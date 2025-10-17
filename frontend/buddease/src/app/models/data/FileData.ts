@@ -1,9 +1,9 @@
 // FileData.ts
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
-import { User } from '@/app/users/User';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity,DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { User } from '@/app/users/User';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define the interface for FileData
 interface FileData<
@@ -18,7 +18,7 @@ interface FileData<
   fileType: string; // File type (PDF, DOCX, etc.)
   filePath: string; // Path to the file
   uploader: User['username'] | undefined;
-  attachments?: Attachment[];
+  attachments?: AttachmentType[];
   fileName: string;
   uploadDate: Date | undefined;
   imageData?: string;

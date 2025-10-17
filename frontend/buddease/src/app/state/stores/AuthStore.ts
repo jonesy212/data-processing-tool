@@ -1,8 +1,8 @@
 // AuthStore.ts
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { NFT } from "@/app/nft/NFT";
+import { Permission } from "@/app/permissions/Permission";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
-import { Permission } from "@/app/users/Permission";
 import { User } from "@/app/users/User";
 import { UserPreferences } from "@/config/UserPreferences";
 import { hasTokenExpired } from "@/server/database/hasTokenExpired";

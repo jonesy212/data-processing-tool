@@ -1,7 +1,7 @@
 // ServerSnapshotTypes.ts
 // Server-specific types and interfaces
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { CreateSnapshotsPayload } from '@/server/database/Payload';
 
 export interface ServerSnapshotConfig<

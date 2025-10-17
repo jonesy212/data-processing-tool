@@ -1,11 +1,17 @@
 import { BaseData } from '@/app/models/data/Data';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import Version from '@/versions/Version';
+import { Version } from '@/versions/Version';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // ChangeLogEntry Interface
 interface ChangeLogEntry<
-  T extends BaseData<any, any, StructuredMetadata<any, any>> = BaseData<any, any>,
-  K extends T = T
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   id: string;
   timestamp: Date;
@@ -18,14 +24,21 @@ interface ChangeLogEntry<
 }
 
 // Functional: Create Change Log Entry
-function createChangeLogEntry<T extends BaseData<any, any>, K extends T = T>(
+function createChangeLogEntry<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   author: string,
-  changeType: ChangeLogEntry<T, K>['changeType'],
+  changeType: ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['changeType'],
   changes: Partial<T>,
   previousState?: Partial<T>,
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): ChangeLogEntry<T, K> {
+): ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     id: crypto.randomUUID(),
     timestamp: new Date(),
@@ -39,14 +52,21 @@ function createChangeLogEntry<T extends BaseData<any, any>, K extends T = T>(
 }
 
 // Class-based ChangeLogManager
-class ChangeLogManager<T extends BaseData<any, any, StructuredMetadata<any, any>>, K extends T = T> {
-  private logs: ChangeLogEntry<T, K>[] = [];
+class ChangeLogManager<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  private logs: ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
   constructor(private entityName: string) {}
 
   addEntry(
     author: string,
-    changeType: ChangeLogEntry<T, K>['changeType'],
+    changeType: ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['changeType'],
     changes: Partial<T>,
     previousState?: Partial<T>,
     version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -56,14 +76,14 @@ class ChangeLogManager<T extends BaseData<any, any, StructuredMetadata<any, any>
     this.logs.push(entry);
   }
 
-  getChangeLog(): ChangeLogEntry<T, K>[] {
+  getChangeLog(): ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.logs;
   }
 
-  getChangesByAuthor(author: string): ChangeLogEntry<T, K>[] {
+  getChangesByAuthor(author: string): ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.logs.filter(log => log.author === author);
   }
 }
 
 
-export { ChangeLogManager }
+export { ChangeLogManager };

@@ -1,26 +1,25 @@
 // components/Details.tsx
 
 import { Label } from '@/app/branding/BrandingSettings';
-import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
+import ListGenerator from "@/app/generators/ListGenerator";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
+import { Comment } from "@/app/models/comments/Comments";
 import { CommonData, Customizations } from "@/app/models/CommonData";
-import { Participant } from "@/app/pages/management/ParticipantManagementPage";
+import { Data } from "@/app/models/data/Data";
 import { Phase } from '@/app/models/phases/Phase';
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
-import CommonEvent from "@/app/state/stores/CommonEvent";
+import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { observer } from "mobx-react-lite";
 import React from "react";
-import ListGenerator from "@/app/generators/ListGenerator";
-import { Comment } from "./Comments";
-import { Data } from "./Data";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
-export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
+export type DataAndEventDetails = Data<any, any, any> | CommonEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 interface SharedDetails<
   T extends BaseDataEntity,
@@ -38,7 +37,8 @@ interface SharedDetails<
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[];
   isCompleted: boolean;
-  previousMeta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMeta?: Meta;
+  previousMeta?: Meta;
   label: Label;
 }
 

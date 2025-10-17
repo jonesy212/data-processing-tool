@@ -2,11 +2,14 @@ import { BaseData } from '@/app/models/data/Data';
 import { createDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreConfig } from "@/app/snapshots";
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
-import { Attachment } from '@/components/documents/Attachment/attachment';
-import { BaseDataEntity } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 
+import { createBaseDataEntity } from '@/config/createBaseDataEntity'
+import { BaseDataEntity } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotContextType } from '@/app/context/SnapshotContext'
+import { createSnapshotStoreMap } from '@/app/snapshots/createSnapshotStoreMap'
 
 export function getConfigPromise<
   T extends BaseData<any>, 

@@ -1,5 +1,5 @@
 // WebEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface WebEndpoints {
   send: EndpointConfig;

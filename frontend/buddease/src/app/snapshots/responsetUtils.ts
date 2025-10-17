@@ -1,6 +1,6 @@
 // responsetUtils.ts
 import fetchSnapshotById from '@/app/api/SnapshotApi';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -10,11 +10,18 @@ import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from '@/app/snapshots/SnapshotStoreDataResponse';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotStoreProps } from '@/useSnapshotStore';
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 
-function handleSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -27,7 +34,14 @@ function handleSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends 
   }
 
 
-function mapResponseToSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function mapResponseToSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   response: any
 ): Snapshot<SnapshotStoreDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return {
@@ -209,7 +223,9 @@ const returnsSnapshotStore = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -292,12 +308,12 @@ const returnsSnapshotStore = async <
     throw new Error('Failed to configure snapshot store');
   }
 };
-
-
 export {
   handleSnapshot,
   mapResponseToSnapshot,
   returnsSnapshotStore
+};
+    returnsSnapshotStore
 };
 
 

@@ -1,4 +1,11 @@
 // TaskMetadata.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Task } from "@/app/models/tasks/Task";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { TaskMetadata } from '@/config/MetaDataOptions';
+
+
+
 export const taskMetadata = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -8,7 +15,7 @@ export const taskMetadata = <
   IncludedFields extends keyof T = keyof T
 >(
   task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): TaskMetadata<T, K> => {
+): TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
     // Core identifiers
     id: task.id,

@@ -1,7 +1,7 @@
-import { createAction } from "@reduxjs/toolkit";
+import { VideoOptions } from "@/app/cards/modal/ChatSettingsModal";
 import { Video } from "@/app/state/stores/VideoStore";
-import { VideoData } from "@/app/video/Video";
-import { VideoOptions } from "@/app/communications/chat/ChatSettingsModal";
+import { VideoData } from '@/app/typings/videoTypes/Video';
+import { createAction } from "@reduxjs/toolkit";
 
 export const VideoActions = {
   // General Video Actions

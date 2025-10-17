@@ -1,11 +1,23 @@
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { UILogger } from '@/app/libraries/loggiing/Logger';
+import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { NotificationType } from "@/context/NotificationContext";
 
 interface AreaDimensions {
   width: number;
   height: number;
 }
 
-interface FetchOptions<T extends BaseData = BaseData, K extends T = T> {
+interface FetchOptions<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   /**
    * Core Data Fetching Options
    */
@@ -87,7 +99,7 @@ interface FetchOptions<T extends BaseData = BaseData, K extends T = T> {
 interface Area {
   prefix: string;
   name: string;
-  type: NotificationTypeEnum;
+  type: NotificationType;
   id: string;
   title: string;
   chatThreadName?: string; 
@@ -98,7 +110,16 @@ interface Area {
   dimensions: AreaDimensions; 
 }
 
-export const fetchUserAreaDimensions = (options?: FetchOptions): AreaDimensions => {
+export const fetchUserAreaDimensions = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  options?: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): AreaDimensions => {
   const { elementId, listenForResize, onChange } = options || {};
 
   const getDimensions = (): AreaDimensions => {
@@ -183,7 +204,7 @@ const initializeArea = async (): Promise<Area> => {
   const area: Area = {
     prefix: 'USER',
     name: 'JohnDoe',
-    type: NotificationTypeEnum.UserID,
+    type: NotificationTypeEnum.USER_ID,
     id: '12345',
     title: 'UserAccount',
     dimensions, 
@@ -212,6 +233,5 @@ const initializeArea = async (): Promise<Area> => {
 
 initializeArea();
 
-export { FetchOptions };
-export type { Area };
+export type { Area, FetchOptions };
 

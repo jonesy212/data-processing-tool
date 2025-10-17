@@ -1,3 +1,4 @@
+import { ParsedData } from '@/app/documents/DocType';
 import { FileLogger } from '@/app/libraries/logging/Logger';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import safeParseData from '@/components/crypto/SafeParseData';
@@ -5,7 +6,6 @@ import ConditionalRouteComponent from '@/components/libraries/ui/components/Cond
 import DynamicRouteComponent from '@/components/libraries/ui/components/DynamicRouteComponent';
 import { Data } from '@/components/models/data/Data';
 import { YourResponseType } from '@/components/typings/types';
-import { ParsedData } from '@/documents/DocType';
 import DynamicErrorBoundary from '@/shared/DynamicErrorBoundary';
 
 // Define a mapping between JSX elements and route strings

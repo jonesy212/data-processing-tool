@@ -1,24 +1,25 @@
 import { BaseCustomEvent, CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
-import SnapshotStore, { handleSnapshotEvent } from '@/app/snapshots/SnapshotStore';
+import handleSnapshotEvent from '@/app/snapshots/FetchableDataStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { EventAttendance } from '@/calendar/AttendancePrediction';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "./BaseConfig";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { EventAttendance } from '@/app/calendar/AttendancePrediction';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface SharedSnapshotEvent<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = keyof T,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends BaseEvent {
   snapshotId?: string | number | null;
@@ -26,10 +27,13 @@ interface SharedSnapshotEvent<
   error?: any
 }
 
-interface UserEvent<T extends BaseDataEntity,
+interface UserEvent<
+  T extends BaseDataEntity, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "user";
@@ -38,10 +42,13 @@ interface UserEvent<T extends BaseDataEntity,
   metadata?: Record<string, any>; // Optional additional data about the action
 }
 
-interface TaskEvent<T extends BaseDataEntity,
+interface TaskEvent<
+  T extends BaseDataEntity, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "task";
@@ -51,10 +58,13 @@ interface TaskEvent<T extends BaseDataEntity,
   changes?: Record<string, any>; // Details about what was changed
 }
 
-interface ProjectEvent<T extends BaseDataEntity,
+interface ProjectEvent<
+  T extends BaseDataEntity, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "project";
@@ -68,7 +78,9 @@ interface ErrorEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "error";
@@ -81,7 +93,9 @@ interface IntegrationEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "integration";
@@ -94,7 +108,9 @@ interface FileEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "file";
@@ -108,7 +124,9 @@ interface NotificationEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "notification";
@@ -121,7 +139,9 @@ interface MilestoneEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "milestone";
@@ -136,7 +156,9 @@ interface CommentEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "comment";
@@ -151,7 +173,9 @@ interface MeetingEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
   extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "meeting";
@@ -166,7 +190,9 @@ export type SnapshotEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > =
   | {
     type: "snapshotAdded" | "snapshotUpdated" | "snapshotRemoved";
@@ -196,7 +222,9 @@ type ExtendedSnapshotEvents<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = SnapshotEvents<T, K> & {
   type?: string;
   snapshotId?: string | number | null;
@@ -204,68 +232,90 @@ type ExtendedSnapshotEvents<
   snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
-export type AllEvents<
-  T extends BaseDataEntity,
-  K extends T = T
+export type AllEvents<  
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > =
-  | SnapshotEvent<T, K>
+  | SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | BaseCustomEvent
   | CustomEventExtension
-  | SnapshotEvents<T, K>
+  | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | EventAttendance
-  | SystemEvent<T, K>
-  | UserEvent<T, K>
-  | TaskEvent<T, K>
-  | ProjectEvent<T, K>
-  | NotificationEvent<T, K>
-  | MilestoneEvent<T, K>
-  | FileEvent<T, K>
-  | CommentEvent<T, K>
-  | MeetingEvent<T, K>
-  | IntegrationEvent<T, K>
-  | ErrorEvent<T, K>
-  | CustomEventType<T, K>
-  | ExtendedSnapshotEvents<T, K>;
+  | SystemEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | UserEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | TaskEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | ProjectEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | NotificationEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | MilestoneEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | FileEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | CommentEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | MeetingEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | IntegrationEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | ErrorEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | CustomEventType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | ExtendedSnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
-function isEventAttendance<
-  T extends BaseDataEntity,
-  K extends T = T
+function isEventAttendance<  
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: AllEvents<T, K>
+  event: AllEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): event is EventAttendance {
   return 'eventType' in event && event.eventType === "attendance";
 }
 
-function isSystemEvent<
-  T extends BaseDataEntity,
-  K extends T = T
+function isSystemEvent<  T
+   extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: AllEvents<T, K>
-): event is SystemEvent<T, K> {
+  event: AllEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): event is SystemEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return 'eventType' in event && event.eventType === "system";
 }
 
 
 
-function isTaskEvent<T extends BaseDataEntity,
-  K extends T = T
+function isTaskEvent<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: SnapshotEvent<T, K>
-): event is SnapshotEvent<T, K> & { category: "Task" } {
+  event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): event is SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { category: "Task" } {
   return event.category === "Task";
 }
 
 
 
 // Universal event handler
-function handleEvent<T extends BaseDataEntity,
-  K extends T = T
+function handleEvent<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: SnapshotEvent<T, K>,
+  event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   coreSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  subscribers: SubscriberCollection<T, K>,
+  subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId?: string | number | null,
 ): void {
@@ -319,35 +369,50 @@ function handleEvent<T extends BaseDataEntity,
 }
 
 
-function isEventManager<T extends BaseDataEntity,
-  K extends T = T
+function isEventManager<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   obj: any
-): obj is EventManager<T, K> {
+): obj is EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return obj && Array.isArray(obj.eventRecords);
 }
 
 
-function isSnapshotEvent<T extends BaseDataEntity,
-  K extends T = T
+function isSnapshotEvent<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: AllEvents<T, K>
-): event is SnapshotEvent<T, K> {
+  event: AllEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): event is SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (event.type) {
     return event.type.startsWith("snapshot");
   }
   return false;
 }
 
-function isCustomEvent<T extends BaseDataEntity,
-  K extends T = T
+function isCustomEvent<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  event: AllEvents<any>
-): event is CustomEventType<T, K> {
+  event: AllEvents<any, any, any, any, any, any>
+): event is CustomEventType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return 'eventType' in event;
 }
 
 export { handleEvent, isCustomEvent, isEventAttendance, isEventManager, isSnapshotEvent, isSystemEvent, isTaskEvent };
 
-    export type { BaseEvent, SharedSnapshotEvent };
+export type { BaseEvent, SharedSnapshotEvent };
 

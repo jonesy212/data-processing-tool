@@ -1,4 +1,8 @@
 // phaseTypes.ts
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { PhaseData } from "@/app/models/phases/Phase";
 
 // Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
@@ -112,15 +116,10 @@ const emptyPhase: PhaseDefault = createDefaultPhase();
 
 
 export type {
-  PhaseEntity,
-  PhaseK, 
-  PhaseMeta,
-  PhaseAttachment,
-  PhaseExcludedFields,
-  PhaseIncludedFields,
-  PhaseBaseParams,
-  AppPhase,          
-  AppPhaseData,      
-  AppPhaseMeta,      
-  CustomAppPhaseHooks
+  AppPhase,
+  AppPhaseData,
+  AppPhaseMeta,
+  CustomAppPhaseHooks, PhaseAttachment, PhaseBaseParams, PhaseDefault, PhaseEntity, PhaseExcludedFields,
+  PhaseIncludedFields, PhaseK,
+  PhaseMeta
 };

@@ -6,7 +6,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export function addDataSnapshot<
   T extends BaseDataEntity,

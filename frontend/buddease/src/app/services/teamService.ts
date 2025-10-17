@@ -1,6 +1,6 @@
 // teamService.ts
 // app/services/teamService.ts
-import { Project } from '@/app/projects/Project';
+import { Project } from '@/app/models/projects/Project';
 import { Team } from '@/app/models/teams/Team';
 
 export interface ReassignmentRecord {

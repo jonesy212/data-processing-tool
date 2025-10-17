@@ -1,7 +1,7 @@
 import internalApiService from "@/app/api/ApiClient"; // Import the internalApiService
-import { ClientActions } from "@/app/pages/personas/ClientActions";
+import { ClientConfig } from "@/app/client/Client";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { ClientConfig } from "@/server/database/Client";
+import { ClientActions } from "@/app/pages/personas/ClientActions";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 
 const clientConfig = {} as ClientConfig

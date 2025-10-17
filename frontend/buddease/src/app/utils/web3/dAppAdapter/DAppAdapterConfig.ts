@@ -1,4 +1,5 @@
-import { ApiConfig } from '@/app/api/ApiiConfig';
+import { ApiConfig } from '@/app/api/ApiConfig';
+import { ClientConfig } from "@/app/client/Client";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { BaseData } from '@/app/models/data/Data';
@@ -8,12 +9,12 @@ import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { UserRole } from "@/app/models/UserRole";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
-import { ClientConfig } from "@/server/database/Client";
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
+
 
 export interface DappProps<
   T extends BaseDataEntity = BaseDataEntity,
@@ -22,7 +23,8 @@ export interface DappProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+> extends DAppAdapterDappProps {
+
   // General props
   appName: string;
   appVersion: string;

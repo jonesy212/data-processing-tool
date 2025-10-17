@@ -1,6 +1,6 @@
 // dataAnalysisConfig.ts
-import { DataAnalysisEndpoints } from '../types/categories/DataAnalysisEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DataAnalysisEndpoints } from '@/app/typings/categories/DataAnalysisEndpoints';
 
 export const dataAnalysisConfig: DataAnalysisEndpoints = {
   analyzeData: { path: `${BASE_URL}/api/data-analysis/analyze`, method: "POST" },

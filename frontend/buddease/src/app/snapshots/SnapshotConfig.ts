@@ -2,7 +2,7 @@
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
 
 import { userId } from "@/api/ApiUser";
 import apiNotificationsService from '@/app/api/NotificationsService';
@@ -26,8 +26,8 @@ import {
   SubscriptionTypeEnum
 } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -47,13 +47,13 @@ import {
   NotificationType,
   NotificationTypeEnum,
 } from "@/context/NotificationContext";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
 import {
   getCommunityEngagement,
   getMarketUpdates,
   getTradeExecutions,
-} from "@/utils/trading/TradingUtils";
+} from "@/app/utils/trading/TradingUtils";
 import { useParams } from "next/navigation";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
@@ -67,7 +67,7 @@ import { BaseDatabaseService } from '@/server/database//DatabaseConfig';
 import {
   Snapshots,
   SnapshotUnion,
-} from "./LocalStorageSnapshotStore";
+} from '@/app/snapshots/LocalStorageSnapshotStore'
 import {
   Snapshot
 } from '@/app/snapshots/Snapshot';
@@ -85,12 +85,12 @@ interface RetentionPolicy {
 }
 
 interface ConfigureSnapshotStorePayload<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T 
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 > extends Payload {
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotId: string;
@@ -118,7 +118,7 @@ interface SnapshotConfig<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = keyof T,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
@@ -135,9 +135,9 @@ interface SnapshotConfig<
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   storeConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  initialState: InitializedState<T, K>
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   isCore: boolean;
-  additionalData?: CustomSnapshotData<T, K, Meta> | undefined
+  additionalData?: CustomSnapshotData<T, K, Meta>
   hasSnapshots: () => Promise<boolean>
 }
 
@@ -442,10 +442,12 @@ function createSnapshotConfig<
 
 // Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async <
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
     snapshotId: string,
     subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -1100,13 +1102,13 @@ const updateSubscribersAndSnapshots = async <
           ],
 
           getOnUnsubscribeCallbacks: [
-            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
               console.log('Unsubscribe callback triggered for data:', data);
             }
           ],
 
           setOnUnsubscribeCallbacks: [
-            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
               console.log('Setting unsubscribe callback for data:', data);
             }
           ],
@@ -1118,7 +1120,7 @@ const updateSubscribersAndSnapshots = async <
           setEmail: "", 
           setSnapshotIds: [],
           getPayload: {} as T,
-          handleSnapshot: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+          handleSnapshot: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
             // Example logic: update the snapshot data
             console.log('Handling snapshot update for:', data);
             // Insert any additional logic here, like updating state, calling another function, etc.

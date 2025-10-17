@@ -1,5 +1,4 @@
 // AppEntity.ts
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -9,9 +8,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Core App type definitions
 type AppEntity = BaseDataEntity;
@@ -30,26 +28,6 @@ type AppBaseParams = {
   ExcludedFields: AppExcludedFields;
   IncludedFields: AppIncludedFields;
 };
-
-// Helper type to extract UnifiedMetadata with App types
-type AppUnifiedMetadata = UnifiedMetadata<
-  AppBaseParams['T'],
-  AppBaseParams['K'], 
-  AppBaseParams['Meta'],
-  AppBaseParams['AttachmentType'],
-  AppBaseParams['ExcludedFields'],
-  AppBaseParams['IncludedFields']
->;
-
-// Helper type for StructuredMetadata
-type AppStructuredMetadata = StructuredMetadata<
-  AppBaseParams['T'],
-  AppBaseParams['K'],
-  AppBaseParams['Meta'],
-  AppBaseParams['AttachmentType'],
-  AppBaseParams['ExcludedFields'],
-  AppBaseParams['IncludedFields']
->;
 
 // Core snapshot types (FIXED: AppIncludedFields instead of AppIncludeField)
 type AppSnapshot = Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
@@ -75,8 +53,8 @@ type ApplyFieldFilters<
 
 
 export type {
-    AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
-    AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
-    AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppStructuredMetadata, AppSubscriberCollection, AppUnifiedMetadata
+  AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
+  AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
+  AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppSubscriberCollection
 };
 

@@ -1,6 +1,6 @@
 import { generateNFT } from '@/app/generators/NFTGenerator';
 import { UserRole } from "@/app/models/UserRole";
-import UserRoles from '@/UserRoles';
+import UserRoles from '@/app/models/UserRoles';
 import React from 'react';
 
 const PermissionsEditor: React.FC = () => {
@@ -29,4 +29,5 @@ const PermissionsEditor: React.FC = () => {
     </div>
   );
 };
+
 export { PermissionsEditor }; // Export PermissionsEditor as a named export

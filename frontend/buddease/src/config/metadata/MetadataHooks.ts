@@ -1,6 +1,5 @@
 // config/metadata/MetadataHooks.ts
 import { SharedRelationshipData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { createEventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
@@ -8,8 +7,9 @@ import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { UserData } from "@/app/users/User";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { useState } from 'react';
 
 // Client-side metadata state interfaces
@@ -17,7 +17,9 @@ interface MetaState<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   transformToStructureItems: (data: any) => AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -31,7 +33,9 @@ interface MyMetaState<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends VersionHistory<T, K> {
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
@@ -80,7 +84,14 @@ export const useMeta = <
   return { metadata, setMetadata, updateMetadata };
 };
 
-export const useMetadata = <T extends BaseDataEntity, K extends T = T>(
+export const useMetadata = < 
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
   initialOptions: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   const [options, setOptions] = useState<UnifiedMetaDataOptions<T, K>>(initialOptions);

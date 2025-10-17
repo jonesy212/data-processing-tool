@@ -1,7 +1,7 @@
+import { DEXEnum } from '@/app/models/cypto/exchangeIntegration';
+import { RealtimeData } from "@/app/models/realtime/RealtimeData";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
-import { DEXEnum } from '@/app/components/crypto/exchangeIntegration';
-import { RealtimeData } from "@/app/models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
 const useRealtimeDextData = <T>(

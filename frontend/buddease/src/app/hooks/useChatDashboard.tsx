@@ -1,9 +1,9 @@
 // hooks/useChatDashboard.ts
 import { useEffect } from 'react';
 
-import { ChatMessage } from '@/communications';
-import TypingAnimation from '@/libraries/animations/text/TypingAnimation';
+import { ChatMessage } from '@/app/communications';
 import createDynamicHook from '@/dynamicHooks/dynamicHookGenerator';
+import TypingAnimation from '@/libraries/animations/text/TypingAnimation';
 
 
 const useChatDashboard = createDynamicHook({

@@ -1,6 +1,6 @@
 import { ChatRoom } from "@/app/components/communications";
 import connectToChatWebSocket from '@/app/components/communications/WebSocket';
-import { TodoList } from '@/todos/lists/TodoList';
+import { TodoList } from '@/app/todos/lists/TodoList';
 import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ColorPalette from "@/app/components/styling/ColorPalette";

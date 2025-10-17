@@ -1,6 +1,6 @@
 // globalCollaborationConfig.ts
-import { GlobalCollaborationEndpoints } from '../types/categories/GlobalCollaborationEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { GlobalCollaborationEndpoints } from '@/app/typings/categories/GlobalCollaborationEndpoints';
 
 export const globalCollaborationConfig: GlobalCollaborationEndpoints = {
   startProject: { path: `${BASE_URL}/api/global-collaboration/start-project`, method: "POST" },

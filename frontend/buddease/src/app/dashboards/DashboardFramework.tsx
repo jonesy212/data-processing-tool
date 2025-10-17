@@ -1,28 +1,28 @@
 // DashboardFramework.tsx
+import { AdminDashboard, AdminDashboardProps } from "@/app/admin/AdminDashboard";
+import { processAutoGPTOutputWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
 import {
-    AppTree,
-    generateInitialAppTree,
+  AppTree,
+  generateInitialAppTree,
 } from "@/app/generators/generateAppTree";
+import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
+import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import ChatDashboard from "@/app/pages/dashboards/ChatDashboard";
 import DataDashboard from "@/app/pages/dashboards/DataDashboard";
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
+import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { AdminDashboard, AdminDashboardProps } from "@/app/admin/AdminDashboard";
-import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
-import { processAutoGPTOutputWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
-import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
-import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
-import { AquaConfig } from "@/app/web3/webConfigs/AquaConfig";
 import MeetingScheduler from "./../communications/scheduler/MeetingScheduler";
 import {
-    default as MeetingSchedulerToolbar,
-    default as TeamOverview,
-    default as TeamOverviewToolbar,
+  default as MeetingSchedulerToolbar,
+  default as TeamOverview,
+  default as TeamOverviewToolbar,
 } from "./../communications/scheduler/TeamOverview";
 import PhaseDashboard from "./PhaseDashboard";
 interface DashboardFrameworkProps {

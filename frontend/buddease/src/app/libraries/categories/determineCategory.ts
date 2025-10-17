@@ -1,11 +1,9 @@
 // determinCategory.ts
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // determineCategory function
 function determineCategory<

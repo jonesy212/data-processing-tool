@@ -1,6 +1,6 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { StatusUpdate, SubscriptionCriteria } from '@/app/generators/SubscriptionCriteria';
-import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SecurityEvent {

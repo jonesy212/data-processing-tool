@@ -6,17 +6,17 @@ import { User } from "@/app/users/User";
 import { UserRole } from "@/app/models/UserRole";
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import UserRoles from '@/app/models/UserRoles';
-import { MemberEntity
+import { MemberEntity,
   MemberK, 
   MemberMeta, 
-  MemberData 
+  MemberData,
   MemberAttachment, 
   MemberExcludedFields,
   MemberIncludedFields, 
 } from '@/app/typings/entities/MemberEntity'
 
 export interface Member extends User {
-  teamId: string;
+  teamId?: string;
   roleInTeam: string;
   memberName: string;
   teams?: Team[];
@@ -40,13 +40,13 @@ interface Contributor extends Member {
 }
 
 
-  interface TeamMember<
+interface TeamMember<
   T extends BaseDataEntity = MemberEntity,
-  K extends T = MemberK,
-  Meta extends DefaultMeta<T, K> = MemberMeta,
+  K extends BaseDataEntity = MemberK,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = MemberAttachment,
   ExcludedFields extends keyof T = MemberExcludedFields,
-  IncludedFields extends keyof T = MemberIncludedFields
+  IncludedFields extends keyof T = keyof T
 > extends MemberData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Team-specific additional properties
   teamRole?: string;
@@ -56,6 +56,15 @@ interface Contributor extends Member {
   teamSpecificSettings?: TeamMemberSettings;
   contributionScore?: number;
   lastTeamActivity?: Date;
+
+  // Core member fields
+  id: number;
+  username: string;
+  email: string;
+  tier: string;
+  upload_quota: number;
+  user_type: string;
+  role?: UserRole;
 }
 
 // Team permissions type

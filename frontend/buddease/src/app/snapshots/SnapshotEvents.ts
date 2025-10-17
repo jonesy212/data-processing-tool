@@ -1,18 +1,20 @@
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { Callback, Snapshot, SnapshotCoreBase, SnapshotData, SnapshotsArray, SnapshotWithCriteria } from '@/app/snapshots';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import {SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotCoreBase, SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotContext, SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
-import { Subscriber } from '@/users/Subscriber';
-import { SubscriberCollection } from '@/users/SubscriberCollection';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 
 interface BaseEventCallbacks<
   T extends BaseDataEntity = BaseDataRoot,
@@ -115,7 +117,7 @@ export interface SnapshotEventHandlers<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = keyof T,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
   onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
@@ -138,7 +140,9 @@ interface RecordManagement<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   addRecord: (
     event: string,
@@ -170,7 +174,9 @@ interface SnapshotEventBase<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SnapshotCoreBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   key?: string;
   target?: EventTarget;
@@ -179,73 +185,20 @@ interface SnapshotEventBase<
 }
 
 
-interface SnapshotEvents<
-  T extends BaseDataEntity,
+
+function createContextArgs<  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SnapshotEventBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    BaseEventCallbacks<T, K, Meta>,
-    EventManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SnapshotEventHandlers<T, K, Meta>,
-    RecordManagement<T, K, Meta>,
-    SharedProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-{
-  // Additional event-specific properties
-  eventType?: string;
-  eventName?: string;
-  eventData?: any;
-  eventTimestamp?: Date;
-  eventSource?: string;
-
-  // Event handlers
-  onEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  beforeEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean | void;
-  afterEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-
-  // Trigger methods now share the same tuple
-  trigger?: (
-    event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => void;
-
-  on?: (
-    event: string,
-    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => void;
-
-  off?: (
-    event: string,
-    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    unsubscribeDetails?: {
-      userId: string;
-      snapshotId: string;
-      unsubscribeType: string;
-      unsubscribeDate: Date;
-      unsubscribeReason: string;
-      unsubscribeData: any;
-    },
-    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => void;
-}
-
-
-
-function createContextArgs<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) {
   return args;
 }
 
-export type { SharedProperties, SnapshotEvents };
+export type { SharedProperties, SnapshotEventBase };
 
-export { createContextArgs }
+export { createContextArgs };
 

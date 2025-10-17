@@ -1,12 +1,20 @@
 // ExtendedBackendStructure.ts
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { AppStructureItem } from '@/config/appStructure/AppStructure';
 import { backendConfig } from "@/config/BackendConfig";
-import { traverseFrontendDirectory } from "@/server/traverseFrontend";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import BackendStructure from '@/server/database/BackendStructure';
 import getAppPath from "./appPath";
-import { AppStructureItem } from '@/AppStructure';
-import BackendStructure from '@/BackendStructure';
 
-class ExtendedBackendStructure extends BackendStructure {
+class ExtendedBackendStructure<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BackendStructure {
   // Re-declare private field from parent class
   #structureHash: string | undefined;
 
@@ -67,89 +75,49 @@ class ExtendedBackendStructure extends BackendStructure {
 }
 
 // Create and initialize a proper ExtendedBackendStructure instance
-async function initializeBackendStructure(): Promise<ExtendedBackendStructure> {
-  class InitializableBackendStructure extends ExtendedBackendStructure {
-    constructor() {
-      super(
-        getAppPath(backendConfig.versionNumber, backendConfig.appVersion),
-        responsiveDesignStore.backendStructure?.globalState,
-        responsiveDesignStore.backendStructure?.major || 1,
-        responsiveDesignStore.backendStructure?.minor || 0,
-        responsiveDesignStore.backendStructure?.patch || 0
-      );
+async function initializeBackendStructure<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<ExtendedBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 
-      // Initialize with empty values first
-      this.#structureHash = responsiveDesignStore.backendStructure?.structureHash;
-      this.structure = {};
-      this.databaseSchema = {};
-      this.services = {};
-    }
+  const projectPath = getAppPath(backendConfig.versionNumber, backendConfig.appVersion);
 
-    // Implement all required methods
-    public setDatabaseSchema(schema: Record<string, any>): void {
-      this.databaseSchema = schema;
+  // Create the ExtendedBackendStructure instance
+  const instance = new ExtendedBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+    projectPath,
+    responsiveDesignStore.backendStructure?.globalState,
+    responsiveDesignStore.backendStructure?.major || 1,
+    responsiveDesignStore.backendStructure?.minor || 0,
+    responsiveDesignStore.backendStructure?.patch || 0,
+    {
+      customProperty: responsiveDesignStore.backendStructure?.customProperty || '',
+      additionalConfig: responsiveDesignStore.backendStructure?.additionalConfig || {}
     }
+  );
 
-    public getDatabaseSchema(): Record<string, any> {
-      return this.databaseSchema || {};
+  // Initialize its internal state safely
+  try {
+    if (responsiveDesignStore.backendStructure) {
+      await instance.setStructureHash(await responsiveDesignStore.backendStructure.getStructureHash());
+      instance.structure = await responsiveDesignStore.backendStructure.getStructure() || {};
+      instance.databaseSchema = responsiveDesignStore.backendStructure.getDatabaseSchema() || {};
+      instance.services = responsiveDesignStore.backendStructure.getServices() || {};
+    } else {
+      instance.structure = {};
+      instance.databaseSchema = {};
+      instance.services = {};
     }
-
-    public setServices(services: Record<string, any>): void {
-      this.services = services;
-    }
-
-    public getServices(): Record<string, any> {
-      return this.services || {};
-    }
-
-    public async getStructure(): Promise<Record<string, AppStructureItem>> {
-      const structure = {} as Record<string, AppStructureItem>;
-      const files = await traverseFrontendDirectory(
-        getAppPath(backendConfig.versionNumber, backendConfig.appVersion)
-      );
-      files.forEach((file: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-        structure[file.path] = file;
-      });
-      return structure;
-    }
-
-    public getStructureAsArray(): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-      return Object.values(this.structure || {});
-    }
-
-    public async traverseDirectory(dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-      const result = await super.traverseDirectory(dir);
-      return result || [];
-    }
-
-    public async getStructureHash(): Promise<string | undefined> {
-      return this.#structureHash;
-    }
-
-    public async setStructureHash(hash: string): Promise<void> {
-      this.#structureHash = hash;
-    }
-
-    public async initialize(): Promise<void> {
-      try {
-        if (responsiveDesignStore.backendStructure) {
-          this.structure = await responsiveDesignStore.backendStructure.getStructure() || {};
-          this.databaseSchema = responsiveDesignStore.backendStructure.getDatabaseSchema() || {};
-          this.services = responsiveDesignStore.backendStructure.getServices() || {};
-          this.#structureHash = await responsiveDesignStore.backendStructure.getStructureHash();
-        }
-      } catch (error) {
-        console.error("Initialization failed:", error);
-        // Fallback to empty values if initialization fails
-        this.structure = {};
-        this.databaseSchema = {};
-        this.services = {};
-      }
-    }
+  } catch (error) {
+    console.error("Initialization failed:", error);
+    instance.structure = {};
+    instance.databaseSchema = {};
+    instance.services = {};
   }
 
-  const instance = new InitializableBackendStructure();
-  await instance.initialize();
   return instance;
 }
 

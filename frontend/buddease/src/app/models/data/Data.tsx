@@ -1,15 +1,15 @@
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { AttachmentType } from "@/app/components/documents/NoteData";
+import { Phase } from "@/app/models/phases/Phase";
+import { ExcludedFields } from "@/app/components/routing/Fields";
+import {DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
+import { Content } from "@/app/models/content/AddContent";
+import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   SharedIdentifiers,
   SharedStatusFlags,
   SharedTimestamps,
-} from "@/app/components/documents/RelatedProps";
-import { Phase } from "@/app/components/phases/Phase";
-import { ExcludedFields } from "@/app/components/routing/Fields";
-import { Content } from "@/app/content/AddContent";
-import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+} from "@/app/documents/RelatedProps";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
@@ -17,10 +17,12 @@ import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import UserRoles from "@/app/models/UserRoles";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { taskService } from "@/app/services/TaskService";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
@@ -37,42 +39,42 @@ import {
   SnapshotWithCriteria,
   TagsRecord,
 } from "@/app/snapshots/SnapshotWithCriteria";
-import { ExtendedTodo } from "@/app/state/AssignBaseStore";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
+import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AuthStore } from "@/app/state/stores/AuthStore";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { HighlightColor } from "@/app/styling/Palette";
-import { Task } from "@/app/tasks/Task";
-import { Team } from "@/app/teams/Team";
-import { Collaborator, Member } from "@/app/teams/TeamMembers";
+import { Task } from "@/app/models/tasks/Task";
+import { Team } from "@/app/models/teams/Team";
+import { Collaborator, Member } from "@/app/models/teams/TeamMembers";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
-import { TrackerProps } from "@/app/tracker/Tracker";
+import { TrackerProps } from "@/app/models/tracker/Tracker";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { cleanEmptyStrings } from "@/app/utils/cleanEmptyStrings";
+import { cleanEmptyStrings } from "@/app/utils/web3/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VideoData } from "@/app/video/Video";
 import {
   BaseDataEntity,
   BaseDataRoot,
   DefaultExcludedFields,
-  DefaultMeta,
-} from "@/config/BaseConfig";
+  DefaultIncludedFields,
+  DefaultMeta
+} from '@/config/BaseConfig';
+import {
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
+} from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import userSettings from "@/config/UserSettings";
-import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata,
-} from "@/server/database/MetaDataOptions";
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import UserRoles from "@/app/models/UserRoles";
 import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
 import { K, Meta, T } from "./dataStoreMethods";
@@ -97,19 +99,6 @@ interface SharedPhaseData {
   phase: Phase<any, any> | null;
   priority: PriorityTypeEnum;
 }
-
-interface DataEntity extends BaseDataEntity {
-  id: string;
-  name?: string;
-  description?: string;
-  // Add other fields your app’s Data will have
-  children?: any[];
-  tags?: string[];
-}
-
-type DataK = DataEntity;
-type DataMeta = DefaultMeta<DataEntity, DataK>;
-type DataExcludedFields = DefaultExcludedFields<DataEntity>;
 
 type DataWithOmittedFields<
   T extends BaseDataEntity,
@@ -231,7 +220,7 @@ interface BaseData<
   subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   updatedDetails?: DetailsItem<T>;
   analysisType?: AnalysisTypeEnum | null;
-  analysisResults?: DataAnalysisResult<T>[] | string;
+  analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | string;
   audioUrl?: string;
   videoUrl?: string;
   videoThumbnail?: string;
@@ -353,10 +342,10 @@ const DataDetailsComponent = <
 
 
 const area = fetchUserAreaDimensions().toString();
-const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
-const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
+const currentMetadata: AppUnifiedMetadata = useMetadata('data-area');
+const currentMeta: AppStructuredMetadata = useMeta(area)
 
-const coreData: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -1672,8 +1661,7 @@ export type {
   Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps, DataEntity, DataExcludedFields, DataK,
-  DataMeta, DataWithOmittedFields,
+  DataDetailsProps, DataWithOmittedFields,
   SharedRelationshipData,
   TodoSubtasks
 };

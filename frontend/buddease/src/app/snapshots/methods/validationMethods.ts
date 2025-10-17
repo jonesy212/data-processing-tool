@@ -1,13 +1,13 @@
 // validationMethods.ts
-import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { Snapshot } from "@/app/snapshot/Snapshot";
+import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotWithCriteriaAsBase } from "@/app/snapshotstoreOptions";
-import { Snapshot } from "@/app/snapshot/Snapshot";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 
 // validationMethods.ts
 export const ValidationMethods = {

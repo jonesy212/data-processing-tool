@@ -9,17 +9,24 @@ import { default as CustomFile, default as File } from "@/app/documents/File";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from "@/app/hooks/useNotificationSystem";
+import { DefaultMeta, BaseDataRoot } from '@/config/BaseConfig';
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
   "setEventColor"
 );
 
-type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
+type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K, DefaultMeta<BaseDataRoot, BaseDataRoot>>>;
 
-export const CalendarActions = {
-
+export const CalendarActions = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => ({
   // Standard actions
   addEvent: createAction<DefaultCalendarEvent>("addEvent"),
   removeEvent: createAction<string>("removeEvent"),
@@ -138,7 +145,7 @@ export const CalendarActions = {
   }>("shareEvent"),
   shareFilesWithinCalendarEvent: createAction<{
     eventId: string;
-    files: CustomFile[];
+    files: CustomFile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     calendarEventId: string;
     recipients: string[];
   }>("shareFilesWithinCalendarEvent"),
@@ -149,7 +156,7 @@ export const CalendarActions = {
   
   attachFileToEvent: createAction<{
     eventId: string;
-    attachment: File | string; // File object or URL
+    attachment: File<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string; // File object or URL
     // Additional parameters as needed
   }>("attachFileToEvent"),
 
@@ -187,7 +194,7 @@ export const CalendarActions = {
     // Additional parameters as needed
   }>("createEventTemplate"),
 
-  importEvents: createAction<File>("importEvents"),
+  importEvents: createAction<File<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>("importEvents"),
   exportEvents: createAction("pexportEvents"),
 
   viewEventHistory: createAction<string>("viewEventHistory"),
@@ -368,6 +375,6 @@ export const CalendarActions = {
   ),
 
   selectMilestones: createAction<string[]>("selectMilestones"),
-};
+});
 
 export type { DefaultCalendarEvent };

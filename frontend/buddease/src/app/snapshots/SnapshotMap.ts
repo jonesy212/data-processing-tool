@@ -1,20 +1,28 @@
 // Function to add or update a snapshot in the map
-
-import { Snapshot, SnapshotData } from '@/app/snapshots';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { Subscription } from "@/app/subscriptions/Subscription";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Function to remove a snapshot from the map
-function removeSnapshotFromMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function removeSnapshotFromMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   key: string
 ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
@@ -23,7 +31,13 @@ function removeSnapshotFromMap<T extends BaseDataEntity, K extends T = T, Meta e
 }
 
 // Function to get a snapshot from the map
-function getSnapshotFromMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function getSnapshotFromMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   key: string
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
@@ -32,14 +46,26 @@ function getSnapshotFromMap<T extends BaseDataEntity, K extends T = T, Meta exte
 
 
 // Implementation of the getSnapshot method
-function getSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function getSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   this: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return convertSnapshotContainer(this.snapshotContainer);
 }
 
 // Function to batch update multiple snapshots
-function batchUpdateSnapshots<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function batchUpdateSnapshots<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   existingMap: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   updates: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
@@ -48,13 +74,25 @@ function batchUpdateSnapshots<T extends BaseDataEntity, K extends T = T, Meta ex
 }
 
 // Function to validate a snapshot before adding or updating
-function validateSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
+function validateSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
   // Implement validation logic here (e.g., check for required fields)
   return snapshot.id !== undefined && snapshot.data !== undefined;
 }
 
 // Function to safely update snapshots
-function safeUpdateSnapshots<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function safeUpdateSnapshots<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   key: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -97,7 +135,13 @@ safeUpdateSnapshots(snapshotsMap, 'newKey', newSnapshot);
  * @param snapshot - The snapshot to add or update.
  * @returns A new map with the added or updated snapshot.
  */
-function updateSnapshotMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function updateSnapshotMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   key: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -106,7 +150,13 @@ function updateSnapshotMap<T extends BaseDataEntity, K extends T = T, Meta exten
   return map;
 }
 
-function isSnapshotFunction<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function isSnapshotFunction<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: any
 ): snapshot is (
   id: string | number | undefined,
@@ -140,15 +190,9 @@ type SnapshotStoreMap<
 > = Map<T, [K, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]>;
 
 
-export { getSnapshot, isSnapshotFunction, updateSnapshotMap, SnapshotStoreMap };
+export type { SnapshotStoreMap };
 
-export { isSnapshotFunction,
-  removeSnapshotFromMap,
-getSnapshotFromMap,
-getSnapshot,
-batchUpdateSnapshots,
-validateSnapshot,
-safeUpdateSnapshots,
-updateSnapshotMap,
-isSnapshotFunction,
- }
+  export {
+    batchUpdateSnapshots, getSnapshot, getSnapshotFromMap, isSnapshotFunction, removeSnapshotFromMap, safeUpdateSnapshots,
+    updateSnapshotMap, validateSnapshot
+  };

@@ -1,14 +1,14 @@
 
 import { FilterActions } from '@/app/actions/FilterActions';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { FileTypeEnum } from '@/app/documents/FileType';
 import TaskList from '@/app/components/lists/TaskList';
 import DataFilterForm from '@/app/components/models/data/DataFilterForm';
 import { Task } from '@/app/components/models/tasks/Task';
 import TaskForm from '@/app/components/models/tasks/TaskForm';
 import { NotificationPreferenceEnum } from '@/app/components/notifications/Notification';
-import { Filter } from '@/app/pages/searchs/Filter';
-import { PaginationOptions, SearchOptions, SortingOption } from '@/app/pages/searchs/SearchOptions';
+import { FileTypeEnum } from '@/app/documents/FileType';
+import { Filter } from '@/app/pages/searches/Filter';
+import { PaginationOptions, SearchOptions, SortingOption } from '@/app/pages/searches/SearchOptions';
 import {
   addTask,
   completeTask,

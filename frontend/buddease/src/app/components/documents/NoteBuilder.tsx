@@ -1,14 +1,14 @@
 import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
-import { createMetaState } from '@/config//metadata/MetadataHooks';
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { UserData } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
+import { createMetaState } from '@/config//metadata/MetadataHooks';
 import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
-import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from "./NoteData"; // Assuming you have a NoteData interface
+import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from "../../documents/NoteData"; // Assuming you have a NoteData interface
 
 const NoteBuilder: React.FC = () => {
   const [editorState, setEditorState] = useState(() =>

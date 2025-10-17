@@ -3,10 +3,12 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/server/database/MetaDataOptions";
-import { CoreMetadata } from "@/server/database/MetadataStateManager";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/config/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
+import { CoreMetadata } from "@/server/metadata/MetadataStateManager";
+import { Version } from '../versions/Version';
+import { VersionData, VersionHistory } from '../versions/VersionData';
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -16,21 +18,24 @@ interface SharedMetadata<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends Omit<CoreMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "schema">,
-    Partial<VersionMetadata<T, K>>,
+    Partial<VersionMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    Partial<ConfigMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     Partial<StatusMetadata>,
-    Partial<ConfigMetadata>,
     SharedRelationshipData<K> {
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
   lastUpdated?: Date | VersionHistory<T, K>; 
-  latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
+  latestVersion?: Pick<
+    VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    "id" | "versionNumber" | "timestamp" | "author" | "schema"
+  >;
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 
   permissions?: AppStructurePermissions[]; 
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   category?: Category;
-  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
-  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   currentMeta?: Meta;
   previousMeta?: Meta;
   schema?: Record<string, SchemaField>;

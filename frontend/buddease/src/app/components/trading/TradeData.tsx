@@ -1,11 +1,11 @@
 // TradeData.tsx
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CommonDetails from '@/app/models/CommonData';
 import { Data, DataDetailsProps } from '@/app/models/data/Data';
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { Tag } from '@/appp/models/tracker/Tag';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CommonData, Customizations } from '@/models/CommonDetails';
@@ -80,6 +80,7 @@ const TradeDataComponent: React.FC<TradeDataProps> = ({ trade, details }) => {
           description: "Trade descriptions",
           details: tradeData.details,
           completed: !!tradeData.completed,
+          date: new Date()
         }}
         details={{
           _id: tradeData._id,

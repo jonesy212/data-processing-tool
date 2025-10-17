@@ -1,22 +1,27 @@
 // fetchInitialSnapshotData.ts
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Data } from '@/app/models/data/Data';
+
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import useDocumentStore from "@/app/state/stores/DocumentStore";
-import { Subscriber } from '@/users/Subscriber';
-import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
+import { Snapshot } from "./Snapshot";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { BaseData } from '@/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Example functions for fetching initial snapshot data and current data
 const fetchInitialSnapshotData = async  <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
 >(): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 
@@ -28,7 +33,7 @@ const fetchInitialSnapshotData = async  <
     {
       id: "1",
       data: null, // or appropriate data
-      initialState: {} as InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Initialize with an empty object or appropriate state
+      initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Initialize with an empty object or appropriate state
       isCore: true,
       initialConfig: {}, // Initialize with your configuration
       removeSubscriber: () => {},
@@ -106,7 +111,7 @@ const fetchInitialSnapshotData = async  <
         // Implement the logic here
         return Promise.resolve([]); // Return an array of SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       },
-      initializedState: {} as InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      initializedState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       getAllKeys: (): Promise<string[] | undefined> => {
         // Implement the logic here
         return Promise.resolve(undefined); // Return a Promise that resolves to an array of strings or undefined

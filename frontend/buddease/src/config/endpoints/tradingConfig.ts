@@ -1,6 +1,6 @@
 // tradingConfig.ts
-import { TradingEndpoints } from '../types/categories/TradingEndpoints';
-import { BASE_URL } from './baseUrl';
+import { TradingEndpoints } from '@/app/typings/categories/TradingEndpoints';
+import { BASE_URL } from '@/app/api/baseUrl';
 
 export const tradingConfig: TradingEndpoints = {
   // Trading platform endpoints
@@ -33,9 +33,9 @@ export const tradingConfig: TradingEndpoints = {
   placeOrder: { path: `${BASE_URL}/api/trading/place-order`, method: "POST" },
   cancelOrder: (orderId: string) => ({ path: `${BASE_URL}/api/trading/cancel-order/${orderId}`, method: "DELETE" }),
   getOrderStatus: (orderId: string) => ({ path: `${BASE_URL}/api/trading/order-status/${orderId}`, method: "GET" }),
-  getOpenOrders: { path: `${BASE_URL}/api/trading/open-orders`, method: "GET" }),
-  getOrderHistory: { path: `${BASE_URL}/api/trading/order-history`, method: "GET" }),
-  getTradeHistory: { path: `${BASE_URL}/api/trading/trade-history`, method: "GET" }),
+  getOpenOrders: { path: `${BASE_URL}/api/trading/open-orders`, method: "GET" },
+  getOrderHistory: { path: `${BASE_URL}/api/trading/order-history`, method: "GET" },
+  getTradeHistory: { path: `${BASE_URL}/api/trading/trade-history`, method: "GET" },
   
   // Account management
   getAccountBalance: { path: `${BASE_URL}/api/trading/account-balance`, method: "GET" },
@@ -66,7 +66,7 @@ export const tradingConfig: TradingEndpoints = {
   createTradingBot: { path: `${BASE_URL}/api/trading/trading-bot`, method: "POST" },
   updateTradingBot: (botId: string) => ({ path: `${BASE_URL}/api/trading/trading-bot/${botId}`, method: "PUT" }),
   deleteTradingBot: (botId: string) => ({ path: `${BASE_URL}/api/trading/trading-bot/${botId}`, method: "DELETE" }),
-  getTradingBots: { path: `${BASE_URL}/api/trading/trading-bots`, method: "GET" }),
+  getTradingBots: { path: `${BASE_URL}/api/trading/trading-bots`, method: "GET" },
   startTradingBot: (botId: string) => ({ path: `${BASE_URL}/api/trading/trading-bot/${botId}/start`, method: "POST" }),
   stopTradingBot: (botId: string) => ({ path: `${BASE_URL}/api/trading/trading-bot/${botId}/stop`, method: "POST" }),
   
@@ -78,7 +78,7 @@ export const tradingConfig: TradingEndpoints = {
   // Social trading
   followTrader: (traderId: string) => ({ path: `${BASE_URL}/api/trading/follow-trader/${traderId}`, method: "POST" }),
   unfollowTrader: (traderId: string) => ({ path: `${BASE_URL}/api/trading/unfollow-trader/${traderId}`, method: "DELETE" }),
-  getFollowedTraders: { path: `${BASE_URL}/api/trading/followed-traders`, method: "GET" }),
+  getFollowedTraders: { path: `${BASE_URL}/api/trading/followed-traders`, method: "GET" },
   copyTrade: (tradeId: string) => ({ path: `${BASE_URL}/api/trading/copy-trade/${tradeId}`, method: "POST" }),
   
   // Analytics and reporting

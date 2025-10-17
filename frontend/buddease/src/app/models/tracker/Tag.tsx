@@ -1,28 +1,11 @@
-import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SpecificMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
+import { SpecificMetadata } from '@/config/StructuredMetadata';
 import React from 'react';
-
-
-
-// Define the Tag interface and TagOptions interface
-interface Tag<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SharedTimestamps,
-    SharedStatusFlags {
-  relatedTags: string[];
-  attribs?: Record<string, any>;
-}
 
 interface TagOptions<
   T extends BaseDataEntity,
@@ -42,55 +25,21 @@ interface TagOptions<
   timestamp: number;
 }
 
-// TagProps for the TagComponent
-interface TagProps<
+// Define the Tag interface and TagOptions interface
+interface Tag<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
-  tagOptions: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
-  excludedFields?: ExcludedFields;
-  meta?: Meta;
+> extends TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    SharedTimestamps,
+    SharedStatusFlags {
+  relatedTags: string[];
+  attribs?: Record<string, any>;
 }
 
-// Functional Component TagComponent
-const TagComponent = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->({
-  tagOptions,
-  excludedFields,
-  meta
-}: TagProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-  // Function to display tag options
-  const display = () => {
-    console.log(`Tag Name: ${tagOptions.name}`);
-    console.log(`Tag Color: ${tagOptions.color}`);
-  };
-
-  // Function to return tag options
-  const getOptions = () => tagOptions;
-
-  // Function to get tag id
-  const getId = () => tagOptions.id;
-
-  return (
-    <div>
-      <p>Tag Name: {tagOptions.name}</p>
-      <p>Tag Color: {tagOptions.color}</p>
-      {meta && <span>Created By: {meta.createdBy}</span>}
-    </div>
-  );
-};
-
-export default TagComponent;
 
 // Example usage of TagComponent
 const tagOptions1: TagOptions<BaseDataEntity> = {
@@ -124,7 +73,13 @@ const tagOptions1: TagOptions<BaseDataEntity> = {
   nulltype: {} as AllTypes
 };
 
-const tagOptions2: TagOptions<BaseDataEntity> = {
+const tagOptions2: TagOptions<TagEntity,
+TagK,
+TagMeta,
+TagAttachment,
+TagIncludedFields,
+TagExcludedFields
+> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -138,6 +93,7 @@ const tagOptions2: TagOptions<BaseDataEntity> = {
   timestamp: 0,
   nulltype: {} as AllTypes
 };
+
 const tag1: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions1} />;
 const tag2: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions2} />;
 
@@ -203,7 +159,9 @@ function processTags<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[]
 ): void {

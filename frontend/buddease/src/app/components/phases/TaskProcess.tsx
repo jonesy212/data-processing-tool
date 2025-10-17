@@ -2,7 +2,7 @@
 import TaskReportGenerator, { TaskReport } from "@/app/generators/TaskReportGenerator";
 import React, { useState } from "react";
 import { Task } from "@/app/models/tasks/Task";
-import TaskForm from "@/app/models/tasks/TaskForm";
+import TaskForm from "@/app/components/tasks/TaskForm";
 import TaskService from "@/app/services/TaskService";
 import TaskLoop from "./TaskLoop";
 

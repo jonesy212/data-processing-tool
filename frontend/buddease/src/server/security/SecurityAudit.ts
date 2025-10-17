@@ -1,5 +1,5 @@
 import { useSecurityAudit } from '@/app/hooks/useSecurityAudit';
-import { BaseDataEntity, BaseDataRoot } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import SecureFieldManager from "./SecureFieldManager";
 

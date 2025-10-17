@@ -1,17 +1,18 @@
 import { HookActions } from '@/app/actions/HookActions';
 // AsyncHookLinkerConfig.tsx
+import { UIActions } from '@/app/actions/UIActions';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { Progress } from '@/app/models/tracker/ProgressBar';
+import { PhaseHookConfig } from '@/app/hooks/phaseHooks/PhaseHooks';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { UIActions } from '@/app/actions/UIActions';
-import { Progress } from '@/appp/models/tracker/ProgressBar';
-import { RootState } from '@/state/redux/slices/RootSlice';
-import { PhaseHookConfig } from '@/phaseHooks/PhaseHooks';
 
 export interface AsyncHook<T> extends PhaseHookConfig {
   enable?: () => void; // Change enable method to not be optional
   disable?: () => void; // Change disable method to not be optional
  isActive: boolean;
   initialStartIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => void,
   resetIdleTimeout: () => Promise<void>;
   idleTimeoutId: NodeJS.Timeout | null;
   startAnimation: () => void;

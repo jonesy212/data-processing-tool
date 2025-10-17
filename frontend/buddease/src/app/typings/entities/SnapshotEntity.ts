@@ -1,5 +1,4 @@
 // SnapshotEntity.ts
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -9,24 +8,14 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // --- Core Snapshot type definitions ---
-type SnapshotEntity = BaseDataEntity & {
-  name?: string;
-  description?: string;
-  category?: string;
-  tags?: string[];
-  version?: string;
-  createdBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  metadata?: UnifiedMetadata<any, any>;
-  [key: string]: any;
-};
 
+type SnapshotEntity = BaseDataEntity 
 type SnapshotK = SnapshotEntity;
 type SnapshotMeta = DefaultMeta<SnapshotEntity, SnapshotK>;
 type SnapshotAttachment = Attachment;
@@ -151,7 +140,7 @@ type SnapshotEntityApplyFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,
   IncludedFields extends keyof T = keyof T
-> = Pick<Omit<T, Excluded>, Included>;
+> = Pick<Omit<T, Excluded>, IncludedFields>;
 
 // --- SnapshotEntity data interface ---
 interface SnapshotEntityDataInterface<
@@ -175,8 +164,29 @@ interface SnapshotEntityDataInterface<
 }
 
 // --- Default empty snapshot ---
-const emptySnapshotData: SnapshotEntityDataInterface = {
+const emptySnapshotData: SnapshotEntityDataInterface<
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+> = {
+
+
+   onInitialize, taskIdToAssign, schema, currentCategory,
+  // Core Snapshot fields
   id: '',
+  deleted: false,
+  isCore: false,
+  initialState: {} as SnapshotEntityData,
+  initialConfig: {} as SnapshotEntityStoreConfig,
+  snapshotConfig: {} as SnapshotEntityStoreConfig,
+  storeConfig: {} as SnapshotEntityStoreConfig,
+  subscribers: [] as SnapshotEntitySubscriberCollection[],
+  snapshotType: 'default',
+
+  // Extended entity fields
   name: '',
   description: '',
   category: '',
@@ -185,7 +195,13 @@ const emptySnapshotData: SnapshotEntityDataInterface = {
   createdBy: '',
   createdAt: new Date(),
   updatedAt: new Date(),
+
+  // Metadata
   metadata: {} as SnapshotUnifiedMetadata,
+
+  // Optional additional structure for flexibility
+  data: {} as SnapshotEntityData,
+  store: {} as SnapshotEntityStore,
 };
 
 // --- Helper function ---

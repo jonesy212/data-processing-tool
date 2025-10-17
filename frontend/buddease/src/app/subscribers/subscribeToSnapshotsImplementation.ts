@@ -1,13 +1,12 @@
 // subscribeToSnapshotsImplementation.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { DefaultExcludedFields } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 type Callback<T> = (snapshot: T) => void;
 type UnifiedCallback<
@@ -34,8 +33,10 @@ type SimplifiedSnapshot<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> = Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, DefaultExcludedFields<T>>;
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 const handleSnapshot = <
   T extends BaseDataEntity,

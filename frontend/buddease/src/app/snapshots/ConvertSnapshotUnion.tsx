@@ -1,42 +1,41 @@
 // ConvertSnapshotUnion.tsx
-import { ConvertMeta } from '@/app/components/models/data/dataStoreMethods';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from '@/app/models/data/Data';
+import { ConvertMeta } from '@/app/models/data/dataStoreMethods';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { SnapshotWithCriteriaAsBase } from "./SnapshotStoreOptions";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type ConvertSnapshotWithCriteria<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof BaseDataEntity = never
-> = SnapshotStoreConfig<
-  BaseDataEntity,
-  SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  StructuredMetadata<BaseData<any, any, Meta, Attachment>, SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  ExcludedFields
->;
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 type ConvertSnapshotUnion<
   U extends BaseDataEntity,
   K extends U = U,
   Meta extends DefaultMeta<U, K> = DefaultMeta<U, K>,
-  ExcludedFields extends keyof U = DefaultExcludedFields<U>
+  ExcludedFields extends keyof U = DefaultExcludedFields<U>,
+  IncludedFields extends keyof U = keyof U
 > = SnapshotUnion<U, K, ConvertMeta<U, K, Meta, ExcludedFields>>;
 
 
 
 
 function convertToSnapshotUnion<
-  T extends BaseDataEntity, 
-  K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotUnion<T, K, DefaultMeta<T, K>> {
   // Create a proper SnapshotUnion by ensuring it has BaseDataEntity properties
-  const snapshotUnion: SnapshotUnion<T, K, DefaultMeta<T, K>> = {
+  const snapshotUnion: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     ...snapshot,
     // Ensure BaseDataEntity properties are present
     id: snapshot.id,

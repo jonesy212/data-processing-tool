@@ -3,7 +3,8 @@ import axiosInstance from "@/app/api/csrfToken";
 import { SearchResult } from "@/app/components/routing/SearchResult";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { Note } from "./ApiNote";
-
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define the base URL for your search endpoint
 const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your actual API endpoint
@@ -22,10 +23,12 @@ interface SearchResponseData<
 
 // Define the searchAPI function
 export const searchAPI = async <
-  T extends BaseDataEntity, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
 >(
   query: string
 ): Promise<SearchResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {

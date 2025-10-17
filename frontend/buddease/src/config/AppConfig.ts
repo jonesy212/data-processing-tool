@@ -1,8 +1,8 @@
 //AppConfig
-import { Theme } from "@/app/components/libraries/ui/theme/Theme";
+import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { User } from "@/app/users/User";
 import { AppVersion, currentAppName } from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
@@ -35,7 +35,7 @@ interface AppActions {
 interface AppConfig {
   // General application settings
   appName: string; // Name of the application
-  appVersion: AppVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;// Updated to use AppVersion class
+  appVersion: AppVersion;// Updated to use AppVersion class
   apiBaseUrl: string; // Base URL for API requests
   // Add other general application settings as needed
 

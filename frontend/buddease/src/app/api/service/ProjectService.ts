@@ -1,12 +1,12 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
-import { Product } from "@/app/components/products/Product";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import ProjectModel from "@/app/models/ProjectModel";
 import { Project, ProjectData } from '@/app/models/projects/Project';
+import { Product } from "@/app/products/Product";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
 import { K, T } from '@/components/models/data/dataStoreMethods';

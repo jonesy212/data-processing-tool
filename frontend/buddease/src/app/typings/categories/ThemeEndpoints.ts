@@ -1,5 +1,5 @@
 // ThemeEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ThemeEndpoints {
   list: EndpointConfig;

@@ -1,11 +1,11 @@
 // UIActions.tsx
-import { K } from '@/app/components/models/data/dataStoreMethods';
-import { CollaborationData } from "@/app/pages/community/CollaborationData";
-import { createAction } from "@reduxjs/toolkit";
-import React from "react";
+import { K } from '@/app/models/data/dataStoreMethods';
 import { Progress } from "@/app/models/tracker/ProgressBar";
+import { CollaborationData } from "@/app/pages/community/CollaborationData";
 import { SearchResultWithQuery } from "@/app/routing/SearchResult";
 import { CollaborationState } from "@/app/state/redux/slices/CollaborationSlice";
+import { createAction } from "@reduxjs/toolkit";
+import React from "react";
 
 
 interface FetchUserDataPayload {

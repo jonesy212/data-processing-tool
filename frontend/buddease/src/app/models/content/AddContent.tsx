@@ -1,6 +1,5 @@
 // AddContent.tsx
 import { BaseData } from '@/app/models/data/Data';
-import { BaseConfig } from '@/config/BaseConfig';
 import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from '@/app/models/data/StatusType';
@@ -10,20 +9,16 @@ import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { TaskData } from '@/app/models/tasks/Task';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
-} from '@/config/BaseConfig';
+
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { TaskMetadata } from '@/server/database/MetaDataOptions';
+import { TaskMetadata } from '@/config/MetaDataOptions';
 import UserRoles from '@/app/models/UserRoles';
 import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { BaseDataRoot, BaseConfig } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
+import { BaseDataRoot, BaseConfig } from '@/config/BaseConfig';
 
 interface Content<
   T extends BaseDataEntity = BaseDataRoot,

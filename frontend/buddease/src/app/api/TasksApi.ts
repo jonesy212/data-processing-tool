@@ -1,8 +1,6 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from '@/app/models/data/Data';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Dispatch } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
 

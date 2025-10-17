@@ -1,9 +1,11 @@
+import { Task } from "@/app/components/models/tasks/Task";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { Task } from "@/app/components/models/tasks/Task";
+import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface SnapshotIdentity<
   T extends BaseDataEntity,
@@ -11,6 +13,7 @@ export interface SnapshotIdentity<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   // From CoreSnapshot properties
   id?: string;
@@ -30,7 +33,7 @@ export interface SnapshotIdentity<
   date?: string | number | Date | null;
   status?: StatusType | undefined;
   phases?: ProjectPhaseTypeEnum;
-phase?: PhaseDefault | null;
+  phase?: PhaseDefault | null;
   isCore?: boolean;
   isInitialized?: boolean;
   initializedAt?: Date;
@@ -107,7 +110,9 @@ export interface SnapshotIdentityWithTimestamps<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   createdAt: Date;
   updatedAt: Date;
@@ -128,7 +133,9 @@ export function createSnapshotIdentity<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > (overrides: Partial<SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> = {}): SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const now = new Date();
   
@@ -152,7 +159,9 @@ export function isSnapshotIdentity<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > (obj: any): obj is SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return obj && (obj.id !== undefined || obj.snapshotId !== undefined);
 }

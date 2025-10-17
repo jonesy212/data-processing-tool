@@ -17,7 +17,6 @@ import {
   SubscriberTypeEnum,
   SubscriptionTypeEnum,
 } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import {
   CustomSnapshotData,
@@ -60,6 +59,7 @@ import {
   YourSpecificSnapshotType,
   convertMapToSnapshot
 } from "@/app/typings/YourSpecificSnapshotType";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { BaseDatabaseService } from "@/config/DatabaseConfig";
@@ -69,16 +69,17 @@ import {
   NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
+import { sendNotification } from "@/state/redux/slices/UserSlice";
 import { config } from "process";
-import { sendNotification } from "./UserSlice";
 import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "./snapshotStoreConfigInstance";
 
 type SnapshotStoreDelegate<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  AttachmentType extends  Attachment = Attachment
+  IncludedFields extends keyof T = keyof T
 > = (
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   initialState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -144,10 +145,12 @@ const delegateFunction: SnapshotStoreDelegate<
   };
 
 function convertSnapshotToSpecificType <
-T extends  BaseDataEntity, 
-K extends T = T, 
-Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -179,10 +182,12 @@ ExcludedFields extends keyof T = DefaultExcludedFields<T>
 }
 
 function convertSnapshotItem <
-  T extends  BaseDataEntity, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   item: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -375,7 +380,14 @@ function convertSnapshotItem <
 
 
 
-function convertSnapshotStore<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+function convertSnapshotStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotStorePublicMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Get the snapshot items array using the public method
@@ -527,9 +539,12 @@ function convertSnapshotStore<T extends  BaseDataEntity, K extends T = T, Meta e
   } as SnapshotStorePublicMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 const createSnapshotConfig = <
-  T extends BaseDataEntity, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotContent?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -561,7 +576,14 @@ const createSnapshotConfig = <
   };
 };
 
-function convertSnapshotStoreConfig <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+function convertSnapshotStoreConfig <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>,
 ): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta> {
   // Map or transform the fields as needed to match T and K types
@@ -573,11 +595,22 @@ function convertSnapshotStoreConfig <T extends  BaseDataEntity, K extends T = T,
   };
 }
 
-interface SubscriberCallback <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>> {
+interface SubscriberCallback<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;
   _id: string;
-  handleCallback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  snapshotCallback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void; // Ensure this is a function type
+
+  // Called when some generic event happens, optional parameters
+  handleCallback: (data?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+
+  // Specifically called with a snapshot
+  snapshotCallback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 }
 
 
@@ -677,13 +710,13 @@ class Subscriber<
     eventType: string,
     eventData: any,
     date: Date,
-    type: NotificationTypeEnum
+    type: NotificationType
   ) => Promise<void> {
     return async (
       eventType: string,
       eventData: any,
       date: Date,
-      type: NotificationTypeEnum
+      type: NotificationType
     ) => {
       return this.sendNotification(eventType, eventData, date, type);
     };
@@ -694,7 +727,7 @@ class Subscriber<
     eventType: string,
     eventData: any,
     date: Date,
-    type: NotificationTypeEnum
+    type: NotificationType
   ): Promise<void> {
     // Implement the notification logic using the API service
     console.log(
@@ -892,13 +925,7 @@ class Subscriber<
     }
   }
 
-    public callTriggerIncentives(params: TriggerIncentivesParams) {
-    if (this.triggerIncentives) {
-      this.triggerIncentives(params);
-    } else {
-      console.warn("triggerIncentives function is not defined");
-    }
-  }
+
 
   constructor(
     id: string,
@@ -2079,7 +2106,7 @@ class Subscriber<
       });
     });
     if (typeof sendNotification === "function") {
-      (sendNotification as (type: NotificationTypeEnum) => void)(
+      (sendNotification as (type: NotificationType) => void)(
         NotificationTypeEnum.DataLoading
       );
     }
@@ -2148,7 +2175,7 @@ export const payload: Payload = {
     id: "1",
     name: "Subscriber Name",
     timestamp: new Date(),
-    type: NotificationTypeEnum.DataLoading,
+    type: NotificationType.DataLoading,
     startDate: new Date(),
     endDate: new Date(),
     status: NotificationStatus.ERROR,

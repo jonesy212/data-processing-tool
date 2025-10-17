@@ -4,16 +4,8 @@ import {
     DefaultMeta
 } from '@/config/BaseConfig';
 import React, { useCallback, useMemo, useState } from 'react';
-
-// Types
-interface VersionMetadata {
-  timestamp: Date;
-  author?: string;
-  description?: string;
-  tags?: string[];
-  commitHash?: string;
-  buildNumber?: string;
-}
+import { VersionMetadata } from '@/config/MetaDataOptions'
+import { Attachment } from '@/app/documents/attachment/Attachment'
 
 interface SnapshotVersion<T extends BaseDataEntity> {
   id: string;
@@ -29,11 +21,14 @@ interface SnapshotVersioningSystemProps<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   initialSnapshots?: Map<string, SnapshotVersion<T>>;
   onVersionChange?: (versionId: string, snapshot: SnapshotVersion<T>) => void;
   maxHistory?: number;
+  children: (versioningSystem: ReturnType<typeof useSnapshotVersioningSystem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => React.ReactNode;
 }
 
 // Functional Component
@@ -41,7 +36,9 @@ export function useSnapshotVersioningSystem<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   initialSnapshots = new Map(),
   onVersionChange,
@@ -107,7 +104,12 @@ export function useSnapshotVersioningSystem<
   const cleanupOldVersions = useCallback((snapshotId: string, snapshotsMap: Map<string, SnapshotVersion<T>>) => {
     const versions = Array.from(snapshotsMap.values())
       .filter(v => v.snapshotId === snapshotId)
-      .sort((a, b) => new Date(b.metadata.timestamp).getTime() - new Date(a.metadata.timestamp).getTime());
+      .sort((a, b) => {
+        // Handle undefined timestamps by providing fallbacks
+        const timestampA = a.metadata.timestamp ? new Date(a.metadata.timestamp).getTime() : 0;
+        const timestampB = b.metadata.timestamp ? new Date(b.metadata.timestamp).getTime() : 0;
+        return timestampB - timestampA;
+      });
     
     if (versions.length > maxHistory) {
       const versionsToRemove = versions.slice(maxHistory);
@@ -149,7 +151,12 @@ export function useSnapshotVersioningSystem<
         'snapshotId' in v &&
         v.snapshotId === snapshotId
       )
-      .sort((a, b) => new Date(b.metadata.timestamp).getTime() - new Date(a.metadata.timestamp).getTime());
+      .sort((a, b) => {
+        // Most concise and safe approach
+        const timestampA = new Date(a.metadata.timestamp ?? 0).getTime();
+        const timestampB = new Date(b.metadata.timestamp ?? 0).getTime();
+        return timestampB - timestampA;
+      });
   }, [snapshots]);
     
   // ⏪ Revert to previous version
@@ -173,6 +180,7 @@ export function useSnapshotVersioningSystem<
     return getVersionHistory(snapshotId).find(predicate);
   }, [getVersionHistory]);
 
+
   // 📊 Get version statistics
   const getVersionStats = useCallback((snapshotId: string) => {
     const history = getVersionHistory(snapshotId);
@@ -181,8 +189,8 @@ export function useSnapshotVersioningSystem<
       latestVersion: history[0]?.version,
       earliestVersion: history[history.length - 1]?.version,
       timeSpan: history.length > 1 
-        ? new Date(history[0].metadata.timestamp).getTime() - 
-          new Date(history[history.length - 1].metadata.timestamp).getTime()
+        ? new Date(history[0].metadata.timestamp ?? 0).getTime() - 
+          new Date(history[history.length - 1].metadata.timestamp ?? 0).getTime()
         : 0
     };
   }, [getVersionHistory]);
@@ -228,7 +236,7 @@ export function useSnapshotVersioningSystem<
   return value;
 }
 
-export type { SnapshotVersion }
+export type { SnapshotVersion };
 
 // 🎨 React Hook Component
 export const SnapshotVersioningSystem: React.FC<SnapshotVersioningSystemProps<any>> = ({
@@ -238,6 +246,7 @@ export const SnapshotVersioningSystem: React.FC<SnapshotVersioningSystemProps<an
   maxHistory
 }) => {
   const versioningSystem = useSnapshotVersioningSystem({
+    children,
     initialSnapshots,
     onVersionChange,
     maxHistory

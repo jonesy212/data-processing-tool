@@ -1,8 +1,8 @@
 // ThemeConfigContext.tsx
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import YourClass from "@/app/utils/YourClass";
 import React, { createContext, useContext, useState } from "react";
-import { DappProps } from "@/app/..@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 
 interface ThemeConfigProps {
   fontSize: string;
@@ -36,7 +36,9 @@ export const ThemeConfigProvider = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   children,
 }: {

@@ -17,7 +17,7 @@ import { CalendarStatus, MeetingStatus, StatusType } from "@/app/models/data/Sta
 import { Project, ProjectType } from "@/app/models/projects/Project";
 import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import AnalyzeData from "@/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import {
@@ -49,12 +49,12 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 import { User } from "@/app/users/User";
 import { addToSnapshotList, castToSnapshot, isSnapshotContainer } from '@/app/utils/snapshotUtils';
-import { AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { AppUnifiedMetadata } from "@/app/typings/entites/AppMetadataEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createMeta } from "@/config/metadata/MetadataHooks";
+import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
-import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { processSnapshotData } from '@/utils/versionUtils';
 import { useEffect, useState } from "react";
 ;
@@ -530,7 +530,7 @@ function CalendarApp<
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: K,
         index: number
-      ) => SnapshotsObject<T, K>
+      ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       // Initialize an array to store results from callback executions
       const result: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
@@ -656,7 +656,7 @@ function CalendarApp<
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: Data<T>,
       snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotsObject: SnapshotsObject<T, K>
+      snapshotsObject: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },

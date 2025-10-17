@@ -1,8 +1,9 @@
 // getCurrentSnapshotConfigOptions.ts
 
-import { CategoryProperties } from "@/app/app/pages/personas/ScenarioBuilder";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -12,32 +13,43 @@ import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/app/utils/versionUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import {
-    ConfigureSnapshotStorePayload,
-    Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData,
-    SnapshotStoreProps,
-    SnapshotWithCriteria
-} from '@/index';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+import { ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
+
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+
 
 
 class InitializedDelegateClass<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity, 
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> implements InitializedDelegate<T, K, Meta> {
-  private delegates: SnapshotWithCriteria<T, K, Meta>[];
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> implements InitializedDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  private delegates: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
-  constructor(delegates: SnapshotWithCriteria<T, K, Meta>[]) {
+  constructor(delegates: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) {
     this.delegates = delegates;
   }
 
-  public toConfigArray(): SnapshotStoreConfig<T, K, Meta>[] {
+  async getDelegates(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    return this.delegates as unknown as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  }
+
+  public toConfigArray(): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.delegates.map((snap) => ({
       snapshotId: snap.id,
       snapshotContainer: snap.snapshots ?? [],
@@ -53,7 +65,7 @@ class InitializedDelegateClass<
       subscribers: snap.subscribers ?? [],
     }));
   }
-  public async toConfigArrayAsync(): Promise<SnapshotStoreConfig<T, K, Meta>[]> {
+  public async toConfigArrayAsync(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return this.toConfigArray();
   }
 }
@@ -62,22 +74,22 @@ class InitializedDelegateClass<
 export const getCurrentSnapshotConfigOptions = <
   T extends BaseDataEntity, 
   K extends T = T,
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
   id: string | number,
   snapshotId: string | null,
   criteria: CriteriaType,
-  category?: Category,  
   categoryProperties: CategoryProperties | undefined,
   subscriberId: string | undefined,
-  delegate: SnapshotWithCriteria<T, K, Meta>[] | null,
-  snapshotData: SnapshotData<T, K, Meta>,
+  delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
     dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -89,7 +101,7 @@ export const getCurrentSnapshotConfigOptions = <
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-
+    category?: Category,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -102,36 +114,36 @@ export const getCurrentSnapshotConfigOptions = <
   callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void, // Added prop
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   endpointCategory: string | number,
-  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  category?: Category,  
 ): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
   if (!snapshotId) {
     throw new Error('Snapshot ID is required');
   }
 
-  const delegateInstance: InitializedDelegate<T, K, Meta> | null = delegate
-    ? new InitializedDelegateClass<T, K, Meta>(delegate)
+  const delegateInstance: InitializedDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = delegate
+    ? new InitializedDelegateClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(delegate)
     : null;
 
+  const snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
+    if (snapshotData && Array.isArray(snapshotData)) {
+      snapshotsArray.push(...snapshotData);
+    }
+
   // Use createSnapshotStoreConfig to initialize the base configuration
-  const baseConfig = createSnapshotStoreConfig<T, K, Meta>({
+  const baseConfig = createSnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
     snapshotId,
     getSnapshotContainer: () => snapshotContainer, // wrap your promise
     criteria,
     category,
     categoryProperties,
     delegate: delegateInstance,
-    snapshotData: (snapshotStore: SnapshotStore<T, K, Meta>) => {
-      const snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
-      if (snapshotData && Array.isArray(snapshotData)) {
-        snapshotsArray.push(...snapshotData);
-      }
-      return { snapshots: snapshotsArray };
-    },
+    snapshotData,
     createdAt: new Date(),
     updatedAt: new Date(),
     metadata: {} as Meta,
-    snapshots: [],      // Correct type: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    snapshots: snapshotsArray,      // Correct type: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     subscribers: [],    // Correct type: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]  
   });
 
@@ -175,7 +187,10 @@ export const getCurrentSnapshotConfigOptions = <
       callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ): { snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, config: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } | null => {
+    ): {
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      config: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    } | null => {
       // Ensure snapshotStore exists within snapshotData
       if (!snapshotData.snapshotStore) {
         throw new Error("snapshotStore cannot be null");

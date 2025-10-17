@@ -4,14 +4,14 @@ import { hashString } from "@/app/generators/HashUtils";
 import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/models/data/dataStoreMethods";
 import UserRoles from '@/app/models/UserRoles';
-import { Permission } from '@/app/users/Permission';
+import { Permission } from '@/app/permissions/Permission';
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/config/appStructure/appPath";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { DataVersions } from "@/configs/DataVersionsConfig";
 import * as path from "path";
@@ -51,7 +51,7 @@ export default class FrontendStructure<
 > implements AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   [key: string]: any;
   
-  versions: DataVersions = {
+  versions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     backend: undefined,
     frontend: undefined
   }

@@ -1,21 +1,23 @@
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { simulateFetch } from "@/app/simulate/simulateFetch";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface FetchSnapshotPayload<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
     title?: string;
     description?: string;
     createdAt: string | Date | undefined
@@ -64,7 +66,10 @@ interface FetchTaskSnapshotPayload {
 async function fetchSnapshotPayload<
   T extends BaseDataEntity,
   K extends T = T,
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
   options?: {
@@ -90,7 +95,7 @@ async function fetchSnapshotPayload<
   const requestTimestamp = new Date();
 
   // Simulate fetching data (replace this with actual API call)
-  const fetchedData = await simulateFetch<T, K, Meta>(snapshotId, queryParams);
+  const fetchedData = await simulateFetch<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotId, queryParams);
 
   if (!fetchedData) {
     throw new Error(`Snapshot with ID "${snapshotId}" not found.`);

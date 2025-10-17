@@ -1,10 +1,11 @@
 import { Team } from '@/app/components/models/teams/Team';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
+import {
+  MemberData
+} from '@/app/typings/entities/MemberEntity';
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface Member extends User {
   teamId: string;
@@ -16,26 +17,6 @@ export interface Member extends User {
 }
 
 
-
-
-interface TeamMember<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends MemberData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-    id: number;
-    username: string;
-    email: string;
-    tier: string;
-    upload_quota: number;
-  user_type: string;
-  role: UserRole
-    // Add other TeamMember-related fields as needed
-  }
-  
 
   const DEFAULT_REFRESH_UI = () => {};
 
@@ -103,8 +84,7 @@ interface TeamMember<
     role: UserRoles.Member
   } as TeamMember
 
-export default MemberData; 
-export type { Contributor, TeamMember };
+export type { TeamMember };
 
   export { memberData, teamMember };
 

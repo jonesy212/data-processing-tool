@@ -1,33 +1,12 @@
 // VersionEntity.ts
-import { 
-  BaseDataEntity, 
-  DefaultMeta, 
-  Attachment, 
-  DefaultExcludedFields 
-} from "@/app/models/data/BaseData";
-
-import { 
-  VersionData, 
-  Version, 
-  VersionImpl 
-} from "@/app/models/versions/Version";
-
-import { 
-  FrontendStructure 
-} from "@/app/structures/FrontendStructure";
-
-import { 
-  BackendStructure 
-} from "@/app/structures/BackendStructure";
-
-import { 
-  HistoryEntry 
-} from "@/app/history/HistoryEntry";
-
-import { 
-  StructuredMetadata 
-} from "@/app/metadata/StructuredMetadata";
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { VersionData, Version, VersionImpl } from "@/app/versions/Version";
+import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
+import { BackendStructure } from "@/server/database/BackendStructure";
+import { HistoryEntry } from "@/app/state/stores/HistoryStore";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetaDataOptions, UnifiedMetadata } from '@/config/MetaDataOptions';
 
 /**
  * Core Version Entity representing the complete versioned structure
@@ -44,17 +23,18 @@ export class VersionEntity<
   
   /** Unique version ID or semantic version string */
   id: string;
-  versionNumber: number;
+  versionNumber: string | number;
   versionTag?: string;
   
   /** Reference to underlying data for this version */
   data: T | null;
 
   /** Optional metadata structure */
-  metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   /** Backend and frontend paired version structures */
-  backend?: BackendStructure;
+  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   /** Historical version trail */
@@ -84,6 +64,7 @@ export class VersionEntity<
     backend?: BackendStructure,
     frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    meta?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     history?: HistoryEntry[],
   ) {
     this.id = id;

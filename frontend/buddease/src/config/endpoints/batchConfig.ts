@@ -1,6 +1,6 @@
 // batchConfig.ts
-import { BatchEndpoints } from '../types/categories/BatchEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { BatchEndpoints } from '@/app/typings/categories/BatchEndpoints';
 
 export const batchConfig: BatchEndpoints = {
   fetchVideos: { path: `${BASE_URL}/api/videos/batch`, method: "GET" },

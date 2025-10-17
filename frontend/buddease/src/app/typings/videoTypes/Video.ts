@@ -1,12 +1,11 @@
 
 import { Label } from '@/app/branding/BrandingSettings';
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { 
   BaseDataEntity, 
   DefaultMeta, 
   Attachment, 
-  DefaultExcludedFields 
-} from "@/app/models/data/BaseData";
+  DefaultExcludedFields } from "@/app/models/data/Data";
 
 interface VideoData<
   T extends BaseDataEntity,

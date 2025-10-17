@@ -15,11 +15,11 @@ import {
 } from "@/app/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
+import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { TeamEntity, TeamMeta } from '@/app/typings/entities/teamTypes';
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
   size: "medium",

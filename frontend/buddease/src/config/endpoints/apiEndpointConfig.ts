@@ -1,6 +1,6 @@
 // apiEndpointConfig.ts
-import { ApiConfigEndpoints } from '../types/categories/ApiConfigEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ApiConfigEndpoints } from '@/app/typings/categories/ApiConfigEndpoints';
 
 export const apiEndpointConfig: ApiConfigEndpoints = {
   getUserApiConfig: { path: `${BASE_URL}/api/user/api-config`, method: "GET" },

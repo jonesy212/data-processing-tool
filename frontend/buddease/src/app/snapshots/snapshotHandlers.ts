@@ -13,8 +13,8 @@ import { SnapshotData } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { useEffect } from 'react';
@@ -23,8 +23,8 @@ import { useDispatch } from 'react-redux';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import {
-    NotificationTypeEnum,
-    useNotification
+  NotificationTypeEnum,
+  useNotification
 } from "@/app/context/NotificationContext";
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -32,27 +32,26 @@ import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotManagerOptions from '@/app/snapshots/SnapshotManagerOptions';
+import useSnapshotSlice from '@/app/state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
 import { addToSnapshotList, generateSnapshotId } from "@/app/utils/snapshotUtils";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { Snapshots } from '@/LocalStorageSnapshotStore';
-import useSnapshotSlice from '@/state/redux/slices/SnapshotSlice';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-import { getStoreId } from '@/app/api/ApiData';
-import { CriteriaType } from '@/app/app/pages/searchs/CriteriaType';
-import { SnapshotEvent } from '@/app/app/typings/eventTypes';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { ExcludedFields } from '@/app/routing/Fields';
-import { Payload } from '@/app/server/database/Payload';
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { snapshotCache } from '@/app/utils/cache/InternalCache';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Payload } from '@/server/database/Payload';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { useSnapshotStore } from "./useSnapshotStore";
 
@@ -671,7 +670,7 @@ async function createSnapshotStore<
     filterSnapshots: () => [],
     mapSnapshots: async () => [],
     findSnapshot: () => ({} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
-    subscribe: () => ({ } as SnapshotsArray<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
+    subscribe: () => ({} as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     unsubscribe: () => { },
     fetchSnapshotFailure: (
       snapshotId: string,

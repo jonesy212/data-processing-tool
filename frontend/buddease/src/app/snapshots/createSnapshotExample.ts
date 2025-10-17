@@ -5,7 +5,7 @@
 // import { Data } from '@/app/models/data/Data';
 // import { K, T } from '@/app/models/data/dataStoreMethods';
 // import SnapshotStore from "./SnapshotStore";
-// import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
+// import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 
 // // createSnapshotExample.tsp
 

@@ -1,6 +1,6 @@
 // dexConfig.ts
-import { DexEndpoints } from '../types/categories/DexEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DexEndpoints } from '@/app/typings/categories/DexEndpoints';
 
 export const dexConfig: DexEndpoints = {
   list: { path: `${BASE_URL}/api/dex`, method: "GET" },

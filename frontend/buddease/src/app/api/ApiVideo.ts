@@ -2,17 +2,18 @@
 import { VideoActions } from "@/app/actions/VideoActions";
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { VideoData } from "@/app/components/video/Video";
+import { VideoData } from "@/app/typings/videoTypes";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { ExcludedFields } from '@/app/routing/Fields';
+
 import useVideoStore, { Video } from "@/app/state/stores/VideoStore";
 import { VideoMetadata } from "@/config/StructuredMetadata";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 const API_BASE_URL = endpoints.videos.list;
 
@@ -105,7 +106,7 @@ export const videoService = observable({
 
   updateVideoData: async (
     id: string,
-    metadata: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    metadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFiel >
   ): Promise<{ video: Video }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {
@@ -316,7 +317,7 @@ export const videoService = observable({
 
   updateVideoMetadata: async (
     id: string,
-    metadata: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    metadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>
   ): Promise<{ video: Video }> => {
     try {
       const response = await axiosInstance.put(
@@ -384,7 +385,7 @@ export const videoService = observable({
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>,
       title: "",
       description: "",
       videoDislikes: 0,

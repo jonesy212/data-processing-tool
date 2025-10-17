@@ -1,6 +1,6 @@
 // messagesConfig.ts
-import { MessagesEndpoints } from '../types/categories/MessagesEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { MessagesEndpoints } from '@/app/typings/categories/MessagesEndpoints';
 
 export const messagesConfig: MessagesEndpoints = {
   textMessages: {

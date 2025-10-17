@@ -1,7 +1,7 @@
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
+import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/app/community/newsFeedIntegration';
 import { NewsArticle } from "@/app/pages/blog/Blog";
 import calculateMetrics from '@/app/projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
-import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/community/newsFeedIntegration';
 import updateAnalyticsUI from '@/components/libraries/ui/updateAnalyticsUI';
 import { CryptoHolding } from '@/CryptoHolding';
 import CryptoTransaction from '@/CryptoTransaction';

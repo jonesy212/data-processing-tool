@@ -1,27 +1,35 @@
 // ApiNotes.ts
+import { handleApiError } from '@/app/api/ApiLogs';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { NoteData } from "@/app/components/documents/NoteData";
 import {
-    useNotification
+  NotificationType,
+  useNotification
 } from "@/app/context/NotificationContext";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { NoteData } from "@/app/documents/NoteData";
 import { BaseData } from '@/app/models/data/Data';
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import FolderData from "@/app/models/data/FolderData";
+import { NotificationPosition } from "@/app/models/data/StatusType";
 import { Tag } from '@/app/models/tracker/Tag';
-import { YourResponseType } from "@/app/typings/responseTypes";
+import { YourResponseType } from '@/app/typings/responseTypes';
 import AccessHistory from "@/app/versions/AccessHistory";
 import SearchHistory from "@/app/versions/SearchHistory";
 import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Encryption } from "@/server/security/Encryption";
 import { AxiosError } from "axios";
-import { handleApiError } from '@/app/api/ApiLogs';
 import { SearchResponseData } from "./ApiSearch";
-import { NotificationPosition } from "@/app/models/data/StatusType";
-import { NotificationType } from "@/app/context/NotificationContext";
+import { NoteEntity,
+NoteK,
+NoteMeta,
+NoteAttachment,
+NoteExcludedFields,
+NoteIncludedFields
+} from '@/app/typings/entities/NoteEntity'
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;
@@ -77,9 +85,13 @@ type SearchNotesResponse = {
 };
 
 interface Note<
-  T extends  BaseData<any>, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: number;
   title: string;
   content: string;
@@ -88,7 +100,7 @@ interface Note<
   topics: string[];
   highlights: Highlight[];
   keywords: string[];
-  folders: FolderData[];
+  folders: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   options: any;
   folderPath: string;
   createdAt: Date | undefined;
@@ -103,7 +115,7 @@ interface Note<
   permissions: string;
 
   encryption: Encryption;
-  currentMetadata: StructuredMetadata<any, any>;
+  currentMetadata: StructuredMetadata<any, any, any, any, any, any>;
   searchHistory: SearchHistory[];
   version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Add more properties as needed
@@ -131,13 +143,14 @@ export const handleNoteApiErrorAndNotify = (
     );
   }
 };
+
 // Fetch note by ID API
 export const fetchNoteByIdAPI = async (
   noteId: number,
-  dataCallback: (data: NoteData) => void
+  dataCallback: (data: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>) => void
 ): Promise<any> => {
   try {
-    const fetchNoteEndpoint = `${API_BASE_URL}/notes/${noteId}`;
+    const fetchNot ndpoint = `${API_BASE_URL}/notes/${noteId}`;
     const response = await axiosInstance.get(fetchNoteEndpoint, {
       headers: headersConfig,
     });
@@ -159,7 +172,10 @@ export const fetchNoteByIdAPI = async (
   }
 };
 
-export const addNote = async (newNote: NoteData): Promise<NoteData> => {
+export const addNote = async (
+  newNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
+): Promise<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
+> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes`,
@@ -183,8 +199,8 @@ export const addNote = async (newNote: NoteData): Promise<NoteData> => {
 
 export const updateNote = async (
   noteId: string,
-  updatedNote: NoteData
-): Promise<NoteData> => {
+  updatedNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
+): Promise<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>> => {
   try {
     const response = await axiosInstance.put(
       `${API_BASE_URL}/api/notes/${noteId}`,
@@ -402,7 +418,7 @@ export const listAllNotesAPI = async (): Promise<any[]> => {
 
 // Search notes API
 
-// Updated function with type annotations and centralized error handling
+// function with type annotations and centralized error handling
 export const searchNotesAPI = async (
   searchQuery: string
 ): Promise<SearchNotesResponse | undefined> => {
@@ -410,8 +426,14 @@ export const searchNotesAPI = async (
     const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(
       searchQuery
     )}`;
-    const response = await axiosInstance.get<YourResponseType<NoteData, NoteData, StructuredMetadata<NoteData, NoteData>>
-    >(searchNotesEndpoint);
+    const response = await axiosInstance.get<YourResponseType<
+      NoteEntity,
+      NoteK,
+      NoteMeta,
+      NoteAttachment,
+      NoteExcludedFields,
+      NoteIncludedFields
+    >>(searchNotesEndpoint);
 
     // Ensure that response data matches SearchNotesResponse type
     const responseData: SearchNotesResponse = response.data;

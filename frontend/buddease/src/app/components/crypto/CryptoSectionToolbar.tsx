@@ -1,5 +1,5 @@
 // CryptoSectionToolbar.tsx
-import ToolbarItem from '@/documents/ToolbarItem';
+import ToolbarItem from '@/app/documents/ToolbarItem';
 import React from 'react';
 
 interface CryptoSectionToolbarProps {

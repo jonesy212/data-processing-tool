@@ -1,6 +1,6 @@
 // uiConfig.ts
-import { UiEndpoints } from '../types/categories/UiEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { UiEndpoints } from '@/app/typings/categories/UiEndpoints';
 
 export const uiConfig: UiEndpoints = {
   // User Data & Settings

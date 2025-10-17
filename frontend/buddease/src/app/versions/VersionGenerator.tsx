@@ -1,7 +1,7 @@
 // VersionGenerator.tsx
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
@@ -192,7 +192,7 @@ class VersionGenerator {
                 StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 never
               >, // Example metadata
-              initialState: {} as InitializedState<T, K>, // Example initial state
+              initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Example initial state
               meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Example meta
               mappedSnapshot: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // Example mapped snapshot
               events: {} as EventManager<T, K>, // Example events

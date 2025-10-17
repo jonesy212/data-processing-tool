@@ -1,6 +1,6 @@
 // paymentConfig.ts
-import { PaymentEndpoints } from '../types/categories/PaymentEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { PaymentEndpoints } from '@/app/typings/categories/PaymentEndpoints';
 
 export const paymentConfig: PaymentEndpoints = {
   initiatePayment: { path: `${BASE_URL}/api/payment/initiate`, method: "POST" },

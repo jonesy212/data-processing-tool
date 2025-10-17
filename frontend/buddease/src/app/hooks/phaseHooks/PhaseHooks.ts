@@ -1,23 +1,23 @@
 // PhaseHooks.ts
 
+import { ipfsConfig } from '@/app/components/config/ipfsConfig';
 import createDynamicHook from "@/app/dynamicHooks/dynamicHookGenerator";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import IdeationPhaseComponent from "@/app/phases/IdeationPhaseComponent";
-import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import {
-    ExtendedDAppAdapter,
-    ExtendedDappProps
+  ExtendedDAppAdapter,
+  ExtendedDappProps
 } from "@/app/web3/dAppAdapter/IPFS";
 import userSettings from "@/config/UserSettings";
-import configData from "@/config/configData";
+import configData from "@/config/endpoints/Data";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
-import { ipfsConfig } from '@/app/components/config/ipfsConfig';
 ;
 
 

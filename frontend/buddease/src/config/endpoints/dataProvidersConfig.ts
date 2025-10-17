@@ -1,6 +1,6 @@
 // dataProvidersConfig.ts
-import { DataProvidersEndpoints } from '../types/categories/DataProvidersEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DataProvidersEndpoints } from '@/app/typings/categories/DataProvidersEndpoints';
 
 export const dataProvidersConfig: DataProvidersEndpoints = {
   list: { path: `${BASE_URL}/api/data-providers`, method: "GET" },

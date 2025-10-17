@@ -1,13 +1,13 @@
 // FuzzyMatch.ts
-import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/components/documents/RelatedProps";
+import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/documents/RelatedProps";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
+import { AppMetadata } from "@/config/MetaDataOptions";
 import { useAuth } from "@/context/AuthContext";
-import { AppMetadata } from "@/server/database/MetaDataOptions";
 
 import { processTextWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import fuzzysort from "fuzzysort";
 
 interface BaseEntity<

@@ -1,19 +1,19 @@
 // ApiClient.ts
 //  External API calls (HTTP/REST APIs, external services)
 
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import HeadersConfig from "@/app/api/headers/HeadersConfig";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { useNotification } from '@/app/context/NotificationContext';
-import { Attachment } from '@/app/documents/attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType } from "@/context/NotificationContext";
 import { VersionData } from '@/versions/VersionData';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.client;
@@ -164,7 +164,6 @@ const getNotificationMessage = (key: keyof ClientNotificationMessages): string =
   return fallbackMessages[key] || `${key} message not configured`;
 };
 
-// Updated clientNotificationMessages using the helper function
 const clientNotificationMessages: ClientNotificationMessages = {
   // Existing client messages
   FETCH_CLIENT_DETAILS_SUCCESS: getNotificationMessage('FETCH_CLIENT_DETAILS_SUCCESS'),
@@ -370,8 +369,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
         { headers: headersConfig }
       ),
       "Failed to fetch client details", // For handleApiError logging
-      "FETCH_CLIENT_DETAILS_SUCCESS" as keyof ClientNotificationMessages, // Success notification key
-      "FETCH_CLIENT_DETAILS_ERROR" as keyof ClientNotificationMessages, // Error notification key  
+      "FETCH_CLIENT_DETAILS_SUCCESS" as keyof TMessages, // Success notification key
+      "FETCH_CLIENT_DETAILS_ERROR" as keyof TMessages, // Error notification key  
       { clientId } // Data passed to notifications
     ).then(response => response.data);
   }
@@ -387,8 +386,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
         { headers: headersConfig }
       ),
       "Failed to update client details",
-      "UPDATE_CLIENT_DETAILS_SUCCESS" as keyof ClientNotificationMessages,
-      "UPDATE_CLIENT_DETAILS_ERROR" as keyof ClientNotificationMessages,
+      "UPDATE_CLIENT_DETAILS_SUCCESS" as keyof TMessages,
+      "UPDATE_CLIENT_DETAILS_ERROR" as keyof TMessages,
       { clientId }
     ).then(response => response.data);
   }
@@ -397,8 +396,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`${API_BASE_URL}/connect/${tenantId}`),
       "Failed to connect with tenant",
-      "CONNECT_WITH_TENANT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "CONNECT_WITH_TENANT_ERROR" as keyof ClientNotificationMessages,
+      "CONNECT_WITH_TENANT_SUCCESS" as keyof TMessages,
+      "CONNECT_WITH_TENANT_ERROR" as keyof TMessages,
       { tenantId }
     );
   }
@@ -410,8 +409,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }),
       "Failed to send message to tenant",
-      "SEND_MESSAGE_TO_TENANT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "SEND_MESSAGE_TO_TENANT_ERROR" as keyof ClientNotificationMessages,
+      "SEND_MESSAGE_TO_TENANT_SUCCESS" as keyof TMessages,
+      "SEND_MESSAGE_TO_TENANT_ERROR" as keyof TMessages,
       { tenantId, message }
     );
   }
@@ -420,8 +419,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`),
       "Failed to list connected tenants",
-      "LIST_CONNECTED_TENANTS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "LIST_CONNECTED_TENANTS_ERROR" as keyof ClientNotificationMessages
+      "LIST_CONNECTED_TENANTS_SUCCESS" as keyof TMessages,
+      "LIST_CONNECTED_TENANTS_ERROR" as keyof TMessages
     );
   }
 
@@ -429,8 +428,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/messages"),
       "Failed to list messages",
-      "LIST_MESSAGES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "LIST_MESSAGES_ERROR" as keyof ClientNotificationMessages
+      "LIST_MESSAGES_SUCCESS" as keyof TMessages,
+      "LIST_MESSAGES_ERROR" as keyof TMessages
     );
   }
 
@@ -438,8 +437,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/tasks/create", taskData),
       "Failed to create task",
-      "CREATE_TASK_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "CREATE_TASK_ERROR" as keyof ClientNotificationMessages
+      "CREATE_TASK_SUCCESS" as keyof TMessages,
+      "CREATE_TASK_ERROR" as keyof TMessages
     );
   }
 
@@ -447,8 +446,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.delete(`/api/client/calendar/${eventId}`),
       "Failed to remove calendar event",
-      "REMOVE_CALENDAR_EVENT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "REMOVE_CALENDAR_EVENT_ERROR" as keyof ClientNotificationMessages
+      "REMOVE_CALENDAR_EVENT_SUCCESS" as keyof TMessages,
+      "REMOVE_CALENDAR_EVENT_ERROR" as keyof TMessages
     );
   }
 
@@ -456,8 +455,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/tasks"),
       "Failed to list tasks",
-      "LIST_TASKS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "LIST_TASKS_ERROR" as keyof ClientNotificationMessages
+      "LIST_TASKS_SUCCESS" as keyof TMessages,
+      "LIST_TASKS_ERROR" as keyof TMessages
     );
   }
 
@@ -465,8 +464,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/projects/submit-proposal", proposalData),
       "Failed to submit project proposal",
-      "SUBMIT_PROJECT_PROPOSAL_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "SUBMIT_PROJECT_PROPOSAL_ERROR" as keyof ClientNotificationMessages
+      "SUBMIT_PROJECT_PROPOSAL_SUCCESS" as keyof TMessages,
+      "SUBMIT_PROJECT_PROPOSAL_ERROR" as keyof TMessages
     );
   }
 
@@ -476,8 +475,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/community/challenges/participate", challengeData),
       "Failed to participate in community challenges",
-      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR" as keyof ClientNotificationMessages
+      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS" as keyof TMessages,
+      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR" as keyof TMessages
     );
   }
 
@@ -485,8 +484,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/rewards"),
       "Failed to list rewards",
-      "LIST_REWARDS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "LIST_REWARDS_ERROR" as keyof ClientNotificationMessages
+      "LIST_REWARDS_SUCCESS" as keyof TMessages,
+      "LIST_REWARDS_ERROR" as keyof TMessages
     );
   }
 
@@ -494,8 +493,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${dir}`),
       "Failed to list files",
-      "LIST_FILES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "LIST_FILES_ERROR" as keyof ClientNotificationMessages
+      "LIST_FILES_SUCCESS" as keyof TMessages,
+      "LIST_FILES_ERROR" as keyof TMessages
     );
   }
 
@@ -503,8 +502,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${filePath}`),
       "Failed to get file content",
-      "GET_FILE_CONTENT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "GET_FILE_CONTENT_ERROR" as keyof ClientNotificationMessages
+      "GET_FILE_CONTENT_SUCCESS" as keyof TMessages,
+      "GET_FILE_CONTENT_ERROR" as keyof TMessages
     );
   }
 
@@ -512,8 +511,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/collaborative-edit`),
       "Failed to start collaborative edit",
-      "START_COLLABORATIVE_EDIT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
-      "START_COLLABORATIVE_EDIT_ERROR" as keyof ClientNotificationMessages
+      "START_COLLABORATIVE_EDIT_SUCCESS" as keyof TMessages,
+      "START_COLLABORATIVE_EDIT_ERROR" as keyof TMessages
     );
   }
     
@@ -531,8 +530,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
       "Failed to create file version",
-      "CREATE_FILE_VERSION_SUCCESS" as keyof ClientNotificationMessages,
-      "CREATE_FILE_VERSION_ERROR" as keyof ClientNotificationMessages,
+      "CREATE_FILE_VERSION_SUCCESS" as keyof TMessages,
+      "CREATE_FILE_VERSION_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -544,8 +543,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/updates`, updateData),
       "Failed to receive file update",
-      "RECEIVE_FILE_UPDATE_SUCCESS" as keyof ClientNotificationMessages,
-      "RECEIVE_FILE_UPDATE_ERROR" as keyof ClientNotificationMessages,
+      "RECEIVE_FILE_UPDATE_SUCCESS" as keyof TMessages,
+      "RECEIVE_FILE_UPDATE_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -554,8 +553,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/versions`),
       "Failed to fetch file versions",
-      "FETCH_FILE_VERSIONS_SUCCESS" as keyof ClientNotificationMessages,
-      "FETCH_FILE_VERSIONS_ERROR" as keyof ClientNotificationMessages,
+      "FETCH_FILE_VERSIONS_SUCCESS" as keyof TMessages,
+      "FETCH_FILE_VERSIONS_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -564,8 +563,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/share`, shareData),
       "Failed to share file",
-      "SHARE_FILE_SUCCESS" as keyof ClientNotificationMessages,
-      "SHARE_FILE_ERROR" as keyof ClientNotificationMessages,
+      "SHARE_FILE_SUCCESS" as keyof TMessages,
+      "SHARE_FILE_ERROR" as keyof TMessages,
       { fileId, shareData }
     );
   }
@@ -577,8 +576,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/access`, accessData),
       "Failed to request access to file",
-      "REQUEST_ACCESS_TO_FILE_SUCCESS" as keyof ClientNotificationMessages,
-      "REQUEST_ACCESS_TO_FILE_ERROR" as keyof ClientNotificationMessages,
+      "REQUEST_ACCESS_TO_FILE_SUCCESS" as keyof TMessages,
+      "REQUEST_ACCESS_TO_FILE_ERROR" as keyof TMessages,
       { fileId, accessData }
     );
   }
@@ -587,8 +586,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/export`),
       "Failed to export file",
-      "EXPORT_FILE_SUCCESS" as keyof ClientNotificationMessages,
-      "EXPORT_FILE_ERROR" as keyof ClientNotificationMessages,
+      "EXPORT_FILE_SUCCESS" as keyof TMessages,
+      "EXPORT_FILE_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -597,8 +596,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.delete(`/api/files/${fileId}`),
       "Failed to archive file",
-      "ARCHIVE_FILE_SUCCESS" as keyof ClientNotificationMessages,
-      "ARCHIVE_FILE_ERROR" as keyof ClientNotificationMessages,
+      "ARCHIVE_FILE_SUCCESS" as keyof TMessages,
+      "ARCHIVE_FILE_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -607,8 +606,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/type`),
       "Failed to determine file type",
-      "DETERMINE_FILE_TYPE_SUCCESS" as keyof ClientNotificationMessages,
-      "DETERMINE_FILE_TYPE_ERROR" as keyof ClientNotificationMessages,
+      "DETERMINE_FILE_TYPE_SUCCESS" as keyof TMessages,
+      "DETERMINE_FILE_TYPE_ERROR" as keyof TMessages,
       { fileId }
     );
   }
@@ -617,8 +616,8 @@ class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/import`, fileData),
       "Failed to import file",
-      "IMPORT_FILE_SUCCESS" as keyof ClientNotificationMessages,
-      "IMPORT_FILE_ERROR" as keyof ClientNotificationMessages,
+      "IMPORT_FILE_SUCCESS" as keyof TMessages,
+      "IMPORT_FILE_ERROR" as keyof TMessages,
       { fileData }
     );
   }

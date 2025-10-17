@@ -1,16 +1,20 @@
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UpdateSnapshotPayload } from "@/server/database/Payload";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 interface UpdateSnapshotParams<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
  snapshotId: string | number | null;
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -25,7 +29,7 @@ interface UpdateSnapshotParams<
   payloadData: T | K;
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  store: SnapshotStore<any, K, Meta, ExcludedFields>;
+  store: SnapshotStore<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-export { UpdateSnapshotParams };
+export type { UpdateSnapshotParams };

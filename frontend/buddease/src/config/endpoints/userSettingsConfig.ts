@@ -1,6 +1,6 @@
 // userSettingsConfig.ts
-import { UserSettingsEndpoints } from '../types/categories/UserSettingsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { UserSettingsEndpoints } from '@/app/typings/categories/UserSettingsEndpoints';
 
 export const userSettingsConfig: UserSettingsEndpoints = {
   getUserSettings: { path: `${BASE_URL}/api/user-settings`, method: "GET" },

@@ -3,27 +3,26 @@ import userService from "@/app/api/ApiUser";
 import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
 import { useAssignBaseStore } from "@/app/AssignBaseStore";
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
+import { Meta } from '@/app/models/data/dataStoreMethods';
+import { Phase } from '@/app/models/phases/Phase';
 import { Project } from "@/app/models/projects/Project";
 import { Team } from "@/app/models/teams/Team";
 import { TeamData } from "@/app/models/teams/TeamData";
-import { Phase } from '@/app/models/phases/Phase';
 import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig, SnapshotStoreProps, TagsRecord } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import SnapshotStoreConfigComponent from "@/app/snapshots/SnapshotStoreConfigComponent";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { VideoData } from "@/app/video/Video";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import {
-  AssignTeamMemberStore,
-  useAssignTeamMemberStore,
+    AssignTeamMemberStore,
+    useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 

@@ -1,13 +1,10 @@
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseData } from '@/app/models/data/Data';
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import VersionImpl, { version } from "@/app/versions/Version";
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import VersionImpl from "@/app/versions/Version";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { VersionData, VersionHistory } from "./VersionData";
-
-// Define a default latestVersion generator
+// ✅ Clean, type-safe default version generator
 export function createLatestVersion<
   T extends BaseDataEntity,
   K extends T = T,
@@ -15,152 +12,143 @@ export function createLatestVersion<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-  >(
+>(
   versionData: Partial<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+
   const now = new Date();
-  const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
+
+  // ✅ Define default version metadata (no recursion)
+  const defaultLatestVersion = {
+    id: "ver-0001",
+    versionNumber: "1.0.0",
+    timestamp: now.toISOString(),
+    author: "system",
+    schema: "default-schema",
+  };
+
+  // ✅ Define default VersionImpl (runtime behavior only)
   const defaultVersionImpl: VersionImpl<T, K> = {
     major: 1,
     minor: 0,
     patch: 0,
     appVersion: "1.0.0",
-    checksum: '0000000000000000',
-    bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string): void {
-      switch (type) {
-        case "major":
-          this.major += 1;
-          this.minor = 0;
-          this.patch = 0;
-          break;
-        case "minor":
-          this.minor += 1;
-          this.patch = 0;
-          break;
-        case "patch":
-        default:
-          this.patch += 1;
-          break;
-      }
-  
-      // rebuild version string
-      this.appVersion = `${this.major}.${this.minor}.${this.patch}`;
-  
-      // recalculate checksum + currentHash
-      this.checksum = this.hash(this.appVersion);
-      this.currentHash = this.checksum;
-  
-      if (notes) {
-        console.log(`Version bumped to ${this.appVersion} (${type}) - Notes: ${notes}`);
-      } else {
-        console.log(`Version bumped to ${this.appVersion} (${type})`);
-      }
-    },
-  
-    releaseDate: new Date().toISOString(),
-    description: 'Initial version',
-    content: 'Default content',
-    name: 'Default Version',
-    url: '/versions/1.0.0',
-    versionNumber: '1.0.0',
-    documentId: 'doc-0001',
+    checksum: "0000000000000000",
+    currentHash: "0000000000000000",
+    releaseDate: now.toISOString(),
+    description: "Initial version",
+    content: "Default content",
+    name: "Default Version",
+    url: "/versions/1.0.0",
+    documentId: "doc-0001",
     draft: true,
-    userId: 'system',
-    buildNumber: '1',
-    versions: version,
+    userId: "system",
+    buildNumber: "1",
     id: 0,
     parentId: null,
-    parentType: 'root',
-    parentVersion: '0.0.0',
-    parentTitle: 'Root Version',
-    parentContent: 'No parent content',
-    parentName: 'Root',
-    parentUrl: '/versions/root',
-    parentChecksum: '0000000000000000',
-    parentAppVersion: '0.0.0',
-    parentVersionNumber: '0.0.0',
+    parentType: "root",
+    parentVersion: "0.0.0",
+    parentTitle: "Root Version",
+    parentContent: "No parent content",
+    parentName: "Root",
+    parentUrl: "/versions/root",
+    parentChecksum: "0000000000000000",
+    parentAppVersion: "0.0.0",
+    parentVersionNumber: "0.0.0",
     isLatest: true,
     isActive: true,
     isPublished: false,
     publishedAt: null,
-    source: 'system',
-    status: 'draft',
-    workspaceId: 'workspace-0001',
-    workspaceName: 'Default Workspace',
-    workspaceType: 'system',
-    workspaceUrl: '/workspace/default',
+    source: "system",
+    status: "draft",
+    workspaceId: "workspace-0001",
+    workspaceName: "Default Workspace",
+    workspaceType: "system",
+    workspaceUrl: "/workspace/default",
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    data: undefined,
-    _structure: {},
-  
     versionHistory: {} as VersionHistory,
-    currentHash: '0000000000000000',
-    structureData: '{}',
-  
-    transformToStructureItems: function (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-      return data.map((item: any) => ({
-        id: item.id ?? 'unknown',
-        name: item.name ?? 'Unnamed Item',
+    structureData: "{}",
+    _structure: {},
+
+    // --- Methods ---
+    transformToStructureItems(data: any) {
+      return (data ?? []).map((item: any) => ({
+        id: item.id ?? "unknown",
+        name: item.name ?? "Unnamed Item",
         children: item.children ? this.transformToStructureItems(item.children) : undefined,
       }));
     },
-  
-    getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+
+    getStructure() {
       return Promise.resolve({});
     },
-  
-    getVersionNumber: function (): string {
+
+    getVersionNumber() {
       return this.appVersion;
     },
-  
-    calculateHash: function (): string {
-      // hash the version string consistently
+
+    calculateHash() {
       return this.hash(this.appVersion);
     },
-  
-    updateStructureHash: function (): Promise<void> {
+
+    updateStructureHash() {
       this.currentHash = this.calculateHash();
       return Promise.resolve();
     },
-  
-    setStructureData: function (newData: string): void {
+
+    setStructureData(newData: string) {
       this.structureData = newData;
     },
-  
-    hash: function (value: string): string {
-      // simple hash function (base64 of version string, truncated)
+
+    hash(value: string) {
       return btoa(value).substring(0, 16);
-    }
+    },
+
+    bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string) {
+      switch (type) {
+        case "major":
+          this.major++;
+          this.minor = 0;
+          this.patch = 0;
+          break;
+        case "minor":
+          this.minor++;
+          this.patch = 0;
+          break;
+        default:
+          this.patch++;
+      }
+
+      this.appVersion = `${this.major}.${this.minor}.${this.patch}`;
+      this.checksum = this.hash(this.appVersion);
+      this.currentHash = this.checksum;
+
+      console.log(
+        `Version bumped to ${this.appVersion} (${type})${notes ? " - " + notes : ""}`
+      );
+    },
   };
-  
-  const defaultVersion: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-    id: '0',
+
+  // ✅ Define default VersionData
+  const defaultVersionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    id: "ver-0001",
     name: "Default Version",
     url: "/default-version",
-    versionNumber: "0.0.1",
+    versionNumber: "1.0.0",
     documentId: "default-doc",
     draft: true,
-    userId: "default-user",
+    userId: "system",
     content: "Default content",
-    notes: [],
     appPathWithVersion: "",
-    author: "",
-    buildNumber: 0,
-    schema: {},
-    metadata: {
-      author: "System",
-      timestamp: new Date(),
-      area: "version area",
-      metadataEntries: {},
-      latestVersion,
-      schema: {}
-    },
-    releaseDate: new Date().toISOString(),
-    major: 0,
+    author: "system",
+    buildNumber: 1,
+    schema: "default-schema",
+    releaseDate: now.toISOString(),
+    major: 1,
     minor: 0,
-    patch: 1,
+    patch: 0,
     checksum: "default-checksum",
     parentId: null,
     parentType: null,
@@ -176,41 +164,59 @@ export function createLatestVersion<
     isActive: true,
     isPublished: false,
     publishedAt: null,
-    source: "System Generated",
-    status: "Draft",
-    version: defaultVersionImpl, // Use the valid VersionImpl object
-
-    // Cast to VersionImpl to ensure type safety
-    timestamp: new Date(),
-    user: "System",
-    changes: [],
-    comments: [],
-    workspaceId: "default-workspace",
+    source: "system",
+    status: "draft",
+    timestamp: now,
+    user: "system",
+    createdBy: "system",
+    lastUpdated: now,
+    workspaceId: "workspace-0001",
     workspaceName: "Default Workspace",
-    workspaceType: "Default",
-    workspaceUrl: "/default-workspace",
+    workspaceType: "system",
+    workspaceUrl: "/workspace/default",
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
+    notes: [],
+    changes: [],
+    comments: [],
     history: [],
-    _structure: undefined,
     frontendStructure: undefined,
     backendStructure: undefined,
     data: undefined,
     backend: undefined,
     frontend: undefined,
-    createdBy: "system",
-    lastUpdated: now,
+
+    // ✅ Embed version metadata
+    metadata: {
+      author: "system",
+      timestamp: now,
+      area: "default",
+      metadataEntries: {},
+      latestVersion: defaultLatestVersion, // no recursion here
+      schema: "default-schema",
+    },
+
+    // Optionally include runtime version implementation
+    version: defaultVersionImpl as unknown as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 
-  return { ...defaultVersion, ...versionData };
+  // ✅ Return merged structure (caller can override anything)
+  return { ...defaultVersionData, ...versionData };
 }
 
 
 
-export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends T = T>(
+export function createLastUpdatedWithVersion<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   summary?: string
-): VersionHistory {
+): VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
   return {
     lastUpdated: now,
@@ -226,7 +232,7 @@ export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends 
             children: item.children ? this.transformToStructureItems(item.children) : undefined,
           }));
         },
-        getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+        getStructure: function (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> {
           return Promise.resolve({});
         },
       } as VersionImpl<T, K>,

@@ -1,28 +1,28 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { fetchSnapshotById } from "@/app/api/SnapshotApi";
+import fetchSnapshotById from "@/app/api/SnapshotApi";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from "@/app/models/display/ShowToast";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore, EventRecord, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { convertSnapshotsObjectToArray } from '@/app/snapshots/createSnapshotStoreOptions';
+import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { convertSnapshotsObjectToArray } from '@/createSnapshotStoreOptions';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
 
+import { Snapshot } from "@/app/snapshots/Snapshhot";
 import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { Snapshot } from "./Snapshhot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
@@ -30,9 +30,9 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import {
-    InitializedDelegate,
-    MetaDataOptions,
-    SnapshotStoreOptions
+  InitializedDelegate,
+  MetaDataOptions,
+  SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
 import { addToSnapshotList } from "./snapshotUtils";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
@@ -44,10 +44,12 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 // createOptions.ts
 function createOptions<
-  T extends BaseDataEntity, 
-  K extends T = T, 
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(params: {
   id: string;
 	storeId: number;

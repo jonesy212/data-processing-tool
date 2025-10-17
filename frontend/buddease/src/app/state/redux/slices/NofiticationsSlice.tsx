@@ -1,15 +1,15 @@
 // NotificationSlice.tsx
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { BaseData } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { DocumentOptions } from '@/documents/DocumentOptions';
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { LogData } from '@/models/LogData';
-import { WritableDraft } from '@/state/redux/ReducerGenerator';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
  
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
 

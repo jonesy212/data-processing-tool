@@ -1,4 +1,4 @@
-import { handleCryptoPaymentSelect } from '@/documents/screenFunctionality/ShortcutKeys';
+import { handleCryptoPaymentSelect } from '@/app/documents/screenFunctionality/ShortcutKeys';
 import React from 'react';
 
 const Payments: React.FC = () => {

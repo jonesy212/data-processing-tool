@@ -8,8 +8,15 @@ interface BaseEvent {
   type: string;
 }
 
-interface SystemEvent<T extends BaseData<any>, K extends T = T> 
-  extends SharedSnapshotEvent<T, K> {
+interface SystemEvent<  
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> 
+  extends SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "system"; // Event type identifier
   systemMessage: string; // Description or message of the system event
   severity: "info" | "warning" | "error"; // Level of importance

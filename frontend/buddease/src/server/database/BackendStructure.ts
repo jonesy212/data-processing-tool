@@ -1,22 +1,23 @@
 // app/configs/BackendStructure.ts
-import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
-import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { hashString } from "@/app/generators/HashUtils";
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import Logger from "@/app/libraries/logging/Logger";
+import { SecureField, SecureMetadata } from '@/app/server/security/SecureField';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import getAppPath from "@/config/appStructure/appPath";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { frontend } from "@/config/FrontendStructure";
 import { sanitizeDatabaseSchema } from '@/server/database/sanitizeDatabase';
+import SecureFieldManager from '@/server/security/SecureFieldManager';
 import SecurityAudit from "@/server/security/SecurityAudit";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
-import getAppPath from "./appPath";
-import { AppStructureItem } from "./AppStructure";
-import { frontend } from "./FrontendStructure";
 
 
 interface StructuredBackend {
@@ -129,7 +130,7 @@ export default class BackendStructure <
       this.setStructureHash(await Promise.resolve(newStructureHash));
       
       // Generate or obtain a uniqueID
-      const uniqueID = UniqueIDGenerator.generateID('structureHashUpdate', newStructureHash, NotificationTypeEnum.OperationUpdate);
+      const uniqueID = UniqueIDGenerator.generateID('structureHashUpdate', newStructureHash, NotificationTypeEnum.OPERATION_UPDATE);
 
       Logger.logWithOptions(
         "Structure Hash Update",
@@ -188,9 +189,11 @@ export default class BackendStructure <
             NotificationTypeEnum.FILE_ID,
           );
           const fileContent = await fs.readFile(filePath, "utf-8");
-          const appStructureItem: AppStructureItem = {
+          const userId = useSecureUserId()
+          const appStructureItem: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
             id: uniqueID,
             name: file,
+            userId: userId,
             type: "file",
             items: {},
             path: filePath,
@@ -325,7 +328,7 @@ export default class BackendStructure <
     } as Partial<BackendStructure>;
   }
   
-  backendVersions(): VersionHistory[] {
+  backendVersions(): VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     const { versionNumber, appVersion } = getCurrentAppInfo();
     const projectPath = getAppPath(versionNumber, appVersion);
     const backendStructure: BackendStructure = new BackendStructure(projectPath);
@@ -350,6 +353,7 @@ export default class BackendStructure <
         major: 1, 
         minor: 0,
         patch: 0,
+        currentVersionIndex: 0
       };
     });
     return backendStructureItemsWithVersions;

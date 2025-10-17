@@ -1,17 +1,19 @@
-import { BaseData } from '@/app/models/data/Data';
 import { UserConfig } from "@/app/snapshots";
 import { UserData } from "@/app/users/User";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { userPreferences } from "@/config/UserPreferences";
 import userSettings, { UserSettings } from "@/config/UserSettings";
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface UserConfigData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends UserData<T, K, Meta>,  // ← This already includes BaseData via inheritance
-    UserConfig<T, K, Meta>       // ← Add UserConfig properties
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 {
      // Add configuration-specific fields here
     settings: UserSettings;

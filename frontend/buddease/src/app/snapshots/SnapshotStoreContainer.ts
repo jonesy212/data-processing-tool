@@ -4,17 +4,17 @@ import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Category, generateCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
+import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
-} from "@/config/BaseConfig";
+} from '@/config/BaseConfig';
 import { SimulatedDataSource } from '@/createSnapshotOptions';
 import { SnapshotContainer } from "./SnapshotContainer";
-import { snapshotConfig } from '@/snapshotContainerUtils';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -52,7 +52,9 @@ export const snapshotStoreContainer = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
     storeId: number,
     storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

@@ -1,4 +1,5 @@
 // ApiProject.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { MeetingData } from "@/app/components/calendar/MeetingData";
@@ -12,7 +13,6 @@ import { User } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.projectOwner.base;
@@ -233,7 +233,9 @@ export const ApiProject = observable({
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     projectId: string,
     taskId: string,

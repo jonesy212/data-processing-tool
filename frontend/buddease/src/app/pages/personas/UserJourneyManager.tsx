@@ -1,7 +1,7 @@
 // UserJourneyManager.tsx
 import { PhaseActions } from "@/app/actions/phases/PhaseActions";
-import { TeamCreationPhase } from "@/app/actions/phases/TeamCreation";
-import TeamCreationProcess from "@/app/actions/phases/TeamCreationManager";
+import { TeamCreationPhase } from "@/app/components/phases/steps/TeamCreation";
+import TeamCreationProcess from "@/app/components/phases/steps/TeamCreationManager";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";

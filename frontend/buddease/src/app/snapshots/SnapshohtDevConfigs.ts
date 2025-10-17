@@ -3,7 +3,7 @@
 // import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 // import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 // import { BaseData, Data } from '@/app/models/data/Data';
-// import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
+// import { Snapshot, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 // import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 // import { Category } from "@/app/libraries/categories/generateCategoryProperties";

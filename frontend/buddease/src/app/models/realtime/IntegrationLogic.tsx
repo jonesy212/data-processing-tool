@@ -57,3 +57,4 @@ interface IntegrateComponentsProps extends CommonCalendarProps {
   onDateSelect: (date: Date) => void;
 }
 
+export type { Dependency }

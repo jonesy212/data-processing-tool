@@ -51,7 +51,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var chokidar_1 = require("chokidar");
 var fs = require("fs");
 var path = require("path");
-var appPath_1 = require("@/app/appPath");
+var appPath_1 = require("@/appPath");
 var VersionGenerator_1 = require("@/app/generators/VersionGenerator");
 var _a = (0, VersionGenerator_1.getCurrentAppInfo)(), versionNumber = _a.versionNumber, appVersion = _a.appVersion;
 var AppStructure = /** @class */ (function () {

@@ -1,14 +1,15 @@
 // app/types/blog.ts
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData } from '@/app/models/data/Data';
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 
 export interface BlogData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 > extends SharedRelationshipData<K> {
   _id: string;
   id: string;

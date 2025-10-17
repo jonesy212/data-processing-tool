@@ -6,7 +6,7 @@ import {
   } from "./SnapshotContainer";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import * as snapshotApi from '@/app/api/SnapshotApi'
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig, snapshotFunction } from ".";
 import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";

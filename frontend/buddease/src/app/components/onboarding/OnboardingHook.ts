@@ -1,16 +1,16 @@
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 // OnboardingHooks.ts
 
-import { makeAutoObservable } from 'mobx';
-import { useEffect } from 'react';
-import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.js';
-import { useAuth } from '@/context/AuthContext';
 import { Tracker } from '@/app/models/tracker/Tracker';
+import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.js';
 import { rootStores } from '@/app/state/stores/RootStores';
 import TrackerStore from '@/app/state/stores/TrackerStore';
 import { DocumentData } from '@/components/documents/DocumentBuilder';
-import { User } from '@/users/User.jsx';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { useAuth } from '@/context/AuthContext';
+import { User } from '@/users/User.jsx';
+import { makeAutoObservable } from 'mobx';
+import { useEffect } from 'react';
 
 class OnboardingPhase {
   id: string;
@@ -31,7 +31,9 @@ export const useDynamicOnboarding = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): void => {
   const authContext = useAuth();
   const trackerStore = TrackerStore(rootStores);

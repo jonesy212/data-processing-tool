@@ -1,10 +1,19 @@
 // BackendStructureWrapper.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import BackendStructure from "@/server/database/BackendStructure";
 import { promises as fsPromises } from "fs"; // Use promise-based fs module
-import { AppStructureItem } from "./AppStructure";
-import BackendStructure from "./BackendStructure";
 
-class BackendStructureWrapper {
+class BackendStructureWrapper<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   private backendStructure: BackendStructure;
   private exposeAll: boolean; // User-controlled toggle
 
@@ -13,7 +22,7 @@ class BackendStructureWrapper {
     this.exposeAll = false; // Default to not exposing all
   }
 
-  async getExposedStructure(): Promise<Record<string, AppStructureItem>> {
+  async getExposedStructure(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     const backendStructure = await this.backendStructure.getStructure();
 
     if (this.exposeAll) {
@@ -22,7 +31,7 @@ class BackendStructureWrapper {
     }
 
     // Logic to filter or modify the structure based on your requirements
-    const exposedStructure: Record<string, AppStructureItem> = {};
+    const exposedStructure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
     // Example: Expose only files, not directories
     Object.entries(backendStructure).forEach(async ([key, value]) => {

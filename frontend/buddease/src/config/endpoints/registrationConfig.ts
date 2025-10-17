@@ -1,6 +1,6 @@
 // registrationConfig.ts
-import { RegistrationEndpoints } from '../types/categories/RegistrationEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { RegistrationEndpoints } from '@/app/typings/categories/RegistrationEndpoints';
 
 export const registrationConfig: RegistrationEndpoints = {
   registerUser: { path: `${BASE_URL}/api/users/register`, method: "POST" },

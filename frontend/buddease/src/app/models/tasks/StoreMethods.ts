@@ -1,6 +1,5 @@
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 
 export interface StoreMethods<

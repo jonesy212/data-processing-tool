@@ -10,7 +10,7 @@ import { BytesLike } from "ethers";
 import React, { useState } from "react";
 import { Navigator, Router, Routes, useLocation } from "react-router-dom";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
-import SearchComponent from "./searchs/SearchComponent";
+import SearchComponent from "./searches/SearchComponent";
 
 interface ExtendedAppProps {
   notifications: NotificationData[];

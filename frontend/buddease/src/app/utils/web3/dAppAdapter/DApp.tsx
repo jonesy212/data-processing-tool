@@ -2,12 +2,12 @@
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
 import LoadAquaState from "@/app/dashboards/LoadAquaState";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DataLogger } from "@/app/libraries/logging/Logger";

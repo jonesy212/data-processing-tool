@@ -4,8 +4,8 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/typings/eventTypes';
@@ -24,10 +24,10 @@ import { SnapshotLifecycleMethods } from '@/app/snapshots/SnapshotMethods';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { Content } from '@/models/content/AddContent';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 
 

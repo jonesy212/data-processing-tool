@@ -1,8 +1,8 @@
 import {
   SubscriptionActions
 } from "@/app/actions/SubscriptionActions";
-import { BaseData } from '@/app/models/data/Data';
 import { ModifiedDate } from "@/app/documents/DocType";
+import { BaseData } from '@/app/models/data/Data';
 import { CustomSnapshotData, Snapshot, SnapshotContainerData } from "@/app/snapshots";
 import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
 import { LiveEvent } from "@refinedev/core";
@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { fetchPortfolioUpdatesLastUpdated } from "@/app/utils/trading/TradingUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createAction } from "@reduxjs/toolkit";
 
 interface UseSubscriptionOptions {
@@ -35,7 +35,9 @@ const useSubscription = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   channel,
   onLiveEvent,

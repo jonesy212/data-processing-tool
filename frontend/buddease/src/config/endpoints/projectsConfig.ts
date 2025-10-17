@@ -1,5 +1,5 @@
 // projectsConfig.ts
-import { ProjectsEndpoints } from '../types/categories/ProjectsEndpoints';
+import { ProjectsEndpoints } from '@/app/typings/categories/ProjectsEndpoints';
 
 export const projectsConfig: ProjectsEndpoints = {
   list: { path: "/news", method: "GET" },

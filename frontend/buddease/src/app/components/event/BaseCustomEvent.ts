@@ -1,15 +1,44 @@
 // CustomEvent.ts
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
-import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { K, T } from "@/app/models/data/dataStoreMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 const ClipboardData = {
   onCopy: (content: string) => {},
   onPaste: (content: string) => {},
 };
 
+
+
 export interface CustomClipboardEvent extends BaseCustomEvent {
   getClipboardData(): void;
+}
+
+
+export interface BaseCustomEvent
+  extends EventTarget,
+    Event,
+    ExtendedCalendarEvent {
+  id: string;
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  preventDefault: () => void;
+  stopImmediatePropagation: () => void;
+  addEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => void;
+  dispatchEvent(event: Event): boolean;
+  removeEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => void;
+  clipboardData: React.ClipboardEvent<HTMLDivElement>;
 }
 
 

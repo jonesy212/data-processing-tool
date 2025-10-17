@@ -1,10 +1,8 @@
 // ProjectManagementActions.ts
-import { BaseData, Data } from '@/app/models/data/Data';
-import { createAction } from "@reduxjs/toolkit";
-import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { createAction } from "@reduxjs/toolkit";
 
 
 export const ProjectManagementActions = <

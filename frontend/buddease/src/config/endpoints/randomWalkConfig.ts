@@ -1,6 +1,6 @@
 // randomWalkConfig.ts
-import { RandomWalkEndpoints } from '../types/categories/RandomWalkEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { RandomWalkEndpoints } from '@/app/typings/categories/RandomWalkEndpoints';
 
 export const randomWalkConfig: RandomWalkEndpoints = {
   list: { path: `${BASE_URL}/api/random-walks`, method: "GET" },

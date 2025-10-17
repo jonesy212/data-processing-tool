@@ -1,8 +1,9 @@
 import { categorizeNews } from "@/app/components/community/articleKeywords";
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { generateValidationRulesCode } from "@/server/security/validationRulesCode";
-
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseDataRoot } from '@/config/BaseConfig'
 
 type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
 
@@ -10,10 +11,7 @@ type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Ana
 // Updated CategoryProperties with generics
 interface CategoryProperties<
   T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > {
   id: string;
   type: string;
@@ -507,8 +505,7 @@ export {
   generateUserScenarioComponent, generateUserScenarioMapComponent
 };
 
-    export type { CategoryProperties };
-export { dataVisualizationProperties }
+export type { CategoryProperties };
 // Example usage of categories
 const newsFeedData = { /* Provide your news feed data here */ };
 const categories = categorizeNews(newsFeedData);

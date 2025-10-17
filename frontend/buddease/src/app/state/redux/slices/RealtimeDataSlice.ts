@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RealtimeData } from '@/app/components/models/realtime/RealtimeData';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
 interface RealtimeDataEntity extends BaseDataEntity {

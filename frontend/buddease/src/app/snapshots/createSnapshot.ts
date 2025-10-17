@@ -5,6 +5,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -15,7 +16,6 @@ import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
 import { internalCache } from '@/app/utils/cache/InternalCache';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { deepEqual } from 'assert';
-import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 
 export const createBasicSnapshot = <
   T extends BaseDataEntity,

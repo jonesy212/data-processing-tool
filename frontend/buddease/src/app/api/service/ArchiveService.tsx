@@ -1,8 +1,10 @@
 import { NotificationType } from '@/app/context/NotificationContext';
-import { notify } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StorageService } from '@/models/storage/StoragService';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { notify } from '@/app/utils/snapshotUtils';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StorageService } from '@/app/utils/storage/StoragService';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
 // Archive types
 export interface ArchiveMetadata {
   id: string | number;
@@ -66,10 +68,12 @@ class ArchiveService {
   }
 
   async archiveSnapshot<
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     options?: {
@@ -137,10 +141,12 @@ class ArchiveService {
   }
 
 private validateSnapshotForArchiving<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
   ): boolean {
@@ -165,10 +171,12 @@ private validateSnapshotForArchiving<
   }
 
 private async processSnapshotData<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
   options?: { compression?: boolean }
@@ -215,10 +223,12 @@ private async processSnapshotData<
   }
 
 private async storeArchivedSnapshot<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   archivedSnapshot: ArchivedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  
 ): Promise<void> {
@@ -261,10 +271,12 @@ private async storeArchivedSnapshot<
   }
 
 private sendArchiveNotification<
-  T extends BaseDataEntity = any,  
-  K extends T = any,                 
-  Meta extends DefaultMeta<T, K> = any,  
-  ExcludedFields extends keyof T = any    
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
     archivedSnapshot: ArchivedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
@@ -309,7 +321,14 @@ private sendArchiveNotification<
 }
 
 // Standalone function version
-export const archiveSnapshot = async <T extends BaseDataEntity, K extends T = T>(
+export const archiveSnapshot = async <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   options?: {
     tags?: string[];
@@ -356,6 +375,6 @@ const calculateChecksum = (data: string): string => {
 
 
 export {
-    calculateChecksum, compressData, generateArchiveId
+  calculateChecksum, compressData, generateArchiveId
 };
 

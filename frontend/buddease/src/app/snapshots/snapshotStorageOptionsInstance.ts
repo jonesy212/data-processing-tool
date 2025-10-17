@@ -1,56 +1,63 @@
 // snapshotStorageOptionsInstance.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
-import { Result } from '@/app/snapshots';
+import { Result } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Payload } from '@/server/database/Payload';
 
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
-import { Content } from '@/app/components/models/content/AddContent';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { NotificationPosition } from '@/app/components/models/data/StatusType';
+import { Content } from '@/app/models/content/AddContent';
+import { NotificationPosition } from '@/app/models/data/StatusType';
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, DataDetails } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { ExcludedFields } from '@/app/routing/Fields';
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/server/database/Payload";
+import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer, SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
+import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import SnapshotStoreSubset from '@/app/snapshots/SnapshotStoreSubset';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { NotificationType } from "@/context/NotificationContext";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { CustomSnapshotData, data, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreProps, SnapshotWithCriteria } from ".";
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/server/database/Payload";
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotActionType } from "./SnapshotActionType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 
 // Define a specific set of options for snapshot storage
 interface SnapshotStorageOptions<
-	T extends BaseDataEntity, 
-	K extends T = T,
-	Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
- 	ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
  > {
 	baseURL: string;
 	enabled: boolean;
@@ -68,20 +75,27 @@ interface SnapshotStorageOptions<
 	snapshotId?: string | number | null;
 	metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 	criteria: CriteriaType;
-	multipleCallbacks: MultipleEventsCallbacks<Snapshot<Data, BaseData>>;
+	multipleCallbacks: MultipleEventsCallbacks<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 	snapshotConfig?: SnapshotConfig<Data, BaseData>[];
 }
 
 
 // Define a specific set of options for snapshot configuration
-interface SnapshotConfigOptions<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+interface SnapshotConfigOptions<
+	T extends BaseDataEntity,
+	K extends T = T,
+	Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+	AttachmentType extends Attachment = Attachment,
+	ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+	IncludedFields extends keyof T = keyof T
+> {
 	id: string;
 	snapshotId: number;
 	snapshotStoreData: Snapshots<Data>;
 	category?: string | Category;
 	categoryProperties?: string | CategoryProperties;
-	callback?: (snapshotStore: SnapshotStore<Data, BaseData>) => void;
-	snapshotDataConfig?: SnapshotStoreConfig<Data, BaseData>[];
+	callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+	snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -1389,6 +1403,6 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 
 
 export {
-    snapshotConfigOptions
+  snapshotConfigOptions
 };
 

@@ -1,10 +1,17 @@
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseData } from '@/app/models/data/Data';
+import { CriteriaType } from '@/app/pages/searches'
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta
+} from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
 
 type AsyncOperation<T> = (snapshotId: string, criteria: CriteriaType) => Promise<T>;
-
 
 export function mapToSnapshotStore <
   T extends BaseDataEntity,
@@ -41,7 +48,14 @@ export function mapToSnapshotStore <
 
 
 // Core logic used by both functions
-function mapSnapshotCore<T, K>(
+function mapSnapshotCore<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
   callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
@@ -56,7 +70,14 @@ function mapSnapshotCore<T, K>(
 }
 
 // Asynchronous version
-async function mapSnapshotAsync<T, K>(
+async function mapSnapshotAsync<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   criteria: CriteriaType,
@@ -77,7 +98,14 @@ async function mapSnapshotAsync<T, K>(
 }
 
 // Synchronous version
-function mapSnapshotSync<T, K>(
+function mapSnapshotSync<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
   callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
@@ -87,29 +115,15 @@ function mapSnapshotSync<T, K>(
 
 
 
-// Asynchronous version
-async function mapSnapshotAsync<T, K>(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotId: string,
-  criteria: CriteriaType,
-  mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
-): Promise<string | undefined> | null {
-  try {
-    const result = await someAsyncOperation(snapshotId, criteria); // Example async task
-    if (result) {
-      mapSnapshotCore(snapshot, mapFn, callback);
-      return result; // Return string or undefined
-    }
-    return null;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-
 // Synchronous version
-function mapSnapshotSync<T, K>(
+function mapSnapshotSync<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
   callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
@@ -133,7 +147,5 @@ const someAsyncOperation: AsyncOperation<string | undefined> = async (
 };
 
 
-export { mapSnapshotCore, mapSnapshotAsync
-  mapSnapshotSync }
-
-  export type { AsyncOperation }
+export { mapSnapshotCore, mapSnapshotAsync, mapSnapshotSync }
+export type { AsyncOperation }

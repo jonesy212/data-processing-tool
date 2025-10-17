@@ -1,9 +1,4 @@
 // mappingMethods.ts
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import SnapshotStore from "./SnapshotStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotEvent } from '@/app/typings/eventTypes';
 import {
     SnapshotsArray,
     SnapshotsObject
@@ -11,6 +6,11 @@ import {
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { WrappedU } from "@/app/isCompatibleTempData";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import SnapshotStore from "./SnapshotStore";
 
 // ------------------------
 // mapSnapshots

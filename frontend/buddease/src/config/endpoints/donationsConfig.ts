@@ -1,6 +1,6 @@
 // donationsConfig.ts
-import { DonationsEndpoints } from '../types/categories/DonationsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DonationsEndpoints } from '@/app/typings/categories/DonationsEndpoints';
 
 export const donationsConfig: DonationsEndpoints = {
   makeDonation: (userId: string, amount: number) => ({ 

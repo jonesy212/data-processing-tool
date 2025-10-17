@@ -1,7 +1,7 @@
 // persistenceTypes.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot } from '@/app/snapshots/snapshotTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshot } from '@/snapshotTypes';
 
 // Core Persistence Interfaces
 export interface PersistenceAdapter {

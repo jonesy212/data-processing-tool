@@ -25,12 +25,12 @@ import ChildComponent from "@/app/hooks/ChildComponent";
 import { handleLogin } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import {
-    ThemeConfigProvider,
-    useThemeConfig,
+  ThemeConfigProvider,
+  useThemeConfig,
 } from "@/app/hooks/userInterface/ThemeConfigContext";
 import {
-    default as ThemeCustomization,
-    default as defaultThemeConfig,
+  default as ThemeCustomization,
+  default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -45,15 +45,15 @@ import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
 import { DocumentTree } from "@/app/users/User";
 import {
-    NotificationProvider,
-    NotificationTypeEnum,
+  NotificationProvider,
+  NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import {
-    Route,
-    Router,
-    useLocation,
-    useNavigate,
-    useSearchParams,
+  Route,
+  Router,
+  useLocation,
+  useNavigate,
+  useSearchParams,
 } from "react-router-dom";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
@@ -64,7 +64,7 @@ import RegisterForm from "./forms/RegisterForm";
 import UserSettingsForm from "./forms/UserSettingsForm";
 import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
-import SearchComponent from "./searchs/SearchComponent";
+import SearchComponent from "./searches/SearchComponent";
 
 import { ChatSidebarProvider } from "@/app/api/ChatSidebarProvider";
 import DetermineFileType from "@/app/components/configs/DetermineFileType";

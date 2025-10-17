@@ -1,25 +1,25 @@
-import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { Content } from '@/app/components/models/content/AddContent';
-import { FileType } from "@/app/documents/attachment/attachment";
+import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
+import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
+import { Comment } from '@/app/models/comments/Comments';
+import { Content } from '@/app/models/content/AddContent';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { InitializedData } from "@/app/snapshots/SnapshotStoreOptions";
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
+import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import MobXEntityStore from '@/app/state/stores/MobXEntityStore';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import getAppPath from '@/config//appStructure/appPath';
 import { AppStructureItem, AppStructurePermissions } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { DataVersions } from "@/configs/DataVersionsConfig";
-import { Comment } from '@/models/data/Comments';
 import BackendStructure from '@/server/database/BackendStructure';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { CustomComment } from '@/state/redux/slices/BlogSlice';
 import { BuildVersion, Version, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
 
@@ -42,7 +42,14 @@ interface SharedVersioning {
   buildNumber: string | number;
 }
 
-interface SharedContent {
+interface SharedContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   description?: string;
   notes: string[];
@@ -52,6 +59,10 @@ interface SharedContent {
 interface CoreDataItem<
   T extends BaseDataEntity,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedTimestamps {
   id?: string | number;
@@ -63,8 +74,13 @@ interface CoreDataItem<
   permissions?: AppStructurePermissions;
 }
 
-interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T> {
+interface SharedUpdateHistory<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   lastUpdated?: Date | VersionHistory<T, K>;
   changeLogSummary?: string;
 }
@@ -104,7 +120,9 @@ interface AppStructureDataItem<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends CoreDataItem<T, K>,
   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -133,7 +151,7 @@ interface ExtendedVersionData<
   userId?: string;
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  comments?: (Comment<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | CustomComment)[];
+  comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
   versionHistory: VersionHistory<T, K>;
   releaseDate?: string | Date;
   lastUpdated?: Date | VersionHistory<T, K>;
@@ -178,7 +196,6 @@ type MinimalVersion<T extends BaseDataEntity, K extends T = T> =
     Pick<VersionData<T, K>, "versionNumber" | "timestamp" | "author" | "schema">> & {
   };
 
-represents one stored version snapshot.
 
 // VersionData.ts
 export interface VersionData<
@@ -196,7 +213,7 @@ export interface VersionData<
   id: string | number;
   author?: string;
   type?: string;
-  parentId: string | null;
+  parentId?: string | null;
   parentType?: string | null;
   parentVersion?: string;
   parentVersionNumber?: string;
@@ -230,7 +247,7 @@ export interface VersionData<
 
   // Structure
   _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  backend?: BackendStructure;
+  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Misc
@@ -287,8 +304,12 @@ const transformToStructureItems = (data: Record<string, AppStructureDataItem<T, 
 
 
 const createDefaultVersionData = <
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   overrides?: Partial<VersionData<T, K>>
 ): VersionData<T, K> => {
@@ -504,12 +525,12 @@ const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
   const appPathWithVersion = getAppPath(versionNumber, appVersion);
 
   // Simulate the structure for demonstration purposes
-  const getStructure = async (): Promise<Record<string, AppStructureItem> | undefined> => {
+  const getStructure = async (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> => {
     return undefined; // Simulate structure or return an actual structure
   };
 
   // Call getStructure and await its result
-  let structure: Record<string, AppStructureItem> | undefined;
+  let structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   try {
     structure = await getStructure();
   } catch (error) {

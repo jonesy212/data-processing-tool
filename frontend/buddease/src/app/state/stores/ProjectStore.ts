@@ -1,16 +1,18 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import { ApiProject } from "@/app/api/ApiProject";
-import Milestone from "@/app/calendar/CalendarSlice";
-import { CommonData } from "@/app/models/CommonDetails";
+import Milestone from "@/app/typings/milestoneTypes";
+import { CommonData } from "@/app/components/models/details/CommonDetails";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import Index from "@/app/pages";
 import { Product } from "@/app/products/Product";
-import { WritableDraft } from "@/app/redux/ReducerGenerator";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { StateType } from "@/app/typings/StateType";
 import { User, VisualizationData } from "@/app/users/User";
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";
@@ -20,10 +22,12 @@ import { useDispatch } from "react-redux";
 
 const dispatch = useDispatch();
 export interface ProjectManagerStore<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   project: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

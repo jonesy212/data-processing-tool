@@ -1,6 +1,6 @@
 // filesConfig.ts
-import { FilesEndpoints } from '../types/categories/FilesEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { FilesEndpoints } from '@/app/typings/categories/FilesEndpoints';
 
 export const filesConfig: FilesEndpoints = {
   getFileType: (file: string) => ({ path: `${BASE_URL}/${file}/type`, method: "GET" }),

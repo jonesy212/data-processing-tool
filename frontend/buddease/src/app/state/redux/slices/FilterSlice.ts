@@ -28,9 +28,12 @@ import {
   TeamStatus,
   TodoStatus,
 } from "@/app/models/data/StatusType";
+
+import { PriorityValue } from '@/app/pages/searches/CriteriaType'
+
 import {
   DocumentTypeEnum
-} from "@/app/typings/documents";
+} from "@/app/typings/documentTypess";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -39,7 +42,7 @@ interface FilterState extends Timestamped, StatusTrackable {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;
-  priority?: PriorityTypeEnum | null;
+  priority?: PriorityValue; 
   assignedUser?: string | null;
   notificationType?: NotificationTypeEnum | null;
   todoStatus?: TodoStatus | null;

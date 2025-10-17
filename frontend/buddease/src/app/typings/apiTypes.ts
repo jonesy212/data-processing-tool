@@ -2,8 +2,7 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { ProjectData, ProjectPriority, ProjectStatus } from '@/app/typings/projectTypes';
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // -------------------- API Core Types --------------------
 export interface ApiResponse<T = any> {
@@ -484,7 +483,7 @@ export type DefaultApiResponse = ApiResponse<any>;
 export type DefaultProjectApiRequest = CreateProjectRequest<
   BaseDataEntity,
   BaseDataEntity,
-  StructuredMetadata<any, any>,
+  DefaultMeta<BaseDataRoot, BaseDataRoot>,
   Attachment,
   never,
   keyof BaseDataEntity

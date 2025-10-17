@@ -1,9 +1,10 @@
+
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AppEntity } from "@/app/entities";
+import { AppEntity } from "@/app/typings/entities/AppEnttity";
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
-import { YourResponseType } from "@/app/typings/typeguards/isYourSettingsResponseType";
+import { YourResponseType } from "@/app/typings/responseTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
 import {
@@ -28,7 +29,7 @@ export const fetchExchangeData = async <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): Promise<Exchange<T, K>[]> => {
+>(): Promise<Exchange<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     
     const id = useSecureExchangeId(); // Use the newly created hook here
@@ -46,8 +47,8 @@ export const fetchExchangeData = async <
     }
 
     // Assuming YourResponseType needs to be transformed to ExchangeData[]
-    const exchangeDataArray: Exchange<T, K>[] =
-      transformYourResponseToExchangeData(response.data);
+    const exchangeDataArray: Exchange<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] =
+      transformYourResponseToExchangeData(response.data, apiUrl);
 
     return exchangeDataArray;
   } catch (error) {
@@ -59,16 +60,15 @@ export const fetchExchangeData = async <
     );
     throw error; // Re-throw the error after handling
   }
-};'use server';
+};
 
-
-// Using the full 5-parameter defaults
 const transformYourResponseToExchangeData = <
   T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   yourResponse: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): ExchangeData[] => {

@@ -1,10 +1,10 @@
 import { Taggable } from '@/app/models/CommonData';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseConfig } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { BaseConfig } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
 
 function convertBaseConfig<
   U extends BaseDataEntity,

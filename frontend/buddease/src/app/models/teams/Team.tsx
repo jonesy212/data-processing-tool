@@ -15,12 +15,12 @@ import {
 } from "@/app/communications/LanguageEnum";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
+import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { TeamMeta } from '@/app/typings/entities/TeamEntity'
 
 const options: SearchOptions = {

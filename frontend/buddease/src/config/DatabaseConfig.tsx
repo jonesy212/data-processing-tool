@@ -1,6 +1,7 @@
 // DatabaseConfig.tsx
 import { DatabaseConfig } from '@/config/DatabaseTypes';
-import { DatabaseType } from '@/app/config/DatabaseType'
+import { DatabaseType } from '@/config/DatabaseType'
+
 export interface EnhancedDatabaseConfig extends DatabaseConfig {
   type: DatabaseType;
 }

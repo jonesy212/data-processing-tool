@@ -1,17 +1,19 @@
-import { BaseData } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 async function simulateFetch<
-  T extends SnapshotData<BaseData<any>>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
     snapshotId: string,
     queryParams: Record<string, any>
-  ): Promise<Partial<FetchSnapshotPayload<T, K>>> {
+  ): Promise<Partial<FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     // Simulate a delay for fetching data
     await new Promise((resolve) => setTimeout(resolve, 100));
   

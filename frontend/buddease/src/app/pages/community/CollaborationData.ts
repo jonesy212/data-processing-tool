@@ -1,14 +1,13 @@
 import Milestone from '@/app/components/calendar/CalendarSlice';
-import { Communication } from '@/app/components/communications/chat/Communication';
+import { Communication } from '@/app/components/communications/CommunicationPage';
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
 import { CollaborationOptions } from '@/app/components/interfaces/options/CollaborationOptions';
-import { BaseData, Data } from '@/app/models/data/Data';
 import { Task } from '@/app/components/models/tasks/Task';
 import { Member } from '@/app/components/models/teams/TeamMembers';
-import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { User } from '@/app/components/users/User';
-import { BaseMetadata, BaseMetaDataOptions, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
+import { BaseMetaDataOptions } from "@/config/MetaDataOptions";
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';
 
@@ -52,4 +51,4 @@ interface CollaborationData extends BaseData {
     [key: string]: any; // Allow dynamic properties
   }
   
-  export type { CollaborationData }
+  export type { CollaborationData };

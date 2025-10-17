@@ -4,8 +4,8 @@ import { UnsubscribeDetails } from '@/app//event/DynamicEventHandlerExample';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
@@ -16,20 +16,22 @@ import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { StatusType } from "@/app/models/data/StatusType";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore, InitializedState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Callback, createSnapshotConfig, CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/app/snapshots';
 import {
-    SnapshotsArray,
-    SnapshotsObject,
-    SnapshotUnion
+  Snapshots,
+  SnapshotsArray,
+  SnapshotsObject,
+  SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import handleSnapshotStoreOperation from '@/app/snapshots/handleSnapshotStoreOperation';
+import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
 import { subscribeToSnapshotsImpl } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { getSubscription } from '@/app/subscriptions/subscriptionServiceInstance';
@@ -40,30 +42,26 @@ import { versionData } from '@/app/versions/Version';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { SnapshotWithData } from '@/calendar/CalendarApp';
 import { CalendarEvent } from '@/calendar/CalendarEvent';
-import { LanguageEnum } from '@/communications/LanguageEnum';
 import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { BaseDataRoot } from '@/config/BaseeConfiig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { createMeta } from '@/config/metadata/MetadataHooks';
 import { useMeta } from '@/config/useMeta';
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
 import {
-    createBasicSnapshot,
-    createCompleteSnapshot
+  createBasicSnapshot,
+  createCompleteSnapshot
 } from '@/createSnapshot';
 import { handleSnapshotOperation } from '@/handleSnapshotOperation';
 import { displayToast } from '@/models/display/ShowToast';
-import { ExcludedFields } from '@/routing/Fields';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { CreateSnapshotsPayload } from '@/server/database/Payload';
 import baseMeta from '@/server/database/baseMeta';
-import { getCategory } from '@/snapshotContainerUtils';
-import { SubscriberCollection } from '@/users/SubscriberCollection';
-import Version from '@/versions/Version';
+import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
+import { Version } from '@/versions/Version';
 import { createDefaultVersionData } from '@/versions/VersionData';
 import { Tag } from 'sanitize-html';
-import { Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 
 
@@ -1460,7 +1458,14 @@ const isSnapshotArrayState = <
 };
 
 
-function toSnapshotsArray<T extends BaseDataEntity, K extends T = T>(snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+function toSnapshotsArray<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Transform if needed, or validate each snapshot type
   return snapshots as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
@@ -1541,8 +1546,8 @@ function convertSnapshotsObjectToArray<
 
 
 export {
-    convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
-    isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
-    isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
+  convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
+  isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
+  isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
 };
 

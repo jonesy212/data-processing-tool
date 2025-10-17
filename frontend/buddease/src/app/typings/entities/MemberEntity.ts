@@ -1,8 +1,9 @@
 // MemberEntity.ts
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
+import { UserRole } from '@/app/models/UserRole';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -11,9 +12,11 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { PhaseMeta } from '../phaseTypes';
 
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
@@ -102,9 +105,9 @@ type MemberParams = SnapshotConfigParams<MemberEntity, MemberK, MemberMeta, Memb
 // Utility to pick or omit fields dynamically
 type MemberApplyFieldFilters<
   T extends BaseDataEntity,
-  Excluded extends keyof T = never,
+  ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
-> = Pick<Omit<T, Excluded>, Included>;
+> = Pick<Omit<T, ExcludedFields>, IncludedFields>;
 
 // Define the MemberData interface extending Member
 interface MemberData<
@@ -119,7 +122,7 @@ interface MemberData<
   tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   questionnaireResponses?: any;
   userType: string;
-  role?: string;
+  role?: UserRole
   permissions?: string[];
   joinDate?: Date;
   lastActive?: Date;
@@ -137,9 +140,13 @@ const emptyMemberData: MemberData = {
   email: '',
   datasets: '',
   tasks: [],
+  tier: "",
+  username: "",
+  roleInTeam: "",
+  role: 'member',
+  memberName: "",
   questionnaireResponses: undefined,
   userType: 'member',
-  role: 'member',
   permissions: [],
   joinDate: new Date(),
   lastActive: new Date(),

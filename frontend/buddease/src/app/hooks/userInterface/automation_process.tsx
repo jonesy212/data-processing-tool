@@ -1,15 +1,15 @@
 // AutomatioProcess.ts
+import { ErrorHandlingActions } from '@/app/components/api/ErrorHandlingActions';
+import errorHandlingStore from '@/app/components/state/stores/ErrorHandlingStore';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { notify } from '@/app/utils/snapshotUtils';
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import ReactDOM, { useEffect } from 'react';
-import { ErrorHandlingActions } from '@/app/components/api/ErrorHandlingActions';
-import { BaseData, Data } from '@/app/models/data/Data';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
-import errorHandlingStore from '@/app/components/state/stores/ErrorHandlingStore';
 import RandomWalkSuggestions from '@/RandomWalkSuggestions';
+import ReactDOM, { useEffect } from 'react';
 
 
 // Define a custom hook to handle errors and notifications

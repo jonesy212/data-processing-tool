@@ -2,7 +2,8 @@ import { NotificationType } from '@/app/context/NotificationContext';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
-import { BaseDataEntity } from '@/config/BaseConfig';
+import { archiveSnapshot } from '@/ArchiveService';
+import { validateSnapshot } from '@/app/snapshots/snapshotOperations';
 import {
     handleDataUpdateSnapshot,
     handleDefaultSnapshot,
@@ -11,9 +12,8 @@ import {
     processSnapshotData,
     updateSnapshotMetrics
 } from '@/app/utils/snapshotUtils';
+import { BaseDataEntity } from '@/config/BaseConfig';
 import { useNotification } from '@/context/NotificationContext';
-import { archiveSnapshot } from '@/ArchiveService';
-import { validateSnapshot } from '@/snapshotOperations';
 
 const { notify } = useNotification()
 

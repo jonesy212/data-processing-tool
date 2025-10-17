@@ -1,6 +1,7 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentPath } from "@/app/documents/DocumentPath";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -11,9 +12,7 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { DocumentPath } from "@/server/DocumentPath";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface DatasetModel<
@@ -51,7 +50,7 @@ interface DatasetModel<
   updatedAt?: string | Date; 
   selectedDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Specify type arguments for DocumentData
   selectedDocuments?: DocumentData<T, K>[];
-  content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   phaseType: PhaseTypeEnums
   // Optional: Add other relationships as needed
 }

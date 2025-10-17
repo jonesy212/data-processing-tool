@@ -1,4 +1,4 @@
-import  { CustomTransactionProps } from '@/app/components/crypto/SmartContractInteraction'
+import  { CustomTransactionProps } from '@/app/typings/cryptoTypes/SmartContractInteraction'
 import { AccessList, Signature } from "ethers";
 
 interface BaseTransaction {

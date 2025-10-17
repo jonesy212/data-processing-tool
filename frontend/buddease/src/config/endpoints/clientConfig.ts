@@ -1,5 +1,5 @@
 // clientConfig.ts
-import { ClientEndpoints } from '../types/categories/ClientEndpoints';
+import { ClientEndpoints } from '@/app/typings/categories/ClientEndpoints';
 
 export const clientConfig: ClientEndpoints = {
   fetchClientDetails: (clientId: number) => ({ path: `/api/client/${clientId}`, method: "GET" }),

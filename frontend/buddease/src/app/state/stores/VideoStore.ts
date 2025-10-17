@@ -1,12 +1,12 @@
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { Label } from '@/app/branding/BrandingSettings';
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
 import { BaseData } from '@/app/models/data/Data';
-import { VideoData } from "@/app/typings/videoTypes/Video";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";

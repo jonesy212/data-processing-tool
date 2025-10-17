@@ -31,7 +31,7 @@ This system defines endpoint categories, base configurations, and utility helper
 │   │       ├── DelegatesEndpoints.ts
 │   │       ├── DexEndpoints.ts
 │   │       ├── DetailsEndpoints.ts
-│   │       ├── DocumentsEndpoints.ts
+│   │       ├── DocumentEndpoints.ts
 │   │       ├── DonationsEndpoints.ts
 │   │       ├── DrawingEndpoints.ts
 │   │       ├── ExternalAuthEndpoints.ts
@@ -120,7 +120,8 @@ This defines the core structure of each endpoint, ensuring all endpoints follow 
 File: src/config/endpoints/uiConfig.ts
 
 import { UiEndpoints } from '@/app/typings/categories/UiEndpoints';
-import { BASE_URL } from '@/baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+
 
 export const uiConfig: UiEndpoints = {
   // User Data & Settings
@@ -167,7 +168,7 @@ This structure allows for dynamic endpoint generation based on parameters (e.g.,
 ```typescript
 File: app/utils/urlGenerator.ts
 import { EndpointConfigurations, EndpointConfig } from '@/app/typings/EndpointConfigurations';
-import { BASE_URL } from '@/baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
 
 export const generateEndpointUrl = (
   category: keyof EndpointConfigurations,

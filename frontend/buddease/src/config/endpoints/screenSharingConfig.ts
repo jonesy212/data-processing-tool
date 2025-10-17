@@ -1,6 +1,6 @@
 // screenSharingConfig.ts
-import { ScreenSharingEndpoints } from '../types/categories/ScreenSharingEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ScreenSharingEndpoints } from '@/app/typings/categories/ScreenSharingEndpoints';
 
 export const screenSharingConfig: ScreenSharingEndpoints = {
   startSession: { path: `${BASE_URL}/api/screen-sharing/start-session`, method: "POST" },

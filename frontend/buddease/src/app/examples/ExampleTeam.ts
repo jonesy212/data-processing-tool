@@ -1,22 +1,22 @@
 // ExampleTeam.ts
 import { PriorityTypeEnum, TeamStatus } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
-import { Project, ProjectType, reassignProject } from "@/app/models/projects/Project";
+import { assignProject, Project, ProjectType, reassignProject, unassignProject } from "@/app/models/projects/Project";
+import { Task, TaskData } from "@/app/models/tasks/Task";
+import { TeamData } from "@/app/models/teams/TeamData";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Settings } from "@/app/state/stores/SettingsStore";
-import { Task, TaskData } from "@/app/tasks/Task";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
-import { Progress } from "@/app/tracker/ProgressBar";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { VideoData } from "@/app/video/Video";
 import { UserSettings } from "@/config/UserSettings";
-import { TeamData } from "./TeamData";
 
 // import { unassignProject } from "@/app/calendar/CalendarApp";
 import {
@@ -24,9 +24,20 @@ import {
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { DefaultMeta } from "@/config/BaseConfig";
+import { DefaultMeta } from '@/config/BaseConfig';
 
-import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import { updateProgress } from "@/app/calendar/CalendarApp";
+import { CommonDetails } from "@/app/components/models/detas/CommonDetails";
+import { ExcludedFields } from "@/app/components/routing/Fields";
+import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
+import generateTimeBasedCode fr@/app/components/models/details/CommonDetailsrator";
+import { Team } from "@/app/models/teams/Team";
+import { Snapshot } from "@/app/snapshots";
+import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import MemberEntity from "@/app/typings/entities/MemberEntity";
+import { options } from "sanitize-html";
+import { TeamEntity, TeamExcludedFields, TeamK, TeamMeta } from "../typings/teamTypes";
 
 const timeBasedCode = generateTimeBasedCode();
 // Example usage:

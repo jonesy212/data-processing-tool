@@ -19,7 +19,7 @@ export interface SupportTicket {
   updatedAt: Date;
   customerId: string;
   category: SupportCategory;
-  attachments?: Attachment[];
+  attachments?: AttachmentType[];
   messages: SupportMessage[];
   tags: string[];
   estimatedResolutionTime?: Date;
@@ -33,16 +33,9 @@ export interface SupportMessage {
   content: string;
   timestamp: Date;
   isInternal: boolean;
-  attachments?: Attachment[];
+  attachments?: AttachmentType[];
 }
 
-export interface Attachment {
-  id: string;
-  name: string;
-  url: string;
-  type: string;
-  size: number;
-}
 
 export enum SupportTicketStatus {
   OPEN = 'open',

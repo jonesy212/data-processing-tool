@@ -1,9 +1,9 @@
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Snapshot } from "@/app/types"; // adjust path to where Snapshot<T,K> lives
 import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';

@@ -1,11 +1,20 @@
+import {
+  ProjectEntity,
+  ProjectK,
+  ProjectMeta,
+  ProjectAttachment,
+  ProjectExcludedFields,
+  ProjectIncludedFields
+} from '@/app/typings/entities/ProjectEntity';
 import { Project } from '@/app/models/projects/Project';
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { TaskMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
-import { TaskMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
-
+import { sharedBaseData } from '@/config/metadata/MetadataHooks';
 import { BaseData } from '@/app/models/data/Data';
-import { Task, TaskData } from '@/models/tasks/Task';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { Task, TaskData } from '@/app/models/tasks/Task';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 
 // Pick specific keys from T
 type Fields<T, K extends keyof T> = Pick<T, K>;
@@ -27,11 +36,30 @@ type InclusiveExclusiveFields<
 
 // Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
 // Use the Fields utility type to get specific fields from UnifiedMetaDataOptions
-type ProjectFields = Fields<ProjectMetadata<Task<TaskData>, Project>, 'projectId'>; // { projectId: string }
+type ProjectFields = Fields<ProjectMetadata<Task<TaskData>, Task<ProjectEntity,
+  ProjectK,
+  ProjectMeta,
+  ProjectAttachment,
+  ProjectExcludedFields,
+  ProjectIncludedFields
+  >
+>, 'projectId'>; // { projectId: string }
 
 // Use ExcludeKeys to create a type without specific keys
-type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<BaseData<TaskData, TaskData, any>>,
-  Task<any, any>>, 'taskId'>; // { taskName: string }
+type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>,
+    Task<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields
+  >
+>, 'taskId'>; // { taskName: string }
 
 // If needed, we can also define ExcludedFields as a generic utility for clarity
 type ExcludedFields<T, K extends keyof T> = {
@@ -40,10 +68,12 @@ type ExcludedFields<T, K extends keyof T> = {
 };
 
 type MapExcludedFieldsToMetaKeys<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
 > = ExcludedFields extends keyof Meta ? ExcludedFields : never;
 
 // Example utility function to add source tracking for shared fields
@@ -53,17 +83,25 @@ function addSource<T>(metadata: T, source: string): T & { source: string } {
 
 // Type guard functions to determine the origin
 function isTaskMetadata<
-  T extends BaseData<any>,
-  K extends T = T
->(metadata: any): metadata is TaskMetadata<T, K> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(metadata: any): metadata is TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return metadata?.source === 'TaskMetadata';
 }
 
 
 function isProjectMetadata<
-  T extends BaseData<any>,
-  K extends T = T
->(metadata: any): metadata is ProjectMetadata<T, K> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+>(metadata: any): metadata is ProjectMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return metadata?.source === 'ProjectMetadata';
 }
 
@@ -97,7 +135,7 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
 }
 
 // Example: use BaseDataEntity directly
-const exampleTaskMeta: UnifiedMetadata<
+const exampleTaskMetadata: UnifiedMetaDataOptions<
   BaseDataEntity,                  // T
   BaseDataEntity,                  // K
   StructuredMetadata<BaseDataEntity, BaseDataEntity>, // Meta
@@ -108,16 +146,16 @@ const exampleTaskMeta: UnifiedMetadata<
     taskName: 'Complete documentation',
     id: 'task-1',
     priority: 'High',
-    assignedTo: ['user1'],
+    assignedTo: null,
   },
   source: 'TaskMetadata',
   timestamp: new Date(),
   metadataEntries: {},
-  sharedBaseData: { childIds: [], relatedData: [] },
+  sharedBaseData: sharedBaseData,
 };
 
 // Call a function that processes the metadata
-processMetadata(exampleTaskMeta);
+processMetadata(exampleTaskMetadata);
 
 
 export type { ExcludedFields, ExcludeKeys, Fields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys };

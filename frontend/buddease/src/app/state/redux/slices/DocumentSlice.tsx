@@ -14,29 +14,29 @@ import DocumentBuilder, {
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useDataExport from "@/app/hooks/dataHooks/useDataExport";
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { performSearch } from "@/app/pages/searchs/SearchComponent";
+import { performSearch } from "@/app/pages/searches/SearchComponent";
 import { Document } from "@/app/stores/DocumentStore";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documents";
 import Version, { version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { AppThunk } from "@/configs/appThunk";
 import { backend, backendStructure } from '@/server/database/BackendStructure';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { RootState } from "@/state/redux/slices/RootSlice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { ClientInformation } from '@/app/client/ClientInformation';
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import getAppPath from "@/config/appStructure/appPath";
-import { ClientInformation } from '@/server/database/ClientInformation';
-import { data } from '@tensorflow/tfjs';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseData } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import getAppPath from "@/config/appStructure/appPath";
+import { data } from '@tensorflow/tfjs';
 
 
 
@@ -126,7 +126,7 @@ function toObject<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  document: DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): object {
   return { ...document };
 }
@@ -138,20 +138,21 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   title: "New Document",
 
   content: {
-  id: "",
-  title: "",
-  description: "",
-  subscriberId: "",
-  
-  category: "",
-  categoryProperties: "",
-  timestamp: "",
-  length: 0,
-  
-  items: [],
-  data: {},
-  contentItems: [],
- 
+    apiEndpoint, apiKey, timeout, retryAttempts,
+
+    id: "",
+    title: "",
+    description: "",
+    subscriberId: "",
+    
+    category: "",
+    categoryProperties: "",
+    timestamp: "",
+    length: 0,
+    
+    items: [],
+    data: {},
+    contentItems: [],
   },
   topics: [],
   highlights: [],
@@ -224,8 +225,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
     data: [],
     draft: false,
     versions: {
-      data: [
-        {
+    data: [
+      {
         id: 0,
         parentId: "",
         parentType: "",
@@ -273,8 +274,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
         user: "",
         comments: []
       }
-      ],
-      
+    ],
+    
     backend: backendStructure,
     frontend: frontendStructure,
     },
@@ -371,7 +372,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
             items: {},
             getStructureAsArray: async () => [],
             traverseDirectoryPublic: async () => [],
-            getStructure: () => ({} as Record<string, AppStructureItem>),
+            getStructure: () => ({} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
           },
         },
       };
@@ -1422,9 +1423,12 @@ export const exportDocumentsAsync = createAsyncThunk(
 
 // Define the transformations object and applyTransformation function
 const applyTransformation = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   document: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   documentTag: string,

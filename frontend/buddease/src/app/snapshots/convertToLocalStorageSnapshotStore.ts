@@ -1,6 +1,5 @@
-import { BaseData } from '@/app/models/data/Data';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { LocalStorageSnapshotStore } from "./LocalStorageSnapshotStore";
+import { LocalStorageSnapshotStore } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 function convertToLocalStorageSnapshotStore<T extends BaseDataEntity, K extends T = T>(
   dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

@@ -1,4 +1,4 @@
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { SnapshotData } from "@/app/snapshots";
 
 const snapshotCache: Map<string, SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();

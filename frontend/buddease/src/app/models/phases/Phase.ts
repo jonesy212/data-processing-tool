@@ -1,3 +1,4 @@
+import { AppPhase, PhaseMilestone } from '@/app//typings/entities/PhaseEntity';
 import { addPhase } from "@/app/api/ApiPhases";
 import { Label } from '@/app/branding/BrandingSettings';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
@@ -5,45 +6,46 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { Task } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCritria";
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
+import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { ValidationResult } from '@/app/snapshots/ValidationRule';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { FC } from "react";
-import { Dependency } from '@/app/models/realtme/IntegrationLogic'
-import { PhaseMilestone } from '@/app//typings/entities/PhaseEntitty'
+import { PhaseMeta } from '@/app/typings/phaseTypes'
 
-  interface PhaseData<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          SharedProperties<T, K, Meta> {
-  // Define any properties specific to phase-related data
-    phaseName?: string;
-    startDate?: Date;
-    endDate?: Date;
-    subPhases?: PhaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  }
-
-interface PhaseMeta<
+interface PhaseData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedField> {
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        SharedProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+// Define any properties specific to phase-related data
+  phaseName?: string;
+  startDate?: Date;
+  endDate?: Date;
+  subPhases?: PhaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+}
+
+interface PhaseMetaInterface<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   createdBy?: string;
   updatedBy?: string;
@@ -81,9 +83,9 @@ export interface Phase<
   index?: number;
   name: string;
   description: string | undefined
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  subPhases: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  startDate?: Date | undefined;
+  endDate?: Date | undefined;
+  subPhases?: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   component?: FC<any>; // Adjust to accept any props
   hooks?: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   data?: any;
@@ -112,7 +114,7 @@ export interface Phase<
 export class PhaseImpl<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends PhaseMeta<T, K> = PhaseMeta<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -150,7 +152,7 @@ export class PhaseImpl<
   archived?: boolean;
   relatedUsers?: string[];
   deadline?: Date | string;
-  currentMeta: PhaseMeta<BaseDataEntity, BaseDataEntity, DefaultMeta<BaseDataEntity, BaseDataEntity>, Attachment, DefaultExcludedFields<BaseDataEntity>, keyof BaseDataEntity> = {} as any;
+  currentMeta: PhaseMeta = {} as any;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as any;
   label: Label = { text: "", color: "#000000" };
   title: string = "";
@@ -202,7 +204,7 @@ export class PhaseImpl<
     archived?: boolean;
     relatedUsers?: string[];
     deadline?: Date | string;
-    currentMeta?: PhaseMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    currentMeta?: PhaseMeta
     currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     label?: Label;
     title?: string;
@@ -396,9 +398,15 @@ export const createCustomPhaseHooks = <
         currentPhase: updatedNextPhase 
       };
 
-    } catch (error) {
-      console.error(`Failed to transition from ${currentPhase.name} to ${nextPhase.name}:`, error);
-      throw new Error(`Phase transition failed: ${error.message}`);
+    } catch (error: unknown) {
+      // Narrow the type before accessing .message
+      if (error instanceof Error) {
+        console.error(`Failed to transition from ${currentPhase.name} to ${nextPhase.name}:`, error);
+        throw new Error(`Phase transition failed: ${error.message}`);
+      } else {
+        console.error(`Failed to transition from ${currentPhase.name} to ${nextPhase.name}:`, error);
+        throw new Error(`Phase transition failed: ${String(error)}`);
+      }
     }
   },
 

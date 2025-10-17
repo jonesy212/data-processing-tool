@@ -1,6 +1,6 @@
 // moderatorsConfig.ts
-import { ModeratorsEndpoints } from '../types/categories/ModeratorsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ModeratorsEndpoints } from '@/app/typings/categories/ModeratorsEndpoints';
 
 export const moderatorsConfig: ModeratorsEndpoints = {
   list: { path: `${BASE_URL}/api/moderators`, method: "GET" },

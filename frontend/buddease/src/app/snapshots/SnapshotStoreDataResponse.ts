@@ -1,24 +1,32 @@
-import { SnapshotDataResponse } from "@/app/app/utils/retrieveSnapshotData";
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Data } from '@/app/models/data/Data';
 import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SharedIdentifiers } from '@/documents/RelatedProps';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { Snapshot, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from "@/app/snapshots/Snapshot";
+
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 
 type OptionalSnapshotProps<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >  = Omit<
-  SnapshotDataResponse<T, K, Meta>,
+  SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   'transformDelegate'
   | 'getSnapshotsBySubscriber'
   | 'getSnapshotsBySubscriberSuccess'
@@ -272,25 +280,31 @@ type OptionalSnapshotProps<
   getSnapshotStoreConfigFailure?: boolean;
 };
 
-interface OptionalSnapshotDataResponse<
-  T extends BaseDataEntity = BaseDataRoot,
+interface OptionalSnapshotDataResponse<  
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends SnapshotDataResponse<T, K, Meta>
-//  OptionalSnapshotProps<T, K, Meta> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+//  OptionalSnapshotProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
  {}
 
-interface SnapshotStoreDataResponse<
-  T extends BaseDataEntity = BaseDataRoot,
+interface SnapshotStoreDataResponse<  
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends SharedIdentifiers<T, K, Meta>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 // extends OptionalSnapshotDataResponse
  {
   id: string | number;
   timestamp: Date;
   category: string;
-  initializedState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  initializedState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   topic?: string;
   date?: string;
   config?: any; // Adjust to specific type if known
@@ -324,10 +338,10 @@ interface SnapshotStoreDataResponse<
   length?: number;
   content?: any; // Adjust to specific type if known
   todoSnapshotId?: string;
-  snapshotStore?: any; // Adjust to specific type if known
+  snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Adjust to specific type if known
   dataItems?: any[]; // Adjust to specific type if known
   newData?: any; // Adjust to specific type if known
-  handleSnapshotOperation?: (operation: any) => void; // Adjust type if known
+  handleSnapshotOperation?: (operation: SnapshotOperations) => void; // Adjust type if known
   getCustomStore?: () => any; // Adjust to specific type if known
   addSCustomStore?: (store: any) => void; // Adjust type if known
   removeStore?: (storeId: string) => void;

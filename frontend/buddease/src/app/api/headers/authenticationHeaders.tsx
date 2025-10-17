@@ -1,5 +1,5 @@
 import { User } from "@/app/users/User";
-import configData from "@/config/configData";
+import configData from "@/config/endpoints/Data";
 
 type Token = string | null;
 

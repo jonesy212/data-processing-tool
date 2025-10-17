@@ -1,8 +1,8 @@
-import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { Attachment } from "@/app/features/support/SupportTicketComponent";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { ApiPagination } from '@/app/typings/apiTypes'
+import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
+import { ApiPagination } from '@/app/typings/apiTypes';
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 
 // Base response structure that all API responses should extend
 export interface BaseResponseType<

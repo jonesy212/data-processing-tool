@@ -24,8 +24,8 @@ import { UserData } from "@/app/users/User";
 import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { createDefaultVersionData } from '@/versions/VersionData';
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -259,10 +259,12 @@ type AdditionalDataTypes<
 
 // Combining common types and additional types using intersection
 type SupportedData<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > =
   CommonDataTypes<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // Apply intersection to ensure core data is present
   AdditionalDataTypes<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // Include additional data types with flexibility

@@ -1,14 +1,13 @@
 // TaskManagerStore.tsx
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 import { TaskActions } from '@/app/actions/TaskActions';
-import { addSnapshot } from '@/app/api/SnapshotApi';
-import { saveAs } from '@/app/documents/editing/autosave';
-import { Subscriber } from '@/app/subscrbers/Subscriber';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import addSnapshot from '@/app/api/SnapshotApi';
 import {
-    NotificationType, NotificationTypeEnum,
-    useNotification
+  NotificationType, NotificationTypeEnum,
+  useNotification
 } from "@/app/context/NotificationContext";
+import { saveAs } from '@/app/documents/editing/autosave';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
@@ -17,19 +16,21 @@ import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Task, tasksDataSource } from "@/app/models/tasks/Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>";
-import FilterTasksRequest from "@/app/pages/searchs/FilterTasksRequest";
-import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
-import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
+import { Task, tasksDataSource } from "@/app/models/tasks/Task";
+import FilterTasksRequest from "@/app/pages/searches/FilterTasksRequest";
 import { taskService } from "@/app/services/TaskService";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
+import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
+import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
@@ -115,8 +116,18 @@ export interface TaskManagerStore<
 }
 
 
-const updateTaskPositionSuccess = (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
+const updateTaskPositionSuccess = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
   const { task } = payload;
+
+   // ✅ Extract from store
+  const { tasks, setTasks, setDynamicNotificationMessage } = useTaskManagerStore();
 
   // Find the current position of the task
   const currentStatus = task.status;
@@ -147,12 +158,18 @@ const updateTaskPositionSuccess = (payload: { task: Task<T, K, Meta, AttachmentT
   });
 
   // Show success notification
-  setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+  useTaskManagerStore().setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
 };
 
-
-const useTaskManagerStore = (): TaskManagerStore => {
-  const { notify } = useNotification();
+const useTaskManagerStore = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+ const { notify } = useNotification();
   const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure, setAssignedTaskStore } = TaskActions;
   const assignTaskToUser = useApiManager();
   const [tasks, setTasks] = useState<Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>({
@@ -170,7 +187,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-  const initSnapshot = {} as Snapshot<Data<BaseData<any>>, Data<BaseData<any>>>;
+  const initSnapshot = {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   const dispatch = (action: any) => {
     const { type, payload } = action;

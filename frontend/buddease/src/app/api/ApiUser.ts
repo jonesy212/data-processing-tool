@@ -12,7 +12,7 @@ import dotProp from "dot-prop";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 // Other imports remain unchanged
-import updateUI from '@/documents/editing/updateUI';
+import updateUI from '@/app/documents/editing/updateUI';
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
 const API_BASE_URL = endpoints.users;

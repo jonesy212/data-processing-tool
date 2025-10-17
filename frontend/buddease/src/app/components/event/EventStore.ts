@@ -1,16 +1,23 @@
-import { BaseDataRoot } from '@/config/BaseConfig';
 // EventStore.ts
 import { UnsubscribeDetails } from '@/DynamicEventHandlerExample';
-import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { EventRecord, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import { Callback, Snapshot, SnapshotConfig, SnapshotData, Snapshots, SnapshotsArray, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from "@/app/snapshots";
+import {   SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { storeProps, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -18,11 +25,12 @@ import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { fetchAndCreateSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Content } from '@/models/content/AddContent';
-import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from '@/server/database/Payload';
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 
@@ -35,7 +43,7 @@ export type EventStore<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > = {
-    eventRecords: Record<string, EventRecord<T, K, Meta>[]> | null;
+    eventRecords: Record<string, EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
     callbacks: Record<string, Array<(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>>;
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     eventIds: string[];
@@ -197,9 +205,9 @@ const defaultEventStore = async <
     data: {} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: [],
     storeConfig: {} as StoreConfig,
-    initialState: {} as InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     isCore: true,
-    additionalData: {} as CustomSnapshotData<T, K, Meta>,
+    additionalData: {} as CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotData: coreSnapshot.snapshotData,
     snapshotId: coreSnapshot.snapshotId || '',
     snapshot: coreSnapshot.snapshot || {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Safely access `snapshot` with a fallback
@@ -348,25 +356,25 @@ const defaultEventStore = async <
     getSubscribers: function (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<{ subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
       throw new Error('Function not implemented.');
     },
-    notifySubscribers: function (message: string, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    notifySubscribers: function (message: string, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       throw new Error('Function not implemented.');
     },
     notify: function (id: string, message: string, content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, data: any, date: Date, type: NotificationType, notificationPosition?: NotificationPosition | undefined): void {
       throw new Error('Function not implemented.');
     },
-    manageSubscription: function (snapshotId: string, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never> {
+    manageSubscription: function (snapshotId: string, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error('Function not implemented.');
     },
-    subscribeToSnapshotList: function (snapshotId: string, callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>) => void): void {
+    subscribeToSnapshotList: function (snapshotId: string, callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
       throw new Error('Function not implemented.');
     },
-    subscribeToSnapshot: function (snapshotId: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    subscribeToSnapshot: function (snapshotId: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
       throw new Error('Function not implemented.');
     },
-    subscribeToSnapshotWithMetadata: function (snapshotId: string | number | null, unsubscribe: UnsubscribeDetails, subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, data: T, event: SnapshotEvent, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>, value: T): [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    subscribeToSnapshotWithMetadata: function (snapshotId: string | number | null, unsubscribe: UnsubscribeDetails, subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, data: T, event: SnapshotEvent, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, value: T): [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error('Function not implemented.');
     },
-    unsubscribeFromSnapshot: function (snapshotId: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>) => void): void {
+    unsubscribeFromSnapshot: function (snapshotId: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
       throw new Error('Function not implemented.');
     },
     subscribeToSnapshotsSuccess: function (callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): string {
@@ -375,13 +383,25 @@ const defaultEventStore = async <
     unsubscribeFromSnapshots: function (callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
       throw new Error('Function not implemented.');
     },
-    subscribeToSnapshots: function (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, category?: Category, snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, unsubscribe?: UnsubscribeDetails): [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-      throw new Error('Function not implemented.');
+    subscribeToSnapshots: function (
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+      snapshotId: string, 
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+      snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+      callback: (
+        snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+        snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, 
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+      unsubscribe?: UnsubscribeDetails,
+      category?: Category, 
+    ): [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+        throw new Error('Function not implemented.');
     },
     clearSnapshot: function (): void {
       throw new Error('Function not implemented.');
     },
-    clearSnapshotSuccess: function (context: { useSimulatedDataSource: boolean; simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>[]; }): void {
+    clearSnapshotSuccess: function (context: { useSimulatedDataSource: boolean; simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; }): void {
       throw new Error('Function not implemented.');
     },
     addToSnapshotList: function (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
@@ -396,7 +416,7 @@ const defaultEventStore = async <
     transformSubscriber: function (subscriberId: string, sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error('Function not implemented.');
     },
-    defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never> | null): void {
+    defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null): void {
       throw new Error('Function not implemented.');
     },
     getSnapshotsBySubscriber: function (subscriber: string): Promise<T[]> {

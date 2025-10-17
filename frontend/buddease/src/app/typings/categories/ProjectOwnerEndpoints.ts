@@ -1,5 +1,5 @@
 // ProjectOwnerEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ProjectOwnerEndpoints {
   base: EndpointConfig;

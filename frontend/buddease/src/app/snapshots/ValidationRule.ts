@@ -1,7 +1,19 @@
 
 // Base types for context
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { AppDocument } from '@/app/typings/entities/CommonEntities'
+import { internalCache } from '@/app/utils/cache/InternalCache';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import {   StorePropEntity,
+  StorePropK,
+  StorePropMeta,
+  StorePropAttachment,
+  StorePropExcludedFields,
+  StorePropIncludedFields
+} from '@/app/snapshots/StorePropEntity'
+
 
 export interface BaseDataEntity {
   id?: string | number;
@@ -20,7 +32,7 @@ export interface ValidationMeta<T extends BaseDataEntity, K extends T = T> {
 }
 
 // Validation Rule Types
-export type ValidationRule<T extends BaseDataEntity = BaseDataEntity> = {
+export type ValidationRule<T extends BaseDataEntity = BaseDataEntity, K extends T = T> = {
   /** Unique identifier for the validation rule */
   id: string;
   
@@ -34,7 +46,7 @@ export type ValidationRule<T extends BaseDataEntity = BaseDataEntity> = {
   field: keyof T | '*';
   
   /** Validation function that returns true if valid, false or error message if invalid */
-  validate: (value: any, entity: Partial<T>, meta?: ValidationMeta<T, T>) => 
+  validate: (value: any, entity: Partial<T>, meta?: ValidationMeta<T, K>) => 
     | boolean 
     | string 
     | ValidationResult;
@@ -49,7 +61,7 @@ export type ValidationRule<T extends BaseDataEntity = BaseDataEntity> = {
   when?: ('create' | 'update' | 'delete')[];
   
   /** Optional condition to determine if this rule should run */
-  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, T>) => boolean;
+  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, K>) => boolean;
   
   /** Priority order (lower numbers run first) */
   priority?: number;
@@ -68,7 +80,7 @@ export interface ValidationResult {
 // Common validation rule examples
 export const CommonValidationRules = {
   /** Requires field to not be null/undefined/empty */
-  required: <T extends BaseDataEntity>(field: keyof T, message?: string): ValidationRule<T> => ({
+  required: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> => ({
     id: `required_${String(field)}`,
     name: `Required ${String(field)}`,
     field,
@@ -191,13 +203,15 @@ export class ValidationEngine<T extends BaseDataEntity> {
         results.push({
           isValid: validationResult,
           message: validationResult ? undefined : rule.errorMessage,
-          details: { ruleId: rule.id, field: rule.field }
+          details: { ruleId: rule.id, field: rule.field },
+          errors: { field: keyof AppDocument; message: string; rule: string; }[]
         });
       } else if (typeof validationResult === 'string') {
         results.push({
           isValid: false,
           message: validationResult,
-          details: { ruleId: rule.id, field: rule.field }
+          details: { ruleId: rule.id, field: rule.field },
+          errors: { field: keyof AppDocument; message: string; rule: string; }[]
         });
       } else {
         results.push({
@@ -222,11 +236,17 @@ export class ValidationEngine<T extends BaseDataEntity> {
 }
 
 
-  const snapshotStoreConfig = useDataStore().snapshotStoreConfig
+const snapshotStoreConfig = useDataStore().snapshotStoreConfig
 
 
 // Usage example with SnapshotStoreConfig
-const exampleConfig: SnapshotStoreConfig<BaseDataEntity, BaseDataEntity, DefaultMeta<BaseDataEntity, BaseDataEntity>, never> = {
+const exampleConfig: SnapshotStoreConfig<  
+  StorePropEntity,
+  StorePropK,
+  StorePropMeta,
+  StorePropAttachment,
+  StorePropExcludedFields,
+  StorePropIncludedFields> = {
   ...snapshotStoreConfig,
 
   validationRules: [
@@ -246,10 +266,18 @@ const exampleConfig: SnapshotStoreConfig<BaseDataEntity, BaseDataEntity, Default
       when: ['update']
     }
   ],
-  getOrCreateSnapshot: async <T extends BaseDataEntity>(
+
+  getOrCreateSnapshot: async <  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     id: string,
     baseData: T,
-    storeProps: SnapshotStoreProps<T>
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => {
     const existing = internalCache.get(id);
     if (existing) {

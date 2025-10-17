@@ -5,21 +5,22 @@ import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "@/app/libraries/categories/generateCategoryProperties";
 import { displayToast } from "@/app/models/display/ShowToast";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStore, initializeState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import { DataStore, InitializedState, initializeState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { ExcludedFields } from '@/app/routing/Fields';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
+import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { InitializedData, SnapshotInstanceProps } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { addToSnapshotList, category } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SubscribeResult } from '@/users/Subscriber';
 import { SnapshotData } from ".";
+import { Attachment } from "../documents/attachment/Attachment";
 import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
@@ -27,14 +28,15 @@ import { SnapshotOperation } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
-import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 
 interface SimulatedDataSource<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > extends
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
+> extends
   SnapshotInstanceProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedIdentifiers  {
   // Define the properties of the simulated data source
@@ -43,7 +45,7 @@ interface SimulatedDataSource<
   // You can add more properties if needed
 }
 
-interface InitializedStateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+interface InitializedStateOptions {
   asMap?: boolean; // default false
 }
 
@@ -52,8 +54,10 @@ function getDefaultInitializedState<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(options?: InitializedStateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(options?: InitializedStateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   if (options?.asMap) {
     return new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
   }
@@ -64,14 +68,17 @@ function getDefaultInitializedState<
     createdAt: new Date(),
     updatedAt: new Date(),
     version: '1.0.0',
-  } as InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  } as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Example getDefaultSnapshotStoreConfig function if missing
 function getDefaultSnapshotStoreConfig<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Provide a proper default value
 }
@@ -81,19 +88,21 @@ function createSnapshotOptions<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(
-  snapshotObj: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshot: (
-    id: string | number | undefined,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
-    callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    criteria: CriteriaType,
-    //   snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotId: string | null,
-    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
+    snapshotObj: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshot: (
+      id: string | number | undefined,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+      criteria: CriteriaType,
+    // snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotId: string | null,
+      category?: Category,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Promise<SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   simulatedDataSource?: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional parameter for SimulatedDataSource
 ): SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -174,7 +183,7 @@ function createSnapshotOptions<
 
   };
 
-  let initialState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
+  let initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
   // Use snapshotObj.initialState if available
   if (snapshotObj.initialState) {
@@ -183,19 +192,19 @@ function createSnapshotOptions<
     if (initialized instanceof Map || initialized instanceof SnapshotStore || Array.isArray(initialized) || initialized instanceof Snapshot) {
       initialState = initialized;
     } else if (initialized === null || initialized === undefined) {
-      initialState = getDefaultInitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+      initialState = getDefaultInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
     } else {
       // If it's a plain object or T, cast safely
       initialState = initialized as T;
     }
   } else {
-    initialState = getDefaultInitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+    initialState = getDefaultInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
   }
 
 
   return {
     data: dataMap ? ({} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) : undefined,
-    initialState: snapshotObj.initialState ? initializeState(snapshotObj.initialState) : {} as InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    initialState: snapshotObj.initialState ? initializeState(snapshotObj.initialState) : {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: snapshotObj.id ? snapshotObj.id.toString() : "",
     category: {
       id: "",

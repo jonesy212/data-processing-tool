@@ -1,6 +1,6 @@
 // calendarConfig.ts
-import { CalendarEndpoints } from '../types/categories/CalendarEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { CalendarEndpoints } from '@/app/typings/categories/CalendarEndpoints';
 
 export const calendarConfig: CalendarEndpoints = {
   events: { path: `${BASE_URL}/api/calendar/events`, method: "GET" },

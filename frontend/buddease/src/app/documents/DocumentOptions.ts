@@ -1,32 +1,36 @@
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import VersionImpl, { version } from '@/app/versions/Version';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { MetadataEntriesType } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 import { CustomStyle } from '@/app/api/ApiService';
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "@/app/communications/LanguageEnum";
-import { K, T } from "@/app/models/data/dataStoreMethods";
-import { AllTypes } from '@/app/typings/PropTypes';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { computeChecksum, DocumentData, RevisionOptions } from "@/app/documents/editing/DocumentBuilder";
 import { BaseData } from '@/app/models/data/Data';
 import {
-    BorderStyle,
-    DocumentSize,
-    Layout,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
+  BorderStyle,
+  DocumentSize,
+  Layout,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
 } from "@/app/models/data/StatusType";
+import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { CustomProperties, HighlightColor } from "@/app/styling/Palette";
+import { AllTypes } from '@/app/typings/PropTypes';
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import { UserIdea } from "@/app/users/Ideas";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
+import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
+import { NoteAnimationOptions, NoteOptions } from "@/components/documents/NoteData";
+import { DocumentAnimationOptions } from "@/components/documents/SharedDocumentProps";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UserSettings } from "@/config/UserSettings";
 import FrontendStructure from "@/config/appStructure/FrontendStructure";
@@ -34,12 +38,8 @@ import { DataVersions } from "@/configs/DataVersionsConfig";
 import BackendStructure from '@/server/database/BackendStructure';
 import * as docx from "docx";
 import { ContentState } from "draft-js";
-import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { ModifiedDate } from "./DocType";
-import { computeChecksum, DocumentData, RevisionOptions } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-import { NoteAnimationOptions, NoteOptions } from "@/components/documents/NoteData";
-import { DocumentAnimationOptions } from "@/components/documents/SharedDocumentProps";
  
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;

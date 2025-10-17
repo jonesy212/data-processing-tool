@@ -9,7 +9,7 @@ import {
   useNotification,
 } from "@/app/context/NotificationContext";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { YourResponseType } from "@/app/typings/responseTypes";
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
 

@@ -1,13 +1,22 @@
 // createMeta.ts
-import { BaseData } from '@/app/models/data/Data';
-import { UserConfigData } from '@/app/components/models/data/dataStoreMethods';
-import { StructuredMetadata } from "@/app/StructuredMetadata";
-
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
+import { BaseData } from '@/app/models/data/Data';
+import { UserConfigData } from '@/app/models/data/dataStoreMethods';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
-const createMeta = <T extends BaseData<any>, K extends T = T>(
+const createMeta = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+
   const { useSecureUserId, sanitizeMetadata } = useSecurityAudit();
   const id = useSecureUserId();
 

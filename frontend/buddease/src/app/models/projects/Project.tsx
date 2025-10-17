@@ -14,26 +14,30 @@ import { StatusType } from "@/app/models/data/StatusType";
 import {
   CustomPhaseHooks, Phase,
   PhaseData,
+} from '@/app/models/phases/Phase';
+import { Task } from "@/app/models/tasks/Task";
+import { Team } from "@/app/models/teams/Team";
+import {
   PhaseEntity,
   PhaseExcluded,
   PhaseK,
   PhaseMeta,
   PhaseMetaType
-} from '@/app/models/phases/Phase';
-import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
+} from '@/app/typings/phases/phaseTypes';
+import { BaseDataRoot } from '@/config/BaseConfig';
+
+import { SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Member } from "@/app/models/teams/TeamMembers";
+import { ExcludedFields } from '@/app/routing/Fields';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { VideoData } from "@/app/video/Video";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, baseConfig } from '@/config/BaseConfig';
-import { sharedBaseData, sharedMetadata } from '@/config/metadata/MetadataHooks';
-import { SharedTimestamps } from '@/RelatedProps';
-import { ExcludedFields } from '@/routing/Fields';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { sharedBaseData } from '@/config/metadata/MetadataHooks';
 import React, { ReactNode, useEffect, useState } from "react";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
@@ -174,7 +178,7 @@ interface Project<
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   name: string;
-  description: string; // Updated this line
+  description: string; 
   members: Member[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> [];
   comments?: (Comment<T, K, Meta> | CustomComment)[] | undefined;
@@ -356,7 +360,9 @@ class ProjectImpl<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > implements Project {
   [key: string]: any;
   scheduled?: ScheduledData<any>;

@@ -1,17 +1,28 @@
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import { createErrorNotificationContent, errorLogger } from "@/app/libraries/logging/Logger";
-import { YourResponseType } from "@/app/typings/types";
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { Payload } from '@/server/database/Payload';
 import React, { useState } from 'react';
-import { Payload } from '@/LocalStorageSnapshotStore';
 
-interface SnapshotErrorHandling<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
-    onError?: (error: Payload) => void;
-    clearSnapshotFailure(): unknown;
-    logError: (error: Error, extraInfo?: any) => void;
-    addSnapshotFailure?: (date: Date, error: Error) => void;
-    handleSnapshotError: (error: Error) => void;
-    resetErrorState: () => void;
+
+
+interface SnapshotErrorHandling<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  onError?: (error: Payload) => void;
+  clearSnapshotFailure(): unknown;
+  logError: (error: Error, extraInfo?: any) => void;
+  addSnapshotFailure?: (date: Date, error: Error) => void;
+  handleSnapshotError: (error: Error) => void;
+  resetErrorState: () => void;
 }
 
 

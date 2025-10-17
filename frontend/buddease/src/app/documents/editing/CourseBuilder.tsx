@@ -3,12 +3,14 @@
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { BaseData } from '@/app/models/data/Data';
-import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from '@/app/models/phases/Phase';
-import { createMeta } from "@/server/metadata/MetadataHooks";
+import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { createMeta } from "@/server/metadata/MetadataHooks";
+import { Attachment } from '@/app/documents/attachment/Attachment'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Interfaces for course structure
 interface Lesson {
@@ -16,9 +18,16 @@ interface Lesson {
   content: string;
 }
 
-interface Course {
+interface Course <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>{
   title: string;
-  phases: Phase[];
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -56,7 +65,7 @@ class CourseBuilder {
       const area = {
         prefix: 'USER',
         name: 'JohnDoe',
-        type: NotificationTypeEnum.UserID,
+        type: NotificationTypeEnum.USER_ID,
         id: '12345',
         title: 'UserAccount',
         dimensions: dimensions, // Add the dimensions to the area object

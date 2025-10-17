@@ -1,5 +1,5 @@
 // tasksConfig.ts
-import { TasksEndpoints } from '../types/categories/TasksEndpoints';
+import { TasksEndpoints } from '@/app/typings/categories/TasksEndpoints';
 
 export const tasksConfig: TasksEndpoints = {
   create: { path: "/api/tasks/create", method: "POST" },

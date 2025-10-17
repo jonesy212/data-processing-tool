@@ -1,6 +1,6 @@
 // devConfig.ts
-import { DevEndpoints } from '../types/categories/DevEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DevEndpoints } from '@/app/typings/categories/DevEndpoints';
 
 export const devConfig: DevEndpoints = {
   getMockData: { path: `${BASE_URL}/mock/data`, method: "GET" },

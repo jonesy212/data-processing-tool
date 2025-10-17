@@ -1,12 +1,13 @@
 // snapshotContainerUtils.ts
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { createSnapshot } from "@/app/api/SnapshotApi";
+import createSnapshot from '@/app/api/SnapshotApi';
+import { Attachment } from '@/app/documents/attachment/Attachment'
 import { Category, generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { dataStoreMethods } from "@/app/models/data/dataStoreMethods";
 import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { criteria } from '@/app/pages/searchs/FilterCriteria';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { criteria } from '@/app/pages/searches/FilterCriteria';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ConfigureSnapshotStorePayload, data, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -16,10 +17,10 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { store } from '@/app/state/stores/useAppDispatch';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { category, snapshotId } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/s/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
-import { payload } from '@/users/Subscriber';
+import { RealtimeDataItem } from '@/typings/realtimeTypes';
+import { payload } from '@/app/subscribers/Subscriber';
 import { callback } from 'chart.js/helpers';
 import { id } from 'ethers';
 import { snapshot } from '.';
@@ -62,16 +63,17 @@ const snapshotIdObject = {
 
 // Then use it like this:
 const initializeSnapshotConfig = <
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: string | number,
   snapshotId: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
-  category?: Category,
   categoryProperties: CategoryProperties | undefined,
   subscriberId: string | undefined,
   delegate: Promise<DataStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]>,
@@ -87,7 +89,8 @@ const initializeSnapshotConfig = <
   callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   endpointCategory: string | number,
-  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  category?: Category,
 ) => {
   const config = snapshotApi.getSnapshotConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
     id,
@@ -141,10 +144,12 @@ const snapshotConfig = await initializeSnapshotConfig(
 );
 
 const currentCategory = <
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   type: string, event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 ) => snapshotApi.getSnapshotsAndCategory(
@@ -161,11 +166,14 @@ const snapshotManager = snapshotStoreConfigInstance.getSnapshotManager()
 const snapshotStore = snapshotManager?.state
 const createdSnapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
+
 const getCategory = async <
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
   storeId: number,
@@ -240,33 +248,55 @@ const getCategory = async <
 
 const getDataStoreMethods = () => dataStoreMethods;
 
-// Snapshot methods that define how the snapshot operations are handled
 
 // Snapshot methods that define how the snapshot operations are handled
-const snapshotMethods = <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>() => ({
-  // Step 1️���: Handle snapshot creation
+const snapshotMethods = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => ({
   /**
    * Create a new snapshot
-   * @returns {Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>}
    */
-  create: async (data: T, metadata: K): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  create: async (
+    data: T,
+    metadata: K
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     console.log("Creating snapshot...");
+
+    const now = new Date();
+
     const snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-      id: generateUniqueId(), // Custom ID generator function
+      id: generateUniqueId(),
       data,
       metadata,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: now,
+      updatedAt: now,
+
+      // ✅ Required properties with defaults
+      deleted: false,
+      isCore: false,
+      initialState: { ...data } as T,
+      initialConfig: {} as any,
+      meta: {} as Meta,
+      attachments: [] as AttachmentType[],
+      excludedFields: [] as ExcludedFields[],
+      includedFields: Object.keys(data) as IncludedFields[],
+      version: 1,
+      parentId: null,
+      type: "default",
+      changes: {},
+      history: [],
     };
+
     return snapshot;
   },
 
   /**
    * Update an existing snapshot
-   * @param id The ID of the snapshot to update
-   * @param updatedData The updated data
-   * @param updatedMetadata The updated metadata
-   * @returns {Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>}
    */
   update: async (
     id: string,
@@ -275,33 +305,43 @@ const snapshotMethods = <T, K, Meta, AttachmentType, ExcludedFields, IncludedFie
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     console.log(`Updating snapshot with id ${id}...`);
 
-    // Simulate the process of updating a snapshot
+    const now = new Date();
+
     const existingSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id,
       data: { ...updatedData } as T,
       metadata: { ...updatedMetadata } as K,
-      createdAt: new Date(), // Assume this was already present
-      updatedAt: new Date(), // The updated timestamp
+      createdAt: now,
+      updatedAt: now,
+
+      // ✅ Include all required fields with consistent defaults
+      deleted: false,
+      isCore: false,
+      initialState: { ...updatedData } as T,
+      initialConfig: {} as any,
+      meta: {} as Meta,
+      attachments: [] as AttachmentType[],
+      excludedFields: [] as ExcludedFields[],
+      includedFields: Object.keys(updatedData ?? {}) as IncludedFields[],
+      version: 2,
+      parentId: null,
+      type: "update",
+      changes: updatedData,
+      history: [],
     };
 
-    // Simulate an API call or DB update
     return existingSnapshot;
   },
 
   /**
    * Delete an existing snapshot
-   * @param id The ID of the snapshot to delete
-   * @returns {Promise<{ id: string, success: boolean }>}
    */
   delete: async (id: string): Promise<{ id: string; success: boolean }> => {
     console.log(`Deleting snapshot with id ${id}...`);
-    
-    // Simulate an API call to delete the snapshot
-    const result = { id, success: true };
-    
-    return result;
+    return { id, success: true };
   },
 });
+
 
 
 export { getCategory, snapshotConfig };

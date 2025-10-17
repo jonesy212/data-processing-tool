@@ -7,7 +7,7 @@ import {
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ExcludedFields } from '@/app/routing/Fields';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
@@ -58,7 +58,7 @@ import AppVersionImpl from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
@@ -102,9 +102,12 @@ const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
 type ContentStructuredMetadata<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -134,7 +137,7 @@ interface DocumentData<
   id: string | number;
   _id: string;
   title: string;
-  content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   permissions?: DocumentPermissions;
   topics?: string[];
@@ -725,7 +728,7 @@ const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, Exc
             share: false,
             execute: false,
           },
-          getStructure: function (): Promise<Record<string, AppStructureItem>> {
+          getStructure: function (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
             // Implement the getStructure method here if needed
             return new Promise((resolve, reject) => {
               try {

@@ -1,24 +1,24 @@
 import UserService, { userId, userService } from "@/app/api/ApiUser";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "@/app/components/phases/Phase";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from "@/app/components/video/Video";
 import { CacheData, realtimeData } from "@/app/generators/GenerateCache";
 import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
-import { authToken } from "@/app/server/authToken";
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
 import {
-    frontendStructure,
+  frontendStructure,
 } from "@/config/appStructure/FrontendStructure";
 import { BackendConfig, backendConfig } from "@/config/BackendConfig";
 import { FrontendConfig, frontendConfig } from "@/config/FrontendConfig";
 import userSettings, { UserSettings } from "@/config/UserSettings";
 import BackendStructure, {
-    backendStructure,
+  backendStructure,
 } from "@/configs/appStructure/BackendStructure";
 import { DataVersions, dataVersions } from "@/configs/DataVersionsConfig";
+import { authToken } from "@/server/authToken";
 
 // Define the structure of the response data
 interface CacheResponse {

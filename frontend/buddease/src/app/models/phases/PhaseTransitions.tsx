@@ -1,35 +1,42 @@
 import { ReactNode } from "react";
-import { Data } from '@/app/models/data/Data';
-import { CustomPhaseHooks, Phase } from "./Phase";
+import { BaseData } from '@/app/models/data/Data';
+import { Phase } from "./Phase";
 import React from "react";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CustomPhaseHooks } from '@/app/models/phases/Phase';
+
 
 // Generic helper with defaults (Case 3)
-type DefaultAppData<
-  T = any,
+type DefaultApp<
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta = any,
-  AttachmentType = any,
-  ExcludedFields extends keyof T = any
-> = Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 
 // Factory to create scaffolded or specialized phases
-const makePhase = <
-  T = any,
+const makePhase = <  
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta = any,
-  AttachmentType = any,
-  ExcludedFields extends keyof T = any
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   name: string,
   id: string,
   description: string
 ): Phase<DefaultApp<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => ({
   name,
+  projectId: "project-id",
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
   data: {} as DefaultApp<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  hooks: {} as CustomPhaseHooks,
+  hooks: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   id,
   description,
   date: new Date(),

@@ -1,8 +1,7 @@
 // CalendarActionPayload.ts
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { AllStatus } from "@/app/components/state/stores/DetailsListStore";
 import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { CalendarEvent } from "@/app/app/calendar/CalendarEvent";
-import { AllStatus } from "@/app/app/components/state/stores/DetailsListStore";
 
 // Define possible actions for the CalendarManager
 type CalendarActionType =
@@ -39,6 +38,6 @@ type CalendarActionPayload<T extends  BaseData<any>,  K extends T = T,  Meta ext
 
 
 export type {
-  AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
+    AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
 };
 

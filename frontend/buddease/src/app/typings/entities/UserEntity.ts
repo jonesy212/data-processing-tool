@@ -1,9 +1,21 @@
 // UserEntity.ts
+import { UserProfile } from '@/app/api/ApiUser';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { UserPreferences } from '@/app/typings/userTypes';
+import { User, UserData } from "@/app/users/User";
+import FrontendStructure from '@/config/appStructure/FrontendStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { RealtimeDataItem } from '../realtimeTypes';
+import { ApplyFieldFilters } from './AppEntity';
 
 // Define the actual UserEntity interface
-export interface UserEntity extends BaseDataEntity {
+interface UserEntity extends BaseDataEntity {
   id: string;
   name: string;
   email: string;
@@ -20,12 +32,12 @@ export interface UserEntity extends BaseDataEntity {
 }
 
 // User-specific type parameters
-type UserEntity = UserEntity;
+type AppUserEntity = UserEntity;
 type UserK = UserEntity;
-type UserMeta = DefaultMeta<UserEntity, UserK>;
+type UserMeta = DefaultMeta<AppUserEntity, UserK>;
 type UserAttachment = Attachment;
-type UserExcludedFields = DefaultExcludedFields<UserEntity> | "password" | "secret";
-type UserIncludedFields = keyof UserEntity;
+type UserExcludedFields = DefaultExcludedFields<AppUserEntity> | "password" | "secret";
+type UserIncludedFields = keyof AppUserEntity;
 
 // User parameters container
 type UserBaseParams = {
@@ -92,10 +104,6 @@ type AppUserStructuredMetadata = StructuredMetadata<
   UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
 >;
 
-// User-specific metadata types
-type UserMeta = DefaultMeta<UserEntity, UserK>;
-type UserExcludedFields = DefaultExcludedFields<UserEntity> | "password" | "secret";
-type UserIncludedFields = keyof UserEntity;
 
 // User configuration types
 type UserSnapshotStoreConfig = SnapshotStoreConfig<
@@ -156,87 +164,7 @@ type UserSortOptions = {
   direction: 'asc' | 'desc';
 };
 
-// Export all the new types
-export type {
-  AdminUser, AdminUserData,
-  // Core App types
-  AppUser,
-  AppUserData,
-  AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
-  AppUserSnapshotData,
-  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata,
-  // Role-specific types
-  BasicUser,
-  PremiumUser, PrivateUserData,
-  // Data variations
-  PublicUserData, UserContext, UserExcludedFields,
-  // Utility types
-  UserFilterOptions, UserFrontendStructure, UserIncludedFields,
-  // User metadata types
-  UserMeta, UserParams,
-  // State types
-  UserSession, UserSnapshotsArray,
-  // Configuration types
-  UserSnapshotStoreConfig, UserSortOptions
-};
 
-// Export the main interface
-  export type { UserEntity };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// User-specific type parameters (from your UserEntity.ts)
-type UserEntity = BaseDataEntity & {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  secret?: string;
-  role: string;
-  avatar?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isActive: boolean;
-  lastLogin?: Date;
-  preferences?: UserPreferences;
-};
-
-type UserK = UserEntity;
-type UserMeta = DefaultMeta<UserEntity, UserK>;
-type UserAttachment = Attachment;
-type UserExcludedFields = DefaultExcludedFields<UserEntity> | "password" | "secret";
-type UserIncludedFields = keyof UserEntity;
-
-// Base user parameters type
-type UserBaseParams = {
-  T: UserEntity;
-  K: UserK;
-  Meta: UserMeta;
-  AttachmentType: UserAttachment;
-  ExcludedFields: UserExcludedFields;
-  IncludedFields: UserIncludedFields;
-};
 
 // Core user types using the pattern
 type UserDataDefault = UserData<
@@ -302,4 +230,57 @@ type UserStructuredMetadata = StructuredMetadata<
   UserBaseParams['ExcludedFields'],
   UserBaseParams['IncludedFields']
 >;
+
+
+
+
+// Export all the new types
+export type {
+  AdminUser, AdminUserData,
+  // Core App types
+  AppUser,
+  AppUserData,
+  AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
+  AppUserSnapshotData,
+  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata,
+  // Role-specific types
+  BasicUser,
+  PremiumUser, PrivateUserData,
+  // Data variations
+  PublicUserData, UserContext, UserExcludedFields,
+  // Utility types
+  UserFilterOptions, UserFrontendStructure, UserIncludedFields,
+  // User metadata types
+  UserMeta, UserParams,
+  // State types
+  UserSession, UserSnapshotsArray,
+  // Configuration types
+  UserSnapshotStoreConfig, UserSortOptions
+};
+
+// Export the main interface
+  export type { UserDataDefault, UserEntity, UserSnapshotDefault };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -1,28 +1,45 @@
 // ChatDashboard.tsx
-import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { Team } from '@/app/components/models/teams/Team';
 import { TeamMember } from '@/app/components/models/teams/TeamMembers';
-import {Project} from '@/app/projects/Project';
-import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
-import { AquaConfig } from '@/app/utils/web3/webConfigs/AquaConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentSize } from "@/app/models/data/StatusType";
+import { Project } from '@/app/models/projects/Project';
+import { UserRole } from "@/app/models/UserRole";
+import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
+import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
 import React from 'react';
 
 interface ChatDashboardProps {
   aquaConfig: AquaConfig;
 }
 
-interface DappProps extends DAppAdapterDappProps {
+export interface DappProps<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Omit<DAppAdapterDappProps, 'user'> {
   currentUser: {
-    id: string;
-    name: string;
-    role?: string;
+    id: string | number;
+    username: string;
+    role?: UserRole;
     teams?: Team[];
     projects?: Project[];
-    teamMembers?: TeamMember[];
+    teamMembers?: TeamMember<
+      T,
+      K,
+      Meta,
+      AttachmentType,
+      ExcludedFields,
+      IncludedFields
+    >[];
   };
 }
-
 
 const ChatDashboard: React.FC<ChatDashboardProps> = ({ aquaConfig }) => {
   // Rest of component implementation

@@ -1,6 +1,6 @@
 // logsConfig.ts
-import { LogsEndpoints } from '../types/categories/LogsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { LogsEndpoints } from '@/app/typings/categories/LogsEndpoints';
 
 export const logsConfig: LogsEndpoints = {
   logSession: { path: `${BASE_URL}/api/log/session`, method: "POST" },

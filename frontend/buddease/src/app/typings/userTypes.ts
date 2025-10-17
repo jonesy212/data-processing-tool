@@ -1,11 +1,11 @@
 // userTypes.ts
-// UserEntityTypes.ts
+import { UserEntity, UserDataDefault } from '@/app/typings/entities/UserEntity';
 
 // Supporting interfaces (from your UserData.ts)
 interface UserPreferences {
   ui?: {
     compactMode?: boolean;
-    sidebarCollapsed?: booleapn;
+    sidebarCollapsed?: boolean;
     fontSize?: 'small' | 'medium' | 'large';
   };
   notifications?: {
@@ -80,27 +80,12 @@ const emptyUserData: UserDataDefault = createDefaultUserData();
 
 export type {
 
-  // App-specific types
-  AppUser,
-  AppUserData, AppUserRealtimeDataItem, AppUserSnapshot,
-  AppUserSnapshotData,
-  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, UserAttachment, UserBaseParams,
-
-  // Default types
-  UserDataDefault,
   // Core type parameters
-  UserEntity, UserExcludedFields,
-  // Frontend structure
-  UserFrontendStructure, UserIncludedFields, UserK,
-  UserMeta, UserParams,
+  UserEntity,
 
   // Supporting interfaces
   UserPreferences,
-  UserProfile, UserRealtimeDataItemDefault, UserSettings, UserSnapshotDataDefault, UserSnapshotDefault, UserSnapshotsArray,
-  // Configuration types
-  UserSnapshotStoreConfig, UserSnapshotStoreDefault, UserStructuredMetadata,
-  // Metadata types
-  UserUnifiedMetadata
+  UserSettings
 };
 
   export {

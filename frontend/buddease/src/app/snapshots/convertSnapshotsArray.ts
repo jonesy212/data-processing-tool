@@ -1,4 +1,6 @@
 // import { SnapshotData } from '@/app/snapshots';
+// import { Attachment } from '@/app/documents/attachment/Attachment';
+// import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // // convertSnapshotsArray.ts
 
@@ -6,11 +8,16 @@
 // import { BaseData, Data } from '@/app/models/data/Data';
 // import { K, T } from "@/app/models/data/dataStoreMethods";
 // import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-// import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
+// import { Snapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore'
 // import SnapshotStore from "./SnapshotStore";
 
 // // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-// function convertSnapshotsArray<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+// function convertSnapshotsArray<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
 //   snapshotsArray: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 // ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //     return snapshotsArray.map((snapshot) => {

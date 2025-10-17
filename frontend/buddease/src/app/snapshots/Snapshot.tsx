@@ -1,7 +1,7 @@
 // snapshot
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
+import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import {
   CombinedEvents,
@@ -10,13 +10,12 @@ import {
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { Data, DataDetails } from '@/app/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import {
-  NotificationPosition,
-  ProjectPhaseTypeEnum,
-  StatusType,
+  ProjectPhaseTypeEnum
 } from "@/app/models/data/StatusType";
+import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import {
@@ -25,6 +24,11 @@ import {
   InitializedState,
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
+import {
+  SnapshotsArray,
+  SnapshotsObject
+} from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -32,16 +36,7 @@ import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
 import { useMeta } from "@/config/useMeta";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
-import UserRoles from '@/app/models/UserRoles';
-import { Signature } from "ethers";
-import {
-  Result,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotsObject,
-  SnapshotUnion,
-} from "./LocalStorageSnapshotStore";
+import { id, Signature } from "ethers";
 import { refreshUI, refreshUIForFile } from "./refreshUI";
 import { SnapshotConfigProps } from "./SnapshotConfigProps";
 import {
@@ -57,61 +52,53 @@ import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import {
   AppEntity,
-  AppExcludedFields,
+  AppK,
   AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields
+} from "@/app/typings/entities/AppEntity";
+import {
+
   snapshotStoreConfigInstance
 } from "./snapshotStoreConfigInstance";
 
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { Label } from "@/app/branding/BrandingSettings";
-import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
-import { SharedSnapshotProperties } from "@/app/components/documents/RelatedProps";
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from "@/app/components/routing/Fields";
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { SharedSnapshotProperties, SharedTimestamps } from "@/app/documents/RelatedProps";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import useDocumentManagement from "@/app/hooks/documents/useDocumentManagement";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { Content } from "@/app/models/content/AddContent";
-import { K, T } from "@/app/models/data/dataStoreMethods";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { Tag } from "@/app/models/tracker/Tag";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from "@/app/pages/layouts/fetchUserAreaDimensions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ActivityStatus } from "@/app/pages/profile/Profile";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import {
-  CreateSnapshotsPayload,
-  CreateSnapshotStoresPayload,
-  Payload,
-  UpdateSnapshotPayload,
-} from "@/app/server/database/Payload";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { HighlightColor } from "@/app/styling/Palette";
-import { Subscription } from "@/app/subscriptions/Subscription";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { SnapshotEvent } from "@/app/typings/eventTypes";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { Version } from "@/app/versions/Version";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta,
-} from "@/config/BaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+} from '@/config/BaseConfig';
 import {
-  NotificationType
-} from "@/context/NotificationContext";
+  UnifiedMetaDataOptions
+} from "@/config/MetaDataOptions";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import baseMeta from "@/server/database/baseMeta";
 import {
-  UnifiedMetadata,
-  UnifiedMetaDataOptions,
-} from "@/server/database/MetaDataOptions";
-import { payload } from "@/server/database/Payload";
+  CreateSnapshotStoresPayload,
+  payload
+} from "@/server/database/Payload";
 import { SchemaField } from "@/server/database/SchemaField";
 import operation from "antd/es/transfer/operation";
 import { version } from "os";
@@ -120,35 +107,33 @@ import { options } from "sanitize-html";
 import {
   CustomSnapshotData,
   SnapshotContainer,
-  SnapshotData,
-  SnapshotDataType,
-  SnapshotItem,
-  SnapshotStoreProps,
+  SnapshotData
 } from ".";
-import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { createSnapshot } from "./createSnapshot";
 import { getData } from "./methods/dataMethods";
-import { SnapshotActionType } from "./SnapshotActionType";
 import {
   ConfigureSnapshotStorePayload,
   SnapshotConfig,
 } from "./SnapshotConfig";
 import { SnapshotEvents } from "./SnapshotEvents";
 import { SnapshotSecurity } from "./SnapshotSecurity";
-import { InitializedData, InitializedDataStore } from "./SnapshotStoreOptions";
+import { InitializedData } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
 import { SnapshotContext } from "./SnapshotSubscriberManagement";
-import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
+import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 
 type SnapshotFromParams<
-  Params extends SnapshotConfigParams<any, any, any, any, any[]> = SnapshotConfigParams
+  Params extends SnapshotConfigParams<any, any, any, any, any, any, any[]> = SnapshotConfigParams
 > = Snapshot<
   Params[0], // T
   Params[1], // K
   Params[2], // Meta
   Params[3], // ExcludedFields
   Params[4],
+  Params[5]
   >;
 
 interface Snapshot<
@@ -158,15 +143,16 @@ interface Snapshot<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
-  // SharedMetadata<T, K, ExcludedFields>
+> extends CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+SharedTimestamps
+{
   dataObject?: Record<string, unknown>;
   deleted: boolean;
-  initialState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   isCore: boolean;
 
   customProperties?: Record<string, unknown>;
-  childIds?: T[] | undefined;
+  childIds?: K[] | undefined;
   snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   
   snapshotSubscriberId?: string | undefined;
@@ -197,14 +183,14 @@ interface Snapshot<
   archiveRetention?: number; // days
   archiveImmediately?: boolean;
   // Data-specific properties
-  shared?: SharedSnapshotProperties<T, K, any>;      // ✅ Snapshot data sharing
+  shared?: SharedSnapshotProperties<T, K, any>;      // Snapshot data sharing
   sharedMetadata?: SharedMetadata<T, K, any, any>;   // ✅ Snapshot metadata
   
   // Data security
   security?: SnapshotSecurity;                       // ✅ Data security
   versioning?: string | number;
   versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  initializedState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  initializedState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   criteria?: CriteriaType;
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -224,7 +210,9 @@ function isCombinedEvents<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(events: any): events is CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
     typeof events === "object" &&
@@ -243,10 +231,12 @@ const meta = useMeta<T, K, DefaultMeta<T, K>, DefaultExcludedFields<T>>(area);
 
 // Define T as a generic type parameter
 function processSnapshot<
-  T extends BaseDataEntity<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   // Create proper fallback functions that match the expected return types
   const defaultGetAllKeys = async (): Promise<string[]> => [];
@@ -259,7 +249,9 @@ function processSnapshot<
     T,
     K,
     Meta,
-    ExcludedFields
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
   > & {
     transformSubscriber?: (sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   };
@@ -305,18 +297,15 @@ function processSnapshot<
     snapshotStoreConfig: isSnapshotStoreConfig<
       T,
       K,
-      DefaultMeta<T, K>,
-      DefaultExcludedFields<T>
+      Meta,
+      AttachmentType,
+      ExcludedFields,
+      IncludedFields
     >(snapshot.snapshotStoreConfig)
       ? snapshot.snapshotStoreConfig
       : Array.isArray(snapshotStoreConfigInstance) &&
         snapshotStoreConfigInstance.length > 0 &&
-        isSnapshotStoreConfig<
-          T,
-          K,
-          DefaultMeta<T, K>,
-          DefaultExcludedFields<T>
-        >(snapshotStoreConfigInstance[0])
+        isSnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotStoreConfigInstance[0])
       ? snapshotStoreConfigInstance[0]
       : null,
     getSnapshotItems: snapshot.getSnapshotItems || (() => []), // Replace with actual function
@@ -432,7 +421,7 @@ const plainDataObject: Record<string, Data<T>> = {
       id: "assignee1",
       username: "Assignee Name",
     } as User,
-    collaborators: {},
+    collaborators: [],
     comments: [],
     attachments: [],
     subtasks: [],
@@ -1069,6 +1058,7 @@ const plainDataObject: Record<string, Data<T>> = {
           lockoutDurationMinutes: 15,
         },
         accountLockoutThreshold: 50, //todo create way reset threshod
+        permission: []
       },
       emailVerificationStatus: true,
       phoneVerificationStatus: true,
@@ -1180,7 +1170,7 @@ const plainDataObject: Record<string, Data<T>> = {
               gasLimit: this.gasLimit as bigint,
               chainId: this.chainId,
               hash: this.hash,
-              type: this.type as number,
+              type: this.type || null,
               typeName: this.typeName || "",
               data: this.data || "",
               unsignedHash: this.unsignedHash || "",
@@ -1378,7 +1368,7 @@ const {
 
 
 // Create baseConfig by spreading the instance and adding your overrides
-const baseConfig: SnapshotStoreConfig<AppEntity, AppEntity, AppMeta, AppExcludedFields> = {
+const baseConfig: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> = {
   ...snapshotStoreConfigInstance,
   // Override only the properties you need to change
   snapshotId: snapshotId ?? snapshotStoreConfigInstance.snapshotId,
@@ -1386,6 +1376,11 @@ const baseConfig: SnapshotStoreConfig<AppEntity, AppEntity, AppMeta, AppExcluded
   criteria: criteria ?? snapshotStoreConfigInstance.criteria,
   category: category ?? snapshotStoreConfigInstance.category,
   categoryProperties: categoryProperties ?? snapshotStoreConfigInstance.categoryProperties,
+
+  timestamp: timestamp ?? new Date(),
+  tags: tags ?? snapshotStoreConfigInstance.tags,
+  delegate: delegate ?? snapshotStoreConfigInstance.delegate,
+  initialState: initialState ?? snapshotStoreConfigInstance.initialState,
 }
 
 // Params[0] → T
@@ -1725,7 +1720,9 @@ const getCurrentSnapshot = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends DefaultExcludedFields<T> = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string, // ID of the snapshot to retrieve
   storeId: number,
@@ -1779,7 +1776,10 @@ const snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields> = {
   createdBy: "creator1",
   description: "Sample snapshot description",
   tags: {},
-  metadata: {},
+  metadata: {
+    area: 'snapshot-area',
+    metadataEntries: []
+  },
   data: {
     id: "data1",
     title: "Data Title",

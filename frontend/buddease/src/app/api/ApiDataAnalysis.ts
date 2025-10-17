@@ -1,4 +1,5 @@
 // ApiDataAnalysis.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
@@ -7,8 +8,8 @@ import {
   NotificationTypeEnum,
   useNotification
 } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { convertResponseToSnapshot } from "@/app/snapshots/InitializedSnapshotTypes";
@@ -18,14 +19,11 @@ import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
-import { YourResponseType } from "@/app/typings/types";
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { handleApiError } from '@/app/api/ApiLogs';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 const dispatch = useDispatch();
 // Define the API base URL for data analysis
@@ -103,7 +101,7 @@ export function fetchDataAnalysis<
 >(
   endpoint: string,
   text?: string
-): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>> {
+): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
   const config = {
     headers: headersConfig,
@@ -111,18 +109,18 @@ export function fetchDataAnalysis<
   };
 
   return axiosInstance
-    .get<InitializedSnapshot<T, K, Meta>>(
+    .get<InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       fetchDataAnalysisEndpoint, 
       config
     )
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>>) => {
-      const result = convertResponseToSnapshot<T, K, Meta>(response.data);
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+      const result = convertResponseToSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(response.data);
       
       // Explicit type narrowing
-      if (isSnapshot<T, K, Meta>(result)) {
+      if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
         return result as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      } else if (isSnapshotStore<T, K, Meta>(result)) {
-        return result as SnapshotStore<T, K, Meta>;
+      } else if (isSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
+        return result as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       } else if (isYourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
         return result as YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       }
@@ -152,9 +150,9 @@ function isInitializedSnapshot<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshot: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
-): snapshot is InitializedSnapshot<T, K, Meta> {
-  return (snapshot as InitializedSnapshot<T, K, Meta>).isInitialized === true;
+  snapshot: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): snapshot is InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  return (snapshot as InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).isInitialized === true;
 }
 
 
@@ -174,9 +172,9 @@ export const fetchAnalysisResults = <
     return Promise.reject(new Error("Endpoint is not a string"));
   }
 
-  return fetchDataAnalysis<T, K, Meta>(endpoint)
+  return fetchDataAnalysis<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(endpoint)
     .then((response) => {
-      if (isSnapshotStore<T, K, Meta>(response)) {
+      if (isSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(response)) {
         // Handle SnapshotStore case
         const snapshotStore = response;
         
@@ -598,7 +596,7 @@ export const fetchAnalysisResults = <
           return Promise.reject(new Error("No snapshots available"));
         }
 
-        return createSnapshot<T, K, Meta>({
+        return createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
           // Map properties from analysisResults and snapshotStore
           // Similar to above but using analysisResults where needed
         });

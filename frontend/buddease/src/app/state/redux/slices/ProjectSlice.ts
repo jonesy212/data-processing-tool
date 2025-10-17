@@ -1,13 +1,13 @@
 import Milestone, {
   ProductMilestone,
 } from "@/app/calendar/CalendarSlice";
-import { Product } from "@/app/components/products/Product";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { Contributor, Member } from "@/app/models/teams/TeamMembers";
 import { JobRole } from '@/app/models/UserRoles';
+import { Product } from "@/app/products/Product";
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
 import { WritableDraft } from "@/app/ReducerGenerator";

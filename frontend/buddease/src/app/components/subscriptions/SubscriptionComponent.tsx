@@ -2,24 +2,24 @@ import { getSubscriberId } from "@/app/api/subscriberApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { useUser } from "@/app/context/UserContext";
 import useRealtimeData, {
-  RealtimeUpdateCallback,
+    RealtimeUpdateCallback,
 } from "@/app/hooks/commHooks/useRealtimeData";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
 import {
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { K, T } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
 } from "@/app/utils/web3/applicationUtils";
 import React, { useEffect, useState } from "react";
 import { Subscription } from "./Subscription";

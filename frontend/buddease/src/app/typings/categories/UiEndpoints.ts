@@ -1,5 +1,5 @@
 // UiEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface UiEndpoints {
   // User Data & Settings

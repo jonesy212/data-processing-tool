@@ -28,8 +28,8 @@ export default defineConfig({
 
 
 
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { ModifiedDate } from "@/app/documents/DocType";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { payload, Subscriber } from "@/app/subscribers/Subscriber";

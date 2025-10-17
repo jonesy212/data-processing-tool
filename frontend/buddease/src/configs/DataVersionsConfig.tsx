@@ -1,14 +1,23 @@
-import React from "react";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import AppStructure, { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import React from "react";
 
 interface DataVersionsProps {
   dataPath: string; // Added a prop to pass the data path
 }
 
-interface DataVersions {
-  backend: Record<string, AppStructureItem> | undefined;
-  frontend: Record<string, AppStructureItem> | undefined;
+interface DataVersions<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  backend: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
+  frontend: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
 }
 
 const DataVersionsComponent: React.FC<DataVersionsProps> = ({
@@ -17,7 +26,7 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
 
   const dataStore = useDataStore(); // Initialize DataStore
 
-  const [dataVersions, setDataVersions] = React.useState<DataVersions>({
+  const [dataVersions, setDataVersions] = React.useState<DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>({
     backend: undefined,  // No Promise, just undefined initially
     frontend: undefined, // No Promise, just undefined initially
   });
@@ -25,13 +34,13 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
   React.useEffect(() => {
       const fetchBackendData = async () => {
       const appStructure = new AppStructure("backend"); // Initialize for backend
-      const data = await appStructure.getBackendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem>
+      const data = await appStructure.getBackendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
       setDataVersions((prev) => ({ ...prev, backend: data }));
     };
 
     const fetchFrontendData = async () => {
       const appStructure = new AppStructure("backend"); // Initialize for backend
-      const data = await appStructure.getFrontendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem>
+      const data = await appStructure.getFrontendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
       setDataVersions((prev) => ({ ...prev, frontend: data }));
     };
 

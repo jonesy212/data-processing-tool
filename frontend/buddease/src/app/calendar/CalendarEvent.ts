@@ -9,22 +9,22 @@ import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
+import { ReminderSettings } from '@/app/settings/Reminder';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { data, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { Attendee } from "./Attendee";
-import { ReminderSettings } from '@/app/settings/Reminder'
 
 type CalendarEventBase = BaseDataEntity & {
   title: string;
@@ -37,23 +37,7 @@ type CalendarEventBase = BaseDataEntity & {
   timeZone: string;
 };
 
-// Calendar-specific validation: endDate must be after startDate
-interface CalendarEventMeta extends DefaultMeta<CalendarEventBase, CalendarEventBase> {
-  validation: {
-    isDateRangeValid: boolean;
-    isWithinBusinessHours: boolean;
-    hasNoSchedulingConflicts: boolean;
-  };
-}
 
-
-
-// Calendar-specific attachments
-type CalendarAttachment = Attachment & {
-  type: 'icalendar' | 'meeting-minutes' | 'presentation' | 'attendee-list';
-  eventId: string;
-  duration?: number; // meeting duration in minutes
-};
 
 // Sensitive fields that should never be exposed
 type CalendarExcludedFields = 
@@ -67,9 +51,9 @@ type CalendarExcludedFields =
 
 
 type CalendarEventEntity = CalendarEvent<
-  CalendarEventBase,                           // T
-  CalendarEventBase,                           // K
-  CalendarEventMeta,                           // Meta
+  CalendarEntity,                              // T
+  CalendarK,                                   // K
+  CalendarMeta,                                // Meta
   CalendarAttachment,                          // AttachmentType
   CalendarExcludedFields,                      // ExcludedFields
   CalendarIncludedFields                       // IncludedFields
@@ -87,7 +71,7 @@ type CalendarIncludedFields =
   | 'visibility'
   | 'categories';
 
-
+// Calendar-specific validation: endDate must be after startDate
 interface CalendarEventMeta extends DefaultMeta<CalendarEventBase, CalendarEventBase> {
   validation: {
     isDateRangeValid: boolean;
@@ -125,6 +109,11 @@ interface CalendarEvent<
   title: string;
   content: string;
   topics: string[];
+  //remove if conficting
+  category?: string;
+  date: string;
+  description?: string;
+
   highlights: string[];
   load?: () => void;
   files: any[];
@@ -157,7 +146,7 @@ interface CalendarEvent<
   attendees?: Attendee[];
   color?: string;
   isImportant?: boolean;
-  teamMemberId: Team["id"];
+  teamMemberId: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"];
 
   reminder?: string;
   pinned?: boolean;
@@ -168,11 +157,13 @@ interface CalendarEvent<
 
   getData?: () => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
-  then?: <  
-    T extends BaseDataEntity, 
+  then?: <
+    T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T  
   >(
     callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;

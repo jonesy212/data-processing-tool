@@ -1,9 +1,12 @@
-import { File } from '@/app/models/file/FileManager'
+import { FileMetadata } from '@/app/typings/file/FileManager';
 
-interface Attachment extends File {
-  id?: string;
+interface Attachment {
+  id: string;
+  name: string;
   url: string;
-  fileType: FileType;
+  type: string;
+  fileType?: FileType;
+  fileMetadata?: FileMetadata;
   size: number;
   isImage?: boolean;
   metadata?: Record<string, any>;
@@ -32,4 +35,4 @@ export type FileType =
 export const attachmentInitialState: Record<string, Attachment> = {};
 
 
-export type { Attachment }
+export type { Attachment };

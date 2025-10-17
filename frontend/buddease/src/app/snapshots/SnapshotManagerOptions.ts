@@ -1,13 +1,16 @@
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/s/BaseConfig";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
 import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
-class SnapshotManagerOptions<T extends BaseDataEntity,
+class SnapshotManagerOptions<
+    T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
 > {
   private options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 

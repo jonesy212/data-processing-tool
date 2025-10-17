@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define the event data type that matches your frontend
-interface CalendarEvent {
-  id: string;
-  title: string;
-  date: string;
-  description?: string;
-  category?: string;
-  priority?: 'low' | 'medium' | 'high';
-  metadata?: Record<string, any>;
-}
 
 interface AppendDataRequest {
   event: CalendarEvent;

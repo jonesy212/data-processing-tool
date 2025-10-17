@@ -1,28 +1,29 @@
 // TaskDataSource.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseData } from "@/app/models/data/Data";
+import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
+import { Phase, PhaseData } from "@/app/models/phases/Phase";
+import { BaseTaskEntity } from "@/app/models/tasks/Task";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
+import { PhaseMeta } from "@/app/typings/phaseTypes";
+import { VideoData } from "@/app/typings/videoTypes/Video";
+import { Idea } from "@/app/users/Ideas";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { Task } from "@/app/models/tasks/Task";
+import { TaskData } from "./Task";
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
-const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+// Define the tasks data source with proper generic parameters
+const tasksDataSource: Record<string, Task<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> = {
   "1": {
-
-    progress, getData, participants, uploadedAt,
-    taskId: "",
-    metadataEntries: {},
-    apiEndpoint: "",
-    apiKey: "",
-    
-    timeout: "",
-    retryAttempts: 3,
-    meta: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
-    events: {eventRecords: {}
-  },
-   
     id: "1",
     _id: "taskData",
-    phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<PhaseData<BaseData<any>>>, PhaseMeta<PhaseData<BaseData<any>>>>,
-    videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ideas: {} as Idea[],
-    timestamp: new Date(),
-    category: "default",
+    taskId: "1",
+    taskName: "Task 1",
+    
+    // Core task properties
     title: "Task 1",
     name: "Unique Task Identifier",
     description: "Description for Task 1",
@@ -41,10 +42,45 @@ const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedF
     done: false,
     data: {} as TaskData,
     source: "user",
-    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
+    
+    // Timeline properties
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
+    timestamp: new Date(),
+    
+    // Metadata properties
+    category: "default",
+    metadataEntries: {},
+    
+    // API properties
+    apiEndpoint: "",
+    apiKey: "",
+    timeout: "30000",
+    retryAttempts: 3,
+    
+    // Media properties  
+    videoThumbnail: "thumbnail.jpg",
+    videoDuration: 60,
+    videoUrl: "https://example.com/video",
+    
+    // Analysis properties
+    analysisType: AnalysisTypeEnum.DEFAULT,
+    analysisResults: [],
+    
+    // Complex type properties (properly typed)
+    phase: {} as Phase<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    videoData: {} as VideoData<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    ideas: [] as Idea[],
+    details: {} as DetailsItem<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    
+    // Meta property (correct type)
+    meta: {} as TaskMeta,
+    
+    // Events property (correct type)
+    events: { eventRecords: {} },
+    
+    // Tags property (simplified and consistent)
     tags: {
       "tag1": {
         id: "tag1",
@@ -53,79 +89,61 @@ const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedF
         description: "Tag 1 description",
         enabled: true,
         type: "Category",
-        tags: {}, // This should match the type defined in Tag
+        tags: {},
         relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
         nulltype: ""
-      },
-      "tag2": {
-        id: "tag2",
-        name: "Tag 2",
-        color: "#000000",
-        description: "Tag 2 description",
-        enabled: true,
-        type: "Category",
-        tags: {}, // This should match the type defined in Tag
-        relatedTags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: "creator1",
-        timestamp: new Date().getTime(),
-        nulltype: ""
-      },
-      nulltype: ""
+      }
     },
-    analysisType: {} as AnalysisTypeEnum,
-    analysisResults: [],
-    videoThumbnail: "thumbnail.jpg",
-    videoDuration: 60,
-    videoUrl: "https://example.com/video",
-    details: {} as DetailsItem<BaseData<any>>,
-    [Symbol.iterator]: () => {
-      return {
-        next: () => {
-          return {
-            done: true,
-            value: {
-              _id: "taskData",
-              phase: {} as Phase<PhaseData<TaskData<T, K>>>,
-              videoData: {} as VideoData<any, any>,
-            },
-          };
-        },
-      };
+    
+    // Iterator implementation
+    [Symbol.iterator]: function* () {
+      yield this;
     },
+    
+    // Array method implementation
+    some: function(callbackfn, thisArg?) {
+      return callbackfn(this, 0, [this]);
+    }
   },
-    "2": {
-      childIds: [],
-      relatedData: [],
-      initialState:{},
-      createdBy: "",
-     
-      metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
-      apiKey: "",
-      timeout: 300,
-      retryAttempts: 3,
-     
-      mappedMeta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
-      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-     
+  
+  "2": {
     id: "2",
+    _id: "taskData2",
+    taskId: "2", 
+    taskName: "Task 2",
+    
+    // Core task properties
     title: "Task 2",
-    name: "Unique Task Identifier",
+    name: "Unique Task Identifier", 
     description: "Description for Task 2",
     assignedTo: [],
     assigneeId: "456",
     dueDate: new Date(),
     payload: {},
     type: "bug",
-    taskId: "",
-    taskName: "",
+    status: TaskStatus.InProgress,
+    priority: PriorityTypeEnum.Medium,
+    estimatedHours: 5,
+    actualHours: 3,
+    completionDate: new Date(),
+    dependencies: [],
+    previouslyAssignedTo: [],
+    done: false,
+    data: {} as TaskData,
+    source: "system",
     
+    // Timeline properties
+    startDate: new Date(),
+    endDate: new Date(), 
+    isActive: true,
+    timestamp: new Date(),
+    
+    // Metadata properties
+    category: "default",
     metadataEntries: {
       "file1": {
         originalPath: "/path/to/file1",
@@ -138,41 +156,60 @@ const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedF
         keywords: ["keyword1", "keyword2"],
         authors: ["Author 1", "Author 2"],
         contributors: [],
-        publisher: "Publisher Name",
+        publisher: "Publisher Name", 
         copyright: "2024",
         license: "License Info",
         links: ["http://example.com"],
         tags: ["tag1", "tag2"]
       }
-      },
-      apiEndpoint: "",
-    //  apiKey, timeout, retryAttempts, meta, events,
-    status: TaskStatus.InProgress,
-    priority: PriorityTypeEnum.Medium,
-    estimatedHours: 5,
-    actualHours: 3,
-    completionDate: new Date(),
-    dependencies: [],
-    previouslyAssignedTo: [],
-    done: false,
-    data: {} as TaskData,
-    source: "system",
-    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
-    startDate: new Date(),
-    endDate: new Date(),
-    isActive: true,
+    },
+    
+    // API properties
+    apiEndpoint: "",
+    apiKey: "",
+    timeout: 300,
+    retryAttempts: 3,
+    
+    // Media properties
+    videoThumbnail: "thumbnail2.jpg",
+    videoDuration: 120,
+    videoUrl: "https://example.com/video2",
+    
+    // Analysis properties
+    analysisType: AnalysisTypeEnum.BUG,
+    analysisResults: [1, 2, 3],
+    
+    // Complex type properties
+    phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<PhaseData<BaseData<any>>>, PhaseMeta<PhaseData<BaseData<any>>>>,
+    videoData: {} as VideoData<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    ideas: [] as Idea[],
+    details: {} as DetailsItem<BaseData<any>>,
+    
+    // Meta property (correct type)
+    meta: {} as TaskMeta,
+    
+    // Events property (correct type)  
+    events: { eventRecords: {} },
+    
+    // Additional properties from second task
+    childIds: [],
+    relatedData: [],
+    initialState: {},
+    createdBy: "",
+    
+    // Tags property (consistent with first task)
     tags: {
       "tag1": {
         id: "tag1",
-        name: "Tag 1",
+        name: "Tag 1", 
         color: "#000000",
         description: "Tag 1 description",
         enabled: true,
         type: "Category",
-        tags: {}, // This should match the type defined in Tag
+        tags: {},
         relatedTags: [],
         createdAt: new Date(),
-        updatedAt: new Date(),
+        updatedAt: new Date(), 
         createdBy: "creator1",
         timestamp: new Date().getTime(),
         nulltype: {
@@ -181,54 +218,17 @@ const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedF
           description: "",
           enabled: "",
         }
-        
-      },
-      "tag2": {
-        id: "tag2",
-        name: "Tag 2",
-        color: "#000000",
-        description: "Tag 2 description",
-        enabled: true,
-        type: "Category",
-        tags: {}, // This should match the type defined in Tag
-        relatedTags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: "creator1",
-        timestamp: new Date().getTime(),
-        nulltype: {} as AllTypes
-      },
-      nulltype: {}
+      }
     },
-    analysisType: AnalysisTypeEnum.BUG,
-    analysisResults: [1, 2, 3],
-    videoThumbnail: "thumbnail2.jpg",
-    videoDuration: 120,
-    videoUrl: "https://example.com/video2",
-
-    [Symbol.iterator]: () => {
-      // Add iterator implementation if needed
-      return {
-        next: () => {
-          return {
-            done: true,
-            value: {
-              _id: "taskData2",
-
-              phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
-                BaseData<any, any, StructuredMetadata<any, any>, Attachment>>>,
-              videoData: {} as VideoData<any, any>,
-            },
-          };
-        },
-      };
+    
+    // Iterator implementation
+    [Symbol.iterator]: function* () {
+      yield this;
     },
-    _id: "taskData2",
-    // videoData: {} as VideoData<any, any>,
-   // ideas: {} as Idea[],
-    timestamp: new Date(), // Add timestamp property
-    category: "default", // Add category property
-    // phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  },
-  // Add more tasks as needed
+    
+    // Array method implementation
+    some: function(callbackfn, thisArg?) {
+      return callbackfn(this, 0, [this]);
+    }
+  }
 };

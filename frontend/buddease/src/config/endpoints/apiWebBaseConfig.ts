@@ -1,5 +1,5 @@
 // apiWebBaseConfig.ts
-import { ApiWebBaseEndpoints } from '../types/categories/ApiWebBaseEndpoints';
+import { ApiWebBaseEndpoints } from '@/app/typings/categories/ApiWebBaseEndpoints';
 
 export const apiWebBaseConfig: ApiWebBaseEndpoints = {
   login: { path: "/login", method: "POST" },

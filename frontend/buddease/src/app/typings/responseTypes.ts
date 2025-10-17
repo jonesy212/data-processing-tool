@@ -27,7 +27,7 @@ import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo

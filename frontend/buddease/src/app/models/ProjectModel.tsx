@@ -1,6 +1,6 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Project, ProjectData } from '@/app/projects/Project';
+import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import DatabaseClient from '@/app/todos/tasks/DatabaseClient';
 import { DatabaseService } from '@/config//DatabaseConfig';
@@ -29,7 +29,9 @@ class ProjectModel <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >{
   // Remove the instance tableName property
   static tableName = "projects"; // Keep this as a static property

@@ -266,15 +266,6 @@ interface WebhookSettings {
 }
 
 
-// Notification channels configuration
-interface NotificationChannels {
-  email: EmailSettings;
-  push: PushNotificationSettings;
-  sms: SmsSettings;
-  inApp: InAppSettings;
-  webhook: WebhookSettings;
-}
-
 
 // EscalationCondition.ts
 export interface EscalationCondition {

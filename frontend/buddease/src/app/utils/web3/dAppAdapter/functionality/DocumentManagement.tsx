@@ -1,8 +1,8 @@
 // DocumentManagement.tsx
-import { DocumentData, } from "@/app/documents/editing/DocumentBuilder";
-import DocumentGenerator, { DocumentTypeEnum } from "@/server/ServerDocumentGenerator";
 import { DappProps } from "@/app/DAppAdapterConfig";
+import { DocumentData, } from "@/app/documents/editing/DocumentBuilder";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import DocumentGenerator, { DocumentTypeEnum } from "@/server/ServerDocumentGenerator";
 
 const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
 
@@ -10,7 +10,9 @@ export function manageDocuments<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(newDocument: DocumentData, dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   // Implement logic for document management
   console.log("Document management functionality enabled");

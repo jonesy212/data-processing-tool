@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useNotification } from '@/app/context/NotificationContext';
 import { useAuth } from '@/app/context/AuthContext';
-import { PhaseDefault } from '@/app/types/phase-types';
+import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { GenericStepContainer } from '@/app/components/shared/steps/GenericStepContainer';
 import { useStepNavigation } from '@/app/hooks/useStepNavigation';
 

@@ -1,4 +1,5 @@
 // snapshotUtils.tsx
+
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { ModifiedDate } from "@/app/documents/DocType";
@@ -11,12 +12,12 @@ import { Meta } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots';
 import {
-  Snapshot,
   Snapshots,
   SnapshotsArray,
   SnapshotStoreObject,
   SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
@@ -25,7 +26,6 @@ import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useNotification } from "@/context/NotificationContext";
 import { IHydrateResult } from "mobx-persist";
 
@@ -91,7 +91,7 @@ const isSnapshotWithCriteriaBaseData = (
 
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData, K extends T = T>(
-  data: Snapshots<T, K>
+  data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
@@ -378,7 +378,9 @@ function isSnapshotStoreConfig<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   item: any
 ): item is SnapshotStoreConfig<T, K>[] {
@@ -392,10 +394,12 @@ function isSnapshotStoreConfig<
 
 
 export const addToSnapshotList = async  <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
   >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -445,7 +449,9 @@ export const getSnapshotsBySubscriber = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   subscriber: Subscriber<T, K, Meta>,
   storeProps?: SnapshotStoreProps<T, K>
@@ -548,7 +554,9 @@ function isSnapshotDataType<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   data: any
 ): data is SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
@@ -619,7 +627,9 @@ function isSnapshotData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(data: any): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (!data || typeof data !== 'object') {
     return false;

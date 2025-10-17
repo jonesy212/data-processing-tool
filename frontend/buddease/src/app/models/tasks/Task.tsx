@@ -1,12 +1,14 @@
+
 // Task.ts
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskStructuredMetadata } from '@/app/typings/entities/TaskEntity';
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { taskMetadata } from '@/app/models/data/TaskMetadata';
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from "@/app/models/data/Data";
+import { SharedTimestamps } from '@/app/documents/RelatedProps';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from "@/app/shared/SharedMetadata";
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
@@ -14,11 +16,17 @@ import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { TaskMetadata } from '@/server/database/MetaDataOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { TaskMetadata } from '@/config/MetaDataOptions';
 
-export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
+export type  TaskData = BaseDataEntity<
+  TaskEntity,             // T
+  TaskK,             // K
+  TaskStructuredMetadata,   // Meta
+  TaskAttachment,           // AttachmentType
+  TaskExcludedFields,       // ExcludedFields
+  TaskIncludedFields        // IncludedFields
+>;
  
 interface BaseTaskEntity extends BaseDataEntity {
   id: string;
@@ -43,43 +51,38 @@ interface Task<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends 
-    Omit<TaskMetadata<T, K>, 'tags'>,
-    SharedDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedTimestamps,
+    Omit<TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'tags' | 'permissions'>,
+    SharedDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 {
   id: string;
   title: string;
   description: string;
-  selectedTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  progress: Progress;
-  position?: { x: number; y: number };
-  property?: string;
-  projectName?: string;
-  scheduled?: ScheduledData<T>;
-  isScheduled?: boolean;
-  size?: number;
   assignedTo: User | User[] | null;
   assigneeId: User["id"];
   dueDate: Date | null | undefined;
+  done: boolean;
+  data: TaskData | undefined;
+  progress: Progress | undefined;
+  selectedTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  position?: { x: number; y: number };
+  property?: string;
+  projectName?: string;
+  scheduled?: ScheduledData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ;
+  isScheduled?: boolean;
+  size?: number;
   payload?: any;
-  priority: PriorityTypeEnum | undefined;
+  priority: PriorityValue | undefined;
   type?: AllTypes | string;
   status?: AllStatus;
   isComplete?: boolean;
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
-  dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   previouslyAssignedTo: User[];
-  done: boolean;
-  data: TaskData | undefined;
-  [Symbol.iterator]?(): Iterator<any, any, undefined>;
-  source: "user" | "system";
-  some?: (
-    callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown,
-    thisArg?: any
-  ) => boolean;
+
+  dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   details?: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   startDate: Date | undefined;
@@ -94,7 +97,12 @@ interface Task<
   userId?: number;
   query?: string;
   getData: () => Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-  // New Properties
+    source: "user" | "system";
+  [Symbol.iterator]?(): Iterator<any, any, undefined>;
+  some?: (
+    callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown,
+    thisArg?: any
+  ) => boolean;
 }
 
 export type { Task };
@@ -115,10 +123,12 @@ const createTask = <
     id: "default-id",
     title: "New Task",
     description: "Task Description",
+    metadataEntries: {},
     scheduled: undefined,
     isScheduled: false,
     assignedTo: null,
     version: undefined,
+    progress: undefined,
     assigneeId: "",
     dueDate: null,
     payload: undefined,
@@ -158,5 +168,6 @@ const createTask = <
 };
 
 
-  export { createTask, tasksDataSource };
+  export { createTask };
 
+  export type { BaseTaskEntity };

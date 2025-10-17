@@ -1,27 +1,25 @@
 // SharedDocumentProps.ts
 
-import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
-import { BaseData } from '@/app/models/data/Data';
-import AccessHistory from '@/app/versions/AccessHistory';
+import { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
 import { TagsRecord } from '@/app/snapshots';
-import AppVersionImpl from "@/app/versions/AppVersion";
-import { VersionData } from '@/app/versions/VersionData';
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import { ContentState, EditorState } from 'draft-js';
-import { Dispatch, SetStateAction } from "react";
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
-import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
+import AccessHistory from '@/app/versions/AccessHistory';
+import AppVersionImpl from "@/app/versions/AppVersion";
+import { VersionData } from '@/app/versions/VersionData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { ContentState, EditorState } from 'draft-js';
+import { Dispatch, SetStateAction } from "react";
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed

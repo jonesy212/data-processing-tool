@@ -1,5 +1,5 @@
 // ParticipantsEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ParticipantsEndpoints {
   single: (userId: string | number) => EndpointConfig;

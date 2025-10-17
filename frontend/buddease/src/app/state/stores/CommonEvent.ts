@@ -1,20 +1,17 @@
 // CommonEvent.ts
-import snapshotContainerAPI from '@/app/api/SnapshotApi';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { EventStore } from '@/app/components/event/EventStore';
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { StatusType } from "@/app/models/data/StatusType";
-import { Member } from "@/app/models/teams/TeamMembers";
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import { StatusType } from '@/app/models/data/StatusType';
+import { Member } from '@/app/models/teams/TeamMembers';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
@@ -23,12 +20,14 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
-import { isSnapshot } from "@/app/utils/snapshotUtils";
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
+import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { VideoData } from "@/app/video/Video";
+import { VideoData } from '@/app/typings/videoTypes';
 import { useMetadata } from '@/config/useMetadata';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 interface CommonEvent<
   T extends BaseDataEntity,
@@ -111,6 +110,13 @@ export function implementThen<
     subscriberId: "someSubscriberId",
     category: "someCategory",
     content: {
+
+      apiEndpoint: 'snapshot-apiEndpoint',
+      apiKey: 'snapshot-apiKey',
+      timeout: 'snapshot-timeout',
+      retryAttempts: 'snapshot-retryAttempts',
+     
+
       id: "someId",
       title: "someTitle",
       description: "someDescription",
@@ -123,8 +129,8 @@ export function implementThen<
       data: {} as T,
     },
     store: undefined,
-    events: {} as EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    meta: {},
+    events: {} as Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     // Corrected getSnapshotId implementation
     getSnapshotId: function (key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
       // If the key is a string, you can use it directly
@@ -157,7 +163,7 @@ export function implementThen<
     },
     eventRecords: null,
     snapshotStore: null,
-    dataItems: null,
+    dataItems: undefined,
     newData: null,
     stores: null,
     unsubscribe: function (
@@ -183,11 +189,11 @@ export function implementThen<
         payload: FetchSnapshotPayload<K> | undefined,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payloadData: T | Data,
-        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
-        delegate: SnapshotWithCriteria<T, K>[]
+        delegate: SnapshotWithCriteria<T, K>[],
+        category?: Category
       ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       if (callback) {
@@ -216,20 +222,20 @@ export function implementThen<
     snapshotStoreConfig: snapshotStoreConfigInstance,
     getSnapshotItems: () => [],
     defaultSubscribeToSnapshots: () => { },
-    versionInfo: {} as ExtendedVersionData,
+    versionInfo: {} as ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
    
 
     handleSnapshot: function (
       id: string,
-      snapshotId: string,
+      snapshotId: tring | number | null,
       snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,  // Use conditional type to ensure properties exist
       snapshotData: T,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event,
+      category?: Category,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
@@ -245,15 +251,15 @@ export function implementThen<
       return Promise.resolve(null)
     },
     subscribe: function (
-      snapshotId: number,
+      snapshotId: string | number | null,
       unsubscribe: UnsubscribeDetails,
-      subscriber: Subscriber<T, K> | null,
+      subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       data: T,
       event: Event,
       callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       value: T,
     ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-      const foundSubscriber = subscriber as Subscriber<T, K>;
+      const foundSubscriber = subscriber as Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       if (foundSubscriber) {
         foundSubscriber.getState(data);
         foundSubscriber.setEvent(event, value);

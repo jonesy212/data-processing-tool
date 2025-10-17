@@ -1,4 +1,5 @@
 import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Define types for `DebugInfo` and `TempData` to provide structure
 type DebugInfo = {
@@ -9,12 +10,13 @@ type DebugInfo = {
 };
 
 
-type TempData<
+type TempData<  
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<U>
-  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = {
   tempResults?: T[]; // Array of temporary results, type based on the snapshot data
   temporaryValues?: K; // Temporary values that could be used for intermediate calculations

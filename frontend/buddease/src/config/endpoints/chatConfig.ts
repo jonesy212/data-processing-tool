@@ -1,6 +1,6 @@
 // chatConfig.ts
-import { ChatEndpoints } from '../types/categories/ChatEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ChatEndpoints } from '@/app/typings/categories/ChatEndpoints';
 
 export const chatConfig: ChatEndpoints = {
   getThreads: { path: `${BASE_URL}/api/chat/threads`, method: "GET" },

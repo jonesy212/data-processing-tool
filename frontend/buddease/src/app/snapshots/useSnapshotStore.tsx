@@ -5,7 +5,7 @@ import {
     SnapshotConfig,
 } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from '@/snapshotUtils';
+import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from '@/app/snapshots/snapshotUtils';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -13,7 +13,7 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { LiveEvent } from "@refinedev/core";
 import { isEqual } from "lodash";
@@ -50,7 +50,7 @@ import {
     showErrorMessage,
     showToast,
 } from "@/app/models/display/ShowToast";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Member } from "@/app/models/teams/TeamMembers";
 import {
     DataStoreMethods,
@@ -62,7 +62,7 @@ import {
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectData, ProjectType } from "@/app/models/projects/Project";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { triggerOnSnapshot } from '@/snapshotTrigger';
+import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
 
 import {
     NotificationContextType,
@@ -88,16 +88,16 @@ import {
     Snapshots,
     SnapshotsArray,
     SnapshotUnion,
-} from "./LocalStorageSnapshotStore";
+} from '@/app/snapshots/LocalStorageSnapshotStore'
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { AttachmentType } from '@/app/components/documents/NoteData';
+import { AttachmentType } from '@/app/documents/NoteData';
 import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { convertSubscriptionPayloadToSubscriber } from '@/convertSubscriptionPayloadToSubscriber';
 import { createSnapshot } from "./defaultSnapshotBuilder";
@@ -188,7 +188,7 @@ const useSnapshotStore = <
   const communicationService = new CommunicationServiceImpl();
 
   // Use them for different purposes:
-  const saveSnapshot = async (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedField>) => {
+  const saveSnapshot = async (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Use apiCommunication for saving data
     await apiCommunication.saveSnapshotToDatabase(snapshot);
   };
@@ -1692,7 +1692,12 @@ const specificDependencies = [
 //         > {
 //           throw new Error("Function not implemented.");
 //         },
-//         getData: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<
+//         getData: function <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(): Promise<
 //           Snapshot<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
 //         > {
 //           throw new Error("Function not implemented.");
@@ -1817,7 +1822,12 @@ const specificDependencies = [
 //     > {
 //       throw new Error("Function not implemented.");
 //     },
-//     getData: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<
+//     getData: function <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(): Promise<
 //       Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 //     > {
 //       throw new Error("Function not implemented.");

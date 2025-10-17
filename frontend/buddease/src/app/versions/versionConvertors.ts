@@ -1,11 +1,18 @@
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Version, VersionImpl } from '@/app/versions/Version';
 import { VersionData } from '@/app/versions/VersionData';
-import { Version } from '@/app/versions/Version';
-import { BaseData } from '@/app/models/data/Data';
-import VersionImpl from "@/app/versions/Version";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 
-function toVersionData<T extends BaseData<any>, K extends T = T>(
+function toVersionData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
@@ -53,7 +60,14 @@ function toVersionData<T extends BaseData<any>, K extends T = T>(
   };
 }
 
-function toVersion<T extends BaseData<any>, K extends T = T>(
+function toVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 

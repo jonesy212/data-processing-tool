@@ -1,12 +1,10 @@
 // configMethods.ts
 
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { Snapshot } from "@/app/Snapshot";
 import { SnapshotConfig } from "@/app/SnapshotConfig";
-import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
-import { transformConfigOption, transformMappedData } from "./transformMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import TransformMethods from "./transformMethods";
 
 

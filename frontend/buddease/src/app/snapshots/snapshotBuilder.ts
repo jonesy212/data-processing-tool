@@ -1,7 +1,7 @@
 // snapshotBuilder.ts
 
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Conditional Utility Types
 export type SnapshotConfigArgs<
@@ -70,13 +70,13 @@ export function snapshotBuilder<T extends BaseDataEntity>(type: T) {
         key?: K; 
         meta?: Meta; 
         attachmentType?: AttachmentType;
-        excluded?: Excluded; 
-        included?: Included;
+        excluded?: ExcludedFields; 
+        included?: IncludedFields;
       } = {}
     ): SnapshotConfigBuilder<
       T,
       K extends undefined ? T : NonNullable<K>,
-      Meta extends undefined ? DefaultMeta<T, K extends undefined ? T : NonNullable<K>> : NonNullable<Meta>,
+      Meta extends undefined ? DefaultMeta<T, K extends undefined ? T : NonNullable<K>> : NonNullable<Meta>>,
       AttachmentType extends undefined ? Attachment : NonNullable<AttachmentType>,
       Excluded extends undefined ? DefaultExcludedFields<T> : NonNullable<Excluded>,
       Included extends undefined ? keyof T : NonNullable<Included>

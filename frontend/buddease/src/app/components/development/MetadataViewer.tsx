@@ -1,6 +1,6 @@
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/routing/Fields';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 
 // Define the StructuredMetadataViewer component
 const MetadataViewer = ({ metadata }: { metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {

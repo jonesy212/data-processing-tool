@@ -1,43 +1,46 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { SubscriberTypeEnum } from '@/app/components/models/data/StatusType';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { options } from '@/app/documents/editing/DocumentBuilder';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { mapToSnapshotStore } from '@/app/mappings/mapToSnapshotStore';
 import { BaseData, Data } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
+import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { ExcludedFields } from '@/app/routing/Fields';
 import { category } from '@/app/snapshots/isValidFileCategory';
+import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Callback } from '@/app/subscribeToSnapshotsImplementation';
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { Subscriber } from '@/app/users/Subscriber';
 import { getCommunityEngagement, getMarketUpdates } from "@/app/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/app/utils/web3/applicationUtils";
 import { CustomHydrateResult } from '@/config//DocumentBuilderConfig';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { mapToSnapshotStore } from '@/mappings/mapToSnapshotStore';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
-import { Callback } from '@/subscribeToSnapshotsImplementation';
-import { Subscription } from '@/subscriptions/Subscription';
-import { Subscriber } from '@/users/Subscriber';
-import { CustomSnapshotData, data, SnapshotItem, SnapshotStoreProps } from '.';
-import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { CustomSnapshotData, data, SnapshotItem } from '.';
 import SnapshotStore, { SnapshotData, SubscriberCollection } from "./SnapshotStore";
-;
 
 export const defaultDelegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
-const defaultDataStoreMethods = <
-  T extends BaseDataEntity, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+const defaultDataStoreMethods = <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
   const { notify } = useNotification()
@@ -1016,7 +1019,12 @@ const defaultDataStoreMethods = <
               transformSnapshotConfig: function <T extends BaseDataEntity>(config: SnapshotStoreConfig<BaseData, T>): SnapshotStoreConfig<BaseData, T> {
                 throw new Error("Function not implemented.");
               },
-              setSnapshotData: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+              setSnapshotData: function <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
                 data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
                 subscribers: Subscriber<any, any>[],
                 snapshotData: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>

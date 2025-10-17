@@ -1,6 +1,6 @@
 // userManagementConfig.ts
-import { UserManagementEndpoints } from '../types/categories/UserManagementEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { UserManagementEndpoints } from '@/app/typings/categories/UserManagementEndpoints';
 
 export const userManagementConfig: UserManagementEndpoints = {
   registerUser: { path: `${BASE_URL}/api/users/register`, method: "POST" },

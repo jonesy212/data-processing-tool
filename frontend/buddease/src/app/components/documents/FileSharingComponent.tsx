@@ -1,22 +1,20 @@
 // FileSharingComponent.tsx
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { brandingSettings } from "@/app/branding/BrandingSettings";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseData } from '@/app/models/data/Data';
 import CustomBox from "@/app/containers/CustomBox";
 import useFileUpload from "@/app/hooks/commHooks/useFileUpload";
 import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";
 import InputLabel, { Input } from "@/app/hooks/userInterface/InputFields";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { SupportedData } from "@/app/models/CommonData";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { DataDetailsComponent } from "@/app/models/teams/Team";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
-import { brandingSettings } from "@/app/branding/BrandingSettings";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import DynamicTypography from "@/app/styling/DynamicTypography";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import MenuDivider from "antd/es/menu/MenuDivider";
 import { Router, useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";

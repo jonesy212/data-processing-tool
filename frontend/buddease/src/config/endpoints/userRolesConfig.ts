@@ -1,6 +1,6 @@
 // userRolesConfig.ts
-import { UserRolesEndpoints } from '../types/categories/UserRolesEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { UserRolesEndpoints } from '@/app/typings/categories/UserRolesEndpoints';
 
 export const userRolesConfig: UserRolesEndpoints = {
   list: { path: `${BASE_URL}/api/user-roles`, method: "GET" },

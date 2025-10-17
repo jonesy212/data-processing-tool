@@ -1,75 +1,18 @@
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
-import { ExchangeData } from "@/app/models/data/ExchangeData";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { EventData } from "@/app/state/stores/AssignEventStore";
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SharedMetadata } from "@/app/shared/SharedMetadata";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-
-interface BaseRealtimeData<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id: string | number; // Override id to ensure it's required (remove undefined)
-  name: string;
-  value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  type: string | AllTypes; // Remove null to align with BaseData's expectation
-  date: Date; // Standardize to Date
-  // Add other common properties shared by RealtimeDataItem and RealtimeData here
-}
-
-
-export interface RealtimeData<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
-  id: string;
-  data: T;
-  metadata: Meta;
-  attachments?: AttachmentType[];
-  lastUpdated: Date;
-  version: number;
-  subscribers: Set<RealtimeUpdateCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-}
-
-interface RealtimeDataItem<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends 
-  EventData, 
-  BaseRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
- 
-  title?: string;
-  userId: string;
-  dispatch: (action: any) => void;
-  timestamp: Date;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-}
 
 const processSnapshotStore = <
   T extends BaseDataEntity,
@@ -77,7 +20,7 @@ const processSnapshotStore = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
 >(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
@@ -176,6 +119,5 @@ const updateCallback = <
 };
 
 
-export { RealtimeDataComponent };
-export type { RealtimeData, RealtimeDataItem };
+export default RealtimeDataComponent 
 

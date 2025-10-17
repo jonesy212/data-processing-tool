@@ -19,9 +19,9 @@ import { Version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { VideoData } from "@/app/video/Video";
 import { StructuredMetadata } from '@/config//StructuredMetadata';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { createMetaState } from '@/server/metadata/MetadataStateManager';
 import {
   BaseSyntheticEvent,

@@ -1,5 +1,5 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Todo } from "@/app/todos/Todo";
 import { UserData } from "@/app/users/User";
 

@@ -2,7 +2,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
-import { YourResponseType } from "@/app/typings/responseTypes";
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
@@ -83,7 +83,7 @@ function enrichAsInitializedSnapshot<
 }
 
 export {
-    convertResponseToSnapshot, convertToIntermediateType,
-    enrichAsInitializedSnapshot
+  convertResponseToSnapshot, convertToIntermediateType,
+  enrichAsInitializedSnapshot
 };
 

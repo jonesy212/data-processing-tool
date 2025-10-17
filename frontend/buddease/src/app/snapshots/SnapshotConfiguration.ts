@@ -1,15 +1,18 @@
-import { SnapshotConfig } from '.';
 // SnapshotConfiguration.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DebugInfo, TempData } from "@/app/models/data/TempData";
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotConfiguration<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >{
   configOption?: UnifiedConfigOption<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 

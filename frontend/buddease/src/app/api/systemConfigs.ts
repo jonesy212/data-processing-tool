@@ -1,11 +1,11 @@
 // systemConfigs.ts
-import BackendStructure from "@/server/database/BackendStructure";
 import LazyLoadScriptConfig from "@/app/components/configs/LazyLoadScriptConfig";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import { BackendConfig } from "@/config/BackendConfig";
-import { DataVersions } from "@/configs/DataVersionsConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { FrontendConfig } from "@/config/FrontendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { DataVersions } from "@/configs/DataVersionsConfig";
+import BackendStructure from "@/server/database/BackendStructure";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

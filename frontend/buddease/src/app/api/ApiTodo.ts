@@ -7,7 +7,7 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { AxiosError } from 'axios';
-import { Todo } from '@/todos/Todo';
+import { Todo } from '@/app/todos/Todo';
 import { endpoints } from '@/app/api/endpointConfigurations';
 
 // Define the API base URL for todos

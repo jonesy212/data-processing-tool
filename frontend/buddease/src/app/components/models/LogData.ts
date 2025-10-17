@@ -1,11 +1,11 @@
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import CustomFile from "@/app/documents/File";
 import { Highlight } from "@/app/documents/NoteData";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { BaseData } from "@/app/models/data/Data";
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 interface LogData<
   T extends BaseDataEntity,

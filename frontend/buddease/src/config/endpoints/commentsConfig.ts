@@ -1,5 +1,5 @@
 // commentsConfig.ts
-import { CommentsEndpoints } from '../types/categories/CommentsEndpoints';
+import { CommentsEndpoints } from '@/app/typings/categories/CommentsEndpoints';
 
 export const commentsConfig: CommentsEndpoints = {
   list: { path: "/api/comments/list", method: "GET" },

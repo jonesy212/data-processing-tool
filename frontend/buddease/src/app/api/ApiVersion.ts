@@ -2,14 +2,16 @@
 
 import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correctly for API calls
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { YourResponseType } from '@/app/components/typings/responseTypes'
+import { YourResponseType } from '@/app/typings/responseTypes'
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+
 import { AxiosError } from "axios";
 import { handleApiError } from '@/app/api/ApiLogs';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define the API base URL for version data
 const VERSION_DATA_BASE_URL = endpoints.versionData;
@@ -40,8 +42,12 @@ const handleVersionDataApiErrorAndNotify = (
 };
 
 const fetchVersionData = <
-  T extends BaseData, 
+  T extends BaseDataEntity,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const fetchVersionDataEndpoint = `${VERSION_DATA_BASE_URL}/${snapshotId}`;
 
@@ -61,11 +67,14 @@ const fetchVersionData = <
 
 // Example: Fetch analytics data
 const fetchAnalyticsData = async <
-  T extends BaseData, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-  >(analyticsId: string
-  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    analyticsId: string
 ): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const fetchAnalyticsEndpoint = `${VERSION_DATA_BASE_URL}/analytics/${analyticsId}`;
 

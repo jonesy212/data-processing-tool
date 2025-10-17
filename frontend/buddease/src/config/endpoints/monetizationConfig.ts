@@ -1,6 +1,6 @@
 // monetizationConfig.ts
-import { MonetizationEndpoints } from '../types/categories/MonetizationEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { MonetizationEndpoints } from '@/app/typings/categories/MonetizationEndpoints';
 
 export const monetizationConfig: MonetizationEndpoints = {
   startClientProject: { path: `${BASE_URL}/api/monetization/start-client-project`, method: "POST" },

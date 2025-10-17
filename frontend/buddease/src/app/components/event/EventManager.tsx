@@ -1,24 +1,22 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { BaseData } from '@/app/models/data/Data';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
-    removeAllEvents,
-    removeEvent,
-    selectEventError,
-    selectEventLoading,
-    selectEvents
+  removeAllEvents,
+  removeEvent,
+  selectEventError,
+  selectEventLoading,
+  selectEvents
 } from "@/app/state/redux/slices/EventSlice";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { defaultEventStore, EventStore } from "./EventStore";
-
-import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
-
 
 // Define the thunk actions
 const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
@@ -38,11 +36,21 @@ const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
 type SnapshotCallback<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
 // Define the type for the subscribers
-interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+interface Subscribers<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   [event: string]: SnapshotCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Keys are event names, values are arrays of callback functions
 }
 
@@ -62,9 +70,7 @@ const EventManager: React.FC<EventManagerProps> = ({
   const snapshotId = UniqueIDGenerator.generateEventID();
   const storeId = useSecureStoreId()
 
-  const [eventStore, setEventStore] = useState<
-    EventStore<CustomEventExtension, any> | undefined
-  >(undefined);
+  const [eventStore, setEventStore] = useState<EventStore<CustomEventExtension, any> | undefine>(undefined);
 
   useEffect(() => {
     let isMounted = true;

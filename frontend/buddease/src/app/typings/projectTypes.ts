@@ -5,7 +5,7 @@ import { Task } from '@/app/models/tasks/Task';
 import { Member } from '@/app/models/teams/TeamMembers';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { ProjectMilestone } from '@/app/typings/milestoneTypes';
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 // -------------------- Project Core Types --------------------
 

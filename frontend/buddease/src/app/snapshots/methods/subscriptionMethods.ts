@@ -1,13 +1,17 @@
 // subscriptionMethods.ts
 import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvent } from "@/app/typings/eventTypes";
 import { Subscriber } from "@/app/users/Subscriber";
-import SnapshotStore from "@/app/snapshotstore";
-import { Callback } from "@/app/subscribeToSnapshotsImplementation";
-import { Snapshot, SnapshotData, Snapshots, SnapshotsArray, SnapshotStoreConfig } from "..";
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { Snapshot,  } from "@/app/snapshots/Snapshot";
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Snapshots } from '@/app/snapshots/SnapshotData';
+import { SnapshotsArray, } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 const NULL_KEY = "__null__";
@@ -50,12 +54,12 @@ export const SubscriptionMethods = {
   },
 
   transformSubscriber: function<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
@@ -153,19 +157,21 @@ subscribeToSnapshots: function<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category?: Category,
   snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback: (
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  category?: Category,
   unsubscribeDetails?: UnsubscribeDetails 
 ): [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Example: register callback for multiple snapshots
@@ -302,9 +308,13 @@ subscribeToSnapshots: function<
     return snapshotsToNotify;
   },
 
-  subscribeSimple: function < T extends BaseDataEntity, K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  subscribeSimple: function <   
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snap: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void

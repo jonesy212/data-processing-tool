@@ -1,23 +1,42 @@
 // DatabaseService.ts
 // SERVER-SIDE ONLY - This goes in /server/ directory
-import { Client, Pool } from 'pg';
+import { Pool } from 'pg';
 import { DatabaseConfig, DatabaseQuery, DatabaseService } from '@/config/DatabaseTypes';
-import { getAuthToken } from "@/server/auth/getAuthToken";
-import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
-import performDatabaseOperation from "@/server/database/DatabaseOperations";
+import { getAuthToken } from '@/server/auth/getAuthToken';
+import { sanitizeInput } from '@/app/models/crypto/SanitizationFunctions';
+import performDatabaseOperation from '@/server/database/DatabaseOperations';
 
 export abstract class BaseDatabaseService implements DatabaseService {
-  protected client: any;
+  protected pool: any;
 
- constructor(config: DatabaseConfig) {
-    this.client = new Client(config);
+  constructor(connectionString: string) {
+    this.pool = new Pool({ connectionString });
   }
-  abstract connect(): Promise<void>;
-  abstract disconnect(): Promise<void>;
+
+  public async connect(): Promise<void> {
+    // Test connection
+    const client = await this.pool.connect();
+    client.release();
+    console.log("Database pool connected successfully");
+  }
+
+  public async disconnect(): Promise<void> {
+    await this.pool.end();
+    console.log("Database pool disconnected");
+  }  
   abstract query(sql: string, params?: any[]): Promise<any>;
   abstract insert(tableName: string, data: Record<string, any>): Promise<any>;
-  abstract update(tableName: string, data: Record<string, any>, where: Record<string, any>): Promise<any>;
+  abstract update(
+    tableName: string,
+    data: Record<string, any>,
+    where: Record<string, any>
+  ): Promise<any>;
   abstract delete(tableName: string, where: Record<string, any>): Promise<any>;
+
+  // Shared methods
+  public async disconnect(): Promise<void> {
+    await this.pool.end();
+  }
 
   private validTables: Set<string> = new Set(['users', 'orders', 'products']);  // Define allowed tables
 
@@ -446,17 +465,12 @@ export abstract class BaseDatabaseService implements DatabaseService {
     }
   }
 
+  // Remove the window.confirm call since this is server-side
   async confirmDisconnect(message: string): Promise<boolean> {
     return new Promise((resolve) => {
       const confirmed = window.confirm(message);
       resolve(confirmed);
     });
-  }
-  // Remove the window.confirm call since this is server-side
-  async confirmDisconnect(message: string): Promise<boolean> {
-    // Server-side implementation - maybe log instead of UI confirm
-    console.log(message);
-    return true;
   }
 }
 

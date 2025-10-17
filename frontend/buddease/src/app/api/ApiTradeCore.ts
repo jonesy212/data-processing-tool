@@ -1,14 +1,13 @@
 // ApiTradeCore.ts
 // ApiTradeCore.ts
-import axiosInstance from '@/app/api/csrfToken';
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { DocumentData } from '@/documents/editing/DocumentBuilder';
-import { WritableDraft } from '@/state/redux/ReducerGenerator';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { AxiosError } from 'axios';
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import { AxiosError } from 'axios';
 
 // Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;

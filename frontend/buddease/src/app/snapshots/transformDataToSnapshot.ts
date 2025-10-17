@@ -1,13 +1,18 @@
 // transformDataToSnapshot.ts
+import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
+import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SnapshotConfig, SnapshotStoreConfig } from ".";
-import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
-import { CoreSnapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotEvents } from "./SnapshotEvents";
 import { InitializedData } from "./SnapshotStoreOptions";
 
-const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const transformDataToSnapshot =  <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   item: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -265,7 +270,12 @@ const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Met
 
 export default transformDataToSnapshot;
 
-function transformToCalendarManagerStoreClassMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function transformToCalendarManagerStoreClassMap<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   events: (SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) | {}
 ): Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
   const result: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};

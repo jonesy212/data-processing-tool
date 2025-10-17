@@ -1,27 +1,28 @@
 // User.tsx
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Data } from '@/app/models/data/Data';
-import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
+
+import { UserEntity } from '@/app/typings/entities/UserEntity'
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
+import {
+  fetchUserAreaDimensions,
+  UnifiedMetadata
+} from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UserPreferences } from "@/config/UserPreferences";
 import { UserSettings } from "@/config/UserSettings";
-import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata
-} from "@/server/database/MetaDataOptions";
 
-import { NotificationPreferences } from "@/app/communications/chat/ChatSettingsModal";
-import ChatSettings from "@/app/communications/chat/ChatSettingsPanel";
-import { RealtimeUpdates } from "@/app/community/ActivityFeedComponent";
+import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
+import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
+import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import {
   CustomTransaction,
   SmartContractInteraction,
-} from "@/app/crypto/SmartContractInteraction";
+} from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -33,12 +34,11 @@ import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator"
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
-import { NFT } from "@/app/nft/NFT";
+import { NFT } from "@/app/models/cypto/NFT"
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { Product } from "@/app/products/Product";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { ExcludedFields } from "@/app/routing/Fields";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { SnapshotStoreConfig } from "@/app/snapshots/";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
@@ -46,18 +46,18 @@ import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import {
   DocumentTypeEnum
-} from "@/app/typings/documents";
+} from "@/app/typings/documentTypes";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SharedVersionData } from "@/app/versions/VersionData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import React from "react";
-import { BlockchainAsset } from "./BlockchainAsset";
-import { BlockchainPermissions } from "./BlockchainPermissions";
-import { Permission } from "./Permission";
-import { SocialLinks } from "./SocialLinks";
-import { UserRole } from "./UserRole";
-import UserRoles from "./UserRoles";
-import { ActivityLogEntry } from "./UserSlice";
+import { Permission } from "@/app/permissions/Permission";
+import { BlockchainAsset } from '@/typings/cryptoTypes/BlockchainAsset'
+import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
+import { SocialLinks } from "@/app/users/SocialLinks";
+import { UserRole } from "@/app/models/UserRole";
+import UserRoles from "@/app/models/UserRoles";
+import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
 
 export type UserDataEntity = BaseDataEntity;
 export type UserDataK = UserDataEntity;
@@ -74,7 +74,7 @@ export interface BaseUser<
   T extends UserData<any> = UserData<any>,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends User<T, K, Meta>,
+> extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // Use T and K, not BaseDataEntity
     SharedTimestamps,
     SharedStatusFlags {
@@ -132,7 +132,7 @@ export interface User<
   username: string;
   email: string;
   tier: string;
-  role: UserRole | undefined;
+  role?: UserRole;
   
   // Account Status
   isAuthorized: boolean;
@@ -180,13 +180,13 @@ export interface User<
   school?: string;
   grade?: string;
   createdBy?: string;
-  analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | string;
   isLoggedIn?: boolean;
   localeCompare?: (other: Message) => number;
   interests?: string[];
   privacySettings?: PrivacySettings;
   notifications?: NotificationSettings;
-  projects?: Project<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, AttachmentType, ExcludedFields, IncludedFields>[];
+  projects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   socialLinks?: SocialLinks;
   relationshipStatus?: string | null;
   hobbies?: string[];
@@ -194,7 +194,7 @@ export interface User<
   language?: string;
   education?: Education[];
   employment?: Employment[];
-  dependencies?: Task<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, AttachmentType, ExcludedFields, IncludedFields>[];
+  dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   dateOfBirth?: Date;
   skills?: string[];
   achievements?: string[];
@@ -216,6 +216,7 @@ export interface User<
   blockchainAssets?: BlockchainAsset[];
   nftCollection?: NFT[];
   daoMemberships?: any[];
+
   decentralizedStorageUsage?: any;
   decentralizedIdentity?: any;
   decentralizedMessagingKeys?: any;
@@ -327,7 +328,7 @@ export interface UserData<
   // System & Technical
   datasets?: string;
   storeId: number;
-  snapshots?: Snapshots<T, K>;
+  snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
   realtimeUpdates?: RealtimeUpdates[];
   

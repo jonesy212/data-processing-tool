@@ -1,27 +1,29 @@
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import React from "react";
-import { BaseData, Data } from "./components/models/data/Data";
-import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { UnifiedMetadata } from "./configs/database/MetaDataOptions";
+// layout.tsx
 
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseData } from "@/app/models/data/Data";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { AppSnapshot, AppStructuredMetadata } from '@/app/typings/entities/AppEntity';
+import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
-import { LanguageEnum } from "./communications/LanguageEnum";
+import React from "react";
 import { useSnapshot } from "./context/SnapshotContext";
 import { version } from "./versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
 
-
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any>>(area);
-const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
+const metadata: AppUnifiedMetadata = useMetadata(area);
+const currentMeta: AppStructuredMetadata = useMeta(area);
+const { snapshotMap } = useSnapshot<AppEntity>(); // Or a root alias snapshot
+const mappedSnapshot: Map<string, AppSnapshot> = snapshotMap;
 
-const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>();
-
-const mappedSnapshot: Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>> = snapshotMap;
 
 export const defaultMetadata = <
   T extends BaseDataEntity,
@@ -131,16 +133,17 @@ export default function RootLayout({ children,
   )
 }
 
+
 export const videoMetadataExample: UnifiedMetadata<
   BaseData<any>,
   BaseData<any>,
-  StructuredMetadata<BaseData<any>>
+  StructuredMetadata<BaseData<any>, BaseData<any>>
 > = {
   title: 'Next.js Video Metadata',
   description: 'Metadata with video details',
   projectId: 42,
   area: 'media',
-  currentMeta: currentMeta,
+  currentMeta: currentMeta, // Make sure currentMeta is typed properly
   metadataEntries: {},
   structuredMetadata: {
     id: "123",
@@ -151,22 +154,19 @@ export const videoMetadataExample: UnifiedMetadata<
     description: 'Video metadata description',
     timeout: 0,
     retryAttempts: 0,
-    timestamp: undefined,
-    createdBy: "",
+    createdBy: "system",
     tags: [],
-    initialState: undefined,
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
-    isActive: true, 
-    config:  {},
-    version: null, 
-    permissions: [], 
-    customFields: [], 
-    versionData: null, 
-    meta: {} as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+    latestVersion: createLatestVersion<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>, Attachment, never, keyof BaseData<any>>(),
+    isActive: true,
+    config: {},
+    permissions: [],
+    customFields: [],
+    versionData: null,
+    meta: {} as StructuredMetadata<BaseData<any>, BaseData<any>>,
     events: {} as EventManager<BaseData<any>, BaseData<any>>,
     metadata: {
-      area: area,
+      area: 'media',
       currentMeta: currentMeta,
       metadataEntries: {}
     },
@@ -189,48 +189,45 @@ export const videoMetadataExample: UnifiedMetadata<
         tags: ['example', 'video'],
       },
     },
-    mappedSnapshot: mappedSnapshot, 
+    mappedSnapshot: mappedSnapshot,
   },
   videoMetadata: {
-
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    location: "",
-    closedCaptions: [],
-    license: "",
-    
-    isFamilyFriendly: false,
-    isEmbeddable: false,
-    isDownloadable: false,
     title: 'Sample Video',
-    uploadDate: new Date(),
     url: 'https://example.com/video',
-    categories: [],
-    sizeInBytes: 1000000,
-    uploader: "",
-    format: 'MP4',
-    views: 0,
-    likes: 0,
     duration: 3600,
-    resolution: '1080p',
-    codec: 'H.264',
-    isLicensedContent: false,
+    sizeInBytes: 1000000,
+    format: 'MP4',
+    uploadDate: new Date(),
+    uploader: 'Video Creator',
+    categories: ['Tutorial'],
+    language: LanguageEnum.English,
+    location: 'USA',
     bitrate: 5000000,
     frameRate: 30,
+    views: 0,
+    likes: 0,
+    comments: [],
+    resolution: '1080p',
     aspectRatio: '16:9',
-    baseData: {},
-    metadata: null, 
-    childIds: [], 
-    relatedData: [],
-    data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    subtitles: [],
+    closedCaptions: [],
+    license: 'CC-BY-4.0',
+    isLicensedContent: false,
+    isFamilyFriendly: true,
+    isEmbeddable: true,
+    isDownloadable: true,
+    codec: 'H.264',
     colorSpace: 'sRGB',
     audioCodec: 'AAC',
     audioChannels: 2,
     audioSampleRate: 44100,
-    language: LanguageEnum.English,
-    subtitles: [],
     chapters: [],
     thumbnailUrl: 'https://example.com/thumbnail.jpg',
     metadataSource: 'manual',
+    baseData: {} as BaseData<any>, 
+    metadata: undefined,
+    childIds: [],
+    relatedData: [],
+    data: {} as InitializedData<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>, Attachment, never, keyof BaseData<any>>,
   },
 };

@@ -1,6 +1,6 @@
 // markerConfig.ts
-import { MarkerEndpoints } from '../types/categories/MarkerEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { MarkerEndpoints } from '@/app/typings/categories/MarkerEndpoints';
 
 export const markerConfig: MarkerEndpoints = {
   list: { path: `${BASE_URL}/api/markers`, method: "GET" },

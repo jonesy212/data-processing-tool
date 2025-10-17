@@ -1,6 +1,6 @@
 // CryptoWatchlist.ts
 import { BaseData } from '@/app/models/data/Data';
-import { DocumentPath } from "@/app/typings/documents";
+import { DocumentPath } from "@/app/documents/DocumentPath";
 
 // Define the CryptoWatchlist class
 class CryptoWatchlist {

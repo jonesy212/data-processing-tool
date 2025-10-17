@@ -1,6 +1,7 @@
 import UserService from "@/api/ApiUser";
 import { UIActions } from "@/app/actions/UIActions";
 import { fetchData } from "@/app/api/ApiData";
+import { NotificationType } from "@/context/NotificationContext";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as userApi from "@/app/api/UsersApi";
 import useNotificationBar from "@/app/commHooks/useNotificationBar";
@@ -21,7 +22,9 @@ const usePhaseUI = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >() => {
   const dispatch = useNotificationBar();
   const { isDarkMode, toggleDarkMode } = useDarkModeToggle();
@@ -198,7 +201,7 @@ const usePhaseUI = <
         NotificationMessagesFactory.createErrorMessage(
           "Failed to fetch notifications"
         ),
-        "error" as NOTIFICATION_TYPES
+        "error" as NotificationType
       );
     }
   };

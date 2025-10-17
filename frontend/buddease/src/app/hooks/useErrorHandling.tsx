@@ -2,7 +2,7 @@ import safeParseData from "@/app/dataIntegration/SafeParseData";
 import { ParsedData } from "@/app/dataIntegration/parseData";
 import { FileLogger } from "@/app/libraries/logging/Logger";
 import ErrorHandler from "@/app/shared/ErrorHandler";
-import { YourResponseType } from "@/app/typings/types";
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { ErrorInfo, useState } from "react";
 
 const useErrorHandling = <

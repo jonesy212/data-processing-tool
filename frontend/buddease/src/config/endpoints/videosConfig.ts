@@ -1,6 +1,6 @@
 // videosConfig.ts
-import { VideosEndpoints } from '../types/categories/VideosEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { VideosEndpoints } from '@/app/typings/categories/VideosEndpoints';
 
 export const videosConfig: VideosEndpoints = {
   list: { path: `${BASE_URL}/api/videos`, method: "GET" },

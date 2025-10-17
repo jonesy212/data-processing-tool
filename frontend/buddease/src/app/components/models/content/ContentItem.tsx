@@ -1,8 +1,8 @@
-import { Data } from "@/app/data/Data";
-import { FileType } from "@/app/documents/attachment/attachment";
+import { Data } from "@/app/models/data/Data";
+import { FileType } from '@/app/documents/attachment/Attachment';
 import { StatusType } from "@/app/models/data/StatusType";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { Tag } from "@/app/tracker/Tag";
+import { Tag } from "@/app/models/tracker/Tracker";
 import React, { useState } from "react";
 
 // Check if the tag is an instance of Tag

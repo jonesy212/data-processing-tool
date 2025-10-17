@@ -1,12 +1,12 @@
-import { setError } from '@/app/redux/slices/ErrorSlice';
+import { setError } from '@/app/state/redux/slices/ErrorSlice';
 import { setLoading } from '@/app/state/stores/UISlice';
 // useDocumentManagement.ts
-import { useAuth } from "@/context/AuthContext";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import * as apiDocument from '@/app/api/ApiDocument';
 import axiosInstance from '@/app/api/csrfToken';
-import * as apiDocument from '@/app/api/ApiDocument'
-import useDocumentStore from "@/app/state/stores/DocumentStore";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import useDocumentStore from "@/app/state/stores/DocumentStore";
+import { useAuth } from "@/context/AuthContext";
 
 const useDocumentManagement = () => {
   const { handleError } = useErrorHandling();

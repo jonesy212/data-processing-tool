@@ -8,7 +8,7 @@
 
 ```typescript
 // In your deployment script or CI/CD pipeline
-const versionMethods: SnapshotVersionMethods<User, User> = snapshot.getVersionMethods();
+const versionMethods: SnapshotVersionMethods = snapshot.getVersionMethods();
 
 // ✅ Check backend compatibility before deployment
 const backendVersion = await versionMethods.getBackendVersion();

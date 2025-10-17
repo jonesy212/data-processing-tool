@@ -1,10 +1,10 @@
 // CommunicationComponent.tsx
+import Communication from '@/app/communications/Communication';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { ChatRoom } from '@/calendar/CalendarSlice';
-import Communication from '@/communications/chat/Communication';
+import { CommunicationActions } from '@/CommunicationActions';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { CommunicationActions } from '@/CommunicationActions';
 
 const CommunicationComponent: React.FC = () => {
   const dispatch = useDispatch();

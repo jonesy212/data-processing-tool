@@ -1,4 +1,4 @@
-import { WebEndpoints } from '../types/categories/WebEndpoints';
+import { WebEndpoints } from '@/app/typings/categories/WebEndpoints';
 
 export const webConfig: WebEndpoints = {
   send: { path: "/api/messages/web/send", method: "POST" },

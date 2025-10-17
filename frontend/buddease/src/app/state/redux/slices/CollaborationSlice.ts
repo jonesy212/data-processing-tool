@@ -9,11 +9,8 @@ import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-import { Change } from "@/app/components/documents/NoteData";
 import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
-import { BaseData, Data } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
@@ -23,13 +20,16 @@ import { Idea } from "@/app/components/users/Ideas";
 import CommunityContribution from "@/app/crypto/CommunityContribution";
 import { DocumentBuilderOptions } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
+import { Change } from "@/app/documents/NoteData";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Feedback } from "@/app/features/support/Feedback";
+import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { Project } from '@/app/models/projects/Project';
 import CollaborationSettings from "@/app/pages/community/CollaborationSettings";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
-import { Project } from '@/app/models/projects/Project';
 import { Document } from "@/app/stores/DocumentStore";
 import { useUIManager } from "@/app/stores/UISlice";
 import { VersionData } from "@/app/versions/VersionData";
@@ -54,9 +54,12 @@ enum ResourceType {
   Other,
 }
 interface CollaborationState<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
   participants: Participant[]

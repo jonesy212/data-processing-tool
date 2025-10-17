@@ -1,15 +1,17 @@
-import { BaseData } from '@/app/models/data/Data';
 import DetailsListItem, { AllProperties } from "@/app/components/models/data/DetailsListItem";
+import { BaseData } from '@/app/models/data/Data';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Define a new type for DetailsItem with optional properties
 type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
 
 interface ListGeneratorProps<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   items: DetailsItemCommon<T, K>[]; // Use DetailsItemCommon type
   onItemClick?: (contentItemId: DetailsItemCommon<T, K>, tracker: K) => void; // Accept both contentItemId and tracker (K instead of U)

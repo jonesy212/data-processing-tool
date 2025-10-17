@@ -1,4 +1,6 @@
 // // convertSnapshotStoreToStorage.ts
+// import { Attachment } from '@/app/documents/attachment/Attachment';
+// import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 // import SnapshotStoreOptions from "@/app/hooks/SnapshotStoreOptions";
 // import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 // import { Data } from '@/app/models/data/Data';
@@ -7,7 +9,12 @@
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-// function convertSnapshotStoreToStorage<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Storage {
+// function convertSnapshotStoreToStorage<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Storage {
 //     const storage: Storage = window.localStorage;
   
 //     // Store the snapshot data in the Storage object (e.g., localStorage)
@@ -23,7 +30,12 @@
   
 
 
-// function convertStorageToSnapshotStore<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+// function convertStorageToSnapshotStore<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
 //     storage: Storage,
 //     snapshotStoreId: number,
 //     topic: string, 

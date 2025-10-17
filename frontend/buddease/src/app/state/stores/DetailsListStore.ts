@@ -1,24 +1,24 @@
-import { Message } from '@/app/generators/GenerateChatInterfaces';
 // DetailsListStore.ts
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/context/NotificationContext";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { PhaseData } from "@/app/components/phases/Phase";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData, Data } from '@/app/models/data/Data';
+import { Phase, PhaseData } from "@/app/models/phases/Phase";
 import { Team } from "@/app/models/teams/Team";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { Phase } from '@/app/models/phases/Phase';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 
 import { CommunicationActionTypes } from "@/app/community/CommunicationActions";
 import { DocumentStatus } from "@/app/components/documents/types";
-import { Tag } from '@/app/components/models/tracker/Tag';
+import { Tag } from '@/app/typings/entities/TagEntity';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DataDetails } from '@/app/models/data/Data';
 import {
@@ -44,7 +44,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
 
 import { Label } from '@/app/branding/BrandingSettings';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { ExcludedFields } from '@/app/routing/Fields';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
@@ -52,10 +52,10 @@ import { AllTypes } from "@/app/typings/PropTypes";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 const { notify } = useNotification();
 const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
@@ -79,36 +79,21 @@ export type AllStatus =
 
 // Define a generic interface for details
 interface DetailsItem<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
-  _id?: string;
-  id: string | number;
-  title?: string;
-  type?: AllTypes;
-  status?: AllStatus;
-  communication?: CommunicationActionTypes;
-  teammembers?: Array<TeamMember>;
-  description?: string | null | undefined;
-  startDate: Date;
-  endDate?: Date;
-  updatedAt?: Date;
-  phase?: PhaseDefault | null;
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // Unique properties only - everything else is inherited
   subtitle: string;
   author?: string;
   date?: Date;
-  value?: string
-  label?: string | Label | null;
-  collaborators?: Member[];
-  tags?: string[] | Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  analysisResults?: DataAnalysisResult<T>[];
+  communication?: CommunicationActionTypes;
+  teammembers?: Array<TeamMember>;
   tracker?: string;
   participants?: Member[];
-  // Core properties...
 }
 
 interface DetailsItemExtended<
@@ -116,20 +101,12 @@ interface DetailsItemExtended<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id: string | number;
-  _id?: string;
-  title?: string;
-  name?: string;
+  
   isRecurring?: boolean;
-  type?: AllTypes; //todo verif we match types
-  status?: AllStatus | null; // Use enums for status property
-  participants?: Participant[];
-  members?: Member[];
-  description?: string | null | undefined;
   assignedProjects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  analysisType?: AnalysisTypeEnum | null;
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
@@ -138,43 +115,30 @@ interface DetailsItemExtended<
     reassignmentDate: Date;
   }[];
   progress?: Progress | null;
-  startDate?: Date;
-  dueDate?: Date | null | undefined;
-
-  endDate?: Date;
-
-
-  analysisResults: string | DataAnalysisResult<T>[] | undefined;
-  phase?: PhaseDefault | null;
-  isActive?: boolean;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined
   subtitle?: string;
   author?: string;
-  // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes;
-  label?: string | Label | null;
-  value?: string;
   reminders?: string[];
   importance?: string;
   location?: string;
   attendees?: Member[];
-  attachments?: Attachment[];
   notes?: string[];
   setCurrentProject?: (project: Project) => void;
   setCurrentTeam?: (team: Team) => void;
   clearCurrentProject?: () => void;
-
 }
 
 
 export interface DetailsListStore<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataEntity, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  details: Record<string, DetailsItemExtended<T, K>[]>;
+  details: Record<string, DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   detailsTitle: string;
   detailsDescription: string;
   detailsStatus:
@@ -189,11 +153,11 @@ export interface DetailsListStore<
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
+  
+  // Methods
   updateDetailsTitle: (title: string, newTitle: string) => void;
   subscribe(callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void;
-
   toggleDetails: (detailsId: string) => void;
-
   updateDetailsDescription: (id: string, description: string) => void;
   updateDetailsStatus: (
     status:
@@ -206,21 +170,24 @@ export interface DetailsListStore<
   ) => void;
   addDetails: (id: string, description: string) => void;
   addDetail: (newDetail: Data<T>) => void;
-  addDetailsItem: (detailsItem: DetailsItemExtended<T, K>) => void;
-  setDetails: (details: Record<string, DetailsItemExtended<T, K>[]>) => void;
+  addDetailsItem: (detailsItem: DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  setDetails: (details: Record<string, DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
-   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
 }
 
 class DetailsListStoreClass <
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataEntity, 
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> implements DetailsListStore<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> implements DetailsListStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
 
-  details: Record<string, DetailsItemExtended<T, K>[]> = {
+  details: Record<string, DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {
     pending: [],
     inProgress: [],
     completed: [],
@@ -238,6 +205,7 @@ class DetailsListStoreClass <
     | TaskStatus.Canceled
     | TaskStatus.Scheduled
     | undefined = undefined;
+  
   snapshotStore!: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   subscribe = (callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => {};
@@ -261,12 +229,13 @@ class DetailsListStoreClass <
     return "";
   }
 
-    private createDefaultPhase(): Phase<PhaseData<BaseData<any>>, K> {
+  private createDefaultPhase(): Phase<PhaseData<BaseData<any>>, K> {
     return {
       id: "",
       name: "",
       description: "",
       startDate: new Date(),
+      projectId: "",
       subPhases: [], // Set subPhases as an empty array to meet the expected type
       endDate: new Date() ? new Date() : undefined,
       label: {},
@@ -526,9 +495,6 @@ class DetailsListStoreClass <
         setData: snapConfig?.setData,
         addData: snapConfig?.addData,
        
-        stores: snapConfig?.stores,
-        getStore: snapConfig?.getStore,
-        addStore: snapConfig?.addStore,
         mapSnapshot: snapConfig?.mapSnapshot,
         mapSnapshotWithDetails: snapConfig?.mapSnapshotWithDetails,
         removeStore: snapConfig?.removeStore,
@@ -863,7 +829,7 @@ class DetailsListStoreClass <
         NotificationTypeEnum.InvalidCredentials
       );
 
-      const options = createSnapshotStoreOptions<T, K>({
+      const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> Meta, AttachmentType, ExcludedFields, IncludedFields>({
         initialState,
         snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,

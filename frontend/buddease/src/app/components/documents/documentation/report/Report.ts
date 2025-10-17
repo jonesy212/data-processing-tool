@@ -1,7 +1,7 @@
 // Report.ts
 // Define the structure of a report
 
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { TagsRecord } from "@/app/snapshots";
 
 export interface BaseReport {

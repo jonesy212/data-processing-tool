@@ -1,17 +1,19 @@
 // useSecureSender.ts
-import { useEffect, useState } from 'react';
+import { fetchUserFromDatabase } from '@/app/api/ApiDatabase';
+import { Sender } from '@/app/communications/Communication';
+import { User } from '@/app/users/User';
 import { useAuth } from '@/context/AuthContext';
 import { sanitizeData } from '@/security/SanitizationFunctions';
-import { Sender } from '@/communications/chat/Communication';
-import { User } from '@/app/users/User';
 import {
-  StudentSender, CryptoSender, ProjectOwnerSender,
   ClientSender,
-  FreelancerSender,
+  CryptoSender,
   EducatorSender,
+  FreelancerSender,
+  ProjectOwnerSender,
   ResearchAnalystSender,
+  StudentSender,
 } from '@/users/SenderTypes';
-import { fetchUserFromDatabase } from '@/app/api/ApiDatabase';
+import { useEffect, useState } from 'react';
 
 type SenderBase = Pick<
   User,
@@ -154,4 +156,5 @@ async function fetchSenderData(userId: string): Promise<Sender | null> {
   }
   return baseSender;
 }
-export type { SenderBase }
+export type { SenderBase };
+

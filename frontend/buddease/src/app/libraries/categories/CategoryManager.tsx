@@ -9,6 +9,11 @@ function getCategoryProperties(category: CategoryKeys): CategoryProperties {
     const propertiesMap: { [key: string]: CategoryProperties } = {
         assignedNotes: {
             name: "Notes",
+            id: '', 
+            type: "", 
+            chartType: "", 
+            dataProperties: {}, 
+            formFields: [],
             description: "Notes related to the user",
             icon: "fa-notes",
             color: "#FFD700",

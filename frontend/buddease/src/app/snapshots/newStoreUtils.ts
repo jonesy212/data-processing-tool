@@ -1,15 +1,15 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
-import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import { ExcludedFields } from '@/routing/Fields';
+import { CreateSnapshotStoresPayload } from "@/server/database/Payload";
+import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
 
@@ -19,7 +19,10 @@ const snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, Inc
 export const createSnapshotStores = async <
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

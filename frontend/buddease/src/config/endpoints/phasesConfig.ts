@@ -1,6 +1,6 @@
 // phasesConfig.ts
-import { PhasesEndpoints } from '../types/categories/PhasesEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { PhasesEndpoints } from '@/app/typings/categories/PhasesEndpoints';
 
 export const phasesConfig: PhasesEndpoints = {
   list: { path: `${BASE_URL}/api/phases`, method: "GET" },

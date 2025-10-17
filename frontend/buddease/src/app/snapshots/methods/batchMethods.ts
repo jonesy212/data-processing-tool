@@ -1,16 +1,16 @@
 // batchMethods.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { ExcludedFields } from "@/app/components/routing/Fields";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Snapshots } from "@/app/LocalStorageSnapshotStore";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotActions } from "@/app/snapshots/SnapshotActions";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export const BatchMethods = {
   /**

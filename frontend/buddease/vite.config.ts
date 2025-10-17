@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from "@vitejs/plugin-react";
 import path from 'path';
 
 
 export default defineConfig({
   plugins: [react()],
-  
   resolve: {
     alias: {
       // Root aliases
@@ -18,7 +17,7 @@ export default defineConfig({
       '@ios': path.resolve(__dirname, './platform/ios'),
       '@web': path.resolve(__dirname, './platform/web'),
       '@tablet': path.resolve(__dirname, './platform/tablet'),
-      '@shared': path.resolve(__dirname, './platform/shared'),
+      '@platformShared': path.resolve(__dirname, './platform/shared'),
       
       // App structure aliases
       '@app': path.resolve(__dirname, './src/app'),

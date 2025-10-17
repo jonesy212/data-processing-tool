@@ -1,6 +1,7 @@
 // SnapshotStore.ts
 
 import { IHydrateResult } from 'mobx-persist';
+import { PriorityValue } from '@/app/pages/searches/CriteriaType'
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';
@@ -22,14 +23,14 @@ import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
 import { SnapshotMethodsImplementation } from '@/methods/snapshotMethods';
 import { ValidationMethods } from '@/app/snapshots/methods/validationMethods'
 import { getSnapshotStoreConfig } from '@/app/api/SnapshotApi';
-import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 import { getConfigPromise } from '@/config/getConfigPromise';
 import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType, NotificationTypeEnum } from '@/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { MessageType } from '@/app/generators/MessaageType';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import retrieveSnapshotData from '@/app/utils/retrieveSnapshotData';
 import { prefix } from '@fortawesome/free-solid-svg-icons';
 
@@ -38,9 +39,9 @@ import { Video } from '@/app/state/stores/VideoStore';
 import getConfig from 'next/config';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CreateSnapshotStoresPayload, CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { CreateSnapshotStoresPayload, CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
 import { SchemaField } from '@/server/database/SchemaField';
-import { DocumentTypeEnum } from '@/app/typings/documents';
+import { DocumentTypeEnum } from '@/app/typings/documentTypess';
 import { SnapshotWithData } from '@/app/calendar/CalendarApp';
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { FileTypeEnum } from '@/app/documents/FileType';
@@ -72,7 +73,7 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { IdeaCreationPhaseEnum } from '@/app/users/userJourney/IdeaCreationPhase';
 import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/app/utils/snapshotUtils';
 import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/config/BaseConfig';
 import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
@@ -81,7 +82,7 @@ import {
   Snapshots,
   SnapshotsArray,
   SnapshotsObject
-} from "./LocalStorageSnapshotStore";
+} from '@/app/snapshots/LocalStorageSnapshotStore'
 import { ConfigMethods, applyStoreConfig } from '@/methods/configMethods';
 import  { UtilMethods } from '@/app/snapshots/methods/utilMethods';
 
@@ -122,7 +123,7 @@ import { SnapshotContext } from "./SnapshotSubscriberManagement";
 import { store } from '@/app/state/stores/useAppDispatch';
 import { SnapshotDataParams } from "./SnapshotDataParams";
 import { SnapshotSecurity } from "./SnapshotSecurity";
-import { ChatRoom } from "@/app/communications/chatRoom"
+import { ChatRoom } from "@/app/communications/ChatRoom"
 import { Sender } from "@/appation";
 import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -162,7 +163,7 @@ class SnapshotStore<
     CommonDataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
-  dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null = null;
+  dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined = undefined;
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null =  null;
   
   // ---------------------------
@@ -314,11 +315,11 @@ class SnapshotStore<
   // ----------------
   // Utilities
   // ----------------
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
-  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
-  mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | {} = {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
+  mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined = undefined;
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[] | undefined;
-  priority?: PriorityTypeEnum | undefined;
+  priority?: PriorityValue 
 
   
   // Then provide proper type guards
@@ -406,26 +407,61 @@ class SnapshotStore<
   // ) => Promise<{ subscribers: Subscriber<U, K>[]; snapshots: Snapshots<U, K, Meta> }>;
 
   // STATE MANAGEMENT TYPE DECLARATIONS
-  getCurrentState!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  getCurrentState!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
-  getStates!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  getStates!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
-  hasSnapshots!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>() => Promise<boolean>;
+  hasSnapshots!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => Promise<boolean>;
 
-  equals!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  equals!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     otherStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Promise<boolean>;
 
-  initializeWithData!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  initializeWithData!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     data: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ) => void;
 
-  addToSnapshotList!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  addToSnapshotList!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ) => Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 
-  getSnapshotsBySubscriber!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  getSnapshotsBySubscriber!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     subscriber: string
   ) => Promise<BaseData[]>;
     
@@ -477,7 +513,12 @@ class SnapshotStore<
 
 
   // EVENT & HIERARCHY TYPE DECLARATIONS - validation methods
-  emit!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  emit!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
@@ -489,30 +530,55 @@ class SnapshotStore<
     category: symbol | string | Category | undefined
   ) => void;
 
-  removeChild!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  removeChild!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     childId: string,
     parentId: string,
     parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
-  getChildren!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  getChildren!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: string,
     childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
-  hasChildren!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  hasChildren!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: string
   ) => boolean;
 
-  isDescendantOf!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  isDescendantOf!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     childId: string,
     parentId: string,
     parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => boolean;
 
-  getInitialState!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  getInitialState!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   getConfigOption!: <
     T extends BaseDataEntity,
@@ -522,7 +588,12 @@ class SnapshotStore<
     optionKey: string
   ) => Record<string, any>;
 
-  getTimestamp!: <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>() => Date;
+  getTimestamp!: <  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => Date;
 
   // STORE MANAGEMENT TYPE DECLARATIONS
   findSnapshots!: (criteria: SearchCriteria) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
@@ -901,7 +972,7 @@ processSnapshotData? = async (
         getSnapshotData: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
           // Implementation for retrieving snapshot data
           return undefined; // Replace with actual implementation
-        }
+        },
         
         deleteSnapshot: (id: string) => {},
         core: {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -2042,7 +2113,7 @@ handleActions(action: any): void {
   
   
   public dataStore: InitializedDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
-  public initialState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  public initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Util Methods
   public determinePrefix!: typeof UtilMethods.determinePrefix;
@@ -4946,7 +5017,7 @@ private cleanupOldSnapshots(): void {
       : this.defaultSaveSnapshotStores.bind(this);
   }
 
-  get initializedState(): InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  get initializedState(): InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return this.initialState;
   }
 
@@ -4958,7 +5029,7 @@ private cleanupOldSnapshots(): void {
   }
 
   // Getter for transformed initial state
-  get getTransformedInitialState(): InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+  get getTransformedInitialState(): InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     if (!this.initialState) {
       return null; // Return null if the initial state is not set
     }

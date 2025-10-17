@@ -6,8 +6,8 @@ import {
 import { User } from "@/app/users/User";
 import { fetchEventData } from "@/app/api/ApiEvent";
 import appTreeApiService from "@/app/api/appTreeApi";
-import { fetchUsersByTaskApi } from "@/app/api/TasksApi";
-import { ExtendedTodo, useAssignBaseStore } from "@/app/AssignBaseStore";
+import { fetchUsersByTaskAPI } from "@/app/api/TasksApi";
+import { ExtendedTodo, useAssignBaseStore } from "@/app/state/stores/AssignwBaseStore";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { EventData } from "@/app/utils/ethereumUtils";
 import { isDataRecentEnough } from "@/app/utils/isDataRecentEnough";
@@ -332,7 +332,7 @@ const useAssignEventStore = (): AssignEventStore => {
   
   const fetchUsersByTaskId = async (taskId: string): Promise<string[]> => {
     try {
-      const users = await fetchUsersByTaskApi(taskId);
+      const users = await fetchUsersByTaskAPI(taskId);
       console.log(`Fetched users for task ID ${taskId}:`, users);
       return users;
     } catch (error) {

@@ -4,7 +4,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity } from "@/config/BaseConfig";
+import { BaseDataEntity } from '@/config/BaseConfig';
 
 
 interface FetchableDataStore<
@@ -28,7 +28,14 @@ const initializeData = ():  BaseDataEntity => {
 
 
 // Ensure you're checking the correct type and calling the `trigger` method
-function handleSnapshotEvent<T extends BaseDataEntity, K extends T = T>(
+function handleSnapshotEvent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   coreSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

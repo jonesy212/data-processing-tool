@@ -3,12 +3,13 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
-import { createSubscriber } from '@/app/components/crypto/exchangeIntegration';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   getDefaultDocumentOptions,
 } from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
+import { createSubscriber } from '@/app/models/cypto/exchangeIntegration';
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
   PriorityTypeEnum,
@@ -17,14 +18,14 @@ import {
 import { Member } from "@/app/models/teams/TeamMembers";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { getSnapshotDelegate } from '@/app/snapshots/getSnapshotDelegate';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { VideoData } from "@/app/video/Video";
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { VideoData } from '@/app/typings/videoTypes/Video';
+
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import {
   NotificationTypeEnum,
@@ -40,7 +41,6 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { useStore } from "./StoreProvider";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 import { EventActions } from "@/app/actions/EventActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
@@ -67,9 +67,6 @@ import {
 } from "@/server/database/CalendarActionPayload";
 import { useDispatch } from "react-redux";
 
-import { EventRecord } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { dataStoreMethods, K, T } from '@/app/components/models/data/dataStoreMethods';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import {
   defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
@@ -78,15 +75,17 @@ import {
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
+import { dataStoreMethods, K, T } from '@/app/models/data/dataStoreMethods';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
-import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import { EventRecord } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
 import { SnapshotConfigProps } from "@/app/snapshots/SnapshotConfigProps";
 import SnapshotManagerOptions from "@/app/snapshots/SnapshotManagerOptions";
 import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { id } from 'ethers';
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
 
@@ -302,9 +301,10 @@ class CalendarManagerStoreClass<
   public timestamp: Date;
 
   constructor(
-    category?: Category,
     documentManager: DocumentStore<T, K>,
-    storeProps: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    storeOptions: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
   ) {
     this.timestamp = new Date(); // Initialize default value
     this.category = category;
@@ -432,13 +432,22 @@ class CalendarManagerStoreClass<
 
       
         this.events = events;
-        this.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
-          storeId,
-          options,
-          category,
-          config,
-          operation
-        )
+        this.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+            storeId,
+            name,
+            version,
+            schema, 
+            options, 
+            category,
+            config, 
+            operation,
+            expirationDate,
+            payload,
+            currentMeta,
+            callback,
+            storeProps,
+            endpointCategory
+          });
       } catch (error) {
         console.error("Failed to handle real-time update:", error);
       }

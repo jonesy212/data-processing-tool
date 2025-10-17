@@ -1,5 +1,5 @@
 // createStoreConfig.tsx
-import { ConvertMeta } from '@/app/components/models/data/dataStoreMethods';
+import { ConvertMeta } from '@/app/models/data/dataStoreMethods';
 import {
     SnapshotUnion,
     SnapshotsArray
@@ -11,12 +11,11 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
-import { BaseDataEntity } from '@/config/BaseConfig';
-import { T } from "@/app/models/data/dataStoreMethods";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity } from '@/config/BaseConfig';
 import { convertMetadata } from '@/convertMetadata';
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 

@@ -1,19 +1,25 @@
 // FolderData.ts
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
-import { User } from '@/app/components/users/User';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+  
+import { User } from '@/app/users/User';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-interface FolderData extends ScheduledData<T, K, S> {
-  folderSize: number; // Size of the folder in bytes
-  folderPath: string; // Path to the folder location
-  uploader: User; // User who uploaded the folder
-  attachments?: Attachment[]; // Any attachments associated with the folder
-  // Add other properties as needed
-
-  // Additional properties for expanded usage
-  folderName: string; // Name of the folder
-  uploadDate: Date; // Date when the folder was uploaded
+interface FolderData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends ScheduledData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  folderSize: number;
+  folderPath: string;
+  uploader: User;
+  attachments?: AttachmentType[];
+  folderName: string;
+  uploadDate: Date;
 }
 
 export default FolderData;

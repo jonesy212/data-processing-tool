@@ -1,9 +1,10 @@
+// SnapshotList.ts
 import { Label } from "@/app/branding/BrandingSettings";
-import { ChatRoom } from "@/app/calendar/CalendarSlice";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
-import { Sender } from "@/app/communications/chat/Communication";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
+import { ChatRoom } from "@/app/communications/ChatRoom";
+import { Sender } from "@/app/communications/Communication";
 import { NotificationType } from '@/app/context/NotificationContext';
+import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
@@ -15,7 +16,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 

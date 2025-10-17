@@ -1,7 +1,7 @@
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 
 interface SnapshotStorage<
   T extends BaseDataEntity = BaseDataRoot,

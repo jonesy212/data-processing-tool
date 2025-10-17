@@ -1,5 +1,5 @@
 // searchingConfig.ts
-import { SearchingEndpoints } from '../types/categories/SearchingEndpoints';
+import { SearchingEndpoints } from '@/app/typings/categories/SearchingEndpoints';
 
 export const searchingConfig: SearchingEndpoints = {
   searchMessages: { path: "/api/searching/messages", method: "POST" },

@@ -1,19 +1,15 @@
 // DocumentBuilderComponent.tsx
-import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentBuilder";
-import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { getDefaultDocumentOptions } from "@/documents/DocumentOptions";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { useDispatch } from 'react-redux';
-import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
-import AccessHistory from '@/app/versions/AccessHistory';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { useState } from 'react';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-
+import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentBuilder";
+import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
+import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
+import AccessHistory from '@/app/versions/AccessHistory';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { getDefaultDocumentOptions } from "@/documents/DocumentOptions";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { DocumentFormattingOptions } from "./DocumentFormattingOptionsComponent";
 const dispatch = useDispatch()
 
 function formatDocument<

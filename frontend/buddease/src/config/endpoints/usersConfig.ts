@@ -1,6 +1,5 @@
 // usersConfig.ts
-import { UsersEndpoints } from '../types/categories/UsersEndpoints';
-import { BASE_URL } from './baseUrl';
+import { UsersEndpoints } from '@/app/typings/categories/UsersEndpoints';
 
 export const usersConfig: UsersEndpoints = {
   list: { path: "/users", method: "GET" },

@@ -1,19 +1,26 @@
 // SnapshotDataParams.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SnapshotEvent } from "@/app/typings/eventTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SnapshotsArray } from ".";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-interface SnapshotDataParams<T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+import { BaseDataRoot } from '@/config/BaseConfig';
+
+
+interface SnapshotDataParams<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
     snapshotId: string,
     snapshot: T | null,

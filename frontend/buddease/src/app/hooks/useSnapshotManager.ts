@@ -1,66 +1,66 @@
 // useSnapshotManager.ts
 import { getStoreId } from '@/app/api/ApiData';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { fetchEventId } from '@/app/api/ApiEvent';
-import { createSnapshot } from '@/app/api/SnapshotApi';
+import createSnapshot from '@/app/api/SnapshotApi';
 import {
-    useNotification
+  useNotification
 } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { Category, generateOrVerifySnapshotId } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData } from '@/app/models/data/Data';
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { processSnapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
-import { Snapshot, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { processSnapshot, Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMethods';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { isSnapshotWithCriteria } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { createMetadata } from '@/server/metadata/createMetadata';
-import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
+import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 import { useEffect, useState } from "react";
-import { SnapshotStoreReference } from "./SnapshotStoreReference";
+import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
 
 const { notify } = useNotification();
 
 interface CombinedEvents<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  IncludedFields extends keyof T = keyof T,
 >
   extends SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   event: string | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  
   trigger: (
     event: string | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    eventDate: Date,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
-
   onSnapshotAdded: (event: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onSnapshotRemoved: (
     event: string,
@@ -114,13 +114,19 @@ interface CombinedEvents<
 }
 
 interface SnapshotManager<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-> extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+>  {
+    // Composition: HAS a snapshot instead of IS a snapshot
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  // Manager-specific properties
+  state: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+
   initSnapshot: (
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -133,7 +139,6 @@ interface SnapshotManager<
   snapshot: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -144,6 +149,7 @@ interface SnapshotManager<
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,    
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
@@ -155,7 +161,6 @@ interface SnapshotManager<
   id: number,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   data:  BaseData<any>
-  state: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   getSnapshots: () => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   updateSnapshots: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   // Add the `callbacks` property
@@ -210,11 +215,12 @@ export const createBaseData = (overrides: Partial<BaseData> = {}): BaseData => (
 });
 
 const completeDataStoreMethods: <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 >(
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -230,11 +236,12 @@ const completeDataStoreMethods: <
 // Function to convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to Content
 // Updated function to convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to Content
 const convertSnapshotToContent = < 
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
@@ -248,7 +255,7 @@ const convertSnapshotToContent = <
     data = snapshot.data as unknown as SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   } else {
     // Fallback: Handle other cases or convert data if necessary
-    data = snapshot.data as CustomSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+    data = snapshot.data as CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   }
 
   return {
@@ -256,6 +263,11 @@ const convertSnapshotToContent = <
     title: snapshot.title ?? "default-title",
     description: snapshot.description ?? "default-description",
     subscriberId: snapshot.subscriberId ?? "default-subscriber-id",
+    apiEndpoint: snapshot.apiEndpoint ? "default-apiEndpoint",
+    apiKey: snapshot.apiKey ? "default-apiKey",
+    timeout: snapshot.timeout ? "default-",
+    retryAttempts: snapshot.retryAttempts ? "default-retryAttempts",
+   
     category: snapshot.category,
     timestamp: snapshot.timestamp ?? new Date(),
     categoryProperties: snapshot.categoryProperties ?? "default-category-properties",
@@ -268,11 +280,12 @@ const convertSnapshotToContent = <
 };
 // Example conversion function from Map to CustomSnapshotData
 const convertMapToCustomSnapshotData =  <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 
 ): CustomSnapshotData<T> => {
@@ -289,11 +302,12 @@ const convertMapToCustomSnapshotData =  <
 
 
 const createSnapshotStore =  <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotConfig: SnapshotStoreConfig<T, K>,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -347,15 +361,17 @@ const createSnapshotStore =  <
 
 
 const createSnapshotConfig = <
-  T extends BaseData<any>,
-  K extends T = T, 
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotContent?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  storeOptions?: SnapshotStoreOptions<T, K>
-): SnapshotStoreConfig<T, K> => {
+  storeOptions?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const content = snapshotContent ? convertSnapshotToContent(snapshotContent) : undefined;
 
   if(storeOptions === undefined) {
@@ -604,11 +620,12 @@ const createSnapshotConfig = <
 };
 
 interface SnapshotStoreConfigWithMethods<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 > extends SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   getAllSnapshots: (ref: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
@@ -617,22 +634,37 @@ interface SnapshotStoreConfigWithMethods<
 
 
 export const useSnapshotManager = <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 >(
   initialStoreId: number,
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // ✅ explicitly passed in
 ) => {
-  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfigWithMethods<T, K> & { onSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void } | null>(null);
-  const [snapshotStore, setSnapshotStore] = useState<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
+  // --- State ---
+  const [snapshotManager, setSnapshotManager] = useState<
+    (SnapshotStoreConfigWithMethods<T, K> & {
+      onSnapshot?: (
+        snapshot: Snapshot<
+          SnapshotStoreDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          SnapshotStoreDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        >
+      ) => void;
+    }) | null
+  >(null);
+
+  const [snapshotStore, setSnapshotStore] = useState<
+    SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  >(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // Destructure storeProps for convenience
+  // --- Destructure storeProps ---
   const { 
     storeId: providedStoreId, 
     name, 
@@ -648,7 +680,7 @@ export const useSnapshotManager = <
     endpointCategory 
   } = storeProps;
 
-  // ✅ useCallback so initSnapshotManager is stable across renders
+  // --- Initialize snapshot manager ---
   const initSnapshotManager = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -656,10 +688,10 @@ export const useSnapshotManager = <
         operationType: SnapshotOperationType.FindSnapshot
       };
 
-      // Prevent shadowing: prefer provided storeId if available
+      // Prefer provided storeId if available
       const resolvedStoreId = providedStoreId ?? (await getStoreId(initialStoreId));
 
-      // ✅ Create SnapshotStore
+      // --- Create SnapshotStore ---
       const newSnapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
         storeId: resolvedStoreId,
         name,
@@ -676,26 +708,43 @@ export const useSnapshotManager = <
         endpointCategory
       });
 
-      // ✅ Build config
+      // --- Build SnapshotStoreConfig ---
       const snapshotConfig = createSnapshotConfig(newSnapshotStore) as SnapshotStoreConfigWithMethods<T, K>;
 
       // Extend with getAllSnapshots
-      snapshotConfig.getAllSnapshots = async (ref: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => {
-        const snapshots = await fetchSnapshotsFromAPI(ref);
-        return snapshots as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+      snapshotConfig.getAllSnapshots = async (
+        ref: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+      ) => {
+        const fetched = await fetchSnapshotsFromAPI(ref);
+        return fetched as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       };
 
-      // ✅ Update state
+      // --- Update state ---
       setSnapshotManager(snapshotConfig);
       setSnapshotStore(newSnapshotStore);
+
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to initialize snapshot manager"));
     } finally {
       setIsLoading(false);
     }
-  }, [initialStoreId, providedStoreId, name, version, schema, options, category, config, expirationDate, payload, callback, endpointCategory, storeProps]);
+  }, [
+    initialStoreId,
+    providedStoreId,
+    name,
+    version,
+    schema,
+    options,
+    category,
+    config,
+    expirationDate,
+    payload,
+    callback,
+    endpointCategory,
+    storeProps
+  ]);
 
-  // ✅ Run init on mount / when deps change
+  // --- Run init on mount / deps change ---
   useEffect(() => {
     initSnapshotManager();
   }, [initSnapshotManager]);
@@ -708,6 +757,7 @@ export const useSnapshotManager = <
     refresh: initSnapshotManager
   };
 };
+
 
 
 export { completeDataStoreMethods, convertMapToCustomSnapshotData, convertSnapshotToContent, createSnapshotStore };

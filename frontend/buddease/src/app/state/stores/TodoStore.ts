@@ -3,13 +3,11 @@ import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateSnapshotId } from '@/app/utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -30,9 +28,12 @@ interface TodoManagerStoreProps {
 }
 
 export interface TodoManagerStore<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 > {
   dispatch: (action: any) => void;
   todos: Record<string, Todo<T, K, Meta>>;
@@ -77,9 +78,12 @@ export interface TodoManagerStore<
   
 }
 const useTodoManagerStore = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(props: TodoManagerStoreProps): TodoManagerStore<T, K> => {
   
   const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});

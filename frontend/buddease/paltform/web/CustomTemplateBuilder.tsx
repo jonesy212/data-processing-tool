@@ -18,7 +18,7 @@ import { useMovementAnimations } from "@/app/libraries/animations/movementAnimat
 import Clipboard from "@/app/ts/clipboard";
 import {
   DocumentTypeEnum
-} from "@/app/typings/documents";
+} from "@/app/typings/documentTypes";
 
 interface TemplateDataProps {
   id: number;

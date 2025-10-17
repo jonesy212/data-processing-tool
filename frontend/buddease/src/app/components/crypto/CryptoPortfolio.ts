@@ -1,12 +1,10 @@
 
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { logTradeActivity, updateUserPortfolio } from '@/app/api/PortfolioService';
 import { getMarketPrice } from '@/app/api/PriceApiService';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TradeLogger } from "@/app/libraries/logging/TradeLogger";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 

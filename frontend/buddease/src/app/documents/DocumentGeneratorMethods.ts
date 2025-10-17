@@ -2,35 +2,32 @@
 // // Add the namespace declaration for DXT if it's not already imported
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
-    fetchDocumentByIdAPI,
-    getDocument,
-    loadPresentationFromDatabase,
+  fetchDocumentByIdAPI,
+  getDocument,
+  loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
-import { BaseData } from '@/app/models/data/Data';
 import { loadCryptoWatchlistFromDatabase } from "@/app/crypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "@/app/crypto/generateCryptoWatchlistJSON";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { allowedDiagramFormats } from "@/app/form/FormatEnum";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
 import {
-    Drawing,
-    generateDrawingJSON,
+  Drawing,
+  generateDrawingJSON,
 } from "@/app/libraries/drawing/generateDrawingJSON";
 import { generatePresentationJSON } from "@/app/libraries/presentations/generatePresentationJSON";
 import {
-    DocumentSize
+  DocumentSize
 } from "@/app/models/data/StatusType";
 import { sanitizeInput } from "@/app/security/SanitizationFunctions";
-import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
-import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import {
-    CustomDocxtemplater,
-    CustomPDFPage,
-    CustomPDFProxyPage,
-    DocumentPath,
-    DocumentTypeEnum,
+  CustomDocxtemplater,
+  CustomPDFPage,
+  CustomPDFProxyPage,
+  DocumentPath,
+  DocumentTypeEnum,
 } from "@/app/typings/documents";
 import { parseCSV } from "@/components/documents/parseCSV";
 import { parseDocx } from "@/components/documents/parseDocx";
@@ -38,8 +35,9 @@ import { parseExcel } from "@/components/documents/parseExcel";
 import { extractPDFContent, PDFData, pdfParser } from "@/components/documents/parsePDF";
 import { parseXML } from "@/components/documents/parseXML";
 import { DatabaseConfig } from "@/config/DatabaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { loadDrawingFromDatabase } from "@/config/database/updateDocumentInDatabase";
+import { fetchTextContentFromDatabase } from "@/server/database/DataBaseMethods";
+import loadDraftFromDatabase from "@/server/database/loadDraftFromDatabase";
 import Papa from "papaparse";
 import { PDFDocument } from "pdf-lib";
 import { AppType } from "vite";
@@ -974,7 +972,7 @@ function loadSpreadsheetDocumentContent(document: DocumentData<T, K>): string {
 //   ]; // Updated list of allowed diagram formats
 
 export {
-    extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
-    loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
+  extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
+  loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
 };
 

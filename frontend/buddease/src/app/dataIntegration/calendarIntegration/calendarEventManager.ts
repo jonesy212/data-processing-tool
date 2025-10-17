@@ -6,7 +6,7 @@ import { AllStatus, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/teams/TeamMembers';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 
 export interface CalendarEventManagerOptions {

@@ -1,25 +1,25 @@
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SubscriberCallback } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-
+import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { ModifiedDate } from '@/app/documents/DocType';
-import { BaseData } from '@/app/models/data/Data';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = {
   onSuccess: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onError: (error: any) => void;
@@ -27,32 +27,25 @@ type FetchSnapshotByIdCallback<
 
 // Define the union type for Callback or SubscriberCallback
 type SubscriberCallbackType<
-  T extends BaseData<any, any, any, Attachment>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > =
   | Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   | SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
-interface SubscriberCallback<
+// Type guard to check if a given callback is a SubscriberCallback
+function isSubscriberCallback<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
-> {
-  handleCallback: () => void;
-  snapshotCallback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-}
-
-
-// Type guard to check if a given callback is a SubscriberCallback
-function isSubscriberCallback<
-  T extends BaseData<any, any, any, Attachment>,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): callback is SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -70,10 +63,12 @@ interface SubscriptionContext {
 
 // Updated unsubscribe method with explicit type annotations
 function unsubscribe<
-  T extends BaseData<any, any, any, any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   this: SubscriptionContext,
   snapshotId: number,
@@ -154,9 +149,10 @@ type Subscription<
     ) => void;
     fetchSnapshotByIdCallback?: (
       { userId, snapshotId }: { userId: string; snapshotId: string },
-      callback: FetchSnapshotByIdCallback<T, K>
+      callback: FetchSnapshotByIdCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => void;
   };
   
 
-  export type { SubscriberCallbackType, Subscription };
+  export type { FetchSnapshotByIdCallback, SubscriberCallbackType, Subscription };
+

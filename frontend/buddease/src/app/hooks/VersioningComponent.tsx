@@ -1,5 +1,4 @@
 // VersioningComponent.tsx
-import Version from '@/versions/Version';
 import React from 'react';
 
 interface VersioningComponentProps {

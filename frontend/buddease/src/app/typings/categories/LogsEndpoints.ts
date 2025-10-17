@@ -1,5 +1,5 @@
 // LogsEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface LogsEndpoints {
   logSession: EndpointConfig;

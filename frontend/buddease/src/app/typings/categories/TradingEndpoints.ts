@@ -1,5 +1,5 @@
 // TradingEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface TradingEndpoints {
   // Trading platform endpoints

@@ -1,47 +1,26 @@
-import { createSnapshot } from '@/app/api/SnapshotApi';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import determineFileCategory from "@/app/libraries/categories/determineFileCategory";
-import { processSnapshotsByCategory } from "@/app/libraries/categories/fileCategoryMapping";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
-import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+// Corrected imports section
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { useDispatch } from 'react-redux';
 
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { Member } from "@/app/components/models/teams/TeamMembers";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Content } from "@/app/models/content/AddContent";
-import { BaseData } from '@/app/models/data/Data';
-import { PriorityTypeEnum, ProjectStateEnum } from "@/app/models/data/StatusType";
-import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { sendToAnalytics } from '@/app/projects/DataAnalysisPhase/sendToAnalytics';
-import { ProjectType } from '@/app/models/projects/Project';
-import { snapshotFunction, Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotDataType } from "@/app/snapshots/SnapshhotContainer";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
+// Core models and types
+import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
+import SnapshotList from "@/app/snapshots/SnapshotList";
+import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 
-import { constructTarget, Target } from "@/app//api/EndpointConstructor";
+// API and HTTP related
+import { constructTarget, Target } from "@/app/api/EndpointConstructor";
 import { handleApiError } from "@/app/api/ApiLogs";
 import { searchAPI } from '@/app/api/ApiSearch';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import headersConfig from "@/app/api/headers/HeadersConfig";
 import {
   AuthenticationHeaders,
   createAuthenticationHeaders,
@@ -50,41 +29,69 @@ import createCacheHeaders from "@/app/api/headers/cacheHeaders";
 import createContentHeaders from "@/app/api/headers/contentHeaders";
 import generateCustomHeaders from "@/app/api/headers/customHeaders";
 import createRequestHeaders from "@/app/api/headers/requestHeaders";
+
+// Utilities and hooks
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+
+// Categories and data processing
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import determineFileCategory from "@/app/libraries/categories/determineFileCategory";
+import { processSnapshotsByCategory } from "@/app/libraries/categories/fileCategoryMapping";
+import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
+
+// Data store and methods
+import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { sendToAnalytics } from '@/app/projects/DataAnalysisPhase/sendToAnalytics';
+
+// Operations and config
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotConfig, ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+
+// Subscribers and notifications
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
-import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
-import SnapshotList from "@/app/snapshots/SnapshotList";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
-import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
-import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
+
+// Additional types
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Content } from "@/app/models/content/AddContent";
+import { BaseData } from '@/app/models/data/Data';
+import { PriorityTypeEnum, ProjectStateEnum } from "@/app/models/data/StatusType";
+import { ProjectType } from '@/app/models/projects/Project';
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Subscriber } from '@/app/subscribers/Subscriber';
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { addToSnapshotList, isSnapshot } from "@/app/utils/snapshotUtils";
-import { unsubscribe } from '@/app/utils/web3/applicationUtils';
-import { Meta } from '@/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/components/routing/Fields';
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent } from '@/app/typings/eventTypes';
+
+// Config and metadata
 import { AppConfig, getAppConfig } from "@/config/AppConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import configData from "@/config/configData";
-import { UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
-import { SnapshotEvent } from '@/typings/eventTypes';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import configData from "@/config/endpoints/configData";
+
+// Version management
 import { createDefaultVersionData } from '@/versions/VersionData';
 import { createLatestVersion } from '@/versions/createLatestVersion';
 
+// Utils
+import { addToSnapshotList, isSnapshot } from "@/app/utils/snapshotUtils";
+import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
+import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
 
-
-// React-friendly functional wrappers
-// app/api/snapshotApi.ts
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
+
 import {
   createMockSnapshot,
   getSnapshot,
@@ -96,9 +103,13 @@ import {
   validateSnapshot
 } from '@/app/snapshots/snapshotOperations';
 
-const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
+import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
+
+// Constants
+const API_BASE_URL = endpoints.snapshots.list;
 const dispatch = useDispatch()
 const appConfig: AppConfig = getAppConfig();
+
 
 // Define API notification messages for snapshot operations
 interface SnapshotNotificationMessages {
@@ -149,7 +160,7 @@ const handleSnapshotApiError = (
   handleError(errorMessage);
 };
 
-// Updated handleSpecificApplicationLogic and handleOtherApplicationLogic functions
+// handleSpecificApplicationLogic and handleOtherApplicationLogic functions
 const handleSpecificApplicationLogic = (
   appConfig: AppConfig,
   statusCode: number
@@ -1282,7 +1293,9 @@ const fetchSnapshotById = async<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
     snapshotId: string
   ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
@@ -1657,14 +1670,15 @@ function getCurrentSnapshotAPI<
 
 // Example function to simulate fetching snapshots from a database or external API
 const fetchSnapshotsFromDatabase = async <
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
-  snapshotConfig: SnapshotConfig<any>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType>,
   event: Event,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
@@ -1696,10 +1710,11 @@ const fetchSnapshotsFromDatabase = async <
 
 function unwrapStoreProps<
   T extends BaseDataEntity,
-  //  extends BaseDataRoot, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(props: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   const {
     id,
@@ -1739,7 +1754,14 @@ function unwrapStoreProps<
 }
 
 
-function getSnapshotContainer<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function getSnapshotContainer<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string | number | undefined,
   storeId: number,
   additionalHeaders?: Record<string, string>,
@@ -1842,8 +1864,8 @@ async function fetchSnapshotContainerData<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   snapshotId: string,
-  storeProps: SnapshotStoreProps<T, K>
-): Promise<SnapshotContainerData<T, K>> {
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<SnapshotContainerData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   // Simulate fetching data, e.g., from an API or database
 
   const { criteria, storeId } = storeProps;
@@ -1880,11 +1902,10 @@ function createSnapshotContainer<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   data: SnapshotContainerData<T, K>,
-  storeProps?: SnapshotStoreProps<T, K>
-): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotContainer<T, K, Meta, AttachmentTyp<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 
   const { id, criteria } = storeProps
   const { timestamp, currentCategory, items, config } = data;
@@ -1940,7 +1961,7 @@ function createSnapshotContainer<
       const subscriberId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       // Create the subscriber object
-      const subscriber: Subscriber<T, K> = {
+      const subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         id: subscriberId,
         snapshotId,
         callback,
@@ -2031,16 +2052,17 @@ function createSnapshotContainer<
     snapshot: (
       id: string | number | undefined,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,      categoryProperties: CategoryProperties | undefined,
+      categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
       metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string,
       endpointCategory: string | number,
-      storeProps: SnapshotStoreProps<T, K>,
-      snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentTyp<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>Fields>,
       subscription: Subscription<T, K>,
+      category?: Category,
       snapshotId?: string | number | null,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
@@ -2055,10 +2077,9 @@ function createSnapshotContainer<
       mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStoreMethods<T, K>,
-      storeProps: SnapshotStoreProps<T, K>,
+      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>ry,
       snapshotId?: string | number | null,
       storeId?: number
     ): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
@@ -2268,196 +2289,164 @@ const getSnapshotStoreId = async (
     throw error;
   }
 };
-
-const getSnapshotConfig = <
+export async function getSnapshotConfig<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-  >(
+>(
   id: string | number,
   snapshotId: string | null,
   criteria: CriteriaType,
-  category?: Category,  categoryProperties: CategoryProperties | undefined,
-  subscriberId: string | undefined,
-  delegate: Promise<DataStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]>,
-  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshot: (
+  category?: Category,
+  categoryProperties?: CategoryProperties,
+  subscriberId?: string,
+  delegate?: Promise<DataStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]>,
+  snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshot?: (
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Type updated here
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
-    dataStore: DataStore<T, K>,
-    dataStoreMethods: DataStoreMethods<T, K>,
-    metadata: UnifiedMetadata<T, K, Meta, keyof T>,    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    subscriberId: string, // Add subscriberId here
-    endpointCategory: string | number,// Add endpointCategory here
-    storeProps: SnapshotStoreProps<T, K>,
-    snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    subscription: Subscription<T, K>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
+    categoryProperties?: CategoryProperties,
+    callback?: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
+    dataStore?: DataStore<T, K>,
+    dataStoreMethods?: DataStoreMethods<T, K>,
+    metadata?: UnifiedMetadata<T, K, Meta, keyof T>,
+    subscriberId?: string,
+    endpointCategory?: string | number,
+    storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotConfigData?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    subscription?: Subscription<T, K>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
     snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-  ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }>,
-  data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  events: Record<string, CalendarManagerStoreClass<T, K>[]>, 
-  dataItems: RealtimeDataItem[], 
-  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  payload: ConfigureSnapshotStorePayload<T, K>, 
-  store: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void, 
-  storeProps: SnapshotStoreProps<T, K>,
-  endpointCategory: string | number,
-  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-  return new Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
-    (resolve, reject) => {
-      const subscription = subscriptionServiceInstance.subscriptions.get("snapshot");
+  ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>,
+  storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  endpointCategory?: string | number,
+  snapshotContainer?: Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  try {
+    // 🔹 1. Resolve subscription
+    const subscription = subscriptionServiceInstance.subscriptions.get("snapshot");
+    if (!subscription) throw new Error("Unable to find a subscription for snapshot config");
 
-    const fetchSnapshotConfig = async () => {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const userId = localStorage.getItem("userId");
-        const currentAppVersion = configData.currentAppVersion;
+    // 🔹 2. Authentication
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders = createAuthenticationHeaders(accessToken, userId, currentAppVersion);
 
-        const authenticationHeaders: AuthenticationHeaders =
-          createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    // 🔹 3. Merge headers
+    const headers = Object.assign(
+      {},
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || "")
+    );
 
-        const headersArray = [
-          authenticationHeaders,
-          createCacheHeaders(),
-          createContentHeaders(),
-          generateCustomHeaders({}),
-          createRequestHeaders(accessToken || ""),
-        ];
+    const storeId = useSecureStoreId();
+    if (!storeId) throw new Error("No store id found");
 
-        const headers = Object.assign({}, ...headersArray);
-        const storeId = useSecureStoreId()
-        // Generate additionalHeaders here
-        const additionalHeaders = createHeaders();
+    // 🔹 4. Validate IDs
+    const snapshotCriteriaId = getSnapshotId(criteria);
+    if (!snapshotCriteriaId) throw new Error("Invalid snapshot criteria ID");
 
-        const { criteria } = storeProps
-          const snapshotId = getSnapshotId(criteria)
-        if (!snapshotId) {
-            throw new Error("")
-          }
-        if (!storeId) {
-            throw new Error("no store id found")
-        }
+    // 🔹 5. Fetch base snapshot store data
+    const snapshotStore = await fetchSnapshotStoreData(id);
 
-        const snapshotStore = await fetchSnapshotStoreData(id); // Replace with your actual fetch logic
+    // 🔹 6. Fetch container and config
+    const containerPromise = snapshotApi.getSnapshotContainer(
+      snapshotCriteriaId,
+      Number(storeId),
+      headers,
+      storeProps!,
+      category,
+      snapshotStore
+    );
 
-        const snapshotContainer = snapshotApi.getSnapshotContainer(
-          snapshotId,
-          Number(storeId),
-          headers, 
-          storeProps, 
-          category,
-          snapshotStore
-        )
-        
-        const snapshotStoreConfig = await snapshotApi.getSnapshotStoreConfig(snapshotId, snapshotContainer, criteria, storeId, snapshotFunction);
+    const snapshotStoreConfig = await snapshotApi.getSnapshotStoreConfig(
+      snapshotCriteriaId,
+      containerPromise,
+      criteria,
+      storeId,
+      snapshot
+    );
 
-        // Perform the API request
-        const response = await axiosInstance.post<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
-          `${API_BASE_URL}/${snapshotId}/config`,
-          {
-            snapshotContainer,
-            criteria,
-            category,
-            categoryProperties,
-            delegate,
-          },
-          {
-            headers: headers as Record<string, string>,
-          }
-        );
+    // 🔹 7. Fetch snapshot config from API
+    const response = await axiosInstance.post<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+      `${API_BASE_URL}/${snapshotCriteriaId}/config`,
+      {
+        snapshotContainer: containerPromise,
+        criteria,
+        category,
+        categoryProperties,
+        delegate,
+      },
+      { headers: headers as Record<string, string> }
+    );
 
-        const snapshotConfigData = response.data;
+    const snapshotConfigData = response.data;
 
-        if (!snapshotContainer) {
-          throw new Error("SnapshotContainer is undefined");
-        }
+    // 🔹 8. Resolve container
+    const resolvedContainer = await containerPromise;
+    if (!resolvedContainer) throw new Error("SnapshotContainer is undefined");
 
-        // Assuming snapshotContainer is a Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-        const snapshotContainerResolved = await snapshotContainer;
+    // 🔹 9. Run snapshot callback if available
+    if (id && snapshotId && snapshot) {
+      await snapshot(
+        id,
+        snapshotId,
+        resolvedContainer.snapshotData!,
+        category,
+        categoryProperties,
+        async (snapshotStoreResolved) => {
+          if (!snapshotStoreResolved?.snapshotData || snapshotStoreResolved.snapshotData instanceof Map) return;
 
-        if(subscription === undefined){
-          throw new Error("Unable to find a subscription for snapshotconfig")
-        }
-        // Handle the snapshot if snapshotId is not null
-        if (id !== null && snapshotId !== null && snapshot !== null) {
-          snapshot(
-            id,
-            `${snapshotId}`,
-            snapshotContainerResolved.snapshotData as unknown as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            category,
-            categoryProperties,
-            async (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => {
-              // Handle the snapshotStore as needed
-              const shouldUpdateState = true; // Replace with actual condition
-              const shouldLog = true; // Replace with actual condition
-              const shouldUpdateUI = false; // Replace with actual condition
+          const storeId = snapshotStoreResolved.snapshotData.storeId;
+          if (!storeId) throw new Error(`No storeId associated with ${snapshotStoreResolved.name}`);
 
-              if (
-                'storeId' in snapshotContainerResolved.snapshotData &&
-                snapshotContainerResolved.snapshotData &&
-                !(snapshotContainerResolved.snapshotData instanceof Map)
-              ) {
-                const storeId = snapshotContainerResolved.snapshotData.storeId;
-                if (!storeId) {
-                  throw new Error(`not storeId associated with ${snapshotContainerResolved.name}`);
-                  // Use storeId as needed
-                }
-
-                const snapshotStore = await snapshotApi.getSnapshotStore(storeId, snapshotContainerResolved, criteria);
-                if (shouldUpdateState) {
-                  // Update the state with the snapshotStore
-                  dispatch((await useSnapshotStore(addToSnapshotList, storeProps)).updateSnapshotStore(await snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback));
-                }
-
-                if (shouldLog) {
-                  if (!snapshot) {
-                    throw Error("Snapshot is null");
-                  }
-                  // Log the snapshotStore data
-                  console.log('Snapshot store updated:', snapshot);
-                  // or send it to an analytics service
-                  sendToAnalytics('snapshotStoreUpdated', {}, isSnapshot(snapshot));
-                }
-
-                if (shouldUpdateUI) {
-                  // Update the UI with the snapshotStore
-                  updateUIWithSnapshotStore(isSnapshot(snapshot));
-                }
-              }
-            },
-            {} as DataStore<T, K>,
-            {} as DataStoreMethods<T, K>,
-            {} as UnifiedMetaDataOptions<T, K, Meta, keyof T>,
-            `${endpointCategory}`,
-            storeProps,
-            snapshotConfigData,// Use the snapshotStoreConfig from the response or undefined if null
-            subscription,
-            snapshotStoreConfig,
-            snapshotContainer
+          const snapshotStore = await snapshotApi.getSnapshotStore(storeId, resolvedContainer, criteria);
+          dispatch(
+            (await useSnapshotStore(addToSnapshotList, storeProps!)).updateSnapshotStore(
+              await snapshotStore,
+              snapshotId,
+              new Map(),
+              {},
+              [],
+              {} as Snapshot<T, K>,
+              {} as ConfigureSnapshotStorePayload<T, K>,
+              resolvedContainer,
+              () => {},
+            )
           );
-        }
+        },
+        {} as DataStore<T, K>,
+        {} as DataStoreMethods<T, K>,
+        {} as UnifiedMetadata<T, K, Meta, keyof T>,
+        subscriberId,
+        endpointCategory,
+        storeProps,
+        snapshotConfigData,
+        subscription,
+        snapshotStoreConfig,
+        resolvedContainer
+      );
+    }
 
-        resolve(snapshotConfigData);
-      } catch (error) {
-        const errorMessage = "Failed to get snapshot config";
-        handleApiError(error as AxiosError<unknown>, errorMessage);
-        reject(error);
-      }
-    };
+    // 🔹 10. Return final config
+    return snapshotConfigData;
 
-    fetchSnapshotConfig();
-
-  })
+  } catch (error) {
+    const errorMessage = "Failed to get snapshot config";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
 }
+
 
 const getSnapshotStoreConfigData = <
   T extends BaseDataEntity,
@@ -2513,7 +2502,8 @@ const getSnapshotConfigData = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
@@ -3087,6 +3077,7 @@ const deleteSnapshotStore = async <
     throw error;
   }
 };
+
 
 
 const mapSnapshots = async <

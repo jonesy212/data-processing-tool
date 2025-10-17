@@ -1,8 +1,17 @@
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { StatusType } from "@/app/models/data/StatusType";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // snapshotDefaults.ts
-function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+function defaultTransformDelegate<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Example transformation logic
     // You can modify the snapshot data here, e.g., adding metadata or modifying existing fields.
     snapshot.metadata = {
@@ -12,7 +21,12 @@ function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Met
   
     return snapshot;
   }
-  function defaultAddDataStatus<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultAddDataStatus<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: number,
     status: StatusType | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -41,7 +55,12 @@ function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Met
 
   
 
-  function defaultRemoveData<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultRemoveData<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: number,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
@@ -56,7 +75,12 @@ function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Met
     }
   }
     
-  function defaultUpdateData<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateData<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: number,
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -73,7 +97,12 @@ function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Met
     }
   }
 
-  function defaultUpdateDataTitle<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateDataTitle<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   id: number,
   title: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -92,7 +121,12 @@ function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Met
 }
 
   
-function defaultUpdateDataDescription<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function defaultUpdateDataDescription<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: number,
     description: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -112,7 +146,12 @@ function defaultUpdateDataDescription<T extends BaseDataEntity, K extends T = T,
 
   
 
-  function defaultUpdateDataStatus<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateDataStatus<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     id: number,
     status: StatusType | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -139,7 +178,12 @@ function defaultUpdateDataDescription<T extends BaseDataEntity, K extends T = T,
   }
 
   
-  function defaultAddDataSuccess<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultAddDataSuccess<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     payload: { data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] },
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
@@ -160,7 +204,7 @@ function defaultUpdateDataDescription<T extends BaseDataEntity, K extends T = T,
   }
   
   export {
-    defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
-    defaultUpdateDataStatus, defaultUpdateDataTitle
+  defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
+  defaultUpdateDataStatus, defaultUpdateDataTitle
 };
 

@@ -1,41 +1,40 @@
 // TaskManagerComponent.tsx
+import { Progress } from '';
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import TaskAssignmentSnapshot from "@/app/actions/TaskAssignmentSnapshot";
 import { UIActions } from "@/app/actions/UIActions";
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
-import { Progress } from '';
-import { handleTaskApiErrorAndNotify, updateTaskAPI } from "@/app/api/TasksApi";
-import { Progress } from "@/app/models/tracker/ProgressBar";
+import { handleTaskApiErrorAndNotify } from "@/app/api/TasksApi";
 import { brandingSettings } from "@/app/branding/BrandingSettings";
 import updateUI from "@/app/documents/editing/updateUI";
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { Project } from "@/app/models/projects/Project";
+import { Phase } from "@/app/models/phases/Phase";
+import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { Task, TaskData } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-import { Phase } from "@/app/models/phases/Phase";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { ProjectDetails } from "@/app/models/projects/Project";
 import TaskProgress from "@/app/projects/projectManagement/TaskProgress";
 import TeamProgress from "@/app/projects/projectManagement/TeamProgress";
 import TodoProgress from "@/app/projects/projectManagement/TodoProgress";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { createMilestone } from "@/app/state/redux/slices/TrackerSlice";
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { rootStores } from "@/app/state/stores/RootStores";
 import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
 import useTrackerStore from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { VideoData } from "@/app/typingsVideo/video/videoTypes";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface TaskAssignmentProps<
   T extends BaseDataEntity = BaseDataRoot,
@@ -160,7 +159,7 @@ const TaskManagerComponent = <
               done: true,
               value: {
                 _id: "taskData", // Example value
-                phase: {} as Phase,
+                phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };
@@ -186,7 +185,6 @@ const TaskManagerComponent = <
       data: {} as TaskData,
       source: "user",
       some: () => false,
-      then: () => {},
       startDate: new Date(),
       endDate: new Date(),
       isActive: true,
@@ -205,7 +203,7 @@ const TaskManagerComponent = <
               done: true,
               value: {
                 _id: "taskData", // Example value
-                phase: {} as Phase,
+                phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };
@@ -249,7 +247,7 @@ const TaskManagerComponent = <
               done: true,
               value: {
                 _id: "taskData", // Example value
-                phase: {} as Phase,
+                phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };

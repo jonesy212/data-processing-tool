@@ -1,4 +1,4 @@
-import { SortingEndpoints } from '../types/categories/SortingEndpoints';
+import { SortingEndpoints } from '@/app/typings/categories/SortingEndpoints';
 
 export const sortingConfig: SortingEndpoints = {
   sortEvents: { path: "/api/sorting/events", method: "POST" },

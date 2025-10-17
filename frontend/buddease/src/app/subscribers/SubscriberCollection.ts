@@ -1,7 +1,7 @@
 // SubscriberCollection.ts
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type SubscriberCollection<
   T extends BaseDataEntity,

@@ -1,14 +1,14 @@
 // defaultSnapshotBuilder.ts
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SnapshotUnion } from '@/app/snapshots/snapshotsLocalStorageSnapshotStore';
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import {
-    BaseDataEntity,
-    BaseDataRoot,
-    DefaultExcludedFields,
-    DefaultMeta
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta
 } from '@/config/BaseConfig';
-import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
@@ -17,7 +17,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { Subscribers } from '@/app/subscribers/Subscriber';
 import { Snapshot } from './Snapshot';
 import { default as SnapshotStore } from './SnapshotStore';
@@ -89,16 +89,18 @@ function deepEqual(obj1: any, obj2: any): boolean {
 }
 
 function defaultSnapshotBuilder<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Excluded extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   baseData: T,
-  baseMeta: Map<string, Snapshot<T, K, Meta, Excluded>>,
-  storeProps: SnapshotStoreProps<T, K, Meta, Excluded>,
-  storeOptions?: SnapshotStoreOptions<T, K, Meta, Excluded>
-): SnapshotConfigBuilder<T, K, Meta, Excluded> {
+  baseMeta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  storeOptions?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotConfigBuilder<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     buildBaseConfig: async () => ({
       data: baseData,
@@ -109,18 +111,18 @@ function defaultSnapshotBuilder<
       
     }),
 
-    buildStoreMethods: async () => ({} as StoreMethods<T, K, Meta, Excluded>),
-    buildEventHandlers: async () => ({} as EventHandlers<T, K, Meta, Excluded>),
-    buildSnapshotStore: async () => ({} as SnapshotStore<T, K, Meta, Excluded>),
-    buildSnapshotUnion: async () => ({} as SnapshotUnion<T, K, Meta, Excluded>),
-    buildLifecycle: async () => ({} as Lifecycle<T, K, Meta, Excluded>),
-    buildMeta: async () => ({} as UnifiedMetadata<T, K, Meta, Excluded>),
-    buildStoreConfig: async () => ({} as SnapshotStoreConfig<T, K, Meta, Excluded>),
-    buildSnapshotEvents: async () => ({} as SnapshotEvents<T, K, Meta, Excluded>),
-    buildContainer: async () => ({} as SnapshotContainer<T, K, Meta, Excluded>),
-    buildSubscribers: async () => ({} as Subscribers<T, K, Meta, Excluded>),
-    buildWithCriteria: async () => ({} as SnapshotWithCriteria<T, K, Meta, Excluded>),
-    buildManager: async () => ({} as SnapshotManager<T, K, Meta, Excluded>),
+    buildStoreMethods: async () => ({} as StoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildEventHandlers: async () => ({} as EventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildSnapshotStore: async () => ({} as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildSnapshotUnion: async () => ({} as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildLifecycle: async () => ({} as Lifecycle<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildMeta: async () => ({} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildStoreConfig: async () => ({} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildSnapshotEvents: async () => ({} as SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildContainer: async () => ({} as SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildSubscribers: async () => ({} as Subscribers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildWithCriteria: async () => ({} as SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
+    buildManager: async () => ({} as SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
   };
 }
 

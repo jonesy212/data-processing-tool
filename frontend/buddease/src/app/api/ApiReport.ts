@@ -1,6 +1,7 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
-import { createSnapshot } from '@/app/api/SnapshotApi';
+import createSnapshot from '@/app/api/SnapshotApi';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
+import { analyzeResearchFindings, ResearchFindings } from '@/app/pages/searches/ResearchFindings';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
   AddReportBase,
@@ -10,8 +11,6 @@ import {
 } from '@/components/documents/documentation/report/Report';
 import { FinancialMetrics, processFinancialMetrics } from '@/components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/components/metrics/TechnicalSpecifications';
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { analyzeResearchFindings, ResearchFindings } from '@/pages/searchs/ResearchFindings';
 
 // Define the API base URL for reports
 const API_BASE_URL = endpoints.reports.list

@@ -1,6 +1,6 @@
 // // updateSubscribersAndSnapshots.ts
 
-// import UniqueIDGenerator from "@/app/app/generators/GenerateUniqueIds";
+// import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 // import { CategoryProperties } from "@/app//personas/ScenarioBuilder";
 // import { Subscriber } from "@/app/users/Subscriber";
 // import { Subscription } from "@/app/subscriptions/Subscription";
@@ -13,7 +13,7 @@
 // import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/app/utils/trading/TradingUtils";
 // import { userId } from "@/app/users/ApiUser";
 // import { triggerIncentives } from "@/app/utils/web3/applicationUtils";
-// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
+// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore'
 // import { SnapshotConfig } from '@/app/snapshots/Snapshot';
 // import { K, T } from "./SnapshotConfig";
 // import SnapshotStore from "./SnapshotStore";

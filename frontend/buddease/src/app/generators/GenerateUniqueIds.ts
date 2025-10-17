@@ -1,10 +1,9 @@
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum, NotificationType } from "@/app/context/NotificationContext";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DataDetails } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
@@ -15,7 +14,8 @@ import {
 
 const area = fetchUserAreaDimensions().toString()
 
-const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
+const currentMetadata: AppUnifiedMetadata = useMetadata('uniqueId-generator-area')
+const currentMeta: AppStructuredMetadata = useMeta(area)
 const { versionNumber, appVersion } = getCurrentAppInfo();
 
 
@@ -332,7 +332,7 @@ class UniqueIDGenerator {
     return `coupon_${Date.now()}`;
   }
 
-  static generateVideoID(name: string, type: NotificationTypeEnum): string {
+  static generateVideoID(name: string, type: NotificationType): string {
     return `video_${name}_${type}`;
   }
 
@@ -445,63 +445,63 @@ class UniqueIDGenerator {
     generatorType?: string,
   ): string {
     switch (type) {
-      case NotificationTypeEnum.UserID:
+      case NotificationTypeEnum.USER_ID:
         return UniqueIDGenerator.generateUserID(name);
-      case NotificationTypeEnum.TeamID:
+      case NotificationTypeEnum.TEAM_ID:
         return UniqueIDGenerator.generateTeamID(name);
-      case NotificationTypeEnum.CustomID:
+      case NotificationTypeEnum.CUSTOM_ID:
         return UniqueIDGenerator.generateCustomID(name, type);
-      case NotificationTypeEnum.CalendarID:
+      case NotificationTypeEnum.CALENDAR_ID:
         return UniqueIDGenerator.generateCalendarID(name);
-      case NotificationTypeEnum.ProjectRevenueID:
+      case NotificationTypeEnum.PROJECT_REVENUE_ID:
         return UniqueIDGenerator.generateProjectID(name);
-      case NotificationTypeEnum.AccountCreated:
+      case NotificationTypeEnum.ACCOUNT_CREATED:
         return UniqueIDGenerator.generateUserID(name);
-      case NotificationTypeEnum.TeamJoinRequest:
+      case NotificationTypeEnum.TEAM_JOIN_REQUEST:
         return UniqueIDGenerator.generateTeamID(name);
-      case NotificationTypeEnum.GeneratedID:
+      case NotificationTypeEnum.GENERATED_ID:
         return UniqueIDGenerator.generateElementID(name);
-      case NotificationTypeEnum.PhaseID:
+      case NotificationTypeEnum.PHASE_ID:
         return UniqueIDGenerator.generatePhaseID(name);
-      case NotificationTypeEnum.DocumentEditID:
+      case NotificationTypeEnum.DOCUMENT_EDIT_ID:
         return UniqueIDGenerator.generateDocumentEditID(name);
-      case NotificationTypeEnum.TaskBoardID:
+      case NotificationTypeEnum.DOCUMENT_EDIT_ID:
         return UniqueIDGenerator.generateTaskBoardID();
-      case NotificationTypeEnum.BrainstormingSessionID:
+      case NotificationTypeEnum.BRAINSTORMING_SESSION_ID:
         return UniqueIDGenerator.generateBrainstormingSessionID();
-      case NotificationTypeEnum.CommentID:
+      case NotificationTypeEnum.COMMENT_ID:
         return UniqueIDGenerator.generateCommentID(id || "", title || "");
-      case NotificationTypeEnum.ContentID:
+      case NotificationTypeEnum.CONTENT_ID:
         return UniqueIDGenerator.generateContentID(id || "", title || "");
-      case NotificationTypeEnum.MeetingID:
+      case NotificationTypeEnum.MEETING_ID:
         return UniqueIDGenerator.generateMeetingID(name);
-      case NotificationTypeEnum.ProductID:
+      case NotificationTypeEnum.PRODUCT_ID:
         return UniqueIDGenerator.generateProductID();
-      case NotificationTypeEnum.EventID:
+      case NotificationTypeEnum.EVENT_ID:
         return UniqueIDGenerator.generateEventID();
-      case NotificationTypeEnum.MessageID:
+      case NotificationTypeEnum.MESSAGE_ID:
         return UniqueIDGenerator.generateMessageID();
-      case NotificationTypeEnum.FileID:
+      case NotificationTypeEnum.FILE_ID:
         return UniqueIDGenerator.generateFileID();
-      case NotificationTypeEnum.LocationID:
+      case NotificationTypeEnum.LOCATION_ID:
         return UniqueIDGenerator.generateLocationID();
-      case NotificationTypeEnum.CouponCode:
+      case NotificationTypeEnum.COUPON_CODE:
         return UniqueIDGenerator.generateCouponCode();
-      case NotificationTypeEnum.VideoID:
+      case NotificationTypeEnum.VIDEO_ID:
         return UniqueIDGenerator.generateVideoID(name, type);
-      case NotificationTypeEnum.SurveyID:
+      case NotificationTypeEnum.ANALYTICS_ID:
         return UniqueIDGenerator.generateSurveyID();
-      case NotificationTypeEnum.AnalyticsID:
+      case NotificationTypeEnum.ANALYTICS_ID:
         return UniqueIDGenerator.generateAnalyticsID();
-      case NotificationTypeEnum.AppStructureID:
+      case NotificationTypeEnum.APP_STRUCTURE_ID:
         return UniqueIDGenerator.generateAppStructureID();
-      case NotificationTypeEnum.SnapshotID:
+      case NotificationTypeEnum.SNAPSHOT_ID:
         return UniqueIDGenerator.generateSnapshotID();
-      case NotificationTypeEnum.VersionID:
+      case NotificationTypeEnum.VERSION_ID:
         return UniqueIDGenerator.generateVersionID(versionNumber);
-      case NotificationTypeEnum.AppVersion:
+      case NotificationTypeEnum.APP_VERSION:
         return UniqueIDGenerator.generateAppVersion();
-      case NotificationTypeEnum.PresentationID:
+      case NotificationTypeEnum.PRESENTATION_ID:
         return UniqueIDGenerator.generatePresentationID(
           prefix,
           name,

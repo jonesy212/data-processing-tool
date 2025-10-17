@@ -1,6 +1,6 @@
 // blogsConfig.ts
-import { BlogsEndpoints } from '../types/categories/BlogsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { BlogsEndpoints } from '@/app/typings/categories/BlogsEndpoints';
 
 export const blogsConfig: BlogsEndpoints = {
   list: { path: `${BASE_URL}/blogs`, method: "GET" },

@@ -1,7 +1,8 @@
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { SharedSnapshotProperties } from '@/app/documents/RelatedProps'
+import { SnapshotVersioningSystemProps} from '@/app/snapshots/useSnapshotVersioningSystem'
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
-import { DataWithPriority } from "@/app/components/utils/versionUtils";
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData'
+import { DataWithPriority } from "@/app/utils/versionUtils";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
@@ -116,6 +117,7 @@ function isEnhancedSnapshotData<
           hipaaCompliant: false,
           pciCompliant: false,
         },
+        getSecurityMeasure: () => "",
         validateIntegrity: () => true,
         verifySignature: () => true,
         checkPermissions: () => true,
@@ -220,7 +222,11 @@ function getDefaultPermissions(): AppStructurePermissions {
 // Define generic types T and K for the function
 const findSnapshotStoresById = async <
   T extends BaseDataEntity,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: number
 ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> => {
@@ -241,12 +247,11 @@ const isCustomSnapshotData = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
   input: unknown
-): input is CustomSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+): input is CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // More robust type checking
   return (
     typeof input === 'object' && 

@@ -1,17 +1,19 @@
 // defaultSubscribeToSnapshots.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseData } from '@/app/models/data/Data';
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { createMockSnapshot } from '@/snapshotOperations';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { createMockSnapshot } from '@/app/snapshots/snapshotOperations';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 export const defaultSubscribeToSnapshots = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
   callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => Subscriber<BaseData, T> | null,

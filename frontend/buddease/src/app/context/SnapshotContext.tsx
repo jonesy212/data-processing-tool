@@ -1,16 +1,17 @@
 // // SnapshotContext.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, } from '@/app/models/data/Data';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { createContext, ReactNode, useContext, useState } from "react";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { useMemo } from 'react';
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import {
+  createBasicSnapshot,
+  createCompleteSnapshot
+} from '@/app/snapshots/createSnapshotStoreOptions';
 const fetchSnapshotFromAPI = async <  
   T extends BaseDataEntity,
   K extends T = T,
@@ -32,7 +33,7 @@ const fetchSnapshotFromAPI = async <
   }
 };
 
-interface SnapshotContextType<
+export interface SnapshotContextType<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -244,6 +245,9 @@ export const useSnapshot = <
     snapshotMap: context.snapshotMap as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   };
 };
+
+
+
 
 
 // function fetchSnapshotFromAPI<

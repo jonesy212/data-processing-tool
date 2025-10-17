@@ -3,7 +3,7 @@
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { BaseData } from '@/app/models/data/Data';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
-import {DocumentTypeEnum } from '@/app/typings/documents'
+import {DocumentTypeEnum } from '@/app/typings/documentTypes'
 
 export class ClientDocumentGenerator {
   async createTextDocument(

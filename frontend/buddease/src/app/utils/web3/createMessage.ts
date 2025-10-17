@@ -1,13 +1,13 @@
 // createMessage.ts
-import { Content } from '@/app/components/models/content/AddContent';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { UserPreferences } from "@/config/UserPreferences";
-import { NotificationType } from '@/app/context/NotificationContext';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 import { ChatRoom } from "@/app/calendar/CalendarSlice";
 import { Sender } from "@/app/communications/chat/Communication";
+import { Content } from '@/app/components/models/content/AddContent';
+import { NotificationType } from '@/app/context/NotificationContext';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { UserPreferences } from "@/config/UserPreferences";
+import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 type MessageProps = {
   type: NotificationType; 
   content: string | Content<T, K> | undefined;  // Align content type

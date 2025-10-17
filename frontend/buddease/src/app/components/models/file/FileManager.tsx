@@ -1,29 +1,12 @@
-import { fetchFolderContentsAPI } from '@/app/components/api/ApiFiles';
+import { fetchFolderContentsAPI } from '@/app/api/ApiFiles';
+import { Folder } from '@/app/models/data/Folder';
 import { refreshUIForFile } from "@/app/snapshots/refreshUI";
 import { selectFilteredEvents } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { useFilterStore } from "@/app/state/stores/FilterStore";
-import { Folder } from '@/data/ Folder';
-import { FilteredEventsState } from '@/stats/stores/FilterStore';
+import { FilteredEventsState, useFilterStore } from "@/app/state/stores/FilterStore";
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-interface File {
-  id?: string;
-  name?: string | undefined;
-  fileMetadata: FileMetadata
-}
-
-interface FileMetadata {
-    fileName: string;
-    fileSize: number;
-    size: number;
-    createdAt: Date;
-    updatedAt: Date;
-    [key: string]: any; // Additional fileMetadata fields
-  }
-
 
 // Props for FileManager
 interface FileManagerProps {
@@ -32,8 +15,6 @@ interface FileManagerProps {
     payload: any;
   }
 
-
-  
   const FileManager: React.FC<FileManagerProps> = ({ initialFiles, initialFolders, payload }) => {
     // Filter out files with undefined ids and ensure that ids are strings
     const [files, setFiles] = useState<Map<string, File>>(() => {
@@ -159,4 +140,4 @@ interface FileManagerProps {
   
   export default FileManager
 
-  export type { File, FileManagerProps, FileMetadata };
+  export type {  FileManagerProps };

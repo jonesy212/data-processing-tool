@@ -1,6 +1,6 @@
 // projectOwnerConfig.ts
-import { ProjectOwnerEndpoints } from '../types/categories/ProjectOwnerEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ProjectOwnerEndpoints } from '@/app/typings/categories/ProjectOwnerEndpoints';
 
 export const projectOwnerConfig: ProjectOwnerEndpoints = {
   base: { path: `${BASE_URL}/api/project/owner`, method: "GET" },

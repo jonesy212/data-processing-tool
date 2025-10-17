@@ -1,11 +1,12 @@
 // DataAnalysisResult.ts
-import { Phase } from '@/app/models/phases/Phase';;
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { Phase } from '@/app/models/phases/Phase';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+;
 
 export interface DataAnalysisResult<
   T extends BaseDataEntity,

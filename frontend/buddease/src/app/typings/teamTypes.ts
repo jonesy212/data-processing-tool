@@ -1,5 +1,4 @@
 // teamTypes.ts
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -9,6 +8,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Core Team type definitions
@@ -149,22 +149,22 @@ const emptyTeam: TeamFull = createDefaultTeam();
 
 // ✅ EXPORT FOR REUSE
 export type {
-    TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
-    TeamMeta, TeamNotificationSettings, // ✅ Clean alias
-    TeamParams, TeamPermissions, // ✅ Clean alias
-    TeamRealtimeDataItemFull, // ✅ Clean alias
-    TeamSettings, // ✅ Clean alias
-    TeamSnapshotDataFull, // ✅ Clean alias
-    TeamSnapshotFull, // ✅ Clean alias
-    TeamSnapshotsArrayFull, // ✅ Clean alias
-    TeamSnapshotStoreConfigFull, // ✅ Clean alias
-    TeamSnapshotStoreFull, // ✅ Clean alias
-    TeamSnapshotWithCriteriaFull, // ✅ Clean alias
-    TeamSubscriberCollectionFull
+  TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
+  TeamMeta, TeamNotificationSettings, // ✅ Clean alias
+  TeamParams, TeamPermissions, // ✅ Clean alias
+  TeamRealtimeDataItemFull, // ✅ Clean alias
+  TeamSettings, // ✅ Clean alias
+  TeamSnapshotDataFull, // ✅ Clean alias
+  TeamSnapshotFull, // ✅ Clean alias
+  TeamSnapshotsArrayFull, // ✅ Clean alias
+  TeamSnapshotStoreConfigFull, // ✅ Clean alias
+  TeamSnapshotStoreFull, // ✅ Clean alias
+  TeamSnapshotWithCriteriaFull, // ✅ Clean alias
+  TeamSubscriberCollectionFull
 };
 
   export {
-        createDefaultTeam,
-        emptyTeam
-    };
+    createDefaultTeam,
+    emptyTeam
+  };
 

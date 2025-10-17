@@ -1,6 +1,6 @@
 // databaseConfig.ts
-import { DatabaseEndpoints } from '../types/categories/DatabaseEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { DatabaseEndpoints } from '@/app/typings/categories/DatabaseEndpoints';
 
 export const databaseConfig: DatabaseEndpoints = {
   backend: { path: `${BASE_URL}/api/user/backend`, method: "GET" },

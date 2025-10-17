@@ -1,5 +1,5 @@
 // ToolbarEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ToolbarEndpoints {
   fetchToolbarSize: EndpointConfig;

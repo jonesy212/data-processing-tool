@@ -1,9 +1,16 @@
 // import { Data } from '@/app/models/data/Data';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotItem } from "./SnapshotList";
+// import { Attachment } from '@/app/documents/attachment/Attachment';
+// import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // // convertSnapshotToItem.ts
-// function convertSnapshotToItem<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+// function convertSnapshotToItem<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
 //   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   id: string
 // ): SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {

@@ -2,9 +2,9 @@ import useApiUserPreferences from '@/app/api/preferences/ApiUserPreferences';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { all, call, put } from 'redux-saga/effects';
 
-import userPreferencesSagas from '@/userPreferencesSaga';
+import { communicationPreferencesSaga } from '@/app/communicationPreferencesSaga';
 import brandingPreferencesSaga from '@/brandingPreferencesSaga';
-import { communicationPreferencesSaga } from '@/communicationPreferencesSaga';
+import userPreferencesSagas from '@/userPreferencesSaga';
 import visualPreferencesSaga from '@/visualPreferencesSaga';
 // Import other preference saga files...
 

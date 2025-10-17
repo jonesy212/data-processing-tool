@@ -3,7 +3,7 @@ import { AttendancePredictionResult } from "@/app/components/models/data/Calenda
 import { Attendee } from "./Attendee";
 import { BaseEvent } from '@/app/components/event/BaseEvent'
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
-import { T, K } from '@/app/components/models/data/dataStoreMethods';
+import { T, K } from '@/app/models/data/dataStoreMethods';
 
 interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K> {
   eventId: string;

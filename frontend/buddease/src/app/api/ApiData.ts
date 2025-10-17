@@ -44,7 +44,9 @@ const apiNotificationMessages: DataNotificationMessages = {
 };
 
 
-const handleApiErrorAndNotify = <T extends Record<string, string>>(
+const handleApiErrorAndNotify = <
+  T extends Record<string, string>
+>(
   error: AxiosError<unknown>,
   defaultMessage: string,
   errorId: keyof T,
@@ -238,7 +240,7 @@ class DataApiService {
       const storeIdKey = `storeId_${storeId}`;
       const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
       const notificationDate = new Date();
-      const notificationType = NotificationTypeEnum.GetStoreSuccess;
+      const notificationType = NotificationTypeEnum.GET_STORE_SUCCESS;
 
       notificationStore.notify(
         storeIdKey,

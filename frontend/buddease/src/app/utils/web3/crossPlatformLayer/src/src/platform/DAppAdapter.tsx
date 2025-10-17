@@ -1,6 +1,6 @@
 // DAppAdapter.ts
-import { DAppPlugin } from '@/app/components/web3/pluginSystem/plugins/PluginInterface';
-import loadPlugins from '@/app/components/web3/pluginSystem/plugins/loader';
+import { DAppPlugin } from '@/app/utils/web3/pluginSystem/plugins/PluginInterface';
+import loadPlugins from '@/app/utils/web3/pluginSystem/plugins/loader';
 import { useEffect, useState } from 'react';
 
 import React from "react";

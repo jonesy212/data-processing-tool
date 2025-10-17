@@ -1,16 +1,14 @@
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
-import { Project } from "@/app/models/projects/Project";
-import { User } from "@/app/users/User";
-import { Data } from "@/app/data/Data";
-import { Progress } from "@/app/tracker/ProgressBar";
-import { Member } from "./TeamMembers";
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { CommonData } from "@/app/models/CommonData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseData } from '@/app/models/data/Data';
+import { Project } from "@/app/models/projects/Project";
+import { Progress } from "@/app/tracker/ProgressBar";
+import { User } from "@/app/users/User";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { Member } from "./TeamMembers";
 
 interface TeamData<
   T extends BaseDataEntity = BaseDataEntity,
@@ -84,5 +82,6 @@ const teamData: TeamData<StringData, string> = {
 };
 
 
-export type { TeamData }
-export { teamData }
+export { teamData };
+export type { TeamData };
+

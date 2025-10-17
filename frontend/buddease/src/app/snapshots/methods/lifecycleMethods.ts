@@ -2,26 +2,26 @@
 // snapshotStore/methods/LifecycleMethods.ts
 import { createSnapshot } from '@//createSnapshot';
 import { Content } from '@/app/components/models/content/AddContent';
-import { T } from '@/app/components/models/data/dataStoreMethods';
 import { NotificationType } from "@/app/context/NotificationContext";
+import { T } from '@/app/models/data/dataStoreMethods';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import type {
-    Category,
-    CategoryProperties,
-    CreateSnapshotsPayload,
-    Snapshot,
-    SnapshotManager,
-    SnapshotStoreProps,
-    SnapshotUnion,
-    Subscriber,
-    Subscription,
+  Category,
+  CategoryProperties,
+  CreateSnapshotsPayload,
+  Snapshot,
+  SnapshotManager,
+  SnapshotStoreProps,
+  SnapshotUnion,
+  Subscriber,
+  Subscription,
 } from "@/app/types";
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { convertToSnapshotUnion } from "./ConvertSnapshotUnion";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 

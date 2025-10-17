@@ -1,6 +1,8 @@
 // ContentSlice.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import * as ApiTask from "@/app/api/TasksApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import axiosInstance from '@/app/api/csrfToken'
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { FileType } from "@/app/documents/attachment/Attachment";
@@ -14,11 +16,11 @@ import {
 import ExportTasksPayload from "@/app/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
 import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task";
-import { Phase } from "@/app/components/phases/Phase";
+import { Phase } from "@/app/models/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { TaskSort } from "@/app/components/sort/TaskSort";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
@@ -31,16 +33,16 @@ import {
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import useWebNotifications from "@/app/hooks/commHooks/useWebNotifications";
-import { ContentLogger } from "@/app/logging/Logger";
-import { ContentItem } from "@/app/ntent/ContentItem";
-import { BaseData, Comment, Data } from "@/app/ta/Data";
+import { ContentLogger } from "@/app/libraries/logging/Logger";
+import { ContentItem } from "@/app/models/content/ContentItem";
+import { BaseData, Comment, Data } from "@/app/data/Data";
 import { sanitizeInput } from "@/app/SanitizationFunctions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Idea, IdeationSession } from "@/app/as";
-import { User } from "@/app/r";
-import { VideoData } from "@/app/eo";
-import { DetailsItem } from "@/app/stores/DetailsListStore";
-import { ProjectManagerStore } from "@/app/stores/ProjectStore";
+import { Idea, IdeationSession } from "@/app/users/Ideas";
+import { User } from "@/app/users/User";
+import { VideoData } from "@/app/typings/videoTypes";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { ProjectManagerStore } from "@/app/state/stores/ProjectStore";
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
 
@@ -227,13 +229,13 @@ const getTaskHistoryFromDatabaseAsync = async <
     updateTaskDetails: (
       state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       action: PayloadAction<TaskDetails & {
-        assignedTo?: User[];
-        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
-        previouslyAssignedTo?: User[];
-        phase?: Phase;
         id: string;
-        updates: TaskDetails;
         subtitle: string;
+        assignedTo?: User[];
+        previouslyAssignedTo?: User[];
+        phase?: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+        updates: TaskDetails;
         value: number;
       }>
     ) => {
@@ -259,7 +261,7 @@ const getTaskHistoryFromDatabaseAsync = async <
           previouslyAssignedTo: previouslyAssignedTo
             ? previouslyAssignedTo.map((user: User) => user as WritableDraft<User>)
             : [],
-          phase: phase ? (phase as WritableDraft<Phase>) : null,
+          phase: phase ? (phase as WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) : null,
         };
       }
     };
@@ -534,7 +536,7 @@ export const useContentSlice = createSlice({
         description: string;
         dueDate: Date;
         status: TaskStatus;
-        type: NotificationTypeEnum;
+        type: NotificationType;
       }>
     ) => {
       const { taskId, title, description, dueDate, status, type } = action.payload;

@@ -1,38 +1,38 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/components/routing/Fields';
+import DocumentBuilder, { DocumentData } from "@/app/documents/editing/DocumentBuilder"; // Import the DocumentBuilder component
 import { setCurrentPhase } from "@/app/hooks/phaseHooks/EnhancePhase";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { ComponentActions } from "@/app/libraries/ui/components/ComponentActions";
 import {
-    BorderStyle,
-    DocumentSize,
-    ProjectPhaseTypeEnum,
+  BorderStyle,
+  DocumentSize,
+  ProjectPhaseTypeEnum,
 } from "@/app/models/data/StatusType";
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import useEditorState from "@/app/state/useEditorState";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import AppVersionImpl, {
-    AppVersion,
-    selectAppVersion,
-    selectDatabaseVersion,
+  AppVersion,
+  selectAppVersion,
+  selectDatabaseVersion,
 } from "@/app/versions/AppVersion";
 import VersionImpl from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { UserSettings } from "@/config/UserSettings";
 import FrontendStructure from "@/config/appStructure/FrontendStructure";
 import BackendStructure from '@/server/database/BackendStructure';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { ContentState, Editor, EditorState } from "draft-js";
 import { IHydrateResult } from "mobx-persist";
 import React, { SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { options } from "sanitize-html";
 import { ModifiedDate } from "./DocType";
-import DocumentBuilder, { DocumentData } from "@/app/documents/editing/DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"] }) => {

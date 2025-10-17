@@ -1,5 +1,5 @@
 // CryptoEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface CryptoEndpoints {
   settings: EndpointConfig;

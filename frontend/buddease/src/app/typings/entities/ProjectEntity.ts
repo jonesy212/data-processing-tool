@@ -1,11 +1,18 @@
 // ProjectEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { StructuredMetadata, UnifiedMetadata } from "@/config/StructuredMetadata";
-import { Snapshot, SnapshotStore, SnapshotWithCriteria, SnapshotStoreConfig, SnapshotData } from "@/app/snapshots";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import {  SnapshotData } from "@/app/snapshots/SnapshotData";
+import {  SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
-import { CalendarManagerStoreClass, CalendarEvent, StatusType, AnalysisTypeEnum } from "@/app/calendar";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { SnapshotConfigParams } from "@/app/snapshots/SnapshotConfigBuilder";
+import { Project } from "@/app/models/projects/Project";
 
 // -------------------
 // Project Entity Type
@@ -117,3 +124,12 @@ type ProjectSubscriberCollection = SubscriberCollection<ProjectEntity, ProjectK,
 // Config Types
 // -------------------
 type ProjectSnapshotStoreConfig = SnapshotStoreConfig<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+
+
+export type { ProjectEntity,
+  ProjectK,
+  ProjectMeta,
+  ProjectAttachment,
+  ProjectExcludedFields,
+  ProjectIncludedFields
+}

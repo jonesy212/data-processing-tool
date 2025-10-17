@@ -6,7 +6,7 @@ import { DocumentBuilderConfig } from "@/app/documents/editing/DocumentBuilderCo
 import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { ApiConfig } from "@/config/BackendConfig";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import MainConfig from "@/config/MainConfig";
 import { DataVersions } from "@/configs/DataVersionsConfig";
 import { traverseFrontendDirectory } from "@/server/traverseFrontend";

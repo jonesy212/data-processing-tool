@@ -3,7 +3,12 @@ import { useDispatch } from 'react-redux';
 
 const dispatch = useDispatch()
 // updateUIWithSnapshotStore.ts
-const updateUIWithSnapshotStore = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+const updateUIWithSnapshotStore = <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
       // Perform a UI update with the snapshotStore data
       const snapshotContent = snapshotStore.getData(); // Retrieve the data from snapshotStore

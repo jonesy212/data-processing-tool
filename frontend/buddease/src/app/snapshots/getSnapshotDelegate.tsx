@@ -1,6 +1,8 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     processSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
@@ -39,7 +41,12 @@ async function getSnapshotDelegate<T, K, Meta, AttachmentType, ExcludedFields, I
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+function createDelegateFromContainer<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     processSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
       try {

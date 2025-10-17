@@ -1,18 +1,19 @@
 // server/metadata/MetadataStateManager.ts
-import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Taggable } from '@/app/models/CommonData';
 import { SharedRelationshipData } from '@/app/models/data/Data';
+import { Permission } from "@/app/permissions/Permission";
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import { Permission } from "@/app/users/Permission";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from '@/config/StructuredMetadata';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
 import { createMetadata } from '@/server/metadata/createMetadata';
 
@@ -26,7 +27,7 @@ interface CoreMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>{
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>{
   schema: Record<string, SchemaField>;
 }
 
@@ -48,7 +49,7 @@ interface WithValue<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> | null;
+  value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 // Server-side metadata state creation
@@ -70,10 +71,10 @@ function createMetaState<
   timestamp: string | number | Date | undefined,
   createdBy: string,
   tags: string[],
-  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
-  initialState: InitializedState<T, K>,
-  mappedSnapshot: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>>,
-  events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  mappedSnapshot: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   lastUpdated: VersionHistory<T, K>,
   isActive: boolean,
   config: Record<string, any>,
@@ -83,9 +84,9 @@ function createMetaState<
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   childIds?: K[],
   relatedData?: K[],
-): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> {
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
-  const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> = {
+  const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id,
     apiEndpoint,
     apiKey,
@@ -106,7 +107,7 @@ function createMetaState<
     latestVersion: metadata.latestVersion,
   };
 
-  const unifiedMetadata = createMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>({
+  const unifiedMetadata = createMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
     id,
     category,
     timestamp,
@@ -133,7 +134,7 @@ function createMetaState<
     ...unifiedMetadata,
     baseConfig,
     timestamp: new Date(),
-    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>),
+    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     sharedBaseData: unifiedMetadata.sharedBaseData ?? ({} as SharedRelationshipData<K>),
     taggable: unifiedMetadata.taggable ?? ({} as Taggable<T, K>),
     metadataEntries: unifiedMetadata.metadataEntries ?? ({} as MetadataEntriesType<T, K>),
@@ -175,10 +176,10 @@ export const createMeta = <
     timestamp: new Date(),
     createdBy: '',
     metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    initialState: {} as InitializedState<T, K>,
+    initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     mappedSnapshot: new Map(),
-    events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    events: {} as EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     latestVersion: {} as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     schema: {},
     isActive: true

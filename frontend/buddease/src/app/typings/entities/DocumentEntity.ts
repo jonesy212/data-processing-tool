@@ -1,8 +1,20 @@
 // DocumentEntity.ts
-// DocumentEntity.types.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DocumentObject } from '@/app/documents/DocumentObject';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+
 
 // Core Document type definitions
 interface DocumentEntity extends BaseDataEntity {
@@ -463,77 +475,50 @@ const emptyDocumentData: AppDocumentData = createDefaultDocumentData();
 
 
 export type {
+  AISuggestion,
   // Core App types
   AppDocument,
   AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
   AppDocumentSnapshotData,
-  AppDocumentSnapshotStore, AppDocumentStructuredMetadata, AppDocumentUnifiedMetadata,
-  // Collaboration types
-  DocumentCollaborator,
-  DocumentComment, 
-  DocumentContext,
-
-  // Utility types
-  DocumentFilterOptions, DocumentFrontendStructure, DocumentParams, DocumentPermissions,
-  // State types
-  DocumentSession, DocumentSnapshotsArray,
-  // Configuration types
-  DocumentSnapshotStoreConfig, DocumentSortOptions, DocumentSummary,
-  // Versioning types
-  DocumentVersion,
-  DocumentVersionHistory, PrivateDocument,
-  // Document variations
-  PublicDocument,
-
-
-
-
-   // Search and indexing
-  DocumentSearchResult,
-  DocumentIndex,
-  
-  // Template types
-  DocumentTemplate,
-  TemplateField,
-  
-  // Workflow types
-  DocumentWorkflow,
-  WorkflowStep,
-  WorkflowParticipant,
-  
-  // Styling types
-  DocumentStyles,
-  HeaderStyle,
-  
-  // Export types
-  DocumentExportOptions,
-  ExportResult,
-  ExportFormat,
-  
-  // Analytics types
-  DocumentAnalytics,
-  DocumentUsageStats,
-  
-  // Backup types
-  DocumentBackup,
-  BackupSchedule,
-  
-  // Sharing types
-  DocumentShareLink,
-  DocumentAccessLog,
-  
+  AppDocumentSnapshotStore, AppDocumentStructuredMetadata, AppDocumentUnifiedMetadata, BackupSchedule,
   // Batch operations
   BatchDocumentOperation,
-  BatchOperationResult,
-  
-  // Validation types
-  DocumentValidationRule,
-  ValidationResult,
-  
+  BatchOperationResult, DocumentAccessLog,
   // AI/ML types
   DocumentAIAnalysis,
-  AISuggestion
-
+  // Analytics types
+  DocumentAnalytics,
+  // Backup types
+  DocumentBackup,
+  // Collaboration types
+  DocumentCollaborator,
+  DocumentComment,
+  DocumentContext,
+  // Export types
+  DocumentExportOptions,
+  // Utility types
+  DocumentFilterOptions, DocumentFrontendStructure, DocumentIndex, DocumentParams, DocumentPermissions,
+  // Search and indexing
+  DocumentSearchResult,
+  // State types
+  DocumentSession,
+  // Sharing types
+  DocumentShareLink, DocumentSnapshotsArray,
+  // Configuration types
+  DocumentSnapshotStoreConfig, DocumentSortOptions,
+  // Styling types
+  DocumentStyles, DocumentSummary,
+  // Template types
+  DocumentTemplate, DocumentUsageStats,
+  // Validation types
+  DocumentValidationRule,
+  // Versioning types
+  DocumentVersion,
+  DocumentVersionHistory,
+  // Workflow types
+  DocumentWorkflow, ExportFormat, ExportResult, HeaderStyle, PrivateDocument,
+  // Document variations
+  PublicDocument, TemplateField, ValidationResult, WorkflowParticipant, WorkflowStep
 };
 
 

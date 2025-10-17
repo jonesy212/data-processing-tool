@@ -5,11 +5,19 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig, snapshotStoreConfigs } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields} from '@/config/BaseConfig';
 
 
-
-const processSnapshotConfigs = async () => {
+const processSnapshotConfigs = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => {
   for (const config of snapshotStoreConfigs) {
     // Example of processing each configuration
     console.log(`Processing snapshot configuration for snapshotId: ${config.snapshotId}`);
@@ -22,11 +30,11 @@ const processSnapshotConfigs = async () => {
         payload: FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payloadData: Data<T> | T,
-        category?: Category, 
         categoryProperties: CategoryProperties | undefined, 
         timestamp: Date, 
         data: T,
-        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        category?: Category, 
       ) => {
         // Handle the callback logic here
         return {
@@ -85,11 +93,11 @@ const handleTags = (config: SnapshotStoreConfig<Data<T>, BaseData>) => {
         payload: FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payloadData: Data<T> | T,
-        category?: Category, 
         categoryProperties: CategoryProperties | undefined, 
         timestamp: Date, 
         data: T,
-        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        category?: Category, 
       ) => {
         // Handle snapshot data fetching logic
         return {

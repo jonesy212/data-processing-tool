@@ -1,32 +1,40 @@
 // BaseConfig.ts
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { useSnapshot } from '@/context/SnapshotContext';
-
+import { SchemaField } from '@/server/database/SchemaField';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Taggable } from '@/app/models/CommonData';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T, Meta } from '@/app/models/data/dataStoreMethods';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "../app/services/ConfigurationService";
-import { BaseMetadata } from '@/server/database/MetaDataOptions';
+import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseMetadata } from '@/config/MetaDataOptions';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
-import { SharedIdentifiers } from '@/app/documents/RelatedProps';
-import { AttachmentType } from '@/app/components/documents/NoteData';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { Attachment } from '@/app/features/support/SupportTicketComponent';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppEntity';
 
-type BaseDataEntity = BaseDataRoot;
+import { 
+  ConfigEntity,
+  ConfigK,
+  ConfigMeta,
+  ConfigAttachment,
+  ConfigExcludedFields,
+  ConfigIncludedFields
+} from "@/app/typings/entities/ConfigEntity";
+import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
+
 
 interface BaseDataRoot {
   [key: string]: any;
   snapshotId?: string | number | null;
   categoryProperties?: CategoryProperties;
 }
+
+type BaseDataEntity = BaseDataRoot;
+
 
 type DefaultMeta<
   T extends BaseDataEntity,
@@ -39,6 +47,7 @@ type DefaultMeta<
 
 type DefaultExcludedFields<T extends BaseDataEntity> = never;
 type DefaultIncludedFields<T extends BaseDataEntity> = keyof T;
+type MemberIncludedFields = Exclude<keyof MemberEntity, MemberExcludedFields>;
 
 // Utility type for excluding fields
 type WithoutExcluded<T, ExcludedFields extends keyof T> = Omit<T, ExcludedFields>;
@@ -78,15 +87,20 @@ interface BaseConfig<
   timestamp: string | number | Date | undefined;
   createdBy?: string | undefined;
   tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-  initialState: InitializedState<T, K>;
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   events: EventManager<T, K>;
+  schema: Record<string, SchemaField>
 }
 
 // Specific configuration for project management features
 interface ProjectManagementConfig<
-  T extends  BaseDataEntity,
-  K extends T = T
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   taskPhases: string[];
   maxCollaborators: number;
@@ -113,14 +127,32 @@ interface CryptoConfig<
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
+const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
+const currentMeta: AppStructuredMetadata = useMeta(area)
 
-const mappedSnapshot: Map<string, Snapshot<T, K, DefaultMeta<T, K>, never>> = new Map(
-  Array.from(useSnapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>().snapshotMap)
+
+// ✅ map snapshot with explicit Config types
+const mappedSnapshot: Map<string, Snapshot<ConfigEntity, ConfigK, ConfigMeta, ConfigAttachment>> = new Map(
+  Array.from(
+    useSnapshot<
+      ConfigEntity,
+      ConfigK,
+      ConfigMeta,
+      ConfigAttachment,
+      ConfigExcludedFields,
+      ConfigIncludedFields
+    >().snapshotMap
+  )
 );
 
-const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+const baseConfig: BaseConfig<
+  ConfigEntity,
+  ConfigK,
+  ConfigMeta,
+  ConfigAttachment,
+  ConfigExcludedFields,
+  ConfigIncludedFields
+> = {
   id: "snapshot1",
   category: "example category",
   timestamp: new Date(),
@@ -129,31 +161,27 @@ const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, Include
   tags: ["sample", "snapshot"],
   schema: {},
   isActive: false,
-  metadata: {
-    area: area, 
-    schema: {},
-    metadataEntries: {}
-  },
+  // metadata: {
+  //   area: area, 
+  //   schema: {},
+  //   metadataEntries: {}
+  // },
   apiEndpoint: "https://api.example.com",
   apiKey: "your_api_key",
   timeout: 5000,
   retryAttempts: 3,
   name: "Base Snapshot",
   initialState: undefined,
-  mappedSnapshot: mappedSnapshot,
-  meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  // mappedSnapshot: mappedSnapshot,
+  meta: {} as StructuredMetadata<ConfigEntity, ConfigK, ConfigMeta, ConfigAttachment, ConfigExcludedFields, ConfigIncludedFields>,
   events: {
      eventRecords: {},
   },
 }
 
 export { baseConfig, mappedSnapshot };
+  
 export type {
-  BaseConfig, CryptoConfig, ProjectManagementConfig, SharedConfig,
-  BaseDataEntity,
-  DefaultMeta,
-  DefaultExcludedFields,
-  BaseDataRoot,
-  DefaultIncludedFields
- };
+  BaseConfig, BaseDataEntity, BaseDataRoot, CryptoConfig, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, ProjectManagementConfig, SharedConfig
+};
 

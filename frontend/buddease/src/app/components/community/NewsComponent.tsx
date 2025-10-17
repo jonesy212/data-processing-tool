@@ -1,8 +1,7 @@
 // NewsComponent.tsx
-import { useState } from 'react';
 import useFiltering from '@/app/hooks/useFiltering';
-import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
-import React from 'react'
+import { SearchOptions } from '@/app/pages/searches/SearchOptions';
+import { useState } from 'react';
 
 const NewsComponent = (options: SearchOptions) => {
   const { addFilter, handleSubmit } = useFiltering(options);

@@ -1,16 +1,17 @@
-import { UserSettings } from "@/config/UserSettings";
-import { ProfileAccessControl } from "@/app/pages/profile/Profile";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { CustomTransaction, SmartContractInteraction } from "@/app/crypto/SmartContractInteraction";
+import { NotificationSettings } from "@/app/features/support/NotificationSettings";
+import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { T } from "@/app/models/data/dataStoreMethods";
+import { Phase } from "@/app/models/phases/Phase";
+import { Project } from "@/app/models/projects/Project";
 import { Task, TaskData } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { NFT } from "@/app/nft/NFT";
-import { Phase } from "@/app/models/phases/Phase";
+import { ProfileAccessControl } from "@/app/pages/profile/Profile";
+import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Project } from "@/app/models/projects/Project";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, TagsRecord } from "@/app/snapshots";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -20,14 +21,13 @@ import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 import { Deadline } from "@/app/state/redux/slices/ProjectSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { NotificationSettings } from "@/app/features/support/NotificationSettings";
-import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import TodoImpl, { Todo } from "@/app/todos/Todo";
 import { BaseResponseType } from "@/app/typings/baseResponseType";
-import { VideoData } from "@/app/video/Video";
 import { BlockchainAsset } from "@/app/typings/cryptoTypes/BlockchainAsset";
-import { BlockchainPermissions } from "@/app/users/BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
+import { VideoData } from "@/app/video/Video";
+import { UserSettings } from "@/config/UserSettings";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
 

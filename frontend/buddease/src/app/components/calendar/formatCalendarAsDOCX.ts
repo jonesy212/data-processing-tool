@@ -1,10 +1,10 @@
 // formatCalendarAsDOCX.ts
+import { SimpleCalendarEvent } from "@/app/calendar/CalendarContext";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CustomDocument } from '@/app/documents/DocumentOptions';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { MyPropertiesOptions } from '@/config//declarations/global';
 import * as docx from 'docx';
-import { SimpleCalendarEvent } from "@/app/calendar/CalendarContext";
-import { CustomDocument } from '@/documents/DocumentOptions';
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 
 

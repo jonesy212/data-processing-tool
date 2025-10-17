@@ -1,6 +1,6 @@
 // teamManagementConfig.ts
-import { TeamManagementEndpoints } from '../types/categories/TeamManagementEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { TeamManagementEndpoints } from '@/app/typings/categories/TeamManagementEndpoints';
 
 export const teamManagementConfig: TeamManagementEndpoints = {
   list: { path: `${BASE_URL}/api/team-management`, method: "GET" },

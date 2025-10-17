@@ -1,6 +1,6 @@
 // drawingConfig.ts
-import { DrawingEndpoints } from '../types/categories/DrawingEndpoints';
-import { BASE_URL } from './baseUrl';
+import { DrawingEndpoints } from '@/app/typings/categories/DrawingEndpoints';
+import { BASE_URL } from '@/app/api/baseUrl';
 
 export const drawingConfig: DrawingEndpoints = {
   fetch: { path: `${BASE_URL}/drawing/fetch`, method: "GET" },

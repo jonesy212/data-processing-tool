@@ -1,5 +1,5 @@
 // ContentEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ContentEndpoints {
   fetchContent: EndpointConfig;

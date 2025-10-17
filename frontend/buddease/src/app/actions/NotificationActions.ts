@@ -7,7 +7,7 @@ import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta
-} from "@/config/BaseConfig";
+} from '@/config/BaseConfig';
 import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
 
 export const NotificationActions = {

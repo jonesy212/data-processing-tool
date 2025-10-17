@@ -1,6 +1,6 @@
 // themeConfig.ts
-import { ThemeEndpoints } from '../types/categories/ThemeEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ThemeEndpoints } from '@/app/typings/categories/ThemeEndpoints';
 
 export const themeConfig: ThemeEndpoints = {
   list: { path: `${BASE_URL}/api/themes`, method: "GET" },

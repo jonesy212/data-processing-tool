@@ -1,6 +1,6 @@
 // CustomDataProvider.ts
+import { useAuth } from "@/app/components/auth/AuthContext";
 import { BaseRecord, CreateParams, CreateResponse, DataProvider, DeleteOneParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@refinedev/core";
-import { useAuth } from "@/app/app/components/auth/AuthContext";
 
 const CustomDataProvider: DataProvider = {
   getList: async <TData extends BaseRecord = BaseRecord>(

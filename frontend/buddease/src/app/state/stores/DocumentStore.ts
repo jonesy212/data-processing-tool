@@ -3,6 +3,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseType";
 import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentPath } from "@/app/documents/DocumentPath";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
@@ -12,12 +13,11 @@ import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { DocumentPath } from "@/server/DocumentPath";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
 ;
@@ -50,7 +50,7 @@ interface DocumentContent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   eventId: string;
-  content: Content<T, K, Meta>,
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   meta: Meta; 
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   // Add more properties as needed
@@ -100,7 +100,7 @@ interface DocumentBase<
   timestamp?: Date;
   
   // Content
-  content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
   
@@ -319,6 +319,7 @@ export interface DocumentStore<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
   AttachmentType extends Attachment = Attachment

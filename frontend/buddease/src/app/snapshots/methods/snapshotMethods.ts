@@ -1,12 +1,18 @@
 // snapshotMethods.ts
-import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import SnapshotStore from "@/app/snapshotstore";
-import { SnapshotConfig, SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from '..';
+import SnapshotStore from "@/app/snapshotts/Snapshotstore";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -16,12 +22,12 @@ import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/Bas
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { T, K, Meta } from '@/app/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/routing/Fields';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 
 export const SnapshotMethodsImplementation = {
 
@@ -121,10 +127,12 @@ snapshot: async function<
 },
 
   addSnapshot: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -215,10 +223,12 @@ snapshot: async function<
   },
 
   removeSnapshot: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotToRemove: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -273,10 +283,12 @@ snapshot: async function<
 
 
   updateSnapshot: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
@@ -336,10 +348,12 @@ snapshot: async function<
   },
 
   takeSnapshot: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -431,10 +445,12 @@ snapshot: async function<
   },
 
   restoreSnapshot: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string,

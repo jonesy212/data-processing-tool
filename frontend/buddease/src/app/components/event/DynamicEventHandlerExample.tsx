@@ -1,61 +1,44 @@
-import { BookmarkActions } from "@/app/actions/BookMarkActions";
-import { CalendarActions } from "@/app/actions/CalendarEventActions";
+
 import { ContextMenuActions } from "@/app/actions/ContextMenuActions";
 import { DragActions } from "@/app/actions/DragActions";
-import { DrawingActions } from "@/app/actions/DrawingActions";
-import { EventHandlerActions } from "@/app/actions/EventHanderActions";
 import { ListActions } from "@/app/actions/ListActions";
-import { MeetingActions } from "@/app/actions/MeetingActions";
-import { ProjectActions } from "@/app/actions/ProjectActions";
 import { SearchActions } from "@/app/actions/SearchActions";
-import { SelectActions } from "@/app/actions/SelectActions";
 import { TooltipActions } from "@/app/actions/TooltipActions";
-import { FetchUserDataPayload, UIActions } from "@/app/actions/UIActions";
-import { ZoomActions } from "@/app/actions/ZoomActions";
+import { UIActions } from "@/app/actions/UIActions";
 import * as ApiAnalysis from "@/app/api/service/ApiAnalysisService";
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { searchAPI } from "@/app/api/ApiSearch";
-import { constructTarget } from "@/app/api/EndpointConstructor";
 import { EventDetails } from "@/app/calendar/CalendarEventViewingDetails";
-import getSocketConnection from "@/app/communications/getSocketConnection";
+import getSocketConnection from "@/app/communication/getSocketConnection";
+
 import { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
 import { saveCryptoPortfolioData } from "@/app/documents/editing/autosave";
-import updateUI, {
-  updateUIWithCopiedText,
-  updateUIWithSearchResults
-} from "@/app/documents/editing/updateUI";
-import { HighlightActions } from "@/app/documents/screenFunctionality/HighlightActions";
+import updateUI, { updateUIWithCopiedText } from "@/app/documents/editing/updateUI";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { currentAppType } from "@/app/getCurrentAppType";
-import { useAppSelector } from "@/app/hooks/useAppSelector";
+import { currentAppType } from "@/app/hooks/getCurrentAppType";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import useWebSocket from "@/app/hooks/useWebSocket";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { BlogActions } from "@/app/models/blogs/BlogAction";
-import { ProgressDataProps } from "@/app/models/data/ProgressData";
+import { ProgressDataProps } from "@/app/components/models/data/ProgressData";
 import { SortingType } from "@/app/models/data/StatusType";
 import { K, T } from "@/app/models/data/dataStoreMethods";
-import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import {
   initiateBitcoinPayment,
   initiateEthereumPayment,
 } from "@/app/payment/initCryptoPayments";
-import { PhaseActions } from "@/app/phases/PhaseActions";
+import { PhaseActions } from "@/app/actions/phases/PhaseActions";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { DataAnalysisActions } from "@/app/projects/DataAnalysisPhase/DataAnalysisActions";
+import { DataAnalysisActions } from "@/app/actions/DataAnalysisActions";
 import { brandingSettings } from "@/app/branding/BrandingSettings";
-import { ContentActions } from "@/app/security/ContentActions";
-import { sanitizeData, sanitizeInput } from "@/app/security/SanitizationFunctions";
-import SnapshotList from "@/app/snapshots/SnapshotList";
+import { ContentActions } from "@/app/actions/ContentActions";
+import { sanitizeData, sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { addMessage } from "@/app/state/redux/slices/ChatSlice";
-import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { historyManagerStore } from "@/app/state/stores/HistoryStore";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { UIApi } from "@/app/users/APIUI";
 import { snapshotId } from "@/app/utils/snapshotUtils";
 import { RetryConfig } from "@/app/services/ConfigurationService";
@@ -77,7 +60,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as apiSnapshot from "@/app/api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
-import { CustomMouseEvent } from "./EventService";
+import { CustomMouseEvent } from "@/app/services/EventService";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -1167,7 +1150,7 @@ const handleAppSpecificActions = (selectedText: string | null) => {
 
 
 export { generateNextPhaseRoute };
-export type { CustomEventListener, UnsubscribeDetails };
+export type { CustomEventListener, UnsubscribeDetails, CustomEvent };
 
 function stopImmediatePropagation(
   event: React.MouseEvent<HTMLCanvasElement, MouseEvent>

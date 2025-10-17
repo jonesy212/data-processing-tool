@@ -11,7 +11,7 @@ import { Contract, EventLog } from "web3-eth-contract";
 interface EventData {
   eventId: string; // Event ID from the args
   args?: any[];     // Define the structure of your event data's arguments (you may want to specify the types here)
-  timestamp?: string | number | Date | undefined; // Optional timestamp for the event
+  timestamp?: string | number | Date; // Optional timestamp for the event
   blockNumber: string | number | bigint | undefined;    // Block number in which the event was emitted
   transactionHash: string | undefined; // Transaction hash of the event
   event: string;          // Name of the event

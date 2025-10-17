@@ -1,22 +1,23 @@
+// snapshotContainerInstance.ts
+import { Shared } from '@/api/instances/createSharedSnapshotContainer'
 import { getSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotWithData } from '@/app/calendar/CalendarApp';
 import { CreateSnapshotsPayload } from '@/server/database/Payload';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { Tag } from '@/app/components/models/tracker/Tag';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { Tag } from '@/app/models/tracker/Tag';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Snapshot} from '@/app/snapshots/Snapshot';
 import { SnapshotConfig, ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
@@ -29,16 +30,26 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Version } from '@/app/versions/Version';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import {   SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
 
-
-// snapshotContainerInstance.ts
-const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
-  & BaseData<any, any, StructuredMetadata<any, any>>> extends Shared = {
+const snapshotContainerInstance: SnapshotContainer<
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+> & Shared = {
   childIds: [],
   // ...other properties and methods
   snapshotContainer: snapshotContainer,
@@ -61,30 +72,78 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
 
   snapshot: function (
     id: string | number | undefined,
-    snapshotData: SnapshotData<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    never>,
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    dataStore: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    dataStoreMethods: DataStoreMethods<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    metadata: UnifiedMetadata<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, StructuredMetadata<T, T>, keyof T>,
+    snapshotData: SnapshotData<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    category?: Category,    
+    categoryProperties: CategoryProperties | undefined,
+    callback: (snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => void,
+    dataStore: DataStore<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    dataStoreMethods: DataStoreMethods<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    metadata: UnifiedMetadata<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+  >,
     subscriberId: string,
     endpointCategory: string | number,
-    storeProps: SnapshotStoreProps<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    snapshotConfigData: SnapshotConfig<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    subscription: Subscription<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
+    storeProps: SnapshotStoreProps<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    snapshotConfigData: SnapshotConfig<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    subscription: Subscription<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | undefined,
-    snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-                  SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | null): Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-                    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | Promise<{
+    snapshotContainer?: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | null): Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | Promise<{
                       
     snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
                         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>;
@@ -94,20 +153,45 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
 
   snapshotData: function (
     id: string | number | undefined,
-    data: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    mappedSnapshotData: Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>> | null | undefined,
-    snapshotData: SnapshotData<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+    data: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    mappedSnapshotData: Map<string, Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>> | null | undefined,
+    snapshotData: SnapshotData<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
     never>,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, 
     category?: Category,
     categoryProperties: CategoryProperties | undefined, 
-    dataStoreMethods: DataStoreMethods<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
-    storeProps: SnapshotStoreProps<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
+    dataStoreMethods: DataStoreMethods<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    storeProps: SnapshotStoreProps<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
     snapshotId?: string | number | null,
     storeId?: number
   ): Promise<SnapshotDataType<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
@@ -133,9 +217,10 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   },
   subscribers: [],
   getSnapshotData: function (id: string | number | undefined, snapshotId: number, snapshotData: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    category?: Category, categoryProperties: CategoryProperties | undefined, dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-      SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-        SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>> | null | undefined {
+    category?: Category, 
+    categoryProperties: CategoryProperties | undefined, 
+    dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+      SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>> | null | undefined {
     throw new Error('Function not implemented.');
   },
   deleteSnapshot: function (id: string): void {
@@ -154,43 +239,104 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     timestamp: string,
     type: string,
     event: Event, id: number,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
     category?: Category,
     categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
     data: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     filter?: ((snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>) => boolean) | undefined,
     dataCallback?: ((subscribers: Subscriber<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-      SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[], snapshots: Snapshots<T, K>) => Promise<SnapshotUnion<T, K>[]>) | undefined): Promise<Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+      SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[], snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => Promise<SnapshotUnion<T, K>[]>) | undefined): Promise<Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]> {
     throw new Error('Function not implemented.');
   },
   generateId: function (prefix: string, name: string, type: NotificationType, id?: string, title?: string, chatThreadName?: string, chatMessageId?: string, chatThreadId?: string, dataDetails?: DataDetails, generatorType?: string): string {
     throw new Error('Function not implemented.');
   },
-  compareSnapshots: function (snap1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snap2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  compareSnapshots: function (snap1: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snap2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): {
         snapshot1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
           SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshot2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-            SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; differences: Record<string, { snapshot1: any; snapshot2: any; }>; versionHistory: { snapshot1Version?: number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;snapshot2Version?: number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;};
+            SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; differences: Record<string, { snapshot1: any; snapshot2: any; }>; versionHistory: { snapshot1Version?: number | Version<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>;snapshot2Version?: number | Version<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>;};
       } | null {
     throw new Error('Function not implemented.');
   },
-  compareSnapshotItems: function (snap1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snap2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  compareSnapshotItems: function (snap1: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snap2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, keys: (keyof Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>)[]): { itemDifferences: Record<string, { snapshot1: any; snapshot2: any; differences: { [key: string]: { value1: any; value2: any; }; }; }>; } | null {
     throw new Error('Function not implemented.');
   },
-  batchTakeSnapshot: function (id: number, snapshotId: string, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshots: Snapshots<T, K>): Promise<{ snapshots: Snapshots<T, K>; }> {
+  batchTakeSnapshot: function (id: number, snapshotId: string, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): Promise<{ snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>; }> {
     throw new Error('Function not implemented.');
   },
-  batchFetchSnapshots: function (criteria: CriteriaType, snapshotData: (snapshotIds: string[], subscribers: SubscriberCollection<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshots: Snapshots<T, K>) => Promise<{
+  batchFetchSnapshots: function (criteria: CriteriaType, snapshotData: (snapshotIds: string[], subscribers: SubscriberCollection<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => Promise<{
       subscribers: SubscriberCollection<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-        SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshots: Snapshots<T, K>;
+        SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>;
     }>): Promise<Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]> {
     throw new Error('Function not implemented.');
@@ -198,7 +344,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   batchTakeSnapshotsRequest: function (
     criteria: CriteriaType,
     snapshotData: (snapshotIds: string[],
-      snapshots: Snapshots<T, K>,
+      snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
       subscribers: Subscriber<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]
     ) => Promise<{
@@ -213,7 +364,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>
     ) => Promise<{
       subscribers: SubscriberCollection<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-        SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshots: Snapshots<T, K>;
+        SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>;
     }>,
     snapshotManager: SnapshotManager<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>
@@ -241,8 +397,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   ): void {
     throw new Error('Function not implemented.');
   },
-  batchFetchSnapshotsFailure: function (date: Date, snapshotManager: SnapshotManager<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  batchFetchSnapshotsFailure: function (date: Date, snapshotManager: SnapshotManager<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, payload: { error: Error; }): void {
     throw new Error('Function not implemented.');
   },
@@ -253,13 +413,21 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   ): void {
     throw new Error('Function not implemented.');
   },
-  batchUpdateSnapshotsFailure: function (date: Date, snapshotId: string | number | null, snapshotManager: SnapshotManager<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  batchUpdateSnapshotsFailure: function (date: Date, snapshotId: string | number | null, snapshotManager: SnapshotManager<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, payload: { error: Error; }): void {
     throw new Error('Function not implemented.');
   },
-  handleSnapshotSuccess: function (message: string, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | null, snapshotId: string): void {
+  handleSnapshotSuccess: function (message: string, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | null, snapshotId: string): void {
     throw new Error('Function not implemented.');
   },
   handleSnapshotFailure: function (error: Error, snapshotId: string): void {
@@ -273,8 +441,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   },
   compareSnapshotState: function (
     snapshot1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, StructuredMetadata<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, never> | null,
-    snapshot2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): boolean {
+    snapshot2: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): boolean {
   throw new Error('Function not implemented.');
   },
   payload: undefined,
@@ -282,8 +454,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     throw new Error('Function not implemented.');
   },
   newData: null,
-  getInitialState: function (): Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | null {
+  getInitialState: function (): Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | null {
     throw new Error('Function not implemented.');
   },
   getConfigOption: function (optionKey: string) {
@@ -292,64 +468,157 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   getTimestamp: function (): Date | undefined {
     throw new Error('Function not implemented.');
   },
-  getStores: function (storeId: number, snapshotId: string, snapshotStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshotStoreConfigs: SnapshotStoreConfig<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+  getStores: function (storeId: number, snapshotId: string, snapshotStores: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[], snapshotStoreConfigs: SnapshotStoreConfig<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[]): SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] {
     throw new Error('Function not implemented.');
   },
-  getData: function (id: number | string, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Data<T> | Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>> | null | undefined {
+  getData: function (id: number | string, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): Data<T> | Map<string, Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>> | null | undefined {
     throw new Error('Function not implemented.');
   },
-  getDataVersions: function (id: number): Promise<Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[] | undefined> {
+  getDataVersions: function (id: number): Promise<Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] | undefined> {
     throw new Error('Function not implemented.');
   },
-  updateDataVersions: function (id: number, versions: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]): void {
+  updateDataVersions: function (id: number, versions: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[]): void {
     throw new Error('Function not implemented.');
   },
-  setData: function (id: string, data: Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>>): void {
+  setData: function (id: string, data: Map<string, Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>>): void {
     throw new Error('Function not implemented.');
   },
-  addData: function (id: string, data: Partial<Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>>): void {
+  addData: function (id: string, data: Partial<Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>>): void {
     throw new Error('Function not implemented.');
   },
   removeData: function (id: number): void {
     throw new Error('Function not implemented.');
   },
-  updateData: function (id: number, newData: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): void {
+  updateData: function (id: number, newData: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
-  stores: function (): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+  stores: function (): SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] {
     throw new Error('Function not implemented.');
   },
-  getStore: function (storeId: number, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string | null, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshotStoreConfig: SnapshotStoreConfig<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  getStore: function (storeId: number, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotId: string | null, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotStoreConfig: SnapshotStoreConfig<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, type: string, event: Event) {
     throw new Error('Function not implemented.');
   },
-  addStore: function (storeId: number, snapshotId: string, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, type: string, event: Event) {
+  addStore: function (storeId: number, snapshotId: string, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, type: string, event: Event) {
     throw new Error('Function not implemented.');
   },
-  mapSnapshot: function (id: number, storeId: string | number, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotContainer: SnapshotContainer<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, snapshotId: string, criteria: CriteriaType, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  mapSnapshot: function (id: number, storeId: string | number, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotContainer: SnapshotContainer<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotId: string, criteria: CriteriaType, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, type: string, event: Event, callback: (snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>) => void, mapFn: (item: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>) => SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>): Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
           SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | null {
     throw new Error('Function not implemented.');
   },
-  mapSnapshotWithDetails: function (storeId: number, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, type: string, event: Event, callback: (snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+  mapSnapshotWithDetails: function (storeId: number, snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotId: string, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, type: string, event: Event, callback: (snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>) => void): SnapshotWithData<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | null {
     throw new Error('Function not implemented.');
   },
-  removeStore: function (storeId: number, store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>, type: string, event: Event): void {
+  removeStore: function (storeId: number, store: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, snapshotId: string, snapshot: Snapshot<SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, type: string, event: Event): void {
     throw new Error('Function not implemented.');
   },
   unsubscribe: function (
@@ -365,7 +634,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     callback: (
       snapshotId: string,
       payload: FetchSnapshotPayload<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | undefined,
-      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
       payloadData: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>> | Data, 
       category?: Category,
       categoryProperties: CategoryProperties | undefined,
@@ -392,7 +666,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   fetchSnapshotSuccess: function (
     id: number,
     snapshotId: string,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
     payload: FetchSnapshotPayload<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | undefined,
     snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
     data: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
@@ -426,7 +705,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
         ExcludedFields<T, keyof T>>>, payload: { error: Error; }): void {
     throw new Error('Function not implemented.');
   },
-  configureSnapshotStore: function (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, storeId: number, data: Map<string, Snapshot<SnapshotContainerData<T, K,
+  configureSnapshotStore: function (snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, storeId: number, data: Map<string, Snapshot<SnapshotContainerData<T, K,
     ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
       ExcludedFields<T, keyof T>>>>, events: Record<string, CalendarManagerStoreClass<SnapshotContainerData<T, K,
         ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
@@ -434,7 +718,12 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
             ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
               ExcludedFields<T, keyof T>>>, payload: ConfigureSnapshotStorePayload<SnapshotContainerData<T, K,
                 ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-                  ExcludedFields<T, keyof T>>>, store: SnapshotStore<any, K>, callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void, config: SnapshotStoreConfig<SnapshotContainerData<T, K,
+                  ExcludedFields<T, keyof T>>>, store: SnapshotStore<any, K>, callback: (snapshotStore: SnapshotStore<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => void, config: SnapshotStoreConfig<SnapshotContainerData<T, K,
                     ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
                       ExcludedFields<T, keyof T>>>): void {
     throw new Error('Function not implemented.');
@@ -461,71 +750,153 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     throw new Error('Function not implemented.');
   },
   createSnapshots: function (id: string, snapshotId: string | number | null,
-    snapshots: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-
-      ExcludedFields<T, keyof T>>>[],
-    snapshotManager: SnapshotManager<SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-        ExcludedFields<T, keyof T>>>, payload: CreateSnapshotsPayload<SnapshotContainerData<T, K,
-          ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-            ExcludedFields<T, keyof T>>>, callback: (snapshots: Snapshot<SnapshotContainerData<T, K,
-              ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-                ExcludedFields<T, keyof T>>>[]) => void | null, snapshotDataConfig?: SnapshotConfig<SnapshotContainerData<T, K,
-                  ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-                    ExcludedFields<T, keyof T>>>[] | undefined, category?: string | Category, categoryProperties?: string | CategoryProperties): Snapshot<SnapshotContainerData<T, K,
-                      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-                        ExcludedFields<T, keyof T>>>[] | null {
+    snapshots: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[],
+    snapshotManager: SnapshotManager<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    payload: CreateSnapshotsPayload<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    callback: (snapshots: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[]) => void | null,
+    snapshotDataConfig?: SnapshotConfig<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] | undefined,
+    category?: string | Category,
+    categoryProperties?: string | CategoryProperties): Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] | null {
     throw new Error('Function not implemented.');
   },
   onSnapshot: function (snapshotId: string,
-    snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
+    snapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
     type: string,
     event: Event,
-    callback: (snapshot: Snapshot<SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-        ExcludedFields<T, keyof T>>>) => void): void {
+    callback: (snapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => void): void {
     throw new Error('Function not implemented.');
   },
-  onSnapshots: function (snapshotId: string, snapshots: Snapshots<T, K>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): void {
+  onSnapshots: function (snapshotId: string, snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, type: string, event: Event, callback: (snapshots: Snapshots<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>) => void): void {
     throw new Error('Function not implemented.');
   },
   events: undefined,
   childIds: null,
-  getParentId: function (id: string, snapshot: Snapshot<SnapshotUnion<BaseData, Meta>, SnapshotContainerData<T, K,
-    ExcludedFields<T, keyof T>>>): string | null {
+  getParentId: function (id: string, snapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): string | null {
     throw new Error('Function not implemented.');
   },
-  getChildIds: function (id: string, childSnapshot: Snapshot<SnapshotContainerData<T, K,
-    ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>>): (string | number | undefined)[] {
+  getChildIds: function (id: string, childSnapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): (string | number | undefined)[] {
     throw new Error('Function not implemented.');
   },
-  addChild: function (parentId: string, childId: string, childSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+  addChild: function (parentId: string, childId: string, childSnapshot: CoreSnapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
-  removeChild: function (childId: string, parentId: string, parentSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, childSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+  removeChild: function (childId: string, parentId: string, parentSnapshot: CoreSnapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>, childSnapshot: CoreSnapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
   getChildren: function (
     id: string, 
-    childSnapshot: Snapshot<SnapshotContainerData<T, K,
-    ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>>): CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    childSnapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): CoreSnapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>[] {
     throw new Error('Function not implemented.');
   },
   hasChildren: function (id: string): boolean {
     throw new Error('Function not implemented.');
   },
-  isDescendantOf: function (childId: string, parentId: string, parentSnapshot: Snapshot<SnapshotContainerData<T, K,
-    ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>>, childSnapshot: Snapshot<SnapshotContainerData<T, K,
-        ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-          ExcludedFields<T, keyof T>>>): boolean {
+  isDescendantOf: function (childId: string,
+    parentId: string, parentSnapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>,
+    childSnapshot: Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields>): boolean {
     throw new Error('Function not implemented.');
   },
-  getSnapshotById: function (id: string): Snapshot<SnapshotContainerData<T, K,
-    ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>> | null {
+  getSnapshotById: function (id: string): Snapshot<  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields> | null {
     throw new Error('Function not implemented.');
   },
   initialState: undefined

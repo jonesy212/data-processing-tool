@@ -1,5 +1,5 @@
 // FilterActions.tsx
-import { Filter } from "@/app/pages/searchs/Filter";
+import { Filter } from "@/app/pages/searches/Filter";
 import { createAction } from "@reduxjs/toolkit";
 
 export const FilterActions = {

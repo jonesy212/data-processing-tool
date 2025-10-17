@@ -1,5 +1,5 @@
 // UserSettingsEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface UserSettingsEndpoints {
   getUserSettings: EndpointConfig;

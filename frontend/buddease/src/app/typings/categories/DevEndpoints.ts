@@ -1,5 +1,5 @@
 // DevEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfigurations';
 
 export interface DevEndpoints {
   getMockData: EndpointConfig;

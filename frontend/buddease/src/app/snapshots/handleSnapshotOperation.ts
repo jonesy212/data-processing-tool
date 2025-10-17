@@ -1,14 +1,13 @@
 // handleSnapshotOperation.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { ExcludedFields } from "@/app/components/routing/Fields";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreActions } from "@/app/snapshots/SnapshotActions";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 
 // First, extract the sorting logic to a shared utility function
@@ -24,13 +23,15 @@ const sortByTimestamp = <T extends { timestamp?: string | Date }>(
 };
 
 function handleMapOperation<
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
+  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
   operationType: SnapshotOperationType
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Create a new instance preserving the prototype chain
@@ -92,7 +93,13 @@ function handleMapOperation<
 }
 
 // Define handleSnapshotOperation
-const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const handleSnapshotOperation = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mappedData: Map<string, SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -148,10 +155,13 @@ const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta
 };
 
 
-function handleSnapshotStoreConfigOperation< T extends BaseDataEntity, 
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+function handleSnapshotStoreConfigOperation<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T  
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   data: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

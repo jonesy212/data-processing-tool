@@ -1,19 +1,18 @@
 // SubscriptionActions.ts
-import { Content } from '@/app/models/content/AddContent';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { category } from '@/app/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/app/utils/web3/applicationUtils';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 

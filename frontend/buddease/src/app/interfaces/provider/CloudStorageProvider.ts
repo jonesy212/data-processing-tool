@@ -1,5 +1,5 @@
 // CloudStorageProvider.ts
-import { FileMetadata } from '@/app/models/file/FileManager'
+import { FileMetadata } from '@/app/typings/file/FileManager';
 
 export class CloudStorageProvider {
     providerName: string;
@@ -50,4 +50,4 @@ export class CloudStorageProvider {
 }
   
 
-export type { FileMetadata }
+export type { FileMetadata };

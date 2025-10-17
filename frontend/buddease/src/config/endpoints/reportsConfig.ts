@@ -1,6 +1,6 @@
 // reportsConfig.ts
-import { ReportsEndpoints } from '../types/categories/ReportsEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ReportsEndpoints } from '@/app/typings/categories/ReportsEndpoints';
 
 export const reportsConfig: ReportsEndpoints = {
   list: { path: `${BASE_URL}/api/reports`, method: "GET" },

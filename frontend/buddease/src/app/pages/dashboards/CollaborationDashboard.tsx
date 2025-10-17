@@ -1,19 +1,18 @@
 // CollaborationDashboard.tsx
 import Stopwatch from "@/app/components/calendar/Stopwatch";
-import { ChatRoom } from "@/app/communications/chatRoom";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
-import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
-import { CollaborationProvider } from "@/app/context/CollaborationContext";
-import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
-import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
+import { CollaborationProvider } from "@/app/context/CollaborationContext";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { SearchProvider, useSearch } from "@/app/context/SearchContext";
+import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
-import { SearchProvider, useSearch } from "@/app/context/SearchContext";
+import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
+import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import ChatDashboard from "./ChatDashboard";

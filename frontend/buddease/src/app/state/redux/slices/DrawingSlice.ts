@@ -1,33 +1,55 @@
 // DrawingSlice.ts
-import { DrawingActions } from "@/app/@/app/actions/DrawingActions";
-import { autosaveDrawing } from "@/app/components/documents/editing/autosaveDrawing";
-import FolderData from '@/app/components/models/data/FolderData';
+import { DrawingActions } from "@/app/actions/DrawingActions";
 import Tracker, { TrackerProps } from '@/app/components/models/tracker/Tracker';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { autosaveDrawing } from "@/app/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import FolderData from '@/app/models/data/FolderData';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { RootState } from "@/state/redux/slices/RootSlice";
 import {
   createMilestone
 } from "./TrackerSlice";
 // Define interface for drawing state
 import * as drawingApi from "@/app/api/ApiDrawing";
-import Milestone from "@/app/components/calendar/CalendarSlice";
-import { saveAs } from "@/app/components/documents/editing/autosave";
-import TextType from "@/app/components/documents/TextType";
-import { Content } from "@/app/components/models/content/AddContent";
-import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
-import { K } from '@/app/components/models/data/dataStoreMethods';
-import FileData from "@/app/components/models/data/FileData";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { saveAs } from "@/app/documents/editing/autosave";
+import TextType from "@/app/documents/TextType";
 import {
   saveToLocalStorage
 } from "@/app/hooks/useLocalStorage";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
-import { ContentItem } from "@/app/stores/ContentStore";
+import { Content } from "@/app/models/content/AddContent";
+import { SharedRelationshipData } from '@/app/models/data/Data';
+import { K } from '@/app/models/data/dataStoreMethods';
+import FileData from "@/app/models/data/FileData";
+import Milestone from "@/app/state/redux/slices/CalendarSlice";
+import { ContentItem } from "@/app/state/stores/ContentStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+
+type AppFileData = FileData<
+  Shape,
+  LayerEffect,
+  DefaultMeta<Shape, LayerEffect>,
+  Attachment,
+  DefaultExcludedFields<Shape>,
+  keyof Shape
+>;
+
+type AppFolderData = FolderData<
+  Shape,
+  LayerEffect,
+  DefaultMeta<Shape, LayerEffect>,
+  Attachment,
+  DefaultExcludedFields<Shape>,
+  keyof Shape
+  >;
+
+
 interface Guide {
   id: string;               // Unique identifier for the guide
   type: 'horizontal' | 'vertical'; // Type of the guide (horizontal or vertical)
@@ -83,7 +105,7 @@ interface Shape extends SharedDrawingProps {
   y: number;                       // Y position of the shape
   heigh?: number | string;
   width?: string | number;
-  fillColor: string;
+  fillColor?: string;
   isFlippedX?: boolean;
   isFlippedY?: boolean; // Define additional shape properties as needed
 }
@@ -120,16 +142,21 @@ interface DrawingElement {
 
 
 interface DrawingTemplate<
-  T extends  BaseData<any>, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;               // Unique identifier for the template
   name: string;             // Name of the template
   description?: string;     // Optional description of the template
   imageUrl?: string;        // Optional URL to an image representing the template
   elements: DrawingElement[]; // List of drawing elements included in the template
-  content: Content<T, K, Meta>
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 }
+
 type TrackerDrawingElement = TrackerProps & DrawingElement;
 
 
@@ -140,7 +167,8 @@ interface DrawingState<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> {
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;
   selectedDrawingId: number | null;
   isDrawing: boolean;
@@ -195,7 +223,7 @@ interface DrawingState<
   };                           // Resolution of the canvas
   stroke: Stroke;              // Current stroke settings
   brushes: Brush[];            // List of available brushes
-  templates: DrawingTemplate<T, K>[]; // List of drawing templates
+  templates: DrawingTemplate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // List of drawing templates
   gridSize: number;
   canvasWidth: number;     // Canvas width
   canvasHeight: number;    // Canvas height
@@ -227,12 +255,17 @@ interface DrawingState<
   // Define drawing-related state properties here
 }
 
-
-
 type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten";
+
 // Define initial state
-const initialState: DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>> = {
-  
+const initialState: DrawingState<
+  Shape,
+  LayerEffect,
+  DefaultMeta<Shape, LayerEffect>,
+  Attachment,
+  DefaultExcludedFields<Shape>,
+  keyof Shape
+> = {  
   stroke: {
     width: 0,
     color: ''
@@ -466,12 +499,12 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     name: item.type, // Example: Using 'type' as 'name'
     phases: [], // Initialize with empty or default phases
     type: "",
-    coordinates: "",
+    coordinates: { x: 0, y: 0 },
     width: "",
     height: "",
    
     // Function to track changes for files
-    trackFileChanges: async (file: FileData<T>) => {
+    trackFileChanges: async (file: AppFileData) => {
       try {
         // Use the existing Tracker method to track file changes
         tracker.trackFileChanges(file);
@@ -484,7 +517,7 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     },
 
     // Function to track changes for folders
-    trackFolderChanges: async (folder: FolderData) => {
+    trackFolderChanges: async (folder: AppFolderData) => {
       try {
         // Use the existing Tracker method to track folder changes
         await tracker.trackFolderChanges(folder);

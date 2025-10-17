@@ -1,9 +1,9 @@
 // authProvidenceInstance.ts
 
-import { AuthProvider } from "@refinedev/core";
+import { Permission } from "@/app/permissions/Permission";
 import { useAuthStore } from "@/app/state/stores/AuthStore";
 import { useAuthorizationStore } from "@/app/state/stores/AuthorizationStore";
-import { Permission, UserPermissions } from "@/app/users/Permission";
+import { AuthProvider } from "@refinedev/core";
 
 interface CustomAuthProvider extends AuthProvider {
   // Method to set permissions (example)

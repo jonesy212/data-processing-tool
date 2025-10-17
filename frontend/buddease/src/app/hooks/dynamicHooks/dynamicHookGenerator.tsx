@@ -1,11 +1,11 @@
 import { ClipboardData, CustomEventExtensionConstructor } from "@/app/components/event/BaseCustomEvent";
-import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { updateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
+import { updateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 export type DynamicHookParams<T> = {
   condition: (idleTimeoutDuration: number) => Promise<boolean>;

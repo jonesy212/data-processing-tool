@@ -1,21 +1,21 @@
 // InitializedStateExample.ts
 
 import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
+import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from "@/app/models/data/dataStoreMethods";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { InitializedState, initializeState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { category } from "@/app/utils/snapshotUtils";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 import { StructuredMetadata } from "@/config//StructuredMetadata";
-import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
-import { InitializedState, initializeState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { category } from "@/app/utils/snapshotUtils";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
-import { AppEntity, AppExcludedFields, AppK, AppMeta, AppAttachment, AppIncludeField } from "@/app/utils/web3/dAppAdapter/AppEntity";
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotEvents } from "./SnapshotEvents";
@@ -35,7 +35,9 @@ export function isSnapshotIdentity<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(obj: any): obj is SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return obj && (obj.id !== undefined || obj.snapshotId !== undefined);
 }

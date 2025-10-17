@@ -1,4 +1,3 @@
-import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { DEX } from "@/app/crypto/DEX";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -6,6 +5,7 @@ import useRealtimeDextData from "@/app/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/hooks/commHooks/useRealtimeExchangeData";
 import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import { Exchange } from "@/app/models/cypto/Exchange";
+import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/models/cypto/exchangeIntegration";
 import { Data } from '@/app/models/data/Data';
 import SnapshotList, { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -16,7 +16,7 @@ import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import {
   BaseDataEntity
-} from "@/config/s/BaseConfig";
+} from '@/config/BaseConfig';
   
 
 

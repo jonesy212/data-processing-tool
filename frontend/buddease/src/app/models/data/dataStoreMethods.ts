@@ -1,7 +1,7 @@
 // dataStoreMethods.ts
-import { DataStore } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -22,8 +22,8 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { Version } from "@/app/versions/Version";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { BaseData, Data } from "./Data";
 import { StatusType } from "./StatusType";
 

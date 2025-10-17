@@ -8,21 +8,21 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { Task } from "@/app/models/tasks/Task";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscriber } from "@/app/users/Subscriber";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { Snapshots, SnapshotsObject } from "./LocalStorageSnapshotStore";
+import { Snapshots, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore'
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
@@ -208,7 +208,12 @@ export const SnapshotActions = <
 });
 
 
-// export type SnapshotStoreActionsTypes<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = ReturnType<typeof SnapshotStoreActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+// export type SnapshotStoreActionsTypes<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> = ReturnType<typeof SnapshotStoreActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 const SnapshotStoreActions = <
   T extends BaseDataEntity = BaseDataRoot,

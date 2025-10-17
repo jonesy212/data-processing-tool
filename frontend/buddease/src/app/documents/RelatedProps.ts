@@ -1,15 +1,17 @@
 // RelatedProps.ts
 import { Label } from '@/app/branding/BrandingSettings';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { AllTypes } from '@/app/components/typings/PropTypes';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
-import { Data } from '@/app/models/data/Data';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
+import { PermissionLevel, VisibilityLevel, } from '@/app/permissions/PermissionEnums';
+import { ValidationStatus } from '@/app/permissions/ValidationStatus';
 import { SnapshotContainer } from '@/app/snapshots';
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { AllTypes } from '@/app/typings/PropTypes';
 import { ExternalReference } from '@/calendar/ExternalReference';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-
 
 interface BaseEntityProperties { 
   _id?: string;
@@ -34,7 +36,7 @@ interface SharedIdentifiers<
 > extends BaseEntityProperties {
   snapshotId?: string | number | null;
   categoryProperties?: CategoryProperties;
-  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 interface SharedSnapshotProperties<

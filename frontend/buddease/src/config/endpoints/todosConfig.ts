@@ -1,6 +1,6 @@
 // todosConfig.ts
-import { TodosEndpoints } from '../types/categories/TodosEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { TodosEndpoints } from '@/app/typings/categories/TodosEndpoints';
 
 export const todosConfig: TodosEndpoints = {
   create: `${BASE_URL}/api/todos/create`,

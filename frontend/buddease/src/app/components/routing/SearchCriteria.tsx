@@ -1,4 +1,4 @@
-import { debounce } from "@/app/pages/searchs/Debounce";
+import { debounce } from "@/app/pages/searches/Debounce";
 import { MessageType } from "@/app/generators/MessaageType";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,8 +24,8 @@ import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
 import { BaseData, Data } from '@/app/models/data/Data';
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import { searchDocuments } from "@/app/api/ApiDocument";
-import SearchComponent from "@/app/pages/searchs/SearchComponent";
-import useSearchOptions from "@/app/pages/searchs/useSearchOptions";
+import SearchComponent from "@/app/pages/searches/SearchComponent";
+import useSearchOptions from "@/app/pages/searches/useSearchOptions";
 import { sanitizeInput } from "@/app/security/SanitizationFunctions";
 import { setLoading, clearError } from "@/app/state/stores/UISlice";
 import SearchResult, { SearchResultWithQuery } from "./SearchResult";

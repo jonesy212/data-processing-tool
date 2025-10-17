@@ -1,16 +1,15 @@
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { useMeta } from '@/config/useMeta';
 import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { title } from 'process';
-import React, { createContext, useState } from 'react';
 import { BaseData } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { logData } from '@/app/services/NotificationService';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { useMeta } from '@/config/useMeta';
 import { NotificationData } from '@/NofiticationsSlice';
+import { title } from 'process';
+import React, { createContext, useState } from 'react';
 
 export const notificationStore = notificationStoreInstance
 export const notificationData: NotificationData<T, K, Meta<T, K>>[] = [];

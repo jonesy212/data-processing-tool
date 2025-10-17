@@ -1,10 +1,10 @@
 import * as apiFile from '@/api/ApiFiles';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import * as path from 'path';
-import { AppStructureItem } from '@/appStructure/AppStructure';
-import { frontend } from '@/appStructure/FrontendStructure';
-import { backend } from '@/appStructure/BackendStructure';
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { AppStructureItem } from '@/appStructure/AppStructure';
+import { backend } from '@/appStructure/BackendStructure';
+import { frontend } from '@/appStructure/FrontendStructure';
+import * as path from 'path';
 
 
 interface BackendStructure {
@@ -71,7 +71,7 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
 
 // If you want to allow the method to be used outside the class as well, you can do the following:
 export const getStructureAsArray = (
-  structure?: Record<string, AppStructureItem>
+  structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
   return structure ? Object.values(structure) : [];
 };

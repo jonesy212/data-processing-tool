@@ -11,14 +11,13 @@ import YourCalendarLibrary from "@/app/components/calendar/YourCalendarLibrary";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/components/models/content/ContentPost";
-import { BaseData } from '@/app/models/data/Data';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { BaseData } from '@/app/models/data/Data';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Project } from '@/app/models/projects/Project';
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import React from "react";
 import DatePickerComponent from "react-datepicker";
 

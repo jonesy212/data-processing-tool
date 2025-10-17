@@ -9,11 +9,11 @@ import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimens
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { version } from '@/app/versions/Version';
 import { K, T } from '@/components/models/data/dataStoreMethods';
-import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import * as path from 'path';
-import * as React from 'react';
+import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/config/MetaDataOptions";
 import determineFileType from '@/DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from '@/StructuredMetadata';
+import * as path from 'path';
+import * as React from 'react';
 ;
 
 

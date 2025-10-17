@@ -1,18 +1,26 @@
 import { endpoints } from '@/api/endpointConfigurations';
+import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
+iimport 
+import { ComponentMethods } from '@/app/page'
+import { CalendarMeta,
+CalendarAttachment,
+CalendarExcludedFields,
+CalendarIncludedFields
+} from '@/app/typings/entties/CalendarEntity'
 import appTreeApiService from "@/app/api/appTreeApi";
-import { getSnapshotId } from "@/app/api/SnapshotApi";
-import CalendarManagerStoreClass, { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import getSnapshotId from "@/app/api/SnapshotApi";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import CalendarManagerStoreClass  from '@/state/stores/CalendarManagerStore';
 import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { ApiConfig } from "@/app/services/ConfigurationService";
-import { SnapshotStoreProps } from '@/app/snapshots';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { storeProps, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 
 interface HooksObject {
@@ -110,10 +118,13 @@ const updateSnapshotMethod = (
   return Promise.resolve();
 };
 
-const data = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(); // or whatever type fits
+const data = new Map<string, Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>(); // or whatever type fits
 
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
-const records = Array.from(data.values()).reduce<Record<string, CalendarManagerStoreClass<BaseData<any>, K>[]>>(
+const records = Array.from(data.values()).reduce<Record<string, CalendarManagerStoreClass<CalendarEntity, CalendarK, CalendarMeta,
+CalendarAttachment,
+CalendarExcludedFields,
+CalendarIncludedFields>[]>>(
   (acc, snapshot) => {
     const id = snapshot.id; // Replace with a unique ID field
     if (!acc[id]) {
@@ -420,7 +431,7 @@ const storeData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, 
 
 
 const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
-const dataItems: RealtimeDataItem[] = [];
+const dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 const newData: Data<BaseData<any>> = {
   timestamp: undefined
 };

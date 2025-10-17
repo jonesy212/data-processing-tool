@@ -2,10 +2,12 @@
 // hooks/useNotificationSystem.ts
 import { useCallback, useRef, useMemo } from 'react';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { displayToast, showErrorMessage, showToast } from '@/utils/notifications';
-import ErrorHandler from '@/utils/ErrorHandler';
+import { displayToast, showErrorMessage, showToast } from '@/app/models/ShowToast';
+import ErrorHandler from '@/app/shared/ErrorHandler';
 import { NotificationOptions } from '@/context/NotificationContext'
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CalendarEvent } from '@/app/api/calendarEvent'
 
 export interface NotificationData<
   T extends BaseDataEntity = BaseDataEntity,

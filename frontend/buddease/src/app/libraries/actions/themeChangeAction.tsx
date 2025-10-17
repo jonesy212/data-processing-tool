@@ -1,5 +1,5 @@
 import { BrandingSettings } from '@/app/branding/BrandingSettings';
-import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
+import { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';
 import { createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';

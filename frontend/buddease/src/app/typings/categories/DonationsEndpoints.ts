@@ -1,5 +1,5 @@
 // DonationsEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface DonationsEndpoints {
   makeDonation: (userId: string, amount: number) => EndpointConfig;

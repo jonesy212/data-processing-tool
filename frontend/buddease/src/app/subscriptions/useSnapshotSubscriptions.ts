@@ -1,10 +1,10 @@
 // useSnapshotSubscriptions.ts
 // hooks/subscriptions/useSnapshotSubscriptions.ts
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { useCallback, useEffect, useRef } from 'react';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { useCallback, useEffect, useRef } from 'react';
 
 interface SubscriptionManager<  
   T extends BaseDataEntity,

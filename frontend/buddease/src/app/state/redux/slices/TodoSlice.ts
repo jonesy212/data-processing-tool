@@ -1,6 +1,6 @@
 import { Todo } from '@/app/components/todos/Todo';
-import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
-import { PaginationOptions } from '@/app/pages/searchs/SearchOptions';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
+import { PaginationOptions } from '@/app/pages/searches/SearchOptions';
 import { WritableDraft } from '@/ReducerGenerator';
 import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 

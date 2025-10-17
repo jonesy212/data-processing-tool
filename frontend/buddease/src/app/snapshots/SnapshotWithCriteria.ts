@@ -1,6 +1,7 @@
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 
-import { Tag } from '@/app/components/models/tracker/Tag';
+import { Tag } from '@/app/typings/entities/TagEntity';
 import { useDataContext } from "@/app/context/DataContext";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
@@ -10,8 +11,12 @@ import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "@/app/routing/SearchCriteria";
-import { Callback, SnapshotConfig, SnapshotItem, SnapshotStoreProps } from '@/app/snapshots';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import SnapshotList, { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -21,15 +26,14 @@ import { sharedMetadata } from "@/config/metadata/MetadataHooks";
 import { MetadataEntriesType } from "@/config/StructuredMetadata";
 import { Payload } from '@/server/database/Payload';
 import { createMetadata } from '@/server/metadata/createMetadata';
-import { Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 import {
   SnapshotAttachment,
   SnapshotEntity,
@@ -44,7 +48,7 @@ import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { ExcludedFields } from '@/routing/Fields';
 import { SchemaField } from "@/server/database/SchemaField";
-import { SubscriberCollection } from '@/users/SubscriberCollection';
+import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
 import { VersionData } from '@/versions/VersionData';
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -99,6 +103,23 @@ interface SnapshotWithCriteriaContract<
   snapshotStoreArray?: SnapshotStoreReference<T, K, Meta>[];
 }
 
+
+type SnapshotWithCriteriaConfig<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = SnapshotStoreConfig<
+  SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  Meta,
+  AttachmentType,
+  ExcludedFields,
+  IncludedFields
+>;
+
 // Define SnapshotWithCriteria type
 type SnapshotWithCriteria<
   T extends BaseDataEntity,
@@ -142,7 +163,7 @@ export class SnapshotStoreWithCriteria<
     callback: (data: T) => void,
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     endpointCategory: string,
-    initialState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     // Create a converted callback that performs the type guard
     const convertedCallback = (data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
@@ -505,7 +526,7 @@ const exampleSnapshotStore: SnapshotStore<BaseDataEntity, BaseDataEntity> = {
   initialState: undefined,
   snapshotItems: [],
   nestedStores: [],
-  dataStoreMethods: undefined,
+  dataStoreMethods: null,
   delegate: [],
   subscriberId: "",
   length: 0,
@@ -618,7 +639,7 @@ const exampleSnapshotStore: SnapshotStore<BaseDataEntity, BaseDataEntity> = {
           snapshotId: string,
           callback: (
             snapshotId: string,
-            payload: FetchSnapshotPayload<T> | undefined,
+            payload: FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
             snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             payloadData: T | BaseData<any>,
             category: symbol | string | Category | undefined,
@@ -635,12 +656,12 @@ const exampleSnapshotStore: SnapshotStore<BaseDataEntity, BaseDataEntity> = {
           id: string,
           snapshotId: string | number | null,
           snapshot: BaseDataEntity,
-          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           callback: (snapshot: BaseDataEntity) => void,
           snapshots: SnapshotsArray<BaseDataEntity, BaseDataEntity>,
           type: string,
           event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          category?: Category,
           snapshotContainer?: BaseDataEntity,
           snapshotStoreConfig?: SnapshotStoreConfig<BaseDataEntity, BaseDataEntity> | null,
           storeConfigs?: SnapshotStoreConfig<BaseDataEntity, BaseDataEntity>[]
@@ -965,7 +986,7 @@ const exampleSnapshotStore: SnapshotStore<BaseDataEntity, BaseDataEntity> = {
 };
 
 export { data };
-export type { SearchCriteriaBase, SnapshotWithCriteria, SnapshotWithCriteriaContract, TagsRecord };
+export type { SearchCriteriaBase, SnapshotWithCriteria, SnapshotWithCriteriaContract, TagsRecord, SnapshotWithCriteriaConfig };
 
 // Add example data to the store
 

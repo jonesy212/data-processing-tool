@@ -21,17 +21,17 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { updateProject } from "@/app/state/redux/slices/ProjectManagerSlice";
+import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import NotificationManager from "@/app/components/support/NotificationManager";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { CombinedEvents, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { CalendarEventWithCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';

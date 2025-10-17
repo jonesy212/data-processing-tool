@@ -1,10 +1,12 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMethods';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { createSnapshotStore } from "./snapshotHandlers";
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Snapshot } from '@/app/snapshots/Snapshot'
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig'
+import SnapshotStore from './SnapshotStore';
+import { createSnapshotStoreConfig } from './snapshotStoreConfigInstance';
 
-
-function createSnapshotStoreMap<
+export function createSnapshotStoreMap<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -24,7 +26,7 @@ function createSnapshotStoreMap<
 }
 
 // Helper function to create a SnapshotStore
-function createSnapshotStore<
+export function createSnapshotStore<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

@@ -1,6 +1,6 @@
 // useSnapshotOperations.ts
 // hooks/useSnapshotOperations.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useCallback, useRef } from 'react';
 
 import {
@@ -24,7 +24,7 @@ import {
 } from '@/app//components/snapshots/snapshotOperations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
 const useSnapshotOperations = <

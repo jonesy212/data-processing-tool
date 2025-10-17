@@ -2,7 +2,7 @@
 import { taskService } from "@/app/components/tasks/TaskService";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
-import { TaskActions } from "@/app/@/app/actions/TaskActions";
+import { TaskActions } from "@/app/actions/TaskActions";
 import { Task } from "@/app/models/tasks/Task";
 import EXTENDED_NOTIFICATION_MESSAGES from "@/app/features/support/ExtendedNotificationMessages";
 import * as taskApi from '@/app/api/TasksApi'

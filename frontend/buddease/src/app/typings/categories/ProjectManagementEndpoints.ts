@@ -1,5 +1,5 @@
 // ProjectManagementEndpoints.ts
-import { EndpointConfig } from '../EndpointConfigurations';
+import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ProjectManagementEndpoints {
   createProject: EndpointConfig;

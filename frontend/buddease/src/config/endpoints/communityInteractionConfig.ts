@@ -1,6 +1,6 @@
 // communityInteractionConfig.ts
-import { CommunityInteractionEndpoints } from '../types/categories/CommunityInteractionEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { CommunityInteractionEndpoints } from '@/app/typings/categories/CommunityInteractionEndpoints';
 
 export const communityInteractionConfig: CommunityInteractionEndpoints = {
   createPost: { path: `${BASE_URL}/api/community-interaction/create-post`, method: "POST" },

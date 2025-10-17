@@ -2,7 +2,7 @@
 import { CacheProxyConfig, PersistenceAdapter, PersistenceConfig } from '@/app/components/typings/persistenceTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 // Adapters

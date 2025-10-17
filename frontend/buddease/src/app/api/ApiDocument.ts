@@ -1,37 +1,32 @@
 // ApiDocument.ts
-import { NotificationType } from '@/app/context/NotificationContext';
+import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
-import { AxiosResponse } from "axios";
-import { SnapshotStore } from "@/app/snapshots/SnapshotStore";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { DocumentFull } from '@/app/typings/entities/DocumentEntity';
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { NotificationType, useNotification } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Presentation } from "@/app/documents/editing/Presentation";
-import { BaseData } from '@/app/models/data/Data';
-import { Collaborator } from "@/app/collaborators/Collaborator";
-import {
-    useNotification
-} from "@/app/context/NotificationContext";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import {  DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { DocumentFull } from '@/app/typings/entities/DocumentEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DatabaseConfig } from "@/config/DatabaseTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { current } from "immer";
 
-import { handleApiError } from "@/app/api/ApiLogs";
 
-
-import { ClientInformation, CustomMediaSession } from '@/app/server/database/ClientInformation';
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { Document } from '@/app/state/stores/DocumentStore';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { Content } from '@/app/models/content/AddContent';
 import FileData from '@/app/models/data/FileData';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { endpoints } from '@/app/api/endpointConfigurations';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { Document } from '@/app/state/stores/DocumentStore';
+import { ClientInformation, CustomMediaSession } from '@/server/database/ClientInformation';
+
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -240,65 +235,75 @@ const fakeApiCall = (documentId: number): Promise<DocumentFull> => {
   });
 };
 
-// Define an async thunk action creator to update the document name
-const updateDocumentName = createAsyncThunk<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, { documentId: number; newName: string }>(
-  "documents/updateDocumentName",
-  ({ documentId, newName }, { dispatch }) => {
-    return new Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>((resolve, reject) => {
-      axiosInstance
-        .put(
+// Generic factory for document thunks
+export const createDocumentThunks = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => {
+
+  const updateDocumentName = createAsyncThunk<
+    DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    { documentId: number; newName: string }
+  >(
+    "documents/updateDocumentName",
+    async ({ documentId, newName }, { dispatch }) => {
+      try {
+        const response = await axiosInstance.put<
+          DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        >(
           `${API_BASE_URL}/documents/${documentId}/name`,
           { name: newName },
-          {
-            headers: headersConfig,
-          }
-        )
-        .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
-          // Dispatch success notification
-          useNotification().notify(
-            "UPDATE_DOCUMENT_NAME_SUCCESS",
-            apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
-            null,
-            new Date(),
-            "DocumentSuccess" as NotificationType
-          );
-          resolve(response.data);
-        })
-        .catch((error: AxiosError<unknown>) => {
-          console.error("Error updating document name:", error);
-          handleDocumentApiErrorAndNotify(
-            error,
-            "UPDATE_DOCUMENT_NAME_ERROR"
-          );
-          reject(error);
-        });
-    });
-  }
-);
+          { headers: headersConfig }
+        );
 
-// Define an async thunk action creator to fetch a document by ID
-const fetchDocumentById = createAsyncThunk<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, number>(
-  "documents/fetchDocumentById",
-  (documentId: number, { dispatch }) => {
-    return new Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>((resolve, reject) => {
-      axiosInstance
-        .get(`${API_BASE_URL}/documents/${documentId}`, {
+        useNotification().notify(
+          "UPDATE_DOCUMENT_NAME_SUCCESS",
+          apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
+          null,
+          new Date(),
+          "DocumentSuccess" as NotificationType
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error("Error updating document name:", error);
+        handleDocumentApiErrorAndNotify(error, "UPDATE_DOCUMENT_NAME_ERROR");
+        throw error;
+      }
+    }
+  );
+
+  const fetchDocumentById = createAsyncThunk<
+    DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    number
+  >(
+    "documents/fetchDocumentById",
+    async (documentId, { dispatch }) => {
+      try {
+        const response = await axiosInstance.get<
+          DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        >(`${API_BASE_URL}/documents/${documentId}`, {
           headers: headersConfig,
-        })
-        .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
-          resolve(response.data);
-        })
-        .catch((error: AxiosError<unknown>) => {
-          console.error("Error fetching document:", error);
-          handleDocumentApiErrorAndNotify(
-            error,
-            "FETCH_DOCUMENT_ERROR"
-          );
-          reject(error);
         });
-    });
-  }
-);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching document:", error);
+        handleDocumentApiErrorAndNotify(error, "FETCH_DOCUMENT_ERROR");
+        throw error;
+      }
+    }
+  );
+
+  return {
+    updateDocumentName,
+    fetchDocumentById,
+  };
+};
+
 
 // Function to convert documentData to WritableDraft<DocumentObject>
 const createDraftDocument = <
@@ -373,10 +378,12 @@ const createDraftDocument = <
     documentData: {
       ...data.documentData,
       file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData<T>> : undefined,
-      subtasks: data.documentData?.subtasks?.map((subtask) => ({
+      subtasks: data.documentData?.subtasks?.map((subtask: WritableDraft<Subtask<T>>) => ({
         ...subtask,
         assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
-        tags: subtask.tags ? Object.values(subtask.tags).map((tag) => ({ ...tag })) : [],
+        tags: subtask.tags
+          ? Object.values(subtask.tags).map((tag: Tag) => ({ ...tag }))
+          : [],
       })) || undefined,
     } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     comments: processedComments,
@@ -581,7 +588,14 @@ const updateDocumentNameAPI = async (
 };
 
 
-const addDocumentAPI = (
+const addDocumentAPI = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   documentData: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const addDocumentEndpoint = `${API_BASE_URL}/documents`;
@@ -606,7 +620,14 @@ const addDocumentAPI = (
 
 
 
-const loadPresentationFromDatabase = async (
+const loadPresentationFromDatabase = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   presentationId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Presentation> => {
   try {
@@ -774,8 +795,12 @@ const downloadDocument = async (
 
 // List documents API
 const listDocuments = async <
-  T extends  BaseData<any>,
-  K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/api/documents`);
@@ -933,7 +958,14 @@ const unlockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Add document API
-const addDocument = async (newDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+const addDocument = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(newDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents`,
@@ -957,8 +989,13 @@ const addDocument = async (newDocument: Document<T, K, Meta, AttachmentType, Exc
 
 // Update document API
 const updateDocument = async <
-  T extends  BaseData<any>,
-  K extends T = T>(
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   documentId: string,
   updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
@@ -2085,8 +2122,12 @@ const exportToExternalSystem = async (exportData: any): Promise<any> => {
 };
 
 const generateDocument = <
-  T extends  BaseData<any>,
-  K extends T = T>(
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentData: any,
   options: DocumentOptions
 ): Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
@@ -2360,32 +2401,32 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 
 export {
-    addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-    documentLifecycleManagement, documentRedaction,
-    documentTemplates, documentVersionComparison,
-    downloadDocument, encryptDocument, exportDocumentReport,
-    exportToExternalSystem, fakeApiCall,
-    fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
-    fetchXmlDocumentByIdAPI, filterDocuments,
-    filterDocumentsAPI, generateDocument,
-    generateDocumentReport, getDocument, getDocumentUrl,
-    getDocumentVersions, grantDocumentAccess,
-    importFromExternalSource, initiateDocumentWorkflow,
-    intelligentDocumentSearch, listDocuments,
-    loadPresentationFromDatabase, lockDocument,
-    manageDocumentPermissions, mentionUserInDocument,
-    mergeDocuments, moveDocument,
-    provideFeedbackOnDocument, rejectDocument,
-    removeDocument, requestFeedbackOnDocument,
-    requestReviewOfDocument, resolveFeedbackOnDocument,
-    restoreDocument, retrieveBackup, revertToDocumentVersion,
-    revokeDocumentAccess, scheduleReportGeneration,
-    searchDocumentAPI, searchDocuments, shareDocument,
-    smartTagging, splitDocument, synchronizeWithCloudStorage,
-    tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-    unlockDocument, updateDocument, updateDocumentAPI,
-    updateDocumentNameAPI, updateSnapshotDetails,
-    uploadDocument, validateDocument,
-    viewDocumentHistory
+  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+  documentLifecycleManagement, documentRedaction,
+  documentTemplates, documentVersionComparison,
+  downloadDocument, encryptDocument, exportDocumentReport,
+  exportToExternalSystem, fakeApiCall,
+  fetchAllDocumentsAPI, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
+  fetchXmlDocumentByIdAPI, filterDocuments,
+  filterDocumentsAPI, generateDocument,
+  generateDocumentReport, getDocument, getDocumentUrl,
+  getDocumentVersions, grantDocumentAccess,
+  importFromExternalSource, initiateDocumentWorkflow,
+  intelligentDocumentSearch, listDocuments,
+  loadPresentationFromDatabase, lockDocument,
+  manageDocumentPermissions, mentionUserInDocument,
+  mergeDocuments, moveDocument,
+  provideFeedbackOnDocument, rejectDocument,
+  removeDocument, requestFeedbackOnDocument,
+  requestReviewOfDocument, resolveFeedbackOnDocument,
+  restoreDocument, retrieveBackup, revertToDocumentVersion,
+  revokeDocumentAccess, scheduleReportGeneration,
+  searchDocumentAPI, searchDocuments, shareDocument,
+  smartTagging, splitDocument, synchronizeWithCloudStorage,
+  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+  unlockDocument, updateDocument, updateDocumentAPI,
+  updateDocumentNameAPI, updateSnapshotDetails,
+  uploadDocument, validateDocument,
+  viewDocumentHistory
 };
 

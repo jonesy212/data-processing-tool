@@ -1,8 +1,16 @@
 import { ParsedData } from "@/app/crypto/dataIntegration";
-import { YourResponseType, YourSettingsResponseType } from "@/app/typings/responseTypes";
+import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';
 
-
-function isYourSettingsResponseType(data: ParsedData<YourResponseType>): data is ParsedData<YourSettingsResponseType> {
+function isYourSettingsResponseType<
+  T extends BaseDataEntity = AppEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+    data: ParsedData<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): data is ParsedData<YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields>> {
     return (
         data.data !== undefined &&
         typeof data.data.id === "string" &&
@@ -24,7 +32,9 @@ function isYourSettingsResponseType(data: ParsedData<YourResponseType>): data is
 }
 
 
-function convertToYourSettingsResponseType(data: ParsedData<YourResponseType>): YourSettingsResponseType {
+function convertToYourSettingsResponseType(
+    data: ParsedData<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {
         id: data.id,
         appName: data.appName,
@@ -48,5 +58,5 @@ function convertToYourSettingsResponseType(data: ParsedData<YourResponseType>): 
 }
 
 export {
-isYourSettingsResponseType,
-convertToYourSettingsResponseType }
+  convertToYourSettingsResponseType, isYourSettingsResponseType
+};

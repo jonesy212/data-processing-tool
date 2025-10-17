@@ -1,21 +1,32 @@
 import * as apiFile from '@/api/ApiFiles';
 import SecurityAPI from '@/app/api/SecurityAPI';
-import { Attachment, FileType } from "@/app/documents/attachment/attachment";
+import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { Content } from '@/app/models/content/AddContent';
+import { Permission } from "@/app/permissions/Permission";
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
-import { Permission } from "@/app/users/Permission";
 import { VersionData } from '@/app/versions/VersionData';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { DataVersions } from '@/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
 
 const userId = useSecureUserId()
 
+type UnifiedVersionMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
+  versionMeta: Versions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  structure: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  };
+
 // Define the interface for AppStructureItem
-interface AppStructureItem <
+interface AppStructureItem<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

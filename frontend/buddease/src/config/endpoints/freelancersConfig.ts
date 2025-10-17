@@ -1,6 +1,6 @@
 // freelancersConfig.ts
-import { FreelancersEndpoints } from '../types/categories/FreelancersEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { FreelancersEndpoints } from '@/app/typings/categories/FreelancersEndpoints';
 
 export const freelancersConfig: FreelancersEndpoints = {
   list: { path: `${BASE_URL}/api/freelancers`, method: "GET" },

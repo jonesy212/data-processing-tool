@@ -1,6 +1,6 @@
 // userRolesNFTConfig.ts
-import { UserRolesNFTEndpoints } from '../types/categories/UserRolesNFTEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { UserRolesNFTEndpoints } from '@/app/typings/categories/UserRolesNFTEndpoints';
 
 export const userRolesNFTConfig: UserRolesNFTEndpoints = {
   list: { path: `${BASE_URL}/api/user-roles-nft`, method: "GET" },

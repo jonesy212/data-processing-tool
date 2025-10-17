@@ -1,15 +1,17 @@
-import { BaseData } from '@/app/models/data/Data';
-import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import { useEffect } from "react";
 import { ExchangeEnum } from "@/app/crypto/exchangeIntegration";
 import { RealtimeData } from "@/app/models/realtime/RealtimeData";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import { useEffect } from "react";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
 
 
 const useRealtimeExchangeData = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   initialData: any,
   updateCallback: RealtimeUpdateCallback<RealtimeData, Meta>,

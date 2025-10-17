@@ -1,16 +1,21 @@
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Snapshot, Snapshots, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // SnapshotManagement interface for snapshot operations
-export interface SnapshotManagement<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+export interface SnapshotManagement<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   takeSnapshot(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }>;
   updateSnapshot(
     snapshotId: string, 

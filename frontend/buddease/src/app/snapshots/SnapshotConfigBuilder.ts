@@ -1,22 +1,31 @@
 // SnapshotConfigBuilder.ts
 
 import { EventStore } from "@/app/components/event/EventStore";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import baseMeta from "@/server/database/baseMeta";
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import baseMeta from "@/server/database/baseMeta";
+import { ExcludedFields } from "../components/routing/Fields";
+import { NotificationTypeEnum } from "../context/NotificationContext";
+import { Attachment } from "../documents/attachment/Attachment";
+import { K, Meta, T } from "../models/data/dataStoreMethods";
+import { StoreMethods } from "../models/tasks/StoreMethods";
+import { criteria } from "../pages/searches/FilterCriteria";
+import { initialState } from "../state/redux/slices/FilteredEventsSlice";
+import { SnapshotMeta } from "../typings/entities/SnapshotEntity";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotEvents } from "./SnapshotEvents";
+import { generateId } from "./SnapshotIdentity";
 import { InitializedData, SnapshotInstanceProps } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
 import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 
-interface SnapshotLifecycle {
-  initializeWithData<T>(data: SnapshotUnion<T, any>[]): void;
+interface SnapshotLifecycle<T extends BaseDataEntity> {
+  initializeWithData<T>(data: SnapshotUnion<T, any, any, any, any, any>[]): void;
   clear(): void;
 }
 
@@ -78,24 +87,24 @@ export interface SnapshotConfigBuilder<
   getType(): T;
   getKey(): K;
   getMeta(): Meta;
-  getExcluded(): Excluded[];
+  getExcluded(): IncludedFields[];
 //   build(): any; 
   // Core
-  buildBaseConfig(): Promise<SnapshotConfig<T, K, Meta, Excluded>>;
-  buildStoreMethods(): Promise<StoreMethods<T, K, Meta, Excluded>>;
-  buildEventHandlers(): Promise<EventHandlers<T, K, Meta, Excluded>>;
-  buildSnapshotStore(): Promise<EventStore<T, K, Meta, Excluded>>;
-  buildSnapshotUnion(data: T, related?: K[]): Promise<SnapshotUnion<T, K, Meta, Excluded>>;
-  buildLifecycle(): Promise<SnapshotLifecycle<T, K, Meta, Excluded>>;
-  buildMeta(): Promise<SnapshotMeta<T, K, Meta, Excluded>>;
+  buildBaseConfig(): Promise<SnapshotConfig<T, K, Meta, ExcludedFields>>;
+  buildStoreMethods(): Promise<StoreMethods<T, K, Meta, ExcludedFields>>;
+  buildEventHandlers(): Promise<EventHandlers<T, K, Meta, ExcludedFields>>;
+  buildSnapshotStore(): Promise<EventStore<T, K, Meta, ExcludedFields>>;
+  buildSnapshotUnion(data: T, related?: K[]): Promise<SnapshotUnion<T, K, Meta, ExcludedFields>>;
+  buildLifecycle(): Promise<SnapshotLifecycle<T, K, Meta, ExcludedFields>>;
+  buildMeta(): Promise<SnapshotMeta<T, K, Meta, ExcludedFields>>;
 
   // Extended
-  buildStoreConfig(): Promise<SnapshotStoreConfig<T, K, Meta, Excluded>>;
-  buildSnapshotEvents(): Promise<SnapshotEvents<T, K, Meta, Excluded>>;
-  buildContainer(): Promise<SnapshotContainer<T, K, Meta, Excluded>>;
-  buildSubscribers(): Promise<SnapshotSubscriberManagement<T, K, Meta, Excluded>>;
-  buildWithCriteria(): Promise<SnapshotWithCriteria<T, K, Meta, Excluded>>;
-  buildManager(): Promise<SnapshotManager<T, K, Meta, Excluded>>;
+  buildStoreConfig(): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>>;
+  buildSnapshotEvents(): Promise<SnapshotEvents<T, K, Meta, ExcludedFields>>;
+  buildContainer(): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>;
+  buildSubscribers(): Promise<SnapshotSubscriberManagement<T, K, Meta, ExcludedFields>>;
+  buildWithCriteria(): Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields>>;
+  buildManager(): Promise<SnapshotManager<T, K, Meta, ExcludedFields>>;
 }
 
 

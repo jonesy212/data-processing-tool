@@ -1,5 +1,5 @@
 // communicationSagas.ts
-import { CommunicationActions } from "@/app/components/community/CommunicationActions";
+import { CommunicationActions } from "@/app/actions/CommunicationActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import { watchIdeationPhase } from "./watchers/onboarding/watchIdeationPhase";

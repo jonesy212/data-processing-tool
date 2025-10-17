@@ -1,16 +1,16 @@
 // TeamEntity.ts
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Define the actual TeamEntity interface
 export interface TeamEntity extends BaseDataEntity {
@@ -28,16 +28,16 @@ export interface TeamEntity extends BaseDataEntity {
 }
 
 // Team-specific type parameters
-type TeamEntityType = TeamEntity;
-type TeamK = TeamEntityType;
-type TeamMeta = DefaultMeta<TeamEntityType, TeamK>;
+type AppTeamEntity = TeamEntity;
+type TeamK = AppTeamEntity;
+type TeamMeta = DefaultMeta<AppTeamEntity, TeamK>;
 type TeamAttachment = Attachment;
-type TeamExcludedFields = DefaultExcludedFields<TeamEntityType>;
-type TeamIncludedFields = keyof TeamEntityType;
+type TeamExcludedFields = DefaultExcludedFields<AppTeamEntity>;
+type TeamIncludedFields = keyof AppTeamEntity;
 
 // Team parameters container
 type TeamBaseParams = {
-  T: TeamEntityType;
+  T: AppTeamEntity;
   K: TeamK;
   Meta: TeamMeta;
   AttachmentType: TeamAttachment;
@@ -48,37 +48,37 @@ type TeamBaseParams = {
 // CLEARLY NAMED TEAM TYPES:
 
 // Complete team with all fields
-type CompleteTeam = TeamEntityType;
+type CompleteTeam = AppTeamEntity;
 
 // Team for public display
-type PublicTeamProfile = Pick<TeamEntityType, "id" | "name" | "description" | "avatar" | "isActive" | "settings">;
+type PublicTeamProfile = Pick<AppTeamEntity, "id" | "name" | "description" | "avatar" | "isActive" | "settings">;
 
 // Minimal team for basic display (lists, dropdowns)
-type BasicTeamInfo = Pick<TeamEntityType, "id" | "name" | "avatar" | "isActive">;
+type BasicTeamInfo = Pick<AppTeamEntity, "id" | "name" | "avatar" | "isActive">;
 
 // Team with member details for internal use
-type TeamWithMembers = TeamEntityType & {
+type TeamWithMembers = AppTeamEntity & {
   members?: any[]; // You can define a proper Member type
 };
 
 // Core snapshot types
-type TeamSnapshot = Snapshot<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamSnapshotData = SnapshotData<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamSnapshotStore = SnapshotStore<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamSnapshotWithCriteria = SnapshotWithCriteria<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamSubscriberCollection = SubscriberCollection<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamRealtimeDataItem = RealtimeDataItem<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshot = Snapshot<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshotData = SnapshotData<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshotStore = SnapshotStore<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshotWithCriteria = SnapshotWithCriteria<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSubscriberCollection = SubscriberCollection<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamRealtimeDataItem = RealtimeDataItem<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
 
 // Configuration types
-type TeamSnapshotStoreConfig = SnapshotStoreConfig<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
-type TeamSnapshotsArray = SnapshotsArray<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshotStoreConfig = SnapshotStoreConfig<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamSnapshotsArray = SnapshotsArray<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
 
 // PARAMS
-type TeamParams = SnapshotConfigParams<TeamEntityType, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
+type TeamParams = SnapshotConfigParams<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>;
 
 // Team Metadata Types
 type TeamUnifiedMetadata = UnifiedMetadata<
-  TeamBaseParams['T'],        // TeamEntityType
+  TeamBaseParams['T'],        // AppTeamEntity
   TeamBaseParams['K'],        // TeamK  
   TeamBaseParams['Meta'],     // TeamMeta
   TeamBaseParams['AttachmentType'],  // TeamAttachment
@@ -87,7 +87,7 @@ type TeamUnifiedMetadata = UnifiedMetadata<
 >;
 
 type TeamStructuredMetadata = StructuredMetadata<
-  TeamBaseParams['T'],        // TeamEntityType
+  TeamBaseParams['T'],        // AppTeamEntity
   TeamBaseParams['K'],        // TeamK
   TeamBaseParams['Meta'],     // TeamMeta
   TeamBaseParams['AttachmentType'],  // TeamAttachment
@@ -103,21 +103,20 @@ type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, a
   SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 export type {
-    BasicTeamInfo,
-    // Team entity types
-    CompleteTeam,
-    PublicTeamProfile, TeamAttachment, TeamBaseParams,
-    // Core type parameters
-    TeamEntityType, TeamExcludedFields,
-    TeamIncludedFields, TeamK,
-    TeamMeta, TeamParams, TeamRealtimeDataItem,
-    // Snapshot types
-    TeamSnapshot,
-    TeamSnapshotData,
-    // Utility types
-    TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
-    // Metadata types
-    TeamUnifiedMetadata, TeamWithMembers
+  // Core type parameters
+  AppTeamEntity, BasicTeamInfo,
+  // Team entity types
+  CompleteTeam,
+  PublicTeamProfile, TeamAttachment, TeamBaseParams, TeamExcludedFields,
+  TeamIncludedFields, TeamK,
+  TeamMeta, TeamParams, TeamRealtimeDataItem,
+  // Snapshot types
+  TeamSnapshot,
+  TeamSnapshotData,
+  // Utility types
+  TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
+  // Metadata types
+  TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces

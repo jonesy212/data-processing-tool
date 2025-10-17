@@ -1,10 +1,10 @@
 // createSnapshots.ts
 import {
-    addData,
-    fetchData,
-    getBackendVersion,
-    getDataVersions,
-    getFrontendVersion
+  addData,
+  fetchData,
+  getBackendVersion,
+  getDataVersions,
+  getFrontendVersion
 } from "@/app/api/ApiData";
 import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/app/api/SnapshotApi";
 import { CreateSnapshotStoresPayload } from "@/app/database/Payload";
@@ -16,49 +16,49 @@ import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { notify } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import * as SubscriptionMethods from '@/methods/subscriptionMethods';
 import { SnapshotConfig } from "./SnapshotConfig";
 import { flatMap } from "./defaultSnapshotBuilder";
 import { defaultSubscribeToSnapshot } from "./defaultSnapshotSubscribeFunctions";
 import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
 import {
-    addDataStatus,
-    addDataSuccess,
-    getAllItems,
-    getAllKeys,
-    getData,
-    removeData,
-    setData,
-    updateData,
-    updateDataDescription, updateDataStatus,
-    updateDataTitle
+  addDataStatus,
+  addDataSuccess,
+  getAllItems,
+  getAllKeys,
+  getData,
+  removeData,
+  setData,
+  updateData,
+  updateDataDescription, updateDataStatus,
+  updateDataTitle
 } from "./methods/dataMethods";
 import * as VersionMethods from "./methods/snapshotMethods";
 import { TransformMethods } from "./methods/transformMethods";
 import { UtilMethods } from "./methods/utilMethods";
 import {
-    addSnapshotSuccess,
-    batchFetchSnapshots,
-    batchFetchSnapshotsFailure,
-    batchFetchSnapshotsSuccess,
-    batchTakeSnapshot,
-    batchTakeSnapshotsRequest,
-    batchUpdateSnapshotsFailure,
-    batchUpdateSnapshotsRequest,
-    batchUpdateSnapshotsSuccess,
-    createInitSnapshot,
-    createSnapshotFailure, createSnapshotSuccess,
-    determinePrefix,
-    fetchSnapshot,
-    getAllSnapshots,
-    getDelegate,
-    handleSnapshotSuccess,
-    initSnapshot, notifySubscribers,
-    onSnapshot, onSnapshots,
-    updateSnapshots,
-    updateSnapshotsSuccess,
-    updateSnapshotSuccess
+  addSnapshotSuccess,
+  batchFetchSnapshots,
+  batchFetchSnapshotsFailure,
+  batchFetchSnapshotsSuccess,
+  batchTakeSnapshot,
+  batchTakeSnapshotsRequest,
+  batchUpdateSnapshotsFailure,
+  batchUpdateSnapshotsRequest,
+  batchUpdateSnapshotsSuccess,
+  createInitSnapshot,
+  createSnapshotFailure, createSnapshotSuccess,
+  determinePrefix,
+  fetchSnapshot,
+  getAllSnapshots,
+  getDelegate,
+  handleSnapshotSuccess,
+  initSnapshot, notifySubscribers,
+  onSnapshot, onSnapshots,
+  updateSnapshots,
+  updateSnapshotsSuccess,
+  updateSnapshotSuccess
 } from "./snapshotHandlers";
 import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "./snapshotOperations";
 

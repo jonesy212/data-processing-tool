@@ -4,7 +4,7 @@ import { PhaseData } from "@/app/components/phases/Phase";
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { default as Version, default as VersionImpl } from "@/app/versions/Version";
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/config/BaseConfig';
 import { backendStructure } from "@/server/database/BackendStructure";
 import { useMemo } from "react";
 import { frontendStructure } from "./appStructure/FrontendStructure";

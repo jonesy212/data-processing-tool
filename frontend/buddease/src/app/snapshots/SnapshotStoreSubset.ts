@@ -1,19 +1,18 @@
-import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { SnapshotData } from '@/app/snapshots';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 
 import { NotificationType } from '@/app/context/NotificationContext';
-import {
-    UpdateSnapshotPayload,
-    Payload
-} from "@/app/server/database/Payload";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import {  Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import {
+  Payload,
+  UpdateSnapshotPayload
+} from "@/server/database/Payload";
 import { SnapshotOperation } from "./SnapshotActions";
 import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
@@ -23,16 +22,18 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
-import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 
 // SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   snapshotId: string | null;
   taskIdToAssign: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
@@ -60,7 +61,7 @@ interface SnapshotStoreSubset<
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    newData: T | Data<T, K, Meta, Attachment, ExcludedFields>
+    newData: T | Data<T, K, Meta, Attachment, ExcludedFields>,
     payload: UpdateSnapshotPayload<T>
   ) => Promise<{ snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }>;
 
@@ -121,7 +122,7 @@ interface SnapshotStoreSubset<
   takeSnapshotsSuccess: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void;
 
   // Configures the snapshot store with a specific configuration.
-  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, Data<T, K, Meta, Attachment, ExcludedFields>,  Meta, ExcludedFields>) => void;
+  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
   // Gets the current data.
   getData: () => T | null;

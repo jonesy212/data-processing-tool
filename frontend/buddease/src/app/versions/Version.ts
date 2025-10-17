@@ -8,8 +8,8 @@ import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { useAuth } from "@/context/AuthContext";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
       
@@ -19,8 +19,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { sharedMetadata } from "@/config/metadata/MetadataHooks";
+import { fetchUserAreaDimensions } from "@/config/MetaDataOptions";
 import BackendStructure, { backendStructure } from '@/server/database/BackendStructure';
-import { fetchUserAreaDimensions } from "@/server/database/MetaDataOptions";
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
@@ -37,13 +37,20 @@ import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { User } from "@/app/users/User";
 import { fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import getAppPath from "@/config/appStructure/appPath";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { dataVersions } from "@/config/DocumentBuilderConfig";
 import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
 import { BumpVersionOptions } from "./BumpVersionOptions";
 import { VersionData, VersionHistory } from "./VersionData";
 
-interface ExtendedVersion extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+interface ExtendedVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   name: string;
   url: string;
   versionNumber: string;
@@ -117,7 +124,7 @@ export interface Version<
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   structureData: string;
-  attachments?: Attachment[];
+  attachments?: AttachmentType[];
   excludedFields?: ExcludedFields[];
   includedFields?: IncludedFields[];
 
@@ -136,6 +143,8 @@ export interface Version<
   previousVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versions?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   versionNotes: string[];
+  toData(): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
 }
 
 interface Versions<
@@ -148,15 +157,22 @@ interface Versions<
 > {
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   versionData?: string | number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  backend?: BackendStructure;
+  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   history?: HistoryEntry[];
 }
 
 const area = fetchUserAreaDimensions().toString()
 
-function createDefaultMeta<T extends BaseDataEntity, K extends T = T>(): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  
+function createDefaultMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+
 const { latestVersion = createLatestVersion(), ...rest } = data;
   
   return {
@@ -175,7 +191,7 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
       timestamp: new Date(),
       createdBy: "Unknown",
       metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      initialState: {} as InitializedState<T, K>, // Fixed
+      initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Fixed
       meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Fixed
       mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>(), 
       events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -198,7 +214,10 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
 function createVersion<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(overrides?: Partial<Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, previousVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
 
@@ -447,7 +466,14 @@ function createVersion<
 
 
 // DevVersion: Extends BaseVersion and adds development-specific properties
-interface DevVersion<T extends BaseDataEntity, K extends T = T> extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+interface DevVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   buildDate: string;
   commitHash: string;
   commitDate: string;
@@ -505,12 +531,11 @@ class VersionImpl<
   major: number = 0;
   minor: number = 0;
   patch: number = 0;
-  name: string;
+  name: string = "";
   appVersion: string = "1.0.0";
   draft: boolean = false
   buildNumber: number | string = 0;
   versionNumber: string = "";
-  name: string = ""
   description: string = "";
   isPublished: boolean = false;
   publishedAt: Date | null = null;
@@ -524,7 +549,7 @@ class VersionImpl<
   documentId: string | number = 0;
   userId: string = "";
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  versions: Versions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   
   // Add other properties as needed
   parentId: string | null;
@@ -552,7 +577,7 @@ class VersionImpl<
   published?: boolean;
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
-  deletedAt?: string | Date | undefined;
+  deletedAt?: string | Date |  null = null;
   frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
@@ -605,7 +630,14 @@ class VersionImpl<
  * @param versionInfo - Object containing version details.
  * @returns A new instance of VersionImpl.
  */
-  static createVersion<T extends BaseDataEntity, K extends T = T>(
+  static createVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
     versionInfo: {
       id: number;
       major: number;
@@ -666,7 +698,7 @@ class VersionImpl<
       comments: Comment[];
       reactions: string[];
       changes: string[];
-      attachments: Attachment[];
+      attachments?: AttachmentType[];
       source: string;
       status: string;
       buildNumber: number | string;
@@ -823,7 +855,7 @@ class VersionImpl<
     comments: Comment[];
     reactions: string[];
     changes: string[]
-    attachments: Attachment[];
+    attachments?: AttachmentType[];
     source: string;
     status: string;
     buildNumber: number | string;
@@ -1041,7 +1073,14 @@ class VersionImpl<
     return typeof value === 'string' ? parseInt(value, 10) : value;
   }
 
-  private static ensureVersionData<T extends BaseDataEntity, K extends T = T>(
+  private static ensureVersionData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
     value: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
   ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     if (value === undefined) return null;
@@ -1088,7 +1127,7 @@ class VersionImpl<
     }
   }
 
-  public async getStructure(): Promise<Record<string, AppStructureItem> | undefined> {
+  public async getStructure(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> {
     return new Promise((resolve, reject) => {
       try {
         // Step 1: Parse the structureData
@@ -1097,8 +1136,8 @@ class VersionImpl<
         // Step 2: Transform the parsed data into AppStructureItem array
         const structureItems: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = this.transformToStructureItems(parsedData);
 
-        // Step 3: Convert the array to a Record<string, AppStructureItem>
-        const structureRecord: Record<string, AppStructureItem> = {};
+        // Step 3: Convert the array to a Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+        const structureRecord: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
         structureItems.forEach((item, index) => {
           structureRecord[`item${index}`] = item; // Use a unique key for each item
         });
@@ -2060,5 +2099,5 @@ const devVersion: DevVersion<T, K, Meta, AttachmentType, ExcludedFields, Include
 };
 
 export { createVersion, devVersion, version, versionData };
-export type { BuildVersion, BuildVersion, Version, Version, Versions, Versions };
+export type { BuildVersion, Version, VersionImpl, Versions };
 

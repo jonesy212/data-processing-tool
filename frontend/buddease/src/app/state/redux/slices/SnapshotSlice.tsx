@@ -1,19 +1,30 @@
 // snapshots/SnapshotSlice.ts
+
+import {
+  createAndAddSnapshot,
+  fetchDataStores,
+} from "@/app/thunks"; // adjust imports
+
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { createDefaultSnapshotData, SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity'
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Callback, snapshot, SnapshotConfig, SnapshotData, SnapshotWithCriteria } from "@/app/snapshots";
-import { Snapshot, Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { snapshot } from "@/app/snapshots/SnapshotConfig";
+import { Callback, SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -21,44 +32,32 @@ import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from "@/app/models/content/AddContent";
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
-import { WritableDraft } from "@/app/ReducerGenerator";
-import { ExcludedFields } from "@/app/routing/Fields";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { getSnapshotItems } from "@/app/snapshots/snapshotOperations";
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { sendNotification } from "@/app/users/UserSlice";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Subscription } from "react-redux";
 import { Tag } from "sanitize-html";
 
-
-interface SnapshotState {
-  snapshotId: string;
-  snapshotStores: SnapshotStore<BaseData, BaseData>[];
-  snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  loading: boolean;
-  error: string | null;
-  storeId: number
-}
-
-const initialState: SnapshotState = {
-  snapshotId: "initial-id",
-  snapshots: [],
-  loading: false,
-  error: null,
-  snapshotStores: [],
-  storeId: 0
-};
 
 type PayloadActionWithMeta<T, M = never> = PayloadAction<T, string, M>;
 
 
 
 // Async function to fetch DataStore list based on context
-export const getDelegate = async (context: {
+export const getDelegate = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(context: {
   useSimulatedDataSource: boolean;
   simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }): Promise<DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
@@ -69,42 +68,27 @@ export const getDelegate = async (context: {
   return dataSource.map((config) => initializeDataStore(config));
 };
 
-// Async thunk to call getDelegate and handle state updates
-export const fetchDataStores = createAsyncThunk(
-  'snapshot/fetchDataStores',
-  async (context: { useSimulatedDataSource: boolean; simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
-    return await getDelegate(context);
-  }
-);
-
-
-
 // Create an async thunk
-export const batchFetchSnapshots = createAsyncThunk(
+export const batchFetchSnapshots = createAsyncThunk<
+  { baseSnapshot: SnapshotEntityDataInterface; meta: Meta }, // return type
+  { startDate: Date; endDate: Date; storeId: number; meta: Meta }, // payload type
+  { rejectValue: any } // thunkAPI type
+>(
   'snapshot/batchFetchSnapshots',
-  async ({ startDate, endDate, storeId, meta }: { 
-    startDate: Date; 
-    endDate: Date; 
-    storeId: number; 
-    meta: Meta 
-  }, thunkAPI) => {
+  async ({ startDate, endDate, storeId, meta }, thunkAPI) => {
     try {
-      const snapshotManager = useSnapshotManager;
+      const snapshotManager = useSnapshotManager();
       const subscribers = snapshotManager(storeId);
-      
-      const baseSnapshot = await createCompleteSnapshot<T, K, Meta, Attachment, ExcludedFields>(
-        entity, // You'll need to define where 'entity' comes from
-        new Map(),
-        'mock-snapshot-id',
-        undefined,
-        store,   // You'll need to define where 'store' comes from
-        null,
-        null,
-        false,
-        storeProps, // You'll need to define where 'storeProps' comes from
-        {}
-      );
-      
+
+      // ✅ Use factory to create a properly typed empty snapshot
+      const baseSnapshot = createDefaultSnapshotData({
+        id: `snapshot-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        // optional overrides:
+        createdAt: startDate,
+        updatedAt: endDate,
+        metadata: {} as SnapshotUnifiedMetadata,
+      });
+
       return { baseSnapshot, meta };
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -112,396 +96,299 @@ export const batchFetchSnapshots = createAsyncThunk(
   }
 );
 
+// --------------------
+// Generic Slice Factory
+// --------------------
+export function createGenericSnapshotSlice<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() {
+  interface SnapshotState {
+    snapshotId: string;
+    snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    snapshotStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    dataStores?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // added for fetchDataStores
+    loading: boolean;
+    error: string | null;
+    storeId: number;
+  }
 
-const useSnapshotSlice = createSlice({
-  name: "snapshot",
-  initialState,
-  reducers: {
-    addSnapshot: (
-      state,
-      action: PayloadActionWithMeta<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-    ) => {
-      if (isSnapshot(action.payload)) {
-        const correctStore = findCorrectSnapshotStore(
-          action.payload,
-          state.snapshotStores as SnapshotStore<BaseData, BaseData>[]        );
-        if (correctStore) {
-          correctStore.snapshots.push(action.payload);
+  const initialState: SnapshotState = {
+    snapshotId: "initial-id",
+    snapshots: [],
+    snapshotStores: [],
+    dataStores: [],
+    loading: false,
+    error: null,
+    storeId: 0,
+  };
+
+  // --------------------
+  // Core Slice Definition
+  // --------------------
+  const useSnapshotSlice = createSlice({
+    name: "snapshot",
+    initialState,
+    reducers: {
+      addSnapshot: (
+        state,
+        action: PayloadActionWithMeta<
+          Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        >
+      ) => {
+        if (isSnapshot(action.payload)) {
+          const correctStore = findCorrectSnapshotStore(
+            action.payload,
+            state.snapshotStores
+          );
+          if (correctStore) {
+            correctStore.snapshots.push(action.payload);
+          } else {
+            state.error = "No matching snapshot store found";
+          }
         } else {
-          state.error = 'No matching snapshot store found';
+          state.error = "Snapshot data does not match expected type";
         }
-      } else {
-        state.error = 'Snapshot data does not match expected type';
-      }
-    },
-    removeSnapshot: (
-      state,
-      action: PayloadAction<string>
-    ) => {
-      state.snapshots = state.snapshots.filter(
-        (snapshot) => snapshot.id !== action.payload
-      );
-    },
+      },
 
-    clearSnapshots: (state) => {
-      state.snapshots = [];
-    },
-
-    clearSnapshot: (state, action: PayloadAction<string>) => {
-      const snapshotToRemove = state.snapshots.find(
-        (snapshot) => snapshot.id === action.payload
-      );
-      if (snapshotToRemove) {
-        snapshotToRemove.data = {} as Map<string, WritableDraft<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
-      }
-    },
-
-    updateSnapshot: (
-      state,
-      action: PayloadAction<{ id: string; newData: any }>
-    ) => {
-      const { id, newData } = action.payload;
-      const snapshotToUpdate = state.snapshots.find(
-        (snapshot) => snapshot.id === id
-      );
-      if (snapshotToUpdate) {
-        snapshotToUpdate.data = newData;
-      }
-    },
-
-    
-
-    batchRemoveSnapshotsRequest: <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-      state, // Specify state type here
-      action: PayloadAction<{ startDate: Date; endDate: Date }>
-    ) => {
-
-      const snapshotManager = useSnapshotManager;
-      const subscribers = snapshotManager(state.storeId)
-
-      state.loading = true;
-      state.error = null;
-
-      const notifySubscribers = async <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-        subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-      ) => {
-        const { startDate, endDate } = action.payload;
-        const snapshots = state.snapshots.filter(
-          (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
-            snapshot.date &&
-            (snapshot.updateSnapshotFailure?.date
-              ? snapshot.addSnapshotFailure.date >= startDate && snapshot.date <= endDate
-              : snapshot.date >= startDate && snapshot.date <= endDate)
+      removeSnapshot: (state, action: PayloadAction<string>) => {
+        state.snapshots = state.snapshots.filter(
+          (snapshot) => snapshot.id !== action.payload
         );
-        if (snapshots.length > 0) {
-          for (const snapshot of snapshots) {
-            for (const subscriber of subscribers) {
-              if (subscriber.getData() && subscriber.getData().name) {
-                const recipient = subscriber.getData()?.name ?? 'Unknown Recipient';
-                sendNotification({
-                  message: `Snapshot removed: ${snapshot.id}`,
-                  recipient: subscriber.getData().name,
-                  snapshot: JSON.parse(JSON.stringify(snapshot.data)),
-                });
-              }
-            }
-          }
+      },
+
+      clearSnapshots: (state) => {
+        state.snapshots = [];
+      },
+
+      clearSnapshot: (state, action: PayloadAction<string>) => {
+        const snapshotToRemove = state.snapshots.find(
+          (snapshot) => snapshot.id === action.payload
+        );
+        if (snapshotToRemove) {
+          snapshotToRemove.data = {} as Map<
+            string,
+            WritableDraft<
+              Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+            >
+          >;
         }
-      };
-      notifySubscribers(subscribers)
-    },
+      },
 
-    batchFetchSnapshotsRequest: (
-      state,
-      action: PayloadAction<{ startDate: Date; endDate: Date; storeId: number, meta: Meta }>
-    ) => {
-      const { startDate, endDate, storeId } = action.payload;
-   
-      const snapshotManager = useSnapshotManager;
-      const subscribers = snapshotManager(storeId)
-
-
-      state.loading = true;
-      state.error = null;
-
-      const notifySubscribers = async <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-        subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-        action: PayloadAction<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>
+      updateSnapshot: (
+        state,
+        action: PayloadAction<{ id: string; newData: any }>
       ) => {
-        const { snapshot, subscriber } = action.payload;
-        const recipient = subscriber.getData()?.name;
+        const { id, newData } = action.payload;
+        const snapshotToUpdate = state.snapshots.find(
+          (snapshot) => snapshot.id === id
+        );
+        if (snapshotToUpdate) {
+          snapshotToUpdate.data = newData;
+        }
+      },
 
-        if (snapshot.id && recipient) {
-          const snapshotData = state.snapshots.find(
-            (s) => s.id === snapshot.id
-          )?.data;
-          
-          if (snapshotData) {
-            sendNotification({
-              message: `New snapshot received: ${snapshot.id}`,
-              recipient,
-              snapshot: JSON.parse(JSON.stringify(snapshotData)),
-            });
+      // --- Batch Remove Snapshots ---
+      batchRemoveSnapshotsRequest: (
+        state,
+        action: PayloadAction<{ startDate: Date; endDate: Date }>
+      ) => {
+        state.loading = true;
+        state.error = null;
+      },
+
+      batchFetchSnapshotsRequest: (
+        state,
+        action: PayloadAction<{
+          startDate: Date;
+          endDate: Date;
+          storeId: number;
+          meta?: Meta;
+        }>
+      ) => {
+        state.loading = true;
+        state.error = null;
+      },
+
+      batchFetchSnapshotsSuccess: (
+        state,
+        action: PayloadAction<{
+          snapshots: WritableDraft<
+            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          >[];
+        }>
+      ) => {
+        state.loading = false;
+        state.snapshots = action.payload.snapshots;
+      },
+
+      batchFetchSnapshotsFailure: (
+        state,
+        action: PayloadAction<{ error: string }>
+      ) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      },
+
+      batchUpdateSnapshotsRequest: (state) => {
+        state.loading = true;
+        state.error = null;
+      },
+
+      batchUpdateSnapshotsSuccess: (
+        state,
+        action: PayloadAction<{
+          snapshots: WritableDraft<
+            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          >[];
+        }>
+      ) => {
+        state.loading = false;
+        state.snapshots = action.payload.snapshots;
+        state.error = null;
+
+        // Example: handling specific snapshot updates
+        state.snapshots.forEach((snapshot) => {
+          if (snapshot.id === "specific-id") {
+            snapshot.status = "updated";
+            console.log("Specific snapshot updated", snapshot);
           }
+        });
+      },
+
+      batchUpdateSnapshotsFailure: (
+        state,
+        action: PayloadAction<{ error: { code: string; message: string } }>
+      ) => {
+        state.loading = false;
+        state.error = action.payload.error.message;
+
+        switch (action.payload.error.code) {
+          case "not-found":
+            state.error =
+              "Snapshot not found. Please check the ID and try again.";
+            break;
+          case "permission-denied":
+            state.error = "You do not have permission to perform this action.";
+            break;
+          case "network-error":
+            state.error = "Network error. Please check your connection.";
+            break;
+          default:
+            state.error = "An unexpected error occurred.";
+            break;
         }
-      }
-  
-      // Fetch snapshots from database or API
-      // Ensure you can access 'meta' like 'action.meta.notify'
-      if (action.meta?.notify) {
-        // Additional logic if 'notify' is true
-      }
-      // Define WritableDraft to make T properties writable
-      type WritableDraft<T> = {
-        -readonly [P in keyof T]: T[P];
-      };
+      },
 
-      
-      
-      //   {
-      //     id: "2",
-      //   data: {
-      //     assignee: {
-      //       name: "user_2",
-      //       email: "<EMAIL>",
-      //     },
-      //     startDate: new Date(),
-      //     endDate: new Date(),
-      //     component: {} as FC<any>,
-      //   },
-      // },
-      // Notify subscribers
-      notifySubscribers(
-        snapshot,
-        subscribers,
-        // notify,
-        // id,
-        // notification,
-        // date,
-        // content,
-        // type
-      );
+      batchRemoveSnapshotsSuccess: (state, action: PayloadAction<string[]>) => {
+        state.loading = false;
+        state.snapshots = state.snapshots.filter(
+          (snapshot) => !action.payload.includes(snapshot.id as string)
+        );
+      },
+
+      batchRemoveSnapshotsFailure: (
+        state,
+        action: PayloadAction<{ error: string }>
+      ) => {
+        state.loading = false;
+        state.error = action.payload.error;
+      },
     },
 
-    batchFetchSnapshotsSuccess: (
-      state,
-      action: PayloadAction<{
-        snapshots: WritableDraft<Snapshot<BaseData, any>>[];
-      }>
-    ) => {
-      state.loading = false;
-      state.snapshots = action.payload.snapshots;
-    },
-
-    batchFetchSnapshotsFailure: (
-      state,
-      action: PayloadAction<{ error: string }>
-    ) => {
-      state.loading = false;
-      state.error = action.payload.error;
-    },
-
-    batchUpdateSnapshotsRequest: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-
-    batchUpdateSnapshotsSuccess: (
-      state,
-      action: PayloadAction<{
-        snapshots: WritableDraft<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data>>[];
-      }>
-    ) => {
-      state.loading = false;
-      state.snapshots = action.payload.snapshots;
-    
-      // Additional logic
-      // Log success message
-      console.log('Snapshots updated successfully');
-    
-      // Optionally, you might want to update other parts of the state
-      // Example: Resetting error message
-      state.error = null;
-    
-      // Example: Handling specific snapshot updates if necessary
-      state.snapshots.forEach(snapshot => {
-        if (snapshot.id === "specific-id") {
-          snapshot.status = "updated";
-          console.log("Specific snapshot updated", snapshot);
-        }
-      });
-    },
-    
-
-    batchUpdateSnapshotsFailure: (
-      state,
-      action: PayloadAction<{ error: { code: string, message: string } }>
-    ) => {
-      state.loading = false;
-      state.error = action.payload.error.message;
-      
-      // Handle specific error codes
-      switch (action.payload.error.code) {
-        case "not-found":
-          // Handle not found error
-          console.error("Error: Snapshot not found");
-          // You can set a specific error message or perform other state updates
-          state.error = "Snapshot not found. Please check the ID and try again.";
-          break;
-        case "permission-denied":
-          // Handle permission denied error
-          console.error("Error: Permission denied");
-          state.error = "You do not have permission to perform this action.";
-          break;
-        case "network-error":
-          // Handle network error
-          console.error("Error: Network error");
-          state.error = "Network error. Please check your connection and try again.";
-          break;
-        default:
-          // Handle other errors
-          console.error("Error: " + action.payload.error.message);
-          state.error = "An unexpected error occurred. Please try again.";
-          break;
-      }
-    },
-    
-
-    batchRemoveSnapshotsSuccess: (state, action: PayloadAction<string[]>) => {
-      state.loading = false;
-      state.snapshots = state.snapshots.filter(
-        (snapshot) => !action.payload.includes(snapshot.id as string)      );
-    },
-    batchRemoveSnapshotsFailure: (
-      state,
-      action: PayloadAction<{ error: string }>
-    ) => {
-      state.loading = false;
-      state.error = action.payload.error;
-    },
-
-    //  
-  },
-  extraReducers: (builder) => {
-    builder
+    // --------------------
+    // Async Thunks Integration
+    // --------------------
+    extraReducers: (builder) => {
+      builder
         .addCase(createAndAddSnapshot.fulfilled, (state, action) => {
           if (isSnapshot(action.payload)) {
             const correctStore = findCorrectSnapshotStore(
               action.payload,
-              state.snapshotStores as SnapshotStore<BaseData, BaseData>[]
+              state.snapshotStores as SnapshotStore<BaseDataEntity, BaseDataEntity>[]
             );
             if (correctStore) {
               correctStore.snapshots.push(action.payload);
             } else {
-              state.error = 'No matching snapshot store found';
+              state.error = "No matching snapshot store found";
             }
           } else {
-            state.error = 'Snapshot data does not match expected type';
+            state.error = "Snapshot data does not match expected type";
           }
         })
-      .addCase(createAndAddSnapshot.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-      .addCase(fetchDataStores.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchDataStores.fulfilled, (state, action: PayloadAction<DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
-        state.loading = false;
-        state.dataStores = action.payload;
-      })
-      .addCase(fetchDataStores.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to fetch data stores';
-      })
-      .addCase(batchFetchSnapshots.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(batchFetchSnapshots.fulfilled, (state, action) => {
-        state.loading = false;
-        const { baseSnapshot, meta } = action.payload;
-        
-        // Handle the snapshot data here
-        if (meta?.notify) {
-          // Additional logic if 'notify' is true
-        }
-        
-        // Add your snapshot processing logic
-      })
-      .addCase(batchFetchSnapshots.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      });
-  },
-});
+        .addCase(createAndAddSnapshot.rejected, (state, action) => {
+          state.error = action.payload as string;
+        })
+        .addCase(fetchDataStores.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(
+          fetchDataStores.fulfilled,
+          (
+            state,
+            action: PayloadAction<
+              DataStore<
+                T,
+                K,
+                Meta,
+                AttachmentType,
+                ExcludedFields,
+                IncludedFields
+              >[]
+            >
+          ) => {
+            state.loading = false;
+            state.dataStores = action.payload;
+          }
+        )
+        .addCase(fetchDataStores.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || "Failed to fetch data stores";
+        })
+        .addCase(batchFetchSnapshots.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(batchFetchSnapshots.fulfilled, (state, action) => {
+          state.loading = false;
+          const { baseSnapshot, meta } = action.payload;
 
-// 1. Function that CREATES a snapshot object (local creation)
-export const createSnapshotObject = async <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Attachment = any,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(
-  entity: T,
-  store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  options: { 
-    dataMap?: Map<string, any>;
-    id?: string;
-    meta?: Meta;
-    parentSnapshot?: Snapshot<T, K, Meta, Attachment, ExcludedFields, any> | null;
-    previousSnapshot?: Snapshot<T, K, Meta, Attachment, ExcludedFields, any> | null;
-    isPartial?: boolean;
-  } = {}
-): Promise<Snapshot<T, K, Meta, Attachment, ExcludedFields, any>> => {
-  return createCompleteSnapshot<T, K, Meta, Attachment, ExcludedFields>(
-    entity,
-    options.dataMap || new Map(),
-    options.id || `snapshot-${Date.now()}`,
-    options.meta,
-    store,
-    options.parentSnapshot || null,
-    options.previousSnapshot || null,
-    options.isPartial || false,
-    storeProps,
-    {}
-  );
-};
+          // Handle snapshot logic here
+          if (meta?.notify) {
+            // optional: notify subscribers
+          }
+        })
+        .addCase(batchFetchSnapshots.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action.payload as string;
+        });
+    },
+  });
+
+  return useSnapshotSlice;
+}
+
 
 export const createMockSnapshot = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Attachment = any,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(): Snapshot<T, K, Meta, Attachment, ExcludedFields, any> => {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // For demonstration purposes, we're just going to return the same snapshots
   return {
     id: "1",
     key: "value",
     topic: "topic",
     configOption: {} as string | WritableDraft<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | string,
-    config: {} as Promise<SnapshotStoreConfig<T, K, Meta, ExcludedField> | null>,
+    config: {} as Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>,
     subscription: {} as WritableDraft<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     initialState: {} as WritableDraft<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     category: "category",
@@ -863,7 +750,7 @@ export const createMockSnapshot = <
     getTimestamp: function (): Date | undefined {
       throw new Error("Function not implemented.");
     },
-    getStores: function (): Map<number, SnapshotStore<Data<T, K, Meta, Attachment, ExcludedFields>, any>>[] {
+    getStores: function (): Map<number, SnapshotStore<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>>[] {
       throw new Error("Function not implemented.");
     },
     getData: function (): BaseData | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined {
@@ -914,7 +801,7 @@ export const createMockSnapshot = <
         snapshotId: string,
         payload: FetchSnapshotPayload<BaseData>,
         snapshotStore: SnapshotStore<BaseData, BaseData>,
-        payloadData: BaseData | Data<T, K, Meta, Attachment, ExcludedFields>,
+        payloadData: BaseData | Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         category?: Category,              timestamp: Date,
         data: BaseData,
         delegate: SnapshotWithCriteria<BaseData, BaseData>[]
@@ -961,7 +848,14 @@ export const createMockSnapshot = <
 
 
 // Helper function to fetch the actual data source
-async function fetchRealDataSource(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+async function fetchRealDataSource<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
   // Placeholder logic, replace with actual fetch logic as needed
   return Promise.resolve([
     // Example configs

@@ -1,6 +1,6 @@
 // complete/route.ts
+import { serverConfigService } from '@/server/ServerConfigurationService';
 import { NextRequest, NextResponse } from 'next/server';
-import { serverConfigService } from '@/app/server/ServerConfigurationService';
 
 export async function GET(request: NextRequest) {
   try {

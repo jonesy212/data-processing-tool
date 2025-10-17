@@ -1,15 +1,16 @@
 // useRealtimeData.tsx
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { RealtimeData, RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { RealtimeData, RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
- 
+ import { Attachment } from "@/app/documents/attachment/Attachment";
+
 export const ENDPOINT = endpoints.backend
 
 
@@ -29,10 +30,12 @@ export type RealtimeUpdateCallback<
 ) => void;
 
 const useRealtimeData = <
-  T extends RealtimeData<BaseDataEntity, BaseDataEntity>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   initialData: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   updateCallback: RealtimeUpdateCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

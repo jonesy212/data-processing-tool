@@ -1,4 +1,4 @@
-// import { EndpointConfig } from '../EndpointConfigurations';
+// import { EndpointConfig } from '@/config/EndpointConfig';
 
 export interface ApiWebBaseEndpoints {
   login: EndpointConfig;

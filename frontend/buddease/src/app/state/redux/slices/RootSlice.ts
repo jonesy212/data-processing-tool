@@ -1,10 +1,10 @@
 // RootSlice.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { FilteredEventsState } from '@/app/state/stores/FilterStore';
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface TaskManagerState<

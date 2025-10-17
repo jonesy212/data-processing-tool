@@ -6,24 +6,24 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { CreateSnapshotsPayload } from "@/app/server/database/Payload";
 import { SnapshotData, SnapshotDataType } from '@/app/snapshots';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
+import { Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { isRealtimeDataItemArray } from '@/app/utils/dataTypeGuards';
 import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshots, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { CreateSnapshotsPayload } from "@/server/database/Payload";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
@@ -34,7 +34,9 @@ const snapshotDelegate = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotStoreConfig: SnapshotStoreConfig<T> | undefined
 ): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { DappProps } from "@/app/..@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
-import { AquaConfig } from "@/app/web3/webConfigs/AquaConfig";
+import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import { AquaChat } from "./AquaChat";
 import ChatInput from "./ChatInput";
+import ChatMessage from "./ChatMessage";
 import ChatNotification from "./ChatNotification";
 import handleMessageSend from "./handleMessageSend"; // Import the handleMessageSend function
 import useMessagingSystem from "./useMessagingSystem";
-import ChatMessage from "./ChatMessage";
 
 const ChatComponent: React.FC<{ dappProps: DappProps }> = ({ dappProps }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);

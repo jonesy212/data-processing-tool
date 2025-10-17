@@ -1,6 +1,6 @@
 // projectManagementConfig.ts
-import { ProjectManagementEndpoints } from '../types/categories/ProjectManagementEndpoints';
-import { BASE_URL } from './baseUrl';
+import { BASE_URL } from '@/app/api/baseUrl';
+import { ProjectManagementEndpoints } from '@/app/typings/categories/ProjectManagementEndpoints';
 
 export const projectManagementConfig: ProjectManagementEndpoints = {
   createProject: { path: `${BASE_URL}/api/project-management/create`, method: "POST" },
