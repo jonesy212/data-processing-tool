@@ -1,12 +1,13 @@
 // responseTypes.ts
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
+import { BaseResponseType } from "@/app/typings/baseResponseType";
 import { SearchNotesResponse } from "@/app/api/ApiNote";
-
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions'
 import { Attendee } from "@/app/calendar/Attendee";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { DataWithComment } from "@/app/dataIntegration";
-import { Attachment } from "@/app/features/support/SupportTicketComponent";
-import HighlightEvent from "@/app/highlighting/screenFunctionality";
+import { DataWithComment } from "@/app/dataIntegration/SafeParseData";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { Phase } from "@/app/models/phases/Phase";
@@ -91,7 +92,8 @@ interface YourSettingsResponseType<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends Settings, YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   calendarEventTypes: CalendarEventType[];
   todoTypes: TodoType[];
@@ -107,7 +109,9 @@ type UserDataResponseType<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+
 > = User &
   BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -119,19 +123,20 @@ interface YourResponseType<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           DataWithComment<T>,
           SearchNotesResponse {
   id?: string;
-  forEach?: (arg0: (notification: Notification<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void;
+  forEach?: (arg0: (notification: Notification) => void) => void;
   length?: number;
   calendarEvents: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K, Meta, AttachmentType, ExcludedFields>[];
-  currentPhase: Phase | null;
+  snapshotStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   comment: string;
   excludedData?: ExcludedFields;
   
@@ -148,7 +153,7 @@ interface YourResponseType<
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
 
-  data: Initialized<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   projectInfo?: {
     id: number;
@@ -178,5 +183,5 @@ interface YourResponseType<
 
   analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
-export type { BaseResponseType, UserDataResponseType, YourResponseType, YourSettingsResponseType };
+export type { UserDataResponseType, YourResponseType, YourSettingsResponseType };
 

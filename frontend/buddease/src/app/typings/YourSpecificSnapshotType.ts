@@ -21,27 +21,24 @@ import { createSnapshotStoreOptions } from '@/app/snapshots/createSnapshotStoreO
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { BaseDataRoot } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useContext } from "react";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { useContext } from 'react';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-import { additionalHeaders } from "@/app/api/headers/generateAllHeaders";
-import { CalendarEvent } from "@/app/calendar/CalendarEvent";
-import { SnapshotContext } from "@/app/context/SnapshotContext";
-import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { ExcludedFields } from "@/app/routing/Fields";
-import { SnapshotContent } from "@/app/snapshots/SnapshotContent";
-import { convertBaseDataToK } from "@/app/snapshots/convertSnapshot";
-import { createSnapshotStoreConfig } from "@/app/snapshots/snapshotStoreConfigInstance";
-import {
-  Callback
-} from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { YourResponseType } from "@/app/typings/responseTypes";
-import { generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
-import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { SchemaField } from "@/server/database/SchemaField";
-import { Subscription } from "react-redux";
+import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { SnapshotContext } from '@/app/context/SnapshotContext';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { SnapshotContent } from '@/app/snapshots/SnapshotContent';
+import { convertBaseDataToK } from '@/app/snapshots/convertSnapshot';
+import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { generateSnapshotId, isSnapshot } from '@/app/utils/snapshotUtils';
+import { ExtendedVersionData } from '@/app/versions/VersionData';
+import { SchemaField } from '@/server/database/SchemaField';
+import { Subscription } from 'react-redux';
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 class YourSpecificSnapshotType <
@@ -964,11 +961,10 @@ const convertSnapshoStoretData =  <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshotStoreConfigData: SnapshotStoreConfig<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): SnapshotStoreConfig<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  snapshotStoreConfigData: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return snapshotStoreConfigData
 };
-
 
 const snapshotType =  <
   T extends BaseDataEntity,
@@ -2054,11 +2050,14 @@ const convertSnapshotContainerToStore = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-  snapshotContainer: SnapshotContainer<T, K>
-): SnapshotStore<Data, BaseData> => {
-  return {
-    storeId: snapshotContainer.storeId || '', // Or use a default/fallback value
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+
+  // 1️⃣ Instantiate a new SnapshotStore
+  const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+    storeId: snapshotContainer.storeId || '',
     name: snapshotContainer.name || '',
     version: snapshotContainer.version || new Version('0.0.0'),
     schema: snapshotContainer.schema || {},
@@ -2066,93 +2065,80 @@ const convertSnapshotContainerToStore = <
     category: snapshotContainer.category || '',
     config: snapshotContainer.config || {},
     operation: snapshotContainer.operation || 'defaultOperation',
-    id: snapshotContainer.id,
-    key: snapshotContainer.key,
-    keys: snapshotContainer.keys,
-    topic: snapshotContainer.topic,
-   
-    date: snapshotContainer.date,
-    title: snapshotContainer.title,
-    categoryProperties: snapshotContainer.categoryProperties,
-    message: snapshotContainer.message,
-   
-    timestamp: snapshotContainer.timestamp,
-    createdBy: snapshotContainer.createdBy,
-    eventRecords: snapshotContainer.eventRecords,
-    type: snapshotContainer.type,
-   
-    subscribers: snapshotContainer.subscribers,
-    createdAt: snapshotContainer.createdAt,
-    store: snapshotContainer.store,
-    stores: snapshotContainer.stores,
-   
-    snapshots: snapshotContainer.snapshots,
-    snapshotConfig: snapshotContainer.snapshotConfig,
-    meta: snapshotContainer.meta,
-    snapshotMethods: snapshotContainer.snapshotMethods,
-   
-    getSnapshotsBySubscriber: snapshotContainer.getSnapshotsBySubscriber,
-    getSnapshotsBySubscriberSuccess: snapshotContainer.getSnapshotsBySubscriberSuccess,
-    getSnapshotsByTopic: snapshotContainer.getSnapshotsByTopic,
-    getSnapshotsByTopicSuccess: snapshotContainer.getSnapshotsByTopicSuccess,
-   
-    getSnapshotsByCategory: snapshotContainer.getSnapshotsByCategory,
-    getSnapshotsByCategorySuccess: snapshotContainer.getSnapshotsByCategorySuccess,
-    getSnapshotsByKey: snapshotContainer.getSnapshotsByKey,
-    getSnapshotsByKeySuccess: snapshotContainer.getSnapshotsByKeySuccess,
-   
-    getSnapshotsByPriority: snapshotContainer.getSnapshotsByPriority,
-    getSnapshotsByPrioritySuccess: snapshotContainer.getSnapshotsByPrioritySuccess,
-    getStoreData: snapshotContainer.getStoreData,
-    updateStoreData: snapshotContainer.updateStoreData,
-   
-    updateDelegate: snapshotContainer.updateDelegate,
-    getSnapshotContainer: snapshotContainer.getSnapshotContainer,
-    getSnapshotVersions: snapshotContainer.getSnapshotVersions,
-    createSnapshot: snapshotContainer.createSnapshot,
-   
-    maxAge: snapshotContainer.maxAge,
     expirationDate: snapshotContainer.expirationDate,
-    criteria: snapshotContainer.criteria,
-    initializeWithData: snapshotContainer.initializeWithData,
-    hasSnapshots: snapshotContainer.hasSnapshots,
-    getDataStoreMap: snapshotContainer.getDataStoreMap,
-    emit: snapshotContainer.emit,
-    removeChild: snapshotContainer.removeChild,
-   
-    structuredMetadata: snapshotContainer.structuredMetadata,
-    snapshotStoreConfig: snapshotContainer.snapshotStoreConfig,
-    getChildren: snapshotContainer.getChildren,
-    hasChildren: snapshotContainer.hasChildren,
-   
-    get: snapshotContainer.get,
-    isSubscribed: snapshotContainer.isSubscribed,
-    addToSnapshotList: snapshotContainer.addToSnapshotList,
-    handleSnapshotFailure: snapshotContainer.handleSnapshotFailure,
-    
-    getEventsAsRecord: snapshotContainer.getEventsAsRecord,
-    isDescendantOf: snapshotContainer.isDescendantOf,
-    getInitialState: snapshotContainer.getInitialState,
-    getConfigOption: snapshotContainer.getConfigOption,
-   
-    getAllSnapshots: snapshotContainer.getAllSnapshots,
-    getTimestamp: snapshotContainer.getTimestamp,
-    getStore: snapshotContainer.getStore,
-    getStores: snapshotContainer.getStores,
-    getData: snapshotContainer.getData,
-    addStore: snapshotContainer.addStore,
-    removeStore: snapshotContainer.removeStore,
-    createSnapshots: snapshotContainer.createSnapshots,
-   
-    states: snapshotContainer.states,
-    currentState: snapshotContainer.currentState,
-    updateState: snapshotContainer.updateState,
-    getCurrentState: snapshotContainer.getCurrentState,
-   
+    payload: snapshotContainer.payload,
+    callback: snapshotContainer.callback,
+    storeProps: snapshotContainer.storeProps,
+    endpointCategory: snapshotContainer.endpointCategory,
+  });
 
-    // Map other propertiwes as needed
-  } as SnapshotStore<Data, BaseData>;
+  // 2️⃣ Copy over **all relevant state and properties**
+  snapshotStore.snapshots = snapshotContainer.snapshots || [];
+  snapshotStore.snapshotsArray = snapshotContainer.snapshotsArray;
+  snapshotStore.snapshotsObject = snapshotContainer.snapshotsObject;
+  snapshotStore.mappedSnapshotData = snapshotContainer.mappedSnapshotData;
+  snapshotStore.subscribers = snapshotContainer.subscribers || [];
+  snapshotStore.subscriberManagement = snapshotContainer.subscriberManagement || snapshotContainer.snapshotSubscriberManagement;
+  snapshotStore.stores = snapshotContainer.stores || [];
+  snapshotStore.meta = snapshotContainer.meta;
+  snapshotStore.snapshotConfig = snapshotContainer.snapshotConfig;
+  snapshotStore.states = snapshotContainer.states;
+  snapshotStore.currentState = snapshotContainer.currentState;
+  snapshotStore.data = snapshotContainer.data;
+  snapshotStore.criteria = snapshotContainer.criteria;
+  snapshotStore.content = snapshotContainer.content || snapshotContainer.snapshotContent;
+  snapshotStore.taskIdToAssign = snapshotContainer.taskIdToAssign;
+  snapshotStore.initialConfig = snapshotContainer.initialConfig;
+
+  // 3️⃣ Copy **methods and relationships** dynamically if they exist
+  snapshotStore.addToSnapshotList = snapshotContainer.addToSnapshotList?.bind(snapshotStore);
+  snapshotStore.getSnapshotContainer = snapshotContainer.getSnapshotContainer?.bind(snapshotStore);
+  snapshotStore.createSnapshot = snapshotContainer.createSnapshot?.bind(snapshotStore);
+  snapshotStore.updateState = snapshotContainer.updateState?.bind(snapshotStore);
+  snapshotStore.removeSubscriber = snapshotContainer.removeSubscriber;
+  snapshotStore.onError = snapshotContainer.onError;
+
+  // 4️⃣ Optional Snapshot relationships
+  snapshotStore.snapshotStore = snapshotContainer.snapshotStore;
+  snapshotStore.snapshotContainer = snapshotContainer.snapshotContainer;
+
+  // 5️⃣ Other helpers and methods
+  snapshotStore.getSnapshotsBySubscriber = snapshotContainer.getSnapshotsBySubscriber?.bind(snapshotStore);
+  snapshotStore.getSnapshotsBySubscriberSuccess = snapshotContainer.getSnapshotsBySubscriberSuccess?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByTopic = snapshotContainer.getSnapshotsByTopic?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByTopicSuccess = snapshotContainer.getSnapshotsByTopicSuccess?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByCategory = snapshotContainer.getSnapshotsByCategory?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByCategorySuccess = snapshotContainer.getSnapshotsByCategorySuccess?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByKey = snapshotContainer.getSnapshotsByKey?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByKeySuccess = snapshotContainer.getSnapshotsByKeySuccess?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByPriority = snapshotContainer.getSnapshotsByPriority?.bind(snapshotStore);
+  snapshotStore.getSnapshotsByPrioritySuccess = snapshotContainer.getSnapshotsByPrioritySuccess?.bind(snapshotStore);
+
+  snapshotStore.createSnapshotData = snapshotContainer.createSnapshotData?.bind(snapshotStore);
+
+  snapshotStore.getInitialState = snapshotContainer.getInitialState?.bind(snapshotStore);
+  snapshotStore.getConfigOption = snapshotContainer.getConfigOption?.bind(snapshotStore);
+  snapshotStore.getAllSnapshots = snapshotContainer.getAllSnapshots?.bind(snapshotStore);
+  snapshotStore.getTimestamp = snapshotContainer.getTimestamp?.bind(snapshotStore);
+  snapshotStore.getStore = snapshotContainer.getStore?.bind(snapshotStore);
+  snapshotStore.getStores = snapshotContainer.getStores?.bind(snapshotStore);
+  snapshotStore.getData = snapshotContainer.getData?.bind(snapshotStore);
+  snapshotStore.addStore = snapshotContainer.addStore?.bind(snapshotStore);
+  snapshotStore.removeStore = snapshotContainer.removeStore?.bind(snapshotStore);
+  snapshotStore.createSnapshots = snapshotContainer.createSnapshots?.bind(snapshotStore);
+  snapshotStore.emit = snapshotContainer.emit?.bind(snapshotStore);
+  snapshotStore.removeChild = snapshotContainer.removeChild?.bind(snapshotStore);
+
+  snapshotStore.hasSnapshots = snapshotContainer.hasSnapshots;
+  snapshotStore.hasChildren = snapshotContainer.hasChildren;
+  snapshotStore.getChildren = snapshotContainer.getChildren?.bind(snapshotStore);
+  snapshotStore.isDescendantOf = snapshotContainer.isDescendantOf?.bind(snapshotStore);
+
+  // ✅ Return a fully typed, fully initialized SnapshotStore
+  return snapshotStore;
 };
+
+
 
 
 const convertToSnapshot = <

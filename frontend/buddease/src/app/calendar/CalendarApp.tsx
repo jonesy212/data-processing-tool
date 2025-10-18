@@ -799,7 +799,7 @@ function CalendarApp<
         data={{
           id: "1",
           tags: {},
-          metadata: {} as UnifiedMetaDataOptions<any, K, StructuredMetadata<any, K>, never>,
+          metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<any, K>, never>,
         }}
         details={{
           id: "1",

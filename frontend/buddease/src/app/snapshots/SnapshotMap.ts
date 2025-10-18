@@ -5,14 +5,14 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot, SnapshotData } from '@/app/snapshots';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { Subscription } from "@/app/subscriptions/Subscription";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Function to remove a snapshot from the map
 function removeSnapshotFromMap<
@@ -193,6 +193,7 @@ type SnapshotStoreMap<
 export type { SnapshotStoreMap };
 
   export {
-    batchUpdateSnapshots, getSnapshot, getSnapshotFromMap, isSnapshotFunction, removeSnapshotFromMap, safeUpdateSnapshots,
-    updateSnapshotMap, validateSnapshot
-  };
+        batchUpdateSnapshots, getSnapshot, getSnapshotFromMap, isSnapshotFunction, removeSnapshotFromMap, safeUpdateSnapshots,
+        updateSnapshotMap, validateSnapshot
+    };
+

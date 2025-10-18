@@ -9,7 +9,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { StructuredMetadata } from "@/config/s/StructuredMetadata";
 import { SchemaField } from "@/server/database/SchemaField";
 import { SnapshotData } from "./SnapshotData";
-import { SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotEvents } from '@/app/typings/eventTypes;
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 

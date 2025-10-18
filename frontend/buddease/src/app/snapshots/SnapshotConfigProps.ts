@@ -3,10 +3,10 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";

@@ -7,7 +7,7 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel, } from '@/app/permissions/PermissionEnums';
 import { ValidationStatus } from '@/app/permissions/ValidationStatus';
-import { SnapshotContainer } from '@/app/snapshots';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { ExternalReference } from '@/calendar/ExternalReference';

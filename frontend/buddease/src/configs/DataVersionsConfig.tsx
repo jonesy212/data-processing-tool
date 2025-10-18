@@ -26,7 +26,7 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
 
   const dataStore = useDataStore(); // Initialize DataStore
 
-  const [dataVersions, setDataVersions] = React.useState<DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>({
+  const [dataVersions, setDataVersions] = React.useState<DataVersions<DataVersionsProps>>({
     backend: undefined,  // No Promise, just undefined initially
     frontend: undefined, // No Promise, just undefined initially
   });
@@ -104,6 +104,8 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
     </div>
   );
 };
+
+
 export const dataVersions = {
   frontend: useDataStore().getFrontendVersion(),
   backend: useDataStore().getBackendVersion(),

@@ -1,10 +1,12 @@
 // BackendStructureWrapper.ts
+
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import BackendStructure from "@/server/database/BackendStructure";
-import { promises as fsPromises } from "fs"; // Use promise-based fs module
+import { promises as fsPromises } from "fs"; 
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
 
 class BackendStructureWrapper<
   T extends BaseDataEntity,
@@ -13,7 +15,8 @@ class BackendStructureWrapper<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+> implements IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+
   private backendStructure: BackendStructure;
   private exposeAll: boolean; // User-controlled toggle
 

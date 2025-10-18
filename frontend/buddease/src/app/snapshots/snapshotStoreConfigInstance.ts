@@ -17,6 +17,7 @@ import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataS
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, snapshotConfig } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
@@ -34,21 +35,19 @@ import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/s
 import { Subscription } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
-import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
 import { fetchData } from "@/app/api/ApiData";
-import { Meta } from "@/app/models/data/dataStoreMethods";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import {
+    AppEntity, AppExcludedFields, AppK, AppMeta,
+    AppParams,
+    AppSnapshot,
+    AppSnapshotsArray,
+    AppSnapshotStoreConfig
+} from '@/app/typings/entities/AppEntity';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import {
-  AppEntity, AppExcludedFields, AppK, AppMeta,
-  AppParams,
-  AppSnapshot,
-  AppSnapshotsArray,
-  AppSnapshotStoreConfig
-} from '@/app/typings/entities/AppEntity';
 
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";

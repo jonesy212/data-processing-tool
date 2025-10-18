@@ -13,6 +13,7 @@ import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
@@ -25,7 +26,6 @@ import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CreateSnapshotsPayload } from "@/server/database/Payload";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 

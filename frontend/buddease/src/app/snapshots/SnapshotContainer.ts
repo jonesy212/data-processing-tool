@@ -133,7 +133,8 @@ interface SnapshotContainerData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   items: ItemUnion[];
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
@@ -160,11 +161,11 @@ interface SnapshotContainer<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SnapshotBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SnapshotRelationships<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SnapshotContainerData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   name?: string | undefined;
+  category?: Category;
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   subscriberManagement?: SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   criteria: CriteriaType | undefined,
@@ -214,7 +215,8 @@ function initializeSnapshotContainer <
 }
 
 // Example of initializing SnapshotContainer within a method
-function configureSnapshotContainer<  T extends BaseDataEntity,
+function configureSnapshotContainer<  
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

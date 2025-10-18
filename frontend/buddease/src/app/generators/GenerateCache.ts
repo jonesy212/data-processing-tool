@@ -4,7 +4,7 @@ import { BaseData } from '@/app/models/data/Data';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Data } from '@/app/models/data/Data';
-import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
+import RealtimeData from "@/app/components/models/realtime/RealtimeData";
 import {
     useBrainstormingPhase,
     useMeetingsPhase,
@@ -31,7 +31,7 @@ import FrontendStructure from "@/config/appStructure/FrontendStructure";
 import { backendConfig } from "@/config/BackendConfig";
 import { frontendConfig } from "@/config/FrontendConfig";
 import userSettings from "@/config/UserSettings";
-import BackendStructure from "@/configs/appStructure/BackendStructure";
+import BackendStructure from "@/config/appStructure/IBackendStructure";
 import { DataVersions } from "@/configs/DataVersionsConfig";
 
 const initialData: any = {}; 
@@ -40,16 +40,23 @@ const initialData: any = {};
 export const realtimeData = {} as RealtimeData
 
 // Updated cache data structure based on the provided tree structure
-export interface CacheData extends Data<CacheData> {
+export interface CacheData<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+> extends Data<CacheData> {
   _id: string,
-  lastUpdated: VersionHistory;
-  userSettings: typeof userSettings;
-  dataVersions: DataVersions;
+  lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendStructure: FrontendStructure<BaseData<any>, BaseData<any>>;
   backendStructure: BackendStructure;
-  backendConfig: typeof backendConfig;
   frontendConfig: typeof frontendConfig
+  userSettings: typeof userSettings;
   realtimeData:  RealtimeData
+  backendConfig: typeof backendConfig;
   // fetchData?: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>;
   // Add new top-level cache properties for UI phases
   notificationBarPhaseHook: typeof notificationBarPhaseHook;

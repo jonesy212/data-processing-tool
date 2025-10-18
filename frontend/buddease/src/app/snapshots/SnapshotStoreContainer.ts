@@ -7,6 +7,7 @@ import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { Category, generateCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import {
     BaseDataEntity,
@@ -14,7 +15,6 @@ import {
     DefaultMeta,
 } from '@/config/BaseConfig';
 import { SimulatedDataSource } from '@/createSnapshotOptions';
-import { SnapshotContainer } from "./SnapshotContainer";
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

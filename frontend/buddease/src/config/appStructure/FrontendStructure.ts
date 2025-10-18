@@ -59,6 +59,7 @@ export default class FrontendStructure<
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
+  userId: string;
   name: string;
   type: string; // Adjust based on your FileType definition
   path: string;
@@ -78,6 +79,7 @@ export default class FrontendStructure<
   constructor(projectPath: string,  major: number = 1, minor: number = 0, patch: number = 0) {
     this.id = "";
     this.name = "";
+    this.userId = "";
     this.type = "";
     this.path = "";
     this.content = "";
@@ -144,6 +146,7 @@ export default class FrontendStructure<
         const fileItem: AppStructureItem = {
           id: file,
           name: file,
+          userId: '',
           path: filePath,
           type: "file",
           items: {},

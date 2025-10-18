@@ -1,12 +1,13 @@
 // VersionEntity.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { VersionData, Version, VersionImpl } from "@/app/versions/Version";
+import {  Version, VersionImpl } from "@/app/versions/Version";
 import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
-import { BackendStructure } from "@/server/database/BackendStructure";
 import { HistoryEntry } from "@/app/state/stores/HistoryStore";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetaDataOptions, UnifiedMetadata } from '@/config/MetaDataOptions';
+import { VersionData } from '@/app/versions/VersionData'
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
 
 /**
  * Core Version Entity representing the complete versioned structure
@@ -34,7 +35,7 @@ export class VersionEntity<
   meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   /** Backend and frontend paired version structures */
-  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backend?: IBackendStructure<T>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   /** Historical version trail */
@@ -61,10 +62,10 @@ export class VersionEntity<
     id: string,
     versionNumber: number,
     data: T | null,
-    backend?: BackendStructure,
+    backend?: IBackendStructure<T>,
     frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    meta?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     history?: HistoryEntry[],
   ) {
     this.id = id;
@@ -81,7 +82,7 @@ export class VersionEntity<
   }
 
   /** Get a full clone of this version */
-  clone(): VersionEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  clone(): this {
     return new VersionEntity(
       this.id,
       this.versionNumber,
@@ -90,7 +91,7 @@ export class VersionEntity<
       this.frontend,
       this.metadata,
       this.history ? [...this.history] : [],
-    );
+    ) as this;
   }
 
   /** Update metadata or associated context */
@@ -113,6 +114,8 @@ export class VersionEntity<
     this.updatedAt = new Date();
   }
 }
+
+
 // 🔍 Breakdown
 // Section	Purpose
 // Implements both Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> and VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>	Ensures VersionEntity is fully compatible with all version-handling systems (data, UI, and backend).

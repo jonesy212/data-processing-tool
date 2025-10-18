@@ -9,7 +9,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
-import { SnapshotContainer } from './snapshots';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 
 // --- Enhanced delegate helper with SimulatedDataSource support ---
 async function getDelegate<

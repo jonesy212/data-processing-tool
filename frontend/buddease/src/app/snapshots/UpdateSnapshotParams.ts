@@ -29,7 +29,7 @@ interface UpdateSnapshotParams<
   payloadData: T | K;
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  store: SnapshotStore<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 export type { UpdateSnapshotParams };

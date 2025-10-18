@@ -411,7 +411,7 @@ export interface DataStore<
     id: number,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: T
+    data: T,
     category?: Category
   ) => Promise<SnapshotWithCriteria<T, K>[] | undefined>
   dataStoreConfig: DataStore<T, K> | undefined
@@ -1742,7 +1742,17 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
               determinePrefix: function (snapshot: T | null | undefined, category: string): string {
                 throw new Error('Function not implemented.');
               },
-              updateSnapshot: function (snapshotId: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, events: Record<string, CalendarManagerStoreClass<T, K>[]>, snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: UpdateSnapshotPayload<T>, store: SnapshotStore<any, K>, callback?: ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) | undefined): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
+              updateSnapshot: function (
+                snapshotId: string,
+                data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+                events: Record<string, CalendarManagerStoreClass<T, K>[]>, 
+                snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+                newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+                payload: UpdateSnapshotPayload<T>, 
+                store: SnapshotStore<any, K>, 
+                callback?: ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) | undefined
+              ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
                 throw new Error('Function not implemented.');
               },
               updateSnapshotSuccess: function (): void {
@@ -1803,12 +1813,13 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
                 throw new Error('Function not implemented.');
               },
               configureSnapshotStore: function (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, storeId: number, 
-                data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-                 dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-                 payload: ConfigureSnapshotStorePayload<T, K>,
-                  store: SnapshotStore<any, K>,
+                data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+                events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+                dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], 
+                newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+                payload: ConfigureSnapshotStorePayload<T, K>,
+                store: SnapshotStore<any, K>,
                    callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-
                   ) => void): void {
                 throw new Error('Function not implemented.');
               },

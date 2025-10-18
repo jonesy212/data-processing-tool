@@ -1,7 +1,7 @@
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
-import { Comment } from '@/app/models/comments/Comments';
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
@@ -19,7 +19,6 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMe
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { DataVersions } from "@/configs/DataVersionsConfig";
-import BackendStructure from '@/server/database/BackendStructure';
 import { BuildVersion, Version, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
 
@@ -247,7 +246,7 @@ export interface VersionData<
 
   // Structure
   _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Misc

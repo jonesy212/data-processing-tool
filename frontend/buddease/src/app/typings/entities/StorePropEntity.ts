@@ -1,4 +1,9 @@
 // StorePropEntity.ts
+
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+
 // ------------------------------
 // 1️⃣ Base StorePropEntity definition
 // ------------------------------

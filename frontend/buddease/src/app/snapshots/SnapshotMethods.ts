@@ -327,7 +327,7 @@ interface SnapshotLifecycleMethods<
     mappedSnapshotData?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     delegate?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     payload?: UpdateSnapshotPayload<T>,
-    store?: SnapshotStore<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void, 
     snapshotManager?: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

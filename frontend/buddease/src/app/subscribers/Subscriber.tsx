@@ -1,8 +1,8 @@
 import { SubscriptionActions } from "@/app/actions/SubscriptionActions";
 import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { addSnapshot } from "@/app/api/SnapshotApi";
-import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
+import addSnapshot from "@/app/api/SnapshotApi";
+import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -27,11 +27,11 @@ import {
   SnapshotWithCriteria
 } from "@/app/snapshots";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
-import {
-  SnapshotsArray,
-  createSnapshotOptions
-} from "@/app/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore, { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
+import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
+
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "@/app/snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "@/app/snapshots/SnapshotStoreSubset";
 import {
@@ -69,7 +69,7 @@ import {
   NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
-import { sendNotification } from "@/state/redux/slices/UserSlice";
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { config } from "process";
 import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "./snapshotStoreConfigInstance";
 
@@ -83,11 +83,7 @@ type SnapshotStoreDelegate<
 > = (
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   initialState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotConfig: SnapshotStoreConfig<
-    SnapshotWithCriteria<any, BaseData>,
-    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, AttachmentType>
-  >
-  >[]
+  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 ) => void;
 
 type Subscribers = Subscriber<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Data>[];
@@ -96,8 +92,9 @@ type SubscribeResult<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  AttachmentType extends  Attachment = Attachment
+  IncludedFields extends keyof T = keyof T
 > = {
   subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

@@ -1,11 +1,11 @@
-// Corrected imports section
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { useDispatch } from 'react-redux';
+import { BaseDataRoot } from '@/config/BaseConfig';
 
 // Core models and types
-import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -87,7 +87,7 @@ import { createLatestVersion } from '@/versions/createLatestVersion';
 
 // Utils
 import { addToSnapshotList, isSnapshot } from "@/app/utils/snapshotUtils";
-import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
+import { isSnapshotFunction } from '@/app/snapshots/SnapshotMap';
 import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
 
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
@@ -1545,7 +1545,7 @@ const getSortedList = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   target: Target
-): Promise<SnapshotList<T, K>> => {
+): Promise<SnapshotList<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     // Destructure the target object to extract the endpoint and params
     const { endpoint, params } = target;
@@ -1905,7 +1905,7 @@ function createSnapshotContainer<
 >(
   data: SnapshotContainerData<T, K>,
   storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): SnapshotContainer<T, K, Meta, AttachmentTyp<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
   const { id, criteria } = storeProps
   const { timestamp, currentCategory, items, config } = data;

@@ -7,6 +7,7 @@ import { T } from "@/app/models/data/dataStoreMethods";
 import { InitializedState, initializeState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
@@ -16,9 +17,8 @@ import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, App
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 import { StructuredMetadata } from "@/config//StructuredMetadata";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
-import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotData } from "./SnapshotData";
-import { SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotIdentity } from "./SnapshotIdentity";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

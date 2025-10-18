@@ -1,16 +1,14 @@
 // CalendarActions.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { createAction } from "@reduxjs/toolkit";
 import { default as CustomFile, default as File } from "@/app/documents/File";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { NotificationData } from "@/app/hooks/useNotificationSystem";
-import { DefaultMeta, BaseDataRoot } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(

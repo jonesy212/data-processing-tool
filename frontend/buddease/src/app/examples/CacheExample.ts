@@ -1,3 +1,10 @@
+import { realtimeData } from '@/app/generators/GenerateCache';
+import { backendConfig } from '@/config/BackendConfig';
+import { frontendConfig } from '@/config/FrontendConfig';
+import { frontendStructure } from '@/config/appStructure/FrontendStructure';
+import { userSettings } from '@/config/UserSettings';
+import { versionHistory } from '@/app/versions/VersionData';
+import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 // CacheExample.ts
 import { initializeAppData } from '@/app/api/service/ApiService';
 import useFilePath from "@/app/hooks/useFilePath";

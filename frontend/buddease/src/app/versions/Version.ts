@@ -10,7 +10,7 @@ import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { useAuth } from "@/context/AuthContext";
-
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
       
 import { SharedRelationshipData } from '@/app/models/data/Data';
@@ -20,7 +20,7 @@ import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { sharedMetadata } from "@/config/metadata/MetadataHooks";
 import { fetchUserAreaDimensions } from "@/config/MetaDataOptions";
-import BackendStructure, { backendStructure } from '@/server/database/BackendStructure';
+import { backendStructure } from '@/server/database/BackendStructure';
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
@@ -62,7 +62,7 @@ interface ExtendedVersion<
 interface BuildVersion {
   data: Data<T> | undefined,
   baseData: BaseData<T> | undefined,
-  backend: BackendStructure | undefined,
+  backend: IBackendStructure | undefined,
   frontend: FrontendStructure<T, K> | undefined
 }
 
@@ -79,7 +79,7 @@ export interface Version<
   minor: number;
   patch: number;
   buildNumber: number | string;
-  versionNumber: string;
+  versionNumber: string | number;
   name: string;
   description: string;
   content: string;
@@ -157,7 +157,7 @@ interface Versions<
 > {
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   versionData?: string | number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  backend?: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   history?: HistoryEntry[];
 }

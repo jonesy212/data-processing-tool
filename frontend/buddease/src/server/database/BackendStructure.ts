@@ -18,7 +18,7 @@ import SecureFieldManager from '@/server/security/SecureFieldManager';
 import SecurityAudit from "@/server/security/SecurityAudit";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
-
+import { IBackendStructure } from '@/app/config/IBackendStructure'
 
 interface StructuredBackend {
   structureHash: string | undefined;
@@ -46,7 +46,7 @@ export default class BackendStructure <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+> implements IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   protected structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
   #structureHash: string | undefined;
   public globalState: any; // Add globalState property

@@ -1,14 +1,17 @@
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { DefaultCalendarEvent } from "@/app/actions/CalendarEventActions";
 import { Highlight } from "@/app/documents/NoteData";
 import CustomFile from "@/app/documents/File";
 import {  Snapshot} from "@/app/snapshots";
 import { BaseData } from "./data/Data";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+
 interface LogData<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K, DefaultMeta<T, K>, Attachment, DefaultExcludedFields<T>, keyof T> = StructuredMetadata<T, K, DefaultMeta<T, K>, Attachment, DefaultExcludedFields<T>, keyof T>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -32,10 +35,10 @@ interface LogData<
   clicked: Date | null;
   responded: boolean | null;
   responseTime: Date | null;
-  eventData: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topics: string[] | undefined;
   highlights: Highlight[];
-  files: CustomFile[];
+  eventData: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  files: CustomFile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   meta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null;
 }
 

@@ -1,4 +1,6 @@
 // SnapshotEntity.ts
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { ExtendedVersionData } from "@/app/versions/VersionData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -139,7 +141,7 @@ type SnapshotEntityParams = SnapshotConfigParams<
 type SnapshotEntityApplyFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,
-  IncludedFields extends keyof T = keyof T
+  IncludedFields extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
 > = Pick<Omit<T, Excluded>, IncludedFields>;
 
 // --- SnapshotEntity data interface ---
@@ -174,7 +176,19 @@ const emptySnapshotData: SnapshotEntityDataInterface<
 > = {
 
 
-   onInitialize, taskIdToAssign, schema, currentCategory,
+  taskIdToAssign: "",
+  schema: "",
+  currentCategory: "",
+  initializedState: "",
+  storeId: 0,
+  
+  mappedSnapshotData: new Map(),
+  versionInfo: {} as ExtendedVersionData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+  
+  onInitialize: (callback: () => void) => {},
+  config: {} as Promise<SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null>,
+  snapshotContainer: {} as SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+
   // Core Snapshot fields
   id: '',
   deleted: false,

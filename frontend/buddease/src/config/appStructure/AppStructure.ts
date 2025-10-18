@@ -315,7 +315,8 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: userId ?? 'unknown-user',
+          userId: { userId: "user-id" | null; error: string | null; }
+          
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,

@@ -1,7 +1,8 @@
 // validateDataAgainstSchema.ts
-import { Data } from './../../components/models/data/Data';
-import { SnapshotStoreConfig } from './../../frontend/buddease/src/app/components/snapshots/SnapshotStoreConfig';
-import { SchemaField } from './../../database/SchemaField';
+
+import { Data } from '@/app/models/data/Data';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SchemaField } from '@/server/database/SchemaField';
 
 // Function to validate data against a schema
 

@@ -116,7 +116,7 @@ import {
   ConfigureSnapshotStorePayload,
   SnapshotConfig,
 } from "./SnapshotConfig";
-import { SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";

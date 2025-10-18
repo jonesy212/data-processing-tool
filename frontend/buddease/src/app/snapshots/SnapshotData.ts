@@ -263,7 +263,7 @@ interface SnapshotData<
 {
   id: string;
   storeId: number;
-  category: any;
+  category?: Category;
   validate(): boolean;
   serialize(): string;
   get(key: string): any;

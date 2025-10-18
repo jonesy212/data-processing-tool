@@ -9,25 +9,27 @@ Maintain the same generic pattern across both type definitions.
 ```typescript
 
 interface UpdateSnapshotParams<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Excluded extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   snapshotId: string | number | null;
-  data: Map<string, Snapshot<T, K, Meta, Excluded>>;
-  snapshotManager: SnapshotManager<T, K, Meta, Excluded>;
-  events: Record<string, CalendarManagerStoreClass<T, K, Meta, Excluded>[]>;
-  snapshotStore: SnapshotStore<T, K, Meta, Excluded>;
-  dataItems: RealtimeDataItem<T, K, Meta, Excluded>[];
-  newData: Snapshot<T, K, Meta, Excluded>;
+  data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   timestamp: Date;
   payload: UpdateSnapshotPayload<T>;
   category?: Category;
   payloadData: T | K;
-  mappedSnapshotData: Map<string, Snapshot<T, K, Meta, Excluded>>;
-  delegate: SnapshotWithCriteria<T, K, Meta, Excluded>[];
-  store: SnapshotStore<any, K, Meta, Excluded>;
+  mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  store: SnapshotStor K, Meta, AttachmentType, ExcludedFields IncludedFields>;
 }
 ```
 # Option 2: Utility Type Extraction
@@ -46,7 +48,7 @@ Use tuple parameters in functions while maintaining interface return types.
 ```typescript
 function updateSnapshotWithConfig(
   ...[T, K, Meta, Excluded]: SnapshotConfigParams
-): UpdateSnapshotParams<T, K, Meta, Excluded> {
+): UpdateSnapshotParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Convert tuple to interface
   return {
     snapshotId: null,
@@ -60,7 +62,7 @@ Create a complex mapping type for maximum flexibility.
 
 ``` typescript
 type MapConfigToUpdateParams<Config> = Config extends SnapshotConfigParams<infer T, infer K, infer Meta, infer Excluded>
-  ? UpdateSnapshotParams<T, K, Meta, Excluded>
+  ? UpdateSnapshotParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   : never;
 
 // Usage
@@ -82,7 +84,7 @@ For example, your SimulatedDataSourceFromParams:
 
 ``` typescript
 interface SimulatedDataSourceFromParams<
-  Params extends SnapshotConfigParams<any, any, any, any, any[]> = SnapshotConfigParams
+  Params extends SnapshotConfigParam any, any, any, any[]> = SnapshotConfigParams
 > extends SnapshotInstanceProps<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]> {
   data: InitializedData<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
   fetchData: () => Promise<SnapshotStoreConfig<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>>;
