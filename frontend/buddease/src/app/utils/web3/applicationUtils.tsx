@@ -4,8 +4,8 @@ import { sendSMS } from "@/api/sendSMS";
 import * as articleApi from '@/app/api/articleApi';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
@@ -35,9 +35,9 @@ import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { useMeta } from '@/config/useMeta';
 import { useMetadata } from '@/config/useMetadata';
  const dispatch = useDispatch()
@@ -804,7 +804,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
+    logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
 };
 
   export type { LogActivityParams, TriggerIncentivesParams };

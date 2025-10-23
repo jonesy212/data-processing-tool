@@ -62,6 +62,9 @@ interface DashboardSettings {
   widgetPreferences: WidgetPreferences; // Assuming WidgetPreferences is a defined interface
   showProjectSummary: boolean;
   showTeamSummary: boolean;
+  dashboardWidgets: any[];
+  additionalPreference1?: any;
+  additionalPreference2?: any;
 }
 
 interface WidgetPreferences {

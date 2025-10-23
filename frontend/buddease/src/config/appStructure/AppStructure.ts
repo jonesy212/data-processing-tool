@@ -42,7 +42,7 @@ interface AppStructureItem<
   content?: string | Content<T, K> | undefined;
   draft: boolean;
   permissions?: AppStructurePermissions;
-  versions: DataVersions | undefined;
+  versions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   items?: {
     [key: string]: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
@@ -211,7 +211,7 @@ export default class AppStructure<
           structure[file] = this.createAppStructureItem(
             {
               id: file,
-              userId: userId ?? 'unknown-user',
+              userId: { userId: "user-frontend-id" | null, error: string | null },
               name: file,
               type: "directory",
               path: filePath,
@@ -236,6 +236,7 @@ export default class AppStructure<
               {
                 id: file,
                 userId: userId ?? 'unknown-user',
+                userId: { userId: "user-frontend-id" | null, error: string | null },
                 name: file,
                 type: fileType,
                 path: filePath,
@@ -276,7 +277,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: userId ?? 'unknown-user',
+          userId: { userId: "user-frontend-id" | null, error: string | null },
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,
@@ -315,8 +316,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: { userId: "user-id" | null; error: string | null; }
-          
+          userId: { userId: "user-frontend-id" | null, error: string | null },    
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,
@@ -399,10 +399,12 @@ export default class AppStructure<
 export type { AppStructureItem, AppStructurePermissions };
 
 export const createAppStructure = <
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(fileSystem?: FileSystemService): AppStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return new AppStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>("frontend", fileSystem);
 };

@@ -1,10 +1,15 @@
+import { TaskEntity } from '@/app/snapshots/SnapshotActoins';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { highlightsConfig } from '@/config/endpoints/highlightsConfig';
 import { CollaborationOptions } from "@/app//interfaces/options/CollaborationOptions";
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { CalendarEvent, CalendarManagerStore } from "@/app/calendar/CalendarEvent";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
+import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import useAuthentication from "@/app/hooks/useAuthentication";
@@ -38,7 +43,7 @@ import useSettingManagerStore, { Settings } from "@/app/state/stores/SettingsSto
 import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { store } from "@/app/state/stores/useAppDispatch";
-import { taskService } from "@/app/tasks/TaskService";
+import { taskService } from "@/app/services/TaskService";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
@@ -108,7 +113,6 @@ const resetAppState = () => {
   // Additional state reset logic can go here
 };
 
-
 // Example of using the onTimeout function
 setTimeout(onTimeout, 300000); // Simulate user idle timeout after 5 minutes
 
@@ -129,8 +133,169 @@ type IdleTimeoutType = {
   idleTimeoutDuration: number; // Add this property
 };
 
-export interface UserSettings extends Settings {
-  [x: string]:
+// Core User Identity
+export interface UserIdentity {
+  userId: number;
+  id?: string;
+  appName: string;
+  activePhase: string;
+}
+
+// UI/Appearance Settings
+export interface AppearanceSettings {
+  theme?: ThemeEnum | 'light' | 'dark' | 'auto';
+  darkMode: boolean;
+  fontSize: number;
+  projectColorScheme: string;
+  themeSwitchingEnabled: boolean;
+  language: LanguageEnum | CodingLanguageEnum | string;
+  timeZone: string;
+  timezone?: string;
+  dateFormat: string;
+  timeFormat: string;
+  datePickerEnabled: boolean;
+}
+
+// Notification Settings
+export interface NotificationSettings {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  notificationsEnabled: boolean;
+  isNotificationsEnabled?: boolean;
+  notificationSound: string;
+  notificationSoundEnabled: boolean;
+  toastNotificationsEnabled: boolean;
+  notificationEmailEnabled: boolean;
+  loggingAndNotificationsEnabled: boolean;
+}
+
+// Security & Privacy Settings
+export interface SecuritySettings {
+  twoFactorAuthenticationEnabled: boolean;
+  passwordExpirationDays: number;
+  passwordStrengthEnabled: boolean;
+  securityFeaturesEnabled: boolean;
+  accessControlEnabled: boolean;
+  sessionTimeout?: number;
+  idleTimeout: IdleTimeoutType | undefined;
+  idleTimeoutDuration: number;
+  idleTimeoutEnabled: boolean;
+  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+  browserHistoryEnabled: boolean;
+  geolocationEnabled: boolean;
+  enableDatabaseEncryption: boolean;
+}
+
+// Communication & Chat Settings
+export interface CommunicationSettings {
+  chat: ChatSettings;
+  communicationMode: string;
+  enableRealTimeUpdates: boolean;
+  realTimeChatEnabled: boolean;
+  enableAudioChat: boolean;
+  enableVideoChat: boolean;
+  enableEmojis: boolean;
+  enableGIFs: boolean;
+  webSocketsEnabled: boolean;
+}
+
+// Project & Task Management Settings
+export interface ProjectSettings {
+  projectManagementEnabled: boolean;
+  taskManagementEnabled: boolean;
+  todoManagementEnabled: boolean;
+  defaultProjectView: string;
+  taskSortOrder: string;
+  showCompletedTasks: boolean;
+  defaultTeamDashboard: string;
+  customTaskLabels: any[];
+  customProjectCategories: any[];
+  customTags: any[];
+}
+
+// Team & Collaboration Settings
+export interface CollaborationSettings {
+  enableTeamManagement: boolean;
+  enableGroupManagement: boolean;
+  collaborationMode?: "real-time" | "asynchronous";
+  showTeamCalendar: boolean;
+  teamViewSettings: any[];
+  collaborationPreference1?: any;
+  collaborationPreference2?: any;
+  dragAndDropEnabled: boolean;
+}
+
+// File & Data Management Settings
+export interface DataSettings {
+  defaultFileType: string;
+  allowedFileTypes: string[];
+  imageUploadingEnabled: boolean;
+  enableFileSharing: boolean;
+  dataExportPreferences: any[];
+  localStorageEnabled: boolean;
+  clipboardInteractionEnabled: boolean;
+  versionControlEnabled: boolean;
+  selectDatabaseVersion: string;
+  selectAppVersion: string;
+  dataSync?: "automatic" | "manual";
+}
+
+// UI Feature Flags
+export interface UIFeatureSettings {
+  formHandlingEnabled: boolean;
+  paginationEnabled: boolean;
+  modalManagementEnabled: boolean;
+  sortingEnabled: boolean;
+  loadingSpinnerEnabled: boolean;
+  errorHandlingEnabled: boolean;
+  deviceDetectionEnabled: boolean;
+}
+
+// Analytics & External Services
+export interface AnalyticsSettings {
+  analyticsEnabled: boolean;
+  documentationSystemEnabled: boolean;
+  userProfilesEnabled: boolean;
+  enableBlockchainCommunication: boolean;
+  enableDecentralizedStorage: boolean;
+  thirdPartyApiKeys: Record<string, string> | undefined;
+  externalCalendarSync: boolean;
+  apiAccessLevel?: "read-only" | "read-write";
+  defaultCurrency?: string;
+  projectVisibility?: "public" | "private";
+}
+
+export interface SettingsMethods {
+  filter: (key: keyof UserSettings | "communicationMode" | "defaultFileType" | "theme" | "notifications" | "language" 
+    | "collaborationMode" | "dataSync" | "defaultCurrency" | "apiAccessLevel" 
+    | "projectVisibility") => void;
+}
+
+export interface UserSettings extends SettingsMethods {
+  // Core
+  identity: UserIdentity;
+  
+  // Domain-specific settings
+  appearance: AppearanceSettings;
+  notifications: NotificationSettings;
+  security: SecuritySettings;
+  communication: CommunicationSettings;
+  projects: ProjectSettings;
+  collaboration: CollaborationSettings;
+  data: DataSettings;
+  uiFeatures: UIFeatureSettings;
+  analytics: AnalyticsSettings;
+  dashboard: DashboardSettings;
+  
+  // Privacy
+  privacy?: PrivacySettings;
+  
+  // Additional properties from your original interface
+  enableRealTimeUpdates: boolean; // Duplicate but important
+  realTimeChatEnabled: boolean; // Duplicate but important
+  
+  // Index signature for truly dynamic properties (use sparingly)
+  [x: string]: 
     | string
     | number
     | NodeJS.Timeout
@@ -139,7 +304,7 @@ export interface UserSettings extends Settings {
     | string[]
     | IdleTimeoutType
     | PrivacySettings
-    | NotificationData<T, K, Meta>[]
+    | NotificationData<any, any, any>[]
     | BrowserCheckStore
     | VideoData<BaseData, BaseData>
     | UserAssignee
@@ -150,117 +315,30 @@ export interface UserSettings extends Settings {
     | CollaborationOptions[]
     | NestedEndpoints
     | (Comment | CustomComment)[]
-    | DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    | DetailsItem<any>
     | TrackerStore
     | IconStore
     | Phase<BaseData> 
     | HighlightEvent[]
     | Idea[]
-    | SnapshotStore<SnapshotStoreUnion<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
+    | SnapshotStore<any, any>[]
     | InitializedState<BaseData, BaseData>
     | Member[]
     | NotificationSettings
-    | Task[]
-    | Todo<any, any, any>[] // Assuming you want flexibility here
-    | TodoManagerStore<Todo<any, any, any>, any, any> // Ensure BaseData is appropriately defined
-    | TodoImpl<Todo<any, any, any>, any, any>[] // Use `any` or specify the types as needed
+    | AppTask[]
+    | AppTodo[]
+    | TodoManagerStore<Todo<any, any, any>, any, any>
+    | TodoImpl<Todo<any, any, any>, any, any>[]
     | CalendarEvent<BaseData, BaseData>[]
-    | CalendarManagerStore<BaseData, Meta<T, K>>
-    | SnapshotStoreConfig<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
+    | CalendarManagerStore<BaseData, any>
+    | SnapshotStoreConfig<any, any>[]
     | Record<string, string>
     | undefined
     | NodeJS.Timeout
     | null
-    | ((key: keyof Settings) => void)
+    | ((key: keyof UserSettings) => void)
     | ((timeoutDuration: number, onTimeout: () => void) => void)
     | undefined;
-
-  userId: number;
-  sessionTimeout?: number;
-  communicationMode: string;
-  enableRealTimeUpdates: boolean;
-  defaultFileType: string;
-  allowedFileTypes: string[];
-  enableGroupManagement: boolean;
-  enableTeamManagement: boolean;
-  idleTimeout: IdleTimeoutType | undefined;
-  startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-  idleTimeoutDuration: number;
-  activePhase: string;
-  realTimeChatEnabled: boolean;
-  todoManagementEnabled: boolean;
-  notificationEmailEnabled: boolean;
-  analyticsEnabled: boolean;
-  twoFactorAuthenticationEnabled: boolean;
-  projectManagementEnabled: boolean;
-  documentationSystemEnabled: boolean;
-  versionControlEnabled: boolean;
-  userProfilesEnabled: boolean;
-  accessControlEnabled: boolean;
-  taskManagementEnabled: boolean;
-  loggingAndNotificationsEnabled: boolean;
-  securityFeaturesEnabled: boolean;
-  collaborationPreference1?: any;
-  collaborationPreference2?: any;
-  theme: ThemeEnum | undefined;
-  language: LanguageEnum | CodingLanguageEnum;
-  fontSize: number;
-  darkMode: boolean;
-  enableEmojis: boolean;
-  enableGIFs: boolean;
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  notificationSound: string;
-  timeZone: string;
-  dateFormat: string;
-  timeFormat: string;
-  defaultProjectView: string;
-  taskSortOrder: string;
-  showCompletedTasks: boolean;
-  projectColorScheme: string;
-  showTeamCalendar: boolean;
-  teamViewSettings: any[];
-  defaultTeamDashboard: string;
-  passwordExpirationDays: number;
-  // privacySettings: PrivacySettings
-  thirdPartyApiKeys: Record<string, string> | undefined;
-  externalCalendarSync: boolean;
-  dataExportPreferences: any[];
-  dashboardWidgets: any[];
-  customTaskLabels: any[];
-  customProjectCategories: any[];
-  customTags: any[];
-  additionalPreference1?: any;
-  additionalPreference2?: any;
-  formHandlingEnabled: boolean;
-  paginationEnabled: boolean;
-  modalManagementEnabled: boolean;
-  sortingEnabled: boolean;
-  notificationSoundEnabled: boolean;
-  localStorageEnabled: boolean;
-  clipboardInteractionEnabled: boolean;
-  deviceDetectionEnabled: boolean;
-  loadingSpinnerEnabled: boolean;
-  errorHandlingEnabled: boolean;
-  toastNotificationsEnabled: boolean;
-  datePickerEnabled: boolean;
-  themeSwitchingEnabled: boolean;
-  imageUploadingEnabled: boolean;
-  passwordStrengthEnabled: boolean;
-  browserHistoryEnabled: boolean;
-  geolocationEnabled: boolean;
-  webSocketsEnabled: boolean;
-  dragAndDropEnabled: boolean;
-  idleTimeoutEnabled: boolean;
-  enableAudioChat: boolean;
-  enableVideoChat: boolean;
-  enableFileSharing: boolean;
-  enableBlockchainCommunication: boolean;
-  enableDecentralizedStorage: boolean;
-  selectDatabaseVersion: string;
-  selectAppVersion: string;
-  enableDatabaseEncryption: boolean;
-  notificationsEnabled: boolean;
 }
 
 const userSettings: UserSettings = {
@@ -442,12 +520,12 @@ const userSettings: UserSettings = {
       taskStatus: {},
       
 
-      fetchTasksSuccess: (payload: { tasks: Task[]; }) => {},
+      fetchTasksSuccess: (payload: { tasks: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]; }) => {},
       fetchTasksFailure: (payload: { error: string; }) => {},
       fetchTasksRequest: () => {},
       completeAllTasksSuccess: (success: string) => {},
       
-      completeAllTasks: (payload: { task: Task[]; }) => {},
+      completeAllTasks: (payload: { task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]; }) => {},
       completeAllTasksFailure: (payload: { error: string; }) => {},
       NOTIFICATION_MESSAGE: "",
       NOTIFICATION_MESSAGES: {},
@@ -455,10 +533,10 @@ const userSettings: UserSettings = {
        setDynamicNotificationMessage: (message: Message, type: NotificationType) => {},
       takeTaskSnapshot: (taskId: string) => {},
       markTaskAsComplete: (taskId: string) => {},
-      updateTaskPositionSuccess: (payload: { task: Task; }) => {},
+      updateTaskPositionSuccess: (payload: { task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>; }) => {},
       
-      batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>)  => {},
-      batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task[]>) => {},
+      batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]>)  => {},
+      batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]>) => {},
       batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => {},
       
       assignedTaskStore: {
@@ -503,16 +581,16 @@ const userSettings: UserSettings = {
         assignBoardAutomationToTeam: {},
         assignBoardCustomFieldToTeam: {},
 
-        assignTask: (task) => {
+        assignTask: (task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => {
           // Logic to assign a task
         },
-        assignUsersToTasks: (taskId, userIds) => {
+        assignUsersToTasks: (taskId: string, userIds: string[]) => {
           // Logic to assign users
         },
-        unassignUsersFromTasks: (taskId, userIds) => {
+        unassignUsersFromTasks: (taskId: string, userIds: string[]) => {
           // Logic to unassign users
         },
-        setDynamicNotificationMessage: (message) => {
+        setDynamicNotificationMessage: (message: Message) => {
           // Logic to set notification message
         },
         
@@ -606,21 +684,21 @@ const userSettings: UserSettings = {
       
       updateTaskDueDate: (taskId: string, dueDate: Date) => {},
       updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
-      filterTasksByStatus: (status: AllStatus): Task[] => {
+      filterTasksByStatus: (status: AllStatus): Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[] => {
         // Implement logic to filter tasks by their status
-        return coreData.tasks.filter((task: Task) => task.status === status);
+        return coreData.tasks.filter((task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => task.status === status);
       },
 
       getTaskCountByStatus: (status: AllStatus): number => {
         // Implement logic to count tasks by status
-        return coreData.tasks.filter((task: Task) => task.status === status).length;
+        return coreData.tasks.filter((task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => task.status === status).length;
       },
             
       clearAllTasks: () => {},
       archiveCompletedTasks: () => {},
       updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
         // Implement logic to update the assignee of a task
-        const taskIndex = coreData.tasks.findIndex((task: Task) => task._id === taskId);
+        const taskIndex = coreData.tasks.findIndex((task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => task._id === taskId);
         if (taskIndex !== -1) {
           coreData.tasks[taskIndex].assignee = assignee;
           // Dispatch an action to update the state (assuming Redux or similar)
@@ -628,24 +706,25 @@ const userSettings: UserSettings = {
         }
       },
       
-      getTasksByAssignee: async (tasks: Task[], assignee: User): Promise<Task[]> => {
+      getTasksByAssignee: async (tasks: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[], 
+        assignee: User): Promise<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]> => {
         // Implement logic to get tasks assigned to a specific user
         return tasks.filter(task => task.assignee?._id === assignee._id);
       },
       
       
-      getTaskById: (taskId: string): Task | null => {
+      getTaskById: (taskId: string): Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null => {
         // Implement logic to find a task by its ID
-        return coreData.tasks.find((task: Task) => task._id === taskId) || null;
+        return coreData.tasks.find((task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => task._id === taskId) || null;
       },
       
       
       sortByDueDate: () => { },
       exportTasksToCSV:  () => {},
       dispatch: (action: any) => {},
-      addTaskSuccess: (payload: { task: Task; }) => {},
-      addTask: (task: Task) => {},
-      addTasks:(tasks: Task[]) => {},
+      addTaskSuccess: (payload: { task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>; }) => {},
+      addTask: (task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => {},
+      addTasks:(tasks: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]) => {},
       assignTaskToUser: (taskId: string, userId: string) => {},
       
       removeTask: (taskId: string) => {},
@@ -670,7 +749,6 @@ const userSettings: UserSettings = {
     // filter settings
     object;
   },
-
 };
 
 export default userSettings;

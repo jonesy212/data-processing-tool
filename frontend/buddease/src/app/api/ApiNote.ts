@@ -150,7 +150,7 @@ export const fetchNoteByIdAPI = async (
   dataCallback: (data: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>) => void
 ): Promise<any> => {
   try {
-    const fetchNot ndpoint = `${API_BASE_URL}/notes/${noteId}`;
+    const fetchNoteEndpoint = `${API_BASE_URL}/notes/${noteId}`;
     const response = await axiosInstance.get(fetchNoteEndpoint, {
       headers: headersConfig,
     });

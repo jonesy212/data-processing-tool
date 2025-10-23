@@ -3,8 +3,6 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import * as ApiTask from "@/app/api/TasksApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import axiosInstance from '@/app/api/csrfToken'
-import headersConfig from "@/app/api/headers/HeadersConfig";
 import { FileType } from "@/app/documents/attachment/Attachment";
 import { SupportedData } from '@/app/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
@@ -34,15 +32,16 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import useWebNotifications from "@/app/hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "@/app/libraries/logging/Logger";
-import { ContentItem } from "@/app/models/content/ContentItem";
-import { BaseData, Comment, Data } from "@/app/data/Data";
-import { sanitizeInput } from "@/app/SanitizationFunctions";
+import { ContentItem } from "@/app/components/models/content/ContentItem";
+import { BaseData, Comment, Data } from "@/app/models/data/Data";
+import { sanitizeInput } from "@/app/models/crypto/SanitizationFunctions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Idea, IdeationSession } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { VideoData } from "@/app/typings/videoTypes";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { ProjectManagerStore } from "@/app/state/stores/ProjectStore";
+
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
 
@@ -109,6 +108,7 @@ interface ContentManagerState<
 }
 
 const contentItems: Record<string, ContentItem> = {};
+
 const initialState: ContentManagerState = {
   contentItems: [],
   contentTitle: "",

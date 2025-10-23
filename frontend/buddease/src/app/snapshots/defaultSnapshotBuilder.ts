@@ -15,7 +15,7 @@ import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { Subscribers } from '@/app/subscribers/Subscriber';

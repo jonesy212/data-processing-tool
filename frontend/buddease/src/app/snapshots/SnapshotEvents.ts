@@ -1,20 +1,21 @@
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import {SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotCoreBase, SnapshotData } from '@/app/snapshots/SnapshotData';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotCoreBase, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { SnapshotContext, SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface BaseEventCallbacks<
   T extends BaseDataEntity = BaseDataRoot,
@@ -83,18 +84,7 @@ interface EventManagement<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  // Global event subscription
-  subscribe: (
-    snapshotId: string,
-    unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-    data: T,
-    event: string | Event,
-    callback: Callback<SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    value: T
-  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
-  
+
   unsubscribe: (
     snapshotId: string,
     unsubscribeDetails: UnsubscribeDetails,
@@ -106,7 +96,6 @@ interface EventManagement<
     event: string,
     ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
-
 
   once: (event: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void;
   removeAllListeners: (event?: string) => void,
@@ -198,7 +187,7 @@ function createContextArgs<  T extends BaseDataEntity,
   return args;
 }
 
-export type { SharedProperties, SnapshotEventBase };
+export type { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase };
 
-export { createContextArgs };
+  export { createContextArgs };
 

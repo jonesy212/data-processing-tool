@@ -1,8 +1,7 @@
 // ControlPanel.tsx
-import { CustomEventExtension } from "@/app/components/event/BaseCustomEvent";
-import { createCustomEvent } from "@/app/services/EventService";
 import CustomizableTimersComponent from "@/app/components/stopwatches/CustomizableTimersComponent";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
+import { CustomEventExtension } from "@/app/events/BaseCustomEvent";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
@@ -14,6 +13,7 @@ import FadeInAnimation from "@/app/libraries/animations/FadeInAnimation";
 import RotateAnimation from "@/app/libraries/animations/RotateAnimation";
 import SlideUpAnimation from "@/app/libraries/animations/SlideUpAnimation";
 import { themeConfig } from "@/app/pages/_app";
+import { createCustomEvent } from "@/app/services/EventService";
 import {
   default as useNotificationStore
 } from "@/app/state/stores/NotificationStore";

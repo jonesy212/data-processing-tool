@@ -1,4 +1,5 @@
 // Collaborator.ts
+import { User } from "@/app/users/User";
 
 
 export interface Collaborator extends Member {

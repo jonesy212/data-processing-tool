@@ -1,9 +1,10 @@
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import VersionImpl, { version } from '@/app/versions/Version';
+import { version } from '@/app/versions/Version';
+import { VersionImpl } from '@/app/versions/Version';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { MetadataEntriesType } from "@/config/StructuredMetadata";
 
-import { CustomStyle } from '@/app/api/ApiService';
+import { CustomStyle } from '@/app/service/ApiService';
 import {
   CodingLanguageEnum,
   LanguageEnum,
@@ -23,13 +24,13 @@ import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { CustomProperties, HighlightColor } from "@/app/styling/Palette";
 import { AllTypes } from '@/app/typings/PropTypes';
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { UserIdea } from "@/app/users/Ideas";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
-import { NoteAnimationOptions, NoteOptions } from "@/components/documents/NoteData";
-import { DocumentAnimationOptions } from "@/components/documents/SharedDocumentProps";
+import { NoteAnimationOptions, NoteOptions } from "@/app/documents/NoteData";
+import { DocumentAnimationOptions } from "@/app/documents/SharedDocumentProps";
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UserSettings } from "@/config/UserSettings";
@@ -39,8 +40,10 @@ import BackendStructure from '@/server/database/BackendStructure';
 import * as docx from "docx";
 import { ContentState } from "draft-js";
 import { ModifiedDate } from "./DocType";
-import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
- 
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity'
+
+
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
   addParagraph(paragraph: docx.Paragraph): void;
@@ -66,6 +69,7 @@ export type LinksType =
       enabled: boolean;
     };
   };
+
 
 interface Style {
   name: string;
@@ -164,9 +168,12 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 
 // documentOptions.ts
 export interface DocumentOptions<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   // additionalDocumentOptions: [],
   additionalOptionsLabel: string,
@@ -209,16 +216,16 @@ export interface DocumentOptions<
     };
   };
   additionalOptions: readonly string[] | string | number | any[] | undefined;
-  documentOptions?: DocumentOptions<T, K, Meta> | undefined;
+  documentOptions?: DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   language: LanguageEnum;
   setDocumentPhase?: (
     phase:
       | string
-      | Phase
+      | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
-    phase: string | Phase | undefined;
+    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
     phaseType: DocumentPhaseTypeEnum;
   };
   documentPhase:
@@ -614,9 +621,9 @@ export interface DocumentOptions<
   enableWildcards?: boolean;
   userSettings: UserSettings | undefined;
   enableFuzzy?: boolean;
-  dataVersions: DataVersions | undefined;
+  dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   backendStructure?: BackendStructure;
-  frontendStructure?: FrontendStructure<T, K>;
+  frontendStructure?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   revisionOptions?: RevisionOptions;
 }
 
@@ -630,12 +637,11 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   const checksum = computeChecksum(versionData);
 
   return {
-    previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    previousMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+    currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
     documentOptions: {
-
-    previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      previousMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+      currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,
@@ -838,7 +844,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   parentChecksum: "",
   parentAppVersion: "1.0.0",
   parentVersionNumber: "1.0.0",
-  history: [],
+  history: {},
   isLatest: true,
   isPublished: false,
   publishedAt: null,
@@ -869,7 +875,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     timestamp: new Date().toISOString(),
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
-    metadataEntries: {} as MetadataEntriesType<T, K>,
+    metadataEntries: {} as MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     schema: {}
     },
@@ -877,7 +883,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     frontend: undefined,
 
     checksum: "",
-    version: version as VersionImpl<T, K>,
+    version: version as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: new Date().toISOString(),
     user: "Buddease",
     comments: [],
@@ -907,7 +913,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   additionalOptions: undefined,
   language: LanguageEnum.English,
   setDocumentPhase: (
-    phase: string | Phase | undefined,
+    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     // Internal logic for additional parameters
@@ -1058,10 +1064,14 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
 };
 // Extend DocumentOptions to include additional properties
 interface ExtendedDocumentOptions<
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> 
-  extends DocumentOptions<T, K, Meta> {
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > 
+  extends DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   additionalOption2: string;
 }
 
@@ -1090,7 +1100,14 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
 
 
 
-const mapDocumentToProjectPhase = (document: Document<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): ProjectPhaseTypeEnum => {
+const mapDocumentToProjectPhase = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): ProjectPhaseTypeEnum => {
   switch (document.phaseType) {
     case "drafting":
       return ProjectPhaseTypeEnum.Draft;

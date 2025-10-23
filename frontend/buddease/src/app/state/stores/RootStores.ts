@@ -1,11 +1,10 @@
 // RootStores.ts
-import { TrackerStore } from '@/app/state/stores/TrackerStore';
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
-import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/CalendarManagerStore';
-import { EventStore } from '@/app/components/event/EventStore';
+import { EventStore } from '@/app/events/EventStore';
 import useUIStore from '@/app/libraries/ui/useUIStore';
 import { RealTimeDataStore } from '@/app/models/realtime/RealTimeDataStore';
 import { DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/CalendarManagerStore';
 import { AppStore } from '@/app/state/stores/AppStore';
 import { AuthorizationStore, useAuthorizationStore } from '@/app/state/stores/AuthorizationStore';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
@@ -14,9 +13,7 @@ import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStor
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
 import NotificationStore from '@/app/state/stores/NotificationStore';
 import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
-import { CalendarActionPayload, CalendarActionType } from '@/server/database/CalendarActionPayload';
 import { SettingManagerStore } from '@/app/state/stores/SettingsStore';
-import { AuthStore, useAuthStore } from '@/state/storesAuthStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from '@/app/state/stores/TodoStore';
@@ -25,6 +22,8 @@ import useTrackerStore, { TrackerStore } from '@/app/state/stores/TrackerStore';
 import UIStore from '@/app/state/stores/UIStore';
 import { UserStore, userManagerStore } from '@/app/state/stores/UserStore';
 import useVideoStore, { VideoStore } from '@/app/state/stores/VideoStore';
+import { CalendarActionPayload, CalendarActionType } from '@/server/database/CalendarActionPayload';
+import { AuthStore, useAuthStore } from '@/state/storesAuthStore';
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
  

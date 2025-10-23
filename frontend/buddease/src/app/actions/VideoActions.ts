@@ -6,7 +6,7 @@ import { createAction } from "@reduxjs/toolkit";
 export const VideoActions = {
   // General Video Actions
   createVideo: createAction<{ id: string, updatedVideo: Video }>("createVideo"),
-  updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData }>("updateVideo"),
+  updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData<any, any, any, any, any, any> }>("updateVideo"),
   deleteVideo: createAction<{id: string}>("deleteVideo"),
   fetchVideoByUserId: createAction<{ userId: string }>("fetchVideoByUserId"),
   setVideos: createAction<Video[]>("setVideos"),
@@ -84,7 +84,6 @@ export const VideoActions = {
     "updateVideoSuccess"
   ),
 
-  
   addVideo: createAction<{ id: string, video : Video }>("addVideoSuccess"),
   addVideoSuccess: createAction<{ id: string, video: Video }>("addVideoSuccess"),
 

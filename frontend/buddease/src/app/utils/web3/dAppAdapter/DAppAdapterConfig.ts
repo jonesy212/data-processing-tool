@@ -11,6 +11,7 @@ import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { UserRole } from "@/app/models/UserRole";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
+import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
@@ -108,25 +109,25 @@ export interface DappProps<
       // Possible missing: commentSystem, changeTracking, etc.
     };
 
-    // projectTeamConfig: {
-    //   maxTeamMembers: 10,
-    //   teamRoles: [
-    //     "Project Manager",
-    //     "Product Owner",
-    //     "Scrum Master",
-    //     "Business Analyst",
-    //     "UI/UX Designer",
-    //     "Software Developer",
-    //     "Quality Assurance Engineer",
-    //     "DevOps Engineer",
-    //     "Data Scientist",
-    //     "Marketing Specialist",
-    //     "Sales Representative",
-    //     "Customer Support",
-    //     "Legal Counsel",
-    //     // Add more specific roles as needed...
-    //   ];    // Other team-related configurations...
-    // };
+    projectTeamConfig: {
+      maxTeamMembers: 10,
+      teamRoles: [
+        "Project Manager",
+        "Product Owner",
+        "Scrum Master",
+        "Business Analyst",
+        "UI/UX Designer",
+        "Software Developer",
+        "Quality Assurance Engineer",
+        "DevOps Engineer",
+        "Data Scientist",
+        "Marketing Specialist",
+        "Sales Representative",
+        "Customer Support",
+        "Legal Counsel",
+        // Add more specific roles as needed...
+      ];    // Other team-related configurations...
+    };
     
     projectTeamConfig: {
       maxTeamMembers: number;
@@ -332,14 +333,14 @@ export interface DappProps<
   plugins?: string[];
   customThemes?: Record<string, any>;
   // Possible missing top-level props that might be needed:
-  // - apiKeys?: Record<string, string>;
-  // - environment: 'development' | 'staging' | 'production';
-  // - theme?: ThemeConfig;
-  // - localization?: LocalizationConfig;
-  // - plugins?: PluginConfig[];
-  // - storage?: StorageConfig;
-  // - cache?: CacheConfig;
-  // - logging?: LoggingConfig;
+  apiKeys?: Record<string, string>;
+  environment: 'development' | 'staging' | 'production';
+  theme?: ThemeConfig;
+  localization?: LocalizationConfig;
+  plugins?: PluginConfig[];
+  storage?: StorageConfig;
+  cache?: CacheConfig;
+  logging?: LoggingConfig;
 
   // Additional props as needed
 }

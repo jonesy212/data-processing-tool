@@ -13,13 +13,15 @@ import { getConfigsData } from '@/api/getConfigsApi';
 import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { API_VERSION_HEADER } from '@/config/AppConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import dataVersions from "@/configs/DataVersionsConfig";
 import { VersionHistory } from '@/versions/VersionData';
 import fs from 'fs';
 import { frontendConfig } from "../../config/FrontendConfig";
 import { ModuleType, userPreferences } from "../../config/UserPreferences";
 import userSettings from "../../config/UserSettings";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -33,12 +35,15 @@ interface BaseCacheConfig {
 
 
 interface BaseMetadataConfig<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   enableSnapshot?: boolean;
-  eventRecords?: EventRecord<T, K>[] | []
+  eventRecords?: EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | []
 }
 
 export interface RetryConfig {
@@ -76,12 +81,16 @@ export interface ApiConfig {
 
 interface ConfigurationOptions<
   T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   namingConventions: any;
   lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
   apiConfig: ApiConfig;
-  lastUpdated: VersionHistory<T, K>;
+  lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   userPreferences: {
     modules: ModuleType;
     actions: never[];

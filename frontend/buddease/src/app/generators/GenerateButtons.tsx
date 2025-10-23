@@ -6,7 +6,7 @@ import { useDynamicComponents } from "@/app/components/DynamicComponentsContext"
 import {
   startVoiceRecognition,
   stopVoiceRecognition,
-} from "@/app/components/intelligence/VoiceControl";
+} from "@/app/intelligence/VoiceControl";
 import { RealtimeDataComponent } from "@/app/components/models/realtime/RealtimeData";
 import { Phase } from "@/app/components/phases/Phase";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";

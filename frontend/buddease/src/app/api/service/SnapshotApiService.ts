@@ -223,7 +223,7 @@ class SnapshotApiService {
   IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
     subscriberId: string,
     options: FindSubscriberOptions
-  ): Promise<Subscriber<T, K>> {
+  ): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     const {
       category,
       endpointCategory,
@@ -255,7 +255,7 @@ class SnapshotApiService {
       const subscriberData = await response.json();
 
       // Create subscriber instance with config
-      const subscriber: Subscriber<T, K> = {
+      const subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...subscriberData,
         config: {
           maxRetries: subscriberConfig?.maxRetries || 3,

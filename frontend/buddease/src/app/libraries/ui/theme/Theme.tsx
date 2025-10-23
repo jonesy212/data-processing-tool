@@ -7,6 +7,7 @@ import React, { SetStateAction } from "react";
 enum ThemeEnum{
   LIGHT = "light",
   DARK = "dark",
+  AUTO = 'auto'
 }
 interface Theme extends BrandingSettings {
   primaryColor: string;

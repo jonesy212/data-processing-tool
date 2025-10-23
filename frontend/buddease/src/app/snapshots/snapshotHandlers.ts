@@ -1,5 +1,6 @@
 // snapshotHandlers.ts
 import axiosInstance from '@/app/api/csrfToken';
+import { SnapshotContainer } '@/app/snapshots/SnapshotContainer'
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import updateUI from '@/app/documents/editing/updateUI';
@@ -15,7 +16,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -45,15 +46,15 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-
+import { T } from '@/app/models/data/dataStoreMethods';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { snapshotCache } from '@/app/utils/cache/InternalCache';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Payload } from '@/server/database/Payload';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { useSnapshotStore } from "./useSnapshotStore";
+import { SubscriberEntity, SubscriberK SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields } from '@/app/typings/entities/SubscriberEntity'
 
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -91,7 +92,7 @@ class SnapshotFetchError extends Error {
 }
 
 
-const snapshotSubscribers: Map<string, Set<Subscriber<BaseData, BaseData>>> = new Map();
+const snapshotSubscribers: Map<string, Set<Subscriber<SubscriberEntity, SubscriberK SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields>>> = new Map();
 
 export const subscribeToSnapshots = <
   T extends BaseDataEntity = BaseDataRoot,
@@ -104,22 +105,23 @@ export const subscribeToSnapshots = <
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   snapshotData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category?: Category,  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback: (
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  category?: Category,  
   unsubscribe?: UnsubscribeDetails, 
 ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   if (!snapshotSubscribers.has(snapshotId)) {
-    snapshotSubscribers.set(snapshotId, new Set<Subscriber<BaseData<any>, K>>());
+    snapshotSubscribers.set(snapshotId, new Set<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>());
   }
 
   if (callback !== null) {
     const subscriber = callback(snapshotStore, snapshots);
     if (subscriber !== null) {
-      const subscribersSet = snapshotSubscribers.get(snapshotId) as Set<Subscriber<BaseData<any>, K>>;
+      const subscribersSet = snapshotSubscribers.get(snapshotId) as Set<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
       subscribersSet.add(subscriber);
     }
   }
@@ -180,7 +182,8 @@ const initializeSnapshotStore = async <
   if(!storeId){
     throw new Error("Invalid store identifier provided");
   }
-  const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId);
+
+  const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId, storeProps);
   const snapshotStore = await createSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
     id,
     snapshotStoreData,
@@ -228,10 +231,10 @@ const initializeSnapshotStore = async <
     taskIdToAssign: "task Id assignment",
     schema: {},
     
-    currentCategory: {},
+    currentCategory: {} as Category,
     mappedSnapshotData: new Map(),
     storeId: 0,
-    versionInfo: {},
+    versionInfo: {} as ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     
     initializedState: {},
     criteria: {},
@@ -833,7 +836,7 @@ export const onSnapshots = async  <
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
 ): Promise<void> => {
-  const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+  const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(initialStoreId);
   const snapshotStore = snapshotManager?.state;
 
   if (snapshotStore && snapshotStore.length > 0) {
@@ -1702,10 +1705,12 @@ export async function batchFetchSnapshotsRequest <
 
 // Handler for batch fetching snapshots success
 const batchFetchSnapshotsSuccess = <
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   subscribers: Subscriber<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[],
   snapshots: SnapshotStore<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K>[]
@@ -1714,10 +1719,7 @@ const batchFetchSnapshotsSuccess = <
 }
 
 // Handler for batch fetching snapshots failure
-const batchFetchSnapshotsFailure = <
-  T extends BaseDataEntity, 
-  K extends T = T
->(payload: { error: Error }) => {
+const batchFetchSnapshotsFailure = (payload: { error: Error }) => {
   // Log the error for debugging
   console.error("Batch fetch snapshots failed:", payload.error);
 
@@ -1738,8 +1740,20 @@ const batchFetchSnapshotsFailure = <
 };
 
 // Handler for batch updating snapshots failure
-const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
-  const { error } = payload;
+const batchUpdateSnapshotsFailure = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  payload: { 
+    error: Error;
+    failedSnapshots?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  }
+) => {
+  const { error, failedSnapshots = [] } = payload;
 
   // 1. Log the error for debugging
   console.error("[Snapshot Batch Update Failure]:", error);
@@ -1750,22 +1764,26 @@ const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
   }
 
   // 3. Optionally update application state to mark snapshots as failed
-  // This depends on your state management (Redux, Zustand, etc.)
-  // Example (pseudo-code for Redux):
   dispatch({
     type: 'SNAPSHOT_BATCH_UPDATE_FAILED',
-    payload: { error }
+    payload: { error, failedSnapshots }
   });
 
   // 4. Additional recovery logic: rollback, retry, or mark specific snapshots as failed
-  failedSnapshots.forEach(snapshot => markAsFailed(snapshot.id, error.message));
+  failedSnapshots.forEach(snapshot => {
+    // You'll need to implement markAsFailed or use your existing method
+    console.warn(`Snapshot ${snapshot.id} failed to update: ${error.message}`);
+    // Example: snapshot.markAsFailed?.(error.message);
+  });
 };
 
 function adaptSnapshot<
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const adaptedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: snapshot.id,
@@ -1809,10 +1827,12 @@ function adaptSnapshot<
 }
 
 const fetchSnapshot = async <
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
   options: {
@@ -1894,20 +1914,29 @@ const fetchSnapshot = async <
 };
 
 // Helper functions
-async function getOrCreateSnapshotStore<T, K extends T, Meta>(params: {
+async function getOrCreateSnapshotStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(params: {
   snapshotId: string;
   storeId: number;
   initialData: T;
   category?: Category;
-}): Promise<SnapshotStore<T, K, Meta>> {
+}): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   // Implementation logic
 }
 
 function processSnapshotByCategory<
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: SnapshotStore<T, K, Meta>,
   category?: Category

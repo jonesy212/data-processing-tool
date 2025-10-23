@@ -1,6 +1,6 @@
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AppEntity } from "@/app/typings/entities/AppEnttity";
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";

@@ -1,9 +1,12 @@
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import VersionImpl from "@/app/versions/Version";
+import { VersionImpl } from "@/app/versions/Version";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { VersionData, VersionHistory } from "./VersionData";
+import { Version } from "@/app/versions/Version";
+
+
 // ✅ Clean, type-safe default version generator
 export function createLatestVersion<
   T extends BaseDataEntity,
@@ -28,7 +31,7 @@ export function createLatestVersion<
   };
 
   // ✅ Define default VersionImpl (runtime behavior only)
-  const defaultVersionImpl: VersionImpl<T, K> = {
+  const defaultVersionImpl: VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     major: 1,
     minor: 0,
     patch: 0,
@@ -68,7 +71,7 @@ export function createLatestVersion<
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    versionHistory: {} as VersionHistory,
+    versionHistory: {} as VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     structureData: "{}",
     _structure: {},
 
@@ -144,7 +147,21 @@ export function createLatestVersion<
     appPathWithVersion: "",
     author: "system",
     buildNumber: 1,
-    schema: "default-schema",
+      schema: {
+      // Provide actual SchemaField objects
+      "field1": {
+        type: "string",
+        required: true,
+        defaultValue: "",
+        // ... other SchemaField properties
+      },
+      "field2": {
+        type: "number", 
+        required: false,
+        defaultValue: 0,
+        // ... other SchemaField properties
+      },
+    },
     releaseDate: now.toISOString(),
     major: 1,
     minor: 0,
@@ -194,7 +211,21 @@ export function createLatestVersion<
       area: "default",
       metadataEntries: {},
       latestVersion: defaultLatestVersion, // no recursion here
-      schema: "default-schema",
+      schema: {
+        // Provide actual SchemaField objects
+        "field1": {
+          type: "string",
+          required: true,
+          defaultValue: "",
+          // ... other SchemaField properties
+        },
+        "field2": {
+          type: "number", 
+          required: false,
+          defaultValue: 0,
+          // ... other SchemaField properties
+        }
+      },
     },
 
     // Optionally include runtime version implementation
@@ -244,10 +275,10 @@ export function createLastUpdatedWithVersion<
   }
 }
 
-const versionHistory: VersionHistory = {
+const versionHistory: VersionHistory<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
   versionData: [],
   history: [],
-  latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+  latestVersion: createLatestVersion<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>({
     id: "1",
     name: "Initial Release",
     versionNumber: "1.0.0",
@@ -258,7 +289,7 @@ const versionHistory: VersionHistory = {
       timestamp: new Date(),
       area: 'version history area',
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+      latestVersion: createLatestVersion<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(),
       schema: {}
     },
     releaseDate: "2024-11-24",

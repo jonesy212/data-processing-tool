@@ -1,22 +1,34 @@
-import { getSnapshotId } from "@/app/api/SnapshotApi";
+import getSnapshotId from "@/app/api/SnapshotApi";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotData } from '@/app/snapshots';
-import { Snapshot, SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotEvents } from "@/app/snapshots/SnapshotEvents";
+import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotEvents } from "@/app/typings/eventTypes";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultIncludedFields,
+  DefaultMeta
+} from '@/config/BaseConfig';
 
 // createSnapshotStore.ts
 function createSnapshotStore <
-  T extends BaseData<any>,
-  K extends T = T,  
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -57,19 +69,19 @@ function createSnapshotStore <
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },
-    deleteSnapshot: () => { /* Implement deletion logic */ },
+    deleteSnapshot: async (snapshotId: string, permanent?: boolean) => { /* Implement deletion logic */ },
     
     restoreSnapshot: (
       id: string,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
       snapshotData: SnapshotData<T, K, Meta>,
-      category?: Category,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: string | SnapshotEvents<T, K>,
       subscribers: SubscriberCollection<T, K>,
+      category?: Category,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, Meta, T> | undefined
         ) => {

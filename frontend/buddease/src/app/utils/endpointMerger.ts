@@ -7,115 +7,6 @@ import { generateEndpointUrl } from './urlGenerator';
 // const { handleFilterTasks } = useSearchOptions();
 // const { addFilter } = useFiltering(searchOptions);
 
-/**
- * Creates dynamically merged endpoints with generated URLs
- */
-
-
-
-
-#TODO
-// The following are declared in EndpointConfigurations but missing in merged definitions:
-
-// analytics
-
-// auth
-
-// batch
-
-// blogs
-
-// calendar
-
-// chat
-
-// collaborationTools
-
-// communication
-
-// communityInteraction
-
-// crypto
-
-// dataProviders
-
-// database
-
-// details
-
-// dev
-
-// donations
-
-// drawing
-
-// externalAuth
-
-// feedback
-
-// files
-
-// freelancers
-
-// generators
-
-// globalCollaboration
-
-// marker
-
-// moderators
-
-// monetization
-
-// parameterCustomization
-
-// participants
-
-// payment
-
-// personas
-
-// phases
-
-// projectManagement
-
-// projectOwner
-
-// randomWalk
-
-// registration
-
-// reports
-
-// security
-
-// stateGovCities
-
-// teamManagement
-
-// theme
-
-// toolbar
-
-// trading
-
-// userManagement
-
-// userRoles
-
-// userRolesNFT
-
-// userSettings
-
-// videos
-
-// dataAnalysis
-
-// logs
-
-// uiSettings
-
-// That’s 49 missing endpoint groups (based on your definition list).
 
 
 export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurations) => {
@@ -123,6 +14,47 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
     apiWebBase: mergeConfigurations(endpointConfigurations.apiWebBase, {
       login: generateEndpointUrl("apiWebBase", "login"),
       logout: generateEndpointUrl("apiWebBase", "logout"),
+    }),
+
+    analytics: mergeConfigurations(endpointConfigurations.analytics, {
+      single: generateEndpointUrl("analytics", "single"),
+      list: generateEndpointUrl("analytics", "list"),
+      add: generateEndpointUrl("analytics", "add"),
+      update: generateEndpointUrl("analytics", "update"),
+      remove: generateEndpointUrl("analytics", "remove"),
+    }),
+
+    auth: mergeConfigurations(endpointConfigurations.auth, {
+      login: generateEndpointUrl("auth", "login"),
+      logout: generateEndpointUrl("auth", "logout"),
+      refresh: generateEndpointUrl("auth", "refresh"),
+      register: generateEndpointUrl("auth", "register"),
+    }),
+
+    batch: mergeConfigurations(endpointConfigurations.batch, {
+      process: generateEndpointUrl("batch", "process"),
+      status: generateEndpointUrl("batch", "status"),
+    }),
+
+    blogs: mergeConfigurations(endpointConfigurations.blogs, {
+      single: generateEndpointUrl("blogs", "single"),
+      list: generateEndpointUrl("blogs", "list"),
+      add: generateEndpointUrl("blogs", "add"),
+      update: generateEndpointUrl("blogs", "update"),
+      remove: generateEndpointUrl("blogs", "remove"),
+    }),
+
+    calendar: mergeConfigurations(endpointConfigurations.calendar, {
+      events: generateEndpointUrl("calendar", "events"),
+      addEvent: generateEndpointUrl("calendar", "addEvent"),
+      updateEvent: generateEndpointUrl("calendar", "updateEvent"),
+      removeEvent: generateEndpointUrl("calendar", "removeEvent"),
+    }),
+
+    chat: mergeConfigurations(endpointConfigurations.chat, {
+      sendMessage: generateEndpointUrl("chat", "sendMessage"),
+      fetchMessages: generateEndpointUrl("chat", "fetchMessages"),
+      deleteMessage: generateEndpointUrl("chat", "deleteMessage"),
     }),
 
     client: mergeConfigurations(endpointConfigurations.client, {
@@ -154,11 +86,64 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       importFile: generateEndpointUrl("client", "importFile"),
     }),
 
+    collaborationTools: mergeConfigurations(endpointConfigurations.collaborationTools, {
+      createWorkspace: generateEndpointUrl("collaborationTools", "createWorkspace"),
+      updateWorkspace: generateEndpointUrl("collaborationTools", "updateWorkspace"),
+      deleteWorkspace: generateEndpointUrl("collaborationTools", "deleteWorkspace"),
+      listWorkspaces: generateEndpointUrl("collaborationTools", "listWorkspaces"),
+    }),
+
     comments: mergeConfigurations(endpointConfigurations.comments, {
       list: generateEndpointUrl("comments", "list"),
       single: (commentId: number) => generateEndpointUrl("comments", "single"),
     }),
 
+    communication: mergeConfigurations(endpointConfigurations.communication, {
+      send: generateEndpointUrl("communication", "send"),
+      receive: generateEndpointUrl("communication", "receive"),
+      history: generateEndpointUrl("communication", "history"),
+    }),
+
+    content: mergeConfigurations(endpointConfigurations.content, {
+      create: generateEndpointUrl("content", "create"),
+      update: (contentId: number) =>
+        generateEndpointUrl("content", "update", { contentId }),
+      delete: (contentId: number) =>
+        generateEndpointUrl("content", "delete", { contentId }),
+      fetch: generateEndpointUrl("content", "fetch"),
+      add: generateEndpointUrl("content", "add"),
+      remove: (contentId: number) =>
+        generateEndpointUrl("content", "remove", { contentId }),
+      fetchAll: generateEndpointUrl("content", "fetchAll"),
+      fetchAllByType: (contentType: string) =>
+        generateEndpointUrl("content", "fetchAllByType", { contentType }),
+      fetchAllByTypeAndTeam: (contentType: string, teamId: number) =>
+        generateEndpointUrl("content", "fetchAllByTypeAndTeam", {
+          contentType,
+          teamId,
+        }),
+
+      fetchAllByTeam: (teamId: number) =>
+        generateEndpointUrl("content", "fetchAllByTeam", { teamId }),
+    }),
+
+    communityInteraction: mergeConfigurations(endpointConfigurations.communityInteraction, {
+      post: generateEndpointUrl("communityInteraction", "post"),
+      comment: generateEndpointUrl("communityInteraction", "comment"),
+      like: generateEndpointUrl("communityInteraction", "like"),
+      list: generateEndpointUrl("communityInteraction", "list"),
+    }),
+
+    crypto: mergeConfigurations(endpointConfigurations.crypto, {
+      getRates: generateEndpointUrl("crypto", "getRates"),
+      trade: generateEndpointUrl("crypto", "trade"),
+      history: generateEndpointUrl("crypto", "history"),
+    }),
+
+    dataAnalysis: mergeConfigurations(endpointConfigurations.dataAnalysis, {
+      run: generateEndpointUrl("dataAnalysis", "run"),
+      report: generateEndpointUrl("dataAnalysis", "report"),
+    }),
 
     data: mergeConfigurations(endpointConfigurations.data, {
       single: generateEndpointUrl("data", "single"),
@@ -179,7 +164,27 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       uploadData: generateEndpointUrl("data", "uploadData"),
     }),
 
-      
+    dataProviders: mergeConfigurations(endpointConfigurations.dataProviders, {
+      fetch: generateEndpointUrl("dataProviders", "fetch"),
+      update: generateEndpointUrl("dataProviders", "update"),
+    }),
+
+    database: mergeConfigurations(endpointConfigurations.database, {
+      query: generateEndpointUrl("database", "query"),
+      insert: generateEndpointUrl("database", "insert"),
+      update: generateEndpointUrl("database", "update"),
+      delete: generateEndpointUrl("database", "delete"),
+    }),
+
+    details: mergeConfigurations(endpointConfigurations.details, {
+      get: generateEndpointUrl("details", "get"),
+      update: generateEndpointUrl("details", "update"),
+    }),
+
+    dev: mergeConfigurations(endpointConfigurations.dev, {
+      test: generateEndpointUrl("dev", "test"),
+      build: generateEndpointUrl("dev", "build"),
+    }),
 
     documents: mergeConfigurations(endpointConfigurations.documents, {
       list: generateEndpointUrl("documents", "list"),
@@ -254,30 +259,22 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       accessControls: generateEndpointUrl("documents", "accessControls"),
       templates: generateEndpointUrl("documents", "templates"),
     }),
-  
-    content: mergeConfigurations(endpointConfigurations.content, {
-      create: generateEndpointUrl("content", "create"),
-      update: (contentId: number) =>
-        generateEndpointUrl("content", "update", { contentId }),
-      delete: (contentId: number) =>
-        generateEndpointUrl("content", "delete", { contentId }),
-      fetch: generateEndpointUrl("content", "fetch"),
-      add: generateEndpointUrl("content", "add"),
-      remove: (contentId: number) =>
-        generateEndpointUrl("content", "remove", { contentId }),
-      fetchAll: generateEndpointUrl("content", "fetchAll"),
-      fetchAllByType: (contentType: string) =>
-        generateEndpointUrl("content", "fetchAllByType", { contentType }),
-      fetchAllByTypeAndTeam: (contentType: string, teamId: number) =>
-        generateEndpointUrl("content", "fetchAllByTypeAndTeam", {
-          contentType,
-          teamId,
-        }),
 
-    fetchAllByTeam: (teamId: number) =>
-        generateEndpointUrl("content", "fetchAllByTeam", { teamId }),
+
+    donations: mergeConfigurations(endpointConfigurations.donations, {
+      create: generateEndpointUrl("donations", "create"),
+      list: generateEndpointUrl("donations", "list"),
+      update: generateEndpointUrl("donations", "update"),
+      remove: generateEndpointUrl("donations", "remove"),
     }),
-      
+
+    drawing: mergeConfigurations(endpointConfigurations.drawing, {
+      create: generateEndpointUrl("drawing", "create"),
+      update: generateEndpointUrl("drawing", "update"),
+      delete: generateEndpointUrl("drawing", "delete"),
+      list: generateEndpointUrl("drawing", "list"),
+    }),
+
     delegates: mergeConfigurations(endpointConfigurations.delegates, {
       create: generateEndpointUrl("delegates", "create"),
       list: generateEndpointUrl("delegates", "list"),
@@ -289,9 +286,43 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       update: (delegateId: number) =>
         generateEndpointUrl("delegates", "update", { delegateId }),
     }),
-    
+
+    externalAuth: mergeConfigurations(endpointConfigurations.externalAuth, {
+      login: generateEndpointUrl("externalAuth", "login"),
+      logout: generateEndpointUrl("externalAuth", "logout"),
+      register: generateEndpointUrl("externalAuth", "register"),
+    }),
+
+    feedback: mergeConfigurations(endpointConfigurations.feedback, {
+      submit: generateEndpointUrl("feedback", "submit"),
+      list: generateEndpointUrl("feedback", "list"),
+    }),
+
+    files: mergeConfigurations(endpointConfigurations.files, {
+      upload: generateEndpointUrl("files", "upload"),
+      download: generateEndpointUrl("files", "download"),
+      delete: generateEndpointUrl("files", "delete"),
+    }),
+
     filtering: mergeConfigurations(endpointConfigurations.filtering, {
       filterTasks: generateEndpointUrl("filtering", "filterTasks"),
+    }),
+
+    freelancers: mergeConfigurations(endpointConfigurations.freelancers, {
+      list: generateEndpointUrl("freelancers", "list"),
+      hire: generateEndpointUrl("freelancers", "hire"),
+      rate: generateEndpointUrl("freelancers", "rate"),
+    }),
+
+
+    generators: mergeConfigurations(endpointConfigurations.generators, {
+      generate: generateEndpointUrl("generators", "generate"),
+      status: generateEndpointUrl("generators", "status"),
+    }),
+
+    globalCollaboration: mergeConfigurations(endpointConfigurations.globalCollaboration, {
+      sync: generateEndpointUrl("globalCollaboration", "sync"),
+      status: generateEndpointUrl("globalCollaboration", "status"),
     }),
 
     highlights: mergeConfigurations(endpointConfigurations.highlights, {
@@ -308,6 +339,28 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       logFailure: generateEndpointUrl("logging", "logFailure"),
     }),
 
+    logs: mergeConfigurations(endpointConfigurations.logs, {
+      create: generateEndpointUrl("logs", "create"),
+      list: generateEndpointUrl("logs", "list"),
+    }),
+
+    marker: mergeConfigurations(endpointConfigurations.marker, {
+      add: generateEndpointUrl("marker", "add"),
+      remove: generateEndpointUrl("marker", "remove"),
+    }),
+
+    moderators: mergeConfigurations(endpointConfigurations.moderators, {
+      list: generateEndpointUrl("moderators", "list"),
+      ban: generateEndpointUrl("moderators", "ban"),
+      unban: generateEndpointUrl("moderators", "unban"),
+    }),
+
+    monetization: mergeConfigurations(endpointConfigurations.monetization, {
+      enable: generateEndpointUrl("monetization", "enable"),
+      disable: generateEndpointUrl("monetization", "disable"),
+      report: generateEndpointUrl("monetization", "report"),
+    }),
+
     news: mergeConfigurations(endpointConfigurations.news, {
       list: generateEndpointUrl("news", "list"),
       single: (newsId: number) => generateEndpointUrl("news", "single"),
@@ -319,16 +372,64 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       unpublish: (newsId: number) => generateEndpointUrl("news", "unpublish"),
     }),
 
+    parameterCustomization: mergeConfigurations(endpointConfigurations.parameterCustomization, {
+      set: generateEndpointUrl("parameterCustomization", "set"),
+      get: generateEndpointUrl("parameterCustomization", "get"),
+    }),
+
+    participants: mergeConfigurations(endpointConfigurations.participants, {
+      add: generateEndpointUrl("participants", "add"),
+      remove: generateEndpointUrl("participants", "remove"),
+      list: generateEndpointUrl("participants", "list"),
+    }),
+
+    payment: mergeConfigurations(endpointConfigurations.payment, {
+      create: generateEndpointUrl("payment", "create"),
+      refund: generateEndpointUrl("payment", "refund"),
+      status: generateEndpointUrl("payment", "status"),
+    }),
+
+    personas: mergeConfigurations(endpointConfigurations.personas, {
+      create: generateEndpointUrl("personas", "create"),
+      update: generateEndpointUrl("personas", "update"),
+      delete: generateEndpointUrl("personas", "delete"),
+      list: generateEndpointUrl("personas", "list"),
+    }),
+
+    phases: mergeConfigurations(endpointConfigurations.phases, {
+      add: generateEndpointUrl("phases", "add"),
+      update: generateEndpointUrl("phases", "update"),
+      remove: generateEndpointUrl("phases", "remove"),
+      list: generateEndpointUrl("phases", "list"),
+    }),
+
     projects: mergeConfigurations(endpointConfigurations.projects, {
       list: generateEndpointUrl("projects", "list"),
       single: (projectId: number) => generateEndpointUrl("projects", "single"),
     }),
 
 
+    projectManagement: mergeConfigurations(endpointConfigurations.projectManagement, {
+      create: generateEndpointUrl("projectManagement", "create"),
+      update: generateEndpointUrl("projectManagement", "update"),
+      delete: generateEndpointUrl("projectManagement", "delete"),
+      list: generateEndpointUrl("projectManagement", "list"),
+    }),
+
+    projectOwner: mergeConfigurations(endpointConfigurations.projectOwner, {
+      get: generateEndpointUrl("projectOwner", "get"),
+      update: generateEndpointUrl("projectOwner", "update"),
+    }),
+
     sorting: mergeConfigurations(endpointConfigurations.sorting, {
       sortEvents: generateEndpointUrl("sorting", "sortEvents"),
       sortMessages: generateEndpointUrl("sorting", "sortMessages"),
       snapshots: generateEndpointUrl("sorting", "snapshots"),
+    }),
+
+    randomWalk: mergeConfigurations(endpointConfigurations.randomWalk, {
+      start: generateEndpointUrl("randomWalk", "start"),
+      status: generateEndpointUrl("randomWalk", "status"),
     }),
 
     realtime: mergeConfigurations(endpointConfigurations.realtime, {
@@ -351,6 +452,16 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       fetchMessages: generateEndpointUrl("realtime", "fetchMessages"),
     }),
 
+    registration: mergeConfigurations(endpointConfigurations.registration, {
+      register: generateEndpointUrl("registration", "register"),
+      confirm: generateEndpointUrl("registration", "confirm"),
+    }),
+
+    reports: mergeConfigurations(endpointConfigurations.reports, {
+      generate: generateEndpointUrl("reports", "generate"),
+      list: generateEndpointUrl("reports", "list"),
+    }),
+
     searching: mergeConfigurations(endpointConfigurations.searching, {
       searchMessages: generateEndpointUrl("searching", "searchMessages"),
       searchDelegates: generateEndpointUrl("searching", "searchDelegates"),
@@ -361,8 +472,11 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       searchTodos: generateEndpointUrl("searching", "searchTodos"),
     }),
 
+    security: mergeConfigurations(endpointConfigurations.security, {
+      check: generateEndpointUrl("security", "check"),
+      update: generateEndpointUrl("security", "update"),
+    }),
 
-    
     snapshots: mergeConfigurations(endpointConfigurations.snapshots, {
       list: generateEndpointUrl("snapshots", "list"),
       create: generateEndpointUrl("snapshots", "create"),
@@ -379,7 +493,12 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       bulkRemove: generateEndpointUrl("snapshots", "bulkRemove"),
       bulkUpdate: generateEndpointUrl("snapshots", "bulkUpdate"),
     }),
-  
+
+    stateGovCities: mergeConfigurations(endpointConfigurations.stateGovCities, {
+      list: generateEndpointUrl("stateGovCities", "list"),
+      get: generateEndpointUrl("stateGovCities", "get"),
+    }),
+
     teams: mergeConfigurations(endpointConfigurations.teams, {
       list: generateEndpointUrl("teams", "list"),
       single: (teamId: number) =>
@@ -394,7 +513,24 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       updateTeams: (teamIds: number[]) =>
         generateEndpointUrl("teams", "updateTeams", teamIds),
     }),
-  
+
+    teamManagement: mergeConfigurations(endpointConfigurations.teamManagement, {
+      create: generateEndpointUrl("teamManagement", "create"),
+      update: generateEndpointUrl("teamManagement", "update"),
+      delete: generateEndpointUrl("teamManagement", "delete"),
+      list: generateEndpointUrl("teamManagement", "list"),
+    }),
+
+    theme: mergeConfigurations(endpointConfigurations.theme, {
+      get: generateEndpointUrl("theme", "get"),
+      set: generateEndpointUrl("theme", "set"),
+    }),
+
+    toolbar: mergeConfigurations(endpointConfigurations.toolbar, {
+      addButton: generateEndpointUrl("toolbar", "addButton"),
+      removeButton: generateEndpointUrl("toolbar", "removeButton"),
+    }),
+
     todos: mergeConfigurations(endpointConfigurations.todos, {
       create: generateEndpointUrl("todos", "create"),
       update: (todoId: number) =>
@@ -418,7 +554,13 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       bulkAssign: generateEndpointUrl("todos", "bulkAssign"),
       bulkUnassign: generateEndpointUrl("todos", "bulkUnassign"),
     }),
-  
+
+    trading: mergeConfigurations(endpointConfigurations.trading, {
+      buy: generateEndpointUrl("trading", "buy"),
+      sell: generateEndpointUrl("trading", "sell"),
+      history: generateEndpointUrl("trading", "history"),
+    }),
+
     ui: mergeConfigurations(endpointConfigurations.ui, {
       userData: (userId: string) => generateEndpointUrl("ui", "userData", { userId }),
       userSettings: (userId: string) => generateEndpointUrl("ui", "userSettings", { userId }),
@@ -448,7 +590,7 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       loadLayout: (userId: string) => generateEndpointUrl("ui", "loadLayout", { userId }),
       resetLayout: (userId: string) => generateEndpointUrl("ui", "resetLayout", { userId }),
     }),
-  
+
     users: mergeConfigurations(endpointConfigurations.users, {
       list: generateEndpointUrl("users", "list"),
       single: (userId: number) =>
@@ -465,7 +607,144 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       updateRoles: (userIds: number[]) =>
         generateEndpointUrl("users", "updateRoles", { userIds }),
     }),
-    
+
+    uiSettings: mergeConfigurations(endpointConfigurations.uiSettings, {
+      // Interface & Layout
+      fetchInterfaceContent: generateEndpointUrl("uiSettings", "fetchInterfaceContent"),
+      updateInterfaceSettings: generateEndpointUrl("uiSettings", "updateInterfaceSettings"),
+      fetchUserDashboard: generateEndpointUrl("uiSettings", "fetchUserDashboard"),
+      updateUserDashboardLayout: generateEndpointUrl("uiSettings", "updateUserDashboardLayout"),
+      
+      // Widgets
+      fetchUserWidgets: generateEndpointUrl("uiSettings", "fetchUserWidgets"),
+      customizeUserWidget: generateEndpointUrl("uiSettings", "customizeUserWidget"),
+      
+      // Themes
+      fetchUserThemes: generateEndpointUrl("uiSettings", "fetchUserThemes"),
+      switchUserTheme: generateEndpointUrl("uiSettings", "switchUserTheme"),
+      
+      // Preferences
+      fetchUserPreferences: generateEndpointUrl("uiSettings", "fetchUserPreferences"),
+      updateUserPreferences: generateEndpointUrl("uiSettings", "updateUserPreferences"),
+      
+      // Notifications
+      fetchUserNotifications: generateEndpointUrl("uiSettings", "fetchUserNotifications"),
+      markNotificationAsRead: generateEndpointUrl("uiSettings", "markNotificationAsRead"),
+      clearAllNotifications: generateEndpointUrl("uiSettings", "clearAllNotifications"),
+      
+      // Messaging
+      fetchUserMessages: generateEndpointUrl("uiSettings", "fetchUserMessages"),
+      sendMessageToUser: generateEndpointUrl("uiSettings", "sendMessageToUser"),
+      
+      // Display
+      toggleDarkMode: generateEndpointUrl("uiSettings", "toggleDarkMode"),
+      
+      // Avatar
+      fetchUserAvatar: generateEndpointUrl("uiSettings", "fetchUserAvatar"),
+      updateUserAvatar: generateEndpointUrl("uiSettings", "updateUserAvatar"),
+      
+      // User Settings
+      fetchUserSettings: generateEndpointUrl("uiSettings", "fetchUserSettings"),
+      updateUserSettings: generateEndpointUrl("uiSettings", "updateUserSettings"),
+      
+      // User Preferences & Settings
+      getUserPreferences: generateEndpointUrl("uiSettings", "getUserPreferences"),
+      resetUserPreferences: generateEndpointUrl("uiSettings", "resetUserPreferences"),
+      
+      // Theme & Appearance
+      getThemeSettings: generateEndpointUrl("uiSettings", "getThemeSettings"),
+      updateThemeSettings: generateEndpointUrl("uiSettings", "updateThemeSettings"),
+      resetThemeSettings: generateEndpointUrl("uiSettings", "resetThemeSettings"),
+      
+      // Layout & Display
+      getLayoutSettings: generateEndpointUrl("uiSettings", "getLayoutSettings"),
+      updateLayoutSettings: generateEndpointUrl("uiSettings", "updateLayoutSettings"),
+      saveLayoutPreset: generateEndpointUrl("uiSettings", "saveLayoutPreset"),
+      deleteLayoutPreset: generateEndpointUrl("uiSettings", "deleteLayoutPreset"),
+      
+      // Notifications
+      getNotificationSettings: generateEndpointUrl("uiSettings", "getNotificationSettings"),
+      updateNotificationSettings: generateEndpointUrl("uiSettings", "updateNotificationSettings"),
+      muteNotifications: generateEndpointUrl("uiSettings", "muteNotifications"),
+      unmuteNotifications: generateEndpointUrl("uiSettings", "unmuteNotifications"),
+      
+      // Accessibility
+      getAccessibilitySettings: generateEndpointUrl("uiSettings", "getAccessibilitySettings"),
+      updateAccessibilitySettings: generateEndpointUrl("uiSettings", "updateAccessibilitySettings"),
+      toggleHighContrast: generateEndpointUrl("uiSettings", "toggleHighContrast"),
+      toggleScreenReader: generateEndpointUrl("uiSettings", "toggleScreenReader"),
+      
+      // Performance
+      getPerformanceSettings: generateEndpointUrl("uiSettings", "getPerformanceSettings"),
+      updatePerformanceSettings: generateEndpointUrl("uiSettings", "updatePerformanceSettings"),
+      setDataSaverMode: generateEndpointUrl("uiSettings", "setDataSaverMode"),
+      setHighPerformanceMode: generateEndpointUrl("uiSettings", "setHighPerformanceMode"),
+      
+      // Privacy
+      getPrivacySettings: generateEndpointUrl("uiSettings", "getPrivacySettings"),
+      updatePrivacySettings: generateEndpointUrl("uiSettings", "updatePrivacySettings"),
+      updateDataCollection: generateEndpointUrl("uiSettings", "updateDataCollection"),
+      exportUserData: generateEndpointUrl("uiSettings", "exportUserData"),
+      
+      // Language & Region
+      getLanguageSettings: generateEndpointUrl("uiSettings", "getLanguageSettings"),
+      updateLanguageSettings: generateEndpointUrl("uiSettings", "updateLanguageSettings"),
+      getRegionSettings: generateEndpointUrl("uiSettings", "getRegionSettings"),
+      updateRegionSettings: generateEndpointUrl("uiSettings", "updateRegionSettings"),
+      
+      // Shortcuts & Hotkeys
+      getShortcutSettings: generateEndpointUrl("uiSettings", "getShortcutSettings"),
+      updateShortcutSettings: generateEndpointUrl("uiSettings", "updateShortcutSettings"),
+      resetShortcuts: generateEndpointUrl("uiSettings", "resetShortcuts"),
+      importShortcuts: generateEndpointUrl("uiSettings", "importShortcuts"),
+      exportShortcuts: generateEndpointUrl("uiSettings", "exportShortcuts"),
+      
+      // Widgets & Components
+      getWidgetSettings: generateEndpointUrl("uiSettings", "getWidgetSettings"),
+      updateWidgetSettings: generateEndpointUrl("uiSettings", "updateWidgetSettings"),
+      toggleWidget: generateEndpointUrl("uiSettings", "toggleWidget"),
+      reorderWidgets: generateEndpointUrl("uiSettings", "reorderWidgets"),
+      
+      // Dashboard
+      getDashboardSettings: generateEndpointUrl("uiSettings", "getDashboardSettings"),
+      updateDashboardSettings: generateEndpointUrl("uiSettings", "updateDashboardSettings"),
+      createDashboardPreset: generateEndpointUrl("uiSettings", "createDashboardPreset"),
+      deleteDashboardPreset: generateEndpointUrl("uiSettings", "deleteDashboardPreset"),
+      
+      // Export/Import
+      exportAllSettings: generateEndpointUrl("uiSettings", "exportAllSettings"),
+      importSettings: generateEndpointUrl("uiSettings", "importSettings"),
+      resetAllSettings: generateEndpointUrl("uiSettings", "resetAllSettings"),
+      
+      // Sync
+      getSyncSettings: generateEndpointUrl("uiSettings", "getSyncSettings"),
+      updateSyncSettings: generateEndpointUrl("uiSettings", "updateSyncSettings"),
+      forceSync: generateEndpointUrl("uiSettings", "forceSync"),
+      pauseSync: generateEndpointUrl("uiSettings", "pauseSync")
+    }),
+
+    userManagement: mergeConfigurations(endpointConfigurations.userManagement, {
+      create: generateEndpointUrl("userManagement", "create"),
+      update: generateEndpointUrl("userManagement", "update"),
+      delete: generateEndpointUrl("userManagement", "delete"),
+      list: generateEndpointUrl("userManagement", "list"),
+    }),
+
+    userRoles: mergeConfigurations(endpointConfigurations.userRoles, {
+      assign: generateEndpointUrl("userRoles", "assign"),
+      revoke: generateEndpointUrl("userRoles", "revoke"),
+    }),
+
+    userRolesNFT: mergeConfigurations(endpointConfigurations.userRolesNFT, {
+      assign: generateEndpointUrl("userRolesNFT", "assign"),
+      revoke: generateEndpointUrl("userRolesNFT", "revoke"),
+    }),
+
+    userSettings: mergeConfigurations(endpointConfigurations.userSettings, {
+      get: generateEndpointUrl("userSettings", "get"),
+      update: generateEndpointUrl("userSettings", "update"),
+    }),
+
     version: mergeConfigurations(endpointConfigurations.version, {
       getVersion: generateEndpointUrl("version", "getVersion"),
       updateVersion: generateEndpointUrl("version", "updateVersion"),
@@ -473,7 +752,54 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       backend: generateEndpointUrl("version", "backend"),
       frontend: generateEndpointUrl("version", "frontend"),
     }),
-  
+
+    videos: mergeConfigurations(endpointConfigurations.videos, {
+      list: generateEndpointUrl("videos", "list"),
+      uploadVideo: generateEndpointUrl("videos", "uploadVideo"),
+      single: generateEndpointUrl("videos", "single"),
+      add: generateEndpointUrl("videos", "add"),
+      remove: generateEndpointUrl("videos", "remove"),
+      update: generateEndpointUrl("videos", "update"),
+
+      // Conference endpoints
+      conferenceCreate: generateEndpointUrl("videos", "conference.create"),
+      conferenceJoin: generateEndpointUrl("videos", "conference.join"),
+      conferenceEnd: generateEndpointUrl("videos", "conference.end"),
+
+      // Messaging endpoints
+      messagesSend: generateEndpointUrl("videos", "messages.send"),
+      messagesRetrieve: generateEndpointUrl("videos", "messages.retrieve"),
+
+      // Annotation endpoints
+      annotationsAdd: generateEndpointUrl("videos", "annotations.add"),
+      annotationsRetrieve: generateEndpointUrl("videos", "annotations.retrieve"),
+
+      // Playback endpoints
+      playbackSpeed: generateEndpointUrl("videos", "playback.speed"),
+      playbackFrame: generateEndpointUrl("videos", "playback.frame"),
+
+      // Analytics
+      analytics: generateEndpointUrl("videos", "analytics"),
+
+      // Live streaming
+      liveStart: generateEndpointUrl("videos", "live.start"),
+      liveEnd: generateEndpointUrl("videos", "live.end"),
+      liveStatus: generateEndpointUrl("videos", "live.status"),
+
+      // Editing & Transcription
+      edit: generateEndpointUrl("videos", "edit"),
+      transcribe: generateEndpointUrl("videos", "transcribe"),
+
+      // Collaboration
+      collaborationCreate: generateEndpointUrl("videos", "collaboration.create"),
+      collaborationInvite: generateEndpointUrl("videos", "collaboration.invite"),
+      collaborationJoin: generateEndpointUrl("videos", "collaboration.join"),
+
+      // Management & Tags
+      manage: generateEndpointUrl("videos", "manage"),
+      updateVideoTags: generateEndpointUrl("videos", "updateVideoTags"),
+    }),
+
     web: mergeConfigurations(endpointConfigurations.web, {
       send: generateEndpointUrl("web", "send"),
       get: generateEndpointUrl("web", "get"),

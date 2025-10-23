@@ -700,6 +700,8 @@ const DynamicEventHandlerService = ({
         }
       }
     );
+
+
     const handleAnnotations = createEventHandler(
       "handleAnnotations",
       (event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent) => {

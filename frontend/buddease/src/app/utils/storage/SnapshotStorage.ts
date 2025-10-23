@@ -1,7 +1,10 @@
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import StorageService from '@/app/utils/storage/StoragService';
+import { ArchiveMetadata } from '@/app/api/service/ArchiveService'
 
 interface SnapshotStorage<
   T extends BaseDataEntity = BaseDataRoot,
@@ -33,3 +36,6 @@ interface SnapshotStorage<
   initialize(): Promise<void>;
   cleanup(): Promise<void>;
 }
+
+
+export type { SnapshotStorage }

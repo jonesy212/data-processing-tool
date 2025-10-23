@@ -1,23 +1,21 @@
-// ChatSettingsPanel.tsx
-import React, { useState } from "react";
+// Define a type for chat settings
+interface ChatSettings {
+  realTimeChatEnabled: boolean;
+  notificationEmailEnabled: boolean;
+  enableEmojis: boolean;
+  enableAudioChat: boolean;
+  enableVideoChat: boolean;
+  enableFileSharing: boolean;
+  enableBlockchainCommunication: boolean;
+  enableDecentralizedStorage: boolean;
+  collaborationPreference1: string | undefined;
+  collaborationPreference2: string | undefined;
+  platforms: ('slack' | 'teams' | 'discord' | 'whatsapp')[];
+  messageFormat: 'text' | 'rich' | 'interactive';
+  mentionUsers: boolean;
+  channelId?: string;
+  close?: () => void;
+  // Add more settings as needed
+}
 
-// Define the ChatSettingsPanel component
-const ChatSettingsPanel: React.FC = () => {
-  // State to track whether the panel is open or closed
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Function to toggle the panel open/close state
-  const togglePanel = () => {
-    setIsOpen(!isOpen);
-  };
-
-  return (
-    <div className={`chat-settings-panel ${isOpen ? 'open' : 'closed'}`}>
-      <button onClick={togglePanel}>Toggle Settings Panel</button>
-      <h3>Chat Settings</h3>
-      {/* Add your settings components or content here */}
-    </div>
-  );
-};
-
-export default ChatSettingsPanel;
+export default ChatSettings;

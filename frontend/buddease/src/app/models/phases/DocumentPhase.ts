@@ -1,4 +1,6 @@
 // DocumentPhase.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
 
 // ---------------------------
 // Supporting Interfaces (New)
@@ -9,7 +11,9 @@ interface DocumentPhase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   name?: string;
   originalPath?: string;

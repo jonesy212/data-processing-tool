@@ -5,7 +5,6 @@ import { UnifiedMetadata } from '@/config/MetaDataOptions';
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { EventStore } from '@/app/components/event/EventStore';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -20,13 +19,13 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { VideoData } from '@/app/typings/videoTypes';
 import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { VideoData } from '@/app/typings/videoTypes';
 import { useMetadata } from '@/config/useMetadata';
 
 interface CommonEvent<

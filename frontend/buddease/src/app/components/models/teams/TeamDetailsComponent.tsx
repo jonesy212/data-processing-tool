@@ -9,6 +9,7 @@ import { Progress } from "@/app/tracker/ProgressBar";
 import dynamic from 'next/dynamic';
 import React from "react";
 import { TeamData } from "./TeamData";
+import { CommonData } from "@/app/models/CommonData";
 
 import {
   LanguageEnum
@@ -18,11 +19,14 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { TeamEntity, TeamMeta } from '@/app/typings/entities/teamTypes';
+import { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/teamTypes';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CommonData } from '@/app'
+
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
   size: "medium",
+  mode: 'ui',
   animations: {
     type: "slide",
     duration: 300,
@@ -141,102 +145,14 @@ interface ReassignedProject {
 }
 
 
-interface Team<
-  T extends BaseDataEntity = TeamEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = TeamMeta,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  teamDetails: {
-    id: string;
-    current: number;
-    name: string;
-    color: string | null;
-    max: number;
-    min: number;
-    label: string;
-    percentage: number;
-    value: number;
-    description: string;
-    done: boolean;
-  };
-
-  // Client-side only methods (call API endpoints)
-  assignProject(teamId: string, projectId: string): Promise<void>;
-  reassignProject(teamId: string, projectId: string, previousTeamId: string): Promise<void>;
-  unassignProject(teamId: string, projectId: string): Promise<void>;
-  updateProgress(teamId: string, projectUpdates?: Array<{
-    projectId: string;
-    status?: string;
-    progress?: number;
-  }>): Promise<number>;
-}
 
 const timeBasedCode = generateTimeBasedCode();
-
-// Example usage with client-side only implementation
-const team: Team = {
-  id: "1",
-  teamName: "Development Team",
-  description: "A team focused on software development",
-  team: {
-    id: "team-1",
-    current: 0,
-    max: 0,
-    label: "",
-    value: 0,
-    percentage: 0,
-    done: false,
-    name: "",
-    color: "",
-    min: 0,
-    description: "",
-  },
-  members: [
-    // ... (keep existing members array, but remove server dependencies)
-  ],
-  projects: [
-    // ... (keep existing projects array, but remove server dependencies)
-  ],
-  creationDate: new Date(),
-  progress: {} as Progress,
-  isActive: true,
-  leader: {
-    // ... (keep existing leader object, but remove server dependencies)
-  },
-  data: {} as TeamData & Team,
-  assignedProjects: [],
-  reassignedProjects: [],
-  
-  // Client-side API implementations
-  assignProject: async (teamId: string, projectId: string): Promise<void> => {
-    await assignProject(teamId, projectId);
-  },
-  
-  unassignProject: async (teamId: string, projectId: string): Promise<void> => {
-    await unassignProject(teamId, projectId);
-  },
-
-  reassignProject: async (teamId: string, projectId: string, previousTeamId: string): Promise<void> => {
-    await reassignProject(teamId, projectId, previousTeamId);
-  },
-
-  updateProgress: async (teamId: string, projectUpdates?: Array<{
-    projectId: string;
-    status?: string;
-    progress?: number;
-  }>): Promise<number> => {
-    return await updateProgress(teamId, projectUpdates);
-  }
-};
 
 
 
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   // Check if team is not undefined before passing it to CommonDetails
-  const data: CommonData<TeamEntity, TeamEntity, TeamMeta, never> | undefined =
+  const data: CommonData<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>| undefined =
   team ? { ...team, completed: true } : undefined;
 
   const setCurrentProject = (project: Project) => {

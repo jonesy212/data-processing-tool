@@ -1,4 +1,4 @@
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 
 // dataTypeGuards.ts
 function isRealtimeDataItemArray(data: any[]): data is RealtimeDataItem[] {

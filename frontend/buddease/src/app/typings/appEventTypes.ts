@@ -1,17 +1,17 @@
-import { BaseCustomEvent, CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
+import { EventAttendance } from '@/app/calendar/AttendancePrediction';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseCustomEvent, CustomEventExtension } from '@/app/events/BaseCustomEvent';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import handleSnapshotEvent from '@/app/snapshots/FetchableDataStore';
+import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { EventAttendance } from '@/app/calendar/AttendancePrediction';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface SharedSnapshotEvent<
@@ -414,5 +414,5 @@ function isCustomEvent<
 
 export { handleEvent, isCustomEvent, isEventAttendance, isEventManager, isSnapshotEvent, isSystemEvent, isTaskEvent };
 
-export type { BaseEvent, SharedSnapshotEvent };
+    export type { BaseEvent, SharedSnapshotEvent };
 

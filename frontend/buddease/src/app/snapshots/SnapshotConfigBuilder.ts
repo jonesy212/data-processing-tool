@@ -1,6 +1,6 @@
 // SnapshotConfigBuilder.ts
 
-import { EventStore } from "@/app/components/event/EventStore";
+import { EventStore } from "@/app/events/EventStore";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';

@@ -93,11 +93,11 @@ export const CommonValidationRules = {
   }),
 
   /** String length validation */
-  minLength: <T extends BaseDataEntity>(
+  minLength: <T extends BaseDataEntity, K extends T = T>(
     field: keyof T, 
     min: number, 
     message?: string
-  ): ValidationRule<T> => ({
+  ): ValidationRule<T, K> => ({
     id: `min_length_${String(field)}_${min}`,
     name: `Minimum length for ${String(field)}`,
     field,
@@ -111,12 +111,12 @@ export const CommonValidationRules = {
   }),
 
   /** Numeric range validation */
-  numberRange: <T extends BaseDataEntity>(
+  numberRange: <T extends BaseDataEntity, K extends T = T>(
     field: keyof T,
     min: number,
     max: number,
     message?: string
-  ): ValidationRule<T> => ({
+  ): ValidationRule<T, K> => ({
     id: `number_range_${String(field)}_${min}_${max}`,
     name: `Number range for ${String(field)}`,
     field,
@@ -131,7 +131,7 @@ export const CommonValidationRules = {
   }),
 
   /** Email format validation */
-  email: <T extends BaseDataEntity>(field: keyof T, message?: string): ValidationRule<T> => ({
+  email: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> => ({
     id: `email_${String(field)}`,
     name: `Email format for ${String(field)}`,
     field,
@@ -150,7 +150,7 @@ export const CommonValidationRules = {
     field: keyof T,
     pattern: RegExp,
     message?: string
-  ): ValidationRule<T> => ({
+  ): ValidationRule<T, K> => ({
     id: `pattern_${String(field)}_${pattern.toString()}`,
     name: `Pattern validation for ${String(field)}`,
     field,
@@ -165,11 +165,11 @@ export const CommonValidationRules = {
 };
 
 // Validation executor utility
-export class ValidationEngine<T extends BaseDataEntity> {
-  static validateEntity<T extends BaseDataEntity>(
+export class ValidationEngine<T extends BaseDataEntity, K extends T = T> {
+  static validateEntity(
     entity: Partial<T>,
-    rules: ValidationRule<T>[],
-    meta?: ValidationMeta<T, T>
+    rules: ValidationRule<T, K>[],
+    meta?: ValidationMeta<T, K>
   ): ValidationResult[] {
     const results: ValidationResult[] = [];
     

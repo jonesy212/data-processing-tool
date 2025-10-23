@@ -8,7 +8,7 @@ import { mapToSnapshotStore } from '@/app/mappings/mapToSnapshotStore';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";

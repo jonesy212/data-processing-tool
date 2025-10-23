@@ -1,3 +1,9 @@
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { ArchiveMetadata } from '@/app/api/service/ArchiveService'
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+
 class StorageService {
   private storage: Storage;
 
@@ -44,20 +50,41 @@ class StorageService {
   }
 
   // Snapshot-specific methods
-  async storeSnapshot<T extends BaseDataEntity, K extends T = T>(
+  async storeSnapshot<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     key: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> {
     await this.set(`snapshots/${key}`, snapshot);
   }
 
-  async getSnapshot<T extends BaseDataEntity, K extends T = T>(
+  async getSnapshot<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     key: string
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
     return await this.get(`snapshots/${key}`);
   }
 
-  async archiveSnapshot<T extends BaseDataEntity, K extends T = T>(
+  async archiveSnapshot<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     metadata: ArchiveMetadata
   ): Promise<void> {

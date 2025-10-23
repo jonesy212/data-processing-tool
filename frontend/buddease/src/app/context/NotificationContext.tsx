@@ -1,23 +1,10 @@
 // NotificationContext.ts
-import {
-    AnalyticsNotificationTypes,
-    AppNotificationTypes,
-    AuthNotificationTypes, BaseNotificationTypes,
-    CalendarNotificationTypes,
-    ChatNotificationTypes,
-    ContentNotificationTypes,
-    CustomNotificationTypes,
-    OnboardingNotificationTypes,
-    OperationNotificationTypes,
-    PaymentNotificationTypes,
-    PhaseNotificationTypes,
-    TeamNotificationTypes
-} from '@/app/features/support/NotificationTypes';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { NotificationPosition, PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+
+import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { NotificationPosition, PriorityTypeEnum } from '@/app/models/data/StatusType';
+import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice';
 import NotificationStore from '@/app/state/stores/NotificationStore';
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { createContext, useContext } from 'react';
 import { 
   NOTIFICATION_TYPES, 
@@ -56,6 +43,19 @@ interface NotificationContextProps {
   showErrorNotification: (title: string, message: string | Message, content?: any) => void;
   showInfoNotification: (title: string, message: string | Message, content?: any) => void;
   addNotification: (notification: NotificationData<any>) => void;
+  sendNotification: (
+    notification: NotificationData<any> | string,
+    options?: {
+      type?: NotificationType;
+      duration?: number;
+      position?: NotificationPosition;
+      action?: () => void;
+      dismissible?: boolean;
+      priority?: 'low' | 'normal' | 'high';
+      category?: string;
+      metadata?: Record<string, any>;
+    }
+  ) => string; 
   removeNotification: (notificationId: string) => void;
   clearNotifications: () => void;
   dismissNotification: (notificationId: string) => void;

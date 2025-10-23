@@ -1,31 +1,33 @@
 "use client";
-
+import { CommonData } from "@/app/models/CommonData";
 import { FileTypeEnum } from "@/app/documents/FileType";
-import { BaseData } from "@/app/data/Data";
+import { BaseData } from "@/app/models/data/Data";
 import useFiltering from "@/app/hooks/useFiltering";
 import { Project, reassignProject } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
-import { Progress } from "@/app/tracker/ProgressBar";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import dynamic from 'next/dynamic';
 import React from "react";
 import { TeamData } from "./TeamData";
-
+import SnapshotStore from '@/app/snapshots/SnapshotStore'
 import {
   LanguageEnum
 } from "@/app/communications/LanguageEnum";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SearchOptions } from "@/app/pages/searches/SearchOptions";
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { TeamMeta } from '@/app/typings/entities/TeamEntity'
+import { AppTeamEntity TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity'
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
   size: "medium",
+  mode: 'team',
   animations: {
     type: "slide",
     duration: 300,
@@ -124,7 +126,7 @@ const updateProgress = async (teamId: string, projectUpdates?: Array<{
 
 // Dynamically import CommonDetails
 const CommonDetails = dynamic(
-  () => import(from "@/CommonData"),
+  () => import("@/app/models/CommonData"),
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 
@@ -145,7 +147,7 @@ interface ReassignedProject {
 
 
 interface Team<
-  T extends BaseDataEntity = TeamEntity,
+  T extends BaseDataEntity = AppTeamEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = TeamMeta,
   AttachmentType extends Attachment = Attachment,
@@ -209,7 +211,7 @@ const team: Team = {
   leader: {
     // ... (keep existing leader object, but remove server dependencies)
   },
-  data: {} as TeamData & Team,
+  data: {} as TeamData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Team,
   assignedProjects: [],
   reassignedProjects: [],
   
@@ -236,11 +238,12 @@ const team: Team = {
 };
 
 
-
-const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
-  // Check if team is not undefined before passing it to CommonDetails
-  const data: CommonData<TeamEntity, TeamEntity, TeamMeta, never> | undefined =
-  team ? { ...team, completed: true } : undefined;
+const TeamDetails: React.FC<{ 
+  team: Team<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> 
+}> = ({ team }) => {
+  // Pass all 6 generic parameters to CommonData
+  const data: CommonData<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> | undefined =
+    team ? { ...team, completed: true } : undefined;
 
   const setCurrentProject = (project: Project) => {
     // Set the current project for the team
@@ -259,7 +262,7 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
 
   return (
     <CommonDetails
-      data={data}
+      data={ data }
       details={{
         _id: team._id,
         id: team.id,

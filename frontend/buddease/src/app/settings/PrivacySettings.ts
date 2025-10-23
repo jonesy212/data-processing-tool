@@ -59,60 +59,50 @@ interface DataSharingPreferences {
 }
 
 
-
 export interface PrivacySettings {
-  /**
-* Indicates whether the data should be encrypted.
-*/
+  // Profile Visibility (from first interface)
+  profileVisibility?: 'public' | 'private' | 'friends';
+  activityVisibility?: boolean;
+  emailVisibility?: boolean;
+
+  // Data Protection & Security (from second interface)
   encryptData?: boolean;
+  anonymizeData?: boolean;
+  isDataSharingEnabled: boolean;
+  dataSharing: DataSharingPreferences;
+  thirdPartyTracking: boolean;
+  enableTwoFactorAuth?: boolean;
 
-
-  /**
-   * List of roles or users with access to the snapshot data.
-   */
+  // Access Control (from second interface)
   accessControl?: {
     roles?: UserRole[];
     users?: User[];
-    accessControlEnabled: boolean,
-    accessControlType: string,
-    accessControlList: string[] // Define a list of allowed users if needed
+    accessControlEnabled: boolean;
+    accessControlType: string;
+    accessControlList: string[];
   };
 
-  /**
-   * Specifies if the data should be anonymized.
-   */
-  anonymizeData?: boolean;
-
-  /**
-   * Metadata related to privacy policies or compliance.
-   */
+  // Privacy Policy & Compliance (from second interface)
   privacyPolicyMetadata?: {
     policyVersion?: string;
     complianceStandards?: string[];
   };
 
-  isDataSharingEnabled: boolean; // Determines if data sharing is enabled
-  dataSharing: DataSharingPreferences; // Contains additional properties
-  thirdPartyTracking: boolean;
-
-  // Additional privacy settings
-  hidePersonalInfo?: boolean; // Whether to hide personal information in user profiles
-  enablePrivacyMode?: boolean; // Whether to enable privacy mode globally
-  enableTwoFactorAuth?: boolean; // Whether to enable two-factor authentication
-  restrictVisibilityToContacts?: boolean; // Whether to restrict content visibility to contacts only
-  restrictFriendRequests?: boolean; // Whether to restrict friend requests
-  hideOnlineStatus?: boolean; // Whether to hide online status
-  showLastSeenTimestamp?: boolean; // Whether to show last seen timestamp
-  allowTaggingInPosts?: boolean; // Whether to allow tagging in posts
-  enableLocationPrivacy?: boolean; // Whether to enable location privacy
-  hideVisitedProfiles?: boolean; // Whether to hide visited profiles from others
-  restrictContentSharing?: boolean; // Whether to restrict content sharing
-  enableIncognitoMode?: boolean; // Whether to enable incognito browsing mode
-  restrictContentSharingToContacts?: boolean; // Whether to restrict content sharing to contacts
-  restrictContentSharingToGroups?: boolean; // Whether to restrict content sharing to groups
-  // Add other privacy-related settings as needed
+  // Content & Interaction Privacy (from second interface)
+  hidePersonalInfo?: boolean;
+  enablePrivacyMode?: boolean;
+  restrictVisibilityToContacts?: boolean;
+  restrictFriendRequests?: boolean;
+  hideOnlineStatus?: boolean;
+  showLastSeenTimestamp?: boolean;
+  allowTaggingInPosts?: boolean;
+  enableLocationPrivacy?: boolean;
+  hideVisitedProfiles?: boolean;
+  restrictContentSharing?: boolean;
+  enableIncognitoMode?: boolean;
+  restrictContentSharingToContacts?: boolean;
+  restrictContentSharingToGroups?: boolean;
 }
-
 
 
 const selectedSettings: PrivacySettings = {

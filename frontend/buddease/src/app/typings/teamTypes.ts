@@ -1,5 +1,8 @@
 // teamTypes.ts
+import UniqueIDGenerator  from '@/app/generators/GenerateUniqueIds';
+import { Member } from '@/app/models/teams/TeamMembers';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -10,19 +13,8 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-
-// Core Team type definitions
-interface TeamEntity extends BaseDataEntity {
-  id: string;
-  name: string;
-  description?: string;
-  members: string[]; // User IDs
-  ownerId: string;
-  createdDate: Date;
-  isActive: boolean;
-  settings: TeamSettings;
-  permissions: TeamPermissions;
-}
+import { Team } from '@/app/models/teams/Team'
+import { TeamEntity } from '@/app/typings/entities/TeamEntity'
 
 type TeamK = TeamEntity;
 type TeamMeta = DefaultMeta<TeamEntity, TeamK>;
@@ -99,13 +91,6 @@ interface TeamSettings {
   notifications: TeamNotificationSettings;
 }
 
-interface TeamPermissions {
-  canInvite: boolean;
-  canRemove: boolean;
-  canEditSettings: boolean;
-  canCreateProjects: boolean;
-  canManageProjects: boolean;
-}
 
 interface TeamNotificationSettings {
   email: boolean;
@@ -115,7 +100,7 @@ interface TeamNotificationSettings {
   dailyDigest: boolean;
 }
 
-
+const generateId = UniqueIDGenerator.generateTeamID()
 // Helper for creating team instances
 const createDefaultTeam = (options: Partial<TeamFull> = {}): TeamFull => ({
   id: options.id || generateId(),
@@ -147,24 +132,28 @@ const createDefaultTeam = (options: Partial<TeamFull> = {}): TeamFull => ({
 // Empty/default team
 const emptyTeam: TeamFull = createDefaultTeam();
 
-// ✅ EXPORT FOR REUSE
 export type {
-  TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
-  TeamMeta, TeamNotificationSettings, // ✅ Clean alias
-  TeamParams, TeamPermissions, // ✅ Clean alias
-  TeamRealtimeDataItemFull, // ✅ Clean alias
-  TeamSettings, // ✅ Clean alias
-  TeamSnapshotDataFull, // ✅ Clean alias
-  TeamSnapshotFull, // ✅ Clean alias
-  TeamSnapshotsArrayFull, // ✅ Clean alias
-  TeamSnapshotStoreConfigFull, // ✅ Clean alias
-  TeamSnapshotStoreFull, // ✅ Clean alias
-  TeamSnapshotWithCriteriaFull, // ✅ Clean alias
+  TeamAttachment, 
+  TeamBaseParams, 
+  TeamEntity, 
+  TeamExcludedFields, 
+  TeamFull, 
+  TeamIncludedFields, 
+  TeamK,
+  TeamMeta, 
+  TeamNotificationSettings, 
+  TeamParams, 
+  TeamPermissions, 
+  TeamRealtimeDataItemFull, 
+  TeamSettings, 
+  TeamSnapshotDataFull, 
+  TeamSnapshotFull, 
+  TeamSnapshotsArrayFull, 
+  TeamSnapshotStoreConfigFull, 
+  TeamSnapshotStoreFull, 
+  TeamSnapshotWithCriteriaFull, 
   TeamSubscriberCollectionFull
 };
 
-  export {
-    createDefaultTeam,
-    emptyTeam
-  };
+export { createDefaultTeam, emptyTeam };
 

@@ -1,8 +1,8 @@
-import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // convertSnapshotEvents.ts
 function convertEventsToRecord<

@@ -1,8 +1,9 @@
 // Report.ts
 // Define the structure of a report
 
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { TagsRecord } from "@/app/snapshots";
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface BaseReport {
   id: number;
@@ -13,7 +14,14 @@ export interface BaseReport {
 }
 
 
-interface AddReportBase extends BaseReport {
+interface AddReportBase<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseReport {
   createdBy: string;
   content: string;
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;

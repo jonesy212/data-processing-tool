@@ -1,4 +1,5 @@
 // userTypes.ts
+import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
 import { UserEntity, UserDataDefault } from '@/app/typings/entities/UserEntity';
 
 // Supporting interfaces (from your UserData.ts)
@@ -39,6 +40,7 @@ interface UserSettings {
     activityVisibility?: boolean;
     emailVisibility?: boolean;
   };
+  chat: ChatSettings;
 }
 
 // Helper for creating user instances
@@ -85,7 +87,8 @@ export type {
 
   // Supporting interfaces
   UserPreferences,
-  UserSettings
+  UserSettings,
+  UserProfileDetails
 };
 
   export {

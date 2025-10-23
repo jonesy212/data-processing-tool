@@ -1,5 +1,5 @@
 // PhaseEntity.ts
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Phase } from '@/app/models/data/Phase';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';

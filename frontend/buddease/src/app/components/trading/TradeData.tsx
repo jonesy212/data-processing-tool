@@ -20,7 +20,7 @@ interface TradeData<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  DataDetailsProps<Data> {
+  DataDetailsProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   uploadedAt: any;
   tradeId: string;
   tradeType: string;
@@ -29,9 +29,9 @@ interface TradeData<
   phase?: PhaseDefault | null;
   isActive?: boolean;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult<T>[];
+  analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   updatedAt?: Date;
-  data?: Data<T>;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Add more properties as needed
 }
@@ -45,7 +45,7 @@ interface TradeDataProps<
   IncludedFields extends keyof T = keyof T
 >  {
   trade: CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { data: TradeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
-  details: DetailsItemExtended<Data>;
+  details: DetailsItemExtended<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 }
 
@@ -66,7 +66,7 @@ const customTradeDataRender: Customizations<TradeDataWithCommon> = {
   // Add more customizations as needed
 };
 
-const TradeDataComponent: React.FC<TradeDataProps> = ({ trade, details }) => {
+const TradeDataComponent: React.FC<TradeDataProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = ({ trade, details }) => {
   const tradeData = trade.data
   return (
     <div>
@@ -88,6 +88,7 @@ const TradeDataComponent: React.FC<TradeDataProps> = ({ trade, details }) => {
           title: tradeData.title,
           description: tradeData.description,
           phase: tradeData.phase,
+          date: tradeData.date,
           isActive: tradeData.isActive,
           tags: 
             tradeData.tags
@@ -98,10 +99,7 @@ const TradeDataComponent: React.FC<TradeDataProps> = ({ trade, details }) => {
           analysisType: tradeData.analysisType,
           analysisResults: tradeData.analysisResults,
           updatedAt: tradeData.uploadedAt
-            ? new Date(tradeData.uploadedAt
-              
-
-            )
+            ? new Date(tradeData.uploadedAt)
             : new Date(),
         }}
         customizations={customTradeDataRender}

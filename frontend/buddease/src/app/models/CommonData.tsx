@@ -4,15 +4,16 @@ import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import DetailsProps from "@/app/components/models/data/Details";
 import { NotificationType } from '@/app/context/NotificationContext';
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { CryptoData } from "@/app/dataIntegration/parseData";
 import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentData } from "@/app/documents/DocumentBuilder";
+import { DocumentData } from "@/app/config/DocumentBuilder";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { ProjectData } from "@/app/models/projects/Project";
-import { SharedMetadata } from "@/app/shared/MetadataHooks";
+import { SharedMetadata } from "@/app/config/metadata/MetadataHooks";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
@@ -137,7 +138,7 @@ type ConditionalCommonData<
   ? CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
   : CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-// Define a generic type for data
+
 interface CommonData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -168,7 +169,7 @@ interface CommonData<
   endDate?: string | Date;
   status?: AllStatus | null;
   collaborationOptions?: CollaborationOptions[] | undefined;
-  participants?: Member[];
+  participants?: Participant[];
   members?: Member[];
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   details?: DetailsItem<T>;

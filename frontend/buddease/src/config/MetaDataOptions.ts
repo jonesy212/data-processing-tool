@@ -1,6 +1,7 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
-import { FileMetadata } from '@/app/components/models/file/FileManager';
+import { ChangeLogEntry} from '@/app/libraries/logging/ChangeLogEntry'
+import  FileMetadata from '@/app/components/models/file/FileManager';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType'
 import { Task } from '@/app/components/models/tasks/Task';
 import { taskMetadata } from '@/app/components/models/tasks/TaskMetadata';
@@ -25,7 +26,7 @@ import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/version
 import { default as Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { AppStructurePermissions } from '@/config/AppStructure';
+import { AppStructurePermissions } from '@/config/appStructure/AppStructure';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SharedMetadata } from '@/config/metadata/MetadataHooks';
 import { CoreMetadata } from '@/config/metadata/MetadataStateManager';
@@ -33,13 +34,18 @@ import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, S
 import { useMeta } from '@/config/useMeta';
 import { SchemaField } from '@/server/database/SchemaField';
 import progress from 'antd/es/progress';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig'
+import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions'
 
 export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 export interface AuditEntry<
   T extends BaseDataEntity,
   K extends T = T,
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   id: string;
 
@@ -117,7 +123,7 @@ interface VersionMetadata<
   tags?: string[];
   commitHash?: string;
   buildNumber?: string;
-
+  date: string | Date
   // Extended version tracking
   latestVersion?: Pick<
     VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -175,7 +181,14 @@ interface StructuralMetadata<T extends BaseDataEntity, K extends T> {
 }
 
 // Current state properties
-interface CurrentStateMetadata<T extends BaseDataEntity, K extends T> {
+interface CurrentStateMetadata<
+    T extends BaseDataEntity, 
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   currentMeta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 }
@@ -217,7 +230,7 @@ interface ProjectMetaDataOptions<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends
-  Omit<BaseMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 'versionData'> {
+  Omit<BaseMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'versionData'> {
   simulatedDataSource?: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
@@ -315,7 +328,8 @@ type UnifiedMetadata<
   transformed?: boolean;
   count?: number;
   generatedAt?: Date;
-  dataSource?: string;
+    dataSource?: string;
+  isArchived?: boolean
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 

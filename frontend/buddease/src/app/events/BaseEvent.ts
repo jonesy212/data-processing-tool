@@ -1,5 +1,7 @@
 import { BaseData } from '@/app/models/data/Data';
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface BaseEvent {
   eventId: string;
@@ -23,7 +25,10 @@ interface SystemEvent<
 }
 
 
-interface CustomEventType<T extends BaseData<any>, K extends T = T> extends SharedSnapshotEvent<T, K> {
+interface CustomEventType<
+  T extends BaseDataEntity, 
+  K extends T = T
+> extends SharedSnapshotEvent<T, K> {
   eventType: "custom";
   description: string;
   metadata?: Record<string, any>;

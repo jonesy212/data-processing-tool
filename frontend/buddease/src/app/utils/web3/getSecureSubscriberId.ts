@@ -5,7 +5,7 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // getSecureSubscriberId.ts
 export const getSecureSubscriberId = <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  subscriber: Subscriber<T, K>
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): string | undefined => {
   // Perform additional checks or sanitization if necessary
   if (!subscriber.id) {

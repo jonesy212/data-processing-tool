@@ -51,9 +51,9 @@ typescript
 Copy
 subscribeToSnapshot: (
   snapshotId: string,
-  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K> | null,
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-) => Subscriber<T, K> | null;
+) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 Example Usage
 typescript
 Copy
@@ -80,7 +80,7 @@ Copy
 subscribeToSnapshotWithMetadata: (
   snapshotId: string | number | null,
   unsubscribe: UnsubscribeDetails,
-  subscriber: Subscriber<T, K> | null,
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   data: T,
   event: Event,
   callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,

@@ -190,7 +190,7 @@ export const getCurrentSnapshotConfigOptions = <
     ): {
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       config: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    } | null => {
+    } => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null  {
       // Ensure snapshotStore exists within snapshotData
       if (!snapshotData.snapshotStore) {
         throw new Error("snapshotStore cannot be null");

@@ -1,6 +1,6 @@
 // UpdatedEventDetailsComponent.tsx
 import { CalendarEventViewingDetailsProps } from '@/app/components/calendar/CalendarEventViewingDetails';
-import { RealtimeDataItem } from '@/realtime/RealtimeData';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import React, { useEffect, useState } from 'react';
 
 interface UpdatedEventDetailsProps extends CalendarEventViewingDetailsProps {

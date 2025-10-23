@@ -1,17 +1,43 @@
 // TasksEndpoints.ts
 import { EndpointConfig } from '@/config/EndpointConfig';
 
+
 export interface TasksEndpoints {
-  create: EndpointConfig;
   list: EndpointConfig;
-  single: (taskId: number) => string;
+  single: (taskId: number) => EndpointConfig;
   add: EndpointConfig;
-  remove: (taskId: number) => string;
-  process: EndpointConfig;
+  remove: (taskId: number) => EndpointConfig;
+  update: (taskId: number) => EndpointConfig;
   completeAll: EndpointConfig;
-  toggle: (taskId: number) => string;
+  toggle: (taskId: number) => EndpointConfig;
   removeMultiple: EndpointConfig;
   toggleMultiple: EndpointConfig;
-  markInProgress: (taskId: number) => string;
-  update: (taskId: number) => string;
+  assign: (taskId: number, teamId: number) => EndpointConfig;
+  unassign: (taskId: number) => EndpointConfig;
+  initializeUserData: EndpointConfig;
+  handleQuestionnaireSubmit: EndpointConfig;
+  bulkAssign: EndpointConfig;
+  bulkUnassign: EndpointConfig;
+  filter: (status: string, dueDate: string, assignedUser: string) => EndpointConfig;
+  setFilterOptions: EndpointConfig;
+  clearFilter: EndpointConfig;
+  applyFilter: EndpointConfig;
+  updateFilterOptions: EndpointConfig;
+  getFilterOptions: EndpointConfig;
+  saveFilterOptions: EndpointConfig;
+  deleteFilterOptions: EndpointConfig;
+  getFilteredData: EndpointConfig;
+  addFilterCriteria: EndpointConfig;
+  removeFilterCriteria: EndpointConfig;
+  setSortOptions: EndpointConfig;
+  applySort: EndpointConfig;
+  updateSortOptions: EndpointConfig;
+  getSortOptions: EndpointConfig;
+  saveSortOptions: EndpointConfig;
+  deleteSortOptions: EndpointConfig;
+  getFilteredAndSortedData: EndpointConfig;
+  resetFilterAndSort: EndpointConfig;
+  applyPagination: EndpointConfig;
+  updatePaginationOptions: EndpointConfig;
+  markInProgress: (taskId: number) => EndpointConfig;
 }

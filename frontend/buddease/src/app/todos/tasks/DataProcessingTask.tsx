@@ -1,7 +1,17 @@
-import { User } from "@/app/users/User";
-
 // dataProcessingTaskInterfaces.tsx
-export interface DataProcessingTask {
+import { User } from "@/app/users/User";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import {UserExcludedFields, UserIncludedFields } from '@/app/typings//entities/UserEntity'
+
+export interface DataProcessingTask<
+  T extends BaseDataEntity = UserEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = UserAttachment,
+  ExcludedFields extends keyof T = UserExcludedFields,
+  IncludedFields extends keyof T = UserIncludedFields 
+>{
     id: number;
     name: string;
     description: string | null;
@@ -11,6 +21,6 @@ export interface DataProcessingTask {
     createdAt: Date;
     startTime: Date | null;
     completionTime: Date | null;
-    user: User;
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }
   

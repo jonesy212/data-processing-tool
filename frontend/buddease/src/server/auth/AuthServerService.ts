@@ -1,22 +1,26 @@
 // AuthServerService.ts
-import { generateToken } from "@/app/generators/generateTokens";
-import { JWT_SECRET } from "@/server/JwtConfig";
-import * as jwt from "jsonwebtoken";
-import { DatabaseConfig, DatabaseService } from "@/config/DatabaseConfig";
-import { AuthenticationProvider, BaseAuthService } from "./BaseAuthService";
-import { DatabaseServiceFactory, DatabaseType } from "./DatabaseServiceFactory";
-import { LoginResult } from '@/app/typings/authTypes'
+import { generateToken } from '@/app/generators/generateTokens';
+import { JWT_SECRET } from '@/server/JwtConfig';
+import * as jwt from 'jsonwebtoken';
+import { DatabaseConfig, DatabaseService } from '@/config/DatabaseTypes';
+import { AuthenticationProvider, BaseAuthService } from '@/server/auth/BasicAuthService';
+import { DatabaseServiceFactory } from '@/server/database/DatabaseServiceFactory';
+import { DatabaseType } from '@/app/typings/database'
+import { LoginResult } from '@/app/typings/authTypes';
 
-// Define proper response types
-interface LoginResult {
-  success: boolean;
-  accessToken?: string;
-  user?: any;
-  roles?: string[];
-  permissions?: string[];
-  error?: string;
-  code?: string;
+
+export interface LoginCredentials {
+  username: string;
+  password: string;
+  email?: string;
+  rememberMe?: boolean;
+  twoFactorCode?: string;
+  deviceId?: string;
+  ipAddress?: string;
+  userAgent?: string;
 }
+
+
 
 interface AdminLoginResult extends LoginResult {
   isAdmin?: boolean;
@@ -25,6 +29,7 @@ interface AdminLoginResult extends LoginResult {
 class AuthServerService extends BaseAuthService {
   private databaseService: DatabaseService;
   private databaseType: DatabaseType;
+  private currentAccessToken: string | null = null;
 
   constructor(databaseConfig: DatabaseConfig, databaseType: DatabaseType = DatabaseType.POSTGRES) {
     super();
@@ -32,8 +37,32 @@ class AuthServerService extends BaseAuthService {
     this.databaseService = DatabaseServiceFactory.createDatabaseService(databaseConfig, databaseType);
   }
 
+  // Implement the missing abstract methods from BaseAuthService
+  setAccessToken(token: string): void {
+    this.currentAccessToken = token;
+  }
 
-  
+  clearAccessToken(): void {
+    this.currentAccessToken = null;
+  }
+
+  getAccessToken(): string | null {
+    return this.currentAccessToken;
+  }
+
+  isAuthenticated(): boolean {
+    if (!this.currentAccessToken) return false;
+    
+    try {
+      // Verify the token is still valid
+      jwt.verify(this.currentAccessToken, JWT_SECRET);
+      return true;
+    } catch (error) {
+      // Token is invalid or expired
+      this.currentAccessToken = null;
+      return false;
+    }
+  }
 
   // Server-specific implementations
   protected async saveAuthenticationProvidersInternal(providers: AuthenticationProvider[]): Promise<void> {
@@ -54,26 +83,100 @@ class AuthServerService extends BaseAuthService {
     }
   }
 
+
+    // Add the verifyPassword method
+  private async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    try {
+      // Check if the stored password is already hashed with our format
+      if (hashedPassword.includes(':')) {
+        // Format: "salt:hash"
+        const [salt, originalHash] = hashedPassword.split(':');
+        if (!salt || !originalHash) return false;
+        
+        const hash = crypto
+          .createHmac('sha256', salt)
+          .update(plainPassword)
+          .digest('hex');
+        
+        return hash === originalHash;
+      } else {
+        // Legacy or plain text fallback (for migration purposes)
+        console.warn('⚠️  Using plain text password comparison - migrate to hashed passwords!');
+        return plainPassword === hashedPassword;
+      }
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      return false;
+    }
+  }
+
+  // Optional: Advanced crypto implementation
+  private async verifyPasswordWithCrypto(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    // This is a more secure approach using Node.js crypto
+    // You'll need to implement consistent hashing with salt
+    const crypto = await import('crypto');
+    
+    // Extract salt and hash from the stored password
+    // Format: "salt:hash" or use a more structured approach
+    const [salt, originalHash] = hashedPassword.split(':');
+    
+    if (!salt || !originalHash) {
+      return false;
+    }
+    
+    // Hash the provided password with the same salt
+    const hash = crypto
+      .createHmac('sha256', salt)
+      .update(plainPassword)
+      .digest('hex');
+    
+    // Compare the hashes
+    return hash === originalHash;
+  }
+
+  // Optional: Password hashing method (for when creating/updating users)
+
+  public async hashPassword(password: string): Promise<string> {
+    try {
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto
+        .createHmac('sha256', salt)
+        .update(password)
+        .digest('hex');
+      
+      return `${salt}:${hash}`;
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      throw new Error('Password hashing failed');
+    }
+  }
+
+
   // Enhanced login method with proper error handling
-  async login(username: string, password: string): Promise<LoginResult> {
+  async login(username: string, password: string): Promise<LoginResult & { accessToken: string }> {
     try {
       // Validate input
       if (!username || !password) {
         return {
-          success: false,
+          success: true,
+          accessToken: '', // TypeScript knows this satisfies both
           error: 'Missing credentials',
-          code: 'MISSING_CREDENTIALS'
+          code: 'MISSING_CREDENTIALS' 
         };
       }
 
-      // Find user in database ← USING databaseService HERE!
-      const user = await this.databaseService.findOne('users', { username });
+      // Find user in database
+      const user = await this.databaseService.findOne({
+        tableName: 'users', 
+        query: { username: username } // Match the interface structure
+      });
       
       if (!user) {
         return {
           success: false,
-          error: 'User not found',
-          code: 'USER_NOT_FOUND'
+          accessToken: '', // Empty string satisfies the constraint
+          error: 'Login failed',
+          code: 'LOGIN_FAILED'
         };
       }
 
@@ -81,6 +184,7 @@ class AuthServerService extends BaseAuthService {
       if (user.isLocked) {
         return {
           success: false,
+          accessToken: '', 
           error: 'Account temporarily locked',
           code: 'ACCOUNT_LOCKED'
         };
@@ -88,11 +192,13 @@ class AuthServerService extends BaseAuthService {
       
       // Verify password (you'll need to implement proper password hashing)
       const isPasswordValid = await this.verifyPassword(password, user.password);
+
       if (!isPasswordValid) {
         // Increment failed login attempts
         await this.incrementFailedAttempts(user.id);
         return {
           success: false,
+          accessToken: '', 
           error: 'Invalid credentials',
           code: 'INVALID_CREDENTIALS'
         };
@@ -121,6 +227,7 @@ class AuthServerService extends BaseAuthService {
       console.error('Login error:', error);
       return {
         success: false,
+        accessToken: '', 
         error: 'Login failed',
         code: 'LOGIN_FAILED'
       };
@@ -132,20 +239,25 @@ class AuthServerService extends BaseAuthService {
     try {
       // First perform regular login
       const loginResult = await this.login(username, password);
-      
+        
       if (!loginResult.success) {
-        return loginResult;
+        return {
+          ...loginResult,
+          accessToken: '', // Ensure accessToken is always present
+          isAdmin: false
+        };
       }
 
       // Check if user has admin role
       if (!loginResult.roles?.includes('admin')) {
         return {
           success: false,
+          accessToken: '', // Provide empty string
           error: 'Admin access required',
-          code: 'ADMIN_ACCESS_REQUIRED'
+          code: 'ADMIN_ACCESS_REQUIRED',
+          isAdmin: false
         };
       }
-
       // Generate admin-specific token with longer expiry
       const adminTokenPayload = {
         ...this.createTokenPayload(loginResult.user!),
@@ -153,9 +265,13 @@ class AuthServerService extends BaseAuthService {
         adminSince: new Date().toISOString()
       };
       
-      const adminScopes = [...(loginResult.permissions || []), 'admin_access'];
+      const adminScopes = [
+        ...(loginResult.permissions?.map(p => typeof p === 'string' ? p : p.name) || []),
+        'admin_access'
+      ];
+      
       const adminAccessToken = generateToken(adminTokenPayload, adminScopes, { expiresIn: '8h' });
-
+        
       this.setAccessToken(adminAccessToken);
 
       return {
@@ -171,6 +287,7 @@ class AuthServerService extends BaseAuthService {
       console.error('Admin login error:', error);
       return {
         success: false,
+        accessToken: '',
         error: 'Admin login failed',
         code: 'ADMIN_LOGIN_FAILED'
       };
@@ -184,13 +301,17 @@ class AuthServerService extends BaseAuthService {
   
       // Ensure the payload contains the user ID and scopes
       if (typeof payload.sub !== 'string' || !Array.isArray(payload.scopes)) {
-        throw new Error("Invalid refresh token payload");
+        throw new Error('Invalid refresh token payload');
       }
   
       // Fetch fresh user data from database
-      const user = await this.databaseService.findOne('users', { _id: payload.sub });
+      const user = await this.databaseService.findOne({
+        tableName: 'users', 
+         query: { id: payload.sub } 
+      });
+      
       if (!user) {
-        throw new Error("User not found");
+        throw new Error('User not found');
       }
   
       const scopes = payload.scopes;
@@ -201,7 +322,7 @@ class AuthServerService extends BaseAuthService {
   
       return { accessToken: newAccessToken };
     } catch (error) {
-      throw new Error("Invalid refresh token");
+      throw new Error('Invalid refresh token');
     }
   }
 
@@ -258,46 +379,52 @@ class AuthServerService extends BaseAuthService {
     return sanitizedUser;
   }
 
-  private async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    // Implement proper password verification (bcrypt, etc.)
-    // This is a placeholder - replace with actual hashing logic
-    return plainPassword === hashedPassword; // Remove this in production!
-  }
-
-  private async incrementFailedAttempts(userId: string): Promise<void> {
-    try {
-      const user = await this.databaseService.findOne('users', { _id: userId });
-      if (user) {
-        const failedAttempts = (user.failedLoginAttempts || 0) + 1;
-        const isLocked = failedAttempts >= 5; // Lock after 5 failed attempts
-        
-        await this.databaseService.update('users', { _id: userId }, {
-          failedLoginAttempts: failedAttempts,
-          isLocked,
-          lockUntil: isLocked ? new Date(Date.now() + 30 * 60 * 1000) : null // 30 minutes
-        });
-      }
-    } catch (error) {
-      console.error('Error incrementing failed attempts:', error);
-    }
-  }
-
-  private async resetFailedAttempts(userId: string): Promise<void> {
-    try {
-      await this.databaseService.update('users', { _id: userId }, {
-        failedLoginAttempts: 0,
-        isLocked: false,
-        lockUntil: null
+private async incrementFailedAttempts(userId: string): Promise<void> {
+  try {
+    // FIXED
+    const user = await this.databaseService.findOne({
+      tableName: 'users',
+      query: { _id: userId }
+    });
+    
+    if (user) {
+      const failedAttempts = (user.failedLoginAttempts || 0) + 1;
+      const isLocked = failedAttempts >= 5;
+      
+      await this.databaseService.update(
+        'users', { _id: userId }, {
+        failedLoginAttempts: failedAttempts,
+        isLocked,
+        lockUntil: isLocked ? new Date(Date.now() + 30 * 60 * 1000) : null
       });
-    } catch (error) {
-      console.error('Error resetting failed attempts:', error);
     }
+  } catch (error) {
+    console.error('Error incrementing failed attempts:', error);
   }
+}
+
+private async resetFailedAttempts(userId: string): Promise<void> {
+  try {
+    await this.databaseService.update(
+      'users', { _id: userId }, {
+      failedLoginAttempts: 0,
+      isLocked: false,
+      lockUntil: null
+    });
+  } catch (error) {
+    console.error('Error resetting failed attempts:', error);
+  }
+}
 
   // Additional server-only methods
   async validateUserPermissions(userId: string, requiredPermissions: string[]): Promise<boolean> {
     try {
-      const user = await this.databaseService.findOne('users', { _id: userId });
+      // FIXED: Use single object parameter with tableName and query properties
+      const user = await this.databaseService.findOne({
+        tableName: 'users',
+        query: { _id: userId }
+      });
+      
       if (!user) return false;
 
       return requiredPermissions.every(permission => 
@@ -309,9 +436,15 @@ class AuthServerService extends BaseAuthService {
     }
   }
 
+ 
   async validateUserRoles(userId: string, requiredRoles: string[]): Promise<boolean> {
     try {
-      const user = await this.databaseService.findOne('users', { _id: userId });
+      // FIXED
+      const user = await this.databaseService.findOne({
+        tableName: 'users',
+        query: { _id: userId }
+      });
+      
       if (!user) return false;
 
       return requiredRoles.every(role => 
@@ -321,6 +454,12 @@ class AuthServerService extends BaseAuthService {
       console.error('Error validating user roles:', error);
       return false;
     }
+  }
+
+  // Logout method
+  async logout(): Promise<void> {
+    this.clearAccessToken();
+    // Additional cleanup logic if needed
   }
 }
 
@@ -346,4 +485,4 @@ export const createMysqlAuthService = () =>
 
 // Default export
 export default createPostgresAuthService;
-export { AuthServerService, LoginResult };
+export { AuthServerService };

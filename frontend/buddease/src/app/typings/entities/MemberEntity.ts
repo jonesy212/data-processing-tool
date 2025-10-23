@@ -1,9 +1,12 @@
 // MemberEntity.ts
-import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Member } from "@/app/models/members/Member";
 import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
+import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
-import { UserRole } from '@/app/models/UserRole';
+import { UserRole } from "@/app/models/UserRole";
+import { Permission } from '@/app/permissions/Permission';
+import { Product } from '@/app/products/Product';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -17,7 +20,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { PhaseMeta } from '../phaseTypes';
-
+import { ProjectBudget } from '@/app/typings/projectTypes'
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
   datasets?: string;
@@ -25,7 +28,7 @@ type MemberEntity = BaseDataEntity & {
   questionnaireResponses?: any;
   userType: string;
   role?: string;
-  permissions?: string[];
+  permissions?: Permission[] | string[];
   joinDate?: Date;
   lastActive?: Date;
   status?: 'active' | 'inactive' | 'pending';
@@ -78,9 +81,7 @@ type AppMemberData = PhaseData<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
 >;
 
-type AppMemberMeta = PhaseMeta<
-  MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
->;
+type AppMemberMeta = PhaseMeta;
 
 type CustomAppMemberHooks = CustomPhaseHooks<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
@@ -106,7 +107,7 @@ type MemberParams = SnapshotConfigParams<MemberEntity, MemberK, MemberMeta, Memb
 type MemberApplyFieldFilters<
   T extends BaseDataEntity,
   ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T
+  IncludedFields extends Exclude<keyof T, ExcludedFields> = Exclude<keyof T, ExcludedFields>
 > = Pick<Omit<T, ExcludedFields>, IncludedFields>;
 
 // Define the MemberData interface extending Member
@@ -123,18 +124,27 @@ interface MemberData<
   questionnaireResponses?: any;
   userType: string;
   role?: UserRole
-  permissions?: string[];
+  permissions?: Permission[] | string[];
   joinDate?: Date;
   lastActive?: Date;
   status?: 'active' | 'inactive' | 'pending';
   teamId?: string;
-  projects?: string[];
+  prroducts?: Product<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  projects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   skills?: string[];
+
+  budget: ProjectBudget, 
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], 
+  currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  done: boolean
   // Add other fields specific to MemberData
 }
 
 // Default empty member data
 const emptyMemberData: MemberData = {
+  isAuthorized, uploadQuota, hasQuota, processingTasks,
+  budget, phases, currentPhase, done,
+
   id: '',
   name: '',
   email: '',
@@ -143,7 +153,7 @@ const emptyMemberData: MemberData = {
   tier: "",
   username: "",
   roleInTeam: "",
-  role: 'member',
+  role: UserRole.Member,
   memberName: "",
   questionnaireResponses: undefined,
   userType: 'member',

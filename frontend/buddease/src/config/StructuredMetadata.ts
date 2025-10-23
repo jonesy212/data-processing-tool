@@ -9,7 +9,7 @@ if (typeof window === 'undefined') {
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Permission } from "@/app/perrmissions/Permission";
+import { Permission } from '@/app/permissions/Permission'
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Taggable } from '@/app/models/CommonData';
 import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
@@ -20,12 +20,12 @@ import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { Video } from '@/app/state/stores/VideoStore';
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from '@/app/versions/Version';
-import { Comment } from '@/app/models//Comments';
+import { Comment } from '@/app/models/comments/Comments';
 import { Task } from '@/app/models/tasks/Task';
-import { Contributor } from '@/models/teams/TeamMembers';
+import { Contributor } from '@/app/models/teams/TeamMembers';
 import { BaseConfig, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { MyDataType } from '@/confiig/MetaDataOptions';
+import { MyDataType } from '@/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SchemaField } from '@/server/database/SchemaField';
@@ -43,7 +43,7 @@ interface SpecificMetadata<
   IncludedFields extends keyof T = keyof T
 > {
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
-  categories?: CategoryProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  categories?: CategoryProperties<T, K>[];
   priority?: number;
   customFields?: Record<string, any>;
 }
@@ -119,18 +119,18 @@ interface StructuredMetadata<
   baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedMetadata: SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedBaseData: SharedRelationshipData<K>;
-  taggable: Taggable<T, K>;
+  taggable: Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   description?: string | undefined;
   fileType?: string;
   alternatePaths?: string[];
   originalPath?: string;
-  metadataEntries: MetadataEntriesType<T, K>;
+  metadataEntries: MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  lastUpdated?: Date | VersionHistory<T, K>; 
-  permissions: Permission[];
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  permissions?: Permission[] | string[];
   customFields?: Record<string, any>;
   config?: Record<string, any>;
   baseUrl?: string;
@@ -167,7 +167,7 @@ interface VideoMetadata<
   frameRate: number
   views: number;
   likes: number;
-  comments?: number | (Comment<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
   resolution: string;
   aspectRatio: string;
   subtitles: boolean | string[];
@@ -217,7 +217,7 @@ interface ProjectMetadata<
   customFields?: Record<string, any>
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined
   isActive: boolean;
-  permissions: Permission[];
+  permissions?: Permission[] | string[];
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
   lastUpdated: Date | VersionHistory<T, K>; // Add this line
 }

@@ -6,6 +6,12 @@ import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { UserAssignee } from "@/app/todos/Todo";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/config/BaseConfig';
+import { TaskEntity,
+  TaskK,
+  TaskMeta,
+  TaskAttachment,
+  TaskExcludedFields,
+  TaskIncludedFields} from '@/app/typings/entities/TaskEntity';
 
 
 export interface Schedule {
@@ -19,9 +25,21 @@ export interface Schedule {
   [key: string]: any; // Add any additional shared scheduling fields
 }
 
+export type TaskOrTodo<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = 
+  | Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+
 type MyTaskOrTodo = TaskOrTodo<
-  TaskCoreData,
-  TaskCoreData,
+  TaskEntity,
+  TaskK,
   TaskMeta,
   TaskAttachment,
   TaskExcludedFields,
@@ -43,7 +61,7 @@ export interface ScheduledData<
   scheduledDate: Date;
   priority?: "scheduled" | "completed" | "canceled" | "rescheduled"; // General status for scheduling
   assignee?: UserAssignee | null;
-  subtasks?: TodoImpl<any, any, any>[];
+  subtasks?: TodoImpl<any, any, any, any, any, any>[];
   additionalData?: any;
   isScheduled?: boolean;
 }

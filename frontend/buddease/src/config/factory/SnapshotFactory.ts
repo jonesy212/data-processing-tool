@@ -1,3 +1,9 @@
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+
+
 // =========================
 // CONFIG FACTORY COMPANION
 // =========================
@@ -13,7 +19,7 @@ export const SnapshotConfigFactory = {
     Extras extends unknown[] = []
   >(
     builder: SnapshotConfigBuilder<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ...params: SnapshotConfigParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, Extras>
+    ...params: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, Extras>
   ): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     if (builder.createConfig) {
       return builder.createConfig(params);

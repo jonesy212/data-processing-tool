@@ -1,16 +1,15 @@
-import { NotificationTypeEnum, NotificationType } from "@/app/context/NotificationContext";
+import { useMetadata } from '@/config/useMetadata';
+import { NotificationTypeEnum, useNotification, NotificationType } from "@/app/context/NotificationContext";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DataDetails } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+
 import { useMeta } from "@/config/useMeta";
-import {
-    NotificationType,
-    useNotification,
-} from "@/context/NotificationContext";
+import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { AppSnapshot, AppStructuredMetadata } from '@/app/typings/entities/AppEntity';
 
 const area = fetchUserAreaDimensions().toString()
 
@@ -27,7 +26,7 @@ export function generateUserID(userName: string) {
   const generatedID = UniqueIDGenerator.generateID(
     USER_ID_PREFIX,
     userName,
-    NotificationTypeEnum.GeneratedID
+    NotificationTypeEnum.GENERATED_ID
   );
   return {
     [Symbol.iterator]: function* () {
@@ -43,7 +42,7 @@ class UniqueIDGenerator {
     return this.generateID(
       prefix.toUpperCase(),
       "auto_generated",
-      NotificationTypeEnum.System
+      NotificationTypeEnum.SYSTEM
     );
   }
   static generateSnapshoItemID(arg0: string): string {
@@ -100,7 +99,7 @@ class UniqueIDGenerator {
         generationOptions: options
       },
       timestamp,
-      NotificationTypeEnum.GeneratedID,
+      NotificationTypeEnum.GENERATED_ID,
       notificationType,
       options?.metadata ? {
         additionalOptions: [JSON.stringify({
@@ -120,7 +119,7 @@ class UniqueIDGenerator {
     content: any,
     timestamp: Date,
     type: NotificationType,
-    notificationType: NotificationType = NotificationTypeEnum.System,
+    notificationType: NotificationType = NotificationTypeEnum.SYSTEM,
     options?: {
       additionalOptions?: readonly string[] | string | number | any[] | undefined;
       additionalDocumentOptions?: DocumentOptions;
@@ -144,7 +143,7 @@ class UniqueIDGenerator {
     return this.generateID(
       "VER",
       `version_${versionNumber}`,
-      NotificationTypeEnum.GeneratedID
+      NotificationTypeEnum.GENERATED_ID
     );
   }
 
@@ -153,7 +152,7 @@ class UniqueIDGenerator {
     return UniqueIDGenerator.generateID(
       "SNP",
       "snapshot_id",
-      NotificationTypeEnum.GeneratedID
+      NotificationTypeEnum.GENERATED_ID
     );
   }
 
@@ -167,7 +166,7 @@ class UniqueIDGenerator {
       name,
       type,
       id,
-      NotificationTypeEnum.GeneratedID
+      NotificationTypeEnum.GENERATED_ID
     );
   }
 
@@ -183,7 +182,7 @@ class UniqueIDGenerator {
     const uniqueID = UniqueIDGenerator.generateID(
       "SNP",
       category,
-      NotificationTypeEnum.GeneratedID
+      NotificationTypeEnum.GENERATED_ID
     );
 
     // Combine the category and unique ID with a timestamp for uniqueness
@@ -203,7 +202,7 @@ class UniqueIDGenerator {
       `Generated notification ID: ${notificationID}`, // content: string
       notification.message,                  // notificationMessage: NotificationMessages
       new Date(),                            // date: Date
-      NotificationTypeEnum.GeneratedID,      // type: NotificationTypeEnum
+      NotificationTypeEnum.GENERATED_ID,      // type: NotificationTypeEnum
       notificationType,                      // notificationType: NotificationType
       {                                      // options (optional)
         additionalOptions: [notificationID],
@@ -230,11 +229,11 @@ class UniqueIDGenerator {
   static generateTaskID(
     name: string,
     title: string,
-    type: NotificationTypeEnum): string {
+    type: NotificationType): string {
     return `task_${name}_${type}`;
   }
 
-  static generateCustomID(name: string, type: NotificationTypeEnum): string {
+  static generateCustomID(name: string, type: NotificationType): string {
     return `custom_${name}_${type}`;
   }
 
@@ -569,7 +568,7 @@ const videoDataDetails: DataDetails<T, K> = {
   status: "pending",
   isActive: false,
   tags: {},
-  type: NotificationTypeEnum.GeneratedID,
+  type: NotificationTypeEnum.GENERATED_ID,
   createdAt: new Date(),
   uploadedAt: new Date(),
   analysisResults: [],
@@ -588,7 +587,7 @@ const videoDetailsString = JSON.stringify(videoDataDetails);
 const uniqueVideoID = UniqueIDGenerator.generateID(
   "video",
   videoDetailsString,
-  NotificationTypeEnum.GeneratedID,
+  NotificationTypeEnum.GENERATED_ID,
   videoDataDetails as unknown as string
 );
 

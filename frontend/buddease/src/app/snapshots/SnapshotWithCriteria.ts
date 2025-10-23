@@ -22,7 +22,7 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { sharedMetadata } from "@/config/metadata/MetadataHooks";
+import { sharedMetadata } from "@/config/metadata/MetadataStateManager";
 import { MetadataEntriesType } from "@/config/StructuredMetadata";
 import { Payload } from '@/server/database/Payload';
 import { createMetadata } from '@/server/metadata/createMetadata';

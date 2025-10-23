@@ -1,45 +1,46 @@
 // ExampleTeam.ts
-import { PriorityTypeEnum, TeamStatus } from "@/app/models/data/StatusType";
+import { AppTeamEntity TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity'
+import { PriorityTypeEnum, TeamStatus } from '@/app/models/data/StatusType';
 import { Phase } from '@/app/models/phases/Phase';
-import { assignProject, Project, ProjectType, reassignProject, unassignProject } from "@/app/models/projects/Project";
-import { Task, TaskData } from "@/app/models/tasks/Task";
-import { TeamData } from "@/app/models/teams/TeamData";
-import { Progress } from "@/app/models/tracker/ProgressBar";
-import { UserRole } from "@/app/models/UserRole";
+import { assignProject, Project, ProjectType, reassignProject, unassignProject } from '@/app/models/projects/Project';
+import { Task, TaskData } from '@/app/models/tasks/Task';
+import { TeamData } from '@/app/models/teams/TeamData';
+import { Progress } from '@/app/models/tracker/ProgressBar';
+import { UserRole } from '@/app/models/UserRole';
 import UserRoles from '@/app/models/UserRoles';
-import { Persona } from "@/app/pages/personas/Persona";
-import { ProfileAccessControl } from "@/app/pages/profile/Profile";
-import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { Settings } from "@/app/state/stores/SettingsStore";
-import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { Persona } from '@/app/pages/personas/Persona';
+import { ProfileAccessControl } from '@/app/pages/profile/Profile';
+import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
+import { Settings } from '@/app/state/stores/SettingsStore';
+import { DataProcessingTask } from '@/app/todos/tasks/DataProcessingTask';
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { VideoData } from '@/app/typings/videoTypes/Video';
-import { Idea } from "@/app/users/Ideas";
-import { User } from "@/app/users/User";
-import { UserSettings } from "@/config/UserSettings";
+import { Idea } from '@/app/users/Ideas';
+import { User } from '@/app/users/User';
+import { UserSettings } from '@/config/UserSettings';
 
-// import { unassignProject } from "@/app/calendar/CalendarApp";
 import {
   CodingLanguageEnum,
   LanguageEnum,
-} from "@/app/communications/LanguageEnum";
-import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
+} from '@/app/communications/LanguageEnum';
+import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
 import { DefaultMeta } from '@/config/BaseConfig';
 
-import { updateProgress } from "@/app/calendar/CalendarApp";
-import { CommonDetails } from "@/app/components/models/detas/CommonDetails";
-import { ExcludedFields } from "@/app/components/routing/Fields";
-import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
-import generateTimeBasedCode fr@/app/components/models/details/CommonDetailsrator";
-import { Team } from "@/app/models/teams/Team";
-import { Snapshot } from "@/app/snapshots";
-import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import MemberEntity from "@/app/typings/entities/MemberEntity";
-import { options } from "sanitize-html";
-import { TeamEntity, TeamExcludedFields, TeamK, TeamMeta } from "../typings/teamTypes";
-
+import { updateProgress } from '@/app/calendar/CalendarApp';
+import { CommonDetails } from '@/app/components/models/details/CommonDetails';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import generateTimeBasedCode '@/app/models/realtime/TimeBasedCodeGenerator';
+import { Team } from '@/app/models/teams/Team';
+import { Snapshot } from '@/app/snapshots';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields} from '@/app/typings/entities/MemberEntity';
+import { options } from 'sanitize-html';
+import { useFiltering } from '@/app/hooks/useFiltering'
 const timeBasedCode = generateTimeBasedCode();
+const { addFilter } = useFiltering(options);
+
 // Example usage:
 const team: Team = {
   id: "1",
@@ -112,23 +113,28 @@ const team: Team = {
           resetIdleTimeout: function (): Promise<void> {
             return Promise.resolve();
           },
-          idleTimeoutDuration: () => {},
-          idleTimeoutId: null,
-          startIdleTimeout: (
+          idleTimeoutDuration: 0,
+          idleTimeoutId: null as NodeJS.Timeout | null,
+            startIdleTimeout: function (
             timeoutDuration: number,
-            onTimeout: () => void | undefined
-          ) => {},
+            onTimeout: () => void
+          ): void {
+            if (this.idleTimeout.idleTimeoutId) {
+              clearTimeout(this.idleTimeout.idleTimeoutId);
+            }
+            this.idleTimeout.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+          },
           toggleActivation: async () => false,
-          idleTimeoutDuration: 0
         },
         startIdleTimeout: function (
           timeoutDuration: number,
           onTimeout: () => void
         ): void {
-          if (this.idleTimeoutId) {
-            clearTimeout(String(this.idleTimeoutId));
-          }
-          this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+            if (this.idleTimeout.idleTimeoutId) {
+              clearTimeout(this.idleTimeout.idleTimeoutId as NodeJS.Timeout);
+            }
+            this.idleTimeout.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+          },
         },
         idleTimeoutDuration: 0,
         activePhase: "",
@@ -324,7 +330,7 @@ const team: Team = {
       achievements: [],
       profileVisibility: "",
       profileAccessControl: {} as ProfileAccessControl,
-      activityStatus: "",
+      activityStatus: ""
     },
     {
       _id: "member-2",
@@ -347,7 +353,7 @@ const team: Team = {
       roleInTeam: "moderator",
       memberName: "Jane English",
       persona: {} as Persona,
-      members: [] as SnapshotStore<Snapshot<MemberEntity, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>[],
+      members: [] as SnapshotStore<Snapshot<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -753,7 +759,7 @@ const team: Team = {
   phase: null,
   analysisType: AnalysisTypeEnum.PROJECT,
   analysisResults: [],
-  videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  videoData: {} as VideoData<AppTeamEntity TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields>,
   percentage: 0,
   timestamp: undefined,
   category: "",

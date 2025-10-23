@@ -1,7 +1,9 @@
 import { useSecurityAudit } from '@/app/hooks/useSecurityAudit';
-import { BaseDataEntity, BaseDataRoot } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import SecureFieldManager from "./SecureFieldManager";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseDataRoot } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 
 class SecurityAudit<
   T extends BaseDataEntity = BaseDataRoot,

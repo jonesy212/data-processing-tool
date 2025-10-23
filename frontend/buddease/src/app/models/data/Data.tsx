@@ -1,7 +1,8 @@
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Phase } from "@/app/models/phases/Phase";
 import { ExcludedFields } from "@/app/components/routing/Fields";
-import {DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
+import { AppUnifiedMetadata, AppStructuredMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
 import { Content } from "@/app/models/content/AddContent";
 import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -49,7 +50,8 @@ import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { HighlightColor } from "@/app/styling/Palette";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
-import { Collaborator, Member } from "@/app/models/teams/TeamMembers";
+import { Collaborator } from "@/app/models/collaborators/Collaborator";
+import { Member } from "@/app/models/teams/TeamMembers";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
 import { TrackerProps } from "@/app/models/tracker/Tracker";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
@@ -59,7 +61,7 @@ import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { cleanEmptyStrings } from "@/app/utils/web3/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { VideoData } from "@/app/video/Video";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import {
   BaseDataEntity,
   BaseDataRoot,
@@ -132,18 +134,18 @@ interface DataDetails<
   isActive?: boolean;
   status?: AllStatus | null;
   uploadedAt?: Date;
-phase?: PhaseDefault | null;
+  phase?: PhaseDefault | null;
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[];
   todos?: Todo<T, K>[];
   analysisData?: {
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-    analysisResults?: DataAnalysisResult<T>[];
+    analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   };
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   analysisType?: AnalysisTypeEnum | null;
-  analysisResults?: string | DataAnalysisResult<T>[];
+  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   todo?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
@@ -232,7 +234,8 @@ interface BaseData<
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: SnapshotStore<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Simplify snapshots type
+  snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
   text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
@@ -271,6 +274,7 @@ interface Data<
 }
 
 // Define the DataDetails component
+// Define the DataDetails component
 const DataDetailsComponent = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -296,6 +300,15 @@ const DataDetailsComponent = <
       return acc;
     }, []);
   };
+
+  // Add null check for data
+  if (!data) {
+    return (
+      <div className="data-details-empty">
+        <p>No data available</p>
+      </div>
+    );
+  }
   
   return (
     <CommonDetails
@@ -314,7 +327,7 @@ const DataDetailsComponent = <
         createdBy: data.createdBy,
         currentMeta: data.currentMeta,
         latestVersion: data.latestVersion,
-        status: data.status as StatusType | undefined, // Added from second version
+        status: data.status as StatusType | undefined,
       }}
       details={{
         _id: data._id,
@@ -334,12 +347,10 @@ const DataDetailsComponent = <
         currentMetadata: data.currentMetadata,
         currentMeta: data.currentMeta,
         latestVersion: data.latestVersion,
-        // Include other properties from second version if needed
       }}
     />
   );
 };
-
 
 const area = fetchUserAreaDimensions().toString();
 const currentMetadata: AppUnifiedMetadata = useMetadata('data-area');
@@ -410,7 +421,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
     }, // This should match the type defined in Tag
     subPhases: [],
     createdBy: "creator1",
-    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+    latestVersion: createLatestVersion<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>(),
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -737,7 +748,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
           assignBoardAutomationToTeam: {},
           assignBoardCustomFieldToTeam: {},
 
-          assignTask: (task: Task<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+          assignTask: (task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => {
             // Logic to assign a task
           },
           assignUsersToTasks: (taskId: string, userIds: string[]) => {
@@ -1003,7 +1014,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
     // calendarStore: {
     //   openScheduleEventModal: "",
     //   openCalendarSettingsPage: "",
-    //   getData: async (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+    //   getData: async (): Promise<SnapshotStore<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]> => {
     //     // Implement logic to get the data
     //     try {
     //       // Fetch or generate data for SnapshotStore instances
@@ -1149,7 +1160,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
       area: "coreData",
       currentMeta: currentMeta,
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+      latestVersion: createLatestVersion<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>(),
     },
     currentMeta: currentMeta,
     // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
@@ -1628,14 +1639,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
     }),
   ],
   getData: function (): Promise<
-    SnapshotStore<
-      BaseData<any>,
-      BaseData<any>,
-      StructuredMetadata<
-        BaseData<any, any, StructuredMetadata<any, any>>,
-        BaseData<any, any, StructuredMetadata<any, any>>
-      >
-    >[]
+    SnapshotStore<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]
   > {
     return Promise.resolve([]);
   },

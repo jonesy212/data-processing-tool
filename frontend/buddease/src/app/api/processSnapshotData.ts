@@ -1,6 +1,11 @@
+import { AppStructurePermissions } from '@/app/config/appStructure/AppStructurePermissions'
 import { SharedSnapshotProperties } from '@/app/documents/RelatedProps'
-import { SnapshotVersioningSystemProps} from '@/app/snapshots/useSnapshotVersioningSystem'
+import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
+import { SecurityScanResult, SecurityReport } from '@/app/snapshots/SecurityMeasureTypes'
+import SnapshotVersioningSystemProps from '@/app/snapshots/useSnapshotVersioningSystem'
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
+
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData'
 import { DataWithPriority } from "@/app/utils/versionUtils";
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -91,7 +96,7 @@ function isEnhancedSnapshotData<
     return {
       // Core nested properties with proper types
       core: firstEntry.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      shared: firstEntry.shared || {} as SharedSnapshotProperties<T, K, ExcludedFields>,
+      shared: firstEntry.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       identity: firstEntry.identity || {} as SnapshotIdentity,
       security: firstEntry.security || {
         isEncrypted: false,
@@ -134,7 +139,7 @@ function isEnhancedSnapshotData<
         runSecurityScan: () => ({} as SecurityScanResult),
         generateSecurityReport: () => ({} as SecurityReport),
       } as SnapshotSecurity,
-      versioning: firstEntry.versioning || {} as SnapshotVersioning<T, K, Meta>,
+      versioning: firstEntry.versioning || {} as SnapshotVersioning<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       storage: firstEntry.storage || {} as SnapshotStorage<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       operations: firstEntry.operations || {} as SnapshotOperations<T, K>,
       base: firstEntry.base || {} as BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -148,11 +153,8 @@ function isEnhancedSnapshotData<
       // Copy all properties from the snapshot
       ...firstEntry,
       
-
       // Ensure required properties exist with proper defaults
-     
-
-
+    
       storeId: baseEntry.storeId ?? 0,
       timestamp: baseEntry.timestamp ?? new Date(),
       isExpired: baseEntry.isExpired ?? (() => false),
@@ -160,7 +162,6 @@ function isEnhancedSnapshotData<
       getSnapshotCategory: baseEntry.getSnapshotCategory ?? (() => undefined),
       getSnapshotData: baseEntry.getSnapshotData ?? (() => undefined),
       deleteSnapshot: baseEntry.deleteSnapshot ?? (() => {}),
-      snapshotData: baseEntry.snapshotData ?? (async () => ({} as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)),
       
       // Default empty arrays for collection properties
       subscribers: baseEntry.subscribers ?? [],
@@ -190,8 +191,8 @@ function isEnhancedSnapshotData<
     // Convert SnapshotStore to SnapshotData if needed
     return {
       ...input,
-      core: input.core || {} as CoreSnapshot<T, K, Meta>,
-      shared: input.shared || {} as SharedSnapshotProperties<T, K, ExcludedFields>,
+      core: input.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      shared: input.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       identity: input.identity || {} as SnapshotIdentity,
       security: input.security || {} as SnapshotSecurity,
       // ... other required properties
@@ -267,7 +268,6 @@ const transformCustomSnapshotToSnapshot = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T

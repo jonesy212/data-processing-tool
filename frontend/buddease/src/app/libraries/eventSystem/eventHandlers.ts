@@ -11,6 +11,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { EventHandler } from '@/app/typings/eventTypes'
+
+
 export interface SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   'snapshot:added': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   'snapshot:updated': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

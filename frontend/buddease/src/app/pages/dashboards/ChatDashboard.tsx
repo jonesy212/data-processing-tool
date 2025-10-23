@@ -1,5 +1,6 @@
 // ChatDashboard.tsx
-import { Team } from '@/app/components/models/teams/Team';
+import React from 'react';
+import { Team } from '@/app/models/teams/Team';
 import { TeamMember } from '@/app/components/models/teams/TeamMembers';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
@@ -10,35 +11,8 @@ import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/
 import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-import React from 'react';
-
 interface ChatDashboardProps {
   aquaConfig: AquaConfig;
-}
-
-export interface DappProps<
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends Omit<DAppAdapterDappProps, 'user'> {
-  currentUser: {
-    id: string | number;
-    username: string;
-    role?: UserRole;
-    teams?: Team[];
-    projects?: Project[];
-    teamMembers?: TeamMember<
-      T,
-      K,
-      Meta,
-      AttachmentType,
-      ExcludedFields,
-      IncludedFields
-    >[];
-  };
 }
 
 const ChatDashboard: React.FC<ChatDashboardProps> = ({ aquaConfig }) => {
@@ -49,7 +23,7 @@ const ChatDashboard: React.FC<ChatDashboardProps> = ({ aquaConfig }) => {
     currentUser: {
       id: "0",
       name: "",
-      role: "",
+      role: UserRole,
       teams: [] as Team[],
       projects: [] as Project[],
       teamMembers: [] as TeamMember[],

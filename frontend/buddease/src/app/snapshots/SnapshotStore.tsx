@@ -1,136 +1,111 @@
 // SnapshotStore.ts
 
-import { IHydrateResult } from 'mobx-persist';
-import { PriorityValue } from '@/app/pages/searches/CriteriaType'
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
+import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';
-import { bindAllMethods } from '@/methodBinder'
-import { VersionHistory } from '@/app/versions/VersionData';
-import { Label } from '@/app/branding/BrandingSettings';
+import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AllTypes } from '@/app/typings/PropTypes';
-import { U, WrappedU } from '@/isCompatibleTempData';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStoreReference';
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
+import { AllTypes } from '@/app/typings/PropTypes';
+import { VersionHistory } from '@/app/versions/VersionData';
+import { U, WrappedU } from '@/isCompatibleTempData';
+import { bindAllMethods } from '@/methodBinder';
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { InitializedConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+import { getSnapshotStoreConfig } from '@/app/api/SnapshotApi';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
-import { SnapshotMethodsImplementation } from '@/methods/snapshotMethods';
-import { ValidationMethods } from '@/app/snapshots/methods/validationMethods'
-import { getSnapshotStoreConfig } from '@/app/api/SnapshotApi';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { ValidationMethods } from '@/app/snapshots/methods/validationMethods';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { getConfigPromise } from '@/config/getConfigPromise';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType, NotificationTypeEnum } from '@/context/NotificationContext';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { MessageType } from '@/app/generators/MessaageType';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
-import retrieveSnapshotData from '@/app/utils/retrieveSnapshotData';
-import { prefix } from '@fortawesome/free-solid-svg-icons';
+import { SnapshotMethodsImplementation } from '@/methods/snapshotMethods';
 
 import { Video } from '@/app/state/stores/VideoStore';
 
 import getConfig from 'next/config';
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CreateSnapshotStoresPayload, CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
-import { SchemaField } from '@/server/database/SchemaField';
-import { DocumentTypeEnum } from '@/app/typings/documentTypess';
 import { SnapshotWithData } from '@/app/calendar/CalendarApp';
-import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
-import { FileTypeEnum } from '@/app/documents/FileType';
-import defaultImplementation from '@/app/event/defaultImplementation';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
-import FormatEnum from '@/app/form/FormatEnum';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
-import AnimationTypeEnum from '@/app/libraries/animations/AnimationLibrary';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData, DataDetails } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { dataStoreMethods } from '@/app/models/data/dataStoreMethods';
-import { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationPosition, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from '@/app/models/data/StatusType';
+import { NotificationPosition, StatusType } from '@/app/models/data/StatusType';
 import { DebugInfo, TempData } from '@/app/models/data/TempData';
-import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
-import { ContentManagementPhaseEnum } from '@/app/components/phases/ContentManagementPhase';
-import { FeedbackPhaseEnum } from '@/app/phases/FeedbackPhase';
-import { TaskPhaseEnum } from '@/app/phases/TaskProcess';
-import { TenantManagementPhaseEnum } from '@/app/components/phases/TenantManagementPhase';
-import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SearchCriteria } from '@/app/routing/SearchCriteria';
-import { SecurityFeatureEnum } from '@/app/security/SecurityFeatureEnum';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/app/typings/YourSpecificSnapshotType';
-import { AuditRecord } from '@/app/subscribers/Subscriber';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { IdeaCreationPhaseEnum } from '@/app/users/userJourney/IdeaCreationPhase';
-import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/app/utils/snapshotUtils';
-import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/config/BaseConfig';
-import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import {
-  SnapshotUnion,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotsObject
-} from '@/app/snapshots/LocalStorageSnapshotStore'
+    SnapshotUnion,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotsObject
+} from '@/app/snapshots/LocalStorageSnapshotStore';
+import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { AuditRecord } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/app/typings/YourSpecificSnapshotType';
+import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/app/utils/snapshotUtils';
+import { Version } from '@/app/versions/Version';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { ConfigMethods, applyStoreConfig } from '@/methods/configMethods';
-import  { UtilMethods } from '@/app/snapshots/methods/utilMethods';
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
+import { SchemaField } from '@/server/database/SchemaField';
 
 import { createSnapshotStores } from '@/app/snapshots/newStoreUtils';
-import { SnapshotActions, SnapshotOperation } from '@/app/snapshots/SnapshotActions';
+import { SnapshotOperation } from '@/app/snapshots/SnapshotActions';
 import { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotData, SnapshotBaseMethods } from '@/app/snapshots/SnapshotData';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
-import { createSnapshotStore, delegate, notifySubscribers, onSnapshots, subscribeToSnapshot, subscribeToSnapshots } from '@/app/snapshots/snapshotHandlers';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { createSnapshotStore, delegate, notifySubscribers, subscribeToSnapshot, subscribeToSnapshots } from '@/app/snapshots/snapshotHandlers';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
-import { getSnapshotItems, SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotOperations, getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { InitializedData, InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteriaContract, TagsRecord, data } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { Callback } from './subscribeToSnapshotsImplementation';
 import { SnapshotStoreProps, useSnapshotStore } from './useSnapshotStore';
 
 
-import { LifecycleMethods } from './methods/lifecycleMethods';
-import { SnapshotEvent } from '@/typings/eventTypes';
-import { snapshot, SnapshotWithCriteria } from '.';
-import { ConvertSnapshotWithCriteria  } from '@/app/snapshots/ConvertSnapshotUnion';
-import { options } from '@/app/documents/editing/DocumentBuilder';
+import { searchAPI } from "@/app/api/ApiSearch";
+import { ChatRoom } from "@/app/communications/ChatRoom";
+import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { SearchResult } from "@/app/components/routing/SearchResult";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { SnapshotSubscriptionMethods } from '@/app/snapshots/SnapshotMethods';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { notify } from '@/app/utils/snapshotUtils';
+import { Sender } from "@/appation";
+import { SnapshotEvent } from '@/typings/eventTypes';
+import { SnapshotWithCriteria } from '.';
 import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from './methods/advancedTransform';
 import { BatchMethods } from './methods/batchMethods';
 import * as DataMethods from './methods/dataMethods';
 import * as FetchMethods from './methods/fetchMethods';
+import { LifecycleMethods } from './methods/lifecycleMethods';
+import { MapMethods } from "./methods/mappingMethods";
 import * as SnapshotMethods from './methods/snapshotMethods';
 import { SubscriptionMethods } from './methods/subscriptionMethods';
 import * as TransformMethods from './methods/transformMethods';
 import { SnapshotStoreConfigWithCore } from './methods/transformMethods';
 import * as VersionMethods from './methods/versionMethods';
-import { SnapshotSubscriptionMethods } from '@/app/snapshots/SnapshotMethods';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotContext } from "./SnapshotSubscriberManagement";
-import { store } from '@/app/state/stores/useAppDispatch';
 import { SnapshotDataParams } from "./SnapshotDataParams";
 import { SnapshotSecurity } from "./SnapshotSecurity";
-import { ChatRoom } from "@/app/communications/ChatRoom"
-import { Sender } from "@/appation";
-import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { MapMethods } from "./methods/mappingMethods";
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
-import { searchAPI } from "@/app/api/ApiSearch";
-import { SearchResult } from "@/app/components/routing/SearchResult"
+import { SnapshotContext } from "./SnapshotSubscriberManagement";
 
 interface UnsubscribeEvent extends UnsubscribeDetails {
   id: string;

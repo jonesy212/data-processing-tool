@@ -1,17 +1,26 @@
 // createMessage.ts
-import { ChatRoom } from "@/app/calendar/CalendarSlice";
-import { Sender } from "@/app/communications/chat/Communication";
-import { Content } from '@/app/components/models/content/AddContent';
+import { ChatRoom } from "@/app/state/redux/slices/CalendarSlice";
+import { Sender } from "@/app/communications/chat/CommunicationPage";
+import { Content } from '@/app/models/content/AddContent';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { UserPreferences } from "@/config/UserPreferences";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
-type MessageProps = {
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
+
+
+type MessageProps<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> = {
   type: NotificationType; 
   content: string | Content<T, K> | undefined;  // Align content type
-  additionalData?: CustomSnapshotData<T, K, Meta<T, K>>,
+  additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   sender: Sender; 
   channel: ChatRoom; 
 }

@@ -81,18 +81,15 @@ import { logsConfig } from '@/config/endpoints/logsConfig';
 import { realtimeConfig } from '@/config/endpoints/realtimeConfig';
 import { batchConfig } from '@/config/endpoints/batchConfig';
 import { analyticsConfig } from '@/config/endpoints/analyticsConfig';
-
 import { createMergedEndpoints } from '@/app/utils/endpointMerger';
-import mergeConfigurations from '@/app/utils/mergeConfigurations';
 import  createApiConfig from './ApiConfig';
-import { EndpointConfig, EndpointConfigurations } from '@/config/EndpointConfig';
+import { EndpointConfigurations } from '@/config/EndpointConfig';
 
 // Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {
   analytics: analyticsConfig,
   apiConfig: apiEndpointConfig,
   apiWebBase: apiWebBaseConfig,
-  dataAnalysis: dataAnalysisConfig,
   auth: authConfig,
   batch: batchConfig,
   blogs: blogsConfig,
@@ -107,6 +104,7 @@ export const endpointConfigurations: EndpointConfigurations = {
   crypto: cryptoConfig,
   data: dataConfig,
   database: databaseConfig,
+  dataAnalysis: dataAnalysisConfig,
   dataProviders: dataProvidersConfig,
   delegates: delegatesConfig,
   details: detailsConfig,
@@ -172,7 +170,6 @@ export const endpointConfigurations: EndpointConfigurations = {
 
 };
 
-// Export types
 
 // Export individual configurations for selective imports
 export {

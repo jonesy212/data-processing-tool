@@ -2,6 +2,9 @@ declare function require(path: string): any;
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Presentation } from '@/app/components/documents/Presentation';
 
+
+declare module '*.css';
+
 interface MyPropertiesOptions extends DocumentOptions {
   sections: any; // Add all required properties
   title?: string;

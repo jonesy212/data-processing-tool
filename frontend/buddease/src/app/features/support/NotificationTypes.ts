@@ -46,8 +46,7 @@ export const ChatNotificationTypes = {
   CHAT_MESSAGE_ID: 'ChatMessageID',
   CHAT_THREAD_ID: 'ChatThreadID',
   DIRECT_MESSAGE: 'DirectMessage',
-  
-  
+  MESSAGE_ID: 'Message'
 } as const;
 
 // Operations & System Actions

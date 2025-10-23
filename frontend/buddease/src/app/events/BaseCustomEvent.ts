@@ -1,7 +1,6 @@
 // CustomEvent.ts
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 const ClipboardData = {
@@ -42,14 +41,7 @@ export interface BaseCustomEvent
 }
 
 
-export interface ExtendedCalendarEvent<
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
+export interface ExtendedCalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -71,7 +63,10 @@ export interface ExtendedCalendarEvent<
   clipboardData: React.ClipboardEvent<HTMLDivElement>;
 }
 
-interface CustomEventExtension extends CustomEvent, SharedSnapshotEvent<T, K> {
+interface CustomEventExtension<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T
+> extends CustomEvent, SharedSnapshotEvent<T, K> {
   id: string;
   title: string;
   dispatchEvent?(event: Event): boolean;

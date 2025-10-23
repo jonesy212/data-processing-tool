@@ -48,7 +48,6 @@ type CommentType = 'Blog' | 'Chat' | 'Forum';
 
 // Main Comment interface extending BaseData
 interface Comment<
-
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

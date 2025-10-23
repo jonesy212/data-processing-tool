@@ -1,11 +1,11 @@
 // DashboardFramework.tsx
 import { AdminDashboard, AdminDashboardProps } from "@/app/admin/AdminDashboard";
-import { processAutoGPTOutputWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
 import {
   AppTree,
   generateInitialAppTree,
 } from "@/app/generators/generateAppTree";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
+import { processAutoGPTOutputWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import ChatDashboard from "@/app/pages/dashboards/ChatDashboard";
 import DataDashboard from "@/app/pages/dashboards/DataDashboard";

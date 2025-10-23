@@ -8,7 +8,7 @@ import { userId } from "@/api/ApiUser";
 import apiNotificationsService from '@/app/api/NotificationsService';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -743,8 +743,8 @@ const updateSubscribersAndSnapshots = async <
           }, {});
 
 
-          // Flatten the record to an array of SnapshotUnion<Data, Meta>
-          const updatedSnapshots: SnapshotUnion<Data, Meta>[] = Object.values(categorizedSnapshots).flat();
+          // Flatten the record to an array of SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          const updatedSnapshots: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = Object.values(categorizedSnapshots).flat();
 
           // Create a new Subscriber object with updated data
           const id = snapshotApi.fetchSnapshotById(snapshotId).toString();
@@ -1231,14 +1231,14 @@ const updateSubscribersAndSnapshots = async <
           }
         },
  
-        fetchSnapshotById: async (userId: string, snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
+        fetchSnapshotById: async (userId: string, snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
           try {
             // Example logic for fetching a snapshot by ID (could involve an API call or DB lookup)
             const snapshot = await fetch(`/api/snapshots/${snapshotId}`)
               .then((response) => response.json())
               .then((data) => {
                 // Assuming the data is of type Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-                return data as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+                return data as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
               });
 
             return snapshot;
@@ -1248,14 +1248,14 @@ const updateSubscribersAndSnapshots = async <
           }
         },
 
-        isSnapshotOfType: async (): Promise<SnapshotConfig<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>, never>[]> => {
+        isSnapshotOfType: async (): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
           try {
             // Example logic to check if snapshot is of a specific type
             const snapshots = await fetch('/api/snapshots')
               .then((response) => response.json())
               .then((data) => {
                 // Assuming the data is an array of snapshot configs
-                return data as SnapshotConfig<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>, never>[];
+                return data as SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
               });
 
             // Returning the filtered snapshot configs based on some internal checks
@@ -1269,13 +1269,13 @@ const updateSubscribersAndSnapshots = async <
           }
         },
 
-        snapshots: async (): Promise<SnapshotConfig<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>, never>[]> => {
+        snapshots: async (): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
           try {
             // Example logic to fetch all snapshots
             const snapshotConfigs = await fetch('/api/snapshots/configs')
               .then((response) => response.json())
               .then((data) => {
-                return data as SnapshotConfig<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>, never>[];
+                return data as SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
               });
 
             return snapshotConfigs;

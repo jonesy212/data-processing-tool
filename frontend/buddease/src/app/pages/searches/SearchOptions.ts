@@ -1,5 +1,5 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { DashboardPreferenceEnum } from "@/app/components/dashboards/DashboardSettings";
+import { DashboardPreferenceEnum } from "@/app/dashboards/DashboardSettings";
 import { FileTypeEnum } from "@/app/documents/FileType";
 import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
@@ -7,6 +7,128 @@ import { CalendarSettingsEnum } from "@/app/settings/CalendarSettingsEnum";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { PrivacySettingEnum } from "@/app/models/data/StatusType";
 import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+
+// Base common options
+interface BaseSearchOptions {
+  communicationMode?: string;
+  size?: string;
+  animations?: {
+    type: string;
+    duration: number;
+  };
+  additionalOptions?: {
+    filters: any[];
+  };
+  additionalOption2?: any;
+  defaultFileType?: FileTypeEnum;
+  realTimeUpdates?: boolean;
+  theme?: string;
+  language?: LanguageEnum;
+  notificationPreferences?: NotificationPreferenceEnum;
+  privacySettings?: any[];
+  taskManagement?: boolean;
+  projectView?: string;
+  calendarSettings?: any;
+  dashboardPreferences?: any;
+  securityFeatures?: any[];
+  newsOptions?: {
+    newsCategory: string;
+    newsLanguage: string;
+    sortBy: SortCriteria;
+    searchKeywords: string[];
+    excludeKeywords: string[];
+  };
+}
+
+// Team-level search (minimal defaults, no pagination/sorting)
+interface TeamSearchOptions extends BaseSearchOptions {
+  mode: "team";
+  additionalOptions: {
+    filters: any[];
+  };
+}
+
+// UI-level search (with pagination and sorting)
+interface UiSearchOptions extends BaseSearchOptions {
+  mode: "ui";
+  additionalOptions: {
+    filters: any[];
+    sorting: {
+      field: string;
+      order: "asc" | "desc";
+    };
+    pagination: {
+      currentPage: number;
+      pageSize: number;
+      totalItems: number;
+      totalPages: number;
+    };
+  };
+}
+
+// Advanced / Custom search (optional, for more complex scenarios)
+interface AdvancedSearchOptions extends BaseSearchOptions {
+  mode: "advanced";
+  additionalOptions: {
+    filters: any[];
+    sorting?: {
+      field: string;
+      order: "asc" | "desc";
+    };
+    pagination?: {
+      currentPage: number;
+      pageSize: number;
+      totalItems: number;
+      totalPages: number;
+    };
+    customOptions?: Record<string, any>;
+  };
+}
+
+// Union type
+type SearchOptions = TeamSearchOptions | UiSearchOptions | AdvancedSearchOptions;
+
+// Example usage
+const teamOptions: TeamSearchOptions = {
+  mode: "team",
+  communicationMode: "email",
+  size: "medium",
+  additionalOptions: { filters: [] },
+  defaultFileType: FileTypeEnum.Document,
+  realTimeUpdates: false,
+  language: LanguageEnum.English,
+  notificationPreferences: NotificationPreferenceEnum.Email,
+  newsOptions: {
+    newsCategory: "",
+    newsLanguage: "",
+    sortBy: SortCriteria.Date,
+    searchKeywords: [],
+    excludeKeywords: [],
+  },
+};
+
+const uiOptions: UiSearchOptions = {
+  mode: "ui",
+  size: "medium",
+  additionalOptions: {
+    filters: [],
+    sorting: { field: "title", order: "asc" },
+    pagination: { currentPage: 1, pageSize: 10, totalItems: 0, totalPages: 0 },
+  },
+  communicationMode: "email",
+  defaultFileType: FileTypeEnum.UnknownType,
+  realTimeUpdates: false,
+  language: LanguageEnum.English,
+  notificationPreferences: NotificationPreferenceEnum.Email,
+  newsOptions: {
+    newsCategory: "",
+    newsLanguage: "",
+    sortBy: SortCriteria.Newest,
+    searchKeywords: [],
+    excludeKeywords: [],
+  },
+};
+
 
 interface NewsOptions {
   newsCategory: string; // Example: 'technology', 'business', etc.
@@ -98,6 +220,72 @@ interface CustomFilter {
     totalPages: number;
   }
     
+
+  const options: SearchOptions = {
+  communicationMode: "email", // Example communication mode
+  size: "medium",
+  animations: {
+    type: "slide",
+    duration: 300,
+  },
+  additionalOptions: {
+    filters: [],
+  },
+  additionalOption2: undefined,
+  defaultFileType: FileTypeEnum.Document,
+  realTimeUpdates: false,
+  theme: "",
+  language: LanguageEnum.English,
+  notificationPreferences: NotificationPreferenceEnum.Email,
+  privacySettings: [],
+  taskManagement: false,
+  projectView: "",
+  calendarSettings: undefined,
+  dashboardPreferences: undefined,
+  securityFeatures: [],
+  newsOptions: {
+    newsCategory: "",
+    newsLanguage: "",
+    sortBy: SortCriteria.Date,
+    searchKeywords: [],
+    excludeKeywords: [],
+    // show: false,
+    // showTime: false,
+    // showDate: false,
+    // showProject: false,
+    // showTeam: false,
+    // showUser: false,
+    // showIdea: false,
+    // showTask: false,
+    // showData: false,
+    // showVideo: false,
+    // showSnapshot: false,
+    // showProgress: false,
+    // showTeamMember: false,
+    // showIdeaMember: false,
+    // showTaskMember: false,
+    // showDataMember: false,
+    // showVideoMember: false,
+    // showSnapshotMember: false,
+    // showProgressMember: false,
+    // showTeamMemberTask: false,
+    // showIdeaMemberTask: false,
+    // showTaskMemberTask: false,
+    // showDataMemberTask: false,
+    // showVideoMemberTask: false,
+    // showSnapshotMemberTask: false,
+    // showProgressMemberTask: false,
+    // showTeamMemberData: false,
+    // showIdeaMemberData: false,
+    // showTaskMemberData: false,
+    // showDataMemberData: false,
+    // showVideoMemberData: false,
+    // showSnapshotMemberData: false,
+  },
+};
+
+
+
 
   
   // Define searchOptions object

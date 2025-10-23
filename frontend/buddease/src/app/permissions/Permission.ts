@@ -70,9 +70,30 @@ interface TaskPermissions extends BasePermissions {
   canAssignTasks?: boolean;
 }
 
+
+// Member-specific Permissions
+interface MemberPermission extends Permission {
+  scope: 'member';
+  resourceType: 'profile' | 'data' | 'settings' | 'tasks';
+  memberId: string;
+  // Member-specific constraints
+  canEditOwnProfile?: boolean;
+  canViewOwnData?: boolean;
+  canManageOwnTasks?: boolean;
+}
+
+
+
 interface TeamPermissions extends BasePermissions {
   // Additional team-specific permissions
   canManageMembers?: boolean;
+  canManageTeam?: boolean;
+  canInviteMembers?: boolean;
+  canRemoveMembers?: boolean;
+  canCreateProjects?: boolean;
+  canDeleteProjects?: boolean;
+  canAssignTasks?: boolean;
+  canViewAnalytics?: boolean;
 }
 
 interface ProjectManagementPermissions extends BasePermissions {
@@ -196,5 +217,23 @@ const userBoardPermissions: BoardPermissions = {
 
 
 
-export type { BasePermissions, DocumentEditingPermissions, EncryptionSetting, Permission, PrivacyCompliance, UserPermissions };
+export type { BasePermissions, 
+  DocumentEditingPermissions, 
+  EncryptionSetting, Permission, 
+  PrivacyCompliance, UserPermissions, 
+  MemberPermission,
+  EncryptionSetting,
+  PrivacyCompliance,
+  DataPermissions,
+  BoardPermissions,
+  TaskPermissions,
+  MemberPermission,
+  TeamPermissions,
+  ProjectManagementPermissions,
+  CommunityPermissions,
+  ProjectsPermissions,
+  DeveloperPermissions,
+  BlockchainPermissions,
+  DocumentEditingPermissions
+ };
 

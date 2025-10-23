@@ -2,10 +2,12 @@
 import { Label } from "@/app/branding/BrandingSettings";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { ChatRoom } from "@/app/communications/ChatRoom";
-import { Sender } from "@/app/communications/Communication";
+import { Sender } from "@/app/communications/CommunicationPage";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
@@ -30,7 +32,7 @@ interface SnapshotItem<
   IncludedFields extends keyof T = keyof T
 > extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id: string;
+  id: string | number | undefined;
   message?: (
     type: NotificationType, 
     content: string, 
@@ -272,10 +274,10 @@ const createSnapshotItem = <
     data,              // baseData
     baseMeta,          // baseMeta
     snapshotId,        // snapshotId
-    category,          // category
     snapshotStore,     // snapshotStore
     snapshotManager,   // snapshotManager (pass this argument)
     snapshotStoreConfig, // snapshotStoreConfig (pass this argument)
+    category,          // category
     storeProps         // storeProps (optional)
   );
 
@@ -295,10 +297,10 @@ const createSnapshotItem = <
   const message = createMessage(
     type,
     content,
-    additionalData,
     Number(userId),
     sender,
     channel,
+    additionalData
  )
   
  

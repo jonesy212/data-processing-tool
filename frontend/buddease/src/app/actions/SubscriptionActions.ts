@@ -59,7 +59,7 @@ interface SubscriptionPayload<
   id: string;  // assuming id is a string
   content: string | object;  // assuming content can be a string or an object
   date: Date;  // assuming date is a Date object
-  subscribers: Array<Subscriber<T, K>>;  // assuming subscribers is an array of Subscriber objects
+  subscribers: Array<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;  // assuming subscribers is an array of Subscriber objects
   subscription: {
     active: boolean;
     plan: string;
@@ -110,8 +110,7 @@ interface SubscriptionPayload<
       unsubscribeReason: string; 
       unsubscribeData: any;
     },
-    callback: Callback<Snapshot<SnapshotContainerData<T, K, ExcludedFields>,
-    SnapshotContainerData<T, K, ExcludedFields>>> | null
+    callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null
   ) => void;  // function to handle unsubscribe action
   toSnapshotStore: (snapshot: T) => void;  // function to handle snapshot storage
   getId: () => string;  // function to get the ID
@@ -123,7 +122,7 @@ interface SubscriptionPayload<
   onUnsubscribe: () => void;  // callback when unsubscribed
   onSnapshot: (snapshot: T) => void;  // callback when a snapshot is received
   triggerOnSnapshot: (snapshot: T) => void;  // function to trigger snapshot actions
-  subscriber: Subscriber<T, K> | undefined;  // specific Subscriber type, can be undefined
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;  // specific Subscriber type, can be undefined
   message?: string;  // optional message property
   subscriberId: string;  // subscriber ID
   type?: "info" | "success" | "error" | "warning";  // type for message categorization

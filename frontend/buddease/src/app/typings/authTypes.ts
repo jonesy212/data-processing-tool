@@ -1,17 +1,19 @@
 // authTypes.ts
 // types/auth.ts (shared between frontend and backend)
-
+import { Permission } from '@/app/permissions/Permission';
 
 export interface LoginResult {
   success: boolean;
-  accessToken?: string;
+  accessToken: string;
   user?: any;
   roles?: string[];
-  permissions?: string[];
+  permissions?: Permission[] | string[];
   error?: string;
   code?: string;
   dashboardConfig?: DashboardConfig;
 }
+
+
 
 export interface DashboardConfig {
   title: string;

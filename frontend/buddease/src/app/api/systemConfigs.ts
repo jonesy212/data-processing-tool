@@ -13,7 +13,30 @@ import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
 
 
+
+export interface SystemConfigs {
+  apiUrl: string;
+  maxConnections: number;
+  retryConfig: {
+    enabled: boolean;
+    maxRetries: number;
+    retryDelay: number;
+  };
+  aquaConfig: AquaConfig;
+  storeConfig: ShoppingCenterConfig;
+  dataVersions: DataVersions<any, any, any, any, any, any>;
+  frontendStructure: FrontendStructure<any, any, any, any, any, any>;
+  frontendDocumentConfig: FrontendConfig;
+  backendStructure: BackendStructure;
+  backendDocumentConfig: BackendConfig;
+  lazyLoadScriptConfig: LazyLoadScriptConfig;
+}
+
+
 type ConfigFrontendStructure = FrontendStructure<any, any, any, any, any, any>;
+
+
+
 
 export const createSystemConfigs = <
   T extends BaseDataEntity,
@@ -43,7 +66,7 @@ export const createSystemConfigs = <
   // Add more configurations as needed
   aquaConfig: {} as AquaConfig,
   storeConfig: {} as ShoppingCenterConfig,
-  dataVersions: {} as DataVersions,
+  dataVersions: {} as DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   frontendStructure: {} as ConfigFrontendStructure,
   frontendDocumentConfig: {} as FrontendConfig,
   backendStructure: {} as BackendStructure,

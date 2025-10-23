@@ -615,7 +615,7 @@ export const fetchAnalysisResults = <
 };
 
 // Function to check if an object conforms to DataAnalysisResult interface
-const isDataAnalysisResult = (obj: any): obj is DataAnalysisResult<T> => {
+const isDataAnalysisResult = (obj: any): obj is DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return (
     typeof obj === "object" &&
     typeof obj.id === "number" &&

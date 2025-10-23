@@ -76,6 +76,7 @@ import { VersionEndpoints } from '@/app/typings/categories/VersionEndpoints';
 import { VideosEndpoints } from '@/app/typings/categories/VideosEndpoints';
 import { WebEndpoints } from '@/app/typings/categories/WebEndpoints';
 import { ParameterConfig } from '@/config/ParameterConfig';
+
 export interface EndpointConfig {
   path: string;
   method: "GET" | "POST" | "PUT" | "DELETE";

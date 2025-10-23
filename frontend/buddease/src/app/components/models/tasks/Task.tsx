@@ -1,28 +1,16 @@
 // Task.ts
-import { PhaseData, PhaseMeta } from '@/app/models/phases/Phase';
-import { Permission } from '@/app/permissions/Permission';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { BaseData } from '@/app/models/data/Data';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import CommonDetails, { SupportedData } from '@/app/models/CommonData';
-import { PriorityTypeEnum, TaskStatus } from '@/app/models/data/StatusType';
-import { Phase } from '@/app/models/phases/Phase';
-import { Snapshot } from '@/app/snapshots';
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { AllTypes } from '@/app/typings/PropTypes';
-import { Idea } from '@/app/users/Ideas';
-import { VideoData } from '@/app/video/Video';
-import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
+import { BaseData } from '@/app/models/data/Data';
+import { Task } from '@/app/models/tasks/Task';
+import { Permission } from '@/app/permissions/Permission';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
+export type TaskData = BaseData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
  
-
 export interface TaskEntityExtended extends TaskEntity {
-  permissions: Permission[];
+  permissions?: Permission[] | string[];
   ownerId: string;
 }
 

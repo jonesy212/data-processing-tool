@@ -1,11 +1,15 @@
 // eventTypes.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { EventData } from "@/app/state/stores/AssignEventStore";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotEventBase, BaseEventCallbacks, SharedProperties, RecordManagement, EventManagement, SnapshotEventHandlers } from "@/app/snapshots/SnapshotEvents";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { DefaultMeta } from '@/config/BaseConfig';
+import { DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { ExtractContextArgs } from '@/app/snapshots/SnapshotEvents'
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 
 // Simplified generic structure to match your function signature
 export interface SnapshotEvent<
@@ -55,7 +59,9 @@ export interface EventContext<
   operation?: string;
 }
 
-interface SnapshotEvents<
+
+// Create a comprehensive merged interface
+interface MergedSnapshotBase<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -63,17 +69,28 @@ interface SnapshotEvents<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SnapshotEventBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Optional
+}
+
+export interface SnapshotEvents<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends MergedSnapshotBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     BaseEventCallbacks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     EventManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SnapshotEventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     RecordManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   // Additional event-specific properties
   eventType?: string;
   eventName?: string;
-  eventData?: any;
+  eventData?: EventData;
   eventTimestamp?: Date;
   eventSource?: string;
 
@@ -118,9 +135,6 @@ interface SnapshotEvents<
 }
 
 
-
-
-
 export interface ErrorEvent {
   type: string;
   error: Error;
@@ -144,13 +158,6 @@ export interface SubscriptionEvent<
 
 export type EventHandler<T = any> = (event: T) => void | Promise<void>;
 export type EventFilter<T = any> = (event: T) => boolean;
-
-export interface EventListener<T = any> {
-  id: string;
-  handler: EventHandler<T>;
-  filter?: EventFilter<T>;
-  once?: boolean;
-}
 
 export interface EventEmitterConfig {
   maxListeners?: number;

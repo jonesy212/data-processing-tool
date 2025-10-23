@@ -1285,7 +1285,13 @@ class Subscriber<
   }
 
   // Static method to transform Subscriber
-  static transformSubscriber <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  static transformSubscriber <  T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Subscriber<BaseData, BaseData> {
     const transformedSub = new Subscriber<BaseData, BaseData>(
@@ -1372,8 +1378,7 @@ class Subscriber<
     transformedSub.getData = sub.getData;
     transformedSub.getInitialData = sub.getInitialData;
     transformedSub.getNewData = sub.getNewData;
-    transformedSub.getDefaultSubscribeToSnapshots =
-      sub.getDefaultSubscribeToSnapshots;
+    transformedSub.getDefaultSubscribeToSnapshots = sub.getDefaultSubscribeToSnapshots;
     transformedSub.getSubscribeToSnapshots = sub.getSubscribeToSnapshots;
     transformedSub.fetchTransformSubscribers = sub.fetchTransformSubscribers;
     transformedSub.getTransformSubscribers = sub.getTransformSubscribers;
@@ -2111,7 +2116,13 @@ class Subscriber<
   }
   
 
-  static createSubscriber<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  static createSubscriber<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
     id: string,
     name: string,
     subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -2172,7 +2183,7 @@ export const payload: Payload = {
     id: "1",
     name: "Subscriber Name",
     timestamp: new Date(),
-    type: NotificationType.DataLoading,
+    type: NotificationTypeEnum.DataLoading,
     startDate: new Date(),
     endDate: new Date(),
     status: NotificationStatus.ERROR,

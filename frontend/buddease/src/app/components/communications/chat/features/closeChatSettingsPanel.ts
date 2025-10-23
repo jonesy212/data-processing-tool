@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import ChatSettings from "@/app/ChatSettingsPanel";
-
+import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
 
 const settingsPanel = useRef<ChatSettings | null>(null);
 // Function to close the chat settings panel

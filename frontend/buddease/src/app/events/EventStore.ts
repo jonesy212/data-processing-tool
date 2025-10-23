@@ -1,30 +1,29 @@
 // EventStore.ts
 import { UnsubscribeDetails } from '@/DynamicEventHandlerExample';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { EventRecord, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import {   SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { storeProps, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { fetchAndCreateSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';

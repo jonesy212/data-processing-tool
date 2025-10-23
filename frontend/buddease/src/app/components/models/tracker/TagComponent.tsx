@@ -1,6 +1,6 @@
 import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { TagsRecord } from '@/app/snapshots';
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/config/BaseConfig';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { SpecificMetadata } from '@/config/StructuredMetadata';

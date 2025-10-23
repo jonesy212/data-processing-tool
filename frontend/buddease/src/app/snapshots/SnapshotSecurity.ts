@@ -4,7 +4,7 @@ import { AuditRecord } from "@/app/ysis/frontend/buddease/src/app/users/Subscrib
 import {
   SecurityMeasure,
   SecurityMeasureHeader, SecurityMeasureLogger, SecurityMeasureType, SecurityMeasureUnion, SecurityReport, SecurityScanResult
-} from '@/SecurityMeasureTypes';
+} from '@/app/snapshots/SecurityMeasureTypes';
  
 // SnapshotSecurity.ts
 interface SnapshotSecurity {

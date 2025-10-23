@@ -18,8 +18,13 @@ import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
+import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity'
 
-export type DataAndEventDetails = Data<any, any, any> | CommonEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+export type DataAndEventDetails =
+  | Data<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
+  | CommonEvent<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields>;
+
 
 interface SharedDetails<
   T extends BaseDataEntity,
@@ -32,7 +37,7 @@ interface SharedDetails<
           SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   participants: Participant[];
   uploadedAt: Date;
-  phase: Phase<any, any>;
+  phase: Phase<any, any, any, any, any, any>;
   phaseName: string;
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[];

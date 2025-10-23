@@ -5,7 +5,7 @@ import { Persona } from "@/app/pages/personas/Persona";
 import { UserProfile } from "@/app/snapshots/userSnapshotData";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { createAction } from "@reduxjs/toolkit";
-import { User, UserData } from "./User";
+import { User, UserData } from "@/app/users/User";
 
 export const UserActions = {
   

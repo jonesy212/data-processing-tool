@@ -9,7 +9,7 @@ function convertToSubscriberCollection<T, K>(callbacks: SubscriberCallback<T, K>
       // Here you would define how callback should be transformed into a SubscriberCollection item
       // For example, if `callback` has metadata or an ID you can use as a key:
       const key = "someUniqueKey"; // Replace with actual logic to generate a key based on callback
-      collection[key] = [callback as unknown as Subscriber<T, K>]; // Type casting example
+      collection[key] = [callback as unknown as Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]; // Type casting example
       return collection;
     });
   }

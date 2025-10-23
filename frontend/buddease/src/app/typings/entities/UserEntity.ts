@@ -1,6 +1,7 @@
 // UserEntity.ts
 import { UserProfile } from '@/app/api/ApiUser';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Permission } from '@/app/permissions/Permission';
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -34,7 +35,15 @@ interface UserEntity extends BaseDataEntity {
 // User-specific type parameters
 type AppUserEntity = UserEntity;
 type UserK = UserEntity;
-type UserMeta = DefaultMeta<AppUserEntity, UserK>;
+type UserMeta = DefaultMeta<UserEntity, UserK> & {
+  // Add only the specific StructuredMetadata properties you need
+  description?: string;
+  fileType?: string;
+  keywords: string[];
+  permissions?: Permission[] | string[];
+  customFields?: Record<string, any>;
+  // Omit the problematic recursive properties
+};
 type UserAttachment = Attachment;
 type UserExcludedFields = DefaultExcludedFields<AppUserEntity> | "password" | "secret";
 type UserIncludedFields = keyof AppUserEntity;
@@ -76,9 +85,7 @@ type AppUserData = UserData<
   UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
 >;
 
-type AppUserProfile = UserProfile<
-  UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
->;
+type AppUserProfile = UserProfile;
 
 type AppUserSnapshot = Snapshot<
   UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
@@ -236,51 +243,25 @@ type UserStructuredMetadata = StructuredMetadata<
 
 // Export all the new types
 export type {
-  AdminUser, AdminUserData,
-  // Core App types
-  AppUser,
-  AppUserData,
-  AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
-  AppUserSnapshotData,
-  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata,
-  // Role-specific types
-  BasicUser,
-  PremiumUser, PrivateUserData,
-  // Data variations
-  PublicUserData, UserContext, UserExcludedFields,
-  // Utility types
-  UserFilterOptions, UserFrontendStructure, UserIncludedFields,
-  // User metadata types
-  UserMeta, UserParams,
-  // State types
-  UserSession, UserSnapshotsArray,
-  // Configuration types
-  UserSnapshotStoreConfig, UserSortOptions
+    AdminUser, AdminUserData,
+    // Core App types
+    AppUser,
+    AppUserData,
+    AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
+    AppUserSnapshotData,
+    AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, BasicUser,
+    PremiumUser, PrivateUserData,
+    // Data variations
+    PublicUserData, UserAttachment, UserContext,
+    // Role-specific types
+    UserDataDefault, UserEntity, UserExcludedFields,
+    // Utility types
+    UserFilterOptions, UserFrontendStructure, UserIncludedFields, UserK,
+    // User metadata types
+    UserMeta, UserParams,
+    // State types
+    UserSession, UserSnapshotDefault, UserSnapshotsArray,
+    // Configuration types
+    UserSnapshotStoreConfig, UserSortOptions
 };
-
-// Export the main interface
-  export type { UserDataDefault, UserEntity, UserSnapshotDefault };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

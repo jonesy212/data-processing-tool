@@ -4,7 +4,8 @@ import { BaseData } from '@/app/models/data/Data';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface DataWithVersion {
   version?: string;
@@ -32,9 +33,13 @@ function hasVersion<T extends Partial<DataWithVersion>>(data: T): data is T & Da
 
 
 const processSnapshotData = <
-  T extends BaseData<any>, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+
 >(
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   versionedData?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional versioned data

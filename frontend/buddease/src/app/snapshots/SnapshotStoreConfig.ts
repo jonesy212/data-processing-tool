@@ -241,14 +241,14 @@ export interface SnapshotStoreConfig<
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
+    category?: Category,
     callback: (createdStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void,
     snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] // Array of SnapshotStoreConfig objects
   ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
 
   taskIdToAssign?: string;
-  clearSnapshots?: any;
+  clearSnapshots?: (() => void) | (() => Promise<void>);
   key?: string;
   topic?: string;
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,> | undefined; // Match the type to the base interface

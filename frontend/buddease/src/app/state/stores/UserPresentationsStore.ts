@@ -1,10 +1,10 @@
 // UserPresentationsStore.ts
 
-import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
 import CalendarEventTimingOptimization, {
-    ExtendedCalendarEvent,
+  ExtendedCalendarEvent,
 } from "@/app/calendar/CalendarEventTimingOptimization";
+import { BaseCustomEvent } from "@/app/events/BaseCustomEvent";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
 import { NotificationType } from "@/context/NotificationContext";

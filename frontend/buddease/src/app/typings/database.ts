@@ -1,4 +1,6 @@
 // database.ts
+import { DatabaseConfig } from '@/config/DatabaseTypes'
+
 export interface IDatabaseService {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
@@ -9,4 +11,10 @@ export interface IDatabaseService {
   createDatabase(config: DatabaseConfig): Promise<void>;
 }
 
-export type DatabaseType = 'postgres' | 'mysql';
+// In your database types file, ensure it's defined like this:
+export enum DatabaseType {
+  POSTGRES = 'postgres',
+  MYSQL = 'mysql',
+  // MONGODB = 'mongodb'
+  // etc...
+}

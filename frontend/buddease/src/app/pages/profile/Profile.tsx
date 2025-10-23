@@ -12,18 +12,42 @@ type ActivityStatus =  "active" | "inactive" | "away" | "busy" | "offline";
 
 // Define the profile access control interface
 interface ProfileAccessControl {
-  friendsOnly: boolean;
-  allowTagging: boolean;
-  blockList: string[];
-  allowMessagesFromNonContacts: boolean,
-  shareProfileWithSearchEngines: boolean,
+  // Privacy Levels
   isPrivate: boolean;
   isPrivateOnly: boolean; 
   isPrivateOnlyForContacts: boolean; 
   isPrivateOnlyForGroups: boolean; 
+  friendsOnly: boolean;
+  
+  // Messaging Controls
+  allowMessagesFromNonContacts: boolean;
   allowMessagesFromFriendContacts: boolean;
-  activityStatus: ActivityStatus;
+  canSendMessages: boolean;
+  
+  // Visibility Controls
+  canViewProfile: boolean;
+  canSeeFriends: boolean;
+  canSeeActivity: boolean;
+  canSeeOnlineStatus: boolean;
+  canSeeLastSeen: boolean;
+  canSeeProfilePicture: boolean;
+  canSeePosts: boolean;
+  canSeeContactInfo: boolean;
+  canSeeMutualFriends: boolean;
+  
+  // Interaction Controls
+  allowTagging: boolean;
+  canCommentOnPosts: boolean;
+  canAddToGroups: boolean;
+  canShareProfile: boolean;
+  
+  // Security & Blocking
+  blockList: string[];
   isAuthorized: boolean;
+  shareProfileWithSearchEngines: boolean;
+  
+  // Status
+  activityStatus: ActivityStatus;
 }
 
 const Profile: React.FC<ProfileProps> = ({ user, props }) => {

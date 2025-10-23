@@ -8,7 +8,7 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
-import { TagsRecord } from '@/app/snapshots';
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';

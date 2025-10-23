@@ -7,7 +7,7 @@ import { SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample'
 import { ModifiedDate } from '@/app/documents/DocType';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';

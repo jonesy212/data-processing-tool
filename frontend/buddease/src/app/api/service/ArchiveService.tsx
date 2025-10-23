@@ -2,7 +2,7 @@ import { NotificationType } from '@/app/context/NotificationContext';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { notify } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StorageService } from '@/app/utils/storage/StoragService';
+import StorageService from '@/app/utils/storage/StoragService';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Archive types
@@ -68,12 +68,12 @@ class ArchiveService {
   }
 
   async archiveSnapshot<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     options?: {
@@ -97,10 +97,12 @@ class ArchiveService {
       const processedData = await this.processSnapshotData(snapshot, options);
 
       // 4. Create archive record
+
+      const originalId = snapshot.id ? snapshot.id.toString() : 'unknown-id';
       const archivedSnapshot: ArchivedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         metadata: {
           id: archiveId,
-          originalId: snapshot.id?.toString(),
+          originalId,
           archivedAt,
           archivedBy,
           compressionType: this.config.compressionEnabled ? this.config.compressionType : 'none',
@@ -113,15 +115,19 @@ class ArchiveService {
         },
         snapshot: processedData.data,
         versionInfo: {
-          major: snapshot.version.major,
-          minor: snapshot.version.minor,
-          patch: snapshot.version.patch,
-          versionNumber: snapshot.version.versionNumber
+          major: snapshot.version?.major ?? 0,
+          minor: snapshot.version?.minor ?? 0,
+          patch: snapshot.version?.patch ?? 0,
+          versionNumber: snapshot.version?.versionNumber ?? 1,
         }
       };
 
       // 5. Store the archived snapshot
       await this.storeArchivedSnapshot(archivedSnapshot);
+
+      if (!snapshot.id) {
+        throw new Error("Cannot update archive status — snapshot is missing an ID");
+      }
 
       // 6. Update snapshot metadata to mark as archived
       await this.updateSnapshotArchiveStatus(snapshot.id, archiveId);
@@ -134,9 +140,14 @@ class ArchiveService {
 
       return archivedSnapshot.metadata;
 
-    } catch (error) {
-      console.error('Failed to archive snapshot:', error);
+    } catch (error: unknown) {
+    // ✅ Fix 3: Properly handle `unknown` error
+    console.error('Failed to archive snapshot:', error);
+    if (error instanceof Error) {
       throw new Error(`Archive failed: ${error.message}`);
+    } else {
+      throw new Error('Archive failed: Unknown error occurred');
+      }
     }
   }
 

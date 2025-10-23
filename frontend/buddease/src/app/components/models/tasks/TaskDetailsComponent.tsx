@@ -1,6 +1,6 @@
 // TaskDetails.ts
 
-// using commong detais we genrate detais for components by mapping through the objects.
+// using commong detais we genrate details for components by mapping through the objects.
 const TaskDetails = <
   T extends BaseDataEntity,
   K extends T = T,

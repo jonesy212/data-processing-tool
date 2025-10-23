@@ -1,13 +1,13 @@
 // User.tsx
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';
-
-import { UserEntity } from '@/app/typings/entities/UserEntity'
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { UserProfileDetails } from '@/app/typings/userTypes';
 import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata
+    fetchUserAreaDimensions,
+    UnifiedMetadata
 } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
@@ -16,17 +16,14 @@ import { UserPreferences } from "@/config/UserPreferences";
 import { UserSettings } from "@/config/UserSettings";
 
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
-import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import {
-  CustomTransaction,
-  SmartContractInteraction,
-} from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
 import CommonDetails from "@/app/models/CommonData";
+import { NFT } from "@/app/models/cypto/NFT";
 import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
 import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
@@ -34,9 +31,9 @@ import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator"
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
-import { NFT } from "@/app/models/cypto/NFT"
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
+import { Permission } from "@/app/permissions/Permission";
 import { Product } from "@/app/products/Product";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
@@ -44,20 +41,22 @@ import { SnapshotStoreConfig } from "@/app/snapshots/";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
+import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
-  DocumentTypeEnum
-} from "@/app/typings/documentTypes";
+    CustomTransaction,
+    SmartContractInteraction,
+} from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SharedVersionData } from "@/app/versions/VersionData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import React from "react";
-import { Permission } from "@/app/permissions/Permission";
-import { BlockchainAsset } from '@/typings/cryptoTypes/BlockchainAsset'
-import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
-import { SocialLinks } from "@/app/users/SocialLinks";
+
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from "@/app/models/UserRoles";
+import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
 import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
+import { SocialLinks } from "@/app/users/SocialLinks";
 
 export type UserDataEntity = BaseDataEntity;
 export type UserDataK = UserDataEntity;
@@ -71,9 +70,12 @@ export type AppUser = User<
 >;
 
 export interface BaseUser<
-  T extends UserData<any> = UserData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // Use T and K, not BaseDataEntity
     SharedTimestamps,
@@ -121,8 +123,8 @@ export const DataTypeEnums = {
 
 export interface User<
   T extends BaseDataEntity = UserEntity,
-  K extends T = UserK,
-  Meta extends DefaultMeta<T, K> = UserMeta,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = UserAttachment,
   ExcludedFields extends keyof T = UserExcludedFields,
   IncludedFields extends keyof T = UserIncludedFields
@@ -230,18 +232,25 @@ export interface User<
 
 
 
-interface ExtendedUser<T extends BaseData = BaseData> extends BaseUser {
+interface ExtendedUser<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseUser<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Workspace & Product Management
   workspaceUrl?: string;
   workspaces?: any[];
-  products?: Product[];
+  products?: Product<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   activeProduct?: string;
   activeWorkspace?: string;
   activeRole?: string;
   
   // Roles & Permissions
   roles?: UserRole[];
-  permissions?: Permission[];
+  permissions?: Permission[] | string[];
   activePermissions?: any[];
   activeWorkspacePermissions?: any[];
   activeProductPermissions?: any[];
@@ -280,8 +289,8 @@ const timeBasedCode: string = generateTimeBasedCode();
 
 export interface UserData<
   T extends BaseDataEntity = UserEntity,
-  K extends T = UserK,
-  Meta extends DefaultMeta<T, K> = UserMeta,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = UserAttachment,
   ExcludedFields extends keyof T = UserExcludedFields,
   IncludedFields extends keyof T = UserIncludedFields
@@ -329,7 +338,7 @@ export interface UserData<
   datasets?: string;
   storeId: number;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
+  snapshotConfiguration?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   realtimeUpdates?: RealtimeUpdates[];
   
   // Timestamps

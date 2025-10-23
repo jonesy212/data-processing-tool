@@ -5,8 +5,8 @@ import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Category } from "@/app/utils/SnapshotStorage";
-import { SnapshotStorage } from "@/app/libraries/categories/generateCategoryProperties";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
 import { ChildRelationship, SharedRelationshipData } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -50,7 +50,7 @@ interface SnapshotBaseProperties<
   storeId: number;
   timestamp: Date | string | number;
   snapshotIds?: string[];
-  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   auditTrail: AuditRecord[];
     // Snapshot-specific properties
   dataObject?: Record<string, unknown>;
@@ -164,7 +164,6 @@ interface SnapshotCoreBase<
   
   // Audit and tracking
   auditTrail?: AuditRecord[];
-  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   
   // Data and storage
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
@@ -414,6 +413,7 @@ interface HierarchyExport<
 }
 
 export type {
-  CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
+  CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships,
+  SnapshotCoreBase
 };
 

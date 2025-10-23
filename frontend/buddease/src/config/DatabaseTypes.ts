@@ -23,8 +23,8 @@ interface DatabaseService {
   updateData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
   deleteData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
   queryData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
-  findOne(params: { tableName: string; query: { id: string } }): Promise<any>;
-  update(data: any, whereClause: any): Promise<any>;
+  findOne(params: { tableName: string; query: Record<string, any> }): Promise<any>;
+  update(tableName: string, whereClause: any, data: any): Promise<any>;
   create(data: any): Promise<any>;
   insert(data: any, modelData: any): Promise<any>;
   disconnect(): void;

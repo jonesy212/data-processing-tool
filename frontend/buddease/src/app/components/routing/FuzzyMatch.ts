@@ -5,9 +5,9 @@ import AppTreeService from "@/app/services/AppTreeService";
 import { AppMetadata } from "@/config/MetaDataOptions";
 import { useAuth } from "@/context/AuthContext";
 
-import { processTextWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
+import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import fuzzysort from "fuzzysort";
 
 interface BaseEntity<

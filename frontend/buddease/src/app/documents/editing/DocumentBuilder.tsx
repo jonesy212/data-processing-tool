@@ -5,7 +5,6 @@ import {
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 
@@ -13,7 +12,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
-import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
+import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
 import {
@@ -49,7 +48,7 @@ import { useAppDispatch } from "@/app/state/stores/useAppDispatch";
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import Clipboard from "@/app/ts/clipboard";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { DocumentPath, DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentPath, DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { getMetadataFromPlainText } from "@/app/utils/metadataUtils";
 import AccessHistory, {
   convertAccessRecordToHistory,
@@ -121,7 +120,6 @@ type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 // ---------------------------
 
 // Main DocumentData interface
-
 interface DocumentData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -213,7 +211,10 @@ export interface CustomProjectPhaseType {
 
 const initialOptions: DocumentOptions = {
   previousMeta: {
-    metadataEntries, keywords, version, isActive,
+    metadataEntries: [],
+    keywords: [],
+    version: {},
+    isActive: true,
   },
   currentMeta: undefined,
   uniqueIdentifier: "",
@@ -439,7 +440,14 @@ const resetEditorContent = () => {
 };
 
 // Assuming you have some way to retrieve or maintain your metadata
-const getMetadataForContentState = (
+const getMetadataForContentState = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   contentState: CustomContentState
 ): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Replace this with your actual logic to extract or retrieve metadata based on contentState
@@ -564,8 +572,8 @@ const extractMetadata = async (
 const handleMetadataExtraction = async (
   contentState: ContentState,
   previousContentState: ContentState,
-  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>,
-  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>,
+  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
+  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
   contentId?: string 
 ) => {
 
@@ -604,7 +612,7 @@ const convertedAccessHistory = options.accessHistory.map(
 
 
 // Now you can use these values in DocumentBuilderProps
-const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   isDynamic: true,
   documents: [],
   projectPath: projectPath,

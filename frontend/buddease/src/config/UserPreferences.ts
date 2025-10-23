@@ -539,7 +539,7 @@ export type { CryptoPreferences, UserPreferences };
 
 // Sample usage
 // Tracking file changes
-const file: FileData = {
+const file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   name: "sample.txt",
   size: 1024,
   type: "text/plain",

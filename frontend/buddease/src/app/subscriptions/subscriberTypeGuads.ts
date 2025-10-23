@@ -39,7 +39,7 @@ function handleSubscription<
   snapshotId: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category?: Category,  snapshotConfig: SnapshotStoreConfig<T, K>,
-  callback: (snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K> | null,
+  callback: (snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void {
   if (isSnapshotSubscriberManagement(obj)) {
@@ -62,7 +62,7 @@ function handleSubscription<
       snapshotData,
       category,
       snapshotConfig,
-      callback as (snapshotStore: SnapshotStore<any, any>) => Subscriber<T, K> | null,
+      callback as (snapshotStore: SnapshotStore<any, any>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       snapshots
     );
   }

@@ -21,7 +21,7 @@ import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/Snapsh
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';

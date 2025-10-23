@@ -11,12 +11,12 @@ const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapsh
 function getSubscription<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   userId: string,
   snapshotId: string
-): { subscription: Subscription<T, K> | null; subscriber: Subscriber<T, K> | null } {
+): { subscription: Subscription<T, K> | null; subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null } {
   const eventName = getEventName(userId, snapshotId);
   const subscribers = subscriptionServiceInstance.subscribers<T, K>(userId, snapshotId);
 
   if (subscribers && Object.keys(subscribers).length > 0) {
-    const subscriber = Object.values(subscribers)[0] as Subscriber<T, K>;
+    const subscriber = Object.values(subscribers)[0] as Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
     // Create safe accessors for potentially undefined properties
     const subscription: Subscription<T, K> = {

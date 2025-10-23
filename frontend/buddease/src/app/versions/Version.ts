@@ -18,7 +18,7 @@ import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/Da
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
-import { sharedMetadata } from "@/config/metadata/MetadataHooks";
+import { sharedMetadata } from "@/config/metadata/MetadataStateManager";
 import { fetchUserAreaDimensions } from "@/config/MetaDataOptions";
 import { backendStructure } from '@/server/database/BackendStructure';
 

@@ -1,4 +1,4 @@
-import { ClipboardData, CustomEventExtensionConstructor } from "@/app/components/event/BaseCustomEvent";
+import { ClipboardData, CustomEventExtensionConstructor } from "@/app/events/BaseCustomEvent";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import { updateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";

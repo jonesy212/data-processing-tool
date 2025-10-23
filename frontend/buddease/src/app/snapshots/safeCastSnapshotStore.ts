@@ -16,9 +16,11 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 // A safe casting function to ensure type compatibility
 function safeCastSnapshotStore<
   T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T, 
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   context: {

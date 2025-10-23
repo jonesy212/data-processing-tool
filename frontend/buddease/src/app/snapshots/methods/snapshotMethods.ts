@@ -5,7 +5,7 @@ import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import SnapshotStore from "@/app/snapshotts/Snapshotstore";
+import SnapshotStore from "@/app/snapshots/Snapshotstore";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
@@ -17,7 +17,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -556,7 +556,7 @@ snapshot: async function<
     categoryProperties?: CategoryProperties,
     delegate?: any,
     snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined{};
   
   /**
    * Sets or updates the snapshot container
@@ -574,7 +574,7 @@ snapshot: async function<
   /**
    * Gets all snapshot containers
    */
-  getAllSnapshotContainers: function (): Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  getAllSnapshotContainers: function () => Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   
   /**
    * Finds snapshot containers by criteria

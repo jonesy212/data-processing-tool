@@ -10,6 +10,7 @@ import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { TaskData } from '@/app/models/tasks/Task';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
+import {ppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields} from '@/app/typings/entities/ContentEntity'
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { TaskMetadata } from '@/config/MetaDataOptions';
 import UserRoles from '@/app/models/UserRoles';
@@ -19,6 +20,13 @@ import ContentToolbar from '@/app/components/models/content/ContentToolbar';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
 import { BaseDataRoot, BaseConfig } from '@/config/BaseConfig';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria'
+import { AppContentEntity,
+ContentK,
+ContentMeta,
+ContentAttachment,
+ContentExcludedFields,
+ContentIncludedFields } from '@/app/typings/entities/ContentEntity'
 
 interface Content<
   T extends BaseDataEntity = BaseDataRoot,
@@ -75,6 +83,10 @@ const AddContent: React.FC<{
     // Create new content object
     const newContent: DefaultContent = {
       id: Math.floor(Math.random() * 1000),
+
+      apiEndpoint, apiKey, timeout, retryAttempts, 
+      
+
       title,
       description,
       subscriberId: '',
@@ -565,7 +577,7 @@ export default AddContent;
 export { taskContent };
 export type { Content, ContentProps };
 
-const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
+const taskContent: Content<AppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields> = {
   id: 'task-001',
   title: 'Develop Feature X',
   description: 'Implement the new feature as per the requirements.',
@@ -588,7 +600,7 @@ const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
     {
       id: 'update-002',
       title: 'Task Status Updated',
-      body: 'The status of the task has been changed to 'In Progress'.',
+      body: 'The status of the task has been changed to In Progress.'
       heading: 'Status Update',
       type: 'text',
       status: StatusType.InProgress,
@@ -609,7 +621,7 @@ const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
   data: null,
   contentItems: [],
   // relatedData: [],
-  phase: null,
+  phase: {} as Phase<AppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>,
   metadata: undefined,
   username: '',
   storeId: '',

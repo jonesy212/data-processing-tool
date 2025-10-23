@@ -17,11 +17,11 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // --- Core Snapshot type definitions ---
 
-type SnapshotEntity = BaseDataEntity 
-type SnapshotK = SnapshotEntity;
-type SnapshotMeta = DefaultMeta<SnapshotEntity, SnapshotK>;
-type SnapshotAttachment = Attachment;
-type SnapshotExcludedFields = DefaultExcludedFields<SnapshotEntity>;
+type SnapshotEntity, = BaseDataEntity 
+type SnapshotK, = SnapshotEntity;
+type SnapshotMeta, = DefaultMeta<SnapshotEntity, SnapshotK>;
+type SnapshotAttachment, = Attachment;
+type SnapshotExcludedFields, = DefaultExcludedFields<SnapshotEntity>;
 type SnapshotIncludedFields = keyof SnapshotEntity;
 
 // --- Main parameters container ---

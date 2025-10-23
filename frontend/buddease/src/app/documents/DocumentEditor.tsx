@@ -21,7 +21,7 @@ import AppVersionImpl, {
   selectAppVersion,
   selectDatabaseVersion,
 } from "@/app/versions/AppVersion";
-import VersionImpl from "@/app/versions/Version";
+import { VersionImpl } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { UserSettings } from "@/config/UserSettings";

@@ -4,7 +4,7 @@ import {
 import { ModifiedDate } from "@/app/documents/DocType";
 import { BaseData } from '@/app/models/data/Data';
 import { CustomSnapshotData, Snapshot, SnapshotContainerData } from "@/app/snapshots";
-import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { LiveEvent } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';

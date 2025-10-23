@@ -350,9 +350,10 @@ type PublicDocument = Pick<AppDocument, "id" | "title" | "content" | "author" | 
 type PrivateDocument = AppDocument; // Full document for authorized users
 type DocumentSummary = Pick<AppDocument, "id" | "title" | "author" | "lastModified" | "fileType" | "size">;
 
+const generateId = UniqueIDGenerator.generateTeamID()
 
 // Helper for creating document instances
-const createDefaultDocument = (options: Partial<DocumentFull> = {}): DocumentFull => ({
+const createDefaultDocument = (options: Partial<AppDocument> = {}): AppDocument => ({
   id: options.id || generateId(),
   title: options.title || '',
   content: options.content || '',
@@ -413,7 +414,7 @@ type DocumentPermissions = {
 type DocumentVersion = {
   id: string;
   version: string;
-  content: string;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   author: string;
   timestamp: Date;
   changes: string[];
@@ -475,50 +476,87 @@ const emptyDocumentData: AppDocumentData = createDefaultDocumentData();
 
 
 export type {
-  AISuggestion,
-  // Core App types
+  // ========== CORE DOCUMENT ENTITY TYPES ==========
+  DocumentEntity,
+  DocumentK, 
+  DocumentMeta,
+  DocumentAttachment,
+  DocumentExcludedFields,
+  DocumentIncludedFields,
+  
+  // ========== CORE APP TYPES ==========
   AppDocument,
-  AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
+  AppDocumentData,
+  AppDocumentSnapshot,
   AppDocumentSnapshotData,
-  AppDocumentSnapshotStore, AppDocumentStructuredMetadata, AppDocumentUnifiedMetadata, BackupSchedule,
-  // Batch operations
-  BatchDocumentOperation,
-  BatchOperationResult, DocumentAccessLog,
-  // AI/ML types
-  DocumentAIAnalysis,
-  // Analytics types
-  DocumentAnalytics,
-  // Backup types
-  DocumentBackup,
-  // Collaboration types
-  DocumentCollaborator,
-  DocumentComment,
+  AppDocumentSnapshotStore,
+  AppDocumentStructuredMetadata,
+  AppDocumentUnifiedMetadata,
+  AppDocumentRealtimeDataItem,
+  
+  // ========== DOCUMENT CONFIGURATION & PARAMS ==========
+  DocumentParams,
+  DocumentSnapshotStoreConfig,
+  DocumentSnapshotsArray,
+  DocumentFrontendStructure,
+  
+  // ========== DOCUMENT CONTENT & STYLING ==========
+  DocumentStyles,
   DocumentContext,
-  // Export types
-  DocumentExportOptions,
-  // Utility types
-  DocumentFilterOptions, DocumentFrontendStructure, DocumentIndex, DocumentParams, DocumentPermissions,
-  // Search and indexing
-  DocumentSearchResult,
-  // State types
-  DocumentSession,
-  // Sharing types
-  DocumentShareLink, DocumentSnapshotsArray,
-  // Configuration types
-  DocumentSnapshotStoreConfig, DocumentSortOptions,
-  // Styling types
-  DocumentStyles, DocumentSummary,
-  // Template types
-  DocumentTemplate, DocumentUsageStats,
-  // Validation types
-  DocumentValidationRule,
-  // Versioning types
+  DocumentSummary,
+  DocumentTemplate,
+  TemplateField,
+  
+  // ========== DOCUMENT VERSIONS & HISTORY ==========
   DocumentVersion,
   DocumentVersionHistory,
-  // Workflow types
-  DocumentWorkflow, ExportFormat, ExportResult, HeaderStyle, PrivateDocument,
-  // Document variations
-  PublicDocument, TemplateField, ValidationResult, WorkflowParticipant, WorkflowStep
+  DocumentBackup,
+  BackupSchedule,
+  
+  // ========== DOCUMENT PERMISSIONS & ACCESS ==========
+  DocumentPermissions,
+  DocumentAccessLog,
+  PrivateDocument,
+  PublicDocument,
+  DocumentShareLink,
+  
+  // ========== DOCUMENT COLLABORATION ==========
+  DocumentCollaborator,
+  DocumentComment,
+  DocumentSession,
+  
+  // ========== DOCUMENT WORKFLOW ==========
+  DocumentWorkflow,
+  WorkflowStep,
+  WorkflowParticipant,
+  
+  // ========== DOCUMENT SEARCH & FILTERING ==========
+  DocumentSearchResult,
+  DocumentFilterOptions,
+  DocumentSortOptions,
+  DocumentIndex,
+  
+  // ========== DOCUMENT EXPORT & FORMATTING ==========
+  DocumentExportOptions,
+  ExportFormat,
+  ExportResult,
+  HeaderStyle,
+  
+  // ========== DOCUMENT ANALYTICS & USAGE ==========
+  DocumentAnalytics,
+  DocumentUsageStats,
+  
+  // ========== DOCUMENT VALIDATION ==========
+  DocumentValidationRule,
+  ValidationResult,
+  
+  // ========== DOCUMENT AI/ML FEATURES ==========
+  AISuggestion,
+  DocumentAIAnalysis,
+  
+  // ========== BATCH OPERATIONS ==========
+  BatchDocumentOperation,
+  BatchOperationResult
 };
 
 

@@ -1,6 +1,6 @@
 // validationMethods.ts
 import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
 import { Snapshot } from "@/app/snapshot/Snapshot";
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';

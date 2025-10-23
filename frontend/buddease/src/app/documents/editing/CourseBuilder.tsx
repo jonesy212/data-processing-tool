@@ -130,7 +130,7 @@ class CourseBuilder {
         endDate: new Date(),
         subPhases: [],
         component: {} as React.FC, // Use React.FC as the type
-        hooks: {} as CustomPhaseHooks<T, K>,
+        hooks: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         duration: 0,
     }
     );

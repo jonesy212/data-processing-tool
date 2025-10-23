@@ -87,3 +87,4 @@ class ChangeLogManager<
 
 
 export { ChangeLogManager };
+export type { ChangeLogEntry }

@@ -1,11 +1,11 @@
 // EventSlice.ts
 
-import axiosInstance from '@/app/api/csrfToken'
-import { CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
-import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/state/redux/slices/RootSlice";
-import { fetchEvents } from "./SecurityEventSlice";
+import axiosInstance from '@/app/api/csrfToken';
+import { CustomEventExtension } from '@/app/events/BaseCustomEvent';
 import { AppThunk } from "@/configs/appThunk";
+import { RootState } from "@/state/redux/slices/RootSlice";
+import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
+import { fetchEvents } from "./SecurityEventSlice";
 
 // Define the initial state for the EventSlice
 interface EventState {
@@ -122,4 +122,4 @@ export const selectEventLoading = (state: RootState) => state.eventManager.loadi
 export const selectEventError = (state: RootState) => state.eventManager.error;
 // Export the reducer
 export default useEventManagerSlice.reducer;
-export type { EventState }
+export type { EventState };

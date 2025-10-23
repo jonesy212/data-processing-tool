@@ -12,19 +12,19 @@ import { Meta } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots';
 import {
-  Snapshots,
-  SnapshotsArray,
-  SnapshotStoreObject,
-  SnapshotUnion,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotStoreObject,
+    SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useNotification } from "@/context/NotificationContext";
 import { IHydrateResult } from "mobx-persist";
@@ -33,14 +33,28 @@ function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(config: any): config is SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+function isSnapshotConfig<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(config: any): config is SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
 // Type guard function to check if a snapshot is a SnapshotStoreObject<BaseData, any>
-const isSnapshotStoreCoreData = (
+const isSnapshotStoreCoreData = <  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: any
-): snapshot is SnapshotStoreObject<BaseData, any> => {
+): snapshot is SnapshotStoreObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Ensure snapshot is an object and has at least one key
   if (typeof snapshot === "object" && snapshot !== null) {
     const keys = Object.keys(snapshot);
@@ -58,9 +72,15 @@ const isSnapshotStoreCoreData = (
 };
 
 // Type guard function to check if a value is a SnapshotUnion<BaseData, Meta>
-const isSnapshotUnionBaseData = <T extends BaseDataEntity, K extends T = T>(
+const isSnapshotUnionBaseData = <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   value: any
-): value is SnapshotUnion<BaseData, Meta<T, K>> => {
+): value is SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
 };
 
@@ -77,9 +97,15 @@ const isSnapshotBaseData = (value: any): value is Snapshot<BaseData, any> => {
 
 
 // Implement the logic to verify SnapshotWithCriteriaBaseData
-const isSnapshotWithCriteriaBaseData = (
+const isSnapshotWithCriteriaBaseData = <  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   value: any
-): value is SnapshotWithCriteria<BaseData, BaseData> => {
+): value is SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Implement checks for properties that are specific to SnapshotWithCriteria<BaseData, BaseData>
   return (
     value &&
@@ -90,7 +116,14 @@ const isSnapshotWithCriteriaBaseData = (
 };
 
 // Example conversion function
-function convertToSnapshotArray<T extends BaseData, K extends T = T>(
+function convertToSnapshotArray<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Implement conversion logic here
@@ -100,10 +133,13 @@ function convertToSnapshotArray<T extends BaseData, K extends T = T>(
 function convertToSnapshotWithCriteria<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotStore?: SnapshotStore<T, K, Meta>
+  snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotWithCriteria<T, K> | null {
   const { id, snapshotData, category, description, categoryProperties } = snapshot;
 
@@ -112,7 +148,7 @@ function convertToSnapshotWithCriteria<
   }
 
   if (category) {
-    const criteriaSnapshot: SnapshotWithCriteria<T, K> = {
+    const criteriaSnapshot: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       ...snapshot,
       // Public methods from SnapshotStore
       get: snapshotStore?.get.bind(snapshotStore),
@@ -153,7 +189,9 @@ function convertToSnapshotWithCriteria<
       criteria: {
         categoryCriteria: category,
         description: description || null,
-        date: new Date()
+        date: new Date(),
+         filters: [], 
+         sort: sort
       },
 
       handleSnapshot: async (
@@ -343,7 +381,14 @@ function convertToSnapshotWithCriteria<
 }
 
 
-function isSnapshotOfType <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function isSnapshotOfType <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   typeCheck: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -361,7 +406,14 @@ function findCorrectSnapshotStore(
 
 
 // Type guard to check if data is SnapshotWithCriteria<T, BaseData>
-function isSnapshotWithCriteria <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function isSnapshotWithCriteria <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: any
 ): data is SnapshotWithCriteria<T, BaseData> {
   return (
@@ -804,12 +856,12 @@ export const snapshot = snapshotApi.getSnapshot(
 );
 
 export {
-  castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
-  isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
-  isSnapshotConfig, isSnapshotContainer, isSnapshotData,
-  isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
-  isSnapshotStoreCoreData, isSnapshotUnionBaseData,
-  isSnapshotWithCriteria, isSubscriberCallback
+    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
+    isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
+    isSnapshotConfig, isSnapshotContainer, isSnapshotData,
+    isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
+    isSnapshotStoreCoreData, isSnapshotUnionBaseData,
+    isSnapshotWithCriteria, isSubscriberCallback
 };
 
 export const snapshots = snapshotApi.getSnapshots(category)

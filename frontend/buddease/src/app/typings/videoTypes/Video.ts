@@ -1,11 +1,9 @@
-
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typiings/entities/VideoEntity'
 import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { 
-  BaseDataEntity, 
-  DefaultMeta, 
-  Attachment, 
-  DefaultExcludedFields } from "@/app/models/data/Data";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface VideoData<
   T extends BaseDataEntity,
@@ -87,7 +85,7 @@ interface VideoData<
 // Now the videos record:
 const videos: Record<
   string,
-  VideoEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  Video<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>[]
 > = {
   someCategory: [
     {
@@ -99,10 +97,10 @@ const videos: Record<
       tags: ['test', 'example'],
       isActive: true,
       url: 'http://example.com',
-      currentMeta: {} as Meta, // Fill with proper Meta if available
-      currentMetadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Proper metadata
+      currentMeta: {} as VideoMeta, // Fill with proper Meta if available
+      currentMetadata: {} as UnifiedMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>, // Proper metadata
       date: new Date(),
-      video: {} as T, // Provide the actual data entity here
+      video: {} as VideoEntity, // Provide the actual data entity here
       label: {
         text: "Test Label",
         color: "#FF0000"

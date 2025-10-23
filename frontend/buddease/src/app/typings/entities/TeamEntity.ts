@@ -1,5 +1,5 @@
 // TeamEntity.ts
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -11,9 +11,11 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-
+import { TeamPermissions } from '@/app/permissions/Permission'
+import { TeamSetttings } from '@/app/typings/TeamSettings'
+import SnapshotStore from '@/app/snapshots/SnapshotStore'
 // Define the actual TeamEntity interface
-export interface TeamEntity extends BaseDataEntity {
+interface TeamEntity extends BaseDataEntity {
   id: string;
   name: string;
   description?: string;
@@ -22,8 +24,12 @@ export interface TeamEntity extends BaseDataEntity {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  members: Member[]; // User IDs
+  createdDate: Date;
+  permissions: TeamPermissions;
   settings?: TeamSettings;
   avatar?: string;
+
   // Add other team-specific fields
 }
 
@@ -114,10 +120,13 @@ export type {
   TeamSnapshot,
   TeamSnapshotData,
   // Utility types
-  TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
+  TeamSnapshotFromParams, TeamSnapshotsArray, 
+  TeamSnapshotStore, TeamSnapshotStoreConfig, 
+  TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, 
+  TeamStructuredMetadata, TeamSubscriberCollection,
   // Metadata types
   TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces
-  export type { TeamEntity, TeamNotificationSettings, TeamPermissions, TeamSettings };
+  export type { TeamEntity, TeamNotificationSettings };

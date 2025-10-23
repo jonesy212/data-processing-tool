@@ -1,127 +1,315 @@
 // VersionEntity.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import {  Version, VersionImpl } from "@/app/versions/Version";
+import { Version, VersionImpl } from "@/app/versions/Version";
 import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
 import { HistoryEntry } from "@/app/state/stores/HistoryStore";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetaDataOptions, UnifiedMetadata } from '@/config/MetaDataOptions';
+import { UnifiedMetadata } from '@/config/MetaDataOptions';
 import { VersionData } from '@/app/versions/VersionData'
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
-/**
- * Core Version Entity representing the complete versioned structure
- * for frontend/backend synchronization, version metadata, and history tracking.
- */
-export class VersionEntity<
+// --- Core Version type definitions ---
+type VersionEntity, = BaseDataEntity;
+type VersionK, = VersionEntity;
+type VersionMeta, = DefaultMeta<VersionEntity, VersionK>;
+type VersionAttachment, = Attachment;
+type VersionExcludedFields, = DefaultExcludedFields<VersionEntity>;
+type VersionIncludedFields = keyof VersionEntity;
+
+// --- Main parameters container ---
+type VersionBaseParams = {
+  T: VersionEntity;
+  K: VersionK;
+  Meta: VersionMeta;
+  AttachmentType: VersionAttachment;
+  ExcludedFields: VersionExcludedFields;
+  IncludedFields: VersionIncludedFields;
+};
+
+// --- Unified & Structured Metadata ---
+type VersionUnifiedMetadata = UnifiedMetadata<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionStructuredMetadata = StructuredMetadata<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+// --- Version types ---
+type VersionEntityType = Version<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntityData = VersionData<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntityImpl = VersionImpl<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+// --- Frontend and backend structure types ---
+type VersionEntityFrontendStructure = FrontendStructure<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntityBackendStructure = IBackendStructure<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+// --- Snapshot compatibility types ---
+type VersionEntitySnapshot = Snapshot<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntitySnapshotData = SnapshotData<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntitySnapshotStore = SnapshotStore<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntitySnapshotStoreConfig = SnapshotStoreConfig<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntitySnapshotsArray = SnapshotsArray<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+// --- Collection types ---
+type VersionEntitySubscriberCollection = SubscriberCollection<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+type VersionEntityRealtimeDataItem = RealtimeDataItem<
+  VersionBaseParams['T'],
+  VersionBaseParams['K'],
+  VersionBaseParams['Meta'],
+  VersionBaseParams['AttachmentType'],
+  VersionBaseParams['ExcludedFields'],
+  VersionBaseParams['IncludedFields']
+>;
+
+// --- History type ---
+type VersionEntityHistoryEntry = HistoryEntry;
+
+// --- Field filter utility ---
+type VersionEntityApplyFieldFilters<
   T extends BaseDataEntity,
+  Excluded extends keyof T = never,
+  IncludedFields extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
+> = Pick<Omit<T, Excluded>, IncludedFields>;
+
+// --- VersionEntity data interface ---
+interface VersionEntityDataInterface<
+  T extends BaseDataEntity = VersionEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> implements Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
-  /** Unique version ID or semantic version string */
-  id: string;
+  name?: string;
+  description?: string;
+  category?: string;
+  tags?: string[];
+  version?: string;
+  createdBy?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  // Version-specific properties
   versionNumber: string | number;
   versionTag?: string;
-  
-  /** Reference to underlying data for this version */
   data: T | null;
-
-  /** Optional metadata structure */
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
-  /** Backend and frontend paired version structures */
   backend?: IBackendStructure<T>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
-  /** Historical version trail */
   history?: HistoryEntry[];
-
-  /** Optional parent and child version links for branching */
   parentVersionId?: string | null;
   childVersions?: string[];
-
-  /** Indicates if this version is currently active */
   isActive: boolean;
-
-  /** Timestamp info */
-  createdAt: Date;
-  updatedAt: Date;
-
-  /** Optional versioned attachments */
   attachments?: AttachmentType[];
-
-  /** Optional version state or context info */
   context?: Record<string, any>;
 
-  constructor(
-    id: string,
-    versionNumber: number,
-    data: T | null,
-    backend?: IBackendStructure<T>,
-    frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    history?: HistoryEntry[],
-  ) {
-    this.id = id;
-    this.versionNumber = versionNumber;
-    this.data = data;
-    this.backend = backend;
-    this.frontend = frontend;
-    this.metadata = metadata;
-    this.history = history;
+  [key: string]: any;
+}
 
-    this.isActive = true;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
+// --- Default empty version ---
+const emptyVersionData: VersionEntityDataInterface<
+  VersionEntity,
+  VersionK,
+  VersionMeta,
+  VersionAttachment,
+  VersionExcludedFields,
+  VersionIncludedFields
+> = {
+  // Core Version fields
+  id: '',
+  versionNumber: '1.0.0',
+  data: null,
+  isActive: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 
-  /** Get a full clone of this version */
-  clone(): this {
-    return new VersionEntity(
-      this.id,
-      this.versionNumber,
-      this.data ? { ...this.data } : null,
-      this.backend,
-      this.frontend,
-      this.metadata,
-      this.history ? [...this.history] : [],
-    ) as this;
-  }
-
-  /** Update metadata or associated context */
-  updateMetadata(meta: Partial<Meta>): void {
+  // Extended entity fields
+  name: '',
+  description: '',
+  category: '',
+  tags: [],
+  version: '',
+  createdBy: '',
+  
+  // Version-specific implementations
+  clone: function(): any {
+    return { ...this };
+  },
+  updateMetadata: function(meta: Partial<any>): void {
     if (this.metadata) {
       Object.assign(this.metadata, meta);
       this.updatedAt = new Date();
     }
-  }
-
-  /** Deactivate this version */
-  deactivate(): void {
+  },
+  deactivate: function(): void {
     this.isActive = false;
     this.updatedAt = new Date();
-  }
-
-  /** Reactivate this version */
-  activate(): void {
+  },
+  activate: function(): void {
     this.isActive = true;
     this.updatedAt = new Date();
-  }
-}
+  },
 
+  // Metadata
+  metadata: {} as VersionUnifiedMetadata,
 
-// 🔍 Breakdown
-// Section	Purpose
-// Implements both Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> and VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>	Ensures VersionEntity is fully compatible with all version-handling systems (data, UI, and backend).
-// backend / frontend	Mirror the structure defined in your Versions interface and FrontendStructure class.
-// metadata	Type-safe support for StructuredMetadata—keeps alignment with your ProjectMetadata and snapshot architecture.
-// clone, updateMetadata, activate, deactivate methods	Provide common utilities for version lifecycle management.
-// history	Keeps version trail consistent with the Versions interface.
+  // Optional structure for flexibility
+  backend: undefined,
+  frontend: undefined,
+  history: [],
+  attachments: [],
+  context: {}
+};
 
-// Would you like me to also include a corresponding createVersionEntity() factory function (similar to createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>())// to generate a new version with defaults for easier integration?
+// --- Helper function ---
+const createDefaultVersionData = (
+  baseData: Partial<VersionEntityDataInterface>
+): VersionEntityDataInterface => ({
+  ...emptyVersionData,
+  ...baseData,
+  id: baseData.id || `version-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  createdAt: baseData.createdAt || new Date(),
+  updatedAt: new Date(),
+});
+
+export type {
+  VersionAttachment,
+  VersionBaseParams,
+  VersionEntity,
+  VersionEntityApplyFieldFilters,
+  VersionEntityBackendStructure,
+  VersionEntityData,
+  VersionEntityDataInterface,
+  VersionEntityFrontendStructure,
+  VersionEntityHistoryEntry,
+  VersionEntityImpl,
+  VersionEntityRealtimeDataItem,
+  VersionEntitySnapshot,
+  VersionEntitySnapshotData,
+  VersionEntitySnapshotsArray,
+  VersionEntitySnapshotStore,
+  VersionEntitySnapshotStoreConfig,
+  VersionEntitySubscriberCollection,
+  VersionEntityType,
+  VersionExcludedFields,
+  VersionIncludedFields,
+  VersionK,
+  VersionMeta,
+  VersionStructuredMetadata,
+  VersionUnifiedMetadata
+};
+
+export {
+  createDefaultVersionData,
+  emptyVersionData
+};
+
+// Export specific type alias for AppVersion
+export type AppVersion = VersionEntityType;

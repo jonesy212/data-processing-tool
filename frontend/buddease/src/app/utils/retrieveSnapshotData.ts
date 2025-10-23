@@ -28,7 +28,7 @@ import { convertSnapshotToMap } from '@/app/typings/YourSpecificSnapshotType';
 import { snapshotId } from "@/app/utils/snapshotUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { DataStoreWithSnapshotMethods } from '@/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Version } from '@/versions/Version';
@@ -605,7 +605,7 @@ const converSnapshotStore = <
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      subscribers: Subscriber<T, K>[];
+      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       data: T;
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       unsubscribe: () => void;
@@ -632,7 +632,7 @@ const converSnapshotStore = <
       updateSnapshotSuccess: (
         snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload?: { data?: any; } | undefined
       ) => void;
-      batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+      batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
       batchUpdateSnapshotsFailure: (
         date: Date, 
         snapshotId: string | number | null,
@@ -708,7 +708,7 @@ const converSnapshotStore = <
         dataStoreMethods: DataStore<T, K>,
         data: T,
         dataCallback?: (
-          subscribers: Subscriber<T, K>[],
+          subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         ) => Promise<SnapshotUnion<T, K, Meta>[]>
       ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
@@ -746,7 +746,7 @@ const converSnapshotStore = <
       ) => void;
       events: any; // Adjust type as needed
       notify: (message: string) => void;
-      notifySubscribers: (message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, any>>) => Subscriber<T, K>[];
+      notifySubscribers: (message: string, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], data: Partial<SnapshotStoreConfig<T, any>>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
      
       parentId: string;
       childIds?: K[];
@@ -1099,7 +1099,7 @@ const converSnapshotStore = <
     
 
 
-    transformSubscriber: (sub: Subscriber<T, K>) => {},
+    transformSubscriber: (sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {},
     isSnapshotStoreConfig: (item: any) => {},
     transformDelegate: () => {},
     initializedState: {},
@@ -1198,7 +1198,7 @@ const converSnapshotStore = <
     initSnapshot: () => {},
     takeSnapshot: (
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscribers?: Subscriber<T, K>[] | undefined
+      subscribers?: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined
     ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> => {},
     takeSnapshotSuccess: () => {},
     takeSnapshotsSuccess: () => {},
@@ -1228,7 +1228,7 @@ const converSnapshotStore = <
       event: Event,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: Map<string, T>,
-      subscribers: Subscriber<T, K>[],
+      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>  | null,
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {},

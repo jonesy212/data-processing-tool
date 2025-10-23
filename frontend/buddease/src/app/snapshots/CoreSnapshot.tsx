@@ -43,7 +43,7 @@ import { SnapshotConfig } from "./SnapshotConfig";
 import {
   SnapshotRelationships,
 } from "./SnapshotData";
-import { SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotInitialization } from "./SnapshotInitialization";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotMethods } from "./SnapshotMethods";

@@ -1,5 +1,5 @@
 // snapshots/SnapshotActions.ts
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -15,7 +15,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
@@ -27,8 +27,9 @@ import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig"
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
-
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { AppEntity } from "@/app/typings/entities/AppEntity";
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields, TaskSnapshotsArray, TaskSnapshot } from '@/app/typings/entities/TaskEntity'
 
 const dispatch = useDispatch()
 
@@ -208,12 +209,6 @@ export const SnapshotActions = <
 });
 
 
-// export type SnapshotStoreActionsTypes<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> = ReturnType<typeof SnapshotStoreActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 const SnapshotStoreActions = <
   T extends BaseDataEntity = BaseDataRoot,
@@ -222,25 +217,23 @@ const SnapshotStoreActions = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): SnapshotStoreActionsTypes<T, K, Meta> => ({
-  addSnapshotToStore: createAction<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>('addSnapshotToStore'),
-  removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
+>(): SnapshotStoreActionsTypes<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => ({
+  addSnapshotToStore: createAction<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>('snapshotStore/addSnapshotToStore'),
+  removeSnapshotFromStore: createAction<string>('snapshotStore/removeSnapshotFromStore'),
   updateSnapshotInStore: createAction<{ 
     snapshotId: string; 
     newData: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> 
-  }>('updateSnapshotInStore'),
-  fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
+  }>('snapshotStore/updateSnapshotInStore'),
+  fetchSnapshotStoreData: createAction<string>('snapshotStore/fetchSnapshotStoreData'),
   handleSnapshotStoreSuccess: createAction<{
-    snapshotStore: SnapshotStore<T, K, Meta>;
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshotId: string;
     operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     operationType: SnapshotOperationType;
-  }>('handleSnapshotStoreSuccess'),
-  handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
+  }>('snapshotStore/handleSnapshotStoreSuccess'),
+  handleSnapshotStoreFailure: createAction<string>('snapshotStore/handleSnapshotStoreFailure'),
 });
-
-
 
 
 // Actions for managing task snapshots with subtasks
@@ -265,26 +258,7 @@ export const TaskWithSubtasksSnapshotActions = <
 
 
 
-
-
-
-// 1️⃣ Define Task-specific entity generics
-type TaskEntity = Task<BaseDataEntity>;           // or your base Task type
-type TaskK = TaskEntity;
-type TaskMeta = DefaultMeta<TaskEntity, TaskK>;
-type TaskExcludedFields = DefaultExcludedFields<TaskEntity>;
-type TaskIncludedFields = DefaultExcludedFields<TaskEntity>;
-type TaskAttachment = Attachment;
-
-// 2️⃣ Define Task-specific snapshot types
-type TaskSnapshot = Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotStore = SnapshotStore<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSubscriberCollection = SubscriberCollection<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskRealtimeDataItem = RealtimeDataItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotWithCriteria = SnapshotWithCriteria<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskCollection = TaskEntity[];
-
-const newTaskSnapshot: TaskSnapshot = {
+const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields, TaskSnapshotsArray> = {
   id: '1',
   data: {
     id: '1',
@@ -343,7 +317,7 @@ const newTaskSnapshot: TaskSnapshot = {
     this.subscribers = Object.fromEntries(filtered) as unknown as TaskSubscriber[];
   },
   addSnapshotFailure: function (
-    snapshotManager: SnapshotManager<TaskEntity, any>,
+    snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     snapshot: TaskSnapshot,
     payload: { error: Error }
   ): void {

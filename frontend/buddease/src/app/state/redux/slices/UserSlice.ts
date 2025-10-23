@@ -1,3 +1,4 @@
+import { AllTypes } from '@/app/typings/PropTypes';
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { CustomTransaction, SmartContractInteraction } from "@/app/crypto/SmartContractInteraction";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
@@ -33,6 +34,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ActivityLogEntry {
   id: string;
+  type: AllTypes;
   timestamp: Date;
   activity: string;
   details?: string;

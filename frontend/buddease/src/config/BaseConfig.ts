@@ -14,8 +14,8 @@ import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppEntity';
-
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { BaseMetaInfo } from '@/config/metadata/BaseMetaInfo'
 import { 
   ConfigEntity,
   ConfigK,
@@ -42,7 +42,9 @@ type DefaultMeta<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
-> = StructuredMetadata<T, K, any, AttachmentType, ExcludedFields, IncludedFields>;
+  > = BaseMetaInfo & {
+    structured?: Partial<Record<string, any>>;
+};
 
 
 type DefaultExcludedFields<T extends BaseDataEntity> = never;
@@ -72,9 +74,9 @@ interface BaseConfig<
 > extends SharedConfig, 
   BaseRetryConfig, 
   BaseCacheConfig, 
-  BaseMetadataConfig<T, K, Meta>,
-  BaseMetadata<K>,
-  Taggable<T, K> {
+  BaseMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  BaseMetadataConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id?: string | number;
   apiEndpoint: string;
   apiKey: string | undefined;
@@ -89,7 +91,7 @@ interface BaseConfig<
   tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  events: EventManager<T, K>;
+  events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   schema: Record<string, SchemaField>
 }
 

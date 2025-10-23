@@ -25,7 +25,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { BaseData, Data } from "./Data";
-import { StatusType } from "./StatusType";
+import { StatusType } from "@/app/models/data/StatusType";
 
 // Assuming T is defined in your context
 type T = BaseDataEntity; // Replace with the appropriate type if necessary

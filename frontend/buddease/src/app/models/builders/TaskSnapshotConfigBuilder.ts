@@ -1,23 +1,23 @@
 // TaskSnapshotConfigBuilder.ts
 
-import { SnapshotConfigBuilder, SnapshotConfigFactory } from "../snapshot/SnapshotConfigBuilder";
-import { Task } from "../models/tasks/Task";
-import { tasksConfig } from "../api/tasks/tasksConfig";
-import { DefaultMeta } from "../meta/DefaultMeta";
-import { Attachment } from "../attachments/Attachment";
-import { SnapshotStoreConfig } from "../snapshot/SnapshotStoreConfig";
-import { BaseDataEntity, BaseDataRoot } from "../models/data/BaseData";
-import { StoreMethods } from "../snapshot/StoreMethods";
-import { EventHandlers } from "../snapshot/EventHandlers";
-import { EventStore } from "../snapshot/EventStore";
-import { SnapshotUnion } from "../snapshot/SnapshotUnion";
-import { SnapshotLifecycle } from "../snapshot/SnapshotLifecycle";
-import { SnapshotMeta } from "../snapshot/SnapshotMeta";
-import { SnapshotEvents } from "../snapshot/SnapshotEvents";
-import { SnapshotContainer } from "../snapshot/SnapshotContainer";
-import { SnapshotSubscriberManagement } from "../snapshot/SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "../snapshot/SnapshotWithCriteria";
-import { SnapshotManager } from "../snapshot/SnapshotManager";
+import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SnapshotConfigFactory } from '@/app/snapshots/SnapshotFactory';
+import { Task } from '@/app/models/tasks/Task';
+import { tasksConfig } from '@/config/endpoints/tasksConfig';
+import { Attachment } from '@/app/documents/attachments/Attachment';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
+import { StoreMethods } from '@/app/models/tasks/StoreMethods';
+import { EventHandler } from '@/app/typings/eventTypes'
+import { EventStore } from '@/app/snapshots/EventStore';
+import { SnapshotUnion } from '@/app/snapshots/SnapshotUnion';
+import { SnapshotLifecycle } from '@/app/snapshots/SnapshotLifecycle';
+import { SnapshotMeta } from '@/app/snapshots/SnapshotMeta';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotManager } from '@/app/snapshots/SnapshotManager';
 
 
 // =========================================
