@@ -1,7 +1,7 @@
 // MessagesEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface MessagesEndpoints {
+export interface MessagesEndpoints extends EndpointCategoryConfig {
   textMessages: {
     send: EndpointConfig;
     get: EndpointConfig;

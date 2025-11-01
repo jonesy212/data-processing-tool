@@ -1,7 +1,7 @@
 // snapshot
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { useMeta } from "@/app/config/useMeta";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import {
   CombinedEvents,
@@ -32,10 +32,12 @@ import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/DataEntity";
+import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from "@/app/typings/entities/AppEntity";
 import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
-import { useMeta } from "@/config/useMeta";
 import { id, Signature } from "ethers";
 import { refreshUI, refreshUIForFile } from "./refreshUI";
 import { SnapshotConfigProps } from "./SnapshotConfigProps";
@@ -51,15 +53,6 @@ import {
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import {
-  AppEntity,
-  AppK,
-  AppMeta,
-  AppAttachment,
-  AppExcludedFields,
-  AppIncludedFields
-} from "@/app/typings/entities/AppEntity";
-import {
-
   snapshotStoreConfigInstance
 } from "./snapshotStoreConfigInstance";
 
@@ -67,8 +60,18 @@ import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { Label } from "@/app/branding/BrandingSettings";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { ExcludedFields } from "@/app/components/routing/Fields";
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from '@/app/config/BaseConfig';
+import { SchemaField } from "@/app/config/metadata/SchemaField";
+import {
+  UnifiedMetaDataOptions
+} from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedSnapshotProperties, SharedTimestamps } from "@/app/documents/RelatedProps";
-import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import useDocumentManagement from "@/app/hooks/documents/useDocumentManagement";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
@@ -76,30 +79,22 @@ import { fetchUserAreaDimensions } from "@/app/pages/layouts/fetchUserAreaDimens
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ActivityStatus } from "@/app/pages/profile/Profile";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import baseMeta from "@/app/server/database/baseMeta";
+import {
+  CreateSnapshotStoresPayload,
+  payload
+} from "@/app/server/database/Payload";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { HighlightColor } from "@/app/styling/Palette";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Todo } from "@/app/todos/Todo";
-import { SnapshotEvent } from "@/app/typings/eventTypes";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent, SnapshotEvents } from "@/app/typings/snapshotTypes";
 import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
-import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from '@/config/BaseConfig';
-import {
-  UnifiedMetaDataOptions
-} from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import baseMeta from "@/server/database/baseMeta";
-import {
-  CreateSnapshotStoresPayload,
-  payload
-} from "@/server/database/Payload";
-import { SchemaField } from "@/server/database/SchemaField";
 import operation from "antd/es/transfer/operation";
 import { version } from "os";
 import { config } from "process";
@@ -109,20 +104,17 @@ import {
   SnapshotContainer,
   SnapshotData
 } from ".";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { createSnapshot } from "./createSnapshot";
 import { getData } from "./methods/dataMethods";
 import {
   ConfigureSnapshotStorePayload,
   SnapshotConfig,
 } from "./SnapshotConfig";
-import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
 import { SnapshotContext } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 
 type SnapshotFromParams<
@@ -184,7 +176,7 @@ SharedTimestamps
   archiveImmediately?: boolean;
   // Data-specific properties
   shared?: SharedSnapshotProperties<T, K, any>;      // Snapshot data sharing
-  sharedMetadata?: SharedMetadata<T, K, any, any>;   // ✅ Snapshot metadata
+  sharedMetadata?: SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Data security
   security?: SnapshotSecurity;                       // ✅ Data security
@@ -194,8 +186,8 @@ SharedTimestamps
   criteria?: CriteriaType;
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  additionalData?: CustomSnapshotData<T, K, Meta> | undefined;
-  dataStores?: DataStore<T, K, Meta>[];
+  additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataStores?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   snapshotStoreConfigSearch?: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseDataEntity>,
@@ -324,7 +316,9 @@ function processSnapshot<
   console.log(newSnapshot);
 }
 
-const plainDataObject: Record<string, Data<T>> = {
+const plainDataObject: Record<string, Data<DataEntity,
+  DataK, DataMeta, DataAttachment,
+  DataIncludedFields, DataExcludedFields>> = {
   "1": {
     _id: "1",
     id: "data1",

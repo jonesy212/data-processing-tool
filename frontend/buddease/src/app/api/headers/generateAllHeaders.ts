@@ -3,11 +3,11 @@ import { useSecureSnapshotId } from '@/app/hooks/useSecureSnapshotId';
 ;
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { authToken } from "@/server/auth/authToken";
-import createCacheHeaders from "@/app/api/cacheHeaders";
-import generateCustomHeaders from "@/app/api/customHeaders";
-import createRequestHeaders from "@/app/api/requestHeaders";
-import createSecurityHeaders from '@/app/api/securityHeaders'
+import { authToken } from "@/app/server/auth/authToken";
+import createCacheHeaders from "@/app/api/headers/cacheHeaders";
+import generateCustomHeaders from "@/app/api/headers/customHeaders";
+import createRequestHeaders from "@/app/api/headers/requestHeaders";
+import createSecurityHeaders from '@/app/api/headers/securityHeaders'
 /**
  * Function to create all necessary headers by combining custom, security, cache, and request headers.
  * @param {Object} options - Options for generating headers.

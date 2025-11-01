@@ -3,7 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { ApiActionTypes } from "@/app/actions/ApiActions";
 import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
 import { TokenActionTypes } from '@/app/tokens/TokenActions';
-import { UserPreferencesActionTypes } from '@/config/UserPreferencesActions';
+import { UserPreferencesActionTypes } from '@/app/config/UserPreferencesActions';
 // Import other action types
 
 

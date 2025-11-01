@@ -1,6 +1,6 @@
 // handleBatchTakeSnapshotsUtils.ts
+import { SnapshotActions } from '@/app/actions/SnapshotActions';
 import { useDispatch } from 'react-redux';
-import { SnapshotActions } from '@/app/snapshots/SnapshotActions';
 
 // Define the handleBatchTakeSnapshots function
 const handleBatchTakeSnapshots = async (snapshotData: any) => {

@@ -14,11 +14,11 @@ export interface BlogData<
   _id: string;
   id: string;
   title?: string;
-  content: string | Content<T, K> | undefined;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;
   author: string;
   date: string | Date | undefined;
   subtitle: string;
-  description?: string | undefined;
-  data?: Content<T, K> | Snapshot<Data<T>, Meta>;
+  description?: string;
+  data?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | Snapshot<Data<T>, Meta>;
   startDate: Date;
 }

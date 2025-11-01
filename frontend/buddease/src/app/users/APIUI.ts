@@ -1,19 +1,18 @@
 // APIUI.ts
-import { endpoints } from '@/app/api/ApiEndpoints';
+import { UIActions } from '@/app/actions/UIActions';
+import internalApiService from "@/app/api/ApiClient";
+import { NotificationType } from '@/app/context/NotificationContext';
 import { handleApiError } from '@/app/api/ApiLogs';
-import headersConfig from '@/app/api/headers/HeadersConfig';
-import { UserSettings } from '@/config/UserSettings';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { UserSettings } from '@/app/config/UserSettings';
+import { useNotification } from "@/app/context/NotificationContext";
+import safeParseData, { DataWithComment } from '@/app/dataIntegration/SafeParseData';
+import { ParsedData } from '@/app/dataIntegration/parseData';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
 import ErrorHandler from '@/app/shared/ErrorHandler';
+import { UserData } from '@/app/users/User';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorInfo } from 'react';
-import { UIActions } from '@/app/actions/UIActions';
-import safeParseData, { DataWithComment } from '@/crypto/SafeParseData';
-import { ParsedData } from '@/crypto/parseData';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
-import axiosInstance from '@/app/api/csrfToken';
-import { UserData } from '@/User';
-import internalApiService from "./ApiClient";
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;
@@ -109,47 +108,24 @@ class UIApiService {
       }
     }
 
-    // ✅ UPDATE: Use internalApiService for user data
     // In your UIApiService methods, update to use the endpoints:
-async fetchUserData(userId: string): Promise<UserData> {
-  try {
-    const endpoint = endpoints.ui.userData(userId);
-    const response = await this.requestHandler(
-      () => internalApiService.get(endpoint.path),
-      "FETCH_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
-      "FETCH_USER_SETTINGS_ERROR"
-    );
-    return response.data;
-  } catch (error) {
-    const { handleError } = useErrorHandling();
-    handleError('Failed to fetch user data');
-    throw error;
-  }
-}
+    async fetchUserData(userId: string): Promise<UserData> {
+        try {
+            const endpoint = endpoints.ui.userData(userId);
+            const response = await this.requestHandler(
+            () => internalApiService.get(endpoint.path),
+            "FETCH_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_USER_SETTINGS_ERROR"
+            );
+            return response.data;
+        } catch (error) {
+            const { handleError } = useErrorHandling();
+            handleError('Failed to fetch user data');
+            throw error;
+        }
+    }
 
-async updateUserSettings(userId: string, settings: UserSettings): Promise<void> {
-  try {
-    const endpoint = endpoints.ui.updateUserSettings(userId);
-    await this.requestHandler(
-      () => internalApiService.put(endpoint.path, settings),
-      "UPDATE_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
-      "UPDATE_USER_SETTINGS_ERROR"
-    );
-    
-    UIActions.setNotification({
-      message: 'User settings updated successfully',
-      type: 'success',
-    });
-  } catch (error) {
-    const { handleError } = useErrorHandling();
-    handleError('Failed to update user settings');
-    throw error;
-  }
-}
-
-
-  // ✅ UPDATE: Use internalApiService for user settings
-  async updateUserSettings(userId: string, settings: UserSettings): Promise<void> {
+    async updateUserSettings(userId: string, settings: UserSettings): Promise<void> {
     try {
         await this.requestHandler(
             () => internalApiService.put(`${UI_API_BASE_URL}/user/${userId}/settings`, settings),
@@ -308,7 +284,7 @@ async updateUserSettings(userId: string, settings: UserSettings): Promise<void> 
 }
 
 // Function to safely parse data with error handling
-const parseDataWithErrorHandling = <T extends DataWithComment>(
+const parseDataWithErrorHandling = <T extends DataWithComment<T>>(
     data: T[],
     threshold: number
 ): ParsedData<T>[] => {
@@ -336,7 +312,7 @@ const handleUiApiErrorAndNotify = (
             errorMessageText,
             null,
             new Date(),
-            'UIAPIError' as NotificationTypeEnum
+            'UIAPIError' as NotificationType
         );
     }
 };
@@ -349,12 +325,5 @@ export default uiApiService;
 
 // Legacy exports for backward compatibility
 export {
-    uiApiService as UIApi,
-    uiApiService as fetchUserData,
-    uiApiService as updateUserSettings,
-    uiApiService as fetchUIData,
-    uiApiService as fetchBrandingData,
-    parseDataWithErrorHandling,
-    handleUiApiErrorAndNotify,
-    uiApiNotificationMessages
+    uiApiService as fetchBrandingData, uiApiService as fetchUIData, uiApiService as fetchUserData, handleUiApiErrorAndNotify, parseDataWithErrorHandling, uiApiService as UIApi, uiApiNotificationMessages, uiApiService as updateUserSettings
 };

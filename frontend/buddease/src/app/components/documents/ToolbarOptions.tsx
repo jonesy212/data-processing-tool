@@ -1,6 +1,6 @@
 import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { DocumentTypeEnum } from "@/app/typings/documents";
-import CustomModifier from "@/documents/CustomModifier";
+import CustomModifier from "@/app/documents/CustomModifier";
 import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
 import { toolbarOptions } from "./Toolbar";

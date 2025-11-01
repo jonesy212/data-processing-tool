@@ -1,5 +1,6 @@
 // snapshotUtils.tsx
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { ModifiedDate } from "@/app/documents/DocType";
@@ -8,14 +9,13 @@ import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { Meta } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots';
 import {
-    Snapshots,
-    SnapshotsArray,
-    SnapshotStoreObject,
-    SnapshotUnion,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotStoreObject,
+  SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -24,8 +24,8 @@ import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapsho
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { SnapshotEvents } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useNotification } from "@/context/NotificationContext";
 import { IHydrateResult } from "mobx-persist";
 
@@ -505,7 +505,7 @@ export const getSnapshotsBySubscriber = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  subscriber: Subscriber<T, K, Meta>,
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   storeProps?: SnapshotStoreProps<T, K>
 ): Promise<T[]> => {
   if (!storeProps) {
@@ -710,12 +710,19 @@ const isArrayOfTypeT = <T extends  BaseDataEntity>(array: any[]): array is T[] =
 };
 
 // Type guard to check if a given callback is a SubscriberCallback
-function isSubscriberCallback<T extends  BaseDataEntity, K extends T>(
-  callback: SubscriberCallbackType<T, K>
-): callback is SubscriberCallback<T, K> {
+function isSubscriberCallback<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): callback is SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
-    (callback as SubscriberCallback<T, K>).handleCallback !== undefined &&
-    (callback as SubscriberCallback<T, K>).snapshotCallback !== undefined
+    (callback as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).handleCallback !== undefined &&
+    (callback as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).snapshotCallback !== undefined
   );
 }
 
@@ -725,25 +732,33 @@ type BaseType<T> = T extends BaseData<infer U> ? U : never;
 
 function castToSnapshot<
   T extends BaseDataEntity,
-  K extends BaseType<T> = BaseType<T>,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return snapshot as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
-
-function isSnapshotContainer<T extends  BaseDataEntity, K extends T>(
+function isSnapshotContainer<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: any
-): data is SnapshotContainer<T, K> {
+): data is SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return data && typeof data.category !== "undefined" && typeof data.data !== "undefined";
 }
 
 
 
-function isBaseData<T>(data: any): data is BaseData<T> {
+function isBaseData<T extends BaseDataRoot>(data: any): data is BaseData<T> {
   return data && typeof data.id === "string" && typeof data.category === "string";
 }
 
@@ -856,12 +871,12 @@ export const snapshot = snapshotApi.getSnapshot(
 );
 
 export {
-    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
-    isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
-    isSnapshotConfig, isSnapshotContainer, isSnapshotData,
-    isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
-    isSnapshotStoreCoreData, isSnapshotUnionBaseData,
-    isSnapshotWithCriteria, isSubscriberCallback
+  castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
+  isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
+  isSnapshotConfig, isSnapshotContainer, isSnapshotData,
+  isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
+  isSnapshotStoreCoreData, isSnapshotUnionBaseData,
+  isSnapshotWithCriteria, isSubscriberCallback
 };
 
 export const snapshots = snapshotApi.getSnapshots(category)

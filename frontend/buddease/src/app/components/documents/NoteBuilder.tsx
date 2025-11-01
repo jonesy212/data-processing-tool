@@ -4,7 +4,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { UserData } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
-import { createMetaState } from '@/config//metadata/MetadataHooks';
+import { createMetaState } from '@/app/config/metadata/MetadataHooks';
 import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";

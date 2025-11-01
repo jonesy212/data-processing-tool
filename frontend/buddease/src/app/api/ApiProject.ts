@@ -2,7 +2,7 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { MeetingData } from "@/app/components/calendar/MeetingData";
+import { MeetingData } from "@/app/calendar/MeetingData";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { Task } from "@/app/components/models/tasks/Task";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
@@ -10,10 +10,16 @@ import FileData from "@/app/models/data/FileData";
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-
+import { ProjectEntity,
+ProjectK,
+ProjectMeta,
+ProjectAttachment,
+ProjectExcludedFields,
+ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
 
 const API_BASE_URL = endpoints.projectOwner.base;
 
@@ -102,16 +108,17 @@ export const ApiProject = observable({
       throw error;
     }
   },
+
   assignTaskToCurrentUserAPI: async (
     projectId: string,
     taskId: string,
-    assignedTo: WritableDraft<User>
+    assignedTo: WritableDraftUser<any, any, any, any, any, any>i
   ): Promise<any> => {
     try {
       const response = await axiosInstance.put(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}/assignee`,
         { assignedTo } // Update the request body to include assignedTo
-      );
+      );i
       return response.data;
     } catch (error) {
       handleApiError(
@@ -124,7 +131,12 @@ export const ApiProject = observable({
 
   updateProjectAPI: async (
     projectId: string,
-    updatedProjectData: Partial<ProjectData>
+    updatedProjectData: Partial<ProjectData<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>>
   ): Promise<any> => {
     try {
       const response = await axiosInstance.put(
@@ -389,7 +401,7 @@ export const ApiProject = observable({
 
   uploadFileToProjectAPI: async (
     projectId: string,
-    fileData: FileData<T>
+    fileData: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> => {
     try {
       await axiosInstance.post(`${API_BASE_URL}/${projectId}/files`, fileData);

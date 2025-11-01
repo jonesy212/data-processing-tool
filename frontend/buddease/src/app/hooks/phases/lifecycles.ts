@@ -1,52 +1,80 @@
 // lifecycles.tsx
 
 // Lifecycle.ts
-import { Lesson } from "@/app/documents/CourseBuilder";
+import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
-import { CustomPhaseHooks, Phase } from "./Phase";
-import { IdeaLifecyclePhase } from "./PhaseManager";
+import { CustomPhaseHooks, Phase } from "@/app/models/phases/Phase";
+import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/config/BaseConfig";
 
-export interface PhaseOptions extends Phase {
+export interface PhaseOptions<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   name: string;
   startDate: Date;
   endDate: Date;
   subPhases: string[];
 }
 
-export interface LifecycleState {
-  currentPhase: PhaseOptions | null;
-  previousPhase: PhaseOptions | null;
-  phaseHistory: PhaseOptions[];
+export interface LifecycleState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  currentPhase: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  previousPhase: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  phaseHistory: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   isTransitioning: boolean;
   lastActivityTime: number;
 }
 
-export interface LifecycleConfig {
-  phases: PhaseOptions[];
+export interface LifecycleConfig<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  phases: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   initialPhase?: string;
   autoAdvance?: boolean;
-  onPhaseChange?: (from: PhaseOptions | null, to: PhaseOptions) => void;
+  onPhaseChange?: (from: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, to: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onTransitionError?: (error: Error) => void;
 }
 
 export interface LifecycleTransition {
-  from: PhaseOptions;
-  to: PhaseOptions;
+  from: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  to: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   timestamp: Date;
   success: boolean;
   error?: string;
 }
 
 
-
-import { Lesson } from "@/app/documents/CourseBuilder";
-import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
-import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
-import { CustomPhaseHooks, Phase } from "./Phase";
-import { IdeaLifecyclePhase } from "./PhaseManager";
-
-interface PhaseOptions extends Phase {
+export interface PhaseOptions<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   name: string;
   startDate: Date;
   endDate: Date;
@@ -54,7 +82,14 @@ interface PhaseOptions extends Phase {
 }
 
 // Define a function to generate a phase object
-const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
+const generatePhase = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(name: string, subPhases: string[]): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
     name,
     startDate: new Date(),
@@ -64,15 +99,15 @@ const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
     duration: 0,
     lessons: {} as Lesson[],
     hooks: {
-      canTransitionTo: (nextPhase: Phase) => {
+      canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return !!enhancedPhaseHook.canTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & PhaseHookConfig
         );
       },
-      handleTransitionTo: (nextPhase: Phase) => {
+      handleTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         console.log("Transitioning to", nextPhase);
         enhancedPhaseHook.handleTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & PhaseHookConfig
         );
         return true;
       },
@@ -94,7 +129,7 @@ const generatePhase = (name: string, subPhases: string[]): PhaseOptions => {
         // Check if the current time exceeds the last activity time plus the idle timeout duration
         const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
         return isIdle;
-      }    } as CustomPhaseHooks,
+      }    } as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 };
 
@@ -107,7 +142,14 @@ const getLastActivityTimeForPhase = (phaseName: string): number => {
 
 
 // Common Functions
-const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions => {
+const generateGenericPhase = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(name: string, subPhases: string[]): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
     name,
     startDate: new Date(),
@@ -117,15 +159,15 @@ const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions =
     duration: 0,
     lessons: {} as Lesson[],
     hooks: {
-      canTransitionTo: (nextPhase: Phase) => {
+      canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return !!enhancedPhaseHook.canTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & PhaseHookConfig
         );
       },
-      handleTransitionTo: (nextPhase: Phase) => {
+      handleTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         console.log("Transitioning to", nextPhase);
         enhancedPhaseHook.handleTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & PhaseHookConfig
         );
         return true;
       },
@@ -148,18 +190,18 @@ const generateGenericPhase = (name: string, subPhases: string[]): PhaseOptions =
         const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
         return isIdle;
       }
-    } as CustomPhaseHooks,
+    } as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 };
 
 
-const lifecyclePhases: PhaseOptions[] = [
+const lifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generatePhase("Idea Lifecycle", ["Idea", "Team Building", "Ideation"]),
   // Add more phases as needed using the generatePhase function
   generateGenericPhase("UI Design", ["Wireframing", "Visual Design", "Prototyping", "User Testing"]),
 ];
 
-const ideaLifecyclePhases: PhaseOptions[] = [
+const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   { 
     name: "Idea Lifecycle",
     startDate: new Date(),
@@ -169,15 +211,15 @@ const ideaLifecyclePhases: PhaseOptions[] = [
     duration: 0,
     lessons: {} as Lesson[],
     hooks: {
-      canTransitionTo: (nextPhase: Phase) => {
+      canTransitionTo: (nextPhase: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>) => {
         return !!enhancedPhaseHook.canTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> & PhaseHookConfig
         );
       },
-      handleTransitionTo: (nextPhase: Phase) => {
+      handleTransitionTo: (nextPhase: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>) => {
         console.log("Transitioning to", nextPhase);
         enhancedPhaseHook.handleTransitionTo(
-          nextPhase as Phase & PhaseHookConfig
+          nextPhase as Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> & PhaseHookConfig
         );
         return true;
       },

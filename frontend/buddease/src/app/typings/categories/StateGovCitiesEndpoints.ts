@@ -1,7 +1,7 @@
 // StateGovCitiesEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface StateGovCitiesEndpoints {
+export interface StateGovCitiesEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (cityId: number) => EndpointConfig;
   add: EndpointConfig;

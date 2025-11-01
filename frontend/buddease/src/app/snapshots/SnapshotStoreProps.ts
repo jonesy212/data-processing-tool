@@ -1,7 +1,7 @@
 // SnapshotStoreProps.ts
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/documents/RelatedProps';
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
@@ -9,7 +9,7 @@ import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManag
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { createDataStore, DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -20,7 +20,7 @@ import {
     SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
@@ -33,20 +33,20 @@ import { fetchSnapshotsForCategory } from '@/app/snapshots/fetchSnapshotsForCate
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { addToSnapshotList, isSnapshot } from '@/app/utils/snapshotUtils';
 import { Version } from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseSnapshotProps } from '@/app/snapshots/createBaseSnapshot';
 import { displayToast } from '@/app/models/display/ShowToast';
-import { Payload } from "@/server/database/Payload";
-import { SchemaField } from "@/server/database/SchemaField";
-import baseMeta from "@/server/database/baseMeta";
+import { Payload } from "@/app/server/database/Payload";
+import { SchemaField } from "@/app/config/metadata/SchemaField";
+import baseMeta from "@/app/server/database/baseMeta";
 import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import { version } from "react";
-import { snapshotStoreConfig } from '.';
+import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields } from '@/app/typings/entities/StorePropEntit '
 // Base interface for all snapshot store properties
 
@@ -62,7 +62,7 @@ interface BaseSnapshotStoreProps<
   storeId: string | number;
   id?: string | number | undefined;
   name: string;
-  description?: string | undefined;
+  description?: string;
   priority?: string | undefined;
 
   // Categorization
@@ -543,53 +543,15 @@ const storeProps: SnapshotStoreProps<
     criteria: {},
     callbacks: {},
     subscribeToSnapshots: (
-      snapshotStore: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       snapshotId: string,
-      snapshotData: SnapshotData<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      snapshotConfig: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotData: SnapshotData<StorePropEntity, torePropK,  StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      snapshotConfig: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       callback: (
-        snapshotStore: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-        snapshots: SnapshotsArray<ExampleEntity,
-          ExampleEntity,
-          DefaultMeta<ExampleEntity, ExampleEntity>,
-          DefaultExcludedFields<ExampleEntity>
-        >
-      ) => Subscriber<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null,
-      snapshots: SnapshotsArray<ExampleEntity,
-        ExampleEntity,
-        DefaultMeta<ExampleEntity, ExampleEntity>,
-        DefaultExcludedFields<ExampleEntity>
-        >,
+        snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+        snapshots: SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+      ) => Subscriber<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null,
+      snapshots: SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       category?: Category,
       unsubscribe?: UnsubscribeDetails,
     ): SnapshotsArray<ExampleEntity, ExampleEntity, DefaultMeta<ExampleEntity, ExampleEntity>, DefaultExcludedFields<ExampleEntity>> | [] => {
@@ -599,86 +561,26 @@ const storeProps: SnapshotStoreProps<
     
     subscribeToSnapshot: (
       snapshotId: string,
-      callback: (snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => Subscriber<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null,
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>
-    ): Subscriber<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null => {
+      callback: (snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => Subscriber<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null,
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+    ): Subscriber<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null => {
       // Implement your logic here
       return null; // or return a Subscriber if necessary
     },
     unsubscribeToSnapshots: (
       snapshotId: string,
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       type: string,
-      event: SnapshotEvent<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      callback: (snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => void
+      event: SnapshotEvent<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      callback: (snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void
     ) => {
       // Implement your logic here
     },
     unsubscribeToSnapshot: (snapshotId: string,
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       type: string,
-      event: SnapshotEvent<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      callback: (snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => void
+      event: SnapshotEvent<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      callback: (snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void
     ) => {
       // Implement your logic here
     },
@@ -688,13 +590,7 @@ const storeProps: SnapshotStoreProps<
 
       if (useSimulatedDataSource) {
         const stores = simulatedDataSource.map(() => {
-          const { store } = createDataStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>();
+          const { store } = createDataStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>();
           return store;
         });
 
@@ -703,41 +599,17 @@ const storeProps: SnapshotStoreProps<
 
       return [];
     },
-    getCategory: async <T extends BaseDataEntity, K extends T = T>(
+    getCategory: async (
       snapshotId: string,
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       type: string,
-      event: SnapshotEvent<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      snapshotConfig: SnapshotConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      event: SnapshotEvent<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      snapshotConfig: SnapshotConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       category?: Category,
       additionalHeaders?: Record<string, string>
     ): Promise<{
       categoryProperties: CategoryProperties;
-      snapshots: SnapshotsArray<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>
+      snapshots: SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
     }> => {
 
       // Type guard with proper typing
@@ -778,21 +650,9 @@ const storeProps: SnapshotStoreProps<
       };
 
       // Fetch snapshots with proper error handling
-      let snapshots: SnapshotsArray<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> = [];
+      let snapshots: SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> = [];
       try {
-        snapshots = await fetchSnapshotsForCategory<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>(
+        snapshots = await fetchSnapshotsForCategory<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>(
           snapshotId,
           type,
           category
@@ -830,58 +690,16 @@ const storeProps: SnapshotStoreProps<
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotData: SnapshotData<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      dataStoreMethods: DataStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotData: SnapshotData<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      dataStoreMethods: DataStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       category?: Category,
       categoryProperties?: CategoryProperties,
-      callback?: (snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => void,
-      snapshotStore?: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      snapshotStoreConfig?: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>
-    ): SnapshotConfig<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | undefined => {
+      callback?: (snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void,
+      snapshotStore?: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      snapshotStoreConfig?: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+    ): SnapshotConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | undefined => {
 
-      const config: SnapshotConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> = {
+      const config: SnapshotConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> = {
         id,
         storeId,
         snapshotId,
@@ -922,13 +740,7 @@ const storeProps: SnapshotStoreProps<
         metadata: snapshotStoreConfig?.metadata,
       };
 
-      if (callback && isSnapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>(snapshotData)) {
+      if (callback && isSnapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>(snapshotData)) {
         callback(snapshotData);
       }
 
@@ -974,140 +786,45 @@ const storeProps: SnapshotStoreProps<
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotData: SnapshotData<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      dataStoreMethods: DataStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotData: SnapshotData<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      dataStoreMethods: DataStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       category?: Category,
       categoryProperties?: CategoryProperties,
-      callback?: (snapshotStore: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => void,
-      snapshotStoreConfig?: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>
-    ): Promise<Snapshot<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null> => {
-      const baseData: BaseData = createBaseData({ ...snapshotData });
+      callback?: (snapshotStore: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void,
+      snapshotStoreConfig?: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+    ): Promise<Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, Store ncludedFields> | null> => {
+        const baseData: BaseData = createBaseData({ 
+          ...snapshotData 
+        });
+        
+        const newSnapshot = createSnapshot(
+          baseData, 
+          {}, // baseMeta - replace with actual meta data
+          snapshotId, 
+          snapshotData,
+          category, 
+          snapshotStore, // snapshotStore - replace with actual store
+          snapshotStoreConfig
+        );
 
-      // ✅ Pass the snapshotData instead of transformedSnapshot
-      const newSnapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> = createSnapshot(
-        baseData, 
-        baseMeta, 
-        snapshotId, 
-        snapshotData, // Use the original data
-        category, 
-        snapshotStore, 
-        snapshotStoreConfig
-      );
-
-      callback?.(newSnapshot);
-      return Promise.resolve(newSnapshot);
-    },
-
+        callback?.(newSnapshot);
+        return Promise.resolve(newSnapshot);
+      },
     configureSnapshotStore: (
-      snapshotStore: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       snapshotId: string,
-      data: Map<string, Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>>,
+      data: Map<string, Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>>,
       events: Record<string, any>,
-      dataItems: RealtimeDataItem<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>[],
-      newData: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      payload: ConfigureSnapshotStorePayload<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      store: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      dataItems: RealtimeDataItem<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>[],
+      newData: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      payload: ConfigureSnapshotStorePayload<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      store: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       callback?: (snapshotStore: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => void
+        StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void
     ): Promise<{
-      snapshotStore: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      storeConfig: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      updatedStore?: SnapshotStore<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>
+      snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      storeConfig: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      updatedStore?: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
     }> => {
       // Step 1: Update the snapshot data
       if (snapshotId && newData) {
@@ -1168,42 +885,12 @@ const storeProps: SnapshotStoreProps<
         ExampleIncludedFields>
     snapshotMethods: [],
     handleSnapshotOperation: (
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      data: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      mappedData: Map<string, SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>>,
-      operation: SnapshotOperation<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>, // Ensure you use this in your logic
-      operationType: SnapshotOperationType
-    ): Promise<Snapshot<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null> => {
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      data: SnapshotStoreConfig<Stor Entity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExc Fields, StorePropIncludedFields>,
+      mappedData: Map<string, Snapsh reConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttach  StorePropExcludedFields, StorePropIncludedFields>>,
+      operation: SnapshotOperation<S ropEntity,StorePropK, StorePropMeta, StorePropAttachment, StorePropE edFields, StorePropIncludedFields>, // Ensure you use this in your logic
+      operationType: SnapshotOperati 
+    ): Promise<Snapshot<StorePropEnt StorePr StorePropM StorePropAttachm StorePropExcludedFie StorePropIncludedFields> | null> => {
       return new Promise((resolve) => {
 
         // Use useSecureUserId to get the current user's ID and ensure the user is authenticated
@@ -1221,13 +908,7 @@ const storeProps: SnapshotStoreProps<
           return; // Exit the function early
         }
         // Use the isSnapshot type guard to validate the snapshot
-        const isValidSnapshot = isSnapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>(snapshot);
+        const isValidSnapshot = isSnapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>(snapshot);
 
         if (!isValidSnapshot) {
           resolve(null); // Resolve with null if the snapshot is invalid
@@ -1235,13 +916,7 @@ const storeProps: SnapshotStoreProps<
         }
         // Check if a snapshot with the requested properties exists
         const existingSnapshot = data.records.find(
-          (record: CalendarManagerStoreClass<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>) => record.id === snapshot.id
+          (record: CalendarManagerStoreClass<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => record.id === snapshot.id
         );
         if (!existingSnapshot) {
           console.warn("No matching snapshot found for the provided properties.");
@@ -1249,17 +924,11 @@ const storeProps: SnapshotStoreProps<
           return;
         }
 
-        const { snapshotManager, snapshotStore } = useSnapshotManager<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>(Number(storeId), storeProps);
+        const { snapshotManager, snapshotStore } = useSnapshotManager<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>(Number(storeId), storeProps);
 
 
         // If all conditions are met, create a new snapshot instance using createSnapshot
-        const newSnapshot = createSnapshot<Data<BaseData<any>>, Data<BaseData<any>>>(
+        const newSnapshot = createSnapshot<Data<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>>(
           snapshot.baseData,
           snapshot.baseMeta,
           snapshot.id,
@@ -1275,40 +944,12 @@ const storeProps: SnapshotStoreProps<
 
     handleSnapshotStoreOperation: async (
       snapshotId: string | number,
-      snapshotStore: SnapshotStore<ExampleEntity,
-        ExampleEntity,
-        DefaultMeta<ExampleEntity, ExampleEntity>,
-        DefaultExcludedFields<ExampleEntity>
-      >,
-      snapshot: Snapshot<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
-      operation: SnapshotOperation<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>,
+      snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      operation: SnapshotOperation<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       operationType: SnapshotOperationType,
-      callback?: (result: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null) => void
-    ): Promise<SnapshotStoreConfig<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null> => {
+      callback?: (result: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null) => void
+    ): Promise<SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null> => {
       try {
         // Validate inputs
         if (!snapshotId || !snapshotStore || !operation) {
@@ -1318,13 +959,7 @@ const storeProps: SnapshotStoreProps<
         // Log the operation for debugging
         console.log(`Handling snapshot operation: ${operationType} for snapshot ID: ${snapshotId}`);
 
-        let result: SnapshotStoreConfig<
-        StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields> | null = null;
+        let result: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null = null;
 
         // Handle different operation types
         switch (operationType) {
@@ -1413,13 +1048,7 @@ const storeProps: SnapshotStoreProps<
 
     // Use async IIFE to handle the async operation
   storeConfig: (async () => {
-    return await createSnapshotStoreConfig<
-  StorePropEntity,
-        StorePropK,
-        StorePropMeta,
-        StorePropAttachment,
-        StorePropExcludedFields,
-        StorePropIncludedFields>(base, overrides);
+    return await createSnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>(base, overrides);
   })()
 };
 

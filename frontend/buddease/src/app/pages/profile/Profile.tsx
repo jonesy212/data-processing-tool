@@ -1,11 +1,20 @@
 // Profile.tsx
-import UserDetails, { User } from '@/app/components/users/User'; // Import the User interface
-import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/personas/PersonaBuilder';
 import React from 'react';
+import UserDetails, { User } from '@/app/users/User';
+import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/app/pages/personas/PersonaBuilder';
+import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
-interface ProfileProps {
-  user: User; // Pass the user data as props
+interface ProfileProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   props: ProfileAccessControl;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Pass the user data as props
 }
 
 type ActivityStatus =  "active" | "inactive" | "away" | "busy" | "offline";

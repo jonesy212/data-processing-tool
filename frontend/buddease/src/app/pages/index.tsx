@@ -8,7 +8,7 @@ import { rootStores } from "@/app/state/stores/RootStores";
 import { User } from "@/app/users/User";
 import generateDynamicContent from '@/components/documents/DynamicContentGenerator';
 import { useAuth } from "@/context/AuthContext";
-import { authToken } from "@/server/auth/authToken";
+import { authToken } from "@/app/server/auth/authToken";
 import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

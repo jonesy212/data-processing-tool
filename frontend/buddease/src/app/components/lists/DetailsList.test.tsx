@@ -51,7 +51,7 @@ describe('DetailsList component', () => {
 
 
 import { render } from '@testing-library/react';
-import BlogList from '@/BlogList';
+import BlogList from '@/app/pages/blog/BlogList';
 import { render } from '@testing-library/react';
 
 describe('BlogList component', () => {

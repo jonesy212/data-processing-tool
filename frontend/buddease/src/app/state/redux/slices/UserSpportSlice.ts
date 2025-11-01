@@ -1,5 +1,5 @@
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/state/redux/slices/RootSlice";
 
 interface UserSupportFeedbackPreferencesState {
   feedbackEnabled: boolean;

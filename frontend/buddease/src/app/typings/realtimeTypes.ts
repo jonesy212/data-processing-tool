@@ -6,7 +6,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { EventData } from "@/app/state/stores/AssignEventStore";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface BaseRealtimeData<
   T extends BaseDataEntity,

@@ -1,10 +1,21 @@
+import { VersionData } from "@/app/versions/VersionData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { Phase } from "@/app/models/phases/Phase";
-import { ExcludedFields } from "@/app/components/routing/Fields";
-import { AppUnifiedMetadata, AppStructuredMetadata } from '@/app/typings/entities/AppMetadataEntity';
-import { DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
-import { Content } from "@/app/models/content/AddContent";
-import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { Collaborator } from "@/app/collaborators/Collaborator";
+import { HighlightColor } from "@/app/components/styling/Palette";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultIncludedFields,
+  DefaultMeta
+} from '@/app/config/BaseConfig';
+import {
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
+} from "@/app/config/MetaDataOptions";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
+import userSettings from "@/app/config/UserSettings";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   SharedIdentifiers,
@@ -18,6 +29,12 @@ import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { Content } from "@/app/models/content/AddContent";
+import { Member } from "@/app/models/members/Member";
+import { Phase } from "@/app/models/phases/Phase";
+import { Task } from "@/app/models/tasks/Task";
+import { Team } from "@/app/models/teams/Team";
+import { TrackerProps } from "@/app/models/tracker/Tracker";
 import UserRoles from "@/app/models/UserRoles";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
@@ -47,39 +64,21 @@ import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AuthStore } from "@/app/state/stores/AuthStore";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { HighlightColor } from "@/app/styling/Palette";
-import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
-import { Collaborator } from "@/app/models/collaborators/Collaborator";
-import { Member } from "@/app/models/teams/TeamMembers";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
-import { TrackerProps } from "@/app/models/tracker/Tracker";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { AllTypes } from "@/app/typings/PropTypes";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { cleanEmptyStrings } from "@/app/utils/web3/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { VideoData } from "@/app/typings/videoTypes/Video";
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
-} from '@/config/BaseConfig';
-import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata,
-} from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
-import userSettings from "@/config/UserSettings";
 import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
-import { K, Meta, T } from "./dataStoreMethods";
+import { K, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,
@@ -122,7 +121,7 @@ interface DataDetails<
 > extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   _id?: string;
   title?: string;
-  description?: string | null;
+  description?: string;
   details?: DetailsItem<T>;
   completed?: boolean;
   startDate?: string | Date;
@@ -137,7 +136,7 @@ interface DataDetails<
   phase?: PhaseDefault | null;
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[];
-  todos?: Todo<T, K>[];
+  todos?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   analysisData?: {
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -201,10 +200,10 @@ interface BaseData<
   children?:
     | ChildRelationship<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  data?: any;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   size?: string | number;
-  description?: string | null;
-  startDate?: Date;
+  description?: string;
+  startDate?: string | Date;
   endDate?: Date;
   isScheduled?: boolean;
   status?: AllStatus | null;
@@ -231,15 +230,14 @@ interface BaseData<
   videoData?: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   additionalData?: any;
   ideas?: Idea[];
-  members?: number[] | string[] | Member[];
-  leader?: User | null;
-  snapshotStores?: SnapshotStoreReference<T, K>[];
+  members?: number[] | string[] | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  leader?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  snapshotStores?: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
-  categoryProperties?: CategoryProperties;
   userConfig?: any; // Use UserConfigData<T, K, Meta>
   scheduled?: ScheduledData<T>;
   [key: string]: any;
@@ -258,22 +256,22 @@ interface Data<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  category?: symbol | string | Category | undefined;
-  categoryProperties?: CategoryProperties;
+  > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  major?: number;
+  minor?: number;
+  patch?: number;
+  category?: Category
+   categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   actions?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   label?: any;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
-  major?: number;
-  minor?: number;
-  patch?: number;
+  toInitializedData?(): InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   [key: string]: any;
 }
 
-// Define the DataDetails component
 // Define the DataDetails component
 const DataDetailsComponent = <
   T extends BaseDataEntity,
@@ -284,6 +282,57 @@ const DataDetailsComponent = <
   IncludedFields extends keyof T = keyof T
 >({ data }: DataDetailsProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
 
+  // Safe property access utilities
+  const safeGetString = (obj: any, prop: string): string => {
+    return obj && typeof obj[prop] === 'string' ? obj[prop] : "";
+  };
+
+  const safeGetBoolean = (obj: any, prop: string): boolean => {
+    return obj && typeof obj[prop] === 'boolean' ? obj[prop] : false;
+  };
+
+  const safeGetDate = (obj: any, prop: string): Date | undefined => {
+    return obj && obj[prop] ? new Date(obj[prop]) : undefined;
+  };
+
+  // Enhanced safe get functions with proper typing
+  const safeGet = <ValueType,>(
+    obj: any, 
+    prop: string, 
+    defaultValue?: ValueType
+  ): ValueType | undefined => {
+    return obj && obj[prop] !== undefined ? obj[prop] : defaultValue;
+  };
+
+  // Type-specific safe get functions
+  const safeGetAnalysisResults = (
+    obj: any
+  ): DataAnalysisResult<any, any, any, any, any, any>[] | undefined => {
+    return safeGet(obj, 'analysisResults');
+  };
+
+  const safeGetCurrentMetadata = (
+    obj: any
+  ): UnifiedMetadata<any, any, any, any, any, any> | undefined => {
+    return safeGet(obj, 'currentMetadata');
+  };
+
+  const safeGetLatestVersion = (
+    obj: any
+  ): Pick<VersionData<any, any, any, any, any, any>, "id" | "versionNumber" | "createdAt" | "createdBy"> | undefined => {
+    return safeGet(obj, 'latestVersion');
+  };
+
+  // Enhanced type guard that checks for CommonData structure
+  const isCommonData = (obj: any): obj is CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+    return obj && 
+           typeof obj === 'object' && 
+           !(obj instanceof Map) &&
+           !(obj instanceof SnapshotStore) &&
+           ('id' in obj || 'title' in obj || 'description' in obj); // Basic structure check
+  };
+
+  // Get tag names with safe access
   const getTagNames = (
     tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
   ): string[] => {
@@ -293,60 +342,64 @@ const DataDetailsComponent = <
       return tags.filter((tag): tag is string => typeof tag === "string");
     }
 
-    return Object.values(tags).reduce<string[]>((acc, tag) => {
-      if (tag.name && typeof tag.name === "string") {
-        acc.push(tag.name);
-      }
-      return acc;
-    }, []);
+    // Safe access for TagsRecord
+    if (typeof tags === 'object' && tags !== null) {
+      return Object.values(tags).reduce<string[]>((acc, tag) => {
+        if (tag && typeof tag === 'object' && 'name' in tag && typeof tag.name === "string") {
+          acc.push(tag.name);
+        }
+        return acc;
+      }, []);
+    }
+
+    return [];
   };
 
-  // Add null check for data
-  if (!data) {
+  // Add null check and type guard
+  if (!data || !isCommonData(data)) {
     return (
       <div className="data-details-empty">
-        <p>No data available</p>
+        <p>No compatible data available or data is in unexpected format</p>
       </div>
     );
   }
-  
+
+  // Now TypeScript knows data has CommonData properties
   return (
     <CommonDetails
       data={{
-        id: data.id ? data.id.toString() : "",
-        title: data.title || "Data Details",
-        description: data.description || "Data descriptions",
-        details: data.details,
-        completed: !!data.completed,
-        label:
-          typeof data.label === "string"
-            ? { text: data.label, color: "" }
-            : data.label || { text: "", color: "" },
-        currentMetadata: data.currentMetadata,
-        date: data.date,
-        createdBy: data.createdBy,
-        currentMeta: data.currentMeta,
-        latestVersion: data.latestVersion,
-        status: data.status as StatusType | undefined,
+        id: safeGetString(data, 'id'),
+        title: safeGetString(data, 'title') || "Data Details",
+        description: safeGetString(data, 'description') || "Data descriptions",
+        analysisResults: safeGetAnalysisResults(data),
+        completed: safeGetBoolean(data, 'completed'),
+        label: safeGet(data, 'label', { text: "", color: "" }),
+        
+        currentMetadata: safeGetCurrentMetadata(data),
+        date: safeGet(data, 'date'),
+        createdBy: safeGetString(data, 'createdBy'),
+        currentMeta: safeGet(data, 'currentMeta'),
+        latestVersion: safeGetLatestVersion(data),
+        status: safeGet(data, 'status') as StatusType | undefined,
       }}
       details={{
-        _id: data._id,
-        id: data.id ? data.id.toString() : "",
-        title: data.title,
-        createdBy: data.createdBy,
-        description: data.description,
-        phase: data.phase,
-        date: data.date,
-        isActive: data.isActive,
-        tags: data.tags ? getTagNames(data.tags) : [],
-        status: data.status,
-        type: data.type ?? "DefaultType",
-        analysisType: data.analysisType,
-        analysisResults: data.analysisResults,
-        updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
-        currentMetadata: data.currentMetadata,
-        currentMeta: data.currentMeta,
-        latestVersion: data.latestVersion,
+        _id: safeGetString(data, '_id'),
+        id: safeGetString(data, 'id'),
+        title: safeGetString(data, 'title'),
+        createdBy: safeGetString(data, 'createdBy'),
+        description: safeGetString(data, 'description'),
+        phase: safeGet(data, 'phase'),
+        date: safeGet(data, 'date'),
+        isActive: safeGetBoolean(data, 'isActive'),
+        tags: safeGet(data, 'tags') ? getTagNames(safeGet(data, 'tags')) : [],
+        status: safeGet(data, 'status'),
+        type: safeGet(data, 'type', "DefaultType"),
+        analysisType: safeGet(data, 'analysisType'),
+        analysisResults: safeGetAnalysisResults(data),
+        updatedAt: safeGetDate(data, 'updatedAt') || new Date(),
+        currentMetadata: safeGetCurrentMetadata(data),
+        currentMeta: safeGet(data, 'currentMeta'),
+        latestVersion: safeGetLatestVersion(data),
       }}
     />
   );
@@ -570,7 +623,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
       id: "",
       name: "",
       phases: [],
-      trackFileChanges: (file: FileData<T>): FileData<T> => {
+      trackFileChanges: (file: FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>): FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
         return {
           id: file.id,
           title: file.title,
@@ -681,12 +734,12 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         taskDescription: "",
         taskStatus: {},
 
-        fetchTasksSuccess: (payload: { tasks: Task<T, K>[] }) => {},
+        fetchTasksSuccess: (payload: { tasks: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[] }) => {},
         fetchTasksFailure: (payload: { error: string }) => {},
         fetchTasksRequest: () => {},
         completeAllTasksSuccess: (success: string) => {},
 
-        completeAllTasks: (payload: { task: Task<T, K>[] }) => {},
+        completeAllTasks: (payload: { task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[] }) => {},
         completeAllTasksFailure: (payload: { error: string }) => {},
         NOTIFICATION_MESSAGE: "",
         NOTIFICATION_MESSAGES: {},
@@ -694,16 +747,16 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         setDynamicNotificationMessage: (message: string) => {},
         takeTaskSnapshot: (taskId: string) => {},
         markTaskAsComplete: (taskId: string) => {},
-        updateTaskPositionSuccess: (payload: { task: Task<T, K> }) => {},
+        updateTaskPositionSuccess: (payload: { task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> }) => {},
 
         batchFetchTaskSnapshotsRequest: (
-          snapshotData: Record<string, Task<T, K>[]>
+          snapshotData: Record<string, Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]>
         ) => {},
         batchFetchTaskSnapshotsSuccess: (
-          taskId: Record<string, Task<T, K>[]>
+          taskId: Record<string, Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]>
         ) => {},
         batchFetchUserSnapshotsRequest: (
-          snapshotData: Record<string, User[]>
+          snapshotData: Record<string, User<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]>
         ) => {},
 
         assignedTaskStore: {
@@ -757,7 +810,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
           unassignUsersFromTasks: (taskId: string, userIds: string[]) => {
             // Logic to unassign users
           },
-          setDynamicNotificationMessage: (message: Message) => {
+          setDynamicNotificationMessage: (message: Message<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => {
             // Logic to set notification message
           },
 
@@ -908,7 +961,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
             throw new Error("Function not implemented.");
           },
           setAssignedTaskStore: function (
-            store: SnapshotStore<BaseData<any>>
+            store: SnapshotStore<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>
           ): void {
             throw new Error("Function not implemented.");
           },
@@ -919,28 +972,28 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
 
         updateTaskDueDate: (taskId: string, dueDate: Date) => {},
         updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
-        filterTasksByStatus: (status: AllStatus): Task<T, K>[] => {
+        filterTasksByStatus: (status: AllStatus): Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[] => {
           // Implement logic to filter tasks by their status
           return coreData.tasks.filter(
-            (task: Task<T, K>) => task.status === status
+            (task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => task.status === status
           );
         },
 
         getTaskCountByStatus: (status: AllStatus): number => {
           // Implement logic to count tasks by status
           return coreData.tasks.filter(
-            (task: Task<T, K>) => task.status === status
+            (task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => task.status === status
           ).length;
         },
 
         clearAllTasks: () => {},
         archiveCompletedTasks: () => {},
         updateTaskAssignee:
-          (taskId: string, assignee: User) =>
+          (taskId: string, assignee: User<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) =>
           async (dispatch: any): Promise<void> => {
             // Implement logic to update the assignee of a task
             const taskIndex = coreData.tasks.findIndex(
-              (task: Task<T, K>) => task._id === taskId
+              (task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => task._id === taskId
             );
             if (taskIndex !== -1) {
               coreData.tasks[taskIndex].assignee = assignee;
@@ -953,17 +1006,17 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
           },
 
         getTasksByAssignee: async (
-          tasks: Task<T, K>[],
-          assignee: User
-        ): Promise<Task<T, K>[]> => {
+          tasks: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[],
+          assignee: User<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>
+        ): Promise<Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]> => {
           // Implement logic to get tasks assigned to a specific user
           return tasks.filter((task) => task.assigneeId === assignee._id);
         },
 
-        getTaskById: (taskId: string): Task<T, K> | null => {
+        getTaskById: (taskId: string): Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> | null => {
           // Implement logic to find a task by its ID
           return (
-            coreData.tasks.find((task: Task<T, K>) => task._id === taskId) ||
+            coreData.tasks.find((task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => task._id === taskId) ||
             null
           );
         },
@@ -971,20 +1024,20 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         sortByDueDate: () => {},
         exportTasksToCSV: () => {},
         dispatch: (action: any) => {},
-        addTaskSuccess: (payload: { task: Task<T, K> }) => {},
-        addTask: (task: Task<T, K>) => {},
-        addTasks: (tasks: Task<T, K>[]) => {},
+        addTaskSuccess: (payload: { task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> }) => {},
+        addTask: (task: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) => {},
+        addTasks: (tasks: Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>[]) => {},
         assignTaskToUser: (taskId: string, userId: string) => {},
 
         removeTask: (taskId: string) => {},
         removeTasks: (taskIds: string[]) => {},
         fetchTasksByTaskId: async (
           taskId: string
-        ): Promise<Task<T, K> | null> => {
+        ): Promise<Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> | null> => {
           try {
             const response = await taskService.getTaskById(taskId);
             if (response?.data) {
-              return response.data as Task<T, K>; // Cast to the expected type
+              return response.data as Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>; // Cast to the expected type
             }
             throw new Error("No task data found");
           } catch (error) {
@@ -1142,19 +1195,43 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
     skills: ["Project Management", "Software Development"],
     achievements: ["Completed 100 projects", "Employee of the Month"],
     profileVisibility: "Public",
-    profileAccessControl: {
-      friendsOnly: true,
-      allowTagging: true,
-      blockList: [],
-      allowMessagesFromNonContacts: true,
-      shareProfileWithSearchEngines: false,
-      isPrivate: true,
+        profileAccessControl: {
+      // Privacy Levels
+      isPrivate: false,
       isPrivateOnly: false,
       isPrivateOnlyForContacts: false,
       isPrivateOnlyForGroups: false,
-      allowMessagesFromFriendContacts: false,
-      activityStatus: "active",
-      isAuthorized: false,
+      friendsOnly: true,
+      
+      // Messaging Controls
+      allowMessagesFromNonContacts: true,
+      allowMessagesFromFriendContacts: true,
+      canSendMessages: true,
+      
+      // Visibility Controls
+      canViewProfile: true,
+      canSeeFriends: true,
+      canSeeActivity: true,
+      canSeeOnlineStatus: true,
+      canSeeLastSeen: true,
+      canSeeProfilePicture: true,
+      canSeePosts: true,
+      canSeeContactInfo: true,
+      canSeeMutualFriends: true,
+      
+      // Interaction Controls
+      allowTagging: true,
+      canCommentOnPosts: true,
+      canAddToGroups: true,
+      canShareProfile: true,
+      
+      // Security & Blocking
+      blockList: [],
+      isAuthorized: true,
+      shareProfileWithSearchEngines: false,
+      
+      // Status (you'll need to define ActivityStatus or use a default)
+      activityStatus: "active" // or whatever default ActivityStatus value you have
     },
     currentMetadata: {
       area: "coreData",

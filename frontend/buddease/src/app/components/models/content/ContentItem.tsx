@@ -1,8 +1,8 @@
-import { Data } from "@/app/models/data/Data";
 import { FileType } from '@/app/documents/attachment/Attachment';
+import { Data } from "@/app/models/data/Data";
 import { StatusType } from "@/app/models/data/StatusType";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Tag } from "@/app/models/tracker/Tracker";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { useState } from "react";
 
 // Check if the tag is an instance of Tag
@@ -29,7 +29,7 @@ interface ContentItem {
   body?: string; // Description or body of the update (e.g., details on what was changed)
   heading: React.ReactNode; // Main heading for UI rendering
   subheading?: React.ReactNode; // Optional subheading for more context
-  description?: string | null | undefined; // Description for additional information
+  description?: string | undefined; // Description for additional information
   type: FileType; // Type of content item (e.g., a text update, file attachment, etc.)
   footer?: React.ReactNode; // Footer, such as the user who made the update or the update date
   status: StatusType | undefined; // Status of the task after this update (e.g., "In Progress", "Completed")

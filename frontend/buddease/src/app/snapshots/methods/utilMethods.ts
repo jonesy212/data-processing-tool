@@ -1,9 +1,10 @@
+// utilMethods.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Snapshot } from "@/app/types"; // adjust path to where Snapshot<T,K> lives
 import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -11,7 +12,6 @@ import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataS
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotUnion, SnapshotsArray } from '@/LocalStorageSnapshotStore';
 
-// utilMethods.ts
 
 
 
@@ -272,15 +272,15 @@ export const UtilMethods = {
   >(
     storeId: number,
     snapshotId: string,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<SnapshotUnion<T, K, Meta>, T> | null,
+    snapshot: Snapshot<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T> | null,
     timestamp: string | number | Date | undefined,
     type: string,
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
-    snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta>, T, Meta, ExcludedFields>,
-    data: T
+    snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T, Meta, ExcludedFields>,
+    data: T,
+    category?: Category
   ): Promise<string[] | undefined> {
     try {
       const keys: string[] = [];

@@ -1,37 +1,38 @@
 // EventService.ts
 import { EventActions } from '@/app/actions/EventActions';
-import { UIActions } from "@/app/actions/UIActions";
+import { UIActions } from '@/app/actions/UIActions';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
+import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
 import { BaseData } from '@/app/models/data/Data';
-import { Member } from "@/app/models/teams/TeamMembers";
-import { Progress } from "@/app/models/tracker/ProgressBar";
+import { Member } from '@/app/models/members/Member';
+import { Progress } from '@/app/models/tracker/ProgressBar';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { implementThen } from "@/app/state/stores/CommonEvent";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
-import { Version } from "@/app/versions/Version";
-import { VersionHistory } from "@/app/versions/VersionData";
-import { VideoData } from "@/app/video/Video";
-import { StructuredMetadata } from '@/config//StructuredMetadata';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
-import { createMetaState } from '@/server/metadata/MetadataStateManager';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { implementThen } from '@/app/state/stores/CommonEvent';
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity';
+import { Version } from '@/app/versions/Version';
+import { VersionHistory } from '@/app/versions/VersionData';
+import { VideoData } from '@/app/typings/videoTypes';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { useMeta } from '@/app/config/useMeta';
+import { useMetadata } from '@/app/config/useMetadata';
+import { createMetaState } from '@/app/server/metadata/MetadataStateManager';
 import {
   BaseSyntheticEvent,
   ModifierKey,
   MouseEvent,
   SyntheticEvent,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { CustomEventExtension } from "./BaseCustomEvent";
-
+} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { CustomEventExtension } from '@/app/events/BaseCustomEvent';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget>,
@@ -167,7 +168,6 @@ export const createCustomEvent = (
     description,
     startDate,
     endDate,
-    snapshotStore: {}, 
     eventId: "event-id", 
     eventType: "custom-event", 
     timestamp: Date.now(), 
@@ -176,6 +176,7 @@ export const createCustomEvent = (
     cancelable: false,
     startTime: new Date(),
     endTime: new Date(),
+    snapshotStore: {} as SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields> , 
 
     // Methods and properties related to event handling
     addEventListener: (
@@ -303,7 +304,7 @@ class EventService {
     return this.events;
   }
 
-  getEventById(eventId: string): CalendarEvent | CustomEvent | undefined {
+  getEventById(eventId: string): CalendarEvent<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> | CustomEvent | undefined {
     const event = this.events.find((evt) => evt.id === eventId);
     return event;
   }
@@ -365,14 +366,19 @@ class EventService {
     description: string,
     startDate: Date,
     endDate: Date
-  ): CalendarEvent {
+  ): CalendarEvent<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> {
 
     const area = fetchUserAreaDimensions().toString()
     const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
     const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 
     // Create a new CalendarEvent object with the provided parameters
-    const customEvent: CalendarEvent = {
+    const customEvent: CalendarEvent<
+      EventEntity,
+      EventK, EventMeta,
+      EventAttachment, EventExcludedFields,
+      EventIncludedFields
+    > = {
       _id: "",
       id,
       title,
@@ -399,10 +405,10 @@ class EventService {
         [], // tags: tags associated with the metadata
         undefined, // metadata: metadata object, can be undefined initially
         undefined, // initialState: initial state of the metadata, can be undefined
-        {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
+        {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // meta: additional metadata, can be an empty array if not needed
         { eventRecords: {} }, // events: event manager data, initializing with an empty event record
         {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // version: version information, can be undefined if not applicable
-        {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+        {} as VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // lastUpdated: last updated version history, it should be provided
         true, // isActive: boolean flag indicating whether metadata is active or not
         {}, // config: configuration settings for the metadata, using an empty object
         [], // permissions: permissions associated with the metadata, empty for now

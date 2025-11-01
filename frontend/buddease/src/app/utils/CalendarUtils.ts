@@ -2,7 +2,7 @@
 // CalendarUtils.ts
 import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 function isCalendarEventWithCriteria<T>(
     data: T | CalendarEventWithCriteria
     ): data is CalendarEventWithCriteria {

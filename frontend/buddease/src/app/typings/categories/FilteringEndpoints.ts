@@ -1,6 +1,6 @@
 // FilteringEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface FilteringEndpoints {
+export interface FilteringEndpoints extends EndpointCategoryConfig {
   filterTasks: EndpointConfig;
 }

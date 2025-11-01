@@ -1,9 +1,18 @@
 // InternalCache.ts
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-
-class InternalCache<T> {
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
+class InternalCache<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   private cache: Map<string, T>;
 
   constructor() {
@@ -35,34 +44,34 @@ class InternalCache<T> {
 // Create a cache instance for your data type (e.g., BaseData)
 // 1. First define your cache with proper generic parameters
 export const internalCache = new InternalCache<
-  Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>
+  Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
 >();
 
 
 // Option 1: For direct Snapshot storage (recommended for most cases)
 export const snapshotCache = new InternalCache<
-  Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>
+  Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
 >();
 
 // Option 2: For Promise storage (if you need async cache operations)
 export const promiseSnapshotCache = new InternalCache<
-  Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>>
+  Promise<Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>>
 >();
 
 
 // Example methods using the cache instance
 const cacheOperations = {
   // For direct Snapshot storage
-  getSnapshot: (id: string): Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T> | undefined => {
+  getSnapshot: (id: string): Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | undefined => {
     return snapshotCache.get(id);
   },
 
-  addSnapshot: (id: string, snapshot: Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>): void => {
+  addSnapshot: (id: string, snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>): void => {
     snapshotCache.set(id, snapshot);
   },
 
   // For Promise storage
-  getPromiseSnapshot: (id: string): Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T> | undefined> => {
+  getPromiseSnapshot: (id: string): Promise<Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | undefined> => {
     const cachedPromise = promiseSnapshotCache.get(id);
     if (!cachedPromise) {
       return Promise.resolve(undefined);
@@ -70,7 +79,7 @@ const cacheOperations = {
     return cachedPromise;
   },
 
-  addPromiseSnapshot: (id: string, promise: Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>>): void => {
+  addPromiseSnapshot: (id: string, promise: Promise<Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>>): void => {
     promiseSnapshotCache.set(id, promise);
   },
 

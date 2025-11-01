@@ -1,10 +1,10 @@
 import Stopwatch from "@/app/calendar/Stopwatch";
 import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";
 import { K, T } from "@/app/models/data/dataStoreMethods";
-import { fetchUserAreaDimensions, UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import React, { useState } from "react";
 import { Phase } from "./Phase";
 // Function to get a phase component based on the selected phase name

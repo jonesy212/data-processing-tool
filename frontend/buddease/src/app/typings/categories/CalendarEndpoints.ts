@@ -1,7 +1,7 @@
 // CalendarEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CalendarEndpoints {
+export interface CalendarEndpoints extends EndpointCategoryConfig {
   events: EndpointConfig;
   singleEvent: (eventId: string) => EndpointConfig;
   completeAllEvents: EndpointConfig;

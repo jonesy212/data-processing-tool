@@ -1,7 +1,6 @@
 // SnapshotMethods.ts
 
-import { SnapshotWithData } from '@/app/calendar/CalendarApp';
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
+import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -24,7 +23,6 @@ import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
 import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData, SnapshotHierarchyMethods } from '@/app/snapshots/SnapshotData';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
-import { SnapshotEvents } from "@/app/typings/eventTypes";
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
@@ -34,18 +32,17 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { Tag } from '@/app/typings/models/tracker';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { Tag } from '@/app/models/tracker/Tag';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
-import { Version } from '@/versions/Version';
+import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { Version } from '@/app/versions/Version';
 import { IHydrateResult } from "mobx-persist";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { default as SnapshotStore } from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-;
-
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // 1. COMPARISON METHODS
 interface SnapshotComparisonMethods<
@@ -1127,5 +1124,5 @@ interface SnapshotMethods<
   ) => void;
 }
 
-export type { SnapshotHierarchyMethods,SnapshotLifecycleMethods, SnapshotMethods, SnapshotSubscriptionMethods };
+export type { SnapshotHierarchyMethods, SnapshotLifecycleMethods, SnapshotMethods, SnapshotSubscriptionMethods };
 

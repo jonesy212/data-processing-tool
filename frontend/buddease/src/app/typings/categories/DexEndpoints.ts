@@ -1,7 +1,7 @@
 // DexEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DexEndpoints {
+export interface DexEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (dexId: string) => EndpointConfig;
   add: EndpointConfig;

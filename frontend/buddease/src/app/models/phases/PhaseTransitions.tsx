@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { BaseData } from '@/app/models/data/Data';
 import { Phase } from "./Phase";
 import React from "react";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CustomPhaseHooks } from '@/app/models/phases/Phase';
 

@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AllStatus } from "@/app/stores/DetailsListStore";
 import { WritableDraft } from "@/app/ReducerGenerator";
-import updateCall from "@/state/redux/slices/CollaborationSlice";
+import updateCall from "@/app/state/redux/slices/CollaborationSlice";
 import  {Tag}  from "@/app/components/models/tracker/Tag";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 

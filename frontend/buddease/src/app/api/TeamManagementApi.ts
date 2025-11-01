@@ -4,7 +4,7 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { useTeamContext } from "@/app/components/context/TeamContext";
-import { Team } from "@/app/components/models/teams/Team";
+import { Team } from "@/app/models/teams/Team";
 import {
     NotificationTypeEnum,
     useNotification,

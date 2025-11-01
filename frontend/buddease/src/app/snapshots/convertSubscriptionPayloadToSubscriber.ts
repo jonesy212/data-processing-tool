@@ -5,16 +5,19 @@ import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/Stat
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { Payload } from "@/server/database/Payload";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Payload } from "@/app/server/database/Payload";
 import { CustomSnapshotData } from "./SnapshotData";
 
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
 const convertSubscriptionPayloadToSubscriber = <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   payload: SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>> => {

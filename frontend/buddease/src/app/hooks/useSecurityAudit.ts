@@ -1,28 +1,48 @@
 // useSecurityAudit.ts
-import { useSecureUserId as fetchSecureUserId } from '@/useSecureUserId';
+import { useSecureUserId as fetchSecureUserId } from '@/app/hooks/useSecureUserId';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+
+// Type guard for sensitive fields
+const isSensitiveField = (field: any): field is { isSensitive: boolean; value?: any } => {
+    return field && typeof field === "object" && "isSensitive" in field;
+};
 
 export const useSecurityAudit = () => {
-    // Reuse the secure user ID logic from useSecureUserId.ts
     const { userId, error } = fetchSecureUserId();
 
-    const sanitizeMetadata = <T>(metadata: Partial<T>): Partial<T> => {
-        return Object.keys(metadata).reduce<Partial<T>>((sanitized, key) => {
-            const field = metadata[key as keyof T];
+    const sanitizeMetadata = <
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      metadata: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    ): Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+        const sanitized: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
-            if (field && typeof field === "object" && "isSensitive" in field) {
-                // Type assertion to ensure TypeScript recognizes `field` as an object with `isSensitive`
-                const sensitiveField = field as { isSensitive: boolean };
+        for (const key in metadata) {
+            if (metadata.hasOwnProperty(key)) {
+                const metadataKey = key as keyof UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+                const field = metadata[metadataKey];
 
-                // Redact the field if sensitive, otherwise keep it unchanged
-                sanitized[key as keyof T] = sensitiveField.isSensitive
-                    ? "REDACTED" as unknown as T[keyof T] // Explicit cast to ensure type compatibility
-                    : field as T[keyof T]; // Ensure `field` is of type `T[keyof T]`
-            } else {
-                sanitized[key as keyof T] = field as T[keyof T];
+                if (isSensitiveField(field)) {
+                    // Handle sensitive fields
+                    sanitized[metadataKey] = field.isSensitive 
+                        ? ("REDACTED" as any) 
+                        : (field.value as any);
+                } else {
+                    // Handle regular fields
+                    sanitized[metadataKey] = field as any;
+                }
             }
+        }
 
-            return sanitized;
-        }, {});
+        return sanitized;
     };
-    return { sanitizeMetadata, userId, error }
-}
+
+    return { sanitizeMetadata, userId, error };
+};

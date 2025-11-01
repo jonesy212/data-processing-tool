@@ -1,5 +1,5 @@
 // thresholdIdentification.ts
-import { ParsedData } from "./parseData";
+import { ParsedData } from '@/app/dataIntegration/parseData';
 
 // Function to identify potential arbitrage opportunities based on price disparities exceeding a threshold
 export const thresholdIdentification = (parsedData: ParsedData[], threshold: number): void => {

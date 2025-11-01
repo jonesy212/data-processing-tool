@@ -1,18 +1,18 @@
 // TaskSlice.ts
-import { AllStatus } from "@/app/stores/DetailsListStore";
-import { MobXRootState } from "@/app/stores/RootStores";
 import { updateTaskPosition } from "@/app/api/TasksApi";
-import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { BaseData } from '@/app/models/data/Data';
+import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { WritableDraft } from "@/app/ReducerGenerator";
+import { AllStatus } from "@/app/stores/DetailsListStore";
+import { MobXRootState } from "@/app/stores/RootStores";
 import {
-    PayloadAction,
-    ThunkAction,
-    createSlice,
+  PayloadAction,
+  ThunkAction,
+  createSlice,
 } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { updateTask } from "./CollaborationSlice";

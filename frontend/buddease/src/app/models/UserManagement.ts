@@ -1,4 +1,4 @@
-import { userService } from '@/app/components/api/ApiUser';
+import { userService } from '@/app/api/ApiUser';
 import { User } from '@/app/components/users/User';
 import { UserRole } from "@/app/models/UserRole";
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';

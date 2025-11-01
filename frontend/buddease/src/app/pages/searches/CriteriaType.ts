@@ -6,7 +6,7 @@ import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";

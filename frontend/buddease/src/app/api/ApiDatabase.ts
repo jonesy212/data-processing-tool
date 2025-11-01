@@ -68,7 +68,7 @@ const fetchUserIdsFromDatabase = async (taskId: string): Promise<string[]> => {
 };
 
 
-const fetchUserFromDatabase = async (userId: string): Promise<User | null> => {
+const fetchUserFromDatabase = async (userId: string): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   try {
     const response = await fetch(`/api/users/${userId}`);
     
@@ -91,7 +91,7 @@ const fetchUserFromDatabase = async (userId: string): Promise<User | null> => {
       NotificationTypeEnum.SUCCESS
     );
     
-    return user as User;
+    return user as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   } catch (error) {
     console.error(`Error fetching user with ID ${userId}:`, error);
     handleUserApiErrorAndNotify(
@@ -106,7 +106,14 @@ const fetchUserFromDatabase = async (userId: string): Promise<User | null> => {
 
 
 // Add more database operations as needed
-const createUserInDatabase = async (userData: Partial<User>): Promise<User> => {
+const createUserInDatabase = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(userData: Partial<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await fetch('/api/users', {
       method: 'POST',

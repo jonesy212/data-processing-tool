@@ -1,5 +1,5 @@
 // DocumentBuilderConfigComponent.tsx
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import React from "react";
 
 interface DocumentBuilderConfigProps {

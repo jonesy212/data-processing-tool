@@ -1,5 +1,5 @@
 import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
-import { MediaMetadata } from "@/config/MetaDataOptions";
+import { MediaMetadata } from "@/app/config/MetaDataOptions";
 
 interface MediaSession {
   metadata: MediaMetadata | null;

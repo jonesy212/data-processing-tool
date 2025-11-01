@@ -1,4 +1,4 @@
-import { UserPreferences } from "@/config/UserPreferences";
+import { UserPreferences } from "@/app/config/UserPreferences";
 import { endpointPreferences } from "@/app/ApiPreferencesEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
 import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";

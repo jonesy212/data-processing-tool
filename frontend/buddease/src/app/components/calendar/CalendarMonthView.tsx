@@ -1,12 +1,12 @@
 // MonthView.jsx
 import { TaskActions } from "@/app/actions/TaskActions";
-import { CommonCalendarProps } from "@/app/calendar/Calendar";
+import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
 import TaskList from "@/app/components/lists/TaskList";
 import CryptoTransaction from "@/app/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/models/content/ContentPost";
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import { Task } from "@/app/models/tasks/Task";
 import { Project } from '@/app/models/projects/Project';
+import { Task } from "@/app/models/tasks/Task";
 import { updateTask } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {
@@ -27,7 +27,7 @@ import { TaskState } from "@/app/state/redux/slices/TaskSlice";
 import { YearInfo } from "./CalendarYear";
 import { MonthInfo } from "./Month";
 
-import { TaskCollection } from "@/app/snapshots/SnapshotActions";
+import { TaskCollection } from "@/app/actions/SnapshotActions";
 import { updateTaskDetails } from "@/app/state/redux/slices/ContentSlice";
 const {notify} = useNotification;
 

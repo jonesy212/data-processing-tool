@@ -11,7 +11,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AxiosError } from "axios";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the API base URL for version data
 const VERSION_DATA_BASE_URL = endpoints.versionData;

@@ -2,28 +2,42 @@
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DocumentData } from '@/app/documents/DocumentBuilder';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import ListGenerator from '@/app/generators/ListGenerator';
 import FolderData from '@/app/models/data/FolderData';
 import SearchHistory from '@/app/versions/SearchHistory';
-import Version from '@/app/versions/Version';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Entity } from '@/routing/FuzzyMatch';
+import { Version } from '@/app/versions/Version';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Entity } from '@/app/routing/FuzzyMatch';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult
-interface SearchResultWithQuery<T> extends SearchResult<T> {
+interface SearchResultWithQuery<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SearchResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   query: string;
-  searchResults?: SearchResultWithQuery<T>[];
+  searchResults?: SearchResultWithQuery<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   // [Symbol.iterator](): IterableIterator<T>
 }
 
 // Define the SearchResultProps interface for SearchResultComponent
-interface SearchResultProps<T> {
-  result: SearchResultWithQuery<T>;
+interface SearchResultProps<  
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  result: SearchResultWithQuery<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 
@@ -34,7 +48,8 @@ interface SearchResult<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Entity, DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  > extends Entity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   items: T[];
   totalCount: number;
   id: number;
@@ -45,7 +60,7 @@ interface SearchResult<
   topics: string[];
   highlights:  Highlight[];
   keywords: string[];
-  folders: FolderData[];
+  folders: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   options: DocumentOptions;
   folderPath: string | null;
   previousMetadata: any;
@@ -56,7 +71,7 @@ interface SearchResult<
   version?: Version;
   load?: (content: any) => void;
   query: string;
-  results: SearchResult<any>[];
+  results: SearchResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
   // todo set up using for devs
   repoName?: string;
@@ -100,7 +115,7 @@ const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => 
           ) : (
             // If there is only one item, render its details using SearchResultItem
             <SearchResultItem
-              key={item.id} 
+              key={result.id ?? index}  
               items={result.items}
               id={result.id}
               title={result.title}

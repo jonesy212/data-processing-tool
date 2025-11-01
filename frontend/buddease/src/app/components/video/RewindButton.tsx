@@ -1,14 +1,13 @@
-// RewindButton.tsx
+// platform/web/RewindButton.tsx
 import React from 'react';
+import { SharedButton } from '@/app/platform/shared/SharedButton'
 
 const RewindButton: React.FC = () => {
   const handleRewind = () => {
-    // Implement rewind functionality
+    // Web-specific rewind logic
   };
 
-  return (
-    <button onClick={handleRewind}>Rewind</button>
-  );
+  return <SharedButton label="Rewind" onClick={handleRewind} />;
 };
 
 export default RewindButton;

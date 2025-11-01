@@ -3,20 +3,19 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from "@/app/models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
-import { BaseTaskEntity } from "@/app/models/tasks/Task";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
 import { PhaseMeta } from "@/app/typings/phaseTypes";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Task } from "@/app/models/tasks/Task";
 import { TaskData } from "./Task";
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
 // Define the tasks data source with proper generic parameters
-const tasksDataSource: Record<string, Task<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> = {
+const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> = {
   "1": {
     id: "1",
     _id: "taskData",
@@ -69,10 +68,10 @@ const tasksDataSource: Record<string, Task<BaseTaskEntity, TaskK, TaskMeta, Task
     analysisResults: [],
     
     // Complex type properties (properly typed)
-    phase: {} as Phase<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    videoData: {} as VideoData<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    phase: {} as Phase<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    videoData: {} as VideoData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     ideas: [] as Idea[],
-    details: {} as DetailsItem<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    details: {} as DetailsItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     
     // Meta property (correct type)
     meta: {} as TaskMeta,
@@ -181,7 +180,7 @@ const tasksDataSource: Record<string, Task<BaseTaskEntity, TaskK, TaskMeta, Task
     
     // Complex type properties
     phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<PhaseData<BaseData<any>>>, PhaseMeta<PhaseData<BaseData<any>>>>,
-    videoData: {} as VideoData<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    videoData: {} as VideoData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     ideas: [] as Idea[],
     details: {} as DetailsItem<BaseData<any>>,
     

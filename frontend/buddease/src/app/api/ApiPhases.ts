@@ -4,7 +4,7 @@ import { useNotification } from '@/context/NotificationContext';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { AppPhase } from '@/app/entities/PhaseEntity';
+import { AppPhase } from '@/app/typings/entities/PhaseEntity';
 import { NotificationType } from "@/context/NotificationContext";
 
 // Base URL for your API

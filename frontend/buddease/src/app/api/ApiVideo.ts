@@ -1,18 +1,19 @@
 // ApiVideo.ts
 import { VideoActions } from "@/app/actions/VideoActions";
-import axiosInstance from "@/app/api/csrfToken";
+import internalApiService from "./ApiClient";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typiings/entities/VideoEntity'
-import useVideoStore, { Video } from "@/app/state/stores/VideoStore";
-import { VideoMetadata } from "@/config/StructuredMetadata";
+import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
+import useVideoStore from "@/app/state/stores/VideoStore";
+import { Video } from '@/app/typings/videoTypes/Video'
+import { VideoMetadata } from "@/app/config/StructuredMetadata";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const API_BASE_URL = endpoints.videos.list;
 
@@ -74,7 +75,7 @@ export const videoService = observable({
     description: string
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.post(`${API_BASE_URL}`, {
+      const response = await internalApiService.post(`${API_BASE_URL}`, {
         title,
         description,
       });
@@ -108,7 +109,7 @@ export const videoService = observable({
     metadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {
+      const response = await internalApiService.put(`${API_BASE_URL}/${id}`, {
         metadata,
       });
       runInAction(() => {
@@ -142,7 +143,7 @@ export const videoService = observable({
     description: string
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {
+      const response = await internalApiService.put(`${API_BASE_URL}/${id}`, {
         title,
         description,
       });
@@ -172,7 +173,7 @@ export const videoService = observable({
 
   fetchVideo: async function (id: string): Promise<{ video: Video }> {
     try {
-      const response = axiosInstance.get(`${API_BASE_URL}/${id}`);
+      const response = internalApiService.get(`${API_BASE_URL}/${id}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -199,7 +200,7 @@ export const videoService = observable({
 
   fetchVideoByUserId: async function (userId: string): Promise<Video[]> {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/user/${userId}`
       );
       const videoData: Video[] = response.data;
@@ -218,7 +219,7 @@ export const videoService = observable({
 
   deleteVideo: async function (id: string): Promise<{ video: Video }> {
     try {
-      const response = await axiosInstance.delete(`${API_BASE_URL}/${id}`);
+      const response = await internalApiService.delete(`${API_BASE_URL}/${id}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
@@ -245,7 +246,7 @@ export const videoService = observable({
 
   deleteVideoSuccess: async (id: string): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.delete(`${API_BASE_URL}/${id}`);
+      const response = await internalApiService.delete(`${API_BASE_URL}/${id}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
         console.log(response);
@@ -280,7 +281,7 @@ export const videoService = observable({
     notification: string
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.post(
+      const response = await internalApiService.post(
         `${API_BASE_URL}/notification`,
         {
           title: "Video Notification",
@@ -319,7 +320,7 @@ export const videoService = observable({
     metadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>
   ): Promise<{ video: Video }> => {
     try {
-      const response = await axiosInstance.put(
+      const response = await internalApiService.put(
         `${API_BASE_URL}/${id}/metadata`,
         metadata
       );
@@ -398,7 +399,7 @@ export const videoService = observable({
     };
 
     try {
-      const response = await axiosInstance.put(`${API_BASE_URL}/${id}/tags`, {
+      const response = await internalApiService.put(`${API_BASE_URL}/${id}/tags`, {
         tags: newTags,
       });
       runInAction(() => {

@@ -1,18 +1,18 @@
 // ProjectEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import {  SnapshotData } from "@/app/snapshots/SnapshotData";
-import {  SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotConfigParams } from "@/app/snapshots/SnapshotConfigBuilder";
 import { Project } from "@/app/models/projects/Project";
+import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotConfigParams } from "@/app/snapshots/SnapshotConfigBuilder";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 // -------------------
 // Project Entity Type
@@ -34,6 +34,7 @@ type ProjectEntity = BaseDataEntity & {
   isActive?: boolean;
   permissions?: string[];
   customFields?: Record<string, any>;
+  title: string;
 };
 
 // -------------------
@@ -126,10 +127,8 @@ type ProjectSubscriberCollection = SubscriberCollection<ProjectEntity, ProjectK,
 type ProjectSnapshotStoreConfig = SnapshotStoreConfig<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 
-export type { ProjectEntity,
-  ProjectK,
-  ProjectMeta,
-  ProjectAttachment,
-  ProjectExcludedFields,
-  ProjectIncludedFields
-}
+export type {
+  ProjectAttachment, ProjectEntity, ProjectExcludedFields,
+  ProjectIncludedFields, ProjectK,
+  ProjectMeta
+};

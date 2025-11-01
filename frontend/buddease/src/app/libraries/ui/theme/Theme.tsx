@@ -1,5 +1,5 @@
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
 

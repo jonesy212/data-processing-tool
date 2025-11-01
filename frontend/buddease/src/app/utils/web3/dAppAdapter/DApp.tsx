@@ -23,10 +23,10 @@ import { UserData } from "@/app/users/User";
 import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import YourClass from "@/app/utils/YourClass";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { authToken } from "@/server/auth/authToken";
-import Connection from "@/server/database/Connection";
-import isValidAuthToken from "@/server/security/AuthValidation";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { authToken } from "@/app/server/auth/authToken";
+import Connection from "@/app/server/database/Connection";
+import isValidAuthToken from "@/app/server/security/AuthValidation";
 import React, { FC } from "react";
 import winston from "winston";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
@@ -498,7 +498,7 @@ class CustomDAppAdapter<
         component = await import("@/pages/forms/UserFormComponent");
         break;
       case "authToken":
-        component = await import("@/server/auth/authToken");
+        component = await import("@/app/server/auth/authToken");
         break;
 
       default:

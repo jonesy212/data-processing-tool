@@ -1,6 +1,6 @@
 // MarkdownDoc.ts
 
-import { MarkdownDocument } from "@/documents/DocumentInterfaces";
+import { MarkdownDocument } from "@/app/documents/DocumentInterfaces";
 
 // MarkdownDocument Implementation
 class MarkdownDoc implements MarkdownDocument {

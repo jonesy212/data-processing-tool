@@ -10,7 +10,7 @@ import { Product } from "@/app/products/Product";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
 import { K, T } from '@/components/models/data/dataStoreMethods';
-import { ProjectMetadata } from "@/config/StructuredMetadata";
+import { ProjectMetadata } from "@/app/config/StructuredMetadata";
 import { makeAutoObservable } from 'mobx';
 
 const API_BASE_URL = endpoints.projects;

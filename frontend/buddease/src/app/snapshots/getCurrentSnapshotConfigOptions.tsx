@@ -13,13 +13,13 @@ import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/app/utils/versionUtils";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
 

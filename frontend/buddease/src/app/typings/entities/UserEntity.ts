@@ -8,12 +8,13 @@ import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { UserPreferences } from '@/app/typings/userTypes';
 import { User, UserData } from "@/app/users/User";
-import FrontendStructure from '@/config/appStructure/FrontendStructure';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { RealtimeDataItem } from '../realtimeTypes';
 import { ApplyFieldFilters } from './AppEntity';
+import { LoginCredentials } from '@/app/server/auth/AuthServerService'
 
 // Define the actual UserEntity interface
 interface UserEntity extends BaseDataEntity {
@@ -243,25 +244,25 @@ type UserStructuredMetadata = StructuredMetadata<
 
 // Export all the new types
 export type {
-    AdminUser, AdminUserData,
-    // Core App types
-    AppUser,
-    AppUserData,
-    AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
-    AppUserSnapshotData,
-    AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, BasicUser,
-    PremiumUser, PrivateUserData,
-    // Data variations
-    PublicUserData, UserAttachment, UserContext,
-    // Role-specific types
-    UserDataDefault, UserEntity, UserExcludedFields,
-    // Utility types
-    UserFilterOptions, UserFrontendStructure, UserIncludedFields, UserK,
-    // User metadata types
-    UserMeta, UserParams,
-    // State types
-    UserSession, UserSnapshotDefault, UserSnapshotsArray,
-    // Configuration types
-    UserSnapshotStoreConfig, UserSortOptions
+  AdminUser, AdminUserData,
+  // Core App types
+  AppUser,
+  AppUserData,
+  AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
+  AppUserSnapshotData,
+  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, BasicUser,
+  PremiumUser, PrivateUserData,
+  // Data variations
+  PublicUserData, UserAttachment, UserContext,
+  // Role-specific types
+  UserDataDefault, UserEntity, UserExcludedFields,
+  // Utility types
+  UserFilterOptions, UserFrontendStructure, UserIncludedFields, UserK,
+  // User metadata types
+  UserMeta, UserParams,
+  // State types
+  UserSession, UserSnapshotDefault, UserSnapshotsArray,
+  // Configuration types
+  UserSnapshotStoreConfig, UserSortOptions
 };
 

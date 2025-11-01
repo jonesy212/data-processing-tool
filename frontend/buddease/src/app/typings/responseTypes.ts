@@ -1,10 +1,8 @@
 // responseTypes.ts
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { BaseResponseType } from "@/app/typings/baseResponseType";
-import { SearchNotesResponse } from "@/app/api/ApiNote";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions'
-import { Attendee } from "@/app/calendar/Attendee";
+import { SearchNotesResponse, Note } from "@/app/api/ApiNote";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { Attendee } from "@/app/components/calendar/Attendee";
 import { DataWithComment } from "@/app/dataIntegration/SafeParseData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
@@ -15,9 +13,9 @@ import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { SnapshotStoreUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
 import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
@@ -27,8 +25,9 @@ import { TaskManagerStore } from "@/app/state/stores/TaskStore ";
 import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
+import { BaseResponseType } from "@/app/typings/baseResponseType";
 import { User } from "@/app/users/User";
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -128,7 +127,7 @@ interface YourResponseType<
 > extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           DataWithComment<T>,
-          SearchNotesResponse {
+          SearchNotesResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id?: string;
   forEach?: (arg0: (notification: Notification) => void) => void;
   length?: number;

@@ -1,8 +1,9 @@
 // video/VideoSlice.ts
-import { Video } from "@/app/stores/VideoStore";
+import { Video } from '@/app/typings/videoTypes/Video'
+
 import { Channel } from "@/app/interfaces/chat/Channel";
 import { VideoData } from "@/app/components/video/Video";
-import { VideoMetadata } from "@/config/StructuredMetadata";
+import { VideoMetadata } from "@/app/config/StructuredMetadata";
 import { WritableDraft } from "@/app/ReducerGenerator";
 import { User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";

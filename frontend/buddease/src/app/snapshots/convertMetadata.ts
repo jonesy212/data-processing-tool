@@ -2,9 +2,11 @@ import { Taggable } from '@/app/models/CommonData';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { BaseConfig } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseConfig } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 function convertBaseConfig<
   U extends BaseDataEntity,
@@ -12,12 +14,12 @@ function convertBaseConfig<
   K extends T,
   Meta extends DefaultMeta<T, K>,
   AttachmentType extends Attachment,
-  ExcludedFields extends keyof T,
-  IncludedFields extends keyof T
+  ExcludedFields extends keyof U,
+  IncludedFields extends keyof U
 >(
   baseConfig: BaseConfig<T, K,  Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
-  defaultBaseConfig: BaseConfig<U, K, StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-): BaseConfig<U, K, StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  defaultBaseConfig: BaseConfig<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): BaseConfig<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (!baseConfig) {
     return defaultBaseConfig;
   }
@@ -51,8 +53,7 @@ function convertMetadata<
       category: "",
       timestamp: "",
       author: "",
-      metadata: {} as UnifiedMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      meta: {} as StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+
       mappedSnapshot: {} as Map<string, Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       events: {} as EventManager<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       latestVersion: createLatestVersion<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
@@ -80,7 +81,7 @@ function convertMetadata<
     author: metadata.currentMeta?.author || defaultStructuredMetadata.author,
     timestamp: metadata.currentMeta?.timestamp || defaultStructuredMetadata.timestamp,
     baseConfig: convertBaseConfig(
-      metadata.currentMeta?.baseConfig as BaseConfig<U, K, StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields> | undefined,
+      metadata.currentMeta?.baseConfig as BaseConfig<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
       defaultStructuredMetadata.baseConfig
     ),
     sharedMetadata: metadata.currentMeta?.sharedMetadata || defaultStructuredMetadata.sharedMetadata,

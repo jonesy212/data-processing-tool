@@ -1,14 +1,14 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { BaseData } from '@/app/models/data/Data';
 import { UserData } from '@/app/components/users/User';
-import { StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
+import { VideoMetadata } from '@/app/config/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
 
 // EducationalVideoMetadata.ts
 interface EducationalVideoMetadata<
   T extends BaseData<any>, // Content-specific data
   K extends T = T,         // Default fallback to the same type
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends VideoMetadata<T, K, Meta> {
+> extends VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   courseId: string; // ID of the course this video belongs to
   instructor: string; // Name or ID of the instructor
   learningObjectives: string[]; // Specific objectives tied to the video

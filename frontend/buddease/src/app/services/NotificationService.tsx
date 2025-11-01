@@ -1,18 +1,16 @@
 import { EventActions } from '@/app/actions/EventActions';
 import { NotificationActions } from "@/app/actions/NotificationActions";
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { LogData } from "@/app/components/models/LogData";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import { LogData } from "@/app/models/LogData";
 import {
     NotificationType,
     useNotification
 } from "@/app/context/NotificationContext";
 import AnnouncementManager from "@/app/features/support/AnnouncementManager";
 import PushNotificationManager from "@/app/features/support/PushNotificationManager";
-import {
-    NotificationData,
-    selectNotifications,
-} from "@/app/state/redux/slices/NofiticationsSlice";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { selectNotifications } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from '@/app/hooks/useNotificationSystem'
 import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 
@@ -76,15 +74,45 @@ interface NotificationContainer<
     }
   };
 
-export const logData: LogData<T, K, Meta> = {
-  id: "",
-  message: "",
+export const logData: LogData<LogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields> = {
+  // BaseData properties
+  id: "log-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9),
   createdAt: new Date(),
-  type: "PushNotification" as NotificationType,
-  content: "",
-  completionMessageLog: "",
+  updatedAt: new Date(),
+  
+  // LogData specific properties
+  date: new Date(),
   timestamp: new Date(),
-  level: "",
+  level: "info",
+  message: "Notification system log entry created",
+  user: "system",
+  content: "Initial log entry for notification system",
+  endpoint: "/api/logs",
+  method: "POST", 
+  status: "200",
+  response: { success: true, logId: "log-" + Date.now() },
+  sent: new Date(),
+  isSent: true,
+  isDelivered: false,
+  delivered: null,
+  opened: null,
+  clicked: null,
+  responded: null,
+  responseTime: null,
+  topics: ["system", "notifications"],
+  highlights: [],
+  eventData: null,
+  files: [],
+  meta: null,
+  
+  // Additional properties that might be in BaseData
+  type: "SystemLog" as NotificationType,
+  completionMessageLog: "Log entry successfully created and stored",
+  
+  // Add any other BaseData properties that exist
+  // version: 1, (if exists in BaseData)
+  // status: "active", (if exists in BaseData) 
+  // etc.
 };
 
 export interface NotificationManagerServiceProps {
@@ -93,14 +121,20 @@ export interface NotificationManagerServiceProps {
   notifications: string[];
 }
 
-const useNotificationManagerService = (): NotificationContainer => {
+const useNotificationManagerService = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): NotificationContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const { notify } = useNotification();
   const notifications = useSelector(selectNotifications);
   const dispatch = useDispatch();
 
   const setNotifications: React.Dispatch<
-    React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>[]
-  > = (value) => {
+    React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>[] = (value) => {
     // Dispatch action to set notifications in the store or update local state
     dispatch(NotificationActions.setNotifications(value));
   };

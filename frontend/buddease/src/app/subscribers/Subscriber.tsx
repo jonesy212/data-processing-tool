@@ -1,8 +1,7 @@
 import { SubscriptionActions } from "@/app/actions/SubscriptionActions";
 import apiNotificationsService from "@/app/api/NotificationsService";
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import addSnapshot from "@/app/api/SnapshotApi";
-import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
+import addSnapshot, * as snapshotApi from "@/app/api/SnapshotApi";
+import { SecurityStatus } from "@/app/models/data/StatusType";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -29,6 +28,7 @@ import {
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
+import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
 
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -49,6 +49,7 @@ import {
   clearSnapshots,
   removeSnapshot,
 } from "@/app/state/redux/slices/SnapshotSlice";
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import {
   FetchSnapshotByIdCallback,
@@ -61,17 +62,26 @@ import {
 } from "@/app/typings/YourSpecificSnapshotType";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { BaseDatabaseService } from "@/config/DatabaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDatabaseService } from "@/config/DatabaseService";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
   NotificationType,
   NotificationTypeEnum,
 } from "@/context/NotificationContext";
-import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
-import { sendNotification } from "@/app/state/redux/slices/UserSlice";
+import { Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { config } from "process";
-import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "./snapshotStoreConfigInstance";
+import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { AllStatus } from "../state/stores/DetailsListStore";
+import {
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+} from '@/app/typings/entities/SnapshotEntity';
+import { SubscriberEntity, SubscriberK, SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields } from '@/app/typings/entities/SubscriberEntity';
 
 type SnapshotStoreDelegate<
   T extends BaseDataEntity,
@@ -86,7 +96,7 @@ type SnapshotStoreDelegate<
   snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 ) => void;
 
-type Subscribers = Subscriber<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Data>[];
+type Subscribers = Subscriber<SubscriberEntity, SubscriberK, SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields>[];
 
 type SubscribeResult<
   T extends BaseDataEntity,
@@ -106,6 +116,7 @@ interface AuditRecord {
   userId: string;
   action: string;
   details: string;
+  status?: AllStatus;
 }
 
 type SnapshotCallback<T> = (data: T) => void;
@@ -121,20 +132,16 @@ type AppSubscription = Subscription<AppEntity, AppK, AppMeta, AppExcludedFields,
 
 
 const delegateFunction: SnapshotStoreDelegate<
-  MyDataEntity, 
-  MyDataEntity,
-  MyMeta,
-  MyExcludedFields,
-  Attachment
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
 > = (
-  snapshot: Snapshot<MyDataEntity, MyDataEntity, MyMeta, MyExcludedFields>,
-  initialState: Snapshot<MyDataEntity, MyDataEntity, MyMeta, MyExcludedFields>,
-  snapshotConfig: SnapshotStoreConfig<
-    SnapshotWithCriteria<MyDataEntity, MyDataEntity>,
-    SnapshotWithCriteria<MyDataEntity, MyDataEntity>,
-    DefaultMeta<SnapshotWithCriteria<MyDataEntity, MyDataEntity>, SnapshotWithCriteria<MyDataEntity, MyDataEntity>>,
-    DefaultExcludedFields<SnapshotWithCriteria<MyDataEntity, MyDataEntity>>
-  >[]
+  snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+  initialState: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+  snapshotConfig: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
   console.log("Initial state:", initialState);

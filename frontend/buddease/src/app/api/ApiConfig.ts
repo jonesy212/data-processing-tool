@@ -1,17 +1,59 @@
-import endpointConfigurations,{  EndpointConfig, endpoints, EndpointConfigurations } from '@/app/api/endpointConfigurations';
-import { Endpoints } from '@/app/api/ApiEndpoints';
+// ApiConfig.ts
+import { Endpoints } from './ApiEndpoints';
+import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
+import { RetryConfig, CacheConfig } from "@/app/services/ConfigurationService";
 
 type EndpointCategory = keyof EndpointConfigurations;
 type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
 
-class ApiConfig {
+export interface ApiConfigInterface {
+  [x: string]: any;
+  name: any;
+  baseURL: string;
+  timeout: number;
+  headers: { [key: string]: string };
+  retry: RetryConfig;
+  cache: CacheConfig;
+  responseType: { contentType: string; encoding: string } | string;
+  withCredentials: boolean;
+  onLoad?: (response: any) => void;
+  apiKeys?: Record<string, string>;
+}
+
+
+class ApiConfig implements ApiConfigInterface {
+  [x: string]: any;
+  name: any;
+  baseURL: string;
+  timeout: number;
+  headers: { [key: string]: string };
+  retry: RetryConfig;
+  cache: CacheConfig;
+  responseType: { contentType: string; encoding: string } | string;
+  withCredentials: boolean;
+  onLoad?: (response: any) => void;
+  apiKeys?: Record<string, string>;
+
   constructor(
     private configurations: EndpointConfigurations,
-    private endpoints: Endpoints
-  ) {}
+    private endpoints: Endpoints,
+    options?: Partial<ApiConfigInterface>
+  ) {
+    // Initialize interface properties
+    this.name = options?.name || 'defaultApiConfig';
+    this.baseURL = options?.baseURL || '';
+    this.timeout = options?.timeout || 10000;
+    this.headers = options?.headers || {};
+    this.retry = options?.retry || {} as RetryConfig;
+    this.cache = options?.cache || {} as CacheConfig;
+    this.responseType = options?.responseType || { contentType: 'application/json', encoding: 'utf-8' };
+    this.withCredentials = options?.withCredentials || false;
+    this.onLoad = options?.onLoad;
+    this.apiKeys = options?.apiKeys;
+  }
 
-  // TYPE-SAFE METHODS (Enhanced)
 
+  // TYPE-SAFE METHODS
   getEndpoint<T extends EndpointCategory>(
     category: T,
     endpointKey: EndpointKey<T>
@@ -22,7 +64,7 @@ class ApiConfig {
   getUrl<T extends EndpointCategory, K extends EndpointKey<T>>(
     category: T,
     endpointKey: K,
-    ...params: EndpointConfigurations[T][K] extends Function ? FunctionParams<T, K> : []
+    ...params: any[]
   ): string {
     const endpoint = this.getEndpoint(category, endpointKey);
     
@@ -37,7 +79,7 @@ class ApiConfig {
   getMethod<T extends EndpointCategory, K extends EndpointKey<T>>(
     category: T,
     endpointKey: K,
-    ...params: EndpointConfigurations[T][K] extends Function ? FunctionParams<T, K> : []
+    ...params: any[]
   ): string {
     const endpoint = this.getEndpoint(category, endpointKey);
     
@@ -49,12 +91,10 @@ class ApiConfig {
     return (endpoint as EndpointConfig).method;
   }
 
-
-
   getEndpointInfo<T extends EndpointCategory, K extends EndpointKey<T>>(
     category: T,
     endpointKey: K,
-    ...params: EndpointConfigurations[T][K] extends Function ? FunctionParams<T, K> : []
+    ...params: any[]
   ) {
     const url = this.getUrl(category, endpointKey, ...params);
     const method = this.getMethod(category, endpointKey, ...params);
@@ -62,7 +102,7 @@ class ApiConfig {
     return { url, method };
   }
 
-  // BATCH OPERATIONS (New) - Simplified for dynamic usage
+  // BATCH OPERATIONS
   batchGetUrls(requests: Array<{ 
     category: EndpointCategory; 
     endpointKey: string; 
@@ -80,29 +120,15 @@ class ApiConfig {
     });
   }
 
-  // LEGACY COMPATIBILITY (Keep for migration)
-  getEndpointConfig<T extends EndpointCategory>(
-    category: T,
-    endpointKey: EndpointKey<T>
-  ) {
-    return this.configurations[category][endpointKey];
+  // Get all categories
+  getCategories(): EndpointCategory[] {
+    return Object.keys(this.configurations) as EndpointCategory[];
   }
 
-  getEndpointUrl<T extends EndpointCategory>(
-    category: T,
-    endpointKey: EndpointKey<T>,
-    ...params: any[]
-  ): string {
-    const endpoint = this.getEndpoint(category, endpointKey);
-    
-    if (typeof endpoint === 'function') {
-      const result = (endpoint as Function)(...params);
-      return result.path;
-    }
-    
-    return (endpoint as EndpointConfig).path;
+  // Get endpoints for a specific category
+  getEndpointsForCategory<T extends EndpointCategory>(category: T): EndpointKey<T>[] {
+    return Object.keys(this.configurations[category]) as EndpointKey<T>[];
   }
 }
 
-export const apiConfig = new ApiConfig(endpointConfigurations, endpoints);
 export default ApiConfig;

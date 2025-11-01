@@ -1,16 +1,16 @@
 
 import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
-import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ComponentStatus, StatusType } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
+import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { useRouter } from "next/router";

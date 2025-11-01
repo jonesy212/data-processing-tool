@@ -1,7 +1,7 @@
 // AuthEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface AuthEndpoints {
+export interface AuthEndpoints extends EndpointCategoryConfig {
   admin: EndpointConfig;
   forgotPassword: EndpointConfig;
   resetPassword: EndpointConfig;

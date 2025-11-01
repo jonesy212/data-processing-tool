@@ -12,14 +12,14 @@ import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 import {ppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields} from '@/app/typings/entities/ContentEntity'
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { TaskMetadata } from '@/config/MetaDataOptions';
+import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import UserRoles from '@/app/models/UserRoles';
 import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
-import { BaseDataRoot, BaseConfig } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/app/config/BaseConfig';
+import { BaseDataRoot, BaseConfig } from '@/app/config/BaseConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria'
 import { AppContentEntity,
 ContentK,

@@ -1,22 +1,37 @@
 // AuthContext.tsx
+import { DashboardConfig } from '@/app/typings/authTypes'
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { NFT } from "@/app/components/nft/NFT";
+import { NFT } from "@/app/models/cypto/NFT";
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "@/app/state/stores/AuthStore";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";
-import { UserPreferences } from "@/config/UserPreferences";
+import { UserPreferences } from "@/app/config/UserPreferences";
 import React, { createContext, useContext, useReducer } from "react";
-
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultIncludedFields,
+  DefaultMeta
+} from '@/app/config/BaseConfig';
 
 // Define the types for the context and state
-interface AuthState {
+interface AuthState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
   id: string;
-  user: User | null;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   token: string | null;
   store: AuthStore;
   resetAuthState: () => void;
   loginWithRoles: (
-    user: User,
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     roles: string[],
     nfts: NFT[],
     authToken: string
@@ -32,9 +47,16 @@ interface AuthState {
   getUserPreferences: () => UserPreferences | null;
 }
 
-interface AuthContextProps {
-  state: AuthState;
-  dispatch: React.Dispatch<AuthAction>;
+interface AuthContextProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
+  state: AuthState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dispatch: React.Dispatch<AuthAction<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -45,12 +67,12 @@ interface AuthContextProps {
   setDashboardConfig: (config: DashboardConfig | null) => void; // Proper typing
   resetAuthState: () => void;
   loginWithRoles: (
-    user: User,
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     roles: string[],
     nfts: NFT[],
     authToken: string
   ) => void; // Update loginWithRoles method
-  user: User | null;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   dashboardConfig: DashboardConfig | null; // Use proper type
   isAuthenticated: boolean; // Add isAuthenticated property
   isLoading: boolean; // Add isLoading property
@@ -73,7 +95,14 @@ interface AuthContextProps {
 
 }
 
-interface AuthAction {
+interface AuthAction<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
   type:
   | "LOGIN"
   | "LOGOUT"
@@ -81,7 +110,7 @@ interface AuthAction {
   | "INTEGRATE_AUTHENTICATION_PROVIDERS" // New action type
   | "UPDATE_USER";
   payload?: {
-    user: User;
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     roles?: string[];
     nfts?: NFT[];
     authToken: string;
@@ -147,7 +176,16 @@ const initialState: AuthState = {
 };
 
 
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+const authReducer = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+  >(state: AuthState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    action: AuthAction<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): AuthState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   switch (action.type) {
     case "LOGIN":
       return {

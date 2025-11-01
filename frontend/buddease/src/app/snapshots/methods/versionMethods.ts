@@ -1,7 +1,7 @@
 // versionMethods.ts
 // snapshotStore/methods/VersionMethods.ts
 import { IHydrateResult } from "mobx-persist";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { dataStoreMethods } from "@/app/models/data/dataStoreMethods";
 

@@ -1,6 +1,6 @@
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
-import { DocumentTypeEnum } from '@/server/ServerDocumentGenerator';
+import { DocumentTypeEnum } from '@/app/server/ServerDocumentGenerator';
 
 interface TextCardProps {
   onSave: (text: string) => Promise<void>;

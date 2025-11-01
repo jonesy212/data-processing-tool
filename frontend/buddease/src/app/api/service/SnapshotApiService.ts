@@ -1,9 +1,14 @@
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SnapshotStoreConfig } from '@/app/snapshots';
 // SnapshotApiService.ts
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot, SnapshotDataType } from '@/app/snapshots';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback } from 'react';
 
 import {
@@ -12,7 +17,7 @@ import {
   FetchOptions,
   FindSubscriberOptions,
   GetConfigOptions
-} from '@/app/api/SnapshotOptions';
+} from '@/app/snapshots/SnapshotOptions';
 
 import { SnapshotConfig } from '@/app/snapshots';
 
@@ -28,12 +33,14 @@ class SnapshotApiService {
   }
 
   // Configuration Methods
-  async getConfig<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  async getConfig<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T, 
+  >(
     options: GetConfigOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     const {
@@ -104,12 +111,14 @@ class SnapshotApiService {
   }
 
   // CRUD Operations
-  async create<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  async create< 
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     options?: CreateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
@@ -164,12 +173,14 @@ class SnapshotApiService {
     }
   }
 
-  async fetchById<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  async fetchById<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     snapshotId: string,
     options?: FetchOptions
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
@@ -215,12 +226,14 @@ class SnapshotApiService {
   }
 
   // Subscriber Operations
-  async findSubscriber<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  async findSubscriber<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     subscriberId: string,
     options: FindSubscriberOptions
   ): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
@@ -272,13 +285,15 @@ class SnapshotApiService {
   }
 
   // Bulk Operations
-  async fetchAll<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
-    options?: FetchAllOptions<T, K>
+  async fetchAll<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    options?: FetchAllOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     const {
       criteria = {},
@@ -346,12 +361,14 @@ class SnapshotApiService {
   }
 
   // Utility Methods
-  private processWithCategory<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  private processWithCategory<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T,
+  >(
     response: any,
     snapshotId: string
   ): SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
@@ -376,12 +393,14 @@ class SnapshotApiService {
     }
   }
 
-  private async validateSnapshot<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  private async validateSnapshot<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T,
+    >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> {
     // Basic validation
@@ -401,17 +420,36 @@ class SnapshotApiService {
     // Custom validation logic can be added here
   }
 
-  private enhanceSnapshotWithMetadata<  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
+  private enhanceSnapshotWithMetadata<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     meta: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     const timestamp = new Date().toISOString();
+
+    // Robust version handling with logging
+    const currentVersion = snapshot.metadata?.version;
+    let newVersion: number;
+
+    if (currentVersion === undefined || currentVersion === null) {
+      newVersion = 1;
+    } else if (typeof currentVersion === 'number') {
+      newVersion = currentVersion + 1;
+    } else if (typeof currentVersion === 'string') {
+      const parsed = Number(currentVersion);
+      newVersion = Number.isNaN(parsed) ? 1 : parsed + 1;
+    } else {
+      // For complex Version objects, extract version number or default to 1
+      console.warn('Complex version object detected, defaulting to version 1');
+      newVersion = 1;
+    }
 
     return {
       ...snapshot,
@@ -421,7 +459,7 @@ class SnapshotApiService {
         ...metadata,
         timestamp: snapshot.metadata?.timestamp || timestamp,
         author: snapshot.metadata?.author || 'system',
-        version: (snapshot.metadata?.version || 0) + 1
+        version: newVersion
       },
       lastModified: timestamp
     };
@@ -467,8 +505,12 @@ const snapshotApi = new SnapshotApiService();
 export const useSnapshotApi = () => {
   const createSnapshot = useCallback(
     async <
-      T extends BaseData<any, any, any, any, any>,
-      K extends T = T
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
     >(
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       options?: CreateOptions

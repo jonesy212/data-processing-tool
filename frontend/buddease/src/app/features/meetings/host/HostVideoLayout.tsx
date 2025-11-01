@@ -1,9 +1,9 @@
 // HostVideoLayout.tsx
 
-import React, { useState } from 'react';
 import VideoAPI from '@/VideoAPI';
 import VideoViewer from '@/VideoViewer';
-import { Video } from '@/types';
+import { Video } from '@/app/typings/videoTypes/Video';
+import React, { useState } from 'react';
 
 const HostVideoLayout: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);

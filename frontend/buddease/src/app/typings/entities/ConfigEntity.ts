@@ -1,6 +1,6 @@
 // ConfigEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Core Config base types
 type ConfigEntity = BaseDataEntity;

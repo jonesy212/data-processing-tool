@@ -1,16 +1,25 @@
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { version } from '@/app/versions/Version';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { SchemaField } from '@/app/config/metadata/SchemaField';
 /**
  * Function to validate if a given metadata object is valid.
  * @template T, K
  * @param {StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>} meta - The metadata object to validate.
- * @param {Record<string, string>} schema - Schema to validate the metadata against, with key-value pairs specifying expected types.
+ * @param {Record<string, SchemaField>} schema - Schema to validate the metadata against, with key-value pairs specifying expected types.
  * @returns {boolean} - Returns true if the metadata is valid, otherwise false.
  */
-function isValidMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
-  meta: StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>,
-  schema: Record<string, string> = {}
+function isValidMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  meta: StructuredMetadata<<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  schema: Record<string, SchemaField> = {}
 ): boolean {
   // Check if meta is an object and not null
   if (typeof meta !== 'object' || meta === null) {

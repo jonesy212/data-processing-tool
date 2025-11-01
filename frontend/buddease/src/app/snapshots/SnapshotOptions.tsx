@@ -8,7 +8,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
   interface CreateOptions<
     T extends BaseDataEntity,
@@ -158,17 +158,10 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 
 
-  // Missing interface definitions
-  interface FetchOptions {
-    includeFields?: string[];
-    excludeFields?: string[];
-    withMetadata?: boolean;
-  }
-
 
   export type {
   CreateOptions,
-  FetchAllOptions, FetchOptions, FindSubscriberOptions,
+  FetchAllOptions, FindSubscriberOptions,
   GetConfigOptions
 };
 

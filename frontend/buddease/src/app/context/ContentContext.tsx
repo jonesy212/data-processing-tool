@@ -1,6 +1,6 @@
 import * as contentApi from '@/api/ApiContent';
 import { endpoints } from '@/api/endpointConfigurations';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ContentState } from 'draft-js';
 import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';

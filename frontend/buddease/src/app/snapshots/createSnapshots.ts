@@ -16,7 +16,7 @@ import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { notify } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import * as SubscriptionMethods from '@/methods/subscriptionMethods';
 import { SnapshotConfig } from "./SnapshotConfig";
 import { flatMap } from "./defaultSnapshotBuilder";

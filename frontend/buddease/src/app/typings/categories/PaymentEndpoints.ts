@@ -1,7 +1,7 @@
 // PaymentEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface PaymentEndpoints {
+export interface PaymentEndpoints extends EndpointCategoryConfig {
   initiatePayment: EndpointConfig;
   verifyPayment: EndpointConfig;
   cancelPayment: EndpointConfig;

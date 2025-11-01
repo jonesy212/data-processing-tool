@@ -1,4 +1,4 @@
-import { BaseDataEntity } from '@/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { BaseData } from '@/app/models/data/Data';
 import { AxiosResponse } from "axios";
 import axiosInstance from '@/app/api/csrfToken';

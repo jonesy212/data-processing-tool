@@ -19,14 +19,14 @@ import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
 import { User, UserData } from "@/app/users/User";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import FileData from '@/components/models/data/FileData';
-import { frontendConfig } from "@/config/FrontendConfig";
-import MainConfig from "@/config/MainConfig";
-import { UserPreferences, userPreferences } from "@/config/UserPreferences";
-import UserSettings from "@/config/UserSettings";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import { frontendConfig } from "@/app/config/FrontendConfig";
+import MainConfig from "@/app/config/MainConfig";
+import { UserPreferences, userPreferences } from "@/app/config/UserPreferences";
+import UserSettings from "@/app/config/UserSettings";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import { backendConfig } from "@/configs/BackendConfig";
-import DataVersionsConfig from "@/configs/DataVersionsConfig";
-import BackendStructure from '@/server/database/BackendStructure';
+import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -34,7 +34,7 @@ import getAppPath from "./appStructure/appPath";
  
 
 
-const handleFileChanges = (file: FileData<T>): FileData<T> => file; // Handles file change logic
+const handleFileChanges = (file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => file; // Handles file change logic
 
 const ApiConfigComponent: React.FC = () => {
   // Access API configurations from Redux state
@@ -97,7 +97,7 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
     id: userPreferences.trackerId || generateTrackerID, // Function to dynamically generate or fetch the tracker ID
     name: "dynamic-task-tracker", // You can set this dynamically based on preferences
     phases: [], // Dynamically fetch or calculate the phases here
-    trackFileChanges: (file: FileData<T>) => handleFileChanges(file), // Your dynamic file handler
+    trackFileChanges: (file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => handleFileChanges(file), // Your dynamic file handler
 
     // Dynamic stroke settings based on user preferences
     stroke: {
@@ -125,7 +125,7 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
               name: "task-tracker",
               id: "taskId",
               phases: {} as Phase[],
-          trackFileChanges: (file: FileData<T>) => file,
+          trackFileChanges: (file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => file,
               // Updated key-value pairs
               stroke: {
                 width: 0,
@@ -138,8 +138,8 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
               x: 10,             // X-coordinate (replace with actual value)
               y: 20,             // Y-coordinate (replace with actual value)
           trackFolderChanges(
-                content: FileData<T>,
-                fileLoader?: FileData<T>,
+                content: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                fileLoader?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               ) {
                 // Make fileLoader optional
                 if (fileLoader) {

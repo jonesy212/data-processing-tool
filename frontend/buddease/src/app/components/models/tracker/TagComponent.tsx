@@ -1,11 +1,18 @@
-import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
-import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import { TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields } from '@/app/typings/entities/TagEntity';
+
 import { AllTypes } from '@/app/typings/PropTypes';
-import { SpecificMetadata } from '@/config/StructuredMetadata';
+import { SpecificMetadata } from '@/app/config/StructuredMetadata';
+import { TagOptions, Tag } from '@/app/models/tracker/Tag'
 import React from 'react';
 
+
+interface TagProps { 
+  tagOptions: TagOptions;
+}
 
 // Functional Component TagComponent
 const TagComponent = <
@@ -19,7 +26,7 @@ const TagComponent = <
   tagOptions,
   excludedFields,
   meta
-}: TagProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+}: TagProps) => {
   // Function to display tag options
   const display = () => {
     console.log(`Tag Name: ${tagOptions.name}`);
@@ -44,7 +51,7 @@ const TagComponent = <
 export default TagComponent;
 
 // Example usage of TagComponent
-const tagOptions1: TagOptions<BaseDataEntity> = {
+const tagOptions1: TagOptions<TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields> = {
   id: "1",
   name: "Important",
   color: "red",
@@ -67,7 +74,7 @@ const tagOptions1: TagOptions<BaseDataEntity> = {
       timestamp: 0,
       nulltype: {} as AllTypes
     }
-  } as TagsRecord<BaseDataEntity>, // explicit type
+  } as TagsRecord<TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields>, // explicit type
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
@@ -75,7 +82,7 @@ const tagOptions1: TagOptions<BaseDataEntity> = {
   nulltype: {} as AllTypes
 };
 
-const tagOptions2: TagOptions<BaseDataEntity> = {
+const tagOptions2: TagOptions<TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -113,7 +120,14 @@ const localeCompare = <
   return nameA.localeCompare(nameB);
 };
 
-const sortTags = <T extends BaseDataEntity, K extends T = T>(tags: TagOptions<T, K>[]) => {
+const sortTags = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(tags: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
   tags.sort(localeCompare);
   return tags;
 };
@@ -188,4 +202,4 @@ function processVideoMetadata<
 }
 
 
-export type { Tag, TagOptions };
+export { TagComponent };

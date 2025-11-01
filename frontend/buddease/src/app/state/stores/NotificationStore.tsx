@@ -1,23 +1,24 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { LogData } from '@/app/components/models/LogData';
-import { NotificationChannels } from '@/app/settings/NotificationChannels'
+import { NotificationPosition } from '@/app/models/data/StatusType';
+import { LogData } from '@/app/models/LogData';
+import { NotificationChannels } from '@/app/notifications/NotificationChannels'
+import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper'
 import { NotificationContextProps, NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { BaseData } from '@/app/models/data/Data';
+
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { NotificationData } from '@/state/redux/slices/NofiticationsSlice';
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppEntity";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+
+import NotificationData from '@/app/state/redux/slices/NofiticationsSlice';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
-import { NotificationChannelHelperImpl } from '@/app/setting/NotificationChannelHelperImpl'
+import { NotificationChannelHelperImpl } from '@/app/notifications/NotificationChannelHelperImpl'
 import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields
 } from '@/app/typings/entities/NotificationEntity'
 
@@ -61,13 +62,31 @@ const currentMetadata: AppUnifiedMetadata = useMetadata('notification-area');
 const currentMeta: AppStructuredMetadata = useMeta(area);
 
 class NotificationStore {
-  @observable notifications: NotificationData<NotificationEntity,
-  NotificationK,
-  NotificationMeta,
-  NotificationAttachment,
-  NotificationExcludedFields,
-  NotificationIncludedFields>[] = [];
+  @observable notifications: NotificationData<
+    NotificationEntity,
+    NotificationK,
+    NotificationMeta,
+    NotificationAttachment,
+    NotificationExcludedFields,
+    NotificationIncludedFields
+  >[] = [];
+  
   @observable setNotifications: NotificationContextProps['setNotifications'] = () => {};
+  
+  @observable sendNotification: NotificationContextProps['sendNotification'] = (
+    notification: string | NotificationData<
+      NotificationEntity, 
+      NotificationK, 
+      NotificationMeta, 
+      NotificationAttachment, 
+      NotificationIncludedFields, 
+      NotificationExcludedFields
+    >,
+    options?: { /* options type */ }
+  ) => {
+    console.log('Sending notification:', notification);
+    return `Notification sent: ${typeof notification === 'string' ? notification : notification.id}`;
+  };
 
   channelHelper: NotificationChannelHelper;
 
@@ -77,7 +96,7 @@ class NotificationStore {
     const channels: NotificationChannels = {
       email: true,
       push: true,
-      sms: false, // SMS disabled by default
+      sms: false,
       chat: true,
       calendar: true,
       audioCall: true,
@@ -94,12 +113,14 @@ class NotificationStore {
   };
 
   @action
-  addNotification = (notification: NotificationData<NotificationEntity,
-  NotificationK,
-  NotificationMeta,
-  NotificationAttachment,
-  NotificationExcludedFields,
-  NotificationIncludedFields>) => {
+  addNotification = (notification: NotificationData<
+    NotificationEntity,
+    NotificationK,
+    NotificationMeta,
+    NotificationAttachment,
+    NotificationExcludedFields,
+    NotificationIncludedFields
+  >) => {
     this.notifications.push(notification);
   };
 
@@ -117,9 +138,10 @@ class NotificationStore {
   notify = (
     id: string | null,
     content: string,
-    notificationMessage: string  | object | null,
+    notificationMessage: string | object | null,
     date: Date,
     type: NotificationType,
+    position?: NotificationPosition,
     notificationType?: NotificationType,
     options?: {
       additionalOptions?: readonly string[] | string | number | any[] | undefined;
@@ -128,17 +150,13 @@ class NotificationStore {
     },
     userName?: string
   ) => {
-
-    // If no ID is passed, generate one from the notificationMessage string
     const notificationId = id ?? UniqueIDGenerator.generateNotificationIDFromMessage(notificationMessage);
     const actualNotificationType = notificationType ?? type;
-    
-    const message = this.generateNotificationMessage(
-      type,
-      userName
-    );
+    const actualPosition = position ?? NotificationPosition.TopRight;
+
+    const message = this.generateNotificationMessage(type, userName);
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-  
+
     this.addNotification({
       id,
       content: message,
@@ -161,8 +179,14 @@ class NotificationStore {
         isSent: false,
         isDelivered: false,
         responseTime: new Date(),
-        eventData: {} as CalendarEvent<BaseData<any, any, any, Attachment>, CustomSnapshotData<T, T, StructuredMetadata<T, T>>>,
-       
+        eventData: {} as CalendarEvent<
+          NotificationEntity,
+          NotificationK,
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >,
         topics: [],
         highlights: [],
         files: [],
@@ -180,60 +204,193 @@ class NotificationStore {
   };
 
   @action
-  showNotification = (title: string, message: string | Message, content?: any) => {
-    const notification: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields> = {
-      id: UniqueIDGenerator.generateSnapshoItemID('notification'), // ✅ Fixed
+  showNotification = (
+    title: string,
+    message: string | Message<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    >,
+    content?: any
+  ) => {
+    const notification: NotificationData<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    > = {
+      id: UniqueIDGenerator.generateSnapshoItemID('notification'),
       title,
       message,
       content,
       date: new Date(),
       type: 'default' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "default"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+      completionMessageLog: { 
+        date: new Date(), 
+        timestamp: new Date(), 
+        level: "default"
+      } as LogData<
+        NotificationEntity,
+        NotificationK,
+        StructuredMetadata<
+          NotificationEntity,
+          NotificationK,
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >
+      >
     };
     this.addNotification(notification);
   };
 
   @action
-  showSuccessNotification = (title: string, message: string | Message, content?: any) => {
-    const notification: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields> = {
-      id: UniqueIDGenerator.generateSnapshoItemID('success_notification'), // ✅ Fixed
+  showSuccessNotification = (
+    title: string, 
+    message: string | Message<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    >, 
+    content?: any
+  ) => {
+    const notification: NotificationData<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    > = {
+      id: UniqueIDGenerator.generateSnapshoItemID('success_notification'),
       title,
       message,
       content,
       date: new Date(),
       type: 'success' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "success"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+      completionMessageLog: { 
+        date: new Date(), 
+        timestamp: new Date(), 
+        level: "success"
+      } as LogData<
+        NotificationEntity,
+        NotificationK,
+        StructuredMetadata<
+          NotificationEntity,
+          NotificationK,
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >
+      >
     };
     this.addNotification(notification);
   };
 
   @action
-  showErrorNotification = (title: string, message: string | Message, content?: any) => {
-    const notification: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields> = {
-      id: UniqueIDGenerator.generateSnapshoItemID('error_notification'), // ✅ Fixed
+  showErrorNotification = (
+    title: string, 
+    message: string | Message<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    >, 
+    content?: any
+  ) => {
+    const notification: NotificationData<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    > = {
+      id: UniqueIDGenerator.generateSnapshoItemID('error_notification'),
       title,
       message,
       content,
       date: new Date(),
       type: 'error' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "error"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+      completionMessageLog: { 
+        date: new Date(), 
+        timestamp: new Date(), 
+        level: "error"
+      } as LogData<
+        NotificationEntity,
+        NotificationK,
+        StructuredMetadata<
+          NotificationEntity,
+          NotificationK,
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >
+      >
     };
     this.addNotification(notification);
   };
 
   @action
-  showInfoNotification = (title: string, message: string | Message, content?: any) => {
-    const notification: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields> = {
-      id: UniqueIDGenerator.generateSnapshoItemID('info_notification'), // ✅ Fixed
+  showInfoNotification = (
+    title: string, 
+    message: string | Message<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    >, 
+    content?: any
+  ) => {
+    const notification: NotificationData<
+      NotificationEntity,
+      NotificationK,
+      NotificationMeta,
+      NotificationAttachment,
+      NotificationExcludedFields,
+      NotificationIncludedFields
+    > = {
+      id: UniqueIDGenerator.generateSnapshoItemID('info_notification'),
       title,
       message,
       content,
       date: new Date(),
       type: 'info' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "info"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+      completionMessageLog: { 
+        date: new Date(), 
+        timestamp: new Date(), 
+        level: "info"
+      } as LogData<
+        NotificationEntity,
+        NotificationK,
+        StructuredMetadata<
+          NotificationEntity,
+          NotificationK,
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >
+      >
     };
     this.addNotification(notification);
   };
+
   @action
   dismissNotification = (notificationId: string) => {
     this.removeNotification(notificationId);
@@ -249,7 +406,6 @@ class NotificationStore {
     return createContext(state);
   };
 
-  // Generate the notification message based on the notification type
   private generateNotificationMessage = (
     type: NotificationType,
     userName?: string

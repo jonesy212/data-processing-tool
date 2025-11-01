@@ -1,8 +1,7 @@
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Version } from '@/versions/Version';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Version } from '@/versions/Version';
 
 // ChangeLogEntry Interface
 interface ChangeLogEntry<
@@ -87,4 +86,4 @@ class ChangeLogManager<
 
 
 export { ChangeLogManager };
-export type { ChangeLogEntry }
+export type { ChangeLogEntry };

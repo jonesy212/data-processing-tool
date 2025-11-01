@@ -1,4 +1,5 @@
-import { EventAttendance } from '@/app/calendar/AttendancePrediction';
+import { SnapshotOperationType } from "@/app/actions/SnapshotActions";
+import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseCustomEvent, CustomEventExtension } from '@/app/events/BaseCustomEvent';
@@ -7,12 +8,11 @@ import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/Da
 import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import handleSnapshotEvent from '@/app/snapshots/FetchableDataStore';
-import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { SnapshotEvents } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface SharedSnapshotEvent<
   T extends BaseDataEntity = BaseDataEntity,

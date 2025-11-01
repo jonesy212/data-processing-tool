@@ -4,7 +4,7 @@ import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessin
 import { Snapshot } from "@/app/Snapshot";
 import { SnapshotConfig } from "@/app/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import TransformMethods from "./transformMethods";
 
 

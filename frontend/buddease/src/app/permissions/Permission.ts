@@ -84,7 +84,7 @@ interface MemberPermission extends Permission {
 
 
 
-interface TeamPermissions extends BasePermissions {
+interface TeamPermission extends Permission {
   // Additional team-specific permissions
   canManageMembers?: boolean;
   canManageTeam?: boolean;
@@ -180,7 +180,7 @@ interface UserPermissions {
   data?: DataPermissions;
   board?: BoardPermissions;
   task?: TaskPermissions;
-  team?: TeamPermissions;
+  team?: TeamPermission;
   projectManagement?: ProjectManagementPermissions
   community?: CommunityPermissions;
   projects?: ProjectsPermissions;
@@ -219,21 +219,19 @@ const userBoardPermissions: BoardPermissions = {
 
 export type { BasePermissions, 
   DocumentEditingPermissions, 
-  EncryptionSetting, Permission, 
-  PrivacyCompliance, UserPermissions, 
-  MemberPermission,
-  EncryptionSetting,
-  PrivacyCompliance,
+  Permission, 
+  UserPermissions,
   DataPermissions,
   BoardPermissions,
   TaskPermissions,
   MemberPermission,
-  TeamPermissions,
+  TeamPermission,
   ProjectManagementPermissions,
   CommunityPermissions,
   ProjectsPermissions,
+  PrivacyCompliance,
+  EncryptionSetting,
   DeveloperPermissions,
   BlockchainPermissions,
-  DocumentEditingPermissions
  };
 

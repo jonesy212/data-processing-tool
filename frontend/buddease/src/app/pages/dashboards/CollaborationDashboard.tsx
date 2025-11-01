@@ -1,5 +1,5 @@
 // CollaborationDashboard.tsx
-import Stopwatch from "@/app/components/calendar/Stopwatch";
+import Stopwatch from "@/app/calendar/Stopwatch";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";

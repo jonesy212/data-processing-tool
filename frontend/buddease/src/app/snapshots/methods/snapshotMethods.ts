@@ -17,12 +17,12 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { T, K, Meta } from '@/app/models/data/dataStoreMethods';

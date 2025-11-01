@@ -3,7 +3,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { Note, handleNoteApiErrorAndNotify } from '@/ApiNote';
 import axiosInstance from '@/app/api/csrfToken';
 import { headersConfig } from '@/components/shared/SharedHeaders';
-import { authToken } from '@/server/auth/authToken';
+import { authToken } from '@/app/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
 
 const INSTAGRAM_API_BASE_URL = 'https://api.instagram.com/v1'; // Adjust the base URL accordingly

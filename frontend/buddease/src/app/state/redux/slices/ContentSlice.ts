@@ -2,7 +2,16 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import * as ApiTask from "@/app/api/TasksApi";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { 
+  ContentEntity, 
+  ContentK, 
+  ContentMeta, 
+  ContentAttachment, 
+  ContentExcludedFields, 
+  ContentIncludedFields 
+} from '@/app/typings/entities/ContentEntity';
+
 import { FileType } from "@/app/documents/attachment/Attachment";
 import { SupportedData } from '@/app/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
@@ -33,8 +42,8 @@ import { AxiosResponse } from "axios";
 import useWebNotifications from "@/app/hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "@/app/libraries/logging/Logger";
 import { ContentItem } from "@/app/components/models/content/ContentItem";
-import { BaseData, Comment, Data } from "@/app/models/data/Data";
-import { sanitizeInput } from "@/app/models/crypto/SanitizationFunctions";
+import { BaseData, Data } from "@/app/models/data/Data";
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Idea, IdeationSession } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
@@ -96,20 +105,20 @@ interface ContentManagerState<
   [Symbol.iterator]: () => Iterator<any, any, undefined>;
   _id: string;
   phase: any | null;
-  videoData: VideoData | undefined;
+  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   ideas: any[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   users: User[];
   taskFilter: string;
   setAssignedUserFilter?: (userId: string) => void;
-  asignedTo: Task["assignedTo"] | null;
+  asignedTo: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["assignedTo"] | null;
   completedTasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   taskHistories: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 const contentItems: Record<string, ContentItem> = {};
 
-const initialState: ContentManagerState = {
+const initialState: ContentManagerState<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields> = {
   contentItems: [],
   contentTitle: "",
   name: "contentManager",
@@ -464,13 +473,13 @@ export const useContentSlice = createSlice({
     },
 
     completeTask: (
-      state: WritableDraft<ContentManagerState>,
+      state: WritableDraft<ContentManagerState<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>,
       action: PayloadAction<CompleteTaskPayload>
     ) => {
       const { taskId, userId } = action.payload;
     
       // Find the task to complete
-      const taskIndex = state.tasks.findIndex((task: WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => task.id === taskId);
+      const taskIndex = state.tasks.findIndex((task: WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>) => task.id === taskId);
     
       if (taskIndex === -1) {
         return;
@@ -570,7 +579,7 @@ export const useContentSlice = createSlice({
           throw new Error("Function not implemented.");
         },
         some: function (
-          callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown,
+          callbackfn: (value: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>, index: number, array: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]) => unknown,
           thisArg?: any
         ): boolean {
           throw new Error("Function not implemented.");
@@ -578,7 +587,7 @@ export const useContentSlice = createSlice({
         then: function (arg0: (newTask: any) => void): unknown {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>[]> {
+        getData: function (): Promise<SnapshotStore<Snapshot<<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>, <ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>>[]> {
           throw new Error("Function not implemented.");
         },
       });
@@ -665,7 +674,7 @@ export const useContentSlice = createSlice({
         state: WritableDraft<ContentManagerState>,
         action: PayloadAction<{
           completedContentId: string;
-          changes: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+          changes: Partial<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>;
           taskId: string;
         }>
       ) => {
@@ -675,7 +684,7 @@ export const useContentSlice = createSlice({
         
         if (taskIndex !== -1) {
           const existingTask = state.tasks[taskIndex];
-          const updatedTask: WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+          const updatedTask: WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>> = {
             ...existingTask,
             ...changes,
             assignedTo: changes.assignedTo
@@ -685,8 +694,8 @@ export const useContentSlice = createSlice({
               : existingTask.assignedTo,
             dependencies: changes.dependencies
               ? Array.isArray(changes.dependencies)
-                ? changes.dependencies.map((dependency) => ({ ...dependency } as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>))
-                : [changes.dependencies as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>]
+                ? changes.dependencies.map((dependency) => ({ ...dependency } as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>))
+                : [changes.dependencies as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>]
               : existingTask.dependencies,
             previouslyAssignedTo: changes.previouslyAssignedTo
               ? Array.isArray(changes.previouslyAssignedTo)
@@ -698,8 +707,8 @@ export const useContentSlice = createSlice({
               : existingTask.details,
             subtasks: changes.subtasks
               ? Array.isArray(changes.subtasks)
-                ? changes.subtasks.map((subtask) => ({ ...subtask } as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>))
-                : [changes.subtasks as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>]
+                ? changes.subtasks.map((subtask) => ({ ...subtask } as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>))
+                : [changes.subtasks as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>]
               : existingTask.subtasks,
             actions: changes.actions
               ? Array.isArray(changes.actions)
@@ -721,8 +730,8 @@ export const useContentSlice = createSlice({
             getData: changes.getData ?? existingTask.getData,
             updatedSubtasks: changes.updatedSubtasks
               ? Array.isArray(changes.updatedSubtasks)
-                ? changes.updatedSubtasks.map((updatedSubtask) => ({ ...updatedSubtask } as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>))
-                : [changes.updatedSubtasks as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>]
+                ? changes.updatedSubtasks.map((updatedSubtask) => ({ ...updatedSubtask } as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>))
+                : [changes.updatedSubtasks as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>]
               : existingTask.updatedSubtasks,
             updatedActions: changes.updatedActions
               ? Array.isArray(changes.updatedActions)
@@ -851,7 +860,7 @@ export const useContentSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        changes: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+        changes: Partial<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>;
       }>
     ) => {
       const { taskId, changes } = action.payload;
@@ -920,10 +929,10 @@ export const useContentSlice = createSlice({
               : [],
             dependencies: task.dependencies
               ? task.dependencies.map(
-                  (dependency) => dependency as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+                  (dependency) => dependency as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>
                 )
               : null,
-          } as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+          } as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>;
         }
       });
     },
@@ -933,16 +942,16 @@ export const useContentSlice = createSlice({
 
       tasks.forEach((task: Task) => {
         if (!state.tasks.find((t) => t.id === task.id)) {
-          state.tasks.push(task as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
+          state.tasks.push(task as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>);
         }
       });
     },
 
     updateTaskDetails: (
-      state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+      state: WritableDraft<ContentManagerState<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>,
       action: PayloadAction<TaskDetails & {
         assignedTo?: User[];
-        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+        dependencies?: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[] | null;
         previouslyAssignedTo?: User[];
         phase?: Phase;
         id: string;
@@ -966,7 +975,7 @@ export const useContentSlice = createSlice({
             ? assignedTo.map((user: User) => user as WritableDraft<User>)
             : [],
           dependencies: dependencies
-            ? dependencies.map((dependency: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => dependency as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)
+            ? dependencies.map((dependency: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => dependency as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
             : null,
           previouslyAssignedTo: previouslyAssignedTo
             ? previouslyAssignedTo.map((user: User) => user as WritableDraft<User>)
@@ -1024,7 +1033,7 @@ export const useContentSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        dependencyTaskId: WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+        dependencyTaskId: WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>;
       }>
     ) => {
       const { taskId, dependencyTaskId } = action.payload;
@@ -1100,7 +1109,7 @@ export const useContentSlice = createSlice({
       state,
       action: PayloadAction<{
         taskId: string;
-        previousState: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+        previousState: Partial<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>;
       }>
     ) => {
       const { taskId, previousState } = action.payload;

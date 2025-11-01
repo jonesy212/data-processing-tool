@@ -1,17 +1,17 @@
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotUnion, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import { StructuredMetadata } from "@/config/s/StructuredMetadata";
-import { SchemaField } from "@/server/database/SchemaField";
-import { SnapshotData } from "./SnapshotData";
-import { SnapshotEvents } from '@/app/typings/eventTypes;
-import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/config/s/StructuredMetadata';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { SnapshotData } from './SnapshotData';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
+import SnapshotStore from './SnapshotStore';
+import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
 // A safe casting function to ensure type compatibility
 function safeCastSnapshotStore<

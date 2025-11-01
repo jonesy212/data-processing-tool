@@ -1,19 +1,22 @@
 // User.tsx
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { Data } from '@/app/models/data/Data';
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { UserProfileDetails } from '@/app/typings/userTypes';
 import {
-    fetchUserAreaDimensions,
-    UnifiedMetadata
-} from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
-import { UserPreferences } from "@/config/UserPreferences";
-import { UserSettings } from "@/config/UserSettings";
+  fetchUserAreaDimensions,
+  UnifiedMetadata
+} from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { UserSettings } from "@/app/config/UserSettings";
 
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
@@ -43,19 +46,18 @@ import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
-    CustomTransaction,
-    SmartContractInteraction,
+  CustomTransaction,
+  SmartContractInteraction,
 } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SharedVersionData } from "@/app/versions/VersionData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import React from "react";
 
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from "@/app/models/UserRoles";
 import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
-import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
 import { SocialLinks } from "@/app/users/SocialLinks";
 
 export type UserDataEntity = BaseDataEntity;
@@ -63,11 +65,7 @@ export type UserDataK = UserDataEntity;
 export type UserDataMeta = DefaultMeta<UserDataEntity, UserDataK>;
 export type UserDataExcludedFields = DefaultExcludedFields<UserDataEntity>;
 
-export type AppUser = User<
-  UserData<UserDataEntity, UserDataK, UserDataMeta>,
-  UserDataMeta,
-  UserDataExcludedFields
->;
+export type AppUser = User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
 export interface BaseUser<
   T extends BaseDataEntity,
@@ -122,7 +120,7 @@ export const DataTypeEnums = {
 } as const;
 
 export interface User<
-  T extends BaseDataEntity = UserEntity,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = UserAttachment,
@@ -182,9 +180,9 @@ export interface User<
   school?: string;
   grade?: string;
   createdBy?: string;
-  analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | string;
+  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   isLoggedIn?: boolean;
-  localeCompare?: (other: Message) => number;
+  localeCompare?: (other: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => number;
   interests?: string[];
   privacySettings?: PrivacySettings;
   notifications?: NotificationSettings;
@@ -323,16 +321,16 @@ export interface UserData<
   visualizations?: VisualizationData[];
   
   // Activity & Analytics
-  activityLog?: UserActivity[];
+  activityLog?: ActivityLogEntry[];
   notifications?: UserNotification[];
   analytics?: UserAnalytics;
   analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   unreadNotificationCount?: number;
   
   // Settings & Preferences
-  permissions?: string[];
+  permissions?: Permission[];
   chatSettings?: ChatSettings;
-  subscription?: SubscriptionInfo;
+  subscription?: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // System & Technical
   datasets?: string;
@@ -366,8 +364,8 @@ export interface UserData<
 // Type aliases for cleaner code
 type TypedUser = User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 type TypedUserData = UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
-type TypedProject = Project<UserEntity, UserK, StructuredMetadata<UserEntity, UserK>, UserAttachment, UserExcludedFields, UserIncludedFields>;
-type TypedTask = Task<UserEntity, UserK, StructuredMetadata<UserEntity, UserK>, UserAttachment, UserExcludedFields, UserIncludedFields>;
+type TypedProject = Project<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
+type TypedTask = Task<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 type TypedDataAnalysisResult = DataAnalysisResult<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
 // Status flag type for better organization
@@ -433,7 +431,7 @@ const userData: UserData = {
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
-  snapshots: {} as Snapshots<BaseData<T, K, Meta<T, K>, Attachment>>,
+  snapshots: {} as Snapshots<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
   role: {} as UserRole,
   deletedAt: null,
   lastLogin: new Date(),
@@ -517,20 +515,13 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
           phase: user.phase ?? {},
           analysisResults: user.analysisResults,
           label: label ? label.toString() : label,
-          data: user.data as UserData<
-            BaseData<any, any, StructuredMetadata<any, any>>,
-            BaseData<any, any, StructuredMetadata<any, any>>,
-            StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          >,
+          data: user.data as UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
           createdBy: user.createdBy,
           tags: validTags,
           currentMetadata: user.currentMetadata,
           currentMeta:
             user.currentMeta ||
-            ({} as StructuredMetadata<
-              BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
-              BaseData<any, any, StructuredMetadata<any, any>, Attachment>
-              >),
+            ({} as StructuredMetadata<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>),
           latestVersion: user.latestVersion
         }}
       />
@@ -540,10 +531,9 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   }
 };
 const area = fetchUserAreaDimensions().toString();
-const meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
-const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(
-  area
-);
+const currentMeta: AppStructuredMetadata = useMeta(area)
+const currentMetadata: AppUnifiedMetadata = useMetadata('user-area');
+
 export const usersDataSource: Record<string, UserData> = {
   1: {
     currentMetadata: currentMetadata,

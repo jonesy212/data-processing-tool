@@ -9,7 +9,7 @@ import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -92,18 +92,18 @@ import {
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
-import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
+import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AttachmentType } from '@/app/documents/NoteData';
-import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { convertSubscriptionPayloadToSubscriber } from '@/convertSubscriptionPayloadToSubscriber';
 import { createSnapshot } from "./defaultSnapshotBuilder";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { sortByTimestamp } from "./handleSnapshotOperation";
-import { SnapshotActions } from "./SnapshotActions";
+import { SnapshotActions } from "../actions/SnapshotActions";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { delegate } from "./snapshotHandlers";
@@ -2932,7 +2932,7 @@ const specificDependencies = [
 //             callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
 //             snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
 //             category?: symbol | string | Category,
-//             categoryProperties?: string | CategoryProperties
+//              categoryProperties?: CategoryProperties;
 //           ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
 //             throw new Error("Function not implemented.");
 //           },

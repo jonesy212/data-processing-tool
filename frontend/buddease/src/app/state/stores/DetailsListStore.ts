@@ -10,15 +10,12 @@ import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
 import { Team } from "@/app/models/teams/Team";
-import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 
-import { CommunicationActionTypes } from "@/app/community/CommunicationActions";
+import { CommunicationActionTypes } from "@/app/actions/CommunicationActions";
 import { DocumentStatus } from "@/app/components/documents/types";
-import { Tag } from '@/app/typings/entities/TagEntity';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DataDetails } from '@/app/models/data/Data';
 import {
@@ -30,32 +27,29 @@ import {
   TaskStatus,
   TeamStatus,
   TodoStatus,
+  SecurityStatus
 } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
-import { Member, TeamMember } from "@/app/models/teams/TeamMembers";
+import { TeamMember } from "@/app/models/teams/TeamMembers";
+import { Member } from "@/app/models/members/Member";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+
 import { data, SnapshotConfig, SnapshotDataType, TagsRecord } from "@/app/snapshots";
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-;
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
 
-import { Label } from '@/app/branding/BrandingSettings';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+
+import { useMetadata } from "@/app/config/useMetadata";
 
 const { notify } = useNotification();
 const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
@@ -73,8 +67,8 @@ export type AllStatus =
   | MeetingStatus
   | DocumentStatus
   | PriorityTypeEnum
-  | ProductStatus;
-
+  | ProductStatus
+  | SecurityStatus;
 
 
 // Define a generic interface for details
@@ -91,9 +85,9 @@ interface DetailsItem<
   author?: string;
   date?: Date;
   communication?: CommunicationActionTypes;
-  teammembers?: Array<TeamMember>;
+  teammembers?: Array<TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   tracker?: string;
-  participants?: Member[];
+  participants?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 interface DetailsItemExtended<
@@ -122,7 +116,7 @@ interface DetailsItemExtended<
   reminders?: string[];
   importance?: string;
   location?: string;
-  attendees?: Member[];
+  attendees?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   notes?: string[];
   setCurrentProject?: (project: Project) => void;
   setCurrentTeam?: (team: Team) => void;
@@ -174,7 +168,7 @@ export interface DetailsListStore<
   setDetails: (details: Record<string, DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
-  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+  setDynamicNotificationMessage: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: NotificationType) => void;
 }
 
 class DetailsListStoreClass <
@@ -1115,7 +1109,7 @@ class DetailsListStoreClass <
   }
 
   // Function to set a dynamic notification message
-  setDynamicNotificationMessage = (message: Message) => {
+  setDynamicNotificationMessage = (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     this.setDynamicNotificationMessage(message);
   };
 

@@ -14,7 +14,7 @@ import {
   ExtendedDAppAdapter,
   ExtendedDappProps
 } from "@/app/web3/dAppAdapter/IPFS";
-import userSettings from "@/config/UserSettings";
+import userSettings from "@/app/config/UserSettings";
 import configData from "@/config/endpoints/Data";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";

@@ -893,56 +893,8 @@ export const endpoints: Endpoints = {
     culturalAdaptation: `${BASE_URL}/api/global-collaboration/adapt`,
   },
 
-  logs: {
-    logSession: `${BASE_URL}/api/log/session`,
-    logVideoEvent: `${BASE_URL}/api/log/video-event`,
-    logAudioEvent: `${BASE_URL}/api/log/audio-event`,
-    logChannelEvent: `${BASE_URL}/api/log/channel-event`,
-    logDocumentEvent: `${BASE_URL}/api/log/document-event`,
-    logCollaborationEvent: `${BASE_URL}/api/log/collaboration-event`,
-    logCalendarEvent: `${BASE_URL}/api/log/calendar-event`,
-    logCalendarEventUrl: `${BASE_URL}/api/log/calendar-event-url`,
-  },
 
-  moderators: {
-    list: `${BASE_URL}/api/moderators`,
-    single: (moderatorId: number) =>
-      `${BASE_URL}/api/moderators/${moderatorId}`,
-    manageCommunity: `${BASE_URL}/api/moderators/manage-community`,
-    moderateContent: `${BASE_URL}/api/moderators/moderate-content`,
-    participateInDecisions: `${BASE_URL}/api/moderators/participate-decisions`,
-    // Add more moderator-related endpoints as needed
-  },
 
-  monetization: {
-    startClientProject: `${BASE_URL}/api/monetization/start-client-project`,
-    getClientProjects: `${BASE_URL}/api/monetization/client-projects`,
-    getClientProjectDetails: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    updateClientProject: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    deleteClientProject: (projectId: string) =>
-      `${BASE_URL}/api/monetization/client-projects/${projectId}`,
-    sendGift: (userId: string, giftId: string) =>
-      `${BASE_URL}/api/virtual-gifting/send-gift/${userId}/${giftId}`,
-    getReceivedGifts: (userId: string) =>
-      `${BASE_URL}/api/virtual-gifting/received-gifts/${userId}`,
-    redeemGift: (giftId: string) =>
-      `${BASE_URL}/api/virtual-gifting/redeem-gift/${giftId}`,
-  },
-
-  toolbar: {
-    fetchToolbarSize: `${BASE_URL}/api/toolbar/size`,
-    updateToolbarSize: `${BASE_URL}/api/toolbar/size`,
-  },
-
-  security: {
-    fetchEvents: `${BASE_URL}/api/security/events`,
-    // You can add more endpoints related to security here if needed
-  },  
-  trading: {
-    
-  }
   // Add more sections as needed
 };
 

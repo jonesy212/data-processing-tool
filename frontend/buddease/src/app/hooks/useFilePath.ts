@@ -1,6 +1,6 @@
 // Updated useFilePath hook
 import { useEffect, useState } from 'react';
-import getAppPath from '@/config//appStructure/appPath';
+import getAppPath from '@/app/config/appStructure/appPath';
 
 const useFilePath = () => {
   const [filePath, setFilePath] = useState<string>('');

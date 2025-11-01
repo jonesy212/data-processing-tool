@@ -1,6 +1,8 @@
 import { AllTypes } from '@/app/typings/PropTypes';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SecuritySettings } from '@/app/settings/SecuritySettings'import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
-import { CustomTransaction, SmartContractInteraction } from "@/app/crypto/SmartContractInteraction";
+import { CustomTransaction, SmartContractInteraction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -8,13 +10,15 @@ import { T } from "@/app/models/data/dataStoreMethods";
 import { Phase } from "@/app/models/phases/Phase";
 import { Project } from "@/app/models/projects/Project";
 import { Task, TaskData } from "@/app/models/tasks/Task";
-import { Member } from "@/app/models/teams/TeamMembers";
-import { NFT } from "@/app/nft/NFT";
+import { Member } from "@/app/models/members/Member";
+import { NFT } from "@/app/models/crypto/NFT";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import { Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, TagsRecord } from "@/app/snapshots";
+import { Snapshots } from "@/app/snapshots/";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import {  SnapshotWithCriteria, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
@@ -23,11 +27,11 @@ import { Deadline } from "@/app/state/redux/slices/ProjectSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { Todo } from "@/app/todos/Todo";
-import { BaseResponseType } from "@/app/typings/baseResponseType";
+import { BaseResponseType } from "@/app/typings/responseType";
 import { BlockchainAsset } from "@/app/typings/cryptoTypes/BlockchainAsset";
 import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
-import { VideoData } from "@/app/video/Video";
-import { UserSettings } from "@/config/UserSettings";
+import { VideoData } from "@/app/typings/videoTypes";
+import { UserSettings } from "@/app/config/UserSettings";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
@@ -41,8 +45,15 @@ interface ActivityLogEntry {
   action: string
 }
 
-export interface UserManagerState {
-  users: User[];
+export interface UserManagerState<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  users: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   fullName: string | null;
   bio: string | null;
   profilePicture: string | null;
@@ -114,13 +125,13 @@ export const userManagerSlice = createSlice({
       return state;
     },
 
-    updateBio: (state, action: PayloadAction<string | null>) => {
-      state.bio = action.payload;
+    updateBio: (state, action: PayloadAction<string | null | undefined>) => {
+      state.bio = action.payload ?? null; // Convert undefined to null
       return state;
     },
 
-    updateProfilePicture: (state, action: PayloadAction<string | null>) => {
-      state.profilePicture = action.payload;
+    updateProfilePicture: (state, action: PayloadAction<string | null | undefined>) => {
+      state.profilePicture = action.payload ?? null; // Convert undefined to null
       return state;
     },
 
@@ -333,7 +344,7 @@ export const userManagerSlice = createSlice({
 
     assignUserToProject: (
       state,
-      action: PayloadAction<{ userId: string; projectId: WritableDraft<Project> }>
+      action: PayloadAction<{ userId: string; projectId: WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>
     ) => {
       const { userId, projectId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -398,7 +409,7 @@ export const userManagerSlice = createSlice({
       action: PayloadAction<{
         userId: string;
         projectId: string;
-        tasks: Task[];
+        tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       }>
     ) => {
       const { userId, projectId, tasks } = action.payload;
@@ -413,23 +424,23 @@ export const userManagerSlice = createSlice({
           user.projects[projectIndex].tasks = tasks.map((task) => ({
             ...task,
             // Ensure each task property is compatible with WritableDraft<Task>
-            assignedTo: task.assignedTo as WritableDraft<User> | WritableDraft<User>[] | null,
+            assignedTo: task.assignedTo as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | null,
             dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
             previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User>[],
             data: task.data as WritableDraft<TaskData> | null,
-            tags: task.tags as WritableDraft<TagsRecord> | undefined,
-            subtasks: task.subtasks as WritableDraft<TodoImpl<Todo, any>>[] | undefined,
-            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Data>[]> | undefined,
-            snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<Data, any>> | undefined,
-            phase: task.phase as WritableDraft<Phase> | null | undefined,
-            initialState: task.initialState as WritableDraft<InitializedState<Data, BaseData>> | null | undefined,
+            tags: task.tags as WritableDraft<TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,
+            subtasks: task.subtasks as WritableDraft<TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
+            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | undefined,
+            snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,
+            phase: task.phase as WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
+            initialState: task.initialState as WritableDraft<InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
             comments: task.comments as (WritableDraft<Comment> | WritableDraft<CustomComment>)[] | undefined,
             updatedDetails: task.updatedDetails as WritableDraft<DetailsItem<BaseData>> | undefined,
             videoData: task.videoData as WritableDraft<VideoData> | undefined,
-            members: task.members as string[] | WritableDraft<Member>[] | number[] | undefined,
-            leader: task.leader as WritableDraft<User> | null | undefined,
-            followers: task.followers as WritableDraft<User>[] | undefined,
-            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, BaseData>>[] | undefined,
+            members: task.members as string[] | WritableDraft<Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | number[] | undefined,
+            leader: task.leader as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
+            followers: task.followers as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
+            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
             snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
             // Add other properties here
           }));

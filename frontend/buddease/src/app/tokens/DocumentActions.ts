@@ -1,7 +1,7 @@
 // DocumentActions.ts
 import { DocumentStatus } from "@/app/components/documents/types";
-import { UserIdea } from "@/app/components/users/Ideas";
-import { DocumentEditingPermissions } from "@/app/components/users/Permission";
+import { UserIdea } from "@/app/users/Ideas";
+import { DocumentEditingPermissions } from "@/app/permissions/Permission";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Meta } from '@/app/models/data/dataStoreMethods';

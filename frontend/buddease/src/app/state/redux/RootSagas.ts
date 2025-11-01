@@ -2,24 +2,24 @@
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { apiSagas } from '@/sagas/apiSagas';
-import { calendarSagas } from '@/sagas/calendarSagas';
-import { clientSagas } from '@/sagas/clientSaga';
-import { dataAnalysisSagas } from '@/sagas/dataAnalysisSagas';
-import { dataSagas } from '@/sagas/dataSaga';
-import { detailsSagas } from '@/sagas/detailsSaga';
-import { documentSagas } from '@/sagas/documentSagas';
-import { markerSagas } from '@/sagas/markerSagas';
-import { phaseSagas } from '@/sagas/personaSagas/phaseSaga';
-import promptSagas from '@/sagas/promptSagas';
-import { snapshotSagas } from '@/sagas/snapshotSagas';
-import { taskSagas } from '@/sagas/taskSagas';
-import { teamSagas } from '@/sagas/teamSagas';
-import { tenantSagas } from '@/sagas/tenantSags';
-import { todoSagas } from '@/sagas/todoSagas';
-import { undoRedoSagas } from '@/sagas/UndoRedoSaga';
-import { userSagas } from '@/sagas/userSagas';
-import { videoSagas } from '@/sagas/videoSagas';
+import { apiSagas } from '@/app/state/redux/sagas/apiSagas'
+import { calendarSagas } from '@/app/state/redux/sagas/calendarSagas';
+import { clientSagas } from '@/app/state/redux/sagas/clientSaga';
+import { dataAnalysisSagas } from '@/app/state/redux/sagas/dataAnalysisSagas';
+import { dataSagas } from '@/app/state/redux/sagas/dataSaga';
+import { detailsSagas } from '@/app/state/redux/sagas/detailsSaga';
+import { documentSagas } from '@/app/state/redux/sagas/documentSagas';
+import { markerSagas } from '@/app/state/redux/sagas/markerSagas';
+import { phaseSagas } from '@/app/state/redux/sagas/personaSagas/phaseSaga';
+import promptSagas from '@/app/state/redux/sagas/promptSagas';
+import { snapshotSagas } from '@/app/state/redux/sagas/snapshotSagas';
+import { taskSagas } from '@/app/state/redux/sagas/taskSagas';
+import { teamSagas } from '@/app/state/redux/sagas/teamSagas';
+import { tenantSagas } from '@/app/state/redux/sagas/tenantSags';
+import { todoSagas } from '@/app/state/redux/sagas/todoSagas';
+import { undoRedoSagas } from '@/app/state/redux/sagas/UndoRedoSaga';
+import { userSagas } from '@/app/state/redux/sagas/userSagas';
+import { videoSagas } from '@/app/state/redux/sagas/videoSagas';
 
 // Add more sagas as needed...
 

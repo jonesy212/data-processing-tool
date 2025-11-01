@@ -1,8 +1,10 @@
+import { SnapshotOperation, SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import axiosInstance from '@/app/api/csrfToken';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
-import { SnapshotConfig, } from '@/app/components/snapshots/SnapshotConfig';
-import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
@@ -13,7 +15,6 @@ import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotOperation, SnapshotOperationType } from '@/app/snapshots/SnapshotActions';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -23,12 +24,13 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/app/typings/YourSpecificSnapshotType';
 import { snapshotId } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { DataStoreWithSnapshotMethods } from '@/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Version } from '@/versions/Version';
@@ -76,7 +78,7 @@ interface RetrievedSnapshot<
 
 
 // Define a nction to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot< BaseData<any>, Data>>
-const converSnapshotStore = <
+const convertSnapshotStore = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -247,11 +249,14 @@ const converSnapshotStore = <
   batchUpdateSnapshotsFailure: any, // Placeholder
   batchTakeSnapshot: any, // Placeholder
   handleSnapshotSuccess: any, // Placeholder
-  storeProps: SnapshotStoreProps<T, K>
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
-  const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory} = storeProps
-  const snapshotData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({ initialState, storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+  const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory, core, security, storage, isExpired} = storeProps
+  const snapshotData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+    initialState, storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory,
+    core, security, storage, isExpired, 
+  });
   // Create the Snapshot object from retrievedSnapshot
   const snapshot = {
     // Core Snapshot Properties
@@ -533,7 +538,7 @@ const converSnapshotStore = <
     comments: [],
     attachments: [],
     events: {
-      eventRecords: {} as Record<string, any[]> & CombinedEvents<T, K>,
+      eventRecords: {} as Record<string, any[]> & CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callbacks: {
         default: [(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
           // Convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to a format that can be used with Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -612,59 +617,59 @@ const converSnapshotStore = <
       addSnapshotFailure: (
         date: Date, 
         snapshotId: string | number | null,
-        snapshotManager: SnapshotManager<T, K>,
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
          payload: { error: Error; }
       ) => void;
       createSnapshotSuccess: (
         snapshotId: string | number | null,
-        snapshotManager: SnapshotManager<T, K>,
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payload?: { data?: any }
       ) => void;
       createSnapshotFailure: (
         date: Date,
         snapshotId: string, 
-        snapshotManager: SnapshotManager<T, K>,
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
         payload: { error: Error; }
       ) => void;
       updateSnapshotSuccess: (
-        snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload?: { data?: any; } | undefined
+        snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload?: { data?: any; } | undefined
       ) => void;
       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
       batchUpdateSnapshotsFailure: (
         date: Date, 
         snapshotId: string | number | null,
-        snapshotManager: SnapshotManager<T, K>,
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
          snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           payload: { error: Error; }
       ) => void;
       batchUpdateSnapshotsRequest: (
-        snapshotData: (subscribers: SubscriberCollection<T, K>) => Promise<{
-          subscribers: SubscriberCollection<T, K>;
+        snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<{
+          subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         }>,
-        snapshotManager: SnapshotManager<T, K>
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       ) => Promise<void>;
       createSnapshots: (
         id: string,
         snapshotId: string,
         snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        snapshotManager: SnapshotManager<T, K>,
+        snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payload: CreateSnapshotsPayload<T, K>,
         callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
         snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
         category?:  Category,
-        categoryProperties?: string | CategoryProperties,
-      ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+         categoryProperties?: CategoryProperties;,
+      ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null,
       batchTakeSnapshot: (snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
       batchTakeSnapshotsRequest: (snapshotIds: string[], snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
       deleteSnapshot: (id: string) => void;
       batchFetchSnapshots: (criteria: any) => Promise<Snapshot<T,K>[]>;
       batchFetchSnapshotsSuccess: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void;
       batchFetchSnapshotsFailure: (
-        date: Date, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }
+        date: Date, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }
       ) => void;
 
       
@@ -689,9 +694,9 @@ const converSnapshotStore = <
         id: string | number | undefined,
         snapshotId: string,
         snapshotData: T,
-        category?: Category,
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStore<T, K>
+        dataStoreMethods: DataStore<T, K>,
+        category?: Category
       ) => Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
       setSnapshotCategory: (id: string, newCategory: string | Category) => void;
       getSnapshotCategory: (id: string) => Category | undefined;
@@ -704,13 +709,14 @@ const converSnapshotStore = <
         event: Event,
         id: number,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        category?: Category,        categoryProperties: CategoryProperties | undefined,
+        category?: Category,
+        categoryProperties: CategoryProperties | undefined,
         dataStoreMethods: DataStore<T, K>,
         data: T,
         dataCallback?: (
           subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-        ) => Promise<SnapshotUnion<T, K, Meta>[]>
+        ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
       ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
       addData: (id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
       setData: (id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
@@ -919,7 +925,7 @@ const converSnapshotStore = <
             reject(new Error("Snapshot container not found"));
           }
         })
-      },
+    },
     getSnapshotVersions: () => { },
     createSnapshot: () => { },
     deleteSnapshot: () => { },
@@ -989,7 +995,7 @@ const converSnapshotStore = <
       snapshotId: string,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotManager: SnapshotManager<T, K>,
+      snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payload: CreateSnapshotStoresPayload<T, K>,
       callback: (snapshotStores?: SnapshotStoreReference<T, K>[]) => void | null,
       snapshotStoreData?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -1056,7 +1062,7 @@ const converSnapshotStore = <
       snapshotId: string,
       snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
-      event: Event,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
     ): Promise<void | null> => {
       return new Promise((resolve) => {
@@ -1074,7 +1080,7 @@ const converSnapshotStore = <
     
         // Step 2: Process snapshots if necessary (e.g., filtering, transformation)
         const processedSnapshots = Array.isArray(snapshots)
-        ? snapshots.map((snapshot: SnapshotUnion<T, K, Meta>) => ({
+        ? snapshots.map((snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({
             ...snapshot,
             updatedAt: new Date() // Example transformation: adding a timestamp
           }))
@@ -1146,7 +1152,7 @@ const converSnapshotStore = <
     addSnapshotFailure: (
       date: Date, 
       snapshotId: string | number | null,
-      snapshotManager: SnapshotManager<T, K>,
+      snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
        payload: { error: Error; }
     ) => {},
@@ -1250,7 +1256,7 @@ const converSnapshotStore = <
     fetchSnapshotSuccess: () => {},
     fetchSnapshotFailure: (
       snapshotId: string,
-      snapshotManager: SnapshotManager<T, K>,
+      snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       date: Date | undefined,
       payload: { error: Error }
@@ -1413,7 +1419,12 @@ const retrieveData = async () => {
 };
 
 export const retrieveSnapshotData = <
-  T extends BaseData<any>, K extends T = T,
+    T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T ,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(id: string
 ): Promise<RetrievedSnapshot<SnapshotDataResponse<T, K>, K> | null> => {
   return new Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(

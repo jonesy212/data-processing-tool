@@ -44,4 +44,5 @@ export const ThemeActions = {
   // Brand Icon, Brand Name
   setBrandIcon: createAction<string>("setBrandIcon"),
   setBrandName: createAction<string>("setBrandName"),
+  setHeaderColorFailure: create<string>('setHeaderColorFailure')
 };

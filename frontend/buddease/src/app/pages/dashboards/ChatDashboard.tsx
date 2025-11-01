@@ -1,15 +1,12 @@
 // ChatDashboard.tsx
-import React from 'react';
-import { Team } from '@/app/models/teams/Team';
-import { TeamMember } from '@/app/components/models/teams/TeamMembers';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { TeamMember } from '@/app/components/models/teams/Contributor';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
-import { UserRole } from "@/app/models/UserRole";
+import { Team } from '@/app/models/teams/Team';
 import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import React from 'react';
 
 interface ChatDashboardProps {
   aquaConfig: AquaConfig;

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render, screen } from '@testing-library/react';
-import CommonDetails from '@/CommonDetails'; // Corrected import path
+import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import React from "react";
 
 describe('CommonDetails', () => {

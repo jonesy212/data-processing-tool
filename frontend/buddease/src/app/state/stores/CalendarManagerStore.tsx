@@ -5,15 +5,15 @@ import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-  getDefaultDocumentOptions,
+    getDefaultDocumentOptions,
 } from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import { createSubscriber } from '@/app/models/cypto/exchangeIntegration';
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-  PriorityTypeEnum,
-  StatusType,
+    PriorityTypeEnum,
+    StatusType,
 } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
@@ -26,16 +26,16 @@ import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
-  NotificationTypeEnum,
-  useNotification
+    NotificationTypeEnum,
+    useNotification
 } from "@/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import {
-  AssignEventStore,
-  ReassignEventResponse,
-  useAssignEventStore,
+    AssignEventStore,
+    ReassignEventResponse,
+    useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
@@ -43,35 +43,35 @@ import { AllStatus } from "./DetailsListStore";
 import { useStore } from "./StoreProvider";
 
 import { EventActions } from "@/app/actions/EventActions";
+import {
+    SnapshotOperation,
+    SnapshotOperationType,
+} from "@/app/actions/SnapshotActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { combinedEvents } from "@/app/event/Event";
 import {
-  createSnapshotStore,
-  SnapshotStoreOptions,
-  useSnapshotManager,
+    createSnapshotStore,
+    SnapshotStoreOptions,
+    useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import {
+    AddEventPayload,
+    CalendarActionPayload,
+    CalendarActionType,
+    RemoveEventPayload,
+    SetEventStatusPayload,
+    UpdateEventPayload,
+} from "@/app/server/database/CalendarActionPayload";
 import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
-import {
-  SnapshotOperation,
-  SnapshotOperationType,
-} from "@/app/snapshots/SnapshotActions";
-import {
-  AddEventPayload,
-  CalendarActionPayload,
-  CalendarActionType,
-  RemoveEventPayload,
-  SetEventStatusPayload,
-  UpdateEventPayload,
-} from "@/server/database/CalendarActionPayload";
 import { useDispatch } from "react-redux";
 
 import {
-  defaultCalendarEventManager
+    defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 import {
-  defaultScheduleCoordinator
+    defaultScheduleCoordinator
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
@@ -125,9 +125,9 @@ const notifyCallback = (): void => {
 
 interface CalendarEntities {
   events: CalendarEvent<Data<BaseData<any>>, BaseData>[];
-  participants: Member[];
-  hosts: Member[];
-  guestSpeakers: Member[]; // Add guestSpeakers array
+  participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  hosts: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  guestSpeakers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Add guestSpeakers array
   // Add more entities as needed
 }
 
@@ -349,7 +349,7 @@ class CalendarManagerStoreClass<
     ) => {
       try {
         const key = this.getSnapshotDataKey(documentId, eventId, userId)
-        const snapshotManager = await useSnapshotManager<T, K>(storeId);
+        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId);
         const snapshotId = await snapshotManager?.snapshotStore?.getSnapshotId(key);
 
         if (snapshotId === undefined || isNaN(parseInt(snapshotId, 10))) {

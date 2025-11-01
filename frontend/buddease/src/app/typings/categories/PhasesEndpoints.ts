@@ -1,7 +1,7 @@
 // PhasesEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface PhasesEndpoints {
+export interface PhasesEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (phaseId: number) => EndpointConfig;
   add: EndpointConfig;

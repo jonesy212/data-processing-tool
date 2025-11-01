@@ -1,11 +1,11 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import HighlightEvent from '@/components/documents/screenFunctionality/HighlightEvent';
-import { headersConfig } from '@/components/shared/SharedHeaders';
-import { YourResponseType } from '@/components/typings/types';
+import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError, AxiosResponse } from 'axios';
-import { handleApiErrorAndNotify, removeData, updateData } from '@/ApiData';
+import { handleApiErrorAndNotify, removeData, updateData } from '@/app/api/ApiData';
 import { endpoints } from '@/app/api/endpointConfigurations';
 
 const API_BASE_URL = endpoints.highlights;
@@ -66,14 +66,14 @@ export const HighlightEventApi = {
           const errorMessage = `Failed to add highlight: ${response.statusText}`;
           handleApiError(
             new Error(response.statusText),
-            NOTIFICATION_MESSAGES.errorMessage.ADD_HIGHLIGHT_ERROR
+            NOTIFICATION_MESSAGES.Highlight.ADD_HIGHLIGHT_ERROR
           );
           reject(new Error(errorMessage));
         }
       } catch (error: any) {
         handleApiError(
           error,
-          NOTIFICATION_MESSAGES.errorMessage.ADD_HIGHLIGHT_ERROR
+          NOTIFICATION_MESSAGES.Highlight.ADD_HIGHLIGHT_ERROR
         );
         reject(error);
       }
@@ -138,7 +138,7 @@ export const HighlightEventApi = {
     } catch (error: any) {
       handleApiError(
         error as AxiosError<unknown, any>,
-        NOTIFICATION_MESSAGES.errorMessage.DELETE_HIGHLIGHT_ERROR
+        NOTIFICATION_MESSAGES.Highlight.DELETE_HIGHLIGHT_ERROR
       );
     }
   },

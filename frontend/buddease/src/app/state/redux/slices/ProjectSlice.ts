@@ -11,7 +11,7 @@ import { Product } from "@/app/products/Product";
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
 import { WritableDraft } from "@/app/ReducerGenerator";
-import { RootState } from "@/state/redux/slices/RootSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
 import { useDispatch } from "react-redux";

@@ -5,14 +5,14 @@ import { DesignSystemConfig } from '@/app/libraries/ui/theme/MapProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import Version from '@/app/versions/Version';
-import { AppStructureItem } from '@/config//appStructure/AppStructure';
-import { UserSettings } from '@/config//UserSettings';
+import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import { UserSettings } from '@/app/config/UserSettings';
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
-import { DocumentTypeEnum } from '@/server/ServerDocumentGenerator';
+import { DocumentTypeEnum } from '@/app/server/ServerDocumentGenerator';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';
 import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from 'docx';

@@ -14,7 +14,7 @@ import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
 import { internalCache } from '@/app/utils/cache/InternalCache';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { deepEqual } from 'assert';
 
 export const createBasicSnapshot = <

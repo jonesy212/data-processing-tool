@@ -1,7 +1,7 @@
 // HighlightEventMetadata.ts
 import { Attachment } from "@/app/components/documents/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 interface HighlightEventMetadata<
   T extends BaseDataEntity = BaseDataEntity,

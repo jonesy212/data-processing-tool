@@ -1,12 +1,12 @@
 // fileSagas.ts
-import { endpoints } from '@/app/api/ApiEndpoints';
+import { endpoints } from '@/app/api/endpointConfigurations';
 // import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/app/api/ApiFiles';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { DataFrameActions } from '@/app/actions/DataFrameActions';
 import { FileActions } from '@/app/actions/FileActions';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import { Data } from '@/app/models/data/Data';
-import { DataActions } from '@/app/projects/DataAnalysisPhase/DataActions';
+import { DataActions } from '@/app/actions/DataActions';
 import axios, { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/api/DataframeApi';

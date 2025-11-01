@@ -1,7 +1,7 @@
 // snapshotBuilder.ts
 
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Conditional Utility Types
 export type SnapshotConfigArgs<

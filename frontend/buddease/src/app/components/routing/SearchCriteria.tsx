@@ -20,7 +20,7 @@ import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { userService } from "@/app/api/ApiUserr";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
+import { Entity, fuzzyMatchEntities } from "../../routing/FuzzyMatch";
 import { BaseData, Data } from '@/app/models/data/Data';
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import { searchDocuments } from "@/app/api/ApiDocument";

@@ -1,5 +1,7 @@
 // factoryHandlers.ts
-
+import { Message } from '@/app/generators/GenerateChatInterfaces';
+import ReactiveEventHandler from '@/app/typings/eventHandlers/eventTypes'
+import ReactiveMouseEvent from '@/app/typings/eventHandlers/eventTypes'
 
 const isReactiveEventHandler = (
   handler: ReactiveEventHandler | EventListenerOrEventListenerObject

@@ -1,16 +1,12 @@
 import { endpoints } from '@/api/endpointConfigurations';
 import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
-iimport 
+ 
 import { ComponentMethods } from '@/app/page'
-import { CalendarMeta,
-CalendarAttachment,
-CalendarExcludedFields,
-CalendarIncludedFields
-} from '@/app/typings/entties/CalendarEntity'
+import { CalendarMeta,CalendarK, CalendarEntity, CalendarAttachment, CalendarIncludedFields, CalendarExcludedFields } from '@/app/typings/entties/CalendarEntity'
 import appTreeApiService from "@/app/api/appTreeApi";
 import getSnapshotId from "@/app/api/SnapshotApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import CalendarManagerStoreClass  from '@/state/stores/CalendarManagerStore';
+import CalendarManagerStoreClass  from '@/app/state/stores/CalendarManagerStore';
 import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';

@@ -11,8 +11,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from '@/app/snapshots/SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 
 function handleSnapshot<  
   T extends BaseDataEntity,

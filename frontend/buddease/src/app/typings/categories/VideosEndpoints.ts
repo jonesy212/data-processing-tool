@@ -1,7 +1,7 @@
 // VideosEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface VideosEndpoints {
+export interface VideosEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   uploadVideo: EndpointConfig;
   single: (videoId: string) => EndpointConfig;

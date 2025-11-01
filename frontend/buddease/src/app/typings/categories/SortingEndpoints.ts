@@ -1,7 +1,7 @@
 // SortingEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface SortingEndpoints {
+export interface SortingEndpoints extends EndpointCategoryConfig {
   sortEvents: EndpointConfig;
   sortMessages: EndpointConfig;
   snapshots: EndpointConfig;

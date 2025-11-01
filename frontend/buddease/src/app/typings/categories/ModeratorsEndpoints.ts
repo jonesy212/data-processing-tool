@@ -1,7 +1,7 @@
 // ModeratorsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ModeratorsEndpoints {
+export interface ModeratorsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (moderatorId: number) => EndpointConfig;
   manageCommunity: EndpointConfig;

@@ -1,7 +1,7 @@
 // FreelancersEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface FreelancersEndpoints {
+export interface FreelancersEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (freelancerId: number) => EndpointConfig;
   submitProposal: EndpointConfig;

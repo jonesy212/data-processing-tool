@@ -1,7 +1,7 @@
 // dexApi.ts
-import { AxiosError } from "axios";
 import DEXData from "@/app/components/models/data/DEXData";
-import { YourResponseType } from '@/app/components/typings/responseTypes'
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { AxiosError } from "axios";
 import {
   fetchData,
   handleApiErrorAndNotify,

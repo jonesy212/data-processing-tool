@@ -1,8 +1,10 @@
 // ThemeConfigContext.tsx
-import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import YourClass from "@/app/utils/YourClass";
 import React, { createContext, useContext, useState } from "react";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface ThemeConfigProps {
   fontSize: string;
@@ -54,7 +56,7 @@ export const ThemeConfigProvider = <
     {} as ThemeConfig | (() => ThemeConfig)
   );
 
-  let yourClassInstance: YourClass;
+  const yourClassInstance = new YourClass();
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 

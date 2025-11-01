@@ -1,7 +1,7 @@
+// TodoManagerStore.ts
 import { NotificationType } from "@/app/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateSnapshotId } from '@/app/utils/snapshotUtils';
-// TodoManagerStore.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
@@ -20,6 +20,8 @@ import {
 import { AllStatus } from '@/DetailsListStore';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const { notify } = useNotification();
 

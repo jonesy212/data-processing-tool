@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 import IPFS from 'ipfs';
 import { getConfigsData } from '@/app/api/getConfigsApi';
-import { ipfsConfig } from '@/config/ipfsConfig';
+import { ipfsConfig } from '@/app/config/ipfsConfig';
 import { useAuth } from '@/context/AuthContext';
 import { CustomDAppAdapter } from '@/DApp';
 import { DAppAdapterConfig, DappProps } from '@/DAppAdapterConfig';

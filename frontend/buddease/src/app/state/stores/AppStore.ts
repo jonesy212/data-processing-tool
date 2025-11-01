@@ -26,7 +26,7 @@ import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { ToolbarState } from '@/app/state/stores/ToolbarStore';
 import { UIState } from '@/app/state/stores/UISlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { makeAutoObservable } from 'mobx';
 

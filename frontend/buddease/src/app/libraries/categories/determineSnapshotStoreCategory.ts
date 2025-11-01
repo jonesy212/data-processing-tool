@@ -1,6 +1,6 @@
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 //determineSnapshotStoreCategory.ts
 function determineSnapshotStoreCategory<
   T extends BaseDataEntity,

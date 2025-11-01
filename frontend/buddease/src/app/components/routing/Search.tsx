@@ -8,7 +8,7 @@ import SearchComponent, {
 } from "@/app/pages/searches/SearchComponent";
 import { sanitizeInput } from "@/app/security/SanitizationFunctions";
 import React, { useEffect, useState } from "react";
-import { Entity } from "./FuzzyMatch";
+import { Entity } from "../../routing/FuzzyMatch";
 import SearchResult from "./SearchResult";
 
 const SearchPage: React.FC<SearchComponentProps> = ({

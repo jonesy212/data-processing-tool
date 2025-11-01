@@ -1,27 +1,34 @@
-import { SystemConfigs } from "@/app/api/systemConfigs";
-import { UserConfigs } from "@/app/api/userConfigs";
+import { handleApiError } from '@/app/api/ApiLogs';
+import ApiConfig from '@/app/api/ApiConfig';
+import { UserConfigs } from '@/app/api/userConfigs';
 import { useNotification } from '@/app/context/NotificationContext';
-import { Project, isProjectInSpecialPhase } from "@/app/models/projects/Project";
-import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
+import { Project, isProjectInSpecialPhase } from '@/app/models/projects/Project';
+import StoreConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
+import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
+import { createSystemConfigs } from '@/app/api/systemConfigs';
 import {
   BackendConfig,
   backendConfig,
-} from "../../config/BackendConfig";
+} from '@/app/config/BackendConfig';
+import {
+  FrontendConfig,
+  frontendConfig,
+} from '@/app/config/FrontendConfig';
 
 import { getConfigsData } from '@/api/getConfigsApi';
-import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
+import LazyLoadScriptConfigImpl from '@/app/components/configs/LazyLoadScriptConfig';
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { API_VERSION_HEADER } from '@/config/AppConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import dataVersions from "@/configs/DataVersionsConfig";
+import { API_VERSION_HEADER } from '@/app/config/AppConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import dataVersions from '@/app/configs/DataVersionsConfig';
 import { VersionHistory } from '@/versions/VersionData';
-import fs from 'fs';
-import { frontendConfig } from "../../config/FrontendConfig";
-import { ModuleType, userPreferences } from "../../config/UserPreferences";
-import userSettings from "../../config/UserSettings";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
+
+import { ModuleType, userPreferences } from '@/app/config/UserPreferences';
+import userSettings from '@/app/config/UserSettings'
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import authenticationHeaders from '../api/headers/authenticationHeaders';
+import { configConfig } from '@/app/config/endpoints/configConfig'
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -57,27 +64,25 @@ export interface CacheConfig {
   maxAge: number;
   staleWhileRevalidate: number;
   cacheKey: string;
+  strategy: 'memory' | 'persistent' | 'hybrid';
+  ttl: number;
+  versioning: {
+    enabled: boolean;
+    key: string;
+  };
+  invalidation: {
+    onUpdate: boolean;
+    onDelete: boolean;
+    pattern?: string;
+  };
+  persistence?: {
+    enabled: boolean;
+    storageKey: string;
+    autoRehydrate: boolean;
+  };
 }
 
-export interface ApiConfig {
-  [x: string]: any;
-  name: any
-  baseURL: string;
-  timeout: number;
-  headers: {
-    [key: string]: string;
-  };
-  retry: RetryConfig;
-  cache: CacheConfig;
-  responseType: {
-    contentType: string; // New property for content type
-    encoding: string; // New property for encoding
-    // Add more properties as needed
-  } | string;
-  withCredentials: boolean;
-  onLoad?: (response: any) => void;
-  apiKeys?: Record<string, string>;
-}
+
 
 interface ConfigurationOptions<
   T extends BaseDataEntity = BaseDataRoot,
@@ -106,7 +111,7 @@ interface ConfigurationOptions<
   backendConfig: BackendConfig; // Add backendDocumentConfig here
 
   configStructure: {
-    systemConfigs: typeof SystemConfigs;
+    systemConfigs: ReturnType<typeof createSystemConfigs>;
     userConfigs: typeof UserConfigs;
     aquaConfig: AquaConfig;
     storeConfig: StoreConfig;
@@ -124,6 +129,9 @@ export const DATA_PATH = getConfigsData()
 
 const notify = useNotification
 
+const configureScript = () => {
+  console.log("Script configured");
+};
 
 export class ConfigurationService {
   protected static instance: ConfigurationService
@@ -132,16 +140,36 @@ export class ConfigurationService {
   private apiConfigSubscribers: ((config: ApiConfig) => void)[] = [];
 
   private constructor() {
-    // Initialize apiConfig with default values
-    this.apiConfig = this.getDefaultApiConfig();
+    // Initialize ApiConfig with endpoint configurations
+    this.apiConfig = new ApiConfig({ config: configConfig }, { config: configConfig });
+  }
 
+ private async readConfigFile(): Promise<any> {
+    try {
+      const endpoint = this.apiConfig.getEndpoint("config", "getConfigFile");
+      const response = await fetch(endpoint.path, {
+        method: endpoint.method,
+        headers: authenticationHeaders,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load config file: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error("Error reading config file:", error);
+      // Return fallback/default config
+      return {
+        apiKey: process.env.REACT_APP_API_KEY || '',
+        appId: process.env.REACT_APP_ID || '',
+        appDescription: process.env.REACT_APP_DESCRIPTION || '',
+        // ... other default values
+      };
+    }
   }
 
 
-  private readConfigFile(): any {
-    const rawData = fs.readFileSync('config.json', 'utf-8');
-    return JSON.parse(rawData);
-  }
   // Handle API key retrieval
   async getApiKey(): Promise<string> {
     const config = await this.readConfigFile();
@@ -153,8 +181,9 @@ export class ConfigurationService {
     return config.appId;
   }
 
-  getAppDescription(): string {
-    return this.readConfigFile().appDescription;
+  async getAppDescription(): Promise<string> {
+    const config = await this.readConfigFile();
+    return config.appDescription;
   }
 
 
@@ -217,165 +246,231 @@ private getDefaultApiConfig(): ApiConfig {
   }
 
 
+  /**
+   * Load system configurations from API
+   */
+  async getSystemConfigs(): Promise<ReturnType<typeof createSystemConfigs>> {
+    try {
+      const endpoint = this.apiConfig.getEndpoint("config", "getSystemConfigs");
+      const response = await fetch(endpoint.path, {
+        method: endpoint.method,
+        headers: authenticationHeaders,
+      });
+
+      if (!response.ok) throw new Error(`Failed to load system configs: ${response.statusText}`);
+      return await response.json(); // ✅ Proper response handling
+    } catch (error) {
+      handleApiError(error, "Failed to load system configurations");
+      console.warn("Falling back to local system config defaults.");
+      return createSystemConfigs();
+    }
+  }
+
+  /**
+   * Load user configurations from API
+   */
+  async getUserConfigs(): Promise<typeof UserConfigs> {
+    try {
+      const endpoint = this.apiConfig.getEndpoint("config", "getUserConfigs");
+      const response = await fetch(endpoint.path, {
+        method: endpoint.method,
+        headers: authenticationHeaders,
+      });
+
+      if (!response.ok) throw new Error(`Failed to load user configs: ${response.statusText}`);
+      return await response.json();
+    } catch (error) {
+      handleApiError(error, "Failed to load user configurations");
+      console.warn("Falling back to local user config defaults.");
+      return UserConfigs;
+    }
+  }
+
+
+  /**
+   * Load user settings from API
+   */
+  async getUserSettings(): Promise<Record<string, any>> {
+    try {
+      const endpoint = this.apiConfig.getEndpoint("config", "getUserSettings");
+      const response = await fetch(endpoint.path, {
+        method: endpoint.method,
+        headers: authenticationHeaders,
+      });
+
+      if (!response.ok) throw new Error(`Failed to load user settings: ${response.statusText}`);
+      return await response.json();
+    } catch (error) {
+      handleApiError(error, "Failed to load user settings");
+      console.warn("Falling back to default user settings.");
+      return {}; // fallback to empty/default settings
+    }
+  }
+
+
+  /**
+   * Get default snapshot configuration
+   */
   getSnapshotConfig(): LazyLoadScriptConfigImpl {
-    // Example: Default configuration
     const defaultConfig: LazyLoadScriptConfigImpl = {
-      timeout: 5000, // 5 seconds timeout for script loading
+      timeout: 5000,
       onLoad: () => console.log("Script loaded successfully"),
-      retryCount: 3, // Retry loading script up to 3 times
-      retryDelay: 1000, // 1 second delay between retry attempts
-      asyncLoad: true, // Asynchronously load scripts
-      deferLoad: false, // Do not defer script execution
+      retryCount: 3,
+      retryDelay: 1000,
+      asyncLoad: true,
+      deferLoad: false,
       onBeforeLoad: () => console.log("Loading script..."),
-      onScriptError: (error:ErrorEvent) => console.log("Error loading script", error),
-      onTimeout: () => console.log("Timeout loading script"),
+      onScriptError: (error: ErrorEvent) => console.error("Error loading script", error),
+      onTimeout: () => console.warn("Timeout loading script"),
       onCachedLoad: () => console.log("Script loaded from cache"),
-      onCachedTimeout: () => console.log("Timeout loading script from cache"),
-      onCachedError: (error: Error) =>
-        console.log("Error loading script from cache", error),
-      // Example: Add configuration options here
-      systemConfigs: SystemConfigs,
+      onCachedTimeout: () => console.warn("Timeout loading cached script"),
+      onCachedError: (error: Error) => console.error("Cached load error", error),
+
+      // ✅ Dynamic system components
+      systemConfigs: createSystemConfigs(),
       userConfigs: UserConfigs,
       dataVersions: () => dataVersions,
-      frontend: frontendConfig,
-      backend: backendConfig,
-      aquaConfig:{} as AquaConfig,
+      frontend: frontendConfig as FrontendConfig,
+      backend: backendConfig as BackendConfig,
+      aquaConfig: {} as AquaConfig,
       storeConfig: {} as StoreConfig,
-      configureScript: () => {}
-    }
+      configureScript: () => {},
+    };
+
     return defaultConfig;
   }
 
-  setCachedConfig(config: LazyLoadScriptConfigImpl): void {
-    this.cachedConfig = config;
+
+    /**
+   * Subscribe to API config changes
+   */
+  subscribeToApiConfig(callback: (config: ApiConfig) => void): void {
+    this.apiConfigSubscribers.push(callback);
   }
 
-  // Get the cached configuration
-  getCachedConfig(): LazyLoadScriptConfigImpl | null {
+    /**
+   * Notify subscribers when API config changes
+   */
+  private notifyApiConfigSubscribers(): void {
+    this.apiConfigSubscribers.forEach((callback) => callback(this.apiConfig));
+  }
+
+  /** Get cached snapshot config or create new one */
+  public async getCachedSnapshotConfig(): Promise<LazyLoadScriptConfigImpl> {
+    if (!this.cachedConfig) {
+      console.log('[ConfigService] Creating new snapshot config...');
+      this.cachedConfig = await this.getSnapshotConfig();
+    }
     return this.cachedConfig;
   }
 
-  getLazyLoadScriptConfig(): LazyLoadScriptConfigImpl {
-    // Example: Default configuration
-    const defaultConfig: LazyLoadScriptConfigImpl = {
-      timeout: 5000, // 5 seconds timeout for script loading
-      onLoad: () => console.log("Script loaded successfully"),
-      retryCount: 3, // Retry loading script up to 3 times
-      retryDelay: 1000, // 1 second delay between retry attempts
-      asyncLoad: true, // Asynchronously load scripts
-      deferLoad: false, // Do not defer script execution
-      onBeforeLoad: () => console.log("Loading script..."),
-      onScriptError: (error) => console.error("Script error:", error),
-      thirdPartyLibrary: "example-library",
-      thirdPartyAPIKey: "your-api-key",
-      nonce: "random-nonce-value",
-      configureScript: () => {}
-    };
+  /** Force refresh of cached configs */
+  public async refreshConfigs(): Promise<void> {
+    console.log('[ConfigService] Refreshing all cached configs...');
+    
+    // Clear all caches
+    this.cachedConfig = null;
 
+    // Reinitialize
+    await this.getSnapshotConfig();
+  }
+
+  /** Get lazy load script config with proper caching strategy */
+  public async getLazyLoadScriptConfig(): Promise<LazyLoadScriptConfigImpl> {
+    const snapshotConfig = await this.getCachedSnapshotConfig();
+    
+    // Apply conditional modifications based on your business logic
+    return this.applyConditionalConfigurations(snapshotConfig);
+  }
+
+
+
+  /** Apply conditional configurations to base snapshot config */
+  private applyConditionalConfigurations(baseConfig: LazyLoadScriptConfigImpl): LazyLoadScriptConfigImpl {
     const aquaConfig: AquaConfig = {
-      apiUrl: "https://example.com/aqua-api",
+      apiUrl: 'https://example.com/aqua-api',
       maxConnections: 10,
       timeout: 0,
       secureConnection: false,
       reconnectAttempts: 0,
       autoReconnect: false,
-      appId: "",
-      appSecret: "",
-      relayUrl: "",
-      relayToken: "",
-      chatToken: "",
-      chatUrl: "",
-      chatWebsocketUrl: "",
-      chatImageUploadUrl: "",
+      appId: '',
+      appSecret: '',
+      relayUrl: '',
+      relayToken: '',
+      chatToken: '',
+      chatUrl: '',
+      chatWebsocketUrl: '',
+      chatImageUploadUrl: '',
       chatImageUploadHeaders: {} as Record<string, string>,
       chatImageUploadParams: {} as Record<string, string>,
       chatImageUploadUrlParams: {} as Record<string, string>,
-      chatImageDownloadUrl: "",
+      chatImageDownloadUrl: '',
       chatImageDownloadHeaders: {} as Record<string, string>,
       chatImageDownloadParams: {} as Record<string, string>,
       chatImageDownloadUrlParams: {} as Record<string, string>,
-      chatImageCacheUrl: "",
+      chatImageCacheUrl: '',
       chatImageCacheHeaders: {} as Record<string, string>,
-      chatImageCacheParams: {} as Record<string, string>
+      chatImageCacheParams: {} as Record<string, string>,
     };
-    // Additional edge cases and use cases
-    // Case 1: Custom configuration based on a condition
-    // Determine if custom configuration is needed based on AquaConfig
+
+    // Case 1: Custom configuration based on AquaConfig
     const isCustomConfigNeeded = aquaConfig.maxConnections > 5;
     if (isCustomConfigNeeded) {
       const customApiConfig: ApiConfig = {
-        name: "customApiConfig",
-        baseURL: "https://custom-api.com",
+        ...this.apiConfig,
+        name: 'customApiConfig',
+        baseURL: 'https://custom-api.com',
         timeout: 10000,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         retry: {
           enabled: true,
           maxRetries: 3,
           retryDelay: 0,
         },
-        cache: {} as CacheConfig,
-        responseType: {
-          contentType: "application/json", // Default content type
-          encoding: "utf-8", // Default encoding
-        },
-        withCredentials: false,
-        onLoad: function (response: any): void {
-          throw new Error("Function not implemented.");
-        },
       };
 
       return {
-        // Merge default configuration with custom ApiConfig properties
-        ...defaultConfig,
+        ...baseConfig,
+        configureScript,
         apiConfig: customApiConfig,
-        configureScript: () => { }
-        // Add more custom properties for this case
+        aquaConfig,
       };
     }
 
-    // Determine if a special scenario requires different configuration
+    // Case 2: Special scenario handling
     const specialScenario = isProjectInSpecialPhase({} as Project);
     if (specialScenario) {
       const specialStoreConfig: StoreConfig = {
-        name: "Special Store",
-        description: "Special store for special scenario",
-        // Additional configuration options...
+        name: 'Special Store',
+        description: 'Special store for special scenario',
       };
 
-      if (this.cachedConfig) {
-        return this.cachedConfig;
-      } else {
-        return defaultConfig;
-      }
+      return {
+        ...baseConfig,
+        configureScript,
+        storeConfig: specialStoreConfig,
+        aquaConfig,
+      };
     }
 
-    // Added return statement with default config to resolve error
-    return defaultConfig;
+    // Return base config with aquaConfig
+    return {
+      ...baseConfig,
+      configureScript,
+      aquaConfig,
+    };
   }
 
-  // Add more configuration methods as needed
+   // Cache management methods
 
-
-  
-async getSystemConfigs(): Promise<typeof SystemConfigs> {
-  // Simulate asynchronous fetching, replace with actual async logic
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(SystemConfigs);
-    }, 500);
-  });
-}
-
-  async getUserConfigs(): Promise<typeof UserConfigs>  {
-    // Simulate asynchronous fetching, replace with actual async logic
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(UserConfigs);
-      }, 500);
-    });
+  public clearCache(): void {
+    this.cachedConfig = null;
+    console.log('[ConfigService] All caches cleared');
   }
+
   getApiConfig(): ApiConfig {
     // Example API configuration
     // You can modify this based on your application's needs
@@ -397,6 +492,17 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
         maxAge: 300000,
         staleWhileRevalidate: 60000,
         cacheKey: "api_cache_key",
+        strategy: 'memory', // ✅ Add missing property
+        ttl: 3600000, // ✅ Add missing property (1 hour)
+        versioning: { // ✅ Add missing property
+          enabled: true,
+          key: 'v1'
+        },
+        invalidation: { // ✅ Add missing property
+          onUpdate: true,
+          onDelete: true,
+          pattern: '.*'
+        }
       },
       responseType: {
         contentType: "application/json",
@@ -455,6 +561,7 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
     // Trigger callbacks to notify subscribers about the change
     this.triggerApiConfigChange();
   }
+  
 }
 // Create an instance of the configuration service
 const configServiceInstance = ConfigurationService.getInstance();

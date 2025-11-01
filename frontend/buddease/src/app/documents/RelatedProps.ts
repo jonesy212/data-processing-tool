@@ -10,8 +10,9 @@ import { ValidationStatus } from '@/app/permissions/ValidationStatus';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { AllTypes } from '@/app/typings/PropTypes';
-import { ExternalReference } from '@/calendar/ExternalReference';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { ExternalReference } from '@/app/calendar/ExternalReference';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Version } from "@/app/versions/Version";
 
 interface BaseEntityProperties { 
   _id?: string;
@@ -35,8 +36,7 @@ interface SharedIdentifiers<
   IncludedFields extends keyof T = keyof T
 > extends BaseEntityProperties {
   snapshotId?: string | number | null;
-  categoryProperties?: CategoryProperties;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+   categoryProperties?: CategoryProperties;
 }
 
 interface SharedSnapshotProperties<
@@ -48,7 +48,7 @@ interface SharedSnapshotProperties<
   IncludedFields extends keyof T = keyof T
 >
   extends BaseEntityProperties {
-  version?: number;
+  version?:  Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousVersionId?: string | null;
   nextVersionId?: string | null;
   permissions?: PermissionLevel[];

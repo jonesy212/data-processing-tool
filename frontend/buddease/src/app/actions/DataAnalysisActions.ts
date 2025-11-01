@@ -1,7 +1,6 @@
 // dataAnalysis/DataAnalysisActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { DataAnalysis } from "./DataAnalysis";
-
+import { DataAnalysis } from '@/app/projects/DataAnalysisPhase/DataAnalysis'
 export const DataAnalysisActions = {
   // Standard actions
   analyzeText: createAction<string>("analysisText"),

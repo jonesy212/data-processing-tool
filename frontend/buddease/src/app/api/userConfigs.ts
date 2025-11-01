@@ -1,9 +1,9 @@
 import { UserConfig } from "@/app/snapshots";
 import { UserData } from "@/app/users/User";
-import { userPreferences } from "@/config/UserPreferences";
-import userSettings, { UserSettings } from "@/config/UserSettings";
+import { userPreferences } from "@/app/config/UserPreferences";
+import userSettings, { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface UserConfigData<
   T extends BaseDataEntity,

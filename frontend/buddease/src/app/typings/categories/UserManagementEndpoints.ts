@@ -1,7 +1,7 @@
 // UserManagementEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface UserManagementEndpoints {
+export interface UserManagementEndpoints extends EndpointCategoryConfig {
   registerUser: EndpointConfig;
   updateUserProfile: (userId: number) => EndpointConfig;
   deleteUserAccount: (userId: number) => EndpointConfig;

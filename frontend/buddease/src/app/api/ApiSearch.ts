@@ -4,19 +4,21 @@ import { SearchResult } from "@/app/components/routing/SearchResult";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { Note } from "./ApiNote";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the base URL for your search endpoint
 const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your actual API endpoint
 
 // Define the structure of the search response data
 interface SearchResponseData<
-  T extends BaseDataEntity, 
-  K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   > {
-  results: Note<T, K>[]; // Assuming an array of Note objects in the response
+  results: Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Assuming an array of Note objects in the response
   totalCount: number; // Total count of search results
   // Add other properties if necessary
 }
@@ -37,13 +39,13 @@ export const searchAPI = async <
       query
     )}`;
 
-    const response = await axiosInstance.get<SearchResponseData<T, K>>(
+    const response = await axiosInstance.get<SearchResponseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       searchEndpoint
     );
 
     const { results, totalCount } = response.data;
 
-    const searchResults: SearchResult<T, K>[] = results.map((note) => ({
+    const searchResults: SearchResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = results.map((note) => ({
       _id: note.id,
       id: note.id,
       date: note.date,

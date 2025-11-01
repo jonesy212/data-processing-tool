@@ -23,10 +23,10 @@ import AppVersionImpl, {
 } from "@/app/versions/AppVersion";
 import { VersionImpl } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { UserSettings } from "@/config/UserSettings";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import BackendStructure from '@/server/database/BackendStructure';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { UserSettings } from "@/app/config/UserSettings";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { ContentState, Editor, EditorState } from "draft-js";
 import { IHydrateResult } from "mobx-persist";
 import React, { SetStateAction, useEffect, useState } from "react";

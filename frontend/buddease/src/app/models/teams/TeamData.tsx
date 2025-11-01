@@ -1,3 +1,4 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
@@ -8,7 +9,6 @@ import { BaseData } from '@/app/models/data/Data';
 import { Project } from "@/app/models/projects/Project";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Member } from "./TeamMembers";
 
 interface TeamData<  
@@ -23,7 +23,7 @@ T extends BaseDataEntity,
   id: number | string;
   teamName: string
   description?: string;
-  members?: Member[];
+  members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projects: Project[];
   creationDate: Date;
   isActive: boolean;

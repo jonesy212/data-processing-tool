@@ -1,5 +1,4 @@
 // EventStore.ts
-import { UnsubscribeDetails } from '@/DynamicEventHandlerExample';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
@@ -16,21 +15,22 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { fetchAndCreateSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Content } from '@/models/content/AddContent';
-import { UpdateSnapshotPayload } from '@/server/database/Payload';
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 
 

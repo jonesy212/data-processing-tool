@@ -1,6 +1,6 @@
 // InitializedStateExample.ts
 
-import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from "@/app/models/data/dataStoreMethods";
@@ -14,9 +14,9 @@ import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { category } from "@/app/utils/snapshotUtils";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import { StructuredMetadata } from "@/config//StructuredMetadata";
-import { UpdateSnapshotPayload } from "@/server/database/Payload";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotIdentity } from "./SnapshotIdentity";

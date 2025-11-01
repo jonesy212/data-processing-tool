@@ -1,7 +1,7 @@
 // VersionGenerator.tsx
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
@@ -14,7 +14,7 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
 import { ExtendedVersionData } from '@/app/versionsVersionData';
-import getAppPath from "@/config/appStructure/appPath";
+import getAppPath from "@/app/config/appStructure/appPath";
 import { AxiosError } from "axios";
 
 const { notify } = useNotification();

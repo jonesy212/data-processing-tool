@@ -1,7 +1,7 @@
 // In a separate file: src/app/actions/database.ts
 'use server';
 
-import { PostgresDatabaseService } from '@/server/database/PostgresDatabaseService';
+import { PostgresDatabaseService } from '@/app/server/database/PostgresDatabaseService';
 
 export async function createDatabaseAction(config: DatabaseConfig) {
   'use server';

@@ -1,82 +1,30 @@
 // SnapshotContainer.ts
-import { fetchData } from "@/api/ApiData";
-import { handleApiError } from "@/app/api/ApiLogs";
-import axiosInstance from '@/app/api/csrfToken';
+import { createCompleteSnapshot } from '@/app/snapshots/createSnnapshot'
+import { SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
-import { AuthenticationHeaders, createAuthenticationHeaders } from "@/app/api/headers/authenticationHeaders";
-import createCacheHeaders from "@/app/api/headers/cacheHeaders";
-import createContentHeaders from "@/app/api/headers/contentHeaders";
-import generateCustomHeaders from "@/app/api/headers/customHeaders";
-import createRequestHeaders from "@/app/api/headers/requestHeaders";
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import addSnapshot,from "@/app/api/SnapshotApi";
-import apiCallfrom "@/app/api/SnapshotApi";
-import getSnapshotId from "@/app/api/SnapshotApi";
-import handleOtherStatusCodes from "@/app/api/SnapshotApi";
-import mergeSnapshots from "@/app/api/SnapshotApi";
-import updateSnapshotStore from "@/app/api/SnapshotApi";
-import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { ContentItem } from '@/app/cards/DummyCardLoader';
-import { Version } from "@/app/versions/Version";
-import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { K } from '@/app/models/data/dataStoreMethods';
-import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { criteria } from "@/app/pages/searches/FilterCriteria";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { convertStoreId } from '@/app/snapshots/convertSnapshot';
-import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import { isSnapshotsArray } from '@/app/snapshots/createSnapshotStoreOptions';
-import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { snapshot, Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
-import { addSnapshotSuccess, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsRequest, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshots, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, createSnapshotFailure, createSnapshotStore, createSnapshotSuccess, fetchSnapshot, getAllSnapshots, initSnapshot, notifySubscribers, onSnapshot, onSnapshots, updateSnapshot, updateSnapshotFailure, updateSnapshots, updateSnapshotsSuccess, updateSnapshotSuccess } from '@/app/snapshots/snapshotHandlers';
-import SnapshotStore, { initialState, SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
-import initialState from '@/app/snapshots/SnapshotStore';
-import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
-import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { data, SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { clearSnapshot } from "@/app/state/redux/slices/SnapshotSlice";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscription } from "@/app/subscriptions/Subscription";
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { isSnapshotDataType, notify } from "@/app/utils/snapshotUtils";
-import { VersionData } from "@/app/versions/VersionData";
-import { Tag } from '@/appp/models/tracker/Tag';
-import { AppConfig, getAppConfig } from "@/config/AppConfig";
-import configData from "@/config/endpoints/configData";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { FetchSnapshotPayload, fetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
+import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Version } from "@/app/versions/Version";
+
 import { BaseEntity } from '@/app/routing/FuzzyMatch';
-import { SnapshotEvent } from "@/typings/eventTypes";
-import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { AxiosError } from "axios";
-import { createSnapshot } from "./createSnapshot";
-import { flatMap } from "./defaultSnapshotBuilder";
-import { getData, setData } from "./methods/dataMethods";
-import { createSnapshotStores } from "./newStoreUtils";
-import { SnapshotOperation } from "./SnapshotActions";
-import { ConfigureSnapshotStorePayload, createSnapshotConfig, SnapshotConfig } from "./SnapshotConfig";
-import { CustomSnapshotData, SnapshotData, SnapshotRelationships } from "./SnapshotData";
-import { SnapshotDataParams } from "./SnapshotDataParams";
-import { SnapshotMethods } from "./SnapshotMethods";
-import { clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById, getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot } from "./snapshotOperations";
-import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotData, SnapshotRelationships } from "@/app/snapshots/SnapshotData";
+import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { InitializedData } from "@/app/snapshots/SnapshotStoreOptions";
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const API_BASE_URL = endpoints.snapshots
 
@@ -98,6 +46,7 @@ type SnapshotDataType<
 
 type ItemUnion = ContentItem | K; // Assuming K extends Data
 
+
 interface SnapshotBase<
   T extends BaseDataEntity,
   K extends T = T,
@@ -105,7 +54,9 @@ interface SnapshotBase<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
+> extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          SnapshotCategoryMethods // reuse the shared signatures
+{
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   items: ItemUnion[];
   contentItems?: ContentItem[];
@@ -120,9 +71,7 @@ interface SnapshotBase<
   topic?: string;
   find: (id: string) => SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   version: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  // Category-related methods
-  setSnapshotCategory: (id: string, newCategory: string | Category) => void;
-  getSnapshotCategory: (id: string) => Category | undefined;
+  // other SnapshotBase members...
 }
 
 
@@ -283,7 +232,7 @@ export const snapshotContainer = async <
       initialized: true,
       getSnapshot: () => snapshot,
       getConfig: () => resolvedConfig,
-      updateSnapshot: (updatedData: Partial<T>) => {
+      updateSnapshot: (snapshotId: string | number | null, updatedData: Partial<T>) => {
         snapshot.data = { ...snapshot.data, ...updatedData };
         return snapshot;
       },

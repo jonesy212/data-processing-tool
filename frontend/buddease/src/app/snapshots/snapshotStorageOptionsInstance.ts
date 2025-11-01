@@ -3,47 +3,45 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
 import { Result } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields } from '@/app/typings/entities/SnapshotStorageEntity'
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Payload } from '@/server/database/Payload';
+import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta } from '@/app/typings/entities/SnapshotStorageEntity';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Payload } from '@/app/server/database/Payload';
 
-import { SnapshotWithData } from "@/app/calendar/CalendarApp";
-import { Content } from '@/app/models/content/AddContent';
-import { NotificationPosition } from '@/app/models/data/StatusType';
-import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
+import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Content } from '@/app/models/content/AddContent';
 import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { NotificationPosition, PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer, SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
 import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import SnapshotStoreSubset from '@/app/snapshots/SnapshotStoreSubset';
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { NotificationType } from "@/context/NotificationContext";
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/server/database/Payload";
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/server/database/Payload";
+import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotActionType } from "./SnapshotActionType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotItem } from "./SnapshotList";
@@ -93,7 +91,7 @@ interface SnapshotConfigOptions<
 	snapshotId: number;
 	snapshotStoreData: Snapshots<Data>;
 	category?: string | Category;
-	categoryProperties?: string | CategoryProperties;
+	 categoryProperties?: CategoryProperties;
 	callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 	snapshotDataConfig?: SnapshotStoreConfig<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[];
 }
@@ -720,7 +718,7 @@ SnapshotStorageIncludedFields>,
 			) => void | null,
 
 
-			snapshotDataConfig?: SnapshotConfig<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[] | undefined, category?: string | Category, categoryProperties?: string | CategoryProperties): Snapshot<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[] | null {
+			snapshotDataConfig?: SnapshotConfig<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[] | undefined, category?: string | Category,  categoryProperties?: CategoryProperties;): Snapshot<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[] | null {
 			throw new Error("Function not implemented.");
 		},
 		onSnapshot: function (snapshotId: number, snapshot: Snapshot<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>, type: string, event: SnapshotEvent<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>, callback: (snapshot: Snapshot<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>) => void): void {

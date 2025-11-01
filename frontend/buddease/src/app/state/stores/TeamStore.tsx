@@ -25,6 +25,8 @@ import {
     useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CustomPhase<T extends BaseData<any>, K extends T> = Phase<CustomData<T, K>, BaseData<any>>;
 

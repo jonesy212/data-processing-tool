@@ -1,4 +1,4 @@
-import { ApiConfig } from '@/app/api/ApiConfig';
+import ApiConfig from '@/app/api/ApiConfig';
 import { ClientConfig } from "@/app/client/Client";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
@@ -9,9 +9,10 @@ import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { UserRole } from "@/app/models/UserRole";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
-import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { ThemeConfig } from '@/app/libraries/ui/theme/ThemeConfig'
+import { PluginConfig } from '@/app/typings/pluginTypes/PluginConfig'
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
@@ -24,7 +25,7 @@ export interface DappProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends DAppAdapterDappProps {
+> {
 
   // General props
   appName: string;
@@ -109,26 +110,6 @@ export interface DappProps<
       // Possible missing: commentSystem, changeTracking, etc.
     };
 
-    projectTeamConfig: {
-      maxTeamMembers: 10,
-      teamRoles: [
-        "Project Manager",
-        "Product Owner",
-        "Scrum Master",
-        "Business Analyst",
-        "UI/UX Designer",
-        "Software Developer",
-        "Quality Assurance Engineer",
-        "DevOps Engineer",
-        "Data Scientist",
-        "Marketing Specialist",
-        "Sales Representative",
-        "Customer Support",
-        "Legal Counsel",
-        // Add more specific roles as needed...
-      ];    // Other team-related configurations...
-    };
-    
     projectTeamConfig: {
       maxTeamMembers: number;
       teamRoles: string[];
@@ -251,7 +232,7 @@ export interface DappProps<
       };
       privacy: {
         dataSharing: boolean;
-        analytics: boolean;
+        analyticsEnabled: boolean;
         personalizedAds: boolean;
       };
       accessibility: {
@@ -330,14 +311,11 @@ export interface DappProps<
   // Additional top-level props that might be needed
   environment: 'development' | 'staging' | 'production';
   apiKeys?: Record<string, string>;
-  plugins?: string[];
+  plugins?: PluginConfig[];
   customThemes?: Record<string, any>;
   // Possible missing top-level props that might be needed:
-  apiKeys?: Record<string, string>;
-  environment: 'development' | 'staging' | 'production';
   theme?: ThemeConfig;
   localization?: LocalizationConfig;
-  plugins?: PluginConfig[];
   storage?: StorageConfig;
   cache?: CacheConfig;
   logging?: LoggingConfig;

@@ -1,7 +1,7 @@
 // HighlightsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface HighlightsEndpoints {
+export interface HighlightsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   add: EndpointConfig;
   getSpecific: EndpointConfig;

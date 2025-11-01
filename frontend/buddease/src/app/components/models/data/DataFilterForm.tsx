@@ -16,7 +16,7 @@ import { Data } from "./Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from '@/DataFrameComponent';
 import { authToken } from "@/app/auth/authToken";
-import { Phase } from '@/app/models/phases/Phase';;
+import { Phase } from '@/app/models/phases/Phase';
 import ListGenerator from "@/app/generators/ListGenerator";
 import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 import { Snapshot } from '@/app/snapshots/Snapshot';

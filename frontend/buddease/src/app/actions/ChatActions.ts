@@ -2,7 +2,7 @@
 // chat/ChatActions.ts
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createAction } from "@reduxjs/toolkit";
-import { ChatRoom } from "@/app/calendar/CalendarSlice";
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 

@@ -6,8 +6,8 @@ import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { VersionData } from '@/app/versions/Version';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedProperties } from '@/app/snapshots/SnapshotEvents';
-import { BaseDataRoot, SharedConfig } from '@/config/BaseConfig';
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataRoot, SharedConfig } from '@/app/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SharedAuditInfo, SharedVersioning, SharedUpdateHistory } from '@/app/versions/VersionData'
 import { SharedRelationshipData, SharedPhaseData } from '@/app/models/data/Data'

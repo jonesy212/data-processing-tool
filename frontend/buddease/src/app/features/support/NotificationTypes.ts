@@ -1,6 +1,4 @@
 // NotificationTypes.ts
-import { NotificationType } from '@/app/context/NotificationContext';
-import UsageExamplesBox  from '@/app/components/styling/UsageExamplesBox';
 
 // Base types - System & Technical
 export const BaseNotificationTypes = {

@@ -1,11 +1,11 @@
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AppEntity } from "@/app/typings/entities/AppEntity";
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { YourResponseType } from "@/app/typings/responseTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AxiosError } from "axios";
 import {
   apiNotificationMessages,

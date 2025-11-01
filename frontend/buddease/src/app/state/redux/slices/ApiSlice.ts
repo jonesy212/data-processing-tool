@@ -1,7 +1,9 @@
-import { WritableDraft } from "@/app/ReducerGenerator";
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communications/Language";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMetadata } from "@/app/config/useMetadata";
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/interfaces/provider/CloudStorageProvider";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -13,15 +15,13 @@ import { EncryptionSetting, Permission } from "@/app/permissions/Permission";
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ApiConfig } from "@/app/services/ConfigurationService";
-import { DetailsItem } from "@/app/stores/DetailsListStore";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
+import { Attachment, PhaseEntity, PhaseExcluded, PhaseK, PhaseMetaType } from '@/app/typings/entities/PhaseEntity';
 import { Version, version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMetadata } from "@/config/useMetadata";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
 import { useDispatch } from "react-redux";
@@ -60,7 +60,7 @@ interface ApiManagerState {
   accessPermissions: Record<string, string[]>;
   collaborationToolsEnabled: boolean;
 
-  phases: Phase[];
+  phases: Phase<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded>[];
   progress: number;
 
   dataAnalysisTools: DataAnalysisTool[];
@@ -158,7 +158,8 @@ const dispatch = useDispatch();
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
+// Updated area for calendar
+const currentMetadata: AppUnifiedMetadata = useMetadata('api-area');
 
 const initializedState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   metadata: currentMetadata,
@@ -240,7 +241,7 @@ export const useApiManagerSlice = createSlice({
         isActive: false,
         tags: {},
         version: mutableVersion,
-        lastUpdated: {} as WritableDraft<VersionHistory<T, K>>,
+        lastUpdated: {} as WritableDraft<VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         config: {} as WritableDraft<Record<string, any>>,
         permissions: [],
 

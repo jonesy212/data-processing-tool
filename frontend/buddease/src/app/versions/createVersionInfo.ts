@@ -3,22 +3,27 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Snapshot, SnapshotContainer, SnapshotsArray, SnapshotStoreConfig, TagsRecord } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
 import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { frontendStructure } from "@/config/appStructure/FrontendStructure";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { backendStructure } from '@/server/database/BackendStructure';
+import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { backendStructure } from '@/app/server/database/BackendStructure';
 import { default as Version, default as VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
-
+import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from '@/app/typings/entities/DataEntity'
+import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/VersionEntity'
 
 // Default reusable data
-const defaultData: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+const defaultData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields> = {
   id: 'default-id', // Replace with a unique identifier logic if needed
   category: 'default-category',
   subtasks: [],
@@ -27,12 +32,14 @@ const defaultData: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, Exc
 };
 
 
-const createVersionInfo = (versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+const createVersionInfo = (
+  versionData: string | VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>
+): Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> => {
   const docPermissions = new DocumentPermissions(true, true);
 
   const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
+  const currentMeta: StructuredMetadata<<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = useMeta<T, K>(area)
   
     // If the versionData is a string, construct a default versionInfo object
   const defaultVersionInfo: Version<any, any> = {

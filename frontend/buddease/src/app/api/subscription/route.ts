@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { manageSubscriptionsServer } from '@/app/exchangeIntegrationServer';
-
-import { NextRequest, NextResponse } from 'next/server';
-import { getSubscriberId, getSubscribersAPI } from '@/subscriberApi';
-import { manageSubscriptionsServer } from '@/app/exchangeIntegrationServer';
+import { manageSubscriptionsServer } from '@/app/api/exchangeIntegrationServer';
+import { getSubscriberId, getSubscribersAPI } from '@/app/api/subscriberApi';
+import { processTradesServerAPI } from '@/app/api/exchangeIntegrationServer'
+import { getSubscriberByIdAPI } from '@/app/api/subscriberApi'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +19,7 @@ export async function POST(request: NextRequest) {
         
       case 'processTrades':
         if (type === 'TRADES') {
-          await processTradesServer(trades);
+          await processTradesServerAPI(trades);
           return NextResponse.json({ success: true, message: 'Trades processed' });
         }
         return NextResponse.json({ success: false, message: 'Unsupported operation' });
@@ -50,7 +49,7 @@ export async function GET(request: NextRequest) {
         
       case 'getSubscriber':
         // Implementation to get specific subscriber by ID
-        const subscriber = await getSubscriberById(subscriberId);
+        const subscriber = await getSubscriberByIdAPI(subscriberId);
         return NextResponse.json({ success: true, subscriber });
         
       default:

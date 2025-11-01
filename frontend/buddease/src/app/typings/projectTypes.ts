@@ -1,12 +1,14 @@
 // projectTypes.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PriorityTypeEnum } from '@/app/models/data/StatusType';
+import { BaseData } from '@/app/models/data/Data';
 import { Task } from '@/app/models/tasks/Task';
-import { Member } from '@/app/models/teams/TeamMembers';
+import { Member } from '@/app/models/members/Member';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { ProjectMilestone } from '@/app/typings/milestoneTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
+
 // -------------------- Project Core Types --------------------
 
 export enum ProjectStatus {
@@ -75,19 +77,30 @@ export interface ProjectResource {
   assignedTasks: string[];
 }
 
+// Enhanced ProjectBudget interface
 export interface ProjectBudget {
   total: number;
-  allocated: number;
+  used: number;
+  allocated: number;      // Total allocated across all categories
   spent: number;
   remaining: number;
+  currency: string;
   categories: {
     [category: string]: {
-      allocated: number;
+      allocated: number;  // Allocated for this specific category
       spent: number;
       remaining: number;
     }
   };
+  allocations: {          // Detailed allocation records
+    id: string;
+    category: string;
+    amount: number;
+    date: Date;
+    description: string;
+  }[];
   variance: number;
+  lastUpdated: Date;
 }
 
 // -------------------- Project Data Interface --------------------
@@ -114,7 +127,7 @@ export interface ProjectData<
   
   // Team and stakeholders
   projectManager: string;
-  teamMembers: Member[];
+  teamMembers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   stakeholders: string[];
   
   // Metadata
@@ -371,11 +384,4 @@ export type ProjectMap<
 > = Map<string, ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 // -------------------- Default Project Type --------------------
-export type DefaultProjectData = ProjectData<
-  BaseDataEntity,
-  BaseDataEntity,
-  StructuredMetadata<any, any>,
-  Attachment,
-  never,
-  keyof BaseDataEntity
->;
+export type DefaultProjectData = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;

@@ -7,8 +7,8 @@ import {
 } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define API base URL
 const API_BASE_URL = endpoints.notifications;

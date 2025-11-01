@@ -1,7 +1,7 @@
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import StorageService from '@/app/utils/storage/StoragService';
 import { ArchiveMetadata } from '@/app/api/service/ArchiveService'

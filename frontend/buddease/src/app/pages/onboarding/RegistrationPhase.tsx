@@ -8,7 +8,7 @@ import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { setError, setLoading } from "@/app/state/stores/UISlice";
 import { UserData } from "@/app/users/User";
-import authService from "@/server/auth//AuthService";
+import authService from "@/app/server/auth/AuthService";
 import axios from "axios";
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";

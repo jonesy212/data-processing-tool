@@ -4,8 +4,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
 import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 interface BaseSnapshotProps<
   T extends BaseDataEntity,

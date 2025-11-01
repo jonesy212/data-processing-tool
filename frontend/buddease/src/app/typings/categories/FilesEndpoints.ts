@@ -1,7 +1,7 @@
 // FilesEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface FilesEndpoints {
+export interface FilesEndpoints extends EndpointCategoryConfig {
   getFileType: (file: string) => EndpointConfig;
   fetchFiles: EndpointConfig;
   fetchFileAPI: (fileId: string) => EndpointConfig;

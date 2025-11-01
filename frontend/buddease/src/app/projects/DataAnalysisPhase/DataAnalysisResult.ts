@@ -5,8 +5,8 @@ import { Phase } from '@/app/models/phases/Phase';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-;
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import SnapshotStore from '@/app/snapshots/SnapshotStore'
 
 export interface DataAnalysisResult<
   T extends BaseDataEntity,
@@ -30,9 +30,9 @@ export interface DataAnalysisResult<
   sentiment: number,
   recommendations: string[]; // Array of recommendations based on the analysis
   sentimentAnalysis: boolean;
-  phase: Phase<PhaseData<T>, K>;
+  phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   priority: PriorityTypeEnum;
-  snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  snapshotStores?: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   metrics: {
     // Object containing various metrics related to the analysis
     accuracy: number; // Accuracy metric

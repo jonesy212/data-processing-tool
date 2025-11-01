@@ -1,8 +1,9 @@
+import { CommonData } from '@/components/models/CommonDetails';
+import { FileMetadata } from '@/app/typings/file/FileManager';
 // File-specific types
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { CommonData } from './CommonData';
-import { File } from './entities/FileEntity';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { File } from '@/app/typings/file/fileTypes';
 
 
 
@@ -62,7 +63,3 @@ export type FileIncludedFields = keyof AppFileEntity;
 export type AppFile = File<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 export type AppFileCommonData = CommonData<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 
-// Add to your existing exports
-export {
-    AppFile, AppProject, AppTeam
-};

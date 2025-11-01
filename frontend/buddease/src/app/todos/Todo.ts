@@ -1,7 +1,7 @@
 import { DayOfWeekProps } from '@/app/components/calendar/DayOfWeek';
 import { Month } from '@/app/components/calendar/Month';
 import { Collaborator } from '@/app/collaborators/Collaborator';
-import { ScheduledData } from '@/app/components/calendar/ScheduledData';
+import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Task } from '@/app/components/models/tasks/Task';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -42,16 +42,15 @@ import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Idea } from '@/app/users/Ideas';
 import { User } from '@/app/users/User';
-import { VideoData } from '@/app/typings/videoTypes';
-import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
+import { VideoData } from '@/app/typings/videoTypes/Video';
+import { CreateSnapshotsPayload, Payload } from '@/app/server/database/Payload';
 import operation from 'antd/es/transfer/operation';
 import { config } from 'process';
 import { FC } from 'react';
 import { options } from 'sanitize-html';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-export type UserAssignee = Pick<User, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
+export type UserAssignee = Pick<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
 export interface Todo<
   T extends BaseDataEntity = BaseDataRoot,
@@ -85,7 +84,7 @@ export interface Todo<
   assignedUsers: string[];
   collaborators: Collaborator[];
   labels: string[];
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| CustomComment)[] | undefined;
   attachments?: AttachmentType[];
   checklists?: (typeof ChecklistItem)[];
   startDate?: Date;
@@ -93,7 +92,7 @@ export interface Todo<
   timeEstimate?: number;
   timeSpent?: number;
   dependencies?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  recurring?: null | undefined;
+  recurring?: boolean | null;
   // subtasks?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   entities?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projectId?: string;
@@ -233,14 +232,14 @@ class TodoImpl<
   priority: PriorityValue | undefined = undefined;
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
-  assignedTo: User | null = null;
+  assignedTo: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   assignee: UserAssignee | null = null;
   assigneeId: string = "";
   assignedUsers: string[] = [];
   collaborators: Collaborator[] = [];
   labels: string[] = [];
   comments: Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
-  attachments: Attachment[] = [];
+  attachments: AttachmentType[] = [];
   subtasks: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
 
   entities: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
@@ -267,7 +266,7 @@ class TodoImpl<
   ideas: Idea[] = [];
   tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {}
   phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
-  then: (callback: (newData: Snapshot) => void) => void = () => { };
+  then: (callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void = () => { };
   analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   videoUrl: string = "";
@@ -285,7 +284,7 @@ class TodoImpl<
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     eventRecords: null,
     snapshotStore: null,
-    data: {} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
+    data: {} as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     store: new LocalStorageSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       storage: window.localStorage,
       category: this.category,
@@ -295,7 +294,7 @@ class TodoImpl<
       operation,
     }),
     state: null,
-    snapshotStoreConfig: {},
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     getDataStore: (): Promise<InitializedDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
       return new Promise<InitializedDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>((resolve) => {
         const stores = this.dataStores.map((store) =>
@@ -305,17 +304,21 @@ class TodoImpl<
       });
     },
     
-    getDataStoreMap: (): Promise<Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
-      return new Promise<Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, >>((resolve) => {
-        resolve(new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>());
+    getDataStoreMap: (): Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
+      return new Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, >>((resolve) => {
+        resolve(new Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>());
       })
     },
-    meta: {},
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: [],
     getSnapshotItems: function (): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[] {
       throw new Error("Function not implemented.");
     },
-    defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null): void {
+    defaultSubscribeToSnapshots: function (
+      snapshotId: string, 
+      callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, 
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+    ): void {
       throw new Error("Function not implemented.");
     },
     versionInfo: null,
@@ -365,7 +368,7 @@ class TodoImpl<
     getFrontendVersion: function (): Promise<string | number | undefined> {
       throw new Error("Function not implemented.");
     },
-    fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       throw new Error("Function not implemented.");
     },
     defaultSubscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
@@ -377,10 +380,20 @@ class TodoImpl<
     removeItem: function (key: string | number): Promise<void> {
       throw new Error("Function not implemented.");
     },
-    getSnapshot: function (snapshot: (id: string) => Promise<{ category: any; timestamp: any; id: any; snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; data: T; }> | undefined): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    getSnapshot: function (snapshot: (id: string) => Promise<{ 
+      category: any; 
+      timestamp: any; 
+      id: any; 
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+      data: T; 
+    }> | undefined
+    ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       throw new Error("Function not implemented.");
     },
-    getSnapshotSuccess: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    getSnapshotSuccess: function (
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       throw new Error("Function not implemented.");
     },
     setItem: function (key: T, value: T): Promise<void> {
@@ -426,27 +439,30 @@ class TodoImpl<
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ): Promise<void> {
+    ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
     createSnapshot: undefined,
     createInitSnapshot: function (
       id: string,
       initialData: T,
-      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       additionalData: any,
       category?: Category     
     ):Promise<Result<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
       throw new Error("Function not implemented.");
     },
-    setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: ((data: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[]): void {
+    setSnapshotSuccess: function (
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+      subscribers: ((data: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[]
+    ): void {
       throw new Error("Function not implemented.");
     },
     setSnapshotFailure: function (error: Error): void {
       throw new Error("Function not implemented.");
     },
-    updateSnapshots: function (): void {
+    updateSnapshots: function (): Promise<number> {
       throw new Error("Function not implemented.");
     },
     updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshot: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
@@ -463,9 +479,7 @@ class TodoImpl<
       snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStoreConfigSearch: SnapshotStoreConfig<
-      SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-      SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+      snapshotStoreConfigSearch: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       category?: Category
     ): void {
       throw new Error("Function not implemented.");
@@ -497,7 +511,7 @@ class TodoImpl<
     setSnapshot: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
       throw new Error("Function not implemented.");
     },
-    transformSnapshotConfig: function <T extends BaseData>(
+    transformSnapshotConfig: function (
       config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error("Function not implemented.");
@@ -583,6 +597,7 @@ class TodoImpl<
       throw new Error("Function not implemented.");
     },
     batchTakeSnapshot: function (
+      id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<{ snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
@@ -727,7 +742,7 @@ class TodoImpl<
       callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null, 
       snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined, 
       category?: string | Category,
-      categoryProperties?: string | CategoryProperties
+       categoryProperties?: CategoryProperties;
     ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
       
   // Example logic to modify existing snapshots

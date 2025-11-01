@@ -1,8 +1,8 @@
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define SampleSnapshot implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 class SampleSnapshot<

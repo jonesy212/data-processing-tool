@@ -28,7 +28,7 @@ export const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   }
 };
 
-export const processTradesServer = async (trades: any[]): Promise<void> => {
+export const processTradesServerAPI = async (trades: any[]): Promise<void> => {
   for (const trade of trades) {
     const { price, quantity, timestamp, tradeId } = trade;
     await saveTradeToDatabase({ price, quantity, timestamp, tradeId });

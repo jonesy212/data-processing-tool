@@ -35,7 +35,7 @@ import {
   DocumentTypeEnum
 } from "@/app/typings/documentTypess";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface FilterState extends Timestamped, StatusTrackable {

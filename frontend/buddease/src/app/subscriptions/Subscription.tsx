@@ -1,17 +1,17 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ModifiedDate } from '@/app/documents/DocType';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample'
-import { ModifiedDate } from '@/app/documents/DocType';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

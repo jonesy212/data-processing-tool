@@ -1,7 +1,7 @@
 // LoggingEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface LoggingEndpoints {
+export interface LoggingEndpoints extends EndpointCategoryConfig {
   logs: EndpointConfig;
   logInfo: EndpointConfig;
   logWarning: EndpointConfig;

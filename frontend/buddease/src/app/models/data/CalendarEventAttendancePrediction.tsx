@@ -1,6 +1,5 @@
-import AttendancePrediction, { EventAttendance } from "@/app/calendar/AttendancePrediction";
-import { Attendee } from "@/app/calendar/Attendee";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
+import AttendancePrediction, { EventAttendance } from "@/app/components/calendar/AttendancePrediction";
 
 // Define the interface for AttendancePredictionResult
 interface AttendancePredictionResult {
@@ -39,4 +38,4 @@ class CalendarEventAttendancePrediction {
 
 export type {
   AttendancePredictionResult
-}
+};

@@ -1,8 +1,11 @@
 // phaseTypes.ts
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { PhaseData } from "@/app/models/phases/Phase";
+import { Phase, CustomPhaseHooks } from '@/app/models/phases/Phase';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 // Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
@@ -41,14 +44,7 @@ type PhaseDefault = Phase<
   PhaseBaseParams['IncludedFields']
 >;
 
-type PhaseMetaDefault = PhaseMeta<
-  PhaseBaseParams['T'],
-  PhaseBaseParams['K'],
-  PhaseBaseParams['Meta'],
-  PhaseBaseParams['AttachmentType'],
-  PhaseBaseParams['ExcludedFields'],
-  PhaseBaseParams['IncludedFields']
->;
+type PhaseMetaDefault = PhaseMeta
 
 type CustomPhaseHooksDefault = CustomPhaseHooks<
   PhaseBaseParams['T'],
@@ -89,18 +85,18 @@ type AppPhaseData = PhaseData<
   PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
 >;
 
-type AppPhaseMeta = PhaseMeta<
-  PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
->;
+type AppPhaseMeta = PhaseMeta;
 
 type CustomAppPhaseHooks = CustomPhaseHooks<
   PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
 >;
 
 
+const phaseName = "default phase";
+const generatePhaseId = UniqueIDGenerator.generatePhaseID(phaseName);
 // Helper for creating phase instances
 const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault => ({
-  id: options.id || generateId(),
+  id: options.id || generatePhaseId(),
   name: options.name || '',
   description: options.description || '',
   startDate: options.startDate,
@@ -121,5 +117,6 @@ export type {
   AppPhaseMeta,
   CustomAppPhaseHooks, PhaseAttachment, PhaseBaseParams, PhaseDefault, PhaseEntity, PhaseExcludedFields,
   PhaseIncludedFields, PhaseK,
-  PhaseMeta
+  PhaseMeta,
+  PhaseStructuredMetadata
 };

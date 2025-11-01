@@ -1,7 +1,7 @@
 // GlobalCollaborationEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface GlobalCollaborationEndpoints {
+export interface GlobalCollaborationEndpoints extends EndpointCategoryConfig {
   startProject: EndpointConfig;
   getProjects: EndpointConfig;
   getProjectDetails: (projectId: string) => EndpointConfig;

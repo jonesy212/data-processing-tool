@@ -1,8 +1,8 @@
 // StorePropEntity.ts
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps'
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 // ------------------------------
 // 1️⃣ Base StorePropEntity definition

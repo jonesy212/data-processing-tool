@@ -2,7 +2,7 @@
 import { Presentation, Slide } from "@/app/documents/Presentation";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Data, DataDetails } from '@/app/models/data/Data';
-import { BaseMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
+import { BaseMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { generatePresentationJSON } from "./generatePresentationJSON";
 

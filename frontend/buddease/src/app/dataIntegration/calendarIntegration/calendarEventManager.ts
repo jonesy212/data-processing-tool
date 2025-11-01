@@ -1,13 +1,13 @@
 // calendarEventManager.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AllStatus, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/teams/TeamMembers';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 
 export interface CalendarEventManagerOptions {
   enableRealTimeUpdates?: boolean;
@@ -387,7 +387,7 @@ export class CalendarEventManager<
     endDate?: Date;
     status?: AllStatus;
     createdBy?: string;
-    participants?: Member[];
+    participants?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   } {
     // Extract event data from snapshot based on your data structure
     const data = snapshot.data as any;

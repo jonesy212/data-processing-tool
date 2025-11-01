@@ -2,7 +2,7 @@
 import { Payload } from '@/app/server/database/Payload'
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback } from 'react';
 import snapshotApi from '@/app/api/snapshotApi';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";

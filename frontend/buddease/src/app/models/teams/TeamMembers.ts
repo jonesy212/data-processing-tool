@@ -1,12 +1,36 @@
-import { TeamMember } from '@/app/components/models/teams/TeamMembers';
-import { Team } from '@/app/components/models/teams/Team';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
-import { MemberData } from '@/app/typings/entities/MemberEntity';
-import { User } from "@/app/users/User";
-import { Permission } from '@/app/permissions/Permission';
+import { Permission, BasePermissions } from '@/app/permissions/Permission';
+import { MemberData, MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Member } from "@/app/models/members/Member";
+import { MemberPermission } from '@/app/permissions/Permission'
 
+// Team member settings
+interface TeamMemberSettings {
+  notificationPreferences?: {
+    teamAnnouncements?: boolean;
+    projectUpdates?: boolean;
+    taskAssignments?: boolean;
+    mentionNotifications?: boolean;
+  };
+  visibilitySettings?: {
+    showEmail?: boolean;
+    showActivity?: boolean;
+    showSkills?: boolean;
+  };
+  collaborationPreferences?: {
+    preferredCommunication?: 'chat' | 'email' | 'video';
+    availabilityStatus?: 'available' | 'busy' | 'away';
+    workingHours?: {
+      start: string;
+      end: string;
+      timezone: string;
+    };
+  };
+}
 
 
 interface TeamMember<
@@ -20,7 +44,7 @@ interface TeamMember<
   // Team-specific additional properties
   teamRole?: string;
   joinDate?: Date;
-  permissions: TeamPermissions;
+  teamPermissions?: TeamPermission[]
   isTeamAdmin?: boolean;
   teamSpecificSettings?: TeamMemberSettings;
   contributionScore?: number;
@@ -33,7 +57,8 @@ interface TeamMember<
   tier: string;
   upload_quota: number;
   user_type: string;
-  role?: Member;
+  member?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  role?: UserRole
 
   // Permission management methods
   canPerformAction: (action: string, resource: string, teamId?: string) => boolean;
@@ -56,7 +81,7 @@ interface TeamPermission extends Permission {
 
 
 // Team Member Permissions (combines both)
-interface TeamMemberPermissions {
+interface TeamMemberPermissions extends BasePermissions {
   basePermissions: Permission[];
   memberPermissions: MemberPermission[];
   teamPermissions: TeamPermission[];
@@ -71,10 +96,40 @@ interface TeamMemberPermissions {
 
   const DEFAULT_REFRESH_UI = () => {};
 
-  const memberData: MemberData = {
+  const memberData: MemberData<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields> = {
     bannerUrl: "", 
     roles: [], 
     followers: [], 
+    timestamp: new Date(),
+    auditTrail: [],
+    deleted: false,
+    budget: {
+      total: 0,
+      used: 0,
+      allocated: 0,
+      spent: 0,
+      remaining: 0,
+      currency: 'USD',
+      categories: {},
+      allocations: [],
+      variance: 0,
+      lastUpdated: new Date()
+    },
+    phases: [],
+    currentPhase: {
+      id: '',
+      name: 'Not Started',
+      description: '',
+      startDate: new Date(),
+      endDate: new Date(),
+      status: 'pending',
+      tasks: [],
+      progress: 0,
+      order: 0,
+      projectId: 'project-id',
+      date: new Date()
+    },
+    done: false,
     preferences: {
       refreshUI: DEFAULT_REFRESH_UI,
     }, 
@@ -135,7 +190,7 @@ interface TeamMemberPermissions {
     role: UserRoles.Member
   } as TeamMember
 
-export type { TeamMember };
+export type { TeamMember, TeamMemberPermissions };
 
-export { memberData, teamMember };
+  export { memberData, teamMember };
 

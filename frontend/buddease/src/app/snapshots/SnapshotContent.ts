@@ -1,7 +1,7 @@
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface SnapshotContent <  T extends BaseDataEntity,
   K extends T = T,

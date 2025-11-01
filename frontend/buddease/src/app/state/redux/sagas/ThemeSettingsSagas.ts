@@ -11,11 +11,31 @@ import { useDispatch } from "react-redux";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 
-const {notify} = handleApiErrorAndNotify()
 const dispatch = useDispatch()
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 
+
+
+// Create theme-specific error handler
+const handleThemeApiErrorAndNotify = (
+  error: any,
+  defaultMessage: string,
+  errorId: keyof typeof NOTIFICATION_MESSAGES.Theme
+) => {
+  return handleApiErrorAndNotify(
+    error,
+    defaultMessage,
+    errorId,
+    NOTIFICATION_MESSAGES.Theme
+  );
+};
+
+
+
+// Then use it in your sagas
+// ThemeSettingsSagas.ts
+import { showThemeSuccessNotification, showThemeErrorNotification } from './ThemeNotificationHelpers';
 
 function* setHeaderColor(action: PayloadAction<Theme>) {
   try {
@@ -23,23 +43,27 @@ function* setHeaderColor(action: PayloadAction<Theme>) {
       type: ThemeActions.setHeaderColor.type,
       payload: action.payload,
     });
-    const notificationInstance = notify({
-      type: "success",
-      message: NOTIFICATION_MESSAGES.THEME.HEADER_COLOR_CHANGED,
-    });
+    
+    const notificationInstance = showThemeSuccessNotification(
+      NOTIFICATION_MESSAGES.Theme.HEADER_COLOR_CHANGED
+    );
+    
     yield delay(3000);
     notificationInstance.remove();
     yield put(ThemeActions.setHeaderColorSuccess());
+    
   } catch (error: any) {
     Logger.error("Error setting header color", error);
     yield put({
       type: ThemeActions.setHeaderColorFailure.type,
       error: error.message,
     });
-    const notificationInstance = notify({
-      type: "error",
-      message: error.message,
-    });
+    
+    const notificationInstance = showThemeErrorNotification(
+      error,
+      "Failed to set header color"
+    );
+    
     yield delay(3000);
     notificationInstance.remove();
   }
@@ -52,10 +76,9 @@ function* setFooterColor(action: PayloadAction<Theme>) {
       payload: action.payload
     });
 
-    const notificationInstance = notify({
-      type: "success",
-      message: NOTIFICATION_MESSAGES.THEME.FOOTER_COLOR_CHANGED
-    });
+    const notificationInstance = showThemeSuccessNotification(
+      NOTIFICATION_MESSAGES.Theme.FOOTER_COLOR_CHANGED
+    );
 
     yield delay(3000);
     notificationInstance.remove();
@@ -68,15 +91,16 @@ function* setFooterColor(action: PayloadAction<Theme>) {
       error: error.message
     });
 
-    const notificationInstance = notify({
-      type: "error",
-      message: error.message
-    });
+    const notificationInstance = showThemeErrorNotification(
+      error,
+      "Failed to set footer color"
+    );
 
     yield delay(3000);
     notificationInstance.remove();
   }
 }
+
 // Saga function for validating theme settings
 function* validateThemeSettings(action: PayloadAction<Partial<Theme>>) {
   try {

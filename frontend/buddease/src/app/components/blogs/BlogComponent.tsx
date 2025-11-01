@@ -1,21 +1,30 @@
 import * as subscriberApi from '@/api/subscriberApi';
+import { BlogData } from '@/app/components/lists/BlogList';
+import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Meta } from '@/app/models/data/dataStoreMethods';
+import Tracker from '@/app/models/tracker/Tracker';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { Subscriber, SubscriberCallback } from '@/app/subscribers/Subscriber';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { snapshotId } from '@/app/utils/snapshotUtils';
-import Tracker from '@/appp/models/tracker/Tracker';
-import { BaseMetaDataOptions } from "@/config/MetaDataOptions";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/app/utils/web3/applicationUtils';
+import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { NotificationType, useNotification } from '@/context/NotificationContext';
-import { BlogData } from '@/lists/BlogList';
-import { Content } from '@/models/content/AddContent';
-import { Subscription } from '@/subscriptions/Subscription';
-import { Subscriber, SubscriberCallback } from '@/users/Subscriber';
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/utils/applicationUtils';
 import React, { useEffect, useState } from 'react';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
-type BlogContentType<T extends BaseData<any>, K extends T = T> = {
+type BlogContentType<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
+  > = {
   body: string;                     // Main content of the blog post
   imageUrls?: string[];            // Optional list of image URLs
   tags?: string[];                  // Optional tags for categorization
@@ -24,7 +33,7 @@ type BlogContentType<T extends BaseData<any>, K extends T = T> = {
   _id: string,
   date: Date,
   subtitle: string,
-  data?: Content<T, K> | Snapshot<Data<T, K>, Meta<T, BaseMetaDataOptions<T, K>>>,
+  data?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | Snapshot<Data<T, K>, Meta<T, BaseMetaDataOptions<T, K>>>,
 };  
 
 
@@ -40,15 +49,27 @@ type BlogOptionalType = {
 
 
 // Fixing BlogContentMeta
-type BlogContentMeta<T extends BaseData<any>, K extends T = T> = {
-  content: string | Content<T, K> | undefined;  // Align content type
+type BlogContentMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
+  > = {
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;  // Align content type
 } & Base
 
 interface BlogProps<
-  T extends  BaseData<any>, 
-  K extends T = T> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   title?: string;
-  content: string | Content<T, K> | undefined;  // Use Content with the required type parameters
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;  // Use Content with the required type parameters
   subscriberId: string;
   metaData?: BlogMetaType;
   optionalData?: BlogOptionalType; // Add optionalData to use BlogOptionalType
@@ -68,7 +89,14 @@ type BlogMetaType = BaseMetaDataOptions<BlogContentType, BlogContentMeta> & {
 
 
 // Fixing BlogDataMeta
-type BlogDataMeta<T extends BaseData<any>, K extends T = T> = 
+type BlogDataMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
+  > = 
   BlogContentMeta<T, K> & 
   BlogOptionalType & 
   BlogMetaType;
@@ -179,7 +207,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
   }
 
   
-  const subscribedId = subscriberApi.getSubscriberById(subscriberId).toString();
+  const subscribedId = subscriberApi.getSubscriberByIdAPI(subscriberId).toString();
   // Ensure that subscriptionData is set properly
   const subscription = subscriptionData || ({} as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>);
   

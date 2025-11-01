@@ -1,21 +1,18 @@
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotCoreBase, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { BaseSnapshotEventHandlers, SnapshotEvents } from '@/app/typings/snapshotTypes';
 
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface BaseEventCallbacks<
   T extends BaseDataEntity = BaseDataRoot,
@@ -102,13 +99,13 @@ interface EventManagement<
 }
 
 export interface SnapshotEventHandlers<
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
+T extends BaseDataEntity = BaseDataEntity, 
+K extends T = T, 
+Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
+AttachmentType extends Attachment = Attachment, 
+ExcludedFields extends keyof T = DefaultExcludedFields<T>, 
+IncludedFields extends keyof T = keyof T
+> extends BaseSnapshotEventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onSnapshotRemoved: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { type: string }) => void;
   onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {

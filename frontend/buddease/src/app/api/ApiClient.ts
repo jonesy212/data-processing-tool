@@ -10,9 +10,9 @@ import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType } from "@/context/NotificationContext";
-import { VersionData } from '@/versions/VersionData';
+import { VersionData } from '@/app/versions/VersionData';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 

@@ -1,6 +1,6 @@
 // useSnapshotOperations.ts
 // hooks/useSnapshotOperations.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback, useRef } from 'react';
 
 import {

@@ -19,6 +19,9 @@ export type MessageNotificationStatusType =
   | "success"
   | "confirmed";
 
+
+type SecurityStatus = 'active' | 'success' | 'failure' | 'warning' | 'pending';
+
 // Define an enum for sorting types
 enum SortingType {
   ASCENDING = "ASCENDING",
@@ -388,7 +391,7 @@ enum BookmarkStatus {
   Idle = "idle",
 }
 
-
+export type { SecurityStatus }
 export {
   ActivityActionEnum,
   ActivityTypeEnum, BookmarkStatus,
@@ -403,5 +406,5 @@ export {
   OutcomeType,
   PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
-  TodoStatus, MeetingStatus
+  TodoStatus, MeetingStatus,
 };

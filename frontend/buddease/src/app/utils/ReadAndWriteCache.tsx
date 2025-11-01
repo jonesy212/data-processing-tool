@@ -10,14 +10,14 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
 import {
   frontendStructure,
-} from "@/config/appStructure/FrontendStructure";
-import { BackendConfig, backendConfig } from "@/config/BackendConfig";
-import { FrontendConfig, frontendConfig } from "@/config/FrontendConfig";
-import userSettings, { UserSettings } from "@/config/UserSettings";
+} from "@/app/config/appStructure/FrontendStructure";
+import { BackendConfig, backendConfig } from "@/app/config/BackendConfig";
+import { FrontendConfig, frontendConfig } from "@/app/config/FrontendConfig";
+import userSettings, { UserSettings } from "@/app/config/UserSettings";
 import BackendStructure, {
   backendStructure,
 } from "@/configs/appStructure/BackendStructure";
-import { DataVersions, dataVersions } from "@/configs/DataVersionsConfig";
+import { DataVersions, dataVersions } from "@/app/configs/DataVersionsConfig";
 import { authToken } from "@/server/authToken";
 
 // Define the structure of the response data

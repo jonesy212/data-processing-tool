@@ -2,6 +2,7 @@ import { K, T } from '@/app/models/data/dataStoreMethods';
 import { SnapshotData } from "@/app/snapshots";
 
 const snapshotCache: Map<string, SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();
+
 const getCachedSnapshotData = (snapshotId: string): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
     // Check if the cache has data for the given snapshot ID
     if (snapshotCache.has(snapshotId)) {

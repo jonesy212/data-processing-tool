@@ -2,7 +2,7 @@
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Data } from "@/app/models/data/Data";
 import { Phase } from "@/app/models/phases/Phase";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createAction } from "@reduxjs/toolkit";
 
 // Hybrid generic defaults for convenience

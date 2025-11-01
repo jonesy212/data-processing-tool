@@ -4,7 +4,7 @@ import { NotificationContext, NotificationType } from "@/app/context/Notificatio
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { AndroidBlogPosts } from '@/AIoSBlogPosts';
-import BlogOverview from '@/BlogOverview';
+import BlogOverview from '@/app/pages/blog/BlogOverview';
 import NewBlogPostForm from '@/NewBlogPostForm';
 import NotificationDisplay from '@/NotificationDisplay';
 

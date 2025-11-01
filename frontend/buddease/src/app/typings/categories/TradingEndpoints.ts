@@ -1,7 +1,7 @@
 // TradingEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface TradingEndpoints {
+export interface TradingEndpoints extends EndpointCategoryConfig {
   // Trading platform endpoints
   getMarketData: EndpointConfig;
   getPortfolioSummary: EndpointConfig;
@@ -12,7 +12,6 @@ export interface TradingEndpoints {
   getTransactionHistory: EndpointConfig;
   getWalletBalance: EndpointConfig;
   getAlertSettings: EndpointConfig;
-  getPriceAlerts: EndpointConfig;
   getInsights: EndpointConfig;
   getStakingRewards: EndpointConfig;
   getLiquidityPools: EndpointConfig;

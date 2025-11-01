@@ -1,28 +1,28 @@
 // Logger.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { BaseData } from '@/app/models/data/Data';
-import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice"
 import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
+import { BaseData } from '@/app/models/data/Data';
+import { LogData } from "@/app/models/LogData";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
-import { DataDetails } from '@/app/models/data/Data';
 import { team, Team } from "@/app/components/models/teams/Team";
 import { TeamData } from "@/app/components/models/teams/TeamData";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { DataDetails } from '@/app/models/data/Data';
 import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { encryptData } from "@/server/security/encryptedData";
 import { DefaultCalendarEvent } from '@/app/actions/CalendarEventActions';
+import { encryptData } from "@/app/server/security/encryptedData";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Theme } from '@/libraries/ui/theme/Theme';
 
 const API_BASE_URL = endpoints.logging;

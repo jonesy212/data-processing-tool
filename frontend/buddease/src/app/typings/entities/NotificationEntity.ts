@@ -1,5 +1,4 @@
 // NotificationEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -9,8 +8,9 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 // 1. Base entity
 type NotificationEntity = BaseDataEntity;
@@ -133,22 +133,11 @@ type ApplyNotificationFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  NotificationEntity,
-  NotificationK,
-  NotificationMeta,
-  NotificationAttachment,
-  NotificationExcludedFields,
-  NotificationIncludedFields,
-  NotificationBaseParams,
-  NotificationSnapshot,
-  NotificationSnapshotData,
-  NotificationSnapshotStore,
+  ApplyNotificationFieldFilters, NotificationAttachment, NotificationBaseParams, NotificationEntity, NotificationExcludedFields,
+  NotificationIncludedFields, NotificationK,
+  NotificationMeta, NotificationParams, NotificationSnapshot,
+  NotificationSnapshotData, NotificationSnapshotsArray, NotificationSnapshotStore,
   NotificationSnapshotStoreConfig,
-  NotificationSnapshotWithCriteria,
-  NotificationSnapshotsArray,
-  NotificationSubscriberCollection,
-  NotificationStructuredMetadata,
-  NotificationUnifiedMetadata,
-  NotificationParams,
-  ApplyNotificationFieldFilters
+  NotificationSnapshotWithCriteria, NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
 };
+

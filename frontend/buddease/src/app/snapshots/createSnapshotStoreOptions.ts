@@ -1,16 +1,15 @@
 // createSnapshotStoreOptions.ts
-import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { UnsubscribeDetails } from '@/app//event/DynamicEventHandlerExample';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { StatusType } from "@/app/models/data/StatusType";
@@ -20,6 +19,7 @@ import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore, InitializedState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { Callback, createSnapshotConfig, CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/app/snapshots';
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import {
   Snapshots,
   SnapshotsArray,
@@ -35,20 +35,20 @@ import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { subscribeToSnapshotsImpl } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { getSubscription } from '@/app/subscriptions/subscriptionServiceInstance';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { convertToSubscriberCollection } from '@/app/utils/SubscriberUtils';
 import { addToSnapshotList, generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
 import { versionData } from '@/app/versions/Version';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { SnapshotWithData } from '@/calendar/CalendarApp';
 import { CalendarEvent } from '@/calendar/CalendarEvent';
-import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseDataRoot } from '@/config/BaseeConfiig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { createMeta } from '@/config/metadata/MetadataHooks';
-import { useMeta } from '@/config/useMeta';
-import { useMetadata } from "@/config/useMetadata";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { createMeta } from '@/app/config/metadata/MetadataHooks';
+import { useMeta } from '@/app/config/useMeta';
+import { useMetadata } from "@/app/config/useMetadata";
 import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
 import {
   createBasicSnapshot,
@@ -56,8 +56,8 @@ import {
 } from '@/createSnapshot';
 import { handleSnapshotOperation } from '@/handleSnapshotOperation';
 import { displayToast } from '@/models/display/ShowToast';
-import { CreateSnapshotsPayload } from '@/server/database/Payload';
-import baseMeta from '@/server/database/baseMeta';
+import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
+import baseMeta from '@/app/server/database/baseMeta';
 import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
 import { Version } from '@/versions/Version';
 import { createDefaultVersionData } from '@/versions/VersionData';
@@ -1075,9 +1075,9 @@ const createSnapshotStoreOptions = <
           snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           payload: CreateSnapshotsPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
-          snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
           category?: string | Category,
-          categoryProperties?: string | CategoryProperties
+          snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
+           categoryProperties?: CategoryProperties,
         ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
           const createdSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
@@ -1439,7 +1439,7 @@ function isSnapshotsArray<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  obj: any
+   obj: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): obj is SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return Array.isArray(obj) && obj.every(item => isSnapshot(item));
 }

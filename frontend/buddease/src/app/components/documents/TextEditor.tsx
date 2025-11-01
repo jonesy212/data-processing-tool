@@ -4,7 +4,7 @@ import { DocumentTypeEnum } from "@/app/typings/documents";
 import {
     DocumentBuilderConfig,
     getDefaultDocumentBuilderConfig,
-} from "@/config/DocumentBuilderConfig";
+} from "@/app/config/DocumentBuilderConfig";
 import "quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import Quill from "react-quill";

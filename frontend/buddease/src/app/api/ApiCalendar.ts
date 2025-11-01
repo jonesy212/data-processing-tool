@@ -2,19 +2,16 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import {
   SimpleCalendarEvent,
   useCalendarContext,
-} from "@/app/calendar/CalendarContext";
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import {
-  CalendarNotificationTypes,
-  NotificationType,
-  useNotification
-} from "@/app/context/NotificationContext";
+} from "@/app/components/calendar/CalendarContext";
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AxiosResponse } from "axios";
 import internalApiService from "./ApiClient";
 
@@ -123,7 +120,7 @@ class CalendarApiService <
       id: UniqueIDGenerator.generateID(
         "newCalendarEventSuccess",
         "calendar-event",
-        CalendarNotificationTypes.EventOccurred,
+        CalendarNotificationTypes.EVENT_OCCURRED,
         "EventCreation" as NotificationType
       ),
       title: "", // Initialize title as an empty string or provide a default value
@@ -143,7 +140,9 @@ class CalendarApiService <
       location: "", // Set if needed
       attendees: [], // Initialize as an empty array if no attendees
       shared: null, // Set to null if not shared
-      details: {}, // Initialize with default details if needed
+      details: {
+        subtitle: "new-event-with-id"
+      } , // Initialize with default details if needed
       bulkEdit: false, // Set a default value
       recurring: false, // Set a default value
       customEventNotifications: "", // Initialize as needed

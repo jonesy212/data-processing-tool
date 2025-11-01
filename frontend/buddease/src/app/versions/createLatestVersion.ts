@@ -1,11 +1,11 @@
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { VersionImpl } from "@/app/versions/Version";
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import VersionImpl from "@/app/versions/Version";
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
 import { VersionData, VersionHistory } from "./VersionData";
 import { Version } from "@/app/versions/Version";
-
+import { VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
 
 // ✅ Clean, type-safe default version generator
 export function createLatestVersion<
@@ -27,7 +27,23 @@ export function createLatestVersion<
     versionNumber: "1.0.0",
     timestamp: now.toISOString(),
     author: "system",
-    schema: "default-schema",
+    schema: {
+      // Provide actual SchemaField objects instead of string
+      "field1": {
+        schemaType: "string" as const,
+        required: true,
+        default: "",
+        schemaProperties: undefined,
+        items: undefined,
+      },
+      "field2": {
+        schemaType: "number" as const,
+        required: false,
+        default: 0,
+        schemaProperties: undefined,
+        items: undefined,
+      }
+    },
   };
 
   // ✅ Define default VersionImpl (runtime behavior only)
@@ -109,30 +125,33 @@ export function createLatestVersion<
       return btoa(value).substring(0, 16);
     },
 
-    bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string) {
-      switch (type) {
-        case "major":
-          this.major++;
-          this.minor = 0;
-          this.patch = 0;
-          break;
-        case "minor":
-          this.minor++;
-          this.patch = 0;
-          break;
-        default:
-          this.patch++;
-      }
+   
+  bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string) {
+    switch (type) {
+      case "major":
+        this.major++;
+        this.minor = 0;
+        this.patch = 0;
+        break;
+      case "minor":
+        this.minor++;
+        this.patch = 0;
+        break;
+      default:
+        this.patch++;
+    }
 
-      this.appVersion = `${this.major}.${this.minor}.${this.patch}`;
-      this.checksum = this.hash(this.appVersion);
-      this.currentHash = this.checksum;
+    this.appVersion = `${this.major}.${this.minor}.${this.patch}`;
+    this.checksum = this.hash(this.appVersion);
+    this.currentHash = this.checksum;
 
-      console.log(
-        `Version bumped to ${this.appVersion} (${type})${notes ? " - " + notes : ""}`
-      );
+    console.log(
+      `Version bumped to ${this.appVersion} (${type})${notes ? " - " + notes : ""}`
+    );
+
+    return this; // Add this line to return the Version object
     },
-  };
+  }
 
   // ✅ Define default VersionData
   const defaultVersionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
@@ -148,18 +167,47 @@ export function createLatestVersion<
     author: "system",
     buildNumber: 1,
       schema: {
-      // Provide actual SchemaField objects
-      "field1": {
-        type: "string",
+        "field1": {
+        schemaType: "string",
         required: true,
-        defaultValue: "",
-        // ... other SchemaField properties
+        default: "",
+        schemaProperties: undefined, // For nested objects
+        items: undefined, // For arrays
       },
       "field2": {
-        type: "number", 
+        schemaType: "number",
         required: false,
-        defaultValue: 0,
-        // ... other SchemaField properties
+        default: 0,
+        schemaProperties: undefined,
+        items: undefined,
+      },
+      // Example of nested object field
+      "field3": {
+        schemaType: "object",
+        required: false,
+        default: {},
+        schemaProperties: {
+          "nestedField": {
+            schemaType: "string",
+            required: true,
+            default: "nested"
+          }
+        },
+        items: undefined,
+      },
+      // Example of array field
+      "field4": {
+        schemaType: "array", 
+        required: false,
+        default: [],
+        schemaProperties: undefined,
+        items: [
+          {
+            schemaType: "string",
+            required: true,
+            default: "array item"
+          }
+        ],
       },
     },
     releaseDate: now.toISOString(),
@@ -214,20 +262,51 @@ export function createLatestVersion<
       schema: {
         // Provide actual SchemaField objects
         "field1": {
-          type: "string",
+          schemaType: "string",
           required: true,
-          defaultValue: "",
-          // ... other SchemaField properties
+          default: "",
+          schemaProperties: undefined,
+          items: undefined,
         },
         "field2": {
-          type: "number", 
+          schemaType: "number",
           required: false,
-          defaultValue: 0,
-          // ... other SchemaField properties
-        }
+          default: 0,
+          schemaProperties: undefined,
+          items: undefined,
+        },
+        "nestedObject": {
+          schemaType: "object",
+          required: true,
+          default: {},
+          schemaProperties: {
+            "nestedField": {
+              schemaType: "string",
+              required: true,
+              default: "nested value",
+              schemaProperties: undefined,
+              items: undefined,
+            }
+          },
+          items: undefined,
+        },
+        "stringArray": {
+          schemaType: "array",
+          required: false,
+          default: [],
+          schemaProperties: undefined,
+          items: [
+            {
+              schemaType: "string",
+              required: true,
+              default: "array item",
+              schemaProperties: undefined,
+              items: undefined,
+            }
+          ],
+        },
       },
     },
-
     // Optionally include runtime version implementation
     version: defaultVersionImpl as unknown as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
@@ -266,7 +345,7 @@ export function createLastUpdatedWithVersion<
         getStructure: function (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> {
           return Promise.resolve({});
         },
-      } as VersionImpl<T, K>,
+      } as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       description: "Initial version", // Example description
       createdAt: now,
       createdBy: "system", // Example author
@@ -284,6 +363,8 @@ const versionHistory: VersionHistory<VersionEntity, VersionK,VersionMeta, Versio
     versionNumber: "1.0.0",
     userId: "user123",
     content: "Initial version of the content.",
+    
+
     metadata: {
       author: "Author Name",
       timestamp: new Date(),

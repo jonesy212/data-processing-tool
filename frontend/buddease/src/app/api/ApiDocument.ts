@@ -11,9 +11,9 @@ import { Presentation } from "@/app/documents/editing/Presentation";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { DocumentFull } from '@/app/typings/entities/DocumentEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { DatabaseConfig } from "@/config/DatabaseTypes";
+import { AppDocument } from '@/app/typings/entities/DocumentEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
 import { current } from "immer";
@@ -25,7 +25,7 @@ import { Content } from '@/app/models/content/AddContent';
 import FileData from '@/app/models/data/FileData';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Document } from '@/app/state/stores/DocumentStore';
-import { ClientInformation, CustomMediaSession } from '@/server/database/ClientInformation';
+import { ClientInformation, CustomMediaSession } from '@/app/client/ClientInformation';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
@@ -56,65 +56,65 @@ interface DocumentNotificationMessages {
   UPLOAD_DOCUMENT_ERROR: string;
 
   SHARE_DOCUMENT_ERROR: string; 
-LOCK_DOCUMENT_ERROR: string;
-UNLOCK_DOCUMENT_ERROR: string;
-ARCHIVE_DOCUMENT_ERROR: string;
-RESTORE_DOCUMENT_ERROR: string;
-MOVE_DOCUMENT_ERROR: string;
-MERGE_DOCUMENTS_ERROR: string;
-SPLIT_DOCUMENT_ERROR: string;
-VALIDATE_DOCUMENT_ERROR: string;
-ENCRYPT_DOCUMENT_ERROR: string;
-DECRYPT_DOCUMENT_ERROR: string;
-TRACK_DOCUMENT_CHANGES_ERROR: string;
-COMPARE_DOCUMENTS_ERROR: string;
-TAG_DOCUMENTS_ERROR: string;
-CATEGORIZE_DOCUMENTS_ERROR: string;
-CUSTOMIZE_DOCUMENT_VIEW_ERROR: string;
-COMMENT_ON_DOCUMENT_ERROR: string;
-MENTION_USER_IN_DOCUMENT_ERROR: string;
-ASSIGN_TASK_IN_DOCUMENT_ERROR: string;
-REQUEST_REVIEW_OF_DOCUMENT_ERROR: string;
-APPROVE_DOCUMENT_ERROR: string;
-REJECT_DOCUMENT_ERROR: string;
-REQUEST_FEEDBACK_ON_DOCUMENT_ERROR: string;
-PROVIDE_FEEDBACK_ON_DOCUMENT_ERROR: string;
-RESOLVE_FEEDBACK_ON_DOCUMENT_ERROR: string;
-COLLABORATIVE_EDITING_ERROR: string;
-SMART_TAGGING_ERROR: string;
-DOCUMENT_ANNOTATION_ERROR: string;
-DOCUMENT_ACTIVITY_LOGGING_ERROR: string;
-INTELLIGENT_DOCUMENT_SEARCH_ERROR: string;
-GET_DOCUMENT_VERSIONS_ERROR: string;
-UPDATE_SNAPSHOT_DETAILS_ERROR: string;
-CREATE_DOCUMENT_VERSION_ERROR: string;
-REVERT_TO_DOCUMENT_VERSION_ERROR: string;
-VIEW_DOCUMENT_HISTORY_ERROR: string;
-DOCUMENT_VERSION_COMPARISON_ERROR: string;
-GRANT_DOCUMENT_ACCESS_ERROR: string;
-REVOKE_DOCUMENT_ACCESS_ERROR: string;
-MANAGE_DOCUMENT_PERMISSIONS_ERROR: string;
-INITIATE_DOCUMENT_WORKFLOW_ERROR: string;
-AUTOMATE_DOCUMENT_TASKS_ERROR: string;
-TRIGGER_DOCUMENT_EVENTS_ERROR: string;
+  LOCK_DOCUMENT_ERROR: string;
+  UNLOCK_DOCUMENT_ERROR: string;
+  ARCHIVE_DOCUMENT_ERROR: string;
+  RESTORE_DOCUMENT_ERROR: string;
+  MOVE_DOCUMENT_ERROR: string;
+  MERGE_DOCUMENTS_ERROR: string;
+  SPLIT_DOCUMENT_ERROR: string;
+  VALIDATE_DOCUMENT_ERROR: string;
+  ENCRYPT_DOCUMENT_ERROR: string;
+  DECRYPT_DOCUMENT_ERROR: string;
+  TRACK_DOCUMENT_CHANGES_ERROR: string;
+  COMPARE_DOCUMENTS_ERROR: string;
+  TAG_DOCUMENTS_ERROR: string;
+  CATEGORIZE_DOCUMENTS_ERROR: string;
+  CUSTOMIZE_DOCUMENT_VIEW_ERROR: string;
+  COMMENT_ON_DOCUMENT_ERROR: string;
+  MENTION_USER_IN_DOCUMENT_ERROR: string;
+  ASSIGN_TASK_IN_DOCUMENT_ERROR: string;
+  REQUEST_REVIEW_OF_DOCUMENT_ERROR: string;
+  APPROVE_DOCUMENT_ERROR: string;
+  REJECT_DOCUMENT_ERROR: string;
+  REQUEST_FEEDBACK_ON_DOCUMENT_ERROR: string;
+  PROVIDE_FEEDBACK_ON_DOCUMENT_ERROR: string;
+  RESOLVE_FEEDBACK_ON_DOCUMENT_ERROR: string;
+  COLLABORATIVE_EDITING_ERROR: string;
+  SMART_TAGGING_ERROR: string;
+  DOCUMENT_ANNOTATION_ERROR: string;
+  DOCUMENT_ACTIVITY_LOGGING_ERROR: string;
+  INTELLIGENT_DOCUMENT_SEARCH_ERROR: string;
+  GET_DOCUMENT_VERSIONS_ERROR: string;
+  UPDATE_SNAPSHOT_DETAILS_ERROR: string;
+  CREATE_DOCUMENT_VERSION_ERROR: string;
+  REVERT_TO_DOCUMENT_VERSION_ERROR: string;
+  VIEW_DOCUMENT_HISTORY_ERROR: string;
+  DOCUMENT_VERSION_COMPARISON_ERROR: string;
+  GRANT_DOCUMENT_ACCESS_ERROR: string;
+  REVOKE_DOCUMENT_ACCESS_ERROR: string;
+  MANAGE_DOCUMENT_PERMISSIONS_ERROR: string;
+  INITIATE_DOCUMENT_WORKFLOW_ERROR: string;
+  AUTOMATE_DOCUMENT_TASKS_ERROR: string;
+  TRIGGER_DOCUMENT_EVENTS_ERROR: string;
 
-DOCUMENT_APPROVAL_WORKFLOW_ERROR: string;
-DOCUMENT_LIFECYCLE_MANAGEMENT_ERROR: string;
-CONNECT_WITH_EXTERNAL_SYSTEM_ERROR: string;
-SYNCHRONIZE_WITH_CLOUD_STORAGE_ERROR: string;
-IMPORT_FROM_EXTERNAL_ERROR: string;
-EXPORT_TO_EXTERNAL_ERROR: string;
-GENERATE_DOCUMENT_ERROR: string;
-GENERATE_DOCUMENT_REPORT_ERROR: string;
-EXPORT_DOCUMENT_REPORT_ERROR: string;
-SCHEDULE_REPORT_GENERATION_ERROR: string;
-CUSTOMIZE_REPORT_SETTINGS_ERROR: string;
-BACKUP_DOCUMENTS_ERROR: string;
-RETRIEVE_BACKUP_ERROR: string;
-DOCUMENT_REDACTION_ERROR: string;
-DOCUMENT_ACCESS_CONTROLS_ERROR: string;
-GET_DOCUMENT_ERROR: string;
-DOCUMENT_TEMPLATES_ERROR: string;
+  DOCUMENT_APPROVAL_WORKFLOW_ERROR: string;
+  DOCUMENT_LIFECYCLE_MANAGEMENT_ERROR: string;
+  CONNECT_WITH_EXTERNAL_SYSTEM_ERROR: string;
+  SYNCHRONIZE_WITH_CLOUD_STORAGE_ERROR: string;
+  IMPORT_FROM_EXTERNAL_ERROR: string;
+  EXPORT_TO_EXTERNAL_ERROR: string;
+  GENERATE_DOCUMENT_ERROR: string;
+  GENERATE_DOCUMENT_REPORT_ERROR: string;
+  EXPORT_DOCUMENT_REPORT_ERROR: string;
+  SCHEDULE_REPORT_GENERATION_ERROR: string;
+  CUSTOMIZE_REPORT_SETTINGS_ERROR: string;
+  BACKUP_DOCUMENTS_ERROR: string;
+  RETRIEVE_BACKUP_ERROR: string;
+  DOCUMENT_REDACTION_ERROR: string;
+  DOCUMENT_ACCESS_CONTROLS_ERROR: string;
+  GET_DOCUMENT_ERROR: string;
+  DOCUMENT_TEMPLATES_ERROR: string;
   // Add more keys as needed
 }
 
@@ -219,7 +219,7 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 
-const fakeApiCall = (documentId: number): Promise<DocumentFull> => {
+const fakeApiCall = (documentId: number): Promise<AppDocument> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -230,7 +230,7 @@ const fakeApiCall = (documentId: number): Promise<DocumentFull> => {
         type: DocumentTypeEnum.Document,
         lastModified: new Date(),
         isPublished: false
-      } as DocumentFull);
+      } as AppDocument);
     }, 1000);
   });
 };
@@ -377,7 +377,7 @@ const createDraftDocument = <
     body: data.body as unknown as WritableDraft<HTMLElement> | undefined,
     documentData: {
       ...data.documentData,
-      file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData<T>> : undefined,
+      file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> : undefined,
       subtasks: data.documentData?.subtasks?.map((subtask: WritableDraft<Subtask<T>>) => ({
         ...subtask,
         assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
@@ -387,7 +387,7 @@ const createDraftDocument = <
       })) || undefined,
     } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     comments: processedComments,
-    content: data.content as WritableDraft<Content<T, K>>,
+    content: data.content as WritableDraft<Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> >,
     selectedDocuments: data.selectedDocuments ? data.selectedDocuments.map(doc => ({ ...doc } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)) : undefined,
     defaultView: data.defaultView as Window | undefined,
   } as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -444,7 +444,7 @@ const convertToDocumentObject = <
       })) || undefined,
     },
     comments: draft.comments ? [...draft.comments] : undefined,
-    content: draft.content as Content<T, K>,
+    content: draft.content as Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ,
     selectedDocuments: draft.selectedDocuments
       ? draft.selectedDocuments.map(doc => ({ ...doc }))
       : undefined,

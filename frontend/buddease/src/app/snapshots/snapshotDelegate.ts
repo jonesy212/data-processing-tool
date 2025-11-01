@@ -1,4 +1,4 @@
-import { BaseDataEntity } from '@/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 // snapshotDelegate.ts
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
@@ -19,12 +19,12 @@ import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { isRealtimeDataItemArray } from '@/app/utils/dataTypeGuards';
 import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { CreateSnapshotsPayload } from "@/server/database/Payload";
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CreateSnapshotsPayload } from "@/app/server/database/Payload";
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -129,7 +129,7 @@ const snapshotDelegate = <
             callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
             snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
             category?:  Category,
-            categoryProperties?: string | CategoryProperties
+             categoryProperties?: CategoryProperties;
           ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
           batchTakeSnapshot: (
             id: number,
@@ -211,7 +211,7 @@ const snapshotDelegate = <
           dataCallback?: (
             subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
             snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ) => Promise<SnapshotUnion<T, K, Meta>[]>
+          ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]>
         ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
         setData: (id: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
         addData: (id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;

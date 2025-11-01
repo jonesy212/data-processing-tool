@@ -1,16 +1,16 @@
 // CryptoEnthusiastCalls.tsx
+import userService from '@/app/api/ApiUser';
+import { authToken } from '@/app/components/auth/authToken';
+import DataFilterForm from '@/app/components/models/data/DataFilterForm';
+import { TraderCallsProps } from '@/app/components/trading/Trades';
 import ListGenerator from '@/app/generators/ListGenerator';
 import processSnapshotList from '@/app/generators/processSnapshotList';
+import useTwoFactorAuthentication from '@/app/hooks/authentication/useTwoFactorAuthentication';
+import SnapshotList from '@/app/snapshots/SnapshotList';
 import { DataAnalysisAction, DataAnalysisDispatch } from '@/app/typings/dataAnalysisTypes';
 import { Dispatch } from '@reduxjs/toolkit';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import userService from '@/app/components/api/ApiUser';
-import { authToken } from '@/app/components/auth/authToken';
-import useTwoFactorAuthentication from '@/app/hooks/authentication/useTwoFactorAuthentication';
-import DataFilterForm from '@/app/components/models/data/DataFilterForm';
-import SnapshotList from '@/app/snapshots/SnapshotList';
-import { TraderCallsProps } from '@/app/components/trading/Trades';
 
 interface CryptoEnthusiastCallsProps extends TraderCallsProps {
   // Define any props needed for the component

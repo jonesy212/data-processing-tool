@@ -1,7 +1,6 @@
-import { detailsApiService } from '@/app/components/models/data/DetailsService';
 import FacebookAPI from "@/app/api/FacebookAPI";
-import { endpoints } from '@/app/api/ApiEndpoints';
-import axiosInstance from "@/server/security/axiosInstance";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import axiosInstance from "@/app/server/security/axiosInstance";
 
 interface FacebookUserDetails {
     userId: string;

@@ -1,7 +1,7 @@
 // CommentsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CommentsEndpoints {
+export interface CommentsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (commentId: number) => EndpointConfig;
 }

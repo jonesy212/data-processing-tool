@@ -3,7 +3,7 @@ import { render,  } from '@testing-library/react';
 import DetailsList from '@/DetailsList';
 import React from "react";
 
-import BlogList from '@/BlogList';
+import BlogList from '@/app/pages/blog/BlogList';
 
 describe('BlogList component', () => {
   test('renders blog list correctly', () => {

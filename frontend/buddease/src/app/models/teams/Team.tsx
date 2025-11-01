@@ -20,7 +20,7 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TeamMeta } from '@/app/typings/entities/TeamEntity'
 import { AppTeamEntity TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity'
 

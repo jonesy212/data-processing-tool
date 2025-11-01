@@ -1,5 +1,6 @@
 // MemberEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { Member } from "@/app/models/members/Member";
 import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
 import { Project } from '@/app/models/projects/Project';
@@ -15,24 +16,25 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { ProjectBudget } from '@/app/typings/projectTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserEntity } from '@/app/typings/entities/UserEntity';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { PhaseMeta } from '../phaseTypes';
-import { ProjectBudget } from '@/app/typings/projectTypes'
+import UserRoles from "@/app/models/UserRoles";
+import { Persona } from "@/app/pages/personas/Persona";
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
-  datasets?: string;
-  tasks?: Task<any, any, any, any, any, any>[]; // Using any for flexibility with Task types
-  questionnaireResponses?: any;
-  userType: string;
-  role?: string;
-  permissions?: Permission[] | string[];
-  joinDate?: Date;
-  lastActive?: Date;
-  status?: 'active' | 'inactive' | 'pending';
-  // Add other member-specific fields
+  // Only include fields that are fundamentally part of the entity data model
+  // not behavioral or derived properties
+  entityVersion?: number;
+  schemaVersion?: string;
+  memberSpecificField?: string;
+  customMetadata?: Record<string, any>;
+
+  // Other core data fields specific to member entities
 };
 
 type MemberK = MemberEntity;
@@ -54,7 +56,7 @@ type MemberBaseParams = {
 // Helper type to extract UnifiedMetadata with Member types
 type MemberUnifiedMetadata = UnifiedMetadata<
   MemberBaseParams['T'],
-  MemberBaseParams['K'], 
+  MemberBaseParams['K'],
   MemberBaseParams['Meta'],
   MemberBaseParams['AttachmentType'],
   MemberBaseParams['ExcludedFields'],
@@ -112,16 +114,15 @@ type MemberApplyFieldFilters<
 
 // Define the MemberData interface extending Member
 interface MemberData<
-  T extends BaseDataEntity = MemberEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Member {
+> extends Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   datasets?: string;
-  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  questionnaireResponses?: any;
+  questionnaireResponses?: { [key: string]: string };
   userType: string;
   role?: UserRole
   permissions?: Permission[] | string[];
@@ -129,45 +130,99 @@ interface MemberData<
   lastActive?: Date;
   status?: 'active' | 'inactive' | 'pending';
   teamId?: string;
+  skills?: string[];
+  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   prroducts?: Product<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  skills?: string[];
 
-  budget: ProjectBudget, 
-  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], 
+  timestamp: string | number | Date | undefined,
+  storeId: number,
+  auditTrail: AuditRecord[],
+  deleted: boolean,
+
+  budget: ProjectBudget,
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   done: boolean
   // Add other fields specific to MemberData
 }
 
 // Default empty member data
-const emptyMemberData: MemberData = {
-  isAuthorized, uploadQuota, hasQuota, processingTasks,
-  budget, phases, currentPhase, done,
+const emptyMemberData: MemberData<
+  MemberEntity,
+  MemberK,
+  MemberMeta,
+  MemberAttachment,
+  MemberExcludedFields,
+  MemberIncludedFields
+> = {
+  uploadQuota: 0,
+  timestamp: new Date(), // Should be Date or number, not string
+  storeId: 0, // Should be number, not string
+  auditTrail: [], // Should be AuditRecord[], not string
+  deleted: false, // Should be boolean, not string
+  isAuthorized: false,
+  
+  hasQuota: false, // Should be boolean, not string
+  processingTasks: [], // Should be array, not string
 
-  id: '',
-  name: '',
-  email: '',
-  datasets: '',
+  budget: {
+    total: 0,
+    used: 0,
+    allocated: 0,        // Add this to match interface
+    spent: 0,           // Add this to match interface
+    remaining: 0,
+    categories: {},      // Change from allocations[] to categories object
+    variance: 0,
+    currency: '0',
+    allocations: [],
+    lastUpdated: new Date()
+  },
+  phases: [],
+  currentPhase: {
+    id: '',
+    name: 'Not Started',
+    description: '',
+    startDate: new Date(),
+    endDate: new Date(),
+    status: 'pending',
+    tasks: [],
+    progress: 0,
+    order: 0,
+    projectId: 'project-id',
+    date: new Date()
+  },
+  done: false,
+  activityStatus: 'offline',
+  activityLog: [],
+  persona: {} as Persona,
+  friends: [],
+  blockedUsers: [],
+  id: 'member-0000',
+  name: 'Unnamed Member',
+  email: 'member@example.com',
+  datasets: 'default',
   tasks: [],
-  tier: "",
-  username: "",
-  roleInTeam: "",
-  role: UserRole.Member,
-  memberName: "",
-  questionnaireResponses: undefined,
+  tier: "basic",
+  username: "anonymous",
+  roleInTeam: "contributor",
+  role: UserRoles.Member,
+  memberName: "Anonymous Member",
+  questionnaireResponses: {},
   userType: 'member',
-  permissions: [],
+  permissions: ['read'],
   joinDate: new Date(),
   lastActive: new Date(),
   status: 'active',
-  teamId: '',
+  teamId: 'team-0000',
   projects: [],
-  skills: []
+  skills: ['general']
 };
 
 // Helper function to create default member data
-const createDefaultMemberData = (baseData: Partial<MemberData>): MemberData => ({
+const createDefaultMemberData = (
+  baseData: Partial<MemberData<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>>
+): MemberData<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields> => ({
   ...emptyMemberData,
   ...baseData,
   id: baseData.id || `member-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -178,7 +233,7 @@ const createDefaultMemberData = (baseData: Partial<MemberData>): MemberData => (
   status: baseData.status || 'active'
 });
 
-export default MemberData; 
+export default MemberData;
 
 export type {
   MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
@@ -187,7 +242,7 @@ export type {
   MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
 };
 
-  export {
-    createDefaultMemberData, emptyMemberData
-  };
+export {
+  createDefaultMemberData, emptyMemberData
+};
 

@@ -1,7 +1,7 @@
 // TeamsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface TeamsEndpoints {
+export interface TeamsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (teamId: number) => EndpointConfig;
   add: EndpointConfig;

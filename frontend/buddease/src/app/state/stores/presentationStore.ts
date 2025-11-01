@@ -1,20 +1,19 @@
-import { ExtendedCalendarEvent } from '@/calendar/CalendarEventTimingOptimization';
-import { Data } from '@/app/models/data/Data';
 // presentationStore.ts
+import { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Presentation } from "@/app/documents/editing/Presentation";
-import { sanitizeData } from "@/app/crypto/SanitizationFunctions";
-import { AssignBaseStore } from "@/app/AssignBaseStore";
+import { sanitizeData } from "@/app/models/crypto/SanitizationFunctions";
+import { AssignBaseStore } from "@/app/state/stores/AssignBaseStore";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { AssignTaskStore } from "@/app/state/stores/AssignTaskStore";
 import { useAssignTeamMemberStore } from "@/app/state/stores/AssignTeamMemberStore";
 import { userManagerStore } from "@/app/state/stores/UserStore";
 
 // Define the necessary types and interfaces
-type PresentationStoreSubset = Pick<
+type PresentationStoreSubset = Partial<Pick<
   AssignBaseStore | AssignTaskStore,
   | "assignedItems"
   | "snapshotStore"
@@ -72,6 +71,7 @@ type PresentationStoreSubset = Pick<
   | "assignBoardIntegrationToTeam"
   | "assignBoardAutomationToTeam"
   | "assignBoardCustomFieldToTeam"
+  >
 >;
 
 function getPropertyIfExists<T extends object, K extends keyof T>(

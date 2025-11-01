@@ -1,3 +1,4 @@
+// generateCategoryProperties.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryKeys } from "@/app/libraries/categories/CategoryManager";
@@ -5,10 +6,25 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig } from '@/app/snapshots/';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
+
+
+// Shared method signatures for category behavior
+type SnapshotCategoryMethods = {
+  /**
+   * Set the category for a snapshot/store entry.
+   * Accepts either a string or a Category union (which itself can include string).
+   */
+  setSnapshotCategory: (id: string, newCategory: string | Category) => void;
+
+  /**
+   * Get the category for a snapshot/store entry.
+   */
+  getSnapshotCategory: (id: string) => Category | undefined;
+};
 
 
 // Type Guard to check if category is CategoryProperties
@@ -16,7 +32,6 @@ function isCategoryProperties(category: Category): category is CategoryPropertie
   return (category as CategoryProperties)?.name !== undefined;
 }
 
-// generateCategoryProperties.ts
 function generateCategoryProperties(area: string | undefined): CategoryProperties {
   switch (area) {
     case "UserInterface":
@@ -258,9 +273,10 @@ function getOrSetCategoryForSnapshot <
   categoryProps?: Category,
   additionalHeaders?: Record<string, string>
 ): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }> {
+  
   // Check if the category is already set and is a string or symbol
   if (typeof snapshot.category === 'string' || typeof snapshot.category === 'symbol') {
-    return {
+    const categoryProperties: CategoryProperties = {
       name: snapshot.category.toString(),
       id: snapshot.id ? snapshot.id.toString() : "", 
       description: snapshot.description ? snapshot.description : "",
@@ -268,7 +284,6 @@ function getOrSetCategoryForSnapshot <
       chartType: snapshot.categoryProperties?.chartType ?? "",
       dataProperties: snapshot.categoryProperties?.dataProperties ?? [],
       formFields: snapshot.categoryProperties?.formFields ?? [],
-     
       icon: snapshot.categoryProperties?.icon ?? "",   
       color: snapshot.categoryProperties?.color ?? "",
       iconColor: snapshot.categoryProperties?.iconColor ?? "",
@@ -289,23 +304,30 @@ function getOrSetCategoryForSnapshot <
       brandLogo: snapshot.categoryProperties?.brandLogo ?? "",
       brandColor: snapshot.categoryProperties?.brandColor ?? "",
       brandMessage: snapshot.categoryProperties?.brandMessage ?? "",
-     }; // Ensure it returns a CategoryProperties object
+    };
+    
+    return Promise.resolve({
+      categoryProperties,
+      snapshots: [snapshot]
+    });
   }
   
   // If it's a CategoryProperties object, return it
   if (snapshot.category && typeof snapshot.category !== 'string' && typeof snapshot.category !== 'symbol') {
-    return snapshot.category; // Return as CategoryProperties
+    return Promise.resolve({
+      categoryProperties: snapshot.category as CategoryProperties,
+      snapshots: [snapshot]
+    });
   }
   
   // No category provided, set a default one based on the context
-
   const defaultCategory: CategoryIdentifier = getCategoryLabelForSnapshot(type) || 'defaultCategory';
  
   // If categoryProps is provided and it's a string or symbol, use it; otherwise, use the default category
   const categoryIdentifier: CategoryIdentifier = 
     typeof categoryProps === 'string' || typeof categoryProps === 'symbol'
     ? categoryProps
-    : defaultCategory; // Provide a fallback value if defaultCategory is null
+    : defaultCategory;
 
   snapshot.category = categoryIdentifier;
 
@@ -316,10 +338,10 @@ function getOrSetCategoryForSnapshot <
     snapshot.categoryProperties = generateCategoryProperties(type);
   }
   
-  return {
+  return Promise.resolve({
     categoryProperties: snapshot.categoryProperties,
-    snapshots: [snapshot] // Return an array of snapshots as required
-  };
+    snapshots: [snapshot]
+  });
 }
 
 
@@ -353,4 +375,4 @@ function generateOrVerifySnapshotId <
 }
 export { generateCategoryProperties, generateOrVerifySnapshotId, getCategoryLabelForSnapshot, getOrSetCategoryForSnapshot, isCategoryProperties };
 
-    export type { Category, CategoryIdentifier };
+    export type { Category, CategoryIdentifier, SnapshotCategoryMethods };

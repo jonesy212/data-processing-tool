@@ -1,11 +1,9 @@
 // versionUtils.ts
 import { hasPriority } from '@/app/api/processSnapshotData';
-import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface DataWithVersion {
   version?: string;

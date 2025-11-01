@@ -1,6 +1,6 @@
 // appStructureClient.ts
 // Client-side file 
-import AppStructure, { FileSystemService } from '@/config//AppStructure';
+import AppStructure, { FileSystemService } from '@/app/config/appStructure/AppStructure';
 
 // Browser-compatible file system (using API calls)
 export const browserFileSystem: FileSystemService = {

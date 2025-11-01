@@ -1,11 +1,11 @@
 // VersionEntity.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { Version, VersionImpl } from "@/app/versions/Version";
-import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { Version, default as VersionImpl } from "@/app/versions/Version";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
 import { HistoryEntry } from "@/app/state/stores/HistoryStore";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { VersionData } from '@/app/versions/VersionData'
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -18,11 +18,11 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 // --- Core Version type definitions ---
-type VersionEntity, = BaseDataEntity;
-type VersionK, = VersionEntity;
-type VersionMeta, = DefaultMeta<VersionEntity, VersionK>;
-type VersionAttachment, = Attachment;
-type VersionExcludedFields, = DefaultExcludedFields<VersionEntity>;
+type VersionEntity = BaseDataEntity;
+type VersionK = VersionEntity;
+type VersionMeta = DefaultMeta<VersionEntity, VersionK>;
+type VersionAttachment = Attachment;
+type VersionExcludedFields = DefaultExcludedFields<VersionEntity>;
 type VersionIncludedFields = keyof VersionEntity;
 
 // --- Main parameters container ---
@@ -225,6 +225,8 @@ const emptyVersionData: VersionEntityDataInterface<
   // Core Version fields
   id: '',
   versionNumber: '1.0.0',
+  major, minor, patch, buildNumber,
+   
   data: null,
   isActive: true,
   createdAt: new Date(),
@@ -280,9 +282,13 @@ const createDefaultVersionData = (
 });
 
 export type {
-  VersionAttachment,
-  VersionBaseParams,
   VersionEntity,
+  VersionK,
+  VersionMeta,
+  VersionAttachment,
+  VersionExcludedFields,
+  VersionIncludedFields,
+  VersionBaseParams,
   VersionEntityApplyFieldFilters,
   VersionEntityBackendStructure,
   VersionEntityData,
@@ -298,10 +304,6 @@ export type {
   VersionEntitySnapshotStoreConfig,
   VersionEntitySubscriberCollection,
   VersionEntityType,
-  VersionExcludedFields,
-  VersionIncludedFields,
-  VersionK,
-  VersionMeta,
   VersionStructuredMetadata,
   VersionUnifiedMetadata
 };

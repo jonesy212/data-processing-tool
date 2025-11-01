@@ -2,11 +2,11 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
-import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/config/MetaDataOptions";
-import { SchemaField } from '@/server/database/SchemaField';
-import { CoreMetadata } from "@/server/metadata/MetadataStateManager";
+import { AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/app/config/MetaDataOptions";
+import { CoreMetadata } from "@/app/server/metadata/MetadataStateManager";
 import { Version } from '../versions/Version';
 import { VersionData, VersionHistory } from '../versions/VersionData';
 
@@ -23,7 +23,7 @@ interface SharedMetadata<
     Partial<StatusMetadata>,
     SharedRelationshipData<K> {
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
-  lastUpdated?: Date | VersionHistory<T, K>; 
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   latestVersion?: Pick<
     VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     "id" | "versionNumber" | "timestamp" | "author" | "schema"

@@ -1,7 +1,7 @@
 // SnapshotSttoreMethods.ts
 
 import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot, SnapshotStoreConfig } from ".";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreProps } from "./useSnapshotStore";

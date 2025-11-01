@@ -10,7 +10,7 @@ import {
   removeData as removeDataAction,
   updateDataDetails as updateDataDetailsAction
 } from '@/app/state/redux/slices/DataSlices'; // Adjust based on your project structure
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useDispatch } from 'react-redux';
 
 interface BaseDataOperations<

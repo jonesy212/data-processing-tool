@@ -7,7 +7,7 @@ import { Team } from '@/app/models/teams/Team';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/models/UserRole";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import UserRoles from '@/app/models/UserRoles';
 import {
 	MemberEntity,
@@ -21,12 +21,19 @@ import {
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder'
 
 
-export interface Member extends User {
+export interface Member<
+	T extends BaseDataEntity,
+	K extends T = T,
+	Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+	AttachmentType extends Attachment = Attachment,
+	ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+	IncludedFields extends keyof T = keyof T
+> extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 	teamId?: string;
 	roleInTeam: string;
 	memberName: string;
-	teams?: Team[];
 	host?: boolean;
+	teams?: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 	// Add other member-specific properties here
 }
 

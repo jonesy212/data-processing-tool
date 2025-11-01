@@ -1,23 +1,23 @@
 
 // Task.ts
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskStructuredMetadata } from '@/app/typings/entities/TaskEntity';
-import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { taskMetadata } from '@/app/models/data/TaskMetadata';
+import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedTimestamps } from '@/app/documents/RelatedProps';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { taskMetadata } from '@/app/models/data/TaskMetadata';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from "@/app/shared/SharedMetadata";
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskStructuredMetadata } from '@/app/typings/entities/TaskEntity';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { TaskMetadata } from '@/config/MetaDataOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TaskMetadata } from '@/app/config/MetaDataOptions';
 
 export type  TaskData = BaseDataEntity<
   TaskEntity,             // T

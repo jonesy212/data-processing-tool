@@ -5,7 +5,7 @@ import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface SnapshotIdentity<
   T extends BaseDataEntity,

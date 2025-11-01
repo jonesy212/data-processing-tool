@@ -1,9 +1,9 @@
 // markerSagas.ts
 
-import { Marker } from '@/app/components/models/data/Marker';
+import { Marker } from '@/app/models/data/Marker';
 import { AxiosResponse } from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
-import { MarkerActions } from '@/components/state/redux/actions/MarkerActions';
+import { MarkerActions } from '@/app/state/redux/actions/MarkerActions';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken'

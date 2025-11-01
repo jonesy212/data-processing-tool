@@ -1,7 +1,9 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import fetchSnapshotById from "@/app/api/SnapshotApi";
-import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
@@ -15,29 +17,27 @@ import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 
-import { Snapshot } from "@/app/snapshots/Snapshhot";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SnapshotStoreProps } from "@/app/snapshots/useSnapshotStore";
+import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { addToSnapshotList } from "@/app/utils/snapshotUtils";
+import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import {
-  InitializedDelegate,
-  MetaDataOptions,
-  SnapshotStoreOptions
+	InitializedDelegate,
+	MetaDataOptions,
+	SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
-import { addToSnapshotList } from "./snapshotUtils";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
-import { SnapshotStoreProps } from "./useSnapshotStore";
 
 
 

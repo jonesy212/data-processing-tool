@@ -1,7 +1,7 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AppBaseParams } from '@/app/typings/entities/AppEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export class ClientSubscriber<
   T extends BaseDataEntity = AppBaseParams['T'],

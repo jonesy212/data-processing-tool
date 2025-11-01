@@ -1,7 +1,7 @@
 // DataAnalysisEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DataAnalysisEndpoints {
+export interface DataAnalysisEndpoints extends EndpointCategoryConfig {
   analyzeData: EndpointConfig;
   getAnalysisResults: EndpointConfig;
   exportAnalysisResults: EndpointConfig;

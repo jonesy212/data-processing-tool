@@ -1,7 +1,7 @@
 // DocumentEndpoints.ts
-import { EndpointConfig } from '@/app/api/endpointConfigurations';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DocumentEndpoints {
+export interface DocumentEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (documentId: string) => EndpointConfig;
   add: EndpointConfig;

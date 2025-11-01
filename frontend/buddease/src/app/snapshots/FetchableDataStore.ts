@@ -4,7 +4,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity } from '@/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 
 
 interface FetchableDataStore<

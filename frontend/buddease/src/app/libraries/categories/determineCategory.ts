@@ -3,7 +3,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // determineCategory function
 function determineCategory<

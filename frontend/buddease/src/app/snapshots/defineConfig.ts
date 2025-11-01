@@ -1,9 +1,22 @@
 // defineConfig.ts
 
-
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, UserConfigExport } from 'vite';
+import { ModifiedDate } from "@/app/documents/DocType";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { payload, Subscriber } from "@/app/subscribers/Subscriber";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
+import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
+
+// Function to get the project ID from an environment variable or use a default value
+function getProjectId() {
+  return process.env.PROJECT_ID || "defaultProject";
+}
+
+const projectId = getProjectId();
 
 export default defineConfig({
   plugins: [react()],
@@ -13,7 +26,7 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env.PROJECT_ID': JSON.stringify(process.env.PROJECT_ID || "defaultProject")
+    'process.env.PROJECT_ID': JSON.stringify(projectId)
   },
   build: {
     outDir: 'dist',
@@ -22,46 +35,14 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
-  }
-  // No custom data/payload properties here - they belong in app config
-});
-
-
-
-import { ModifiedDate } from "@/app/documents/DocType";
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { payload, Subscriber } from "@/app/subscribers/Subscriber";
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
-import { UserConfigExport } from "vite";
-import { snapshotConfig } from "./snapshotStoreConfigInstance";
-
-
-// Function to get the project ID from an environment variable or use a default value
-function getProjectId() {
-    return process.env.PROJECT_ID || "defaultProject";
-  }
-  
-  const projectId = getProjectId();
-  
-  export default defineConfig({
-     plugins: [react()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '@/src'),
-      },
-    },
-    
-    data: snapshotConfig,
-    payload: {
-      projectId,
-      userId: "1234567890",
-    },
-  } as UserConfigExport);
-  
-
-
+  },
+  // Custom configuration
+  data: snapshotConfig,
+  payload: {
+    projectId,
+    userId: "1234567890",
+  },
+} as UserConfigExport);
 
 // Example usage
 const johnSubscriber = new Subscriber<T, CustomSnapshotData<T, K, Meta>>(
@@ -82,8 +63,9 @@ const johnSubscriber = new Subscriber<T, CustomSnapshotData<T, K, Meta>>(
     triggerIncentives: () => { },
     determineCategory: (data: any) => data.category,
     subscribers: [],
-    getSubscriptionLevel: (price: number): SubscriptionLevel | undefined => {
-
+    getSubscriptionLevel: (price: number): any => {
+      // You'll need to implement this or define SubscriptionLevel type
+      return undefined;
     }
   },
   "subscriberId",
@@ -94,4 +76,3 @@ const johnSubscriber = new Subscriber<T, CustomSnapshotData<T, K, Meta>>(
   payload.meta?.optionalData,
   payload.meta?.data 
 );
-  

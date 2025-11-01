@@ -8,7 +8,7 @@ import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { RealtimeDataState } from "@/app/state/redux/slices/RealtimeDataSlice";
 import { UIState } from "@/app/stores/UISlice";
 import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
-import EntityId from "@/state/redux/slices/RootSlice";
+import EntityId from "@/app/state/redux/slices/RootSlice";
 import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { ApiManagerState } from "./ApiSlice";
 import { BlogState } from "./BlogSlice";

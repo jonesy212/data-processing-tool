@@ -4,7 +4,7 @@ import {
     SnapshotContainer,
     SnapshotDataType,
   } from "./SnapshotContainer";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -254,7 +254,7 @@ const snapshotType = <
       // getSnapshotCategory: newSnapshot.getSnapshotCategory,
       // getSnapshotData: newSnapshot.getSnapshotData,
       // deleteSnapshot: newSnapshot.deleteSnapshot,
-      manageSubscription: newSnapshhot.manageSubscription,
+      manageSubscription: newSnapshot.manageSubscription,
       subscribeToSnapshotsSuccess: newSnapshot.subscribeToSnapshotsSuccess,
       unsubscribeFromSnapshots: newSnapshot.unsubscribeFromSnapshots,
       unsubscribe: newSnapshot.unsubscribe,

@@ -1,6 +1,6 @@
 "use client";
 
-import { BaseData } from "@/app/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import useFiltering from "@/app/hooks/useFiltering";
 import { Project, reassignProject } from "@/app/models/projects/Project";
@@ -20,7 +20,7 @@ import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/teamTypes';
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CommonData } from '@/app'
 
 const options: SearchOptions = {

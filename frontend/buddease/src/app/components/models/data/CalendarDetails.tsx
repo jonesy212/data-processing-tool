@@ -1,15 +1,25 @@
 // CalendarDetails.tsx
-import ListGenerator from "@/app/generators/ListGenerator";
-import { observer } from "mobx-react-lite";
-import React from "react";
-import CommonEvent from "@/app/state/stores/CommonEvent";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { CommonData, Customizations } from "@/app/models/CommonData";
-import { Data } from "./Data";
-import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
+import React from 'react';
+import ListGenerator from '@/app/generators/ListGenerator';
+import { observer } from 'mobx-react-lite';
+import  { CommonEvent } from '@/app/state/stores/CommonEvent';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { CommonData, Customizations } from '@/app/models/CommonData';
+import { Data } from '@/app/models/data/Data';
+import { CollaborationOptions } from '@/app/interfaces/options/CollaborationOptions';
+import { Attachment } from '@/app/documents/attachment/Attachment'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
 type CalendarDataAndEventDetails = Data | CommonEvent;
 
-interface CalendarDetailsProps<T> {
+interface CalendarDetailsProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   data?: CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Make data prop optional
   details: DetailsItem<T>;
   customizations?: Customizations<T>;

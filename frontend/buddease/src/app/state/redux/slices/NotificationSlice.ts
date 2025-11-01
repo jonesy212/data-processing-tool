@@ -1,9 +1,9 @@
 // useNotificationManagerSlice.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { WritableDraft } from "@/app/ReducerGenerator";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { RootState } from "@/state/redux/slices/RootSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 

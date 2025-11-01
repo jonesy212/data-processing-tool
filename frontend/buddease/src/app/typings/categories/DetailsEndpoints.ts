@@ -1,7 +1,7 @@
 // DetailsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DetailsEndpoints {
+export interface DetailsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (detailsId: string) => EndpointConfig;
   add: EndpointConfig;

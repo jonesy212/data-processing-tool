@@ -7,8 +7,8 @@ import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessin
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -193,7 +193,7 @@ type SnapshotStoreMap<
 export type { SnapshotStoreMap };
 
   export {
-        batchUpdateSnapshots, getSnapshot, getSnapshotFromMap, isSnapshotFunction, removeSnapshotFromMap, safeUpdateSnapshots,
-        updateSnapshotMap, validateSnapshot
-    };
+    batchUpdateSnapshots, getSnapshot, getSnapshotFromMap, isSnapshotFunction, removeSnapshotFromMap, safeUpdateSnapshots,
+    updateSnapshotMap, validateSnapshot
+  };
 

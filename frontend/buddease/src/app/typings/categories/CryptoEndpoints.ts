@@ -1,7 +1,7 @@
 // CryptoEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CryptoEndpoints {
+export interface CryptoEndpoints extends EndpointCategoryConfig {
   settings: EndpointConfig;
   list: EndpointConfig;
   fetchCryptoData: EndpointConfig;

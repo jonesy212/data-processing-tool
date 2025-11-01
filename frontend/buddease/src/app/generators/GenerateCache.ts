@@ -27,12 +27,12 @@ import {
     notificationBarPhaseHook,
 } from "@/app/hooks/userInterface/UIPhaseHooks";
 import { VersionHistory } from "@/app/versions/VersionData";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import { backendConfig } from "@/config/BackendConfig";
-import { frontendConfig } from "@/config/FrontendConfig";
-import userSettings from "@/config/UserSettings";
-import BackendStructure from "@/config/appStructure/IBackendStructure";
-import { DataVersions } from "@/configs/DataVersionsConfig";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import { backendConfig } from "@/app/config/BackendConfig";
+import { frontendConfig } from "@/app/config/FrontendConfig";
+import userSettings from "@/app/config/UserSettings";
+import BackendStructure from "@/app/config/appStructure/IBackendStructure";
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
 
 const initialData: any = {}; 
 

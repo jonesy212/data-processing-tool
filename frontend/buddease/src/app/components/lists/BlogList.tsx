@@ -1,29 +1,31 @@
 import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData } from '@/app/models/data/Data';
+import ListGenerator from "@/app/generators/ListGenerator";
+import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StatusType } from "@/app/models/data/StatusType";
+import { Phase } from '@/app/models/phases/Phase';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
-import { Data, SharedRelationshipData } from '@/app/models/data/Data';
-import { Phase } from '@/app/models/phases/Phase';
  
 // Define a type representing the data structure for blog posts
 interface BlogData<
-  T extends  BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
-  > extends SharedRelationshipData<K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedRelationshipData<K> {
   _id: string;
   id: string;
   title?: string;
-  content: string | Content<T, K> | undefined;
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;
   author: string;
   date: string | Date | undefined;
   subtitle: string;
-  description?: string | undefined;
-  data?: Content<T, K> | Snapshot<Data<T>, Meta>,
+  description?: string;
+  data?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | Snapshot<Data<T>, Meta>,
   startDate: Date
 }
 

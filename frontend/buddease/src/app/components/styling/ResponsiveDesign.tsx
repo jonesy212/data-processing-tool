@@ -2,9 +2,9 @@
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import getAppPath from "@/config/appStructure/appPath";
-import BackendStructure from '@/server/database/BackendStructure';
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import getAppPath from "@/app/config/appStructure/appPath";
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";

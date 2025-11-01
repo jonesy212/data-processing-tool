@@ -1,7 +1,7 @@
 // advancedTransform.ts
 
 import SnapshotStore from "@/app/snapshotstore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from "..";
 
 // ✅ Keep this as a standalone utility function (not in TransformMethods)

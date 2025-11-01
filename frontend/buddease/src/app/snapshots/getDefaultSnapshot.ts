@@ -1,7 +1,7 @@
 // getDefaultSnapshot.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Helper function to create a default Snapshot instance
 function getDefaultSnapshot<

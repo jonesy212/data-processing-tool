@@ -6,7 +6,7 @@ import { BlogActions } from '@/blogs/BlogAction';
 import { EditorState } from 'draft-js';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import BlogAndContentEditor from '@/BlogAndContentEditor'; // Import the BlogAndContentEditor component
+import BlogAndContentEditor from '@/app/pages/blog/BlogAndContentEditor'; // Import the BlogAndContentEditor component
 
 const BlogAndContentEditorWrapper = async () => {
   const dispatch = useDispatch();

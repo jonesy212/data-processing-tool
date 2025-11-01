@@ -1,6 +1,7 @@
 // DynamicHooks.tsx
 import { loadDashboardState } from "@/app/api/ApiDashboard";
-import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import Web3Provider from '@/app/components/web3/Web3Provider';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { myPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
@@ -10,7 +11,7 @@ import { generatePrompt } from "@/app/prompts/promptGenerator";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import useFluence from "@/app/utils/web3/fluenceProtocoIntegration/src/fluence/useFuence";
 import useAqua from "@/app/utils/web3/useAqua";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useEffect, useState } from "react";
 import createDynamicHook from "./dynamicHookGenerator";
 
@@ -263,7 +264,14 @@ useAsyncHookLinker({
 const subscriptionServiceInstance = {
   subscriptions: new Map<string, { callback: (message: any) => void; usage: string }>(),
    // Add generic types <T, K> to the subscribers method
-   subscribers<T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
+  subscribers<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+  >(name: string, id: string): SubscriberCollection<T, K> {
     // Return an empty array or , K extends the subscribers as a placeholder
     return [];
   },   

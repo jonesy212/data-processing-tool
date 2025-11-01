@@ -4,20 +4,22 @@ import {
   createContentStateFromText,
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
-import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
 import {
   getFormattedOptions
 } from "@/app/documents/DocumentCreationUtils";
+import { DocumentPath } from "@/app/documents/DocumentPath";
+import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
@@ -32,9 +34,9 @@ import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { K, Meta, T, } from "@/app/models/data/dataStoreMethods";
+import { Phase } from '@/app/models/phases/Phase';
 import { Team } from "@/app/models/teams/Team";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Phase } from '@/app/models/phases/Phase';
 import PromptViewer from "@/app/prompts/PromptViewer";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
@@ -48,7 +50,7 @@ import { useAppDispatch } from "@/app/state/stores/useAppDispatch";
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import Clipboard from "@/app/ts/clipboard";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { DocumentPath, DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { getMetadataFromPlainText } from "@/app/utils/metadataUtils";
 import AccessHistory, {
   convertAccessRecordToHistory,
@@ -57,16 +59,16 @@ import AppVersionImpl from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { frontendStructure } from "@/config/appStructure/FrontendStructure";
-import getAppPath from "@/config/appStructure/appPath";
-import { saveDocumentToDatabase } from "@/config/database/updateDocumentInDatabase";
-import { useMetadata } from "@/config/useMetadata";
-import { FinancialReport } from "@/documents/documentation/report/Report";
-import BackendStructure, { backendStructure } from '@/server/database/BackendStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
+import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import getAppPath from "@/app/config/appStructure/appPath";
+import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { useMetadata } from "@/app/config/useMetadata";
+import { FinancialReport } from "@/app/documents/documentation/report/Report";
+import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
@@ -78,17 +80,17 @@ import {
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { versions } from "process";
-import React, { useState, version } from "react";
-import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
-import { ModifiedDate } from "./DocType";
-import { DocumentOptions } from "./DocumentOptions";
-import DocumentPermissions from "./DocumentPermissions";
+import React, { useState } from "react";
+import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import {
   DocumentAnimationOptions,
   DocumentBuilderProps,
-} from "./SharedDocumentProps";
-import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
+} from "@/app/documents/SharedDocumentProps";
+import { DocumentFormattingOptions } from "@/app/components/documents/DocumentFormattingOptionsComponent";
+import { ResearchReport, TechnicalReport } from "@/app/documentation/documents/report/Report";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -104,9 +106,6 @@ type ContentStructuredMetadata<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -133,7 +132,7 @@ interface DocumentData<
   
   // DocumentData specific properties
   id: string | number;
-  _id: string;
+  _id?: string;
   title: string;
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
@@ -151,7 +150,7 @@ interface DocumentData<
   status?: AllStatus;
   type?: AllTypes;
   locked?: boolean;
-  category?: string;
+  category?: string | Category;
   changes?: boolean | string | string[];
   timestamp?: Date;
   source?: string;
@@ -358,7 +357,14 @@ const initialOptions: DocumentOptions = {
       ],
     },
   },
-  setDocumentPhase: (
+  setDocumentPhase: <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
@@ -483,7 +489,7 @@ const getMetadataForContentState = <
         keywords: ["keyword1", "keyword2"],
         authors: ["author1", "author2"],
         contributors: [{
-
+          contributions: []
         }],
         publisher: "publisher1",
         copyright: "copyright1",
@@ -502,7 +508,7 @@ const getMetadataForContentState = <
         keywords: ["keyword3", "keyword4"],
         authors: ["author3", "author4"],
         contributors: [{
-          
+          contributions: []
         }],
         publisher: "publisher2",
         copyright: "copyright2",
@@ -530,7 +536,7 @@ interface ThunkAPI {
 export const saveDocument = createAsyncThunk(
   'document/saveDocument',
   async (
-    { documentData, content, }: { documentData: DocumentData<T, K>; content: string }, 
+    { documentData, content, }: { documentData: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; content: string }, 
     { rejectWithValue }: ThunkAPI
   ) => {
     try {
@@ -546,7 +552,14 @@ export const saveDocument = createAsyncThunk(
 
 // Extracting metadata
 // Convert ContentState to string for metadata extraction
-const extractMetadata = async (
+const extractMetadata = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   contentId: string,
   contentState: ContentState
 ): Promise<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {

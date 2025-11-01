@@ -12,7 +12,7 @@ import {
     processSnapshotData,
     updateSnapshotMetrics
 } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity } from '@/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { useNotification } from '@/context/NotificationContext';
 
 const { notify } = useNotification()

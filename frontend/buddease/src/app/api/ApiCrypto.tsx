@@ -3,8 +3,8 @@ import { NotificationTypeEnum, useNotification } from "@/app/context/Notificatio
 import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
 import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice';
-import NOTIFICATION_MESSAGES from '@/app/support/NotificationMessages';
-import { ApiActions } from '@/ApiActions';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { ApiActions } from '@/app/actions/ApiActions';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken'
 

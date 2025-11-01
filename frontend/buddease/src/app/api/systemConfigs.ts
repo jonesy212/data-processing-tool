@@ -1,41 +1,43 @@
 // systemConfigs.ts
-import LazyLoadScriptConfig from "@/app/components/configs/LazyLoadScriptConfig";
+import LazyLoadScriptConfig from "@/app/config/LazyLoadScriptConfig";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
-import { BackendConfig } from "@/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { FrontendConfig } from "@/config/FrontendConfig";
-import { DataVersions } from "@/configs/DataVersionsConfig";
-import BackendStructure from "@/server/database/BackendStructure";
-
+import { BackendConfig } from "@/app/config/BackendConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { FrontendConfig } from "@/app/config/FrontendConfig";
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import BackendStructure from "@/app/server/database/BackendStructure";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-
 import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
 
 
-
-export interface SystemConfigs {
+export interface SystemConfigs <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>{
   apiUrl: string;
   maxConnections: number;
   retryConfig: {
-    enabled: boolean;
+    enabled?: boolean;
     maxRetries: number;
     retryDelay: number;
   };
   aquaConfig: AquaConfig;
   storeConfig: ShoppingCenterConfig;
-  dataVersions: DataVersions<any, any, any, any, any, any>;
-  frontendStructure: FrontendStructure<any, any, any, any, any, any>;
+  dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendDocumentConfig: FrontendConfig;
   backendStructure: BackendStructure;
   backendDocumentConfig: BackendConfig;
   lazyLoadScriptConfig: LazyLoadScriptConfig;
 }
 
-
-type ConfigFrontendStructure = FrontendStructure<any, any, any, any, any, any>;
-
-
+type ConfigFrontendStructure = FrontendStructure<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
 
 
 export const createSystemConfigs = <

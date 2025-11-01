@@ -5,7 +5,7 @@ import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */

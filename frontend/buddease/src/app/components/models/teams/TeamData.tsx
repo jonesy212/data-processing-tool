@@ -1,3 +1,4 @@
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
@@ -7,8 +8,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { Project } from "@/app/models/projects/Project";
 import { Progress } from "@/app/tracker/ProgressBar";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { Member } from "./TeamMembers";
+import { Member } from "./Contributor";
 
 interface TeamData<
   T extends BaseDataEntity = BaseDataEntity,
@@ -18,7 +18,7 @@ interface TeamData<
   id: number | string;
   teamName: string
   description?: string;
-  members?: Member[];
+  members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projects: Project[];
   creationDate: Date;
   isActive: boolean;

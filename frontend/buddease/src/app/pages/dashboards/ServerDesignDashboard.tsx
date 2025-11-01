@@ -4,10 +4,10 @@ import { ApiConfig } from '@/app/services/ConfigurationService';
 
 import Documentation from "@/app/components/styling/Documentation";
 import BatchProcessingAndCache from "@/app/utils/BatchProcessingAndCache";
-import MainConfig from "@/config/MainConfig";
-import UserPreferences from "@/config/UserPreferences";
-import UserSettings from "@/config/UserSettings";
-import DataVersionsConfig from "@/configs/DataVersionsConfig";
+import MainConfig from "@/app/config/MainConfig";
+import UserPreferences from "@/app/config/UserPreferences";
+import UserSettings from "@/app/config/UserSettings";
+import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import React, { useEffect } from "react";
 
 interface ServerDesignDashboardProps extends DesignDashboardBaseProps {

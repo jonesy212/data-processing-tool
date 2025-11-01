@@ -1,10 +1,11 @@
+import { SnapshotsArray } from '@/app/snapshots';
 // TagEntity.ts
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 // --- Core Tag Type Definitions ---
 
 type TagEntity = BaseDataEntity;
@@ -78,18 +79,8 @@ type TagEntitySnapshotsArray = SnapshotsArray<
 >;
 
 
-export type { 
-  TagEntity,
-  TagK,
-  TagMeta,
-  TagAttachment,
-  TagIncludedFields,
-  TagExcludedFields,
-
-  TagBaseParams,
-  TagUnifiedMetadata,
-  TagStructuredMetadata,
-  TagEntityStore,
-  TagEntityStoreConfig,
-  TagEntitySnapshotsArray
-}
+export type {
+  TagAttachment, TagBaseParams, TagEntity, TagEntitySnapshotsArray, TagEntityStore,
+  TagEntityStoreConfig, TagExcludedFields, TagIncludedFields, TagK,
+  TagMeta, TagStructuredMetadata, TagUnifiedMetadata
+};

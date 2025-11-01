@@ -1,8 +1,8 @@
 // CommunityDetails.tsx
 import CommonDetails, { CommonData } from '@/app/models/CommonData'; // Import CommonData and its type
-import { CommunityData } from '@/models/CommunityData';
+import { CommunityData } from '@/app/models/CommunityData';
 import { Team } from '@/models/teams/Team';
-import { TeamMember } from '@/models/teams/TeamMembers';
+import { TeamMember } from '@/app/models/teams/TeamMembers';
 import React, { useState } from 'react';
 
 interface CommunityDetailsProps {
@@ -20,13 +20,17 @@ const CommunityDetails: React.FC<CommunityDetailsProps> = ({ community }) => {
   const commonData: CommonData<CommunityData> = {
     title: "Community Details",
     description: "Details of the community",
+    date: new Date(),
     data: community
   };
 
   return (
     <div>
       <h2>Community Details</h2>
-      <CommonDetails data={commonData} /> {/* Pass commonData as prop to CommonDetails */}
+      <CommonDetails
+        data={commonData}
+        details={}
+      /> {/* Pass commonData as prop to CommonDetails */}
       {/* Render additional details specific to the community */}
       <h3>Projects</h3>
       {community.projects.map((project: Project) => (

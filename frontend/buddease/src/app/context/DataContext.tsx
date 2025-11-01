@@ -6,7 +6,7 @@ import {
     VersionedData,
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from "@/app/snapshots";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { createContext, ReactNode, useContext } from "react";
 
 interface DataContextProps<

@@ -1,9 +1,8 @@
 // snapshotContainerUtils.ts
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import createSnapshot from '@/app/api/SnapshotApi';
-import { Attachment } from '@/app/documents/attachment/Attachment'
+import createSnapshot, * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category, generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { dataStoreMethods } from "@/app/models/data/dataStoreMethods";
 import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
@@ -15,12 +14,12 @@ import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigIn
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { store } from '@/app/state/stores/useAppDispatch';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { category, snapshotId } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { RealtimeDataItem } from '@/typings/realtimeTypes';
 import { payload } from '@/app/subscribers/Subscriber';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { category, snapshotId } from '@/app/utils/snapshotUtils';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { RealtimeDataItem } from '@/typings/realtimeTypes';
 import { callback } from 'chart.js/helpers';
 import { id } from 'ethers';
 import { snapshot } from '.';

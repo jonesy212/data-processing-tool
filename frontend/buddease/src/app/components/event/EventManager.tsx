@@ -10,13 +10,13 @@ import {
   selectEventLoading,
   selectEvents
 } from "@/app/state/redux/slices/EventSlice";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomEventExtension } from "../../events/BaseCustomEvent";
-import { defaultEventStore, EventStore } from "./EventStore";
+import { defaultEventStore, EventStore } from "@/app/events/EventStore";
 
 // Define the thunk actions
 const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
@@ -70,7 +70,7 @@ const EventManager: React.FC<EventManagerProps> = ({
   const snapshotId = UniqueIDGenerator.generateEventID();
   const storeId = useSecureStoreId()
 
-  const [eventStore, setEventStore] = useState<EventStore<CustomEventExtension, any> | undefine>(undefined);
+  const [eventStore, setEventStore] = useState<EventStore<CustomEventExtension, any> | undefined>(undefined);
 
   useEffect(() => {
     let isMounted = true;
@@ -128,13 +128,85 @@ const EventManager: React.FC<EventManagerProps> = ({
     [eventStore]
   );
 
+ // Define handleAddEvent inside EventManager
+  const handleAddEvent = useCallback((eventData: Partial<CustomMouseEvent>) => {
+    const newEvent: CustomMouseEvent = {
+      id: eventData.id || crypto.randomUUID(),
+      title: eventData.title || "New Event",
+      description: eventData.description || "",
+      startDate: eventData.startDate || new Date(),
+      endDate: eventData.endDate || new Date(),
+      startTime: eventData.startTime || new Date(),
+      endTime: eventData.endTime || new Date(),
+      // MouseEvent properties with defaults
+      altKey: eventData.altKey || false,
+      button: eventData.button || 0,
+      buttons: eventData.buttons || 0,
+      clientX: eventData.clientX || 0,
+      clientY: eventData.clientY || 0,
+      ctrlKey: eventData.ctrlKey || false,
+      metaKey: eventData.metaKey || false,
+      movementX: eventData.movementX || 0,
+      movementY: eventData.movementY || 0,
+      pageX: eventData.pageX || 0,
+      pageY: eventData.pageY || 0,
+      relatedTarget: eventData.relatedTarget || null,
+      screenX: eventData.screenX || 0,
+      screenY: eventData.screenY || 0,
+      shiftKey: eventData.shiftKey || false,
+      detail: eventData.detail || 0,
+      view: eventData.view || null,
+      // BaseSyntheticEvent properties
+      bubbles: false,
+      cancelBubble: false,
+      cancelable: true,
+      composed: false,
+      currentTarget: eventData.currentTarget || null,
+      defaultPrevented: false,
+      eventPhase: 0,
+      isTrusted: true,
+      returnValue: true,
+      srcElement: null,
+      target: eventData.target || null,
+      timeStamp: eventData.timeStamp || Date.now(),
+      type: eventData.type || "custom",
+      // Methods (you'll need to implement these)
+      composedPath: () => [],
+      initEvent: (type, bubbles, cancelable) => {},
+      preventDefault: () => {},
+      stopImmediatePropagation: () => {},
+      stopPropagation: () => {},
+      initCustomEvent: (type, bubbles, cancelable, detail) => {},
+      getAttribute: (name: string) => null,
+      _shouldPersist: false,
+      getModifierState: (key: string) => false,
+      preventDefaultEvent: (event: Event) => {},
+      stopImmediatePropagationEvent: (event: Event) => {},
+      addEventListener: (type, listener, options, useCapture) => {},
+      removeEventListener: (type, listener, options, useCapture) => {},
+      dispatchEvent: (event: Event) => true,
+      clipboardData: null,
+      settings: {},
+      // Event phase constants
+      NONE: 0,
+      CAPTURING_PHASE: 1,
+      AT_TARGET: 2,
+      BUBBLING_PHASE: 3,
+      customEvent: () => {}
+    };
+
+    // Add the event using your store
+    useCalendarManagerStore.addEvent(newEvent);
+    onEventAdded?.(newEvent);
+  }, [onEventAdded]);
+
   // Unsubscribe from events
   const unsubscribeFromEvent = useCallback(
     (
       event: string,
       callback: (snapshot: Snapshot<CustomEventExtension, any>) => void
     ) => {
-      eventStore.unsubscribe(event, callback);
+      eventStore?.unsubscribe(event, callback);
     },
     [eventStore]
   );
@@ -161,12 +233,47 @@ const EventManager: React.FC<EventManagerProps> = ({
             timeStamp: Date.now(),
             type: "custom",
             composedPath: () => [],
-            initEvent: (type, bubbles, cancelable) => {},
+            initEvent: (_type: string, _bubbles?: boolean, _cancelable?: boolean) => {
+              // Standard DOM initEvent implementation
+              this.type = _type;
+              this.bubbles = _bubbles || false;
+              this.cancelable = _cancelable || false;
+              this.timeStamp = Date.now();
+              
+              // Reset event phase and default prevention
+              this.eventPhase = Event.AT_TARGET;
+              this.defaultPrevented = false;
+              
+              // For synthetic events, ensure proper initialization
+              this.isTrusted = false; // Synthetic events are not trusted by default
+            },
             preventDefault: () => {},
             stopImmediatePropagation: () => {},
             stopPropagation: () => { },
             detail: {}, // Example detail data
-            initCustomEvent: (type, bubbles, cancelable, detail) => {},
+            initCustomEvent: (_type: string, _bubbles?: boolean, _cancelable?: boolean, _detail?: any) => {
+              // Initialize the custom event properties
+              this.type = _type;
+              this.bubbles = _bubbles || false;
+              this.cancelable = _cancelable || false;
+              this.detail = _detail || {};
+              this.timeStamp = Date.now();
+              
+              // Custom event specific initialization
+              this.eventPhase = Event.AT_TARGET;
+              this.defaultPrevented = false;
+              this.isTrusted = false;
+              
+              // Additional custom event setup if needed
+              if (_detail && typeof _detail === 'object') {
+                // Copy relevant properties from detail to the event object
+                if (_detail.id) this.id = _detail.id;
+                if (_detail.title) this.title = _detail.title;
+                if (_detail.description) this.description = _detail.description;
+                if (_detail.startDate) this.startDate = _detail.startDate;
+                if (_detail.endDate) this.endDate = _detail.endDate;
+              }
+            },
             NONE: 0,
             CAPTURING_PHASE: 1,
             AT_TARGET: 2,
@@ -181,7 +288,7 @@ const EventManager: React.FC<EventManagerProps> = ({
       <button onClick={handleRemoveAllEvents}>Remove All Events</button>
 
       <ul>
-        {events.map((event) => (
+        {events.map((event: CustomMouseEvent) => (
           <li key={event.id}>
             {event.title}
             <button onClick={() => handleRemoveEvent(event.id)}>Remove</button>

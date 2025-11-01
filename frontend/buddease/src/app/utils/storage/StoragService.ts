@@ -1,7 +1,7 @@
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { ArchiveMetadata } from '@/app/api/service/ArchiveService'
+import { ArchiveMetadata } from '@/app/api/service/ArchiveService';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 class StorageService {

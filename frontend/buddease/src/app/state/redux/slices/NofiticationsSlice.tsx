@@ -1,29 +1,54 @@
 // NotificationSlice.tsx
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
-import { BaseData } from '@/app/models/data/Data';
+import { PayloadAction } from "@reduxjs/toolkit";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { LogData } from '@/models/LogData';
-import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { Dispatch } from '@reduxjs/toolkit';
+import { NotificationEntity,
+NotificationK,
+  NotificationMeta,
+  NotificationAttachment,
+  NotificationExcludedFields,
+NotificationIncludedFields,
+NotificationSnapshotData,
+NotificationSnapshotStore,
+NotificationSnapshotWithCriteria,
+NotificationUnifiedMetadata} from '@/app/typings/entities/NotificationEntity'
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
- 
+
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
 
 export type TeamStatus = "active" | "inactive" | "onHold"; // Define TeamStatus enum
 
 export type DataStatus = "processing" | "completed" | "failed"; // Define DataStatus enum
 
-interface NotificationsState {
+interface NotificationsState<
+  T extends BaseDataEntity = NotificationEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = NotificationMeta,
+  AttachmentType extends Attachment = NotificationAttachment,
+  ExcludedFields extends keyof T = NotificationExcludedFields,
+  IncludedFields extends keyof T = NotificationIncludedFields
+> {
   notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
-const initialState: NotificationsState = {
-  notifications: [{} as NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>] 
+
+const initialState: NotificationsState<
+  NotificationEntity,
+  NotificationK,
+  NotificationMeta,
+  NotificationAttachment,
+  NotificationExcludedFields,
+  NotificationIncludedFields
+> = {
+  notifications: [{} as NotificationSnapshotData] 
 };
+
 
 // Helper function to dispatch notifications
 export const dispatchNotification = (
@@ -38,10 +63,9 @@ export const dispatchNotification = (
     dispatch(
       addNotification({
         id: actionType,
-        // createdAt: new Date(),
         date: new Date(),
         content: successMessage,
-        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
+        completionMessageLog: {} as WritableDraft<NotificationSnapshotData>, // Use your alias
         type: NotificationTypeEnum.INFO,
         message: successMessage,
         status: "tentative",
@@ -61,7 +85,7 @@ export const dispatchNotification = (
         participants: [],
         teamMemberId: '',
         meta: undefined,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+        getSnapshotStoreData: function (): Promise<NotificationSnapshotStore[]> { // Use your alias
           throw new Error('Function not implemented.');
         }
       })
@@ -73,7 +97,7 @@ export const dispatchNotification = (
         id: actionType,
         createdAt: new Date(),
         content: errorMessage + ". Payload received: " + JSON.stringify(payload),
-        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
+        completionMessageLog: {} as WritableDraft<NotificationSnapshotData>, // Use your alias
         type: NotificationTypeEnum.ERROR,
         message: errorMessage + ": " + error,
         status: "tentative",
@@ -94,16 +118,21 @@ export const dispatchNotification = (
         rsvpStatus: 'yes',
         participants: [],
         teamMemberId: '',
-        meta: {} as WritableDraft<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<Base<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, SnapshotWithCriteria<BaseData>>[]> {
+        meta: {} as WritableDraft<NotificationUnifiedMetadata>, // Use your alias
+        getSnapshotStoreData: function (): Promise<SnapshotStore<
+          NotificationSnapshotWithCriteria, // Use your alias
+          NotificationSnapshotWithCriteria, // Use your alias
+          NotificationMeta,
+          NotificationAttachment,
+          NotificationExcludedFields,
+          NotificationIncludedFields
+        >[]> {
           throw new Error('Function not implemented.');
         }
-      },
-      )
+      })
     );
   }
 };
-
 
 
 const notificationsSlice = createSlice({
@@ -127,3 +156,7 @@ export const selectNotifications = (state: { notifications: NotificationsState }
   state.notifications.notifications;
 
 export default notificationsSlice.reducer;
+
+
+
+

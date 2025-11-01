@@ -1,7 +1,7 @@
 // ToolbarEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ToolbarEndpoints {
+export interface ToolbarEndpoints extends EndpointCategoryConfig {
   fetchToolbarSize: EndpointConfig;
   updateToolbarSize: EndpointConfig;
 }

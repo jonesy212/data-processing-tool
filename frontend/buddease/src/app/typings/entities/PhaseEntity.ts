@@ -1,7 +1,10 @@
 // PhaseEntity.ts
+
+import { Dependency } from '@/app/models/realtime/IntegrationLogic';
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Phase } from '@/app/models/data/Phase';
+import { Phase } from '@/app/models/phases/Phase';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
@@ -9,7 +12,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/app/config/BaseConfig';
 import { PhaseStructuredMetadata } from '@/app/typings/phaseTypes'
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
@@ -161,7 +164,7 @@ export type {
   PhaseMilestone,
   PhaseEntity, 
   PhaseNotificationSettings, 
-  PhaseSettings 
+  PhaseSettings ,
   // Metadata types
   PhaseUnifiedMetadata, PhaseWithDetails, PublicPhaseProfile,
 

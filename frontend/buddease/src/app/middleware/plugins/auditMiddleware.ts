@@ -1,12 +1,16 @@
 // auditMiddleware.ts
-import { User } from '@/app/models/data/Data'; // Adjust import path as needed
-import { AuditEntry, BaseDataEntity, DefaultMeta } from '@/app/services/ConfigurationService';
-import { MiddlewareContext, MiddlewareFunction } from '@/types';
+import { User } from '@/app/users/User'; // Adjust import path as needed
+import { AuditEntry } from '@/app/config/MetaDataOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
+import { MiddlewareContext, MiddlewareFunction } from '@/app/middleware/types'
 export interface AuditMiddlewareConfig<
-  T extends BaseDataEntity = any,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   enabled: boolean;
   logLevel?: 'info' | 'debug' | 'warn' | 'error';
@@ -15,22 +19,25 @@ export interface AuditMiddlewareConfig<
   maxPayloadSize?: number;
   captureChanges?: boolean;
   auditService?: {
-    log: (entry: AuditEntry<T, K, Meta>) => Promise<void>;
+    log: (entry: AuditEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
   };
   // User context provider
-  getUserContext?: (context: MiddlewareContext<any, any, any, any, any, any>) => Promise<User | { id: string; name?: string }>;
+  getUserContext?: (context: MiddlewareContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<User | { id: string; name?: string }>;
   // Entity type resolver
   resolveEntityType?: (operation: string, payload: any) => string;
   // Change detector
-  detectChanges?: (operation: string, payload: any, result: any, context: MiddlewareContext<any, any, any, any, any, any>) => 
+  detectChanges?: (operation: string, payload: any, result: any, context: MiddlewareContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
     Promise<Partial<Record<keyof any, { from: any; to: any }>>>;
 }
 
 export const createAuditMiddleware = <
-  T extends BaseDataEntity = any,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
->(config: AuditMiddlewareConfig<T, K, Meta> = {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(config: AuditMiddlewareConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   enabled: true,
   logLevel: 'info',
   includePayload: true,
@@ -40,7 +47,7 @@ export const createAuditMiddleware = <
 }): MiddlewareFunction => {
   
   // Default implementations
-  const defaultGetUserContext = async (context: MiddlewareContext<any, any, any, any, any, any>): Promise<User | { id: string; name?: string }> => {
+  const defaultGetUserContext = async (context: MiddlewareContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<User | { id: string; name?: string }> => {
     return {
       id: context.userId || 'system',
       name: 'System User'
@@ -59,7 +66,7 @@ export const createAuditMiddleware = <
     operation: string, 
     payload: any, 
     result: any, 
-    context: MiddlewareContext<any, any, any, any, any, any>
+    context: MiddlewareContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Partial<Record<keyof any, { from: any; to: any }>>> => {
     const changes: Partial<Record<keyof any, { from: any; to: any }>> = {};
 

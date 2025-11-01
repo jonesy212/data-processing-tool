@@ -1,7 +1,7 @@
 //ActionGenerator.tsx
+import { TodoActions } from "@/app/actions/TodoActions";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
-import { TodoActions } from "@/app/todos/TodoActions";
 
 interface EntityAction<EntityData> extends PayloadAction<Draft<EntityData>> {
   id: string;

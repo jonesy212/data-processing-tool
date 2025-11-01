@@ -1,5 +1,5 @@
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
 import { TableStyle } from "./TableStyle";

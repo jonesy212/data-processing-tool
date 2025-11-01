@@ -1,18 +1,17 @@
 // layout.tsx
-
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from "@/app/models/data/Data";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AppSnapshot, AppStructuredMetadata } from '@/app/typings/entities/AppEntity';
-import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+import { AppSnapshot, AppEntity } from '@/app/typings/entities/AppEntity';
+import { AppUnifiedMetadata, AppStructuredMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import React from "react";
 import { useSnapshot } from "./context/SnapshotContext";
 import { version } from "./versions/Version";
@@ -134,11 +133,7 @@ export default function RootLayout({ children,
 }
 
 
-export const videoMetadataExample: UnifiedMetadata<
-  BaseData<any>,
-  BaseData<any>,
-  StructuredMetadata<BaseData<any>, BaseData<any>>
-> = {
+export const videoMetadataExample: AppUnifiedMetadata = {
   title: 'Next.js Video Metadata',
   description: 'Metadata with video details',
   projectId: 42,
@@ -157,14 +152,14 @@ export const videoMetadataExample: UnifiedMetadata<
     createdBy: "system",
     tags: [],
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>, Attachment, never, keyof BaseData<any>>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     isActive: true,
     config: {},
     permissions: [],
     customFields: [],
     versionData: null,
-    meta: {} as StructuredMetadata<BaseData<any>, BaseData<any>>,
-    events: {} as EventManager<BaseData<any>, BaseData<any>>,
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    events: {} as EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     metadata: {
       area: 'media',
       currentMeta: currentMeta,
@@ -228,6 +223,6 @@ export const videoMetadataExample: UnifiedMetadata<
     metadata: undefined,
     childIds: [],
     relatedData: [],
-    data: {} as InitializedData<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>, Attachment, never, keyof BaseData<any>>,
+    data: {} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   },
 };

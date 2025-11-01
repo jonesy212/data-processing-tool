@@ -1,10 +1,10 @@
 // DataProcessingService.ts
-import { endpoints } from '@/app/api/ApiEndpoints';
-import { Team } from "@/app/components/models/teams/Team";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { Team } from "@/app/models/teams/Team";
+import { MyDataType } from "@/app/config/MetaDataOptions";
 import { Project } from '@/app/models/projects/Project';
 import { TransactionData } from '@/app/payment/Transaction';
 import { UserData } from "@/app/users/User";
-import { MyDataType } from "@/config/MetaDataOptions";
 
 import { DataActions } from '@/app/actions/DataActions';
 import axiosInstance from '@/app/api/csrfToken';
@@ -59,7 +59,7 @@ type YourDataType = UserData<MyDataType> & {
   };
 };
 
-const AppDataActions = DataActions<YourDataType>();
+const AppDataActions = DataActions();
 
 
 // Ensure correct types are used in the data processing

@@ -1,7 +1,7 @@
 // CommunicationEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CommunicationEndpoints {
+export interface CommunicationEndpoints extends EndpointCategoryConfig {
   audioCall: EndpointConfig;
   videoCall: EndpointConfig;
   textChat: EndpointConfig;

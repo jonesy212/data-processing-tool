@@ -1,10 +1,10 @@
 // SnapshotStoreConfigComponent.tsx
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useEffect, useState } from 'react';
-import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface SnapshotStoreConfigComponentProps<
   T extends BaseDataEntity,

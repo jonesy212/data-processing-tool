@@ -2,9 +2,9 @@
 
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import ListGenerator from "@/app/generators/ListGenerator";
-import React, { useState } from "react";
-import { Comment } from '@/app/models/data/Data';
+import { Comment } from "@/app/models/comments/Comments";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import React, { useState } from "react";
 // Define different types of posts
 
 
@@ -47,6 +47,7 @@ const DiscussionForumComponent: React.FC = () => {
       ...newPost,
       id: postId,
       upvotes: 0,
+      timestamp: newPost.timestamp,
       date: newPost.updatedAt,
       title: newPost.title ?? "",
       content: newPost.content ?? "",
@@ -196,4 +197,5 @@ const DiscussionForumComponent: React.FC = () => {
 };
 
 export default DiscussionForumComponent;
-export type {  Post };
+export type { Post };
+

@@ -10,8 +10,8 @@ import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
 import { Snapshot } from "./Snapshot";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { BaseData } from '@/data/Data';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseData } from '@/app/models/data/Data'
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Example functions for fetching initial snapshot data and current data

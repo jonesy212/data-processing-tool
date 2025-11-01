@@ -1,7 +1,7 @@
 import { CalendarActions } from '@/app/actions/CalendarEventActions';
 import { UserActions } from "@/app/actions/UserActions";
-import { endpoints } from '@/app/api/ApiEndpoints';
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { fetchEventsRequest } from '@/app/calendar/CalendarEvent';
 import { User } from "@/app/users/User";
 import { useAuth } from "@/context/AuthContext";

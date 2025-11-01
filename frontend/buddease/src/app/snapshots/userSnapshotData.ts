@@ -1,9 +1,11 @@
 // userSnapshotData.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import useUserProfile from '@/app/hooks/useUserProfile';
 import UserRoles from '@/app/models/UserRoles';
 import { User, UserData } from '@/app/users/User';
 import MyPromise from '@/app/utils/MyPromise';
-import CommonDetails from '@/models/CommonDetails';
+import CommonDetails from '@/components/models/details/CommonDetails';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 
 export type UserProfile<
   T extends BaseDataEntity = UserEntity,

@@ -3,11 +3,11 @@ import { Communication } from '@/app/components/communications/CommunicationPage
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
 import { CollaborationOptions } from '@/app/components/interfaces/options/CollaborationOptions';
 import { Task } from '@/app/components/models/tasks/Task';
-import { Member } from '@/app/components/models/teams/TeamMembers';
+import { Member } from '@/app/components/models/teams/Contributor';
 import { User } from '@/app/components/users/User';
+import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { BaseData } from '@/app/models/data/Data';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
-import { BaseMetaDataOptions } from "@/config/MetaDataOptions";
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';
 
@@ -20,7 +20,7 @@ interface CollaborationData extends BaseData {
     communications?: Communication[]; // Specific to collaboration
     sharedResources?: Resource[]; // Specific to collaboration
     milestones?: Milestone[]; // Specific to collaboration
-    members?: Member[] | string[] | number[]; // Can be Member objects, or IDs as string/number
+    members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | string[] | number[]; // Can be Member objects, or IDs as string/number
     leader?: User | null; // Specific to collaboration
     collaborationOptions?: CollaborationOptions[]; // Specific collaboration settings/options
     isShared?: boolean; // Indicates if the data is shared across collaboration

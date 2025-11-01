@@ -1,12 +1,12 @@
 // GenerateDatabase.tsx
 import { NotificationType } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { databaseConfig, databaseQuery } from "@/config/DatabaseConfig";
+import { databaseConfig, databaseQuery } from "@/app/config/DatabaseConfig";
 import {
     NotificationTypeEnum,
     useNotification,
 } from "@/context/NotificationContext";
-import { databaseService } from "@/server/database/DatabaseOperations";
+import { databaseService } from "@/app/server/database/DatabaseOperations";
 import axios from "axios";
 import React, { useState } from "react";
 

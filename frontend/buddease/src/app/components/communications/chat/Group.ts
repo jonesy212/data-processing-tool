@@ -1,6 +1,6 @@
-import { BlogPost } from "@/app/pages/blog/BlogPost";
 import { Data } from '@/app/models/data/Data';
 import { Member } from "@/app/models/teams/TeamMembers";
+import { BlogPost } from "@/app/pages/blog/BlogPost";
 
 // Group.ts
 interface Group<T> extends Data{
@@ -8,7 +8,7 @@ interface Group<T> extends Data{
   groupName: string;
   items: BlogPost[];
   isPublic: boolean;
-  members: number[] |  string[] | Member[]; 
+  members: number[] |  string[] | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; 
 
 
   // Add more properties as needed

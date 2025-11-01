@@ -1,6 +1,6 @@
 // SenderTypes.ts
 
-import { Sender } from "@/app/communications/chat/Communication";
+import { Sender } from '@/app/components/communications/CommunicationPage';
 
 interface StudentSender extends Sender {
     studentDetails: {

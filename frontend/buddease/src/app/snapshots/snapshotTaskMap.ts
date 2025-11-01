@@ -1,12 +1,11 @@
 import { Snapshot } from ".";
-import { Data } from '@/app/models/data/Data';
-import { K, T } from "./SnapshotConfig";
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
 
 //snapshotTaskMap.ts
-const snapshotTasktMap = new Map<string, Snapshot<Task, Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>([
+const snapshotTasktMap = new Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>([
   [
     'subtask1',
-    {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    {} as Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
   ]
 ]);
 

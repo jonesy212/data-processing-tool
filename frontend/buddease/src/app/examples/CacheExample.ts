@@ -1,18 +1,18 @@
+// CacheExample.ts
 import { realtimeData } from '@/app/generators/GenerateCache';
-import { backendConfig } from '@/config/BackendConfig';
-import { frontendConfig } from '@/config/FrontendConfig';
-import { frontendStructure } from '@/config/appStructure/FrontendStructure';
-import { userSettings } from '@/config/UserSettings';
+import { backendConfig } from '@/app/config/BackendConfig';
+import { frontendConfig } from '@/app/config/FrontendConfig';
+import { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
+import { userSettings } from '@/app/config/UserSettings';
 import { versionHistory } from '@/app/versions/VersionData';
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
-// CacheExample.ts
 import { initializeAppData } from '@/app/api/service/ApiService';
 import useFilePath from "@/app/hooks/useFilePath";
 import { CacheReadOptions } from '@/app/libraries/cache/CacheResponse';
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
-import { authToken } from '@/server/auth/authToken';
+import { authToken } from '@/app/server/auth/authToken';
 import { useState } from "react";
 import { BorderStyle, DocumentSize } from "@/app/models/data/StatusType";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';

@@ -1,8 +1,8 @@
 // MainApplicationLogic.tsx
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import ExtendedAppLogic from "@/app/pages/ExtendedAppLogic";
 import OnboardingPage from "@/app/pages/onboarding/OnboardingPage";
 import UserJourneyManager from "@/app/pages/personas/UserJourney";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { useAuth } from "@/context/AuthContext";
 import React, { useState } from "react";
 

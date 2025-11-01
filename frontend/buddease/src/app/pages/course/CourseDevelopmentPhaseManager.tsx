@@ -1,12 +1,12 @@
-import { useAuth } from '@/app/components/auth/AuthContext';
-import generateTimeBasedCode from '@/app/components/models/realtime/TimeBasedCodeGenerator';
-import { fetchDataWithToken } from '@/app/components/users/ExternalApiAuth';
+import { useAuth } from '@/app/context/AuthContext';
+import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
+import { fetchDataWithToken } from '@/app/api/ExternalApiAuth'
 import { useNotification } from '@/app/context/NotificationContext';
 import { Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import CourseLearningPhase from '@/CourseLearningPhase';
-import CoursePlanningPhase from '@/CoursePlanningPhase';
-import CourseSetupPhase from '@/CourseSetupPhase';
+import CourseLearningPhase from '@/app/pages/CourseLearningPhase';
+import CoursePlanningPhase from '@/app/pages/CoursePlanningPhase';
+import CourseSetupPhase from '@/app/pages/CourseSetupPhase';
 import React, { useState } from 'react';
 
 

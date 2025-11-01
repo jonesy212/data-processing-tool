@@ -23,7 +23,11 @@ export const ToolbarActions = {
 
   
   // Feature Actions
-  toggleFeature: createAction<{ userId: User, feature: string, isEnabled: boolean }>("toggleFeature"),
+  toggleFeature: createAction<{ 
+    userId: User<any, any, any, any, any, any>, 
+    feature: string, 
+    isEnabled: boolean 
+  }>("toggleFeature"),
   enableFeature: createAction<string>("enableFeature"),
   disableFeature: createAction<string>("disableFeature"),
   // Visibility Actions
@@ -49,12 +53,12 @@ export const ToolbarActions = {
 
 
 
-  fetchParticipantData: createAction<{ userId: User, participantData: ParticipantData[] }>("fetchParticipantData"),
+  fetchParticipantData: createAction<{ userId: User<any, any, any, any, any, any>, participantData: ParticipantData[] }>("fetchParticipantData"),
 
   showParticipantManagementModal: createAction<boolean>("showParticipantManagementModal"),
   // Add more toolbar actions as needed
-  addParticipant: createAction<{ userId: User, participant: ParticipantData }>("addParticipant"),
-  removeParticipant: createAction<{ userId: User, participantId: string }>("removeParticipant"),
+  addParticipant: createAction<{ userId: User<any, any, any, any, any, any>, participant: ParticipantData }>("addParticipant"),
+  removeParticipant: createAction<{ userId: User<any, any, any, any, any, any>, participantId: string }>("removeParticipant"),
 };
 
 

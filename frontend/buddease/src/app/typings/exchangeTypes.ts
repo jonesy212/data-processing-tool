@@ -1,10 +1,10 @@
 // exchangeTypes.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Snapshot, SnapshotData, SnapshotWithCriteria } from "@/app/snapshots";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import SnapshotStore from '@/app/snapshots/SnapshotStore'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Exchange-specific entity types
 type ExchangeEntity = BaseDataEntity & {
@@ -55,18 +55,13 @@ type OrderBookEntity = BaseDataEntity & {
 type OrderBookSnapshot = Snapshot<OrderBookEntity, OrderBookEntity, DefaultMeta<OrderBookEntity, OrderBookEntity>, Attachment, DefaultExcludedFields<OrderBookEntity>, keyof OrderBookEntity>;
 
 export type {
-  ExchangeEntity, 
-  ExchangeK,
-  ExchangeMeta, 
-  ExchangeAttachment,
-  ExchangeExcludedFields,
-  ExchangeIncludedFields, 
-  ExchangeSnapshot,
+  ExchangeAttachment, ExchangeEntity, ExchangeExcludedFields,
+  ExchangeIncludedFields, ExchangeK,
+  ExchangeMeta, ExchangeRealtimeDataItem, ExchangeSnapshot,
   ExchangeSnapshotData,
   ExchangeSnapshotStore,
   ExchangeSubscriber,
   OrderBookEntity,
-  OrderBookSnapshot,
-  ExchangeRealtimeDataItem
+  OrderBookSnapshot
 };
 

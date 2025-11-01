@@ -1,39 +1,49 @@
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { SubscriberTypeEnum } from '@/app/components/models/data/StatusType';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { SubscriberTypeEnum } from '@/app/models/data/StatusType';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { options } from '@/app/documents/editing/DocumentBuilder';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { mapToSnapshotStore } from '@/app/mappings/mapToSnapshotStore';
+import { mapToSnapshotStore } from '@/app/snapshots/mappings/mapToSnapshotStore';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { category } from '@/app/snapshots/isValidFileCategory';
-import { Payload, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
+import {  Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Payload } from "@/app/server/database/Payload";
+import {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Callback } from '@/app/subscribeToSnapshotsImplementation';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { Subscriber } from '@/app/users/Subscriber';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { getCommunityEngagement, getMarketUpdates } from "@/app/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/app/utils/web3/applicationUtils";
-import { CustomHydrateResult } from '@/config//DocumentBuilderConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CustomHydrateResult } from '@/app/config/DocumentBuilderConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { CustomSnapshotData, data, SnapshotItem } from '.';
-import SnapshotStore, { SnapshotData, SubscriberCollection } from "./SnapshotStore";
+import SnapshotStore from "./SnapshotStore";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { SnapshotEntity,
+SnapshotK,
+SnapshotMeta,
+SnapshotAttachment,
+SnapshotExcludedFields,
+  SnapshotIncludedFields
+} from '@/app/typings/entities/SnapshotEntity'
 
-export const defaultDelegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+export const defaultDelegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = [];
 
 const defaultDataStoreMethods = <  T extends BaseDataEntity,
   K extends T = T,

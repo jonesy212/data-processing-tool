@@ -2,10 +2,10 @@ import { NotificationType, NotificationTypeEnum } from "@/app/context/Notificati
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { LogData } from "@/app/models/LogData";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import React from "react";
 
 type NotificationMessages = typeof NOTIFICATION_MESSAGES;

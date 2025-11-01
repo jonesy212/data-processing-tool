@@ -1,17 +1,16 @@
 // subscriptionMethods.ts
-import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { SnapshotsArray, } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot, } from "@/app/snapshots/Snapshot";
+import { SnapshotData, Snapshots } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { SnapshotEvent } from "@/app/typings/eventTypes";
 import { Subscriber } from "@/app/users/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import { Snapshot,  } from "@/app/snapshots/Snapshot";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { Snapshots } from '@/app/snapshots/SnapshotData';
-import { SnapshotsArray, } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 const NULL_KEY = "__null__";

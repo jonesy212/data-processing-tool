@@ -6,7 +6,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export function addDataSnapshot<
@@ -270,12 +270,12 @@ export function getAllKeys<
   storeId: number,
   snapshotId: string,
   categoryProperties: CategoryProperties | undefined,
-  snapshot: Snapshot<SnapshotUnion<T, K, Meta>, T> | null,
+  snapshot: Snapshot<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T> | null,
   timestamp: string | number | Date | undefined,
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   id: number,
-  snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta>, T, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T, Meta, ExcludedFields>,
   data: T,
   category?: Category
 ): Promise<string[] | undefined> {

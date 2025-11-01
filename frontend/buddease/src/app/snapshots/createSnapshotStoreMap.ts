@@ -1,10 +1,12 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
+import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot'
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig'
 import SnapshotStore from './SnapshotStore';
-import { createSnapshotStoreConfig } from './snapshotStoreConfigInstance';
+import { createBaseDataEntity } from '@/app/config/createBaseDataEntity'
 
 export function createSnapshotStoreMap<
   T extends BaseDataEntity,
@@ -43,7 +45,7 @@ export function createSnapshotStore<
     version: "1.0.0",
     config: createSnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     snapshots: createSnapshotMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
-    metadata: {} as Meta,
+    metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     
     // SnapshotStore methods
     addSnapshot: function(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {

@@ -1,9 +1,16 @@
 import DetailsListItem, { AllProperties } from "@/app/components/models/data/DetailsListItem";
 import { BaseData } from '@/app/models/data/Data';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Define a new type for DetailsItem with optional properties
-type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
+type DetailsItemCommon<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T , Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
 
 interface ListGeneratorProps<
   T extends BaseDataEntity,

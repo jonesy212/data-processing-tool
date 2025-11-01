@@ -1,29 +1,36 @@
 import { useDynamicComponents } from "@/app/DynamicComponentsContext";
 import DynamicNamingConventions from "@/app/DynamicNamingConventions";
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
-import SecureFieldManager from '@/app/components/security/SecureFieldManager';
+import SecureFieldManager from '@/app/server/security/SecureFieldManager';
 import { useFeatureContext } from "@/app/context/FeatureContext";
 import YourComponent, { YourComponentProps } from "@/app/hooks/YourComponent";
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
+import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import useNotificationManagerService from "@/app/services/NotificationService";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { User } from "@/app/users/User";
-import { UserRole } from "@/app/models/UserRole";
-import { AppConfig } from "@/config/AppConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { ApiConfig } from "@/services/ConfigurationService";
-import SecurityAudit from "@/server/security/SecurityAudit";
-import NotificationManager from '@/support/NotificationManager';
+import { AppConfig } from "@/app/config/AppConfig";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import SecurityAudit from "@/app/server/security/SecurityAudit";
+import { ApiConfig } from "@/app/services/ConfigurationService";
+import NotificationManager from '@/app/features/support/NotificationManager';
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";
 import { ConfigCard } from "./DashboardConfigCard";
 
-interface AdminDashboardProps extends YourComponentProps {
+interface AdminDashboardProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends YourComponentProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
   users: User[];
@@ -34,7 +41,7 @@ interface AdminDashboardProps extends YourComponentProps {
   config: AppConfig;
   updateConfig: (newConfig: Partial<AppConfig>) => void;
   fetchData: () => void;
-  data: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   theme: Theme;
   changeTheme: (newTheme: Theme) => void;
   navigateTo: (route: string) => void;

@@ -1,23 +1,23 @@
 // TaskSnapshotConfigBuilder.ts
 
-import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
-import { SnapshotConfigFactory } from '@/app/snapshots/SnapshotFactory';
-import { Task } from '@/app/models/tasks/Task';
-import { tasksConfig } from '@/config/endpoints/tasksConfig';
-import { Attachment } from '@/app/documents/attachments/Attachment';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { StoreMethods } from '@/app/models/tasks/StoreMethods';
-import { EventHandler } from '@/app/typings/eventTypes'
-import { EventStore } from '@/app/snapshots/EventStore';
-import { SnapshotUnion } from '@/app/snapshots/SnapshotUnion';
-import { SnapshotLifecycle } from '@/app/snapshots/SnapshotLifecycle';
-import { SnapshotMeta } from '@/app/snapshots/SnapshotMeta';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { Task } from '@/app/models/tasks/Task';
+import { EventStore } from '@/app/events/EventStore';
+import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotConfigFactory } from '@/app/config/factory/SnapshotFactory';
+import { SnapshotLifecycle } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { SnapshotMeta } from '@/app/snapshots/SnapshotMeta';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SnapshotManager } from '@/app/snapshots/SnapshotManager';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { tasksConfig } from '@/app/config/endpoints/tasksConfig';
 
 
 // =========================================

@@ -5,6 +5,8 @@ import { Task } from "@/app/models/tasks/Task";
 import { Project } from "@/app/models/projects/Project";
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { Todo } from "@/app/todos/Todo";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export function isTask<
   T extends BaseDataEntity,

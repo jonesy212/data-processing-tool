@@ -1,6 +1,6 @@
 // GeneratorsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface GeneratorsEndpoints {
+export interface GeneratorsEndpoints extends EndpointCategoryConfig {
   generateTransferToken: EndpointConfig;
 }

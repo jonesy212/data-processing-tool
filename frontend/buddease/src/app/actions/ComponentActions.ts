@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import Component from '@/app/actions/Component';
+import Component from '@/app/libraries/ui/components/Component'
 
 export const ComponentActions = {
   addComponent: createAction<{ name: string }>("addComponent"),

@@ -1,17 +1,25 @@
 // dataStoreMethods.ts
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { BaseMetaEntity,
+MetaEntity,
+MetaK,
+MetaMeta,
+MetaAttachment,
+MetaExcludedFields,
+MetaIncludedFields} from '@/app/typings/entities/MetaEntity'
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { addToSnapshotList, isBaseData, isSnapshot } from '@/app/utils/snapshotUtils';
-import { CustomHydrateResult } from "@/config/DocumentBuilderConfig";
+import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { StatusType } from "@/app/models/data/StatusType";
 import { convertToArray } from '@/app/snapshots/createSnapshotStoreOptions';
 import { SnapshotContainer } from "@/app/snapshots/SnapshotContainer";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -21,11 +29,10 @@ import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { Version } from "@/app/versions/Version";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { BaseData, Data } from "./Data";
-import { StatusType } from "@/app/models/data/StatusType";
 
 // Assuming T is defined in your context
 type T = BaseDataEntity; // Replace with the appropriate type if necessary
@@ -42,30 +49,28 @@ export type UserConfigData<
 > = 
   UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   
-  
-type Meta<T extends BaseDataEntity, K extends T> = StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 type ConvertMeta<
   U extends BaseDataEntity,
   K extends U = U,
-  MetaType extends DefaultMeta<U, K> = DefaultMeta<U, K>,
+  Meta extends DefaultMeta<U, K> = DefaultMeta<U, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof U = DefaultExcludedFields<U>,
   IncludedFields extends keyof U = keyof U
-> = MetaType extends StructuredMetadata<U, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>
-  ? StructuredMetadata<U, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>
+> = Meta extends StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ? StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   : never;
 
 type ConvertMetadata<
   U extends BaseDataEntity,
   K extends U = U,
-  MetaType extends DefaultMeta<U, K> = DefaultMeta<U, K>,
+  Meta extends DefaultMeta<U, K> = DefaultMeta<U, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof U = DefaultExcludedFields<U>,
   IncludedFields extends keyof U = keyof U
-> = MetaType extends UnifiedMetadata<U, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>
-  ? UnifiedMetadata<U, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>
-  : MetaType;
+> = Meta extends UnifiedMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ? UnifiedMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  : Meta;
 
 // Unified metadata type
 export type Metadata<
@@ -93,8 +98,8 @@ function createDefaultSnapshotWithCriteriaSafe<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  overrides?: Partial<SnapshotWithCriteria<T, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>>
-): SnapshotWithCriteria<T, K, MetaType, AttachmentType, ExcludedFields, IncludedFields> {
+  overrides?: Partial<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
   // Create base object with required properties
   const baseSnapshot = {
@@ -125,7 +130,7 @@ function createDefaultSnapshotWithCriteriaSafe<
     dataObject: overrides?.dataObject ?? ({} as T),
     initialState: overrides?.initialState ?? ({} as Partial<T>),
     originalData: overrides?.originalData ?? ({} as Partial<T>),
-    metadata: overrides?.metadata ?? (undefined as unknown as MetaType),
+    metadata: overrides?.metadata ?? (undefined as unknown as Meta),
     criteria: overrides?.criteria ?? { filters: [], limit: 0, offset: 0, sort: [] },
     analysisType: overrides?.analysisType ?? undefined,
     events: overrides?.events ?? undefined,
@@ -135,7 +140,7 @@ function createDefaultSnapshotWithCriteriaSafe<
     delegate: overrides?.delegate ?? {
       id: 'default-delegate',
       type: 'default',
-      metadata: undefined as unknown as MetaType,
+      metadata: undefined as unknown as Meta,
       methods: {}
     },
   };
@@ -144,7 +149,7 @@ function createDefaultSnapshotWithCriteriaSafe<
     ...baseSnapshot,
     ...complexObjects,
     ...overrides
-  } as SnapshotWithCriteria<T, K, MetaType, AttachmentType, ExcludedFields, IncludedFields>;
+  } as SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 
@@ -1338,7 +1343,7 @@ const dataStoreMethods = <
       snapshotId: string,
       category?: Category,
       categoryProperties: CategoryProperties | undefined,
-      snapshot: SnapshotUnion<T, K, Meta> | null,
+      snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,

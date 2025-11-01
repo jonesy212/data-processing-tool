@@ -1,7 +1,7 @@
 // DevEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfigurations';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DevEndpoints {
+export interface DevEndpoints extends EndpointCategoryConfig {
   getMockData: EndpointConfig;
   generateMockResponse: EndpointConfig;
   list: EndpointConfig;

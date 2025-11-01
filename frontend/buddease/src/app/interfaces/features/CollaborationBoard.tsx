@@ -1,10 +1,10 @@
 import React from 'react';
-import ProjectManagementSection from '@/ProjectManagementSection';
-import CommunicationSection from '@/CommunicationSection';
-import IdeationSection from '@/IdeationSection';
-import ContentCreationSection from '@/ContentCreationSection';
-import PlanningSection from '@/PlanningSection';
-import FileOrganizationSection from '@/FileOrganizationSection';
+import ProjectManagementSection from '@/app/interfaces/features/ProjectManagementSection'
+import CommunicationSection from '@/app/interfaces/features/CommunicationSection';
+import IdeationSection from '@/app/interfaces/features/IdeationSection';
+import ContentCreationSection from '@/app/interfaces/features/ContentCreationSection';
+import PlanningSection from '@/app/interfaces/features/PlanningSection';
+import FileOrganizationSection from '@/app/interfaces/features/FileOrganizationSection';
 import { ResponsiveDesign } from '@/app/components/styling/ResponsiveDesign';
 
 const CollaborationBoard = () => {

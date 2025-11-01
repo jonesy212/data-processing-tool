@@ -22,5 +22,32 @@ interface SocialLinks {
   gitlab?: string | null;
 }
 
-export type { SocialLinks };
+interface SocialAccount {
+  id: string;
+  provider: SocialProvider; // e.g., 'google', 'github', 'twitter', 'linkedin'
+  providerId: string; // The unique ID from the social provider
+  displayName?: string;
+  email?: string;
+  photoURL?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  expiresAt?: Date;
+  isConnected: boolean;
+  lastSynced?: Date;
+  profileData?: Record<string, any>; // Additional provider-specific data
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+type SocialProvider = 
+  | 'google' 
+  | 'github' 
+  | 'x' 
+  | 'linkedin' 
+  | 'facebook' 
+  | 'microsoft' 
+  | 'slack' 
+  | 'discord';
+
+export type { SocialAccount, SocialLinks, SocialProvider };
 

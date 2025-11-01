@@ -1,6 +1,6 @@
 // DocType.ts
-import { ParsedData } from "@/app/crypto/parseData";
-import { PDFData } from "@/components/documents/parsePDF";
+import { ParsedData } from '@/app/dataIntegration/parseData';
+import { PDFData } from "@/app/documents/parsePDF";
 
 interface ModifiedDate extends Date {
   value: Date | undefined;
@@ -32,4 +32,4 @@ interface YourDocxType extends DocData<any> {
 }
 
   
-  export type { DocData, ModifiedDate, ParsedData, YourDocxType, YourPDFType };
+  export type { DocData, ModifiedDate, YourDocxType, YourPDFType };

@@ -5,7 +5,7 @@ interface File {
 }
 
 
-export interface FileMetadata {
+interface FileMetadata {
   fileName: string;
   fileSize: number;
   size: number;

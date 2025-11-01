@@ -1,6 +1,6 @@
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ApiWebBaseEndpoints {
+export interface ApiWebBaseEndpoints extends EndpointCategoryConfig {
   login: EndpointConfig;
   logout: EndpointConfig;
   register: EndpointConfig,

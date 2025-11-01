@@ -29,9 +29,9 @@ import { generateSnapshotId } from "@/app/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/app/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/app/utils/web3/applicationUtils";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { NotificationType } from "@/context/NotificationContext";
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Subscription } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
@@ -40,14 +40,14 @@ import { SnapshotStoreReference } from "./SnapshotStoreReference";
 import { fetchData } from "@/app/api/ApiData";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
-    AppEntity, AppExcludedFields, AppK, AppMeta,
-    AppParams,
-    AppSnapshot,
-    AppSnapshotsArray,
-    AppSnapshotStoreConfig
+  AppEntity, AppExcludedFields, AppK, AppMeta,
+  AppParams,
+  AppSnapshot,
+  AppSnapshotsArray,
+  AppSnapshotStoreConfig
 } from '@/app/typings/entities/AppEntity';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";

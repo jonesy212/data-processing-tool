@@ -2,7 +2,7 @@
 // AuthorizationActions.ts
 
 // Import necessary actions from other action modules
-import { DataActions } from '@/app/projects/DataAnalysisPhase/DataActions';
+import { DataActions } from '@/app/actions/DataActions';
 import { createAction } from "@reduxjs/toolkit";
 // Import other action modules as needed
 

@@ -1,13 +1,12 @@
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 //Tracker.ts
 import { HighlightColor } from "@/app/components/styling/Palette";
-import { detectMetadataChanges } from "@/configs/metadata/detectMetadataChanges";
+import { detectMetadataChanges } from "@/app/config/metadata/detectMetadataChanges";
 import { useAuth } from "@/context/AuthContext";
 import path from "path";
 import { Phase } from '@/app/models/phases/Phase';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { User } from "@/app/users/User";
 import {
   fetchUsersSuccess,
@@ -15,12 +14,12 @@ import {
   updateFullName,
   updateProfilePicture,
   updateQuota,
-} from "@/app/users/UserSlice";
-import { BaseData } from "@/app/data/Data";
-import { K, T } from "@/app/data/dataStoreMethods";
-import FileData from "@/app/data/FileData";
-import FolderData from "@/app/data/FolderData";
-
+} from "@/app/state/redux/slices/UserSlice";
+import FileData from "@/app/models/data/FileData";
+import FolderData from "@/app/models/data/FolderData";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields} from '@/app/typings/entities/UserEntity'
 
 export interface SharedFormattingOptions {
   borderColor?: string;
@@ -32,14 +31,17 @@ export interface SharedFormattingOptions {
 }
 
 // Define a common interface for tracker properties
-interface CommonTrackerProps {
+interface CommonTrackerProps<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id?: string;  // Optional
   name?: string;  // Optional
-  phases?: Phase[];  // Optional
-  trackFileChanges?: (file: FileData<T>) => void;  // Optional
-  trackFolderChanges?: (folder: FolderData) => void;  // Optional
-  updateUserProfile?: (userData: User, dispatch: any) => void;  // Optional
-  sendNotification?: (notification: NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, userData: User) => void;  // Optional
+  phases?: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];  // Optional
   stroke?: Stroke;
   strokeColor?: string;
   strokeWidth?: number;
@@ -50,24 +52,26 @@ interface CommonTrackerProps {
   x?: number;
   y?: number;
   rotation?: number;
-
-
-   // Update appearance function with comprehensive properties
-   updateAppearance?: (
-     newStroke: Stroke,  // New stroke to be applied
-     newFillColor: string,  // New fill color to be applied
-     updates: {
-       stroke?: Stroke;  // Optional stroke updates
-       fillColor?: string;  // Optional fill color updates
-       borderColor?: string;  // Optional border color updates
-       textColor?: string;  // Optional text color updates
-       highlightColor?: HighlightColor;  // Optional highlight settings
-       backgroundColor?: string;  // Optional background color updates
-       fontSize?: string;  // Optional font size updates
-       fontFamily?: string;  // Optional font family updates
-     },
-     newBorderColor?: string,  // Optional new border color
-     newHighlightColor?: string, // Optional new highlight color
+  trackFileChanges?: (file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;  // Optional
+  trackFolderChanges?: (folder: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;  // Optional
+  updateUserProfile?: (userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, dispatch: any) => void;  // Optional
+  sendNotification?: (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;  // Optional
+  // Update appearance function with comprehensive properties
+  updateAppearance?: (
+    newStroke: Stroke,  // New stroke to be applied
+    newFillColor: string,  // New fill color to be applied
+    updates: {
+      stroke?: Stroke;  // Optional stroke updates
+      fillColor?: string;  // Optional fill color updates
+      borderColor?: string;  // Optional border color updates
+      textColor?: string;  // Optional text color updates
+      highlightColor?: HighlightColor;  // Optional highlight settings
+      backgroundColor?: string;  // Optional background color updates
+      fontSize?: string;  // Optional font size updates
+      fontFamily?: string;  // Optional font family updates
+    },
+    newBorderColor?: string,  // Optional new border color
+    newHighlightColor?: string, // Optional new highlight color
   ) => void;
   
   // todo verify above works original
@@ -84,15 +88,28 @@ interface CommonTrackerProps {
   // ) => void;
 }
 
-interface TrackerProps extends CommonTrackerProps {
+interface TrackerProps<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonTrackerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Additional properties specific to TrackerProps, if any
 }
 
-const userData = {} as User;
-class Tracker implements TrackerProps {
+class Tracker<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> implements TrackerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   name: string;
-  phases: Phase[];
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   stroke: Stroke;
   strokeWidth: number;
   fillColor: string;
@@ -112,9 +129,13 @@ class Tracker implements TrackerProps {
   
   formattingOptions?: SharedFormattingOptions // Optional formatting options
 
-    // Shared formatting properties
+  // Shared formatting properties
+  private userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-  constructor(id: string, name: string, phases: Phase[],
+  constructor(
+    id: string,
+    name: string,
+    phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     stroke: Stroke,
     strokeWidth: number,
     fillColor: string,
@@ -122,8 +143,8 @@ class Tracker implements TrackerProps {
     isFlippedY: boolean,
     x: number,
     y: number,
-        formattingOptions?: SharedFormattingOptions // Optional formatting options
-
+    formattingOptions?: SharedFormattingOptions, // Optional formatting options
+    userData?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     this.id = id;
     this.name = name;
@@ -139,10 +160,11 @@ class Tracker implements TrackerProps {
     if (formattingOptions) {
       Object.assign(this, formattingOptions);
     }
+    this.userData = userData || {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }
 
   // Method to track changes for a file
-  trackFileChanges<T extends BaseData<any>>(file: FileData<T>): void {
+  trackFileChanges(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     // Simulate tracking content changes
     const contentChanges = this.detectContentChanges(file);
 
@@ -160,7 +182,7 @@ class Tracker implements TrackerProps {
 
   }
 
-  detectContentChanges<T extends BaseData<any>>(file: FileData<T>): string {
+  detectContentChanges(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     // Dummy implementation: Check if the content length has changed
     const previousContentLength = file.previousContent?.length;
     const currentContentLength = file.currentContent?.length;
@@ -173,7 +195,7 @@ class Tracker implements TrackerProps {
   }
 
   // Function to track changes for a folder
-  async trackFolderChanges(fileLoader: FolderData): Promise<void> {
+  async trackFolderChanges(fileLoader: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
     try {
       // Make a fetch request to the folder URL to get its contents
       const folderPathUrl = new URL(fileLoader.folderPath, 'file://');
@@ -242,7 +264,7 @@ class Tracker implements TrackerProps {
   }
 
   // Function to track access history of the document
-  trackAccessHistory<T extends BaseData<T>>(file: FileData<T>): string {
+  trackAccessHistory(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     // Implement logic to track access history (actual implementation)
     const currentTime = new Date().toISOString();
     const accessRecord = `Accessed at: ${currentTime}`;
@@ -254,7 +276,7 @@ class Tracker implements TrackerProps {
     return `Access history recorded: ${accessRecord}`;
   }
 
-  getUserProfile(userData: User): void {
+  getUserProfile(userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     // Implement user profile logic here
     console.log("Getting user profile:", userData);
   }
@@ -298,7 +320,7 @@ class Tracker implements TrackerProps {
       updateProfilePicture(newData.profilePicture); // Dispatch action to update profile picture
     }
     if (newData.notification) {
-      this.sendNotification(newData.notification, userData); // Dispatch action to send notification
+      this.sendNotification(newData.notification, this.userData); // Dispatch action to send notification
     }
     if (newData.uploadQuota) {
       updateQuota(newData.uploadQuota); // Dispatch action to update upload quota
@@ -317,7 +339,7 @@ class Tracker implements TrackerProps {
   }
   
   
-  updateUserProfile(userData: User, dispatch: any): void {
+  updateUserProfile(userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, dispatch: any): void {
     // Preprocess fullName - check for empty string and handle it
     const fullNameToDispatch = userData.fullName && userData.fullName.trim() !== ""
       ? userData.fullName
@@ -331,7 +353,10 @@ class Tracker implements TrackerProps {
     }
   }
 
-  sendNotification(notification: NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, userData: User): void {
+  sendNotification(
+    notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 

@@ -2,17 +2,17 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
+import { LiveEvent } from "@refinedev/core";
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { category } from '@/app/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/app/utils/web3/applicationUtils';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 
@@ -24,8 +24,7 @@ interface SubscriptionPayload<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T,
-  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-= CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > {
   error: string | undefined;
   meta: {
@@ -89,7 +88,7 @@ interface SubscriptionPayload<
   updateProjectState: ( stateType: ProjectStateEnum,
     projectId: string,
     newState: Project,
-    content: Content<T, K>,
+    content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ,
     state: object
   ) => void;  // function to update project state
   logActivity: ({ activityType, action, userId, date, snapshotId, description, data, }: LogActivityParams) => void;  // function to log activities
@@ -140,12 +139,26 @@ export const SubscriptionActions = <
   IncludedFields extends keyof T = keyof T,
   S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >() => {
+  // Define payload types that match the generic structure
+  type UnsubscribePayload = {
+    subscriberId: string;
+    unsubscribeDetails: {
+      userId: string;
+      snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+      snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    };
+  };
+
   const actions = {
     // Action to add a new subscriber
     subscribe: createAction<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>("subscribe"),
 
-    // Action to remove a subscriber
-    unsubscribe: createAction<string>("unsubscribe"),
+    // Action to remove a subscriber with proper payload
+    unsubscribe: createAction<UnsubscribePayload>("unsubscribe"),
 
     // Action to fetch initial subscriptions
     fetchInitialSubscriptions: createAction("fetchInitialSubscriptions"),
@@ -155,16 +168,20 @@ export const SubscriptionActions = <
 
     // Action to handle failed subscription
     subscriptionFailure: createAction<string>("subscriptionFailure"),
+
+    // Action to handle live events
+    liveEventReceived: createAction<LiveEvent>("liveEventReceived"),
   };
 
   return actions as {
     subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>;
-    unsubscribe: ActionCreatorWithPayload<string>;
+    unsubscribe: ActionCreatorWithPayload<UnsubscribePayload>;
     fetchInitialSubscriptions: ActionCreatorWithoutPayload;
     subscriptionSuccess: ActionCreatorWithPayload<string>;
     subscriptionFailure: ActionCreatorWithPayload<string>;
+    liveEventReceived: ActionCreatorWithPayload<LiveEvent>;
   };
-}
+};
 
 
 export const createSubscriptionPayload = <

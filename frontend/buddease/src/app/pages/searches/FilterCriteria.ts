@@ -2,7 +2,7 @@
 import { extractCriteria } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import {
   CodingLanguageEnum,
@@ -45,17 +45,17 @@ import {
   DocumentTypeEnum
 } from "@/app/typings/documents";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMetadata } from '@/config/useMetadata';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMetadata } from '@/app/config/useMetadata';
 import { FetchOptions, fetchUserAreaDimensions } from '@/layouts/fetchUserAreaDimensions';
 import { Filter } from "@/pages/searches/Filter";
-import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { Pagination } from '@refinedev/core';
 
 
 
 interface FilterCriteria extends Timestamped, StatusTrackable {
-  description?: string | null | undefined;
+  description?: string | undefined;
   startDate?: Date;
   endDate?: Date;
   filters: Filter[];

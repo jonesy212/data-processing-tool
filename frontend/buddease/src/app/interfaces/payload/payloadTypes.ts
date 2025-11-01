@@ -6,7 +6,7 @@ import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta,
-} from '@/config/BaseConfig';
+} from '@/app/config/BaseConfig';
 import { BaseData } from "@/app/models/data/Data";
 import { NotificationType } from "@/context/NotificationContext";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";

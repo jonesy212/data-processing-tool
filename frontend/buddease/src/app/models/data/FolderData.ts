@@ -1,10 +1,10 @@
 // FolderData.ts
 
-import { ScheduledData } from '@/app/components/calendar/ScheduledData';
+import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
   
 import { User } from '@/app/users/User';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface FolderData<
   T extends BaseDataEntity,

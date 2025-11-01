@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-import UserSettings from '@/config//UserSettings';
+import UserSettings from '@/app/config/UserSettings';
 import useRealtimeData from '@/app/hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { DataVersions } from '@/configs/DataVersionsConfig';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import FrontendStructure from '@/configs/appStructure/FrontendStructure';
 import { CacheData } from '@/generators/GenerateCache';
 import { writeCache } from '@/ReadAndWriteCache';

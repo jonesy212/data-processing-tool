@@ -1,17 +1,40 @@
-import { BaseData } from '@/app/models/data/Data';
-import { sanitizeData } from "@/app/security/SanitizationFunctions";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-
 // getSecureSubscriberId.ts
-export const getSecureSubscriberId = <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions'
+import { Subscriber } from '@/app/subscribers/Subscriber';
+
+// For sanitizing strings specifically
+export const sanitizeString = (input: string): string => {
+  if (typeof input !== 'string') {
+    return String(input);
+  }
+  return input
+    .trim()
+    .replace(/[<>"'&]/g, '') // Remove potentially dangerous characters
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .substring(0, 255); // Limit length for safety
+};
+
+export const getSecureSubscriberId = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+>(
   subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): string | undefined => {
-  // Perform additional checks or sanitization if necessary
   if (!subscriber.id) {
     return undefined;
   }
 
-  // Sanitize subscriber ID if needed
-  return sanitizeData(subscriber.id);
+  // Convert to string if it's not already
+  const id = typeof subscriber.id === 'string' 
+    ? subscriber.id 
+    : String(subscriber.id);
+
+  // Use string-specific sanitizer
+  return sanitizeString(id);
 }

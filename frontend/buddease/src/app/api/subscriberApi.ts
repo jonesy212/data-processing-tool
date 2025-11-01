@@ -2,7 +2,7 @@
 import axiosInstance from "@/app/api/csrfToken";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Server-side API with ALL 6 generic parameters
 export const getSubscriberId = <
@@ -33,7 +33,7 @@ export const getSubscribersAPI = async <
   }
 };
 
-export const getSubscriberById = async <
+export const getSubscriberByIdAPI = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

@@ -1,14 +1,14 @@
 // Community.tsx
 import ProjectManagementApp from '@/app/projects/projectManagement/ProjectManagementApp';
 import ProjectManagementSimulation from '@/app/projects/projectManagement/ProjectManagementSimulation';
-import BlogComponent from '@/blogs/BlogComponent';
-import CommunityDetails from '@/CommunityDetails';
-import CommunityProjectsPage from '@/CommunityProjectsPage';
-import { Team } from '@/models/teams/Team';
-import { TeamMember } from '@/models/teams/TeamMembers';
-import { Product } from '@/products/Product';
-import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/web3/dAppAdapter/IPFS';
-import WeThePeoplePage from '@/WeThePeoplePage';
+import BlogComponent from '@/app/components/blogs/BlogComponent';
+import CommunityDetails from '@/app/components/community/CommunityDetails';
+import CommunityProjectsPage from '@/app/pages/community/CommunityProjectsPage';
+import { Team } from '@/app/models/teams/Team';
+import { TeamMember } from '@/app/models/teams/TeamMembers';
+import { Product } from '@/app/products/Product';
+import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/app/utils/web3/dAppAdapter/IPFS';
+import WeThePeoplePage from '@/app/components/community/WeThePeoplePage';
 import React from 'react';
 
 
@@ -60,6 +60,7 @@ const CommunityPulse: React.FC = () => {
 {/* Create and Display Blog Posts */}
 <BlogComponent
   title="Understanding City Government Positions"
+  subscriberId={'subscriber-id'}
   content={`
     Mayor: The chief executive officer of the city, responsible for overall administration and leadership.
     City Council: Elected representatives who make legislative decisions for the city. The council may consist of multiple members, each representing a specific district or at-large.

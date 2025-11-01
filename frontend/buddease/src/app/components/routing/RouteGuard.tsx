@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { fuzzyMatchEntities } from '@/FuzzyMatch';
+import { fuzzyMatchEntities } from '@/app/routing/FuzzyMatch';
 
 interface RouteGuardProps {
   children: React.ReactNode;

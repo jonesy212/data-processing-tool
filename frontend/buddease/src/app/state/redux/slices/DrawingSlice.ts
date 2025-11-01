@@ -26,9 +26,9 @@ import { Content } from "@/app/models/content/AddContent";
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { K } from '@/app/models/data/dataStoreMethods';
 import FileData from "@/app/models/data/FileData";
-import Milestone from "@/app/state/redux/slices/CalendarSlice";
+import Milestone from "@/app/typings/milestoneTypes";
 import { ContentItem } from "@/app/state/stores/ContentStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 type AppFileData = FileData<

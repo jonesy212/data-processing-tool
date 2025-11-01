@@ -1,7 +1,7 @@
 // ApiConfigEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ApiConfigEndpoints {
+export interface ApiConfigEndpoints extends EndpointCategoryConfig {
   getUserApiConfig: EndpointConfig;
   updateUserApiConfig: EndpointConfig;
   aquaConfig: EndpointConfig;

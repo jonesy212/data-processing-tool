@@ -22,7 +22,7 @@ import {
     updateProjectState,
 } from "@/app/utils/web3/applicationUtils";
 import React, { useEffect, useState } from "react";
-import { Subscription } from "./Subscription";
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { subscriptionServiceInstance } from "./SubscriptionService";
 
 interface Props {

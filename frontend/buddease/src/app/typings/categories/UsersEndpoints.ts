@@ -1,7 +1,7 @@
 // UsersEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface UsersEndpoints {
+export interface UsersEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (userId: number) => EndpointConfig;
   add: EndpointConfig;

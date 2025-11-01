@@ -1,7 +1,7 @@
 // ThemeEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ThemeEndpoints {
+export interface ThemeEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (themeId: number) => EndpointConfig;
   add: EndpointConfig;

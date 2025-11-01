@@ -1,6 +1,6 @@
 // generateCaptionsUtils.ts
 
-import { Video } from "@/app/state/stores/VideoStore";
+import { Video } from '@/app/typings/videoTypes/Video'
 // Function to generate captions for the video
 
 // Function to generate captions from spaCy extracted entities

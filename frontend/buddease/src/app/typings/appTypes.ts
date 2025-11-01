@@ -1,15 +1,28 @@
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Subscription } from "react-redux";
 import { Post } from "@/app/components/community/DiscussionForumComponent";
-import { BaseData } from '@/components/models/data/Data';
 import { Task } from "@/app/components/models/tasks/Task";
-import { Member } from "@/app/components/models/teams/TeamMembers";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Member } from '@/app/models/members/Member';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Subscription } from '@/app/subscriptions/Subscription';
 
-interface CommunicationType {
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from '@/app/config/BaseConfig';
+
+interface CommunicationType<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;
   title: string;
   timestamp: Date;
@@ -20,11 +33,11 @@ interface CommunicationType {
   data: any; // Example, replace with actual data structure
   value: number;
   key: string;
-  subscription: Subscription | null;
+  subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   config: any; // Example, replace with actual config type
   status: string;
   metadata: Record<string, any>;
-  delegate: SnapshotStoreConfig<Snapshot<any>, any>[]; // Example, replace with actual delegate type
+  delegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Example, replace with actual delegate type
   store: SnapshotStore<any> | null;
   state: Snapshot<any>[] | null;
   todoSnapshotId: string;
@@ -58,11 +71,18 @@ interface CollaborationOption {
 }
 
 
-interface CreationPhase<T extends BaseData<any>> {
+interface CreationPhase<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;
   phaseName: string;
   description: string;
-  tasks: Task<BaseData, BaseData, StructuredMetadata<BaseData, BaseData>>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   startDate: Date;
   endDate: Date;
   status: "active" | "inactive" | "completed";
@@ -89,11 +109,18 @@ interface CryptoInformation {
   timestamp: Date;
 }
 
-interface CryptoCommunity {
+interface CryptoCommunity<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  {
   id: string;
   name: string;
   description: string;
-  members: number | Member[];
+  members: number | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   posts: Post[];
 }
 

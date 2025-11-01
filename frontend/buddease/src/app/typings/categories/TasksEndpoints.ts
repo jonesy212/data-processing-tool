@@ -1,8 +1,8 @@
 // TasksEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
 
-export interface TasksEndpoints {
+export interface TasksEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (taskId: number) => EndpointConfig;
   add: EndpointConfig;

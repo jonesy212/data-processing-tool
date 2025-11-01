@@ -1,14 +1,7 @@
 // notification/NotificationActions.ts
 
+import { AppNotificationData } from '@/app/typings/entities/CommonEntities';
 import { createAction } from "@reduxjs/toolkit";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/typings/entities/AppEntity";
-import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta
-} from '@/config/BaseConfig';
-import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
 
 export const NotificationActions = {
   // Single notification actions

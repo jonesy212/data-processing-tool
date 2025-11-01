@@ -1,4 +1,4 @@
-import { FileMetadata } from '@/app/typings/file/FileManager';
+import FileMetadata from '@/app/components/models/file/FileManager';
 
 interface Attachment {
   id: string;

@@ -15,7 +15,7 @@ import {
   DocumentTypeEnum
 } from "@/app/typings/documents";
 import { Version } from "@/app/versions/Version";
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { ContentState } from "draft-js";
 import React, { useState } from "react";
 

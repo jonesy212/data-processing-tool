@@ -7,7 +7,7 @@ import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotWithCriteriaAsBase } from "@/app/snapshotstoreOptions";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 
 // validationMethods.ts
 export const ValidationMethods = {

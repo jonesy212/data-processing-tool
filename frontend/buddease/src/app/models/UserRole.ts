@@ -3,7 +3,7 @@ import { UserRoleEnum } from '@/app/models/UserRoles';
 
 // Assuming this is your UserRole interface and enum
 export interface UserRole {
-    roleType: string | UserRole | UserRoleEnum;
+    roleType: UserRoleEnum; 
     responsibilities: string[];
     permissions: string[];
     positions: { title: string; level: number }[]; // Define positions as an array of objects

@@ -4,7 +4,7 @@ import { Category } from "@/app/components/libraries/categories/generateCategory
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import SnapshotStore from "@/app/snapshotstore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { SnapshotContainer, SnapshotData } from "..";
 
 // src/methods/containerMethods.ts

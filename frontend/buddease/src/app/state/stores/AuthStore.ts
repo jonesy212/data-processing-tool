@@ -4,9 +4,9 @@ import { NFT } from "@/app/nft/NFT";
 import { Permission } from "@/app/permissions/Permission";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";
-import { UserPreferences } from "@/config/UserPreferences";
-import { hasTokenExpired } from "@/server/database/hasTokenExpired";
-import { verifyTokenScopes } from "@/server/database/JwtPayload";
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { hasTokenExpired } from "@/app/server/database/hasTokenExpired";
+import { verifyTokenScopes } from "@/app/server/database/JwtPayload";
 import * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
 import { makeAutoObservable } from "mobx";
 import { Scope } from "./Scopes";

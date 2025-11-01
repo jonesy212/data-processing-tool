@@ -1,7 +1,7 @@
 // ChatSettingsPanel.tsx
 import React from "react";
 
-import userSettings from '@/config//UserSettings';
+import userSettings from '@/app/config/UserSettings';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/context/AuthContext';
 import { UserData } from '@/app/users/User';

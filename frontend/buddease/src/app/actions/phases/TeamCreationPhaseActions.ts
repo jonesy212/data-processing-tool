@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import { TeamCreationPhase } from "./TeamCreation";
+import { TeamCreationPhase } from '@/app/components/phases/steps/TeamCreation'
 export const TeamCreationPhaseActions = {
     // General Team Creation Phase Actions
     updateTeamCreationPhase: createAction<{ id: number, newData: any }>("updateTeamCreationPhase"),

@@ -1,8 +1,10 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseType";
+import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { DocumentPhaseTypeEnum } from "@/app/components/documents/editing/DocumentPhaseType";
 import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Version } from '@/versions/Version';
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Comment } from "@/app/models/comments/Comments";
@@ -12,15 +14,14 @@ import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-;
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -44,10 +45,12 @@ const documentNotificationMessages: DocumentNotificationMessages = {
 
 // Define the type for the document content
 interface DocumentContent<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   eventId: string;
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -68,7 +71,9 @@ interface DocumentBase<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  SharedTimestamps
+{
   // Core identification
   id: string | number;
   _id: string;
@@ -77,7 +82,7 @@ interface DocumentBase<
   // Document metadata
   name?: string;
   title: string;
-  description?: string | null;
+  description?: string;
   
   // Versioning
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;

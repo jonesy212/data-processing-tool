@@ -1,9 +1,8 @@
 // CacheResponse.ts
-import { BaseDataRoot } from '@/config/BaseConfig';
+import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SupportedData } from '@/app/models/CommonData'
-import { EventAttendance } from '@/app/calendar/AttendancePrediction';
+import { SupportedData } from '@/app/models/CommonData';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CacheReadOptions<T extends BaseDataEntity = BaseDataRoot> = {
   filePath: string;
@@ -26,4 +25,4 @@ interface CacheResponse<
 }
 
 
-export type { CacheReadOptions, CacheResponse }
+export type { CacheReadOptions, CacheResponse };

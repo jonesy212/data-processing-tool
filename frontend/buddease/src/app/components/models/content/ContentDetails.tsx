@@ -1,9 +1,8 @@
 // ContentDetails.ts
-import React from "react";
-import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
-import EventDetailsComponent from '@/app/components/calendar/EventDetailsComponent';
+import { CalendarEventViewingDetailsProps } from "@/app/components/calendar/CalendarEventViewingDetails";
 import ListGenerator from "@/app/generators/ListGenerator";
-import { CalendarEventViewingDetailsProps } from "@/app/calendar/CalendarEventViewingDetails";
+import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
+import React from "react";
 
 interface ContentDetails {
   title: string;

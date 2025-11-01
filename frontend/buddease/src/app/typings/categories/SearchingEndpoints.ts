@@ -1,7 +1,7 @@
 // SearchingEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface SearchingEndpoints {
+export interface SearchingEndpoints extends EndpointCategoryConfig {
   searchMessages: EndpointConfig;
   searchDelegates: EndpointConfig;
   searchTasks: EndpointConfig;

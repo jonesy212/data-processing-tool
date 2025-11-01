@@ -1,6 +1,6 @@
 // DocumentFormattingOptionsComponent.tsx
-import React, { useState } from "react";
 import { BaseFormattingOptions } from "@/app/components/documents/ToolbarOptions";
+import React, { useState } from "react";
 
 interface DocumentFormattingOptions extends BaseFormattingOptions {
   fontSize?: number | string | undefined;

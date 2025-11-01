@@ -1,14 +1,13 @@
 // ExchangeData.ts
-import { ExchangeDataTypeEnum } from "@/app/crypto/exchangeIntegration";
+import { ExchangeDataTypeEnum } from "@/app/models/crypto/exchangeIntegration";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { SharedTimestamps } from "@/app/models/CommonData";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields } from "@/app/snapshots/ValidationRule";
-import { DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields } from "@/app/config/BaseConfig";
 
 export interface ExchangeData<
-  T extends BaseDataEntity = AppEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -22,8 +21,8 @@ export interface ExchangeData<
   volume: number;
   type: ExchangeDataTypeEnum;
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   liquidity: number;
   tokens: string[];
 }

@@ -1,7 +1,7 @@
 // CustomEvent.ts
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const ClipboardData = {
   onCopy: (content: string) => {},
@@ -66,7 +66,8 @@ export interface ExtendedCalendarEvent {
 interface CustomEventExtension<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
-> extends CustomEvent, SharedSnapshotEvent<T, K> {
+  > extends CustomEvent,
+  SharedSnapshotEvent<T, K> {
   id: string;
   title: string;
   dispatchEvent?(event: Event): boolean;

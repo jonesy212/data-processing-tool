@@ -1,7 +1,7 @@
 // CommunityInteractionEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CommunityInteractionEndpoints {
+export interface CommunityInteractionEndpoints extends EndpointCategoryConfig {
   createPost: EndpointConfig;
   getPosts: EndpointConfig;
   getPostDetails: (postId: string) => EndpointConfig;

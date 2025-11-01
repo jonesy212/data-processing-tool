@@ -1,27 +1,31 @@
 // Version.ts
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import metadata from '@/app/layout';
 import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
 import { useAuth } from "@/context/AuthContext";
-import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
-import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
       
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
+import FrontendStructure, { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { backendStructure } from '@/app/server/database/BackendStructure';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { sharedMetadata } from "@/config/metadata/MetadataStateManager";
-import { fetchUserAreaDimensions } from "@/config/MetaDataOptions";
-import { backendStructure } from '@/server/database/BackendStructure';
 
+import getAppPath from "@/app/config/appStructure/appPath";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { dataVersions } from "@/app/config/DocumentBuilderConfig";
+import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
@@ -36,10 +40,6 @@ import { data, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { User } from "@/app/users/User";
 import { fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
-import getAppPath from "@/config/appStructure/appPath";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { dataVersions } from "@/config/DocumentBuilderConfig";
-import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
 import { BumpVersionOptions } from "./BumpVersionOptions";
 import { VersionData, VersionHistory } from "./VersionData";
 
@@ -59,11 +59,18 @@ interface ExtendedVersion<
   userId: string;
 }
 
-interface BuildVersion {
+interface BuildVersion<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   data: Data<T> | undefined,
   baseData: BaseData<T> | undefined,
   backend: IBackendStructure | undefined,
-  frontend: FrontendStructure<T, K> | undefined
+  frontend: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
 }
 
 export interface Version<
@@ -122,7 +129,7 @@ export interface Version<
   // Data + structure
   data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   structureData: string;
   attachments?: AttachmentType[];
   excludedFields?: ExcludedFields[];
@@ -193,8 +200,8 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
       metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Fixed
       meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Fixed
-      mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>(), 
-      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+      mappedSnapshot: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), 
+      events: {} as EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       latestVersion,
       schema: {}
     },
@@ -546,10 +553,10 @@ class VersionImpl<
   content: string = "";
 
   url: string = "";
-  documentId: string | number = 0;
+  documentId: number = 0;
   userId: string = "";
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versions: Versions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  versions?: Versions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   
   // Add other properties as needed
   parentId: string | null;
@@ -577,14 +584,14 @@ class VersionImpl<
   published?: boolean;
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
-  deletedAt?: string | Date |  null = null;
+  deletedAt?: string | Date |  null;
   frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   getVersion?: () => Promise<string | null>;
 
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {}; // Define private property _structure
-  versionHistory: VersionHistory<T, K>; // Add version history property
+  versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Add version history property
 
   currentHash: string;
   structureData: string; // Data to be hashed
@@ -650,13 +657,14 @@ class VersionImpl<
       description: string;
       content: string;
       checksum: string;
-      versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+      versionData?: string | number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
       data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
       name: string;
       url: string;
       metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string | any;
       versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-      versionHistory: VersionHistory<T, K>;
+      versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       userId: string;
       documentId: string | number;
       parentId: string | null;
@@ -680,8 +688,8 @@ class VersionImpl<
       publishedAt: Date | null;
       releaseDate: string | Date;
       isDeleted: boolean;
-      publishedBy: User['username'] | null;
-      lastModifiedBy: User['username'] | null;
+      publishedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['username'] | null;
+      lastModifiedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['username'] | null;
       lastModifiedAt: string | Date | null;
       rootId: string | null;
       branchId: string | null;
@@ -689,12 +697,12 @@ class VersionImpl<
       lockedBy: string | null;
       lockedAt: Date | null;
       isArchived: boolean;
-      archivedBy: User['username'];
+      archivedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['username'];
       archivedAt: Date | null;
-      tags: TagsRecord;
+      tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       categories: Category[];
       permissions: DocumentPermissions;
-      collaborators: Member[];
+      collaborators: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       comments: Comment[];
       reactions: string[];
       changes: string[];
@@ -713,7 +721,7 @@ class VersionImpl<
       frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
       backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
     }
-  ): VersionImpl<T, K> {
+  ): VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
        // Convert documentId to string if it's a number
     const documentIdString = typeof versionInfo.documentId === 'number' 
       ? versionInfo.documentId.toString() 
@@ -791,254 +799,114 @@ class VersionImpl<
     });
   }
 
+  // ... all other properties with sensible defaults
 
-  constructor(versionInfo: {
-    id: string | number;
-    major: number;
-    minor: number;
-    patch: number;
-    versionNumber: string;
-    structureData: string;
-    buildVersions?: BuildVersion | undefined;
-    appVersion: string;
-    description: string;
-    content: string;
-    checksum: string;
-    versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-    data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-    name: string;
-    url: string;
-    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-    versionHistory: VersionHistory<T, K>;
-    userId: string;
-    documentId: string | number;
-    parentId: string | null;
-    parentType: string | null;
-    parentVersion: string;
-    parentTitle: string;
-    parentContent: string;
-    parentName: string;
-    parentUrl: string;
-    parentChecksum: string;
-    parentMetadata: {} | undefined;
-    parentAppVersion: string;
-    parentVersionNumber: string;
-    createdAt: string | Date | undefined
-    updatedAt: string | Date | undefined
-    deletedAt: string | Date | undefined
-    draft: boolean;
-    isActive: boolean;
-    isLatest: boolean;
-    isPublished: boolean;
-    publishedAt: Date | null;
-    releaseDate: string | Date | undefined;
+  constructor(init?: Partial<VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) {
+    if (init) {
+      Object.assign(this, init);
+    }
 
-    isDeleted: boolean,
-
-    publishedBy: User['username'] | null,
-    lastModifiedBy: User['username'] | null,
-    lastModifiedAt: string | Date | null,
-
-    rootId: string | null;
-    branchId: string | null;
-    isLocked: boolean;
-    lockedBy: string | null;
-    lockedAt: Date | null;
-    isArchived: boolean;
-    archivedBy: User['username']
-    archivedAt: Date | null;
-    tags: TagsRecord;
-    categories: Category[];
-    permissions: DocumentPermissions;
-    collaborators: Member[];
-    comments: Comment[];
-    reactions: string[];
-    changes: string[]
-    attachments?: AttachmentType[];
-    source: string;
-    status: string;
-    buildNumber: number | string;
-    workspaceId: string;
-    workspaceName: string;
-    workspaceType: string;
-    workspaceUrl: string;
-    workspaceViewers: string[];
-    workspaceAdmins: string[];
-    workspaceMembers: string[];
-
-    _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
-    frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
-    backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
-  }
-  ) {
-
-    // Initialize all properties using processedInfo
-    this.id = versionInfo.id ?? 0;
-    this.documentId = versionInfo.documentId;
-    this.versionData = versionInfo.versionData ?? null;
-    this.major = versionInfo.major ?? 0;
-    this.minor = versionInfo.minor ?? 0;
-    this.patch = versionInfo.patch ?? 0;
-    this.name = versionInfo.name ?? '';
-    this.content = versionInfo.content ?? '';
-    this.buildNumber = versionInfo.buildNumber ?? '0';
-    this.description = versionInfo.description ?? '';
-    
-    // Initialize other properties from versionInfo if provided
-    if (versionInfo.url) this.url = VersionImpl.ensureString(versionInfo.url);
-    if (versionInfo.userId) this.userId = VersionImpl.ensureString(versionInfo.userId);
-    if (versionInfo.appVersion) this.appVersion = VersionImpl.ensureString(versionInfo.appVersion);
-
-    this.structureData = versionInfo.structureData;
-    this.currentHash = '';
-    this.id = versionInfo.id = 0;
-    this.buildVersions = versionInfo.buildVersions;
+    // Handle computed properties and special logic
     this.versionNumber = `${this.major}.${this.minor}.${this.patch}`;
+    this.currentHash = this.computeCurrentHash();
+    
+    // Initialize metadata with defaults if not provided
+    if (!this.metadata) {
+      this.metadata = {
+        author: "",
+        timestamp: undefined,
+        revisionNotes: undefined, 
+        area: "defaultMetadata", 
+        metadataEntries: {}, 
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+        schema: {}
+      };
+    }
 
-    this.appVersion = versionInfo.appVersion;
-    this.versions = versionInfo.versions;
-    this.major = versionInfo.major;
-    this.minor = versionInfo.minor;
-    this.patch = versionInfo.patch;
-    this.metadata = versionInfo.metadata;
-    this.description = versionInfo.description;
-    this.buildNumber = versionInfo.buildNumber;
-    this.content = versionInfo.content;
-    this.checksum = versionInfo.checksum;
-    this.data = versionInfo.data;
-    this.name = versionInfo.name;
-    this.url = versionInfo.url;
-    // Initialize versionData with default values
-    this.versionHistory = versionInfo.versionHistory;
-    this.draft = versionInfo.draft;
-    this.userId = versionInfo.userId;
-    this.documentId = versionInfo.documentId;
-    this.parentId = versionInfo.parentId ? versionInfo.parentId : null;
-    this.parentType = versionInfo.parentType ? versionInfo.parentType : null;
-    this.parentVersion = versionInfo.parentVersion;
-    this.parentTitle = versionInfo.parentTitle;
-    this.parentContent = versionInfo.parentContent;
-    this.parentName = versionInfo.parentName;
-    this.parentUrl = versionInfo.parentUrl;
-    this.parentChecksum = versionInfo.parentChecksum;
-    this.parentMetadata = versionInfo.parentMetadata;
-    this.parentAppVersion = versionInfo.parentAppVersion;
-    this.parentVersionNumber = versionInfo.parentVersionNumber;
-    this.createdAt = versionInfo.createdAt;
-    this.updatedAt = versionInfo.updatedAt;
-    this.deletedAt = versionInfo.deletedAt;
-    this.isLatest = versionInfo.isLatest;
-    this.isActive = versionInfo.isActive;
-    this.isPublished = versionInfo.isPublished;
-    this.releaseDate = versionInfo.releaseDate;
-    this.publishedAt = versionInfo.publishedAt;
-    this.source = versionInfo.source;
-    this.status = versionInfo.status;
-    this.workspaceId = versionInfo.workspaceId;
-    this.workspaceName = versionInfo.workspaceName;
-    this.workspaceType = versionInfo.workspaceType;
-    this.workspaceUrl = versionInfo.workspaceUrl;
-    this.workspaceViewers = versionInfo.workspaceViewers;
-    this.workspaceAdmins = versionInfo.workspaceAdmins;
-    this.workspaceMembers = versionInfo.workspaceMembers;
-    const defaultMetadata = {
-      author: "",
-      timestamp: undefined,
-      revisionNotes: undefined, 
-      area: "defaultMetadata", 
-      metadataEntries: {}, 
-      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
-      schema: {}
-    };
-    this.metadata = versionInfo.metadata
-      ? { ...defaultMetadata, ...versionInfo.metadata }
-      : defaultMetadata;
-    this.versionData = {
-      id: versionInfo.id,
-      parentId: versionInfo.parentId ?? null, // Handle null parentId
-      name: versionInfo.name ?? '',
-      url: versionInfo.url ?? '',
-      versionNumber: versionInfo.versionNumber ?? '',
-      isActive: versionInfo.isArchived,
-      releaseDate: versionInfo.releaseDate 
-      ? (versionInfo.releaseDate instanceof Date ? versionInfo.releaseDate.toISOString() : versionInfo.releaseDate) 
-      : '',
-      buildVersions: versionInfo.buildVersions,
-      documentId: versionInfo.documentId ?? '',
-      draft: versionInfo.draft ?? false,
-      userId: versionInfo.userId ?? '',
-      content: versionInfo.content ?? '',
-      metadata: versionInfo.metadata ?? {
-        ...{ author: "", timestamp: undefined, revisionNotes: undefined }, 
-        ...versionInfo.metadata,
+    // Initialize versionData with proper structure
+    if (!this.versionData) {
+      this.versionData = this.createDefaultVersionData();
+    }
+
+    // Initialize structures
+    this.initializeStructures();
+  }
+
+  private computeCurrentHash(): string {
+    const mergedStructure = this.getStructure?.();
+    if (mergedStructure) {
+      return crypto
+        .createHash("sha256")
+        .update(JSON.stringify(mergedStructure))
+        .digest("hex");
+    }
+    return '';
+  }
+
+  private createDefaultVersionData(): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return {
+      id: this.id,
+      parentId: this.parentId ?? null,
+      name: this.name ?? '',
+      url: this.url ?? '',
+      versionNumber: this.versionNumber,
+      isActive: this.isActive ?? true,
+      releaseDate: this.releaseDate ? (this.releaseDate instanceof Date ? this.releaseDate.toISOString() : this.releaseDate) : '',
+      buildVersions: this.buildVersions,
+      documentId: this.documentId ?? '',
+      draft: this.draft ?? false,
+      userId: this.userId ?? '',
+      content: this.content ?? '',
+      metadata: this.metadata,
+      versionData: this.versionData,
+      major: this.major,
+      minor: this.minor,
+      patch: this.patch,
+      checksum: this.checksum ?? '',
+      parentType: this.parentType ?? '',
+      parentVersion: this.parentVersion ?? '',
+      parentTitle: this.parentTitle ?? '',
+      parentContent: this.parentContent ?? '',
+      parentName: this.parentName ?? '',
+      parentUrl: this.parentUrl ?? '',
+      parentChecksum: this.parentChecksum ?? '',
+      parentMetadata: this.parentMetadata ?? {},
+      parentAppVersion: this.parentAppVersion ?? '',
+      parentVersionNumber: this.parentVersionNumber ?? '',
+      isLatest: this.isLatest ?? true,
+      isPublished: this.isPublished ?? false,
+      publishedAt: this.publishedAt ?? null,
+      source: this.source ?? 'initial',
+      status: this.status ?? 'active',
+      version: {
+        major: this.major,
+        minor: this.minor,
+        patch: this.patch
       },
-      versionData: versionInfo.versionData ?? null,
-      major: versionInfo.major ?? null,
-      minor: versionInfo.minor ?? null,
-      patch: versionInfo.patch ?? null,
-
-      checksum: versionInfo.checksum ?? '',
-      parentType: versionInfo.parentType ?? '',
-      parentVersion: versionInfo.parentVersion ?? '',
-      parentTitle: versionInfo.parentTitle ?? '',
-      parentContent: versionInfo.parentContent ?? '',
-      parentName: versionInfo.parentName ?? '',
-      parentUrl: versionInfo.parentUrl ?? '',
-      parentChecksum: versionInfo.parentChecksum ?? '',
-      parentMetadata: versionInfo.parentMetadata ?? {},
-      parentAppVersion: versionInfo.parentAppVersion ?? '',
-      parentVersionNumber: versionInfo.parentVersionNumber ?? '',
-      isLatest: versionInfo.isLatest ?? true,
-      isPublished: versionInfo.isPublished ?? false,
-      publishedAt: versionInfo.publishedAt ?? null,
-      source: versionInfo.source ?? 'initial',
-      status: versionInfo.status ?? 'active',
-      version: versionInfo.versionNumber ?? {
-        major: versionInfo.major ?? 0,
-        minor: versionInfo.minor ?? 0,
-        patch: versionInfo.patch ?? 0
-      } as Version<any, any>,
-      timestamp: versionInfo.metadata?.timestamp ? versionInfo.metadata.timestamp.toString() : new Date().toString(),
-      user: 'unknown', // Replace with actual user if available
-      changes: versionInfo.changes ?? [],
-      comments: versionInfo.comments ?? [],
-      workspaceId: versionInfo.workspaceId ?? '',
-      workspaceName: versionInfo.workspaceName ?? '',
-      workspaceType: versionInfo.workspaceType ?? '',
-      workspaceUrl: versionInfo.workspaceUrl ?? '',
-      workspaceViewers: versionInfo.workspaceViewers ?? [],
-      workspaceAdmins: versionInfo.workspaceAdmins ?? [],
-      workspaceMembers: versionInfo.workspaceMembers ?? [],
-      createdAt: versionInfo.metadata?.timestamp ? versionInfo.metadata.timestamp.toString() : new Date().toString(),
+      timestamp: new Date().toString(),
+      user: 'unknown',
+      changes: this.changes ?? [],
+      comments: this.comments ?? [],
+      workspaceId: this.workspaceId ?? '',
+      workspaceName: this.workspaceName ?? '',
+      workspaceType: this.workspaceType ?? '',
+      workspaceUrl: this.workspaceUrl ?? '',
+      workspaceViewers: this.workspaceViewers ?? [],
+      workspaceAdmins: this.workspaceAdmins ?? [],
+      workspaceMembers: this.workspaceMembers ?? [],
+      createdAt: new Date().toString(),
       updatedAt: new Date().toString(),
-      _structure: versionInfo._structure,
-      frontendStructure: versionInfo.frontendStructure,
-      backendStructure: versionInfo.backendStructure ?? Promise.resolve([]),
-      data: versionInfo.data ?? [],
-      backend: versionInfo.versions?.backend ?? undefined,
-      frontend: versionInfo.versions?.frontend ?? undefined,
-      history: versionInfo.versions?.history ?? undefined
+      _structure: this._structure,
+      frontendStructure: this.frontendStructure,
+      backendStructure: this.backendStructure ?? Promise.resolve([]),
+      data: this.data ?? [],
+      backend: this.versions?.backend,
+      frontend: this.versions?.frontend,
+      history: this.versions?.history
     };
+  }
 
-    this.getVersion = async (): Promise<string | null> => {
-      // Access getStructure using optional chaining
-      const mergedStructure = this.getStructure?.();
-
-      // Check if mergedStructure is not undefined or null
-      if (mergedStructure) {
-        // Generate hash of the merged structure
-        const hash = crypto
-          .createHash("sha256")
-          .update(JSON.stringify(mergedStructure))
-          .digest("hex");
-
-        return hash;
-      }
-
-      return null;
-    };
-
+  private initializeStructures(): void {
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
@@ -1049,6 +917,18 @@ class VersionImpl<
     );
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
+
+  async getVersion(): Promise<string | null> {
+    const mergedStructure = this.getStructure?.();
+    if (mergedStructure) {
+      return crypto
+        .createHash("sha256")
+        .update(JSON.stringify(mergedStructure))
+        .digest("hex");
+    }
+    return null;
+  }
+}
   
   private async generateStructureHash?(): Promise<string> {
     // Wait for the resolution of the promise
@@ -1195,7 +1075,7 @@ class VersionImpl<
       timestamp: string | Date | undefined
     };
     url: string;
-    versionHistory: VersionHistory<T, K>;
+    versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     draft: boolean;
     userId: string;
     documentId: string | number;
@@ -1244,7 +1124,7 @@ class VersionImpl<
     tags: TagsRecord,
     categories: Category[],
     permissions: DocumentPermissions,
-    collaborators: Member[],
+    collaborators: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     comments: Comment[],
     reactions: string[],
     changes: string[],
@@ -1279,7 +1159,7 @@ class VersionImpl<
       ...versionInfo
     };
 
-    return new VersionImpl<T, K>(processedInfo);
+    return new VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> (processedInfo);
   }
   // Method to get version data
 async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
@@ -1376,7 +1256,7 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
     };
 
     // Function to create a Version object from ExtendedVersion data
-    const createVersion = async (versionData: ExtendedVersion): Promise<VersionImpl<T, K>> => {
+    const createVersion = async (versionData: ExtendedVersion): Promise<VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> > => {
       
       const {
         content,
@@ -1445,7 +1325,7 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
       const docPermissions = new DocumentPermissions(true, false);
       const baseData: BaseData = createBaseData({ ...snapshotData });
       
-      const version: VersionImpl<T, K> = new VersionImpl<T, K>({
+      const version: VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  = new VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ({
         content,
         metadata,
         checksum,
@@ -2098,6 +1978,7 @@ const devVersion: DevVersion<T, K, Meta, AttachmentType, ExcludedFields, Include
   pullRequestAutoMergeBy: 'GitHub Actions'
 };
 
+export default VersionImpl
 export { createVersion, devVersion, version, versionData };
-export type { BuildVersion, Version, VersionImpl, Versions };
+export type { BuildVersion, Version, Versions };
 

@@ -1,4 +1,8 @@
 // DynamicEventHandlerService.ts
+import { CustomMouseEvent } from '@/app/services/EventService'
+import SnapshotList from "@/app/snapshots/SnapshotList";
+import { SyntheticEvent } from "react";
+
 
 const DynamicEventHandlerService = ({
   handleSorting,

@@ -1,8 +1,8 @@
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { updateDocumentInDatabase } from "@/config/database/updateDocumentInDatabase";
-import { DocumentStatusEnum } from "@/server/ServerDocumentGenerator";
+import { updateDocumentInDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { DocumentStatusEnum } from "@/app/server/ServerDocumentGenerator";
 import React, { useState } from "react";
 
 

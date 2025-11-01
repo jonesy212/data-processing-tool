@@ -21,6 +21,8 @@ import useNotificationManagerService from "@/app/services/NotificationService";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 startVoiceRecognition;

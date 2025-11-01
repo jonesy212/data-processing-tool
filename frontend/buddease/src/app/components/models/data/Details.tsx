@@ -15,11 +15,11 @@ import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
-import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity'
 
 export type DataAndEventDetails =
   | Data<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
@@ -37,10 +37,10 @@ interface SharedDetails<
           SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   participants: Participant[];
   uploadedAt: Date;
-  phase: Phase<any, any, any, any, any, any>;
+  phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   phaseName: string;
   fakeData?: FakeData;
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[];
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | CustomComment)[];
   isCompleted: boolean;
   currentMeta?: Meta;
   previousMeta?: Meta;
@@ -48,11 +48,14 @@ interface SharedDetails<
 }
 
 interface DetailsProps<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  data?: CommonData<T, K, Meta>; // Accept both CommonData and specific data type
+  data?: CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Accept both CommonData and specific data type
   details: DetailsItemExtended<T>;
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;

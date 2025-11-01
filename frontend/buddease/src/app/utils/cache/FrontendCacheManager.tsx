@@ -1,4 +1,4 @@
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 
 
 // FrontendCacheManager.ts

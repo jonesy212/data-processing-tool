@@ -2,9 +2,9 @@ import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta
-} from '@/config/BaseConfig';
+} from '@/app/config/BaseConfig';
 import React, { useCallback, useMemo, useState } from 'react';
-import { VersionMetadata } from '@/config/MetaDataOptions'
+import { VersionMetadata } from '@/app/config/MetaDataOptions'
 import { Attachment } from '@/app/documents/attachment/Attachment'
 
 interface SnapshotVersion<T extends BaseDataEntity> {

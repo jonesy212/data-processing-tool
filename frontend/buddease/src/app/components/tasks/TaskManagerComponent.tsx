@@ -6,6 +6,8 @@ import { UIActions } from "@/app/actions/UIActions";
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { handleTaskApiErrorAndNotify } from "@/app/api/TasksApi";
 import { brandingSettings } from "@/app/branding/BrandingSettings";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import updateUI from "@/app/documents/editing/updateUI";
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
@@ -33,8 +35,6 @@ import { VideoData } from '@/app/typings/videoTypes/Video';
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface TaskAssignmentProps<
   T extends BaseDataEntity = BaseDataRoot,
@@ -150,7 +150,7 @@ const TaskManagerComponent = <
       videoThumbnail: "",
       videoDuration: 0,
       videoUrl: "",
-      previouslyAssignedTo: [] as Member[],
+      previouslyAssignedTo: [] as Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {
@@ -194,7 +194,7 @@ const TaskManagerComponent = <
       videoThumbnail: "",
       videoDuration: 0,
       videoUrl: "",
-      previouslyAssignedTo: [] as Member[],
+      previouslyAssignedTo: [] as Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {
@@ -238,7 +238,7 @@ const TaskManagerComponent = <
       videoThumbnail: "",
       videoDuration: 0,
       videoUrl: "",
-      previouslyAssignedTo: [] as Member[],
+      previouslyAssignedTo: [] as Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       [Symbol.iterator]: () => {
         // Add more tasks as needed
         return {

@@ -9,7 +9,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Logger } from "./activityLogger";
 import { ProjectConversionResult, ProjectConverter } from "./projectConverter";
 

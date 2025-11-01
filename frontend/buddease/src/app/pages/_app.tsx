@@ -12,7 +12,6 @@ import ChartComponent from "@/app/components/charts/ChartComponent";
 import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import Toolbar from "@/app/components/documents/Toolbar";
-import { LogData } from "@/app/components/models/LogData";
 import ContentItemComponent from "@/app/components/models/content/ContentItem";
 import OnboardingComponent from "@/app/components/onboarding/OnboardingComponent";
 import { AuthProvider } from "@/app/context/AuthContext";
@@ -24,15 +23,17 @@ import generateAppTree, { AppTree } from "@/app/generators/generateAppTree";
 import ChildComponent from "@/app/hooks/ChildComponent";
 import { handleLogin } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import {
-  ThemeConfigProvider,
-  useThemeConfig,
+    ThemeConfigProvider,
+    useThemeConfig,
 } from "@/app/hooks/userInterface/ThemeConfigContext";
 import {
-  default as ThemeCustomization,
-  default as defaultThemeConfig,
+    default as ThemeCustomization,
+    default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { LogData } from "@/app/models/LogData";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
@@ -40,20 +41,19 @@ import { DynamicPromptProvider } from "@/app/prompts/DynamicPromptContext";
 import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
 import ErrorHandler from "@/app/shared/ErrorHandler";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
 import { DocumentTree } from "@/app/users/User";
 import {
-  NotificationProvider,
-  NotificationTypeEnum,
+    NotificationProvider,
+    NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import {
-  Route,
-  Router,
-  useLocation,
-  useNavigate,
-  useSearchParams,
+    Route,
+    Router,
+    useLocation,
+    useNavigate,
+    useSearchParams,
 } from "react-router-dom";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
@@ -71,6 +71,7 @@ import DetermineFileType from "@/app/components/configs/DetermineFileType";
 import FilePreview from "@/app/components/documents/FilePreview";
 import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
 import StepComponent from "@/app/components/phases/steps/StepComponent";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { NotificationType } from "@/app/context/NotificationContext";
 import StepProvider, { useStepContext } from "@/app/context/StepContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -82,7 +83,6 @@ import { RouteGuard } from "@/app/routing/RouteGuard";
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import FormBuilder from "./forms/formBuilder/FormBuilder";

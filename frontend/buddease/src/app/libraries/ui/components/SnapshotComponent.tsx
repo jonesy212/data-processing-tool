@@ -17,7 +17,7 @@ import {
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useEffect, useState } from "react";
 

@@ -1,9 +1,9 @@
 import { categorizeNews } from "@/app/components/community/articleKeywords";
 import { allCategories } from "@/app/models/data/DataStructureCategories";
-import { generateValidationRulesCode } from "@/server/security/validationRulesCode";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { generateValidationRulesCode } from "@/app/server/security/validationRulesCode";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { BaseDataRoot } from '@/config/BaseConfig'
+import { BaseDataRoot } from '@/app/config/BaseConfig'
 
 type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
 

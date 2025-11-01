@@ -1,10 +1,13 @@
 // RootStores.ts
+import { UndoRedoStore } from '@/app/state/stores/UndoRedoStore'
+import { SettingsStore } from '@/app/state/stores/SettingsStore'
+import { NotificationStore } from '@/app/state/stores/NotificationStore'
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
 import { EventStore } from '@/app/events/EventStore';
 import useUIStore from '@/app/libraries/ui/useUIStore';
 import { RealTimeDataStore } from '@/app/models/realtime/RealTimeDataStore';
 import { DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/CalendarManagerStore';
+import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
 import { AppStore } from '@/app/state/stores/AppStore';
 import { AuthorizationStore, useAuthorizationStore } from '@/app/state/stores/AuthorizationStore';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
@@ -22,10 +25,12 @@ import useTrackerStore, { TrackerStore } from '@/app/state/stores/TrackerStore';
 import UIStore from '@/app/state/stores/UIStore';
 import { UserStore, userManagerStore } from '@/app/state/stores/UserStore';
 import useVideoStore, { VideoStore } from '@/app/state/stores/VideoStore';
-import { CalendarActionPayload, CalendarActionType } from '@/server/database/CalendarActionPayload';
-import { AuthStore, useAuthStore } from '@/state/storesAuthStore';
+import { CalendarActionPayload, CalendarActionType } from '@/app/server/database/CalendarActionPayload';
+import { AuthStore, useAuthStore } from '@/app/state/stores/AuthStore';
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
+ import { Attachment } from '@/app/documents/attachment/Attachment';
+ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -34,19 +39,18 @@ export interface Dispatchable {
 
 export type RootState = MobXRootState;
 
-export interface MobXRootState {
-  appStore: AppStore;
-
-
-   // Add missing stores here
-  trackerStore: TrackerStore;
-  taskManagerStore: TaskManagerStore;
+export interface MobXRootState<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  appStore: AppStore
+  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
-  todoStore: TodoManagerStore;
-  teamStore: TeamManagerStore<T, K, Meta>;
-  userStore: UserStore;
-
   browserCheckStore: BrowserCheckStore
   trackerStore: TrackerStore
   toolbarStore: ToolbarStore;
@@ -55,26 +59,22 @@ export interface MobXRootState {
   iconStore: IconStore;
   authorizationStore: AuthorizationStore;
   projectStore: ProjectManagerStore;
-  taskStore: TaskManagerStore;
-  
-  trackerStore: TrackerStore;
+  taskStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   userStore: UserStore;
-  teamStore: TeamManagerStore<T, K, Meta>;
+  teamStore: TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   projectOwner: ProjectManagerStore;
-  dataStore: DataStore<T, K>;
-  dataAnalysisStore: DataAna;
-  calendarStore: CalendarManagerStore;
-  todoStore: TodoManagerStore;
-  documentStore: DocumentStore;
-  
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataAnalysisStore: DataAnalysisStore;
+  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentStore: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   apiStore: ApiManagerStore;
   realtimeStore: RealtimeManagerStore;
-  eventStore: EventManagerStore;
-  collaborationStore: CollaborationManagerStore;
+  eventStore: EventManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  collaborationStore: CollaborationStore;
   entityStore: EntityManagerStore;
-  notificationStore: NotificationManagerStore;
-  settingsStore: SettingsManagerStore;
-  videoStore: VideoStore;
+  notificationStore: NotificationStore;
+  settingsStore: SettingsStore;
+  videoStore: VideoStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   randomWalkStore: RandomWalkManagerStore;
   pagingStore: PagingManagerStore;
   blogStore: BlogManagerStore;
@@ -82,9 +82,14 @@ export interface MobXRootState {
   versionStore: VersionManagerStore;
 }
 
-export class RootStores {
-  
-  
+export class RootStores<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   browserCheckStore: BrowserCheckStore;
   appStore: AppStore;
   toolbarStore: ToolbarStore;
@@ -93,40 +98,31 @@ export class RootStores {
   iconStore: IconStore;
   authorizationStore: AuthorizationStore;
   projectStore: ProjectManagerStore;
-  taskStore: TaskManagerStore;
+  taskStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   trackerStore: TrackerStore;
   userStore: UserStore;
-
-  trackerStore: TrackerStore;
-  taskManagerStore: TaskManagerStore;
+  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   calendarStore: CalendarManagerStore;
   undoRedoStore: UndoRedoStore;
-  todoStore: TodoManagerStore;
-  teamStore: TeamManagerStore<T, K, Meta>;
-  userStore: UserStore;
-
-  teamStore: TeamManagerStore<T, K>;
+  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  teamStore: TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   projectOwner: ProjectManagerStore;
-  dataStore: DataStore<any, any>;
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dataAnalysisStore: DataAnalysisManagerStore;
-  calendarStore: CalendarManagerStore;
-  todoStore: TodoManagerStore;
-  documentStore: DocumentStore;
+  documentStore: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   apiStore: ApiManagerStore;
   realtimeStore: RealTimeDataStore;
-  eventStore: EventStore;
+  eventStore: EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   collaborationStore: CollaborationStore;
   entityStore: EntityStore;
   notificationStore: NotificationStore;
   settingsStore: SettingManagerStore;
-  videoStore: VideoStore;
+  videoStore: VideoStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   randomWalkStore: RandomWalkStore;
   pagingStore: PagingManagerStore;
   blogStore: BlogManagerStore;
   drawingStore: DrawingManagerStore;
   versionStore: VersionStore;
-
-
 
   constructor(props: any) {
     this.appManager = useAppStore(props);

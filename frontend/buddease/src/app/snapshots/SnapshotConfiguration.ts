@@ -3,7 +3,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DebugInfo, TempData } from "@/app/models/data/TempData";
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotConfiguration<

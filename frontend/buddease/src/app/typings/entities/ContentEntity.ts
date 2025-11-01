@@ -1,7 +1,14 @@
-ContentEntity.ts// ContentEntity.ts
-import { BaseDataEntity } from './DataEntity';
-import { DefaultMeta } from './AppMetadataEntity';
-import { Attachment } from './CommonEntities';
+// ContentEntity.ts
+import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import { ContentItem } from '@/app/components/models/content/ContentItem'
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Content } from '@/app/models/content/AddContent';
+import { CommonData } from '@/app/models/CommonData'
+import { Task } from "@/app/models/tasks/Task";
 
 export interface ContentEntity extends BaseDataEntity {
   // Core content properties
@@ -31,11 +38,23 @@ export interface ContentEntity extends BaseDataEntity {
 }
 
 
+
+
+export type ContentTask = Task<
+  ContentEntity,
+  ContentK,
+  ContentMeta,
+  ContentAttachment,
+  ContentExcludedFields,
+  ContentIncludedFields
+>;
+
+export type WritableContentTask = WritableDraft<ContentTask>;
+
 // Content-specific types
 export type AppContentEntity = ContentEntity;
 export type ContentK = AppContentEntity;
-export type ContentMeta = ContentMeta;
-export type ContentAttachment = ContentAttachment;
+export type ContentMeta = DefaultMeta<ContentEntity, ContentK>;
 export type ContentExcludedFields = 'contentItems' | 'data' | 'categoryProperties';
 export type ContentIncludedFields = keyof AppContentEntity;
 
@@ -45,7 +64,7 @@ export type AppContentCommonData = CommonData<AppContentEntity, ContentK, Conten
 
 
 // Content-specific metadata
-export interface ContentMeta extends DefaultMeta<ContentEntity, ContentEntity> {
+export interface ContentMetaMetric extends DefaultMeta<ContentEntity, ContentEntity> {
   contentSpecificMeta?: {
     seoKeywords?: string[];
     readingTime?: number;

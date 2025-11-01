@@ -1,10 +1,10 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { Member } from '@/app/models/members/Member';
 import { eventService } from "@/app/services/EventService";
-import { Member } from "@/app/components/models/teams/TeamMembers";
 import {
-    addFilteredEvent,
-    clearFilteredEvents,
-    removeFilteredEvent,
+  addFilteredEvent,
+  clearFilteredEvents,
+  removeFilteredEvent,
 } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { implementThen } from "@/app/state/stores/CommonEvent";
 import React from "react";

@@ -1,10 +1,10 @@
 // Import the FetchUserDataPayload interface and UIActions
-import { endpoints } from '@/app/api/ApiEndpoints';
+import { FetchUserDataPayload, UIActions } from '@/app/actions/UIActions'; // Import FetchUserDataPayload
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import generateCustomHeaders from '@/app/api/headers/customHeaders';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { FetchUserDataPayload, UIActions } from '@/app/actions/UIActions'; // Import FetchUserDataPayload
-import axiosInstance from '@/app/api/csrfToken';
 
 const API_BASE_URL = endpoints.notification;
 

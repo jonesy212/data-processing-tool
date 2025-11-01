@@ -1,38 +1,77 @@
 import { Task } from "@/app/components/models/tasks/Task";
+import { Permission } from '@/app/permissions/Permission';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UserRole } from "@/app/models/UserRole";
 import { BaseData } from '@/app/models/data/Data';
 import { CreationPhase } from "./appTypes";
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
 
 // Define TaskUnion similar to SnapshotUnion
-type TaskUnion<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> =
+type TaskUnion<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T , 
+> =
   | Task<T, K, Meta>
   | (TaskWithCriteria<T, K> & T);
 
 // Define TasksArray similar to SnapshotsArray
-type TasksArray<T extends BaseData<any>, K extends T = T> = Array<TaskUnion<T, K>>;
+type TasksArray<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T > = Array<TaskUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 // Define TasksObject similar to SnapshotsObject
-type TasksObject<T extends BaseData<any>, K extends T = T> = {
-  [key: string]: TaskUnion<T, K>;
+type TasksObject<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T > = {
+  [key: string]: TaskUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 // Define TaskStoreObject similar to SnapshotStoreObject
-type TaskStoreObject<T extends BaseData<any>, K extends T = T> = {
-  [key: string]: TaskStoreUnion<T, K>;
+type TaskStoreObject<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T > = {
+  [key: string]: TaskStoreUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 // Define TaskStoreUnion to use K, similar to SnapshotStoreUnion
-type TaskStoreUnion<T extends BaseData<any>, K extends T = T> =
-  | TaskStoreObject<T, K>
-  | Tasks<T, K>;
+type TaskStoreUnion<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T > =
+  | TaskStoreObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Tasks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 // Define Tasks to use K, similar to Snapshots
-type Tasks<T extends BaseData<any>, K extends T = T> =
-  TasksArray<T, K> | TasksObject<T, K>;
+type Tasks<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
+  > =
+  TasksArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  | TasksObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 
-export interface TaskEntityExtended extends TaskEntity {
+interface TaskEntityExtended extends TaskEntity {
   permissions: Permission[];
   ownerId: string;
 }

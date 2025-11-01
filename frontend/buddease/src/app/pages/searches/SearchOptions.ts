@@ -6,7 +6,7 @@ import { NotificationPreferenceEnum } from "@/app/components/notifications/Notif
 import { CalendarSettingsEnum } from "@/app/settings/CalendarSettingsEnum";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { PrivacySettingEnum } from "@/app/models/data/StatusType";
-import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 
 // Base common options
 interface BaseSearchOptions {

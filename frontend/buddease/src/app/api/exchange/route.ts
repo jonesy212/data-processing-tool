@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processTradesServer } from '@/app/exchangeIntegrationServer';
+import { processTradesServerAPI } from '@/app/exchangeIntegrationServer';
 
 export async function POST(request: NextRequest) {
   try {
     const { trades, type, data } = await request.json();
     
     if (type === 'TRADES') {
-      await processTradesServer(trades);
+      await processTradesServerAPI(trades);
       return NextResponse.json({ success: true, message: 'Trades processed' });
     }
     

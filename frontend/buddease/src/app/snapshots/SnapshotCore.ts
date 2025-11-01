@@ -1,27 +1,27 @@
 // SnapshotCore.ts
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';import { MapExcludedFieldsToMetaKeys } from '@/app/components/routing/Fields';
+import { MapExcludedFieldsToMetaKeys } from '@/app/components/routing/Fields';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { EventRecord, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData, UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { AuditRecord } from '@/app/subscribers/Subscriber';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SchemaField } from '@/server/database/SchemaField';
-import { ExtendedVersionData } from '@/versions/VersionData';
 import { MultipleEventsCallbacks } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { MemberEntity } from '@/app/typings/entities/MemberEntity'
+import { MemberEntity } from '@/app/typings/entities/MemberEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { ExtendedVersionData } from '@/versions/VersionData';
 
 interface SnapshotCore<
   T extends BaseDataEntity = MemberEntity,

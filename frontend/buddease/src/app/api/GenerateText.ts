@@ -1,6 +1,6 @@
 // generateText.ts
 
-import { DocumentGenerator } from '@/server/ServerDocumentGenerator';
+import { DocumentGenerator } from '@/app/server/ServerDocumentGenerator';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';

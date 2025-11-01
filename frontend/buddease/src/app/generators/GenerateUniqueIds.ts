@@ -1,15 +1,18 @@
-import { useMetadata } from '@/config/useMetadata';
-import { NotificationTypeEnum, useNotification, NotificationType } from "@/app/context/NotificationContext";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import { DataDetails } from '@/app/models/data/Data';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
+import { DataDetails } from '@/app/models/data/Data';
+import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { useMetadata } from '@/app/config/useMetadata';
+import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from '@/app/typings/entities/DataEntity'
 
-import { useMeta } from "@/config/useMeta";
-import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
-import { AppSnapshot, AppStructuredMetadata } from '@/app/typings/entities/AppEntity';
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { useMeta } from "@/app/config/useMeta";
 
 const area = fetchUserAreaDimensions().toString()
 
@@ -37,7 +40,6 @@ export function generateUserID(userName: string) {
 
 class UniqueIDGenerator {
 
-
   static generateId(prefix: string = 'snapshot'): string {
     return this.generateID(
       prefix.toUpperCase(),
@@ -49,15 +51,22 @@ class UniqueIDGenerator {
     return `${arg0}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
   }
 
-  static generateEnhancedID(
+  static generateEnhancedID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     prefix: string,
     entityName: string,
-    notificationType: NotificationTypeEnum,
+    notificationType: NotificationType,
     options?: {
       customId?: string;
       timestamp?: Date;
       includeRandom?: boolean;
-      metadata?: Record<string, any>;
+      metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       // Your existing parameters
       id?: string;
       title?: string;
@@ -111,9 +120,18 @@ class UniqueIDGenerator {
     return generatedId;
   }
 
-
-
-  private static notifyFormatted(
+ /**
+   * Public method to send formatted notifications
+   * @param id - Unique identifier for the notification
+   * @param message - The main notification message
+   * @param content - Additional content/data for the notification
+   * @param timestamp - When the notification occurred
+   * @param type - The type of notification
+   * @param notificationType - Specific notification type (defaults to SYSTEM)
+   * @param options - Additional options for the notification
+   * @param userName - Optional username associated with the notification
+   */
+  public static notifyFormatted(
     id: string,
     message: string,
     content: any,
@@ -137,6 +155,22 @@ class UniqueIDGenerator {
       options,
       userName
     );
+  }
+    private static notifyFormattedPrivate(
+    id: string,
+    message: string,
+    content: any,
+    timestamp: Date,
+    type: NotificationType,
+    notificationType: NotificationType = NotificationTypeEnum.SYSTEM,
+    options?: {
+      additionalOptions?: readonly string[] | string | number | any[] | undefined;
+      additionalDocumentOptions?: DocumentOptions;
+      additionalOptionsLabel?: string;
+    },
+    userName?: string
+  ): void {
+    this.notifyFormatted(id, message, content, timestamp, type, notificationType, options, userName);
   }
 
   static generateVersionID(versionNumber: string): string {
@@ -188,11 +222,18 @@ class UniqueIDGenerator {
     // Combine the category and unique ID with a timestamp for uniqueness
     return `${category}_${uniqueID}_${timestamp}`;
   }
-  static generateNotificationID(
-    notification: NotificationData<T, K, Meta<T, K>>,
+  static generateNotificationID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     date: Date,
     notificationType: NotificationType,
-    completionMessageLog: NotificationData<T, K, Meta<T, K>>,
+    completionMessageLog: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback?: () => void
   ): string {
     const notificationID = `${notificationType}_${notification.message.id}_${date.getTime()}`;
@@ -216,6 +257,32 @@ class UniqueIDGenerator {
 
     if (callback) callback();
     return notificationID;
+  }
+
+
+  // New method: generateSubscriberID
+  static generateSubscriberID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    subscriberType: string,
+    entityId: string,
+    options?: {
+      customId?: string;
+      timestamp?: Date;
+      includeRandom?: boolean;
+      metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }
+  ): string {
+    const timestamp = options?.timestamp || new Date();
+    const randomSuffix = options?.includeRandom ? `_${Math.random().toString(36).substr(2, 9)}` : '';
+    const customIdPart = options?.customId ? `_${options.customId}` : '';
+    
+    return `SUB_${subscriberType.toUpperCase()}_${entityId}_${timestamp.getTime()}${customIdPart}${randomSuffix}`;
   }
 
   static generateUserID(name: string): string {
@@ -431,7 +498,14 @@ class UniqueIDGenerator {
   }
 
 
-  static generateID(
+  static generateID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     prefix: string,
     name: string,
     type: NotificationType,
@@ -440,7 +514,7 @@ class UniqueIDGenerator {
     chatThreadName?: string,
     chatMessageId?: string,
     chatThreadId?: string,
-    dataDetails?: DataDetails<T, K>,
+    dataDetails?: DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     generatorType?: string,
   ): string {
     switch (type) {
@@ -464,12 +538,8 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generatePhaseID(name);
       case NotificationTypeEnum.DOCUMENT_EDIT_ID:
         return UniqueIDGenerator.generateDocumentEditID(name);
-      case NotificationTypeEnum.DOCUMENT_EDIT_ID:
-        return UniqueIDGenerator.generateTaskBoardID();
       case NotificationTypeEnum.BRAINSTORMING_SESSION_ID:
         return UniqueIDGenerator.generateBrainstormingSessionID();
-      case NotificationTypeEnum.COMMENT_ID:
-        return UniqueIDGenerator.generateCommentID(id || "", title || "");
       case NotificationTypeEnum.CONTENT_ID:
         return UniqueIDGenerator.generateContentID(id || "", title || "");
       case NotificationTypeEnum.MEETING_ID:
@@ -489,8 +559,6 @@ class UniqueIDGenerator {
       case NotificationTypeEnum.VIDEO_ID:
         return UniqueIDGenerator.generateVideoID(name, type);
       case NotificationTypeEnum.ANALYTICS_ID:
-        return UniqueIDGenerator.generateSurveyID();
-      case NotificationTypeEnum.ANALYTICS_ID:
         return UniqueIDGenerator.generateAnalyticsID();
       case NotificationTypeEnum.APP_STRUCTURE_ID:
         return UniqueIDGenerator.generateAppStructureID();
@@ -507,15 +575,14 @@ class UniqueIDGenerator {
           type,
           id,
           title,
-          type,
           dataDetails,
         );
 
-      case NotificationTypeEnum.ChatMessageID:
+      case NotificationTypeEnum.CHAT_MESSAGE_ID:
         return UniqueIDGenerator.generateChatMessageID(
           String(chatThreadId)
         );
-      case NotificationTypeEnum.ChatThreadID:
+      case NotificationTypeEnum.CHAT_THREAD_ID:
         return UniqueIDGenerator.generateChatThreadID(String(chatThreadName));
       default:
         return `${prefix}_${name}_${Date.now()}_${Math.random()
@@ -554,13 +621,13 @@ const options: FetchOptions = {
 const areaDimensions = fetchUserAreaDimensions(options);
 
 // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> =
-  useMetadata<T, K, Meta>({ area: 'phase-area' });
+// const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> =
+//   useMetadata<T, K, Meta>({ area: 'phase-area' });
 
 
 
 
-const videoDataDetails: DataDetails<T, K> = {
+const videoDataDetails: DataDetails<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields> = {
   _id: "",
   id: "video1",
   title: "Video Title",

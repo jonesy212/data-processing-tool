@@ -2,19 +2,19 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { RealtimeData, RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
- import { Attachment } from "@/app/documents/attachment/Attachment";
 
 export const ENDPOINT = endpoints.backend
 
 
-export type RealtimeUpdateCallback<
+type RealtimeUpdateCallback<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -109,3 +109,4 @@ const useRealtimeData = <
 
 
 export default useRealtimeData;
+export type {  RealtimeUpdateCallback }

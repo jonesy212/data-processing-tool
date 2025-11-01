@@ -1,16 +1,22 @@
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { version } from '@/app/versions/Version';
-import { VersionImpl } from '@/app/versions/Version';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { MetadataEntriesType } from "@/config/StructuredMetadata";
+// documentOptions.ts
 
-import { CustomStyle } from '@/app/service/ApiService';
+import { CustomStyle } from '@/app/api/service/ApiService';
 import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
+import { CustomProperties, HighlightColor } from "@/app/components/styling/Palette";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { UserSettings } from "@/app/config/UserSettings";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { NoteAnimationOptions, NoteOptions } from "@/app/documents/NoteData";
+import { DocumentAnimationOptions } from "@/app/documents/SharedDocumentProps";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { computeChecksum, DocumentData, RevisionOptions } from "@/app/documents/editing/DocumentBuilder";
-import { BaseData } from '@/app/models/data/Data';
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import {
   BorderStyle,
   DocumentSize,
@@ -20,28 +26,20 @@ import {
 } from "@/app/models/data/StatusType";
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
-import { CustomProperties, HighlightColor } from "@/app/styling/Palette";
 import { AllTypes } from '@/app/typings/PropTypes';
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { UserIdea } from "@/app/users/Ideas";
-import { Version } from "@/app/versions/Version";
+import VersionImpl, { version, Version } from '@/app/versions/Version';
 import { VersionData } from "@/app/versions/VersionData";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
-import { NoteAnimationOptions, NoteOptions } from "@/app/documents/NoteData";
-import { DocumentAnimationOptions } from "@/app/documents/SharedDocumentProps";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UserSettings } from "@/config/UserSettings";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import { DataVersions } from "@/configs/DataVersionsConfig";
-import BackendStructure from '@/server/database/BackendStructure';
 import * as docx from "docx";
 import { ContentState } from "draft-js";
 import { ModifiedDate } from "./DocType";
-import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity'
 
 
 export interface CustomDocument extends docx.Document {
@@ -71,7 +69,14 @@ export type LinksType =
   };
 
 
-interface Style {
+interface Style<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   name: string;
 
   style:
@@ -129,11 +134,14 @@ interface Style {
 
 // Define the interface for DocumentBuilderOptions extending DocumentOptions
 export interface DocumentBuilderOptions<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
-extends DocumentOptions<T, K, Meta> {
+extends DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   canComment: boolean;
   canView: boolean;
   canEdit: boolean;
@@ -166,7 +174,6 @@ export const getDefaultNoteOptions = (): NoteOptions => {
   };
 };
 
-// documentOptions.ts
 export interface DocumentOptions<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -176,7 +183,7 @@ export interface DocumentOptions<
   IncludedFields extends keyof T = keyof T
 > {
   // additionalDocumentOptions: [],
-  additionalOptionsLabel: string,
+  additionalOptionsLabel: string;
   uniqueIdentifier: string;
   documentType: string | DocumentTypeEnum; // Add documentType property
   userIdea?: string | UserIdea | undefined;
@@ -184,11 +191,11 @@ export interface DocumentOptions<
   name?: string;
   currentVersion?: string; // the version currently assigned
   newVersion?: string;     // optional: a requested new version
- 
-  description?: string | null | undefined,
-  createdBy: string,
+  documentId: string;
+  description?: string;
+  createdBy: string;
   createdByRenamed?: string
-  createdDate?: string | Date,
+  createdDate?: string | Date;
   _rev?: string;
   _attachments?: { [key: string]: string }
   _links?: { [key: string]: string; }
@@ -868,22 +875,22 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   setServices: [],
   notes: [],
   buildNumber: "1",
-  latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+  latestVersion: createLatestVersion<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(),
   schema: {},
   metadata: {
     author: "system",
     timestamp: new Date().toISOString(),
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
-    metadataEntries: {} as MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+    metadataEntries: {} as MetadataEntriesType<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+    latestVersion: createLatestVersion<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(),
     schema: {}
     },
     backend: undefined,
     frontend: undefined,
 
     checksum: "",
-    version: version as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    version: version as VersionImpl<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
     timestamp: new Date().toISOString(),
     user: "Buddease",
     comments: [],
@@ -913,7 +920,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   additionalOptions: undefined,
   language: LanguageEnum.English,
   setDocumentPhase: (
-    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
+    phase: string | Phase<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     // Internal logic for additional parameters

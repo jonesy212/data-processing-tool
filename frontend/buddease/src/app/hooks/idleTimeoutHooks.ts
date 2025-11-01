@@ -1,5 +1,5 @@
 import EXTENDED_NOTIFICATION_MESSAGES from "@/app/features/support/ExtendedNotificationMessages";
-import { IdleTimeoutType } from "@/config/UserSettings";
+import { IdleTimeoutType } from "@/app/config/UserSettings";
 import { DynamicHookParams } from "./DynamicHookParams";
 import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";

@@ -1,25 +1,26 @@
 // createMessage.ts
-import { ChatRoom } from "@/app/state/redux/slices/CalendarSlice";
-import { Sender } from "@/app/communications/chat/CommunicationPage";
-import { Content } from '@/app/models/content/AddContent';
+import { Sender } from '@/app/components/communications/CommunicationPage';
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import { NotificationType } from '@/app/context/NotificationContext';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { UserPreferences } from "@/config/UserPreferences";
-import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { Content } from '@/app/models/content/AddContent';
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
 
-
-
-type MessageProps<  T extends BaseDataEntity,
+type MessageProps<
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> = {
+  IncludedFields extends keyof T = keyof T
+> = {
   type: NotificationType; 
-  content: string | Content<T, K> | undefined;  // Align content type
+  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;  // Align content type
   additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   sender: Sender; 
   channel: ChatRoom; 
@@ -33,7 +34,7 @@ export const createMessage = (
   userId?: number, // User ID, optional
   sender?: Sender, // Sender information, optional
   channel?: ChatRoom, // Channel information, optional
-): Message => {
+): Message<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
   // Default system sender
   const defaultSender: Sender = {
     _id: "system",
@@ -62,6 +63,7 @@ export const createMessage = (
       permissions: [],
       positions: [{ title: "", level: 0 }],
       includes: [],
+      roleType: ''
     },
     bannerUrl: null,
     persona: null,
@@ -87,7 +89,14 @@ export const createMessage = (
   };
 
   // Construct the Message object
-  const message: Message = {
+  const message: Message<
+    AppEntity, 
+    AppK, 
+    AppMeta, 
+    AppAttachment, 
+    AppExcludedFields, 
+    AppIncludedFields
+  > = {
     id: uuidv4(),
     sender: sender || defaultSender,
     senderId: sender?.id || defaultSender.id,

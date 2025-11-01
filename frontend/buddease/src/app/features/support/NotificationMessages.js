@@ -257,8 +257,11 @@ const NOTIFICATION_MESSAGES = {
         ARCHIVE_DOCUMENT_ERROR: "Archive document could not be found",
         DOWNLOAD_DOCUMENT_SUCCESS: "Download document success",
         DOWNLOAD_DOCUMENT_ERROR: "Download document error",
+        FETCH_DOCUMENT_FROM_ARCHIVE_SUCCESS: 'Fetched document from archive is successfully',
+        FETCH_DOCUMENT_FROM_ARCHIVE_ERROR: 'Error fetching document from archive',
         EXPORT_DOCUMENTS_SUCCESS: "Exported documents have been successfully downloaded",
         EXPORT_DOCUMENTS_ERROR: "Error exporting documents. Please try again",
+        EXPORT_DOCUMENT_ERROR: "Error exporting document. Please try again",
         IMPORT_DOCUMENTS_SUCCESS: "Imported documents have been successfully imported",
         IMPORT_DOCUMENTS_ERROR: "Error importing documents. Please try again",
         ARCHIVE_DOCUMENT_SUCCESS: "Archive document has been successfully downloaded",
@@ -360,6 +363,10 @@ const NOTIFICATION_MESSAGES = {
         NO_RESPONSE: "No response from API",
         // Add more generic messages
     },
+    Highlight: {
+        ADD_HIGHLIGHT_ERROR: 'Adding highlighting was not done.',
+        DELETE_HIGHLIGHT_ERROR: 'Error trying to remove highlighting.'
+    },
     Info: {
         DEFAULT: "Error in Action Manager",
         GENERAATED_INFO_ITEMS_SUCCESS: "Info items generated successfully",
@@ -414,6 +421,9 @@ const NOTIFICATION_MESSAGES = {
         DEFAULT: "New message received", // Default message for the messaging system
         MESSAGE_SENT: "Your message has been sent successfully",
         // Add more messages for the MessagingSystem type
+    },
+    Metadata: {
+        ///add messages
     },
     Milestones: {
         ADD_SUCCESS: "Added successfully",

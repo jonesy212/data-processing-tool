@@ -6,7 +6,7 @@ import { ConfigurationService } from "@/app/services/ConfigurationService";
 import { getBackendStructureFilePath, STORE_KEYS } from "@/app/utils/cache/CacheManager";
 import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
 import { currentAppName } from "@/app/versions/AppVersion";
-import { getAuthToken } from '@/server/auth/getAuthToken';
+import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 

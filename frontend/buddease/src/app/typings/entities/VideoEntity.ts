@@ -1,13 +1,13 @@
 // VideoEntity.ts
 
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 // --- Core Video Type Definitions ---
 
@@ -93,16 +93,9 @@ type VideoEntitySnapshotsArray = SnapshotsArray<
 
 // --- Exports ---
 export type {
-  VideoEntity,
-  VideoK,
-  VideoMeta,
-  VideoAttachment,
-  VideoExcludedFields,
-  VideoIncludedFields,
-  VideoBaseParams,
-  VideoUnifiedMetadata,
-  VideoStructuredMetadata,
-  VideoEntityStore,
-  VideoEntityStoreConfig,
-  VideoEntitySnapshotsArray
+  VideoAttachment, VideoBaseParams, VideoEntity, VideoEntitySnapshotsArray, VideoEntityStore,
+  VideoEntityStoreConfig, VideoExcludedFields,
+  VideoIncludedFields, VideoK,
+  VideoMeta, VideoStructuredMetadata, VideoUnifiedMetadata
 };
+

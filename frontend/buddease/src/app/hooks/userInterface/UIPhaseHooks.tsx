@@ -1,21 +1,19 @@
 import UserService from "@/api/ApiUser";
 import { UIActions } from "@/app/actions/UIActions";
 import { fetchData } from "@/app/api/ApiData";
-import { NotificationType } from "@/context/NotificationContext";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as userApi from "@/app/api/UsersApi";
-import useNotificationBar from "@/app/commHooks/useNotificationBar";
+import useNotificationBar from "@/app/hooks/commHooks/useNotificationBar";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/app/features/support/NotificationMessagesFactory";
-import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta
-} from "@/app/models"; // adjust paths
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+
 import { LogData } from "@/app/models/LogData";
 import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
-import { createPhaseHook } from "@/app/phaseHooks/PhaseHooks";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { NotificationType } from "@/context/NotificationContext";
 import useDarkModeToggle from "./useDarkModeToggle";
 
 const usePhaseUI = <

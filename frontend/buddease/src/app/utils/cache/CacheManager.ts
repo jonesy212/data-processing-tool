@@ -3,10 +3,10 @@ import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks } from "@/app/components/phases/Phase";
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import getAppPath from "@/config/appStructure/appPath";
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import { UserPreferences } from "@/config/UserPreferences";
-import { UserSettings } from "@/config/UserSettings";
+import getAppPath from "@/app/config/appStructure/appPath";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { UserSettings } from "@/app/config/UserSettings";
 import BackendStructure from "@/configs/appStructure/BackendStructure";
 import { useNotification } from "@/context/NotificationContext";
 

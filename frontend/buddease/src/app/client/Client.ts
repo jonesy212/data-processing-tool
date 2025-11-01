@@ -3,8 +3,8 @@ import { Pool, QueryResult } from 'pg';
 
 import internalApiService from "@/app/api/ApiClient";
 import { ClientInformation } from '@/app/client/ClientInformation';
-import { mapLanguageToEnum } from '@/app/components/communications/Language';
-import { DatabasePool } from '@/server/database/DatabasePool';
+import { mapLanguageToEnum } from '@/app/communications/Language';
+import { DatabasePool } from '@/app/server/database/DatabasePool';
 
 // Define the structure for ClientConfig
 export interface ClientConfig {

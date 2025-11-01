@@ -1,7 +1,7 @@
 // ScreenSharingEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ScreenSharingEndpoints {
+export interface ScreenSharingEndpoints extends EndpointCategoryConfig {
   startSession: EndpointConfig;
   endSession: EndpointConfig;
   getSessionDetails: (sessionId: string) => EndpointConfig;

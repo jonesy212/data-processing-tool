@@ -1,10 +1,11 @@
 // SanitizationFunctions.ts
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { decryptedData } from '@/app/server/security/decryptedData';
+import { Encryption } from '@/app/server/security/Encryption';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { User } from '@/app/users/User';
-import { decryptedData } from '@/server/security/decryptedData';
 import DOMPurify from 'dompurify';
-import { Encryption } from '@/server/security/Encryption';
 
 
 interface SanitizeDataOptions {
@@ -151,7 +152,7 @@ const isTokenValid = (authToken: string, userId: string): boolean => {
 };
 
 // Function to validate user data
-export const validateUserData = (userData: User): string[] => {
+export const validateUserData = (userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string[] => {
   const errors: string[] = [];
   if (!userData.username) errors.push("Username is required.");
   else if (userData.username.length < 3) errors.push("Username must be at least 3 characters long.");
@@ -278,7 +279,12 @@ export function sanitize(input: unknown, options: { allowHtml?: boolean; allowed
 }
 
 // Unified sanitization logic for SnapshotData and Snapshot
-function sanitizeSnapshotData<T extends BaseData<any>, K extends T = T>(snapshotData?: SnapshotDataType<T>) {
+function sanitizeSnapshotData<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T >(snapshotData?: SnapshotDataType<T>) {
   if (!snapshotData) return undefined;
 
   if (snapshotData instanceof Map) return snapshotData;

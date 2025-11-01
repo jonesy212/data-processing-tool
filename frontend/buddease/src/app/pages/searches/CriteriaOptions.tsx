@@ -42,7 +42,7 @@ enum EffortLevelEnum {
   
   // A mixed criteria type
   interface MixedCriteria extends SearchCriteria, FilterCriteria {
-    description?: string | null;  // Added from FilterCriteria for search context
+    description?: string;  // Added from FilterCriteria for search context
     priority?: string | PriorityTypeEnum | null;  // To allow filtering based on priority
     assignedUser?: string | null;  // To filter by the assigned user
     projectPhase?: ProjectPhaseTypeEnum | null;  // To filter/search by project phase

@@ -1,34 +1,35 @@
 // projects/Project.ts (CLIENT-SIDE ONLY)
+import { Exchange } from '@/app/models/cypto/Exchange';
+import { TeamService } from '@/app/services/teamService'
+import { ScheduledData } from "@/app/calendar/ScheduledData";
+import { implementThen } from '@/app/state/stores/CommonEvent';
 import { Collaborator } from "@/app/collaborators/Collaborator";
-import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { Exchange } from "@/app/crypto/Exchange";
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { StatusType } from "@/app/models/data/StatusType";
 import {
-  CustomPhaseHooks, Phase,
-  PhaseData,
+    CustomPhaseHooks, Phase,
+    PhaseData,
 } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import {
-  PhaseEntity,
-  PhaseExcluded,
-  PhaseK,
-  PhaseMeta,
-  PhaseMetaType
-} from '@/app/typings/phases/phaseTypes';
-import { BaseDataRoot } from '@/config/BaseConfig';
-
+    PhaseEntity,
+    PhaseExcludedFields,
+    PhaseK,
+    PhaseMeta
+} from '@/app/typings/phaseTypes';
+import { ProjectAttachment, ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { sharedBaseData } from '@/app/config/metadata/MetadataHooks';
 import { SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Member } from "@/app/models/teams/TeamMembers";
-import { ExcludedFields } from '@/app/routing/Fields';
+import { Member } from "@/app/models/members/Member";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/app/todos/Todo";
@@ -36,26 +37,13 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { sharedBaseData } from '@/config/metadata/MetadataHooks';
 import React, { ReactNode, useEffect, useState } from "react";
-import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
-import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { UpdatedProjectDetailsProps } from "@/app/projects/UpdateProjectDetails";
 
 
-// A project’s raw entity shape
-type ProjectEntity = BaseDataEntity & {
-  title: string;
-  description?: string;
-  budget?: number;
-};
 
-type ProjectK = ProjectEntity;
-type ProjectMeta = DefaultMeta<ProjectEntity, ProjectK>;
-type ProjectExcludedFields = DefaultExcludedFields<ProjectEntity>;
-
-
-type TypedProject = Project<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
+type TypedProject = Project<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 export enum ProjectType {
   Internal = "Internal",
@@ -179,29 +167,30 @@ interface Project<
   id: string;
   name: string;
   description: string; 
-  members: Member[];
-  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> [];
-  comments?: (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  members: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
   startDate: Date | undefined
   endDate: Date | undefined
   isActive: boolean;
-  leader: User | null;
+  leader: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   budget: number | null;
-  phase: Phase | null;
-  phases: Phase[];
+  phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   type: ProjectType;
   status: AllStatus;
-  currentPhase: Phase | null; // Provide a default value or mark as optional
+  currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Provide a default value or mark as optional
   done: boolean
   
-  currentTeam?: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ; // <-- Add this
-  reassignedProjects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> []; // <-- Add this
+  currentTeam?: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ;
+  reassignedProjects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
-  commnetBy?: User | Member;
-  then?: typeof implementThen;
+  commnetBy?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   data?: ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ;
   customProperty?: string;
   projectProgress?: Progress
+  then?: typeof implementThen;
   // tags?: string[] | Tag[];
 }
 
@@ -214,14 +203,21 @@ type ReassignProject = (
 
 
 
-export interface ProjectDetails {
+export interface ProjectDetails<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   _id?: string  | undefined;
   id?: string;
   title: string;
   name: string;
   description: string;
   status: StatusType;
-  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> [];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projectDetails?: Partial<ProjectDetails>;
 
   // Add other properties as needed
@@ -235,7 +231,7 @@ const unassignProject: UnassignProject = async (
 ): Promise<void> => {
   try {
     // Client-side updates
-    project.currentTeam = null;
+    project.currentTeam = undefined;
     
     // Persist via TeamService
     await TeamService.unassignProject(team, project);
@@ -363,19 +359,19 @@ class ProjectImpl<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> implements Project {
+> implements Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   [key: string]: any;
-  scheduled?: ScheduledData<any>;
+  scheduled?: ScheduledData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isScheduled?: boolean;
   ideas: Idea[] = [];
   dueDate?: Date | null | undefined;
   priority?: "low" | "medium" | "high" | undefined;
-  assignee?: User | undefined;
+  assignee?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   collaborators?: Collaborator[] | undefined;
   comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | CustomComment)[] | undefined
   attachments?: Attachment[] | undefined;
   customProperty?: string;
-  subtasks?: TodoImpl<any, any, any, any>[] | undefined;
+  subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
   createdAt?: Date | undefined;
   updatedAt?: Date | undefined;
   createdBy?: string | undefined;
@@ -391,23 +387,23 @@ class ProjectImpl<
   _id: string = "0";
   id: string = "0"; // Initialize id property to avoid error
   name: string = "projectName";
-  members: Member[] = []; // Provide a default value or mark as optional
-  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> [] = []; // Provide a default value or mark as optional
+  members: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Provide a default value or mark as optional
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Provide a default value or mark as optional
   startDate: Date= new Date(); // Provide a default value or mark as optional
   endDate: Date= new Date(); // Provide a default value or mark as optional // Provide a default value or mark as optional
   isActive: boolean = false; // Provide a default value or mark as optional
-  leader: User | null = null; // Provide a default value or mark as optional
+  leader: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null; // Provide a default value or mark as optional
   budget: number | null = null; // Provide a default value or mark as optional
-  phase: Phase | null = null;
-  phases: Phase[] = []; // Provide a default value or mark as optional
-  currentPhase: Phase | null = null; // Provide a default value or mark as optional
+  phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Provide a default value or mark as optional
+  currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null; // Provide a default value or mark as optional
   description: string = "";
   title: string = "project_title";
   status: StatusType.Pending | StatusType.InProgress | StatusType.Completed = StatusType.Pending;
   tags:  string[] = [];
   then: typeof implementThen = implementThen;
   analysisType?: AnalysisTypeEnum | undefined;
-  analysisResults: DataAnalysisResult<any>[] = [];
+  analysisResults: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   videoUrl: string = "videoUrl";
   videoThumbnail: string = "thumbnail";
   videoDuration: number = 0;
@@ -446,7 +442,7 @@ class ProjectImpl<
   constructor(init?: Partial<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> >) {
     this.id = init?.id ?? "";
     this.name = init?.name ?? "";
-    this.description = init?.description;
+    this.description = init?.description ?? '';
     this.members = init?.members ?? [];
     this.tasks = init?.tasks ?? [];
     this.comments = init?.comments;
@@ -489,7 +485,14 @@ const project: ClientProjectEntity = {
   // Phases & Progress
   phases: ["phase-1", "phase-2", "phase-3"],
   currentPhase: "phase-2",
-  projectProgress: { percentage: 65, status: "in-progress" } as Progress,
+  projectProgress: {
+    id: "",
+    name: "",
+    color: "",
+    description: "",
+    percentage: 65, 
+    status: "in-progress",
+  } as Progress,
   progress: 65,
   
   // Tasks & Content
@@ -508,7 +511,7 @@ const project: ClientProjectEntity = {
   videoUrl: "https://example.com/project-video",
   videoThumbnail: "https://example.com/thumbnail.jpg",
   videoDuration: 3600,
-  analysisType: AnalysisTypeEnum.Predictive,
+  analysisType: AnalysisTypeEnum.PREDICTIVE,
   analysisResults: ["analysis-1", "analysis-2"],
   
   // Metadata
@@ -544,7 +547,7 @@ const project: ClientProjectEntity = {
   visibility: "team",
 };
 
-const currentProject = new ProjectImpl<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>({
+const currentProject = new ProjectImpl<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>({
   id: "p1",
   name: "AI Research",
   description: "Exploring AI-powered project management",
@@ -562,20 +565,23 @@ const currentProject = new ProjectImpl<ProjectEntity, ProjectK, ProjectMeta, Pro
 
 
 
-const currentPhase: PhaseData<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded> = {
+const currentPhase: PhaseData<PhaseEntity, PhaseK, PhaseMeta, Attachment, PhaseExcludedFields> = {
   id: "0",
   name: "name",
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
-  data: {} as BaseData<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded>,
-  hooks: {} as CustomPhaseHooks,
+  eventRecords: {}, 
+  records: {}, 
+  eventIds: [],
+  data: {} as BaseData<PhaseEntity, PhaseK, PhaseMeta, Attachment, PhaseExcludedFields>,
+  hooks: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   description: "", 
   label: {
     text: "",
     color: "",
   },
-  currentMeta: {} as PhaseMeta<PhaseEntity, PhaseK, PhaseMetaType, PhaseExcluded>, 
+  currentMeta: {} as PhaseMeta, 
   currentMetadata: {
     baseConfig, sharedMetadata, sharedBaseData, taggable,
   },
@@ -608,12 +614,12 @@ export interface ProjectData<
   // Project-specific properties
   project: Project;
   projects: Project[];
-  phases: Phase[];
+  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   transitionToNextPhase: () => void;
-  currentPhase: ProjectPhase;
-  projectStatus: ProjectStatus;
+  currentPhase: ProjectPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  projectStatus: ProjectStatus<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   priority: ProjectPriority;
-  tasks: Task<T, K>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   
   // Project management
   timeline: ProjectTimeline;
@@ -624,7 +630,7 @@ export interface ProjectData<
   
   // Team and stakeholders
   projectManager: string;
-  teamMembers: Member[];
+  teamMembers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   stakeholders: string[];
   
   // Project metadata

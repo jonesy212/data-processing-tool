@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { DevelopmentPhase } from "./DevelopmentPhase";
 import EmailConfirmationPhaseComponent from "./EmailConfirmationPhaseComponent";
-import { generateNextPhaseRoute } from '@/app/components/event/DynamicEventHandlerExample';
+import { generateNextPhaseRoute } from '@/app/typings/eventHandlers/factoryHandlers'
 import React from 'react';
 
 

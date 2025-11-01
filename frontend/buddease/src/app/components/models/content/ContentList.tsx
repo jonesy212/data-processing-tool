@@ -1,9 +1,9 @@
 // ContentList.tsx
 import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
+import { Data } from '@/app/models/data/Data';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { Data } from '@/data/Data';
-import React from 'react';
 import { ContentItem } from '@/ContentItem';
+import React from 'react';
 
 interface ContentListProps {
   contentItems: DetailsItem<ContentItem>[]; // Assuming 'contentItems' contain DetailsItem with ContentItem type

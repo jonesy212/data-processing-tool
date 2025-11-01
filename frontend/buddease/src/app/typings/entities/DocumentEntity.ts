@@ -1,9 +1,10 @@
 // DocumentEntity.ts
+import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -11,9 +12,9 @@ import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 
 // Core Document type definitions
@@ -365,10 +366,10 @@ const createDefaultDocument = (options: Partial<AppDocument> = {}): AppDocument 
   lastModified: options.lastModified || new Date(),
   isPublished: options.isPublished ?? false,
   ...options
-} as DocumentFull);
+} as AppDocument);
 
 // Empty/default document
-const emptyDocument: DocumentFull = createDefaultDocument();
+const emptyDocument: AppDocument = createDefaultDocument();
 
 // Document state types
 type DocumentSession = {
@@ -414,7 +415,7 @@ type DocumentPermissions = {
 type DocumentVersion = {
   id: string;
   version: string;
-  content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  content: string | Content<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>;
   author: string;
   timestamp: Date;
   changes: string[];
@@ -452,16 +453,16 @@ const createDefaultDocumentData = (options: Partial<AppDocumentData> = {}): AppD
   // Add any DocumentData specific fields here
   ...options
 } as AppDocumentData);
-
-// Helper for creating document versions
-const createDocumentVersion = (document: AppDocument, author: string, changes: string[] = []): DocumentVersion => ({
-  id: `version-${Date.now()}`,
-  version: incrementVersion(document.version || '1.0.0'),
-  content: document.content,
-  author,
-  timestamp: new Date(),
-  changes
-});
+// Helper to extract version string from Version object
+const extractVersionString = (version: Version<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | string): string => {
+  if (typeof version === 'string') {
+    return version;
+  }
+  
+  // Assuming your Version type has a 'version' or 'number' property
+  // Adjust based on your actual Version type structure
+  return (version as any).version || (version as any).number || '1.0.0';
+};
 
 // Helper for version increment
 const incrementVersion = (currentVersion: string): string => {
@@ -470,93 +471,66 @@ const incrementVersion = (currentVersion: string): string => {
   return parts.join('.');
 };
 
+// Helper for creating document versions
+const createDocumentVersion = (document: AppDocument, author: string, changes: string[] = []): DocumentVersion => ({
+  id: `version-${Date.now()}`,
+  version: incrementVersion(extractVersionString(document.version || '1.0.0')),
+  content: document.content,
+  author,
+  timestamp: new Date(),
+  changes
+});
+
+
 // Empty/default document data
 const emptyDocumentData: AppDocumentData = createDefaultDocumentData();
 
 
 
 export type {
-  // ========== CORE DOCUMENT ENTITY TYPES ==========
-  DocumentEntity,
-  DocumentK, 
-  DocumentMeta,
-  DocumentAttachment,
-  DocumentExcludedFields,
-  DocumentIncludedFields,
-  
+
+  // ========== DOCUMENT AI/ML FEATURES ==========
+  AISuggestion,
   // ========== CORE APP TYPES ==========
   AppDocument,
-  AppDocumentData,
-  AppDocumentSnapshot,
+  AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
   AppDocumentSnapshotData,
   AppDocumentSnapshotStore,
   AppDocumentStructuredMetadata,
-  AppDocumentUnifiedMetadata,
-  AppDocumentRealtimeDataItem,
-  
+  AppDocumentUnifiedMetadata, BackupSchedule,
+  // ========== BATCH OPERATIONS ==========
+  BatchDocumentOperation,
+  BatchOperationResult, DocumentAccessLog, DocumentAIAnalysis,
+  // ========== DOCUMENT ANALYTICS & USAGE ==========
+  DocumentAnalytics, DocumentAttachment, DocumentBackup,
+  // ========== DOCUMENT COLLABORATION ==========
+  DocumentCollaborator,
+  DocumentComment, DocumentContext,
+  // ========== CORE DOCUMENT ENTITY TYPES ==========
+  DocumentEntity, DocumentExcludedFields,
+  // ========== DOCUMENT EXPORT & FORMATTING ==========
+  DocumentExportOptions, DocumentFilterOptions, DocumentFrontendStructure, DocumentIncludedFields, DocumentIndex, DocumentK,
+  DocumentMeta,
   // ========== DOCUMENT CONFIGURATION & PARAMS ==========
   DocumentParams,
-  DocumentSnapshotStoreConfig,
-  DocumentSnapshotsArray,
-  DocumentFrontendStructure,
-  
+  // ========== DOCUMENT PERMISSIONS & ACCESS ==========
+  DocumentPermissions,
+  // ========== DOCUMENT SEARCH & FILTERING ==========
+  DocumentSearchResult, DocumentSession, DocumentShareLink, DocumentSnapshotsArray, DocumentSnapshotStoreConfig, DocumentSortOptions,
   // ========== DOCUMENT CONTENT & STYLING ==========
-  DocumentStyles,
-  DocumentContext,
-  DocumentSummary,
-  DocumentTemplate,
-  TemplateField,
-  
+  DocumentStyles, DocumentSummary,
+  DocumentTemplate, DocumentUsageStats,
+
+  // ========== DOCUMENT VALIDATION ==========
+  DocumentValidationRule,
   // ========== DOCUMENT VERSIONS & HISTORY ==========
   DocumentVersion,
   DocumentVersionHistory,
-  DocumentBackup,
-  BackupSchedule,
-  
-  // ========== DOCUMENT PERMISSIONS & ACCESS ==========
-  DocumentPermissions,
-  DocumentAccessLog,
-  PrivateDocument,
-  PublicDocument,
-  DocumentShareLink,
-  
-  // ========== DOCUMENT COLLABORATION ==========
-  DocumentCollaborator,
-  DocumentComment,
-  DocumentSession,
-  
   // ========== DOCUMENT WORKFLOW ==========
-  DocumentWorkflow,
-  WorkflowStep,
-  WorkflowParticipant,
-  
-  // ========== DOCUMENT SEARCH & FILTERING ==========
-  DocumentSearchResult,
-  DocumentFilterOptions,
-  DocumentSortOptions,
-  DocumentIndex,
-  
-  // ========== DOCUMENT EXPORT & FORMATTING ==========
-  DocumentExportOptions,
-  ExportFormat,
+  DocumentWorkflow, ExportFormat,
   ExportResult,
-  HeaderStyle,
-  
-  // ========== DOCUMENT ANALYTICS & USAGE ==========
-  DocumentAnalytics,
-  DocumentUsageStats,
-  
-  // ========== DOCUMENT VALIDATION ==========
-  DocumentValidationRule,
-  ValidationResult,
-  
-  // ========== DOCUMENT AI/ML FEATURES ==========
-  AISuggestion,
-  DocumentAIAnalysis,
-  
-  // ========== BATCH OPERATIONS ==========
-  BatchDocumentOperation,
-  BatchOperationResult
+  HeaderStyle, PrivateDocument,
+  PublicDocument, TemplateField, WorkflowParticipant, WorkflowStep
 };
 
 

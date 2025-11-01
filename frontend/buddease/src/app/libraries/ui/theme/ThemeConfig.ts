@@ -2,8 +2,6 @@ import { AliasToken } from "antd/es/theme/internal";
 import { ThemeEnum } from "./Theme";
 
 
-
-
 // Define the MappingAlgorithm type
 type MappingAlgorithm = {
   name: string;
@@ -41,7 +39,11 @@ type ComponentsConfig = {
 
 // Update the ThemeConfig interface
 interface ThemeConfig {
-  theme: ThemeEnum;
+  available: ThemeEnum[];
+  autoDetect: boolean;
+  persistence: boolean;
+
+  default: ThemeEnum;
   primaryColor?: string;
   secondaryColor?: string;
   fontSize?: string;
@@ -82,7 +84,10 @@ interface ThemeConfig {
 }
 
 const themeSettings: ThemeConfig = {
-  theme: ThemeEnum.LIGHT,
+  default: ThemeEnum.LIGHT,
+  available: [ThemeEnum.LIGHT, ThemeEnum.DARK, ThemeEnum.AUTO],
+  autoDetect: true,
+  persistence: true,
   primaryColor: validateHexColor("#1890ff"),
   secondaryColor: validateHexColor("#2db7f5"),
   fontSize: "16px",
@@ -104,7 +109,10 @@ const themeSettings: ThemeConfig = {
 const themeSettingsWithOptions: ThemeConfig = {
   // Other theme settings...
   infoColor: "",
-  theme: ThemeEnum.LIGHT,
+  default: ThemeEnum.LIGHT,
+  available: [ThemeEnum.LIGHT, ThemeEnum.DARK, ThemeEnum.AUTO],
+  autoDetect: true,
+  persistence: true,
   algorithm: [
     {
       name: "Algorithm 1",

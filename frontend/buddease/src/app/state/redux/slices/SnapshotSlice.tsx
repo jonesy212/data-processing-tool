@@ -1,47 +1,45 @@
 // snapshots/SnapshotSlice.ts
 
 import {
-  createAndAddSnapshot,
-  fetchDataStores,
+    createAndAddSnapshot,
+    fetchDataStores,
 } from "@/app/thunks"; // adjust imports
 
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { createDefaultSnapshotData, SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity'
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { snapshot } from "@/app/snapshots/SnapshotConfig";
-import { Callback, SnapshotData } from "@/app/snapshots/SnapshotData";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import { CreateSnapshotsPayload, Payload } from '@/app/server/database/Payload';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { createDefaultSnapshotData, SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from "@/app/models/content/AddContent";
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { getSnapshotItems } from "@/app/snapshots/snapshotOperations";
-import { sendNotification } from "@/app/state/redux/slices/UserSlice";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Subscription } from "react-redux";
 import { Tag } from "sanitize-html";
 
 
@@ -77,7 +75,7 @@ export const batchFetchSnapshots = createAsyncThunk<
   'snapshot/batchFetchSnapshots',
   async ({ startDate, endDate, storeId, meta }, thunkAPI) => {
     try {
-      const snapshotManager = useSnapshotManager();
+      const snapshotManager = useSnapshotManager(initialStoreId);
       const subscribers = snapshotManager(storeId);
 
       // ✅ Use factory to create a properly typed empty snapshot
@@ -679,7 +677,7 @@ export const createMockSnapshot = <
     },
     batchFetchSnapshotsFailure: function ( 
       date: Date,
-      snapshotManager: SnapshotManager<T, K>,
+      snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payload: { error: Error; }): void {
       throw new Error("Function not implemented.");
@@ -690,7 +688,7 @@ export const createMockSnapshot = <
     batchUpdateSnapshotsFailure: function (
       date: Date,
       snapshotId: string | number | null,
-      snapshotManager: SnapshotManager<T, K>,
+      snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payload: { error: Error; }
     ): void {

@@ -2,12 +2,12 @@
 // In snapshotOperations/snapshotCreation.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/components/models/content/AddContent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import {
-  createCompleteSnapshot
+    createCompleteSnapshot
 } from '@/createSnapshot';
 
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -27,7 +27,7 @@ export const takeSnapshot = async <
   projectType: ProjectType,
   projectId: string,
   projectState: ProjectStateEnum,
-  projectMembers: Member[],
+  projectMembers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   // Optional: Pass through existing system dependencies
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotManager?: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null

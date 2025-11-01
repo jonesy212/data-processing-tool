@@ -1,7 +1,7 @@
 // ExternalAuthEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ExternalAuthEndpoints {
+export interface ExternalAuthEndpoints extends EndpointCategoryConfig {
   [key: string]: EndpointConfig;
   wixAuthentication: EndpointConfig;
   googleAuthentication: EndpointConfig;

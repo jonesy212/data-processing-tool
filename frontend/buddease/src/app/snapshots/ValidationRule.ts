@@ -13,6 +13,7 @@ import {   StorePropEntity,
   StorePropExcludedFields,
   StorePropIncludedFields
 } from '@/app/snapshots/StorePropEntity'
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 export interface BaseDataEntity {
@@ -70,7 +71,7 @@ export type ValidationRule<T extends BaseDataEntity = BaseDataEntity, K extends 
 export interface ValidationResult {
   isValid: boolean;
   errors: Array<{
-    field: keyof AppDocument;
+    field: string;
     message: string;
     rule: string;
   }>;  message?: string;
@@ -164,7 +165,7 @@ export const CommonValidationRules = {
   })
 };
 
-// Validation executor utility
+/// In the ValidationEngine class, fix the errors array:
 export class ValidationEngine<T extends BaseDataEntity, K extends T = T> {
   static validateEntity(
     entity: Partial<T>,
@@ -204,14 +205,14 @@ export class ValidationEngine<T extends BaseDataEntity, K extends T = T> {
           isValid: validationResult,
           message: validationResult ? undefined : rule.errorMessage,
           details: { ruleId: rule.id, field: rule.field },
-          errors: { field: keyof AppDocument; message: string; rule: string; }[]
+          errors: []
         });
       } else if (typeof validationResult === 'string') {
         results.push({
           isValid: false,
           message: validationResult,
           details: { ruleId: rule.id, field: rule.field },
-          errors: { field: keyof AppDocument; message: string; rule: string; }[]
+          errors: []
         });
       } else {
         results.push({
@@ -267,17 +268,15 @@ const exampleConfig: SnapshotStoreConfig<
     }
   ],
 
-  getOrCreateSnapshot: async <  
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
+  getOrCreateSnapshot: async(
     id: string,
     baseData: T,
-    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    storeProps: SnapshotStoreProps<  StorePropEntity,
+  StorePropK,
+  StorePropMeta,
+  StorePropAttachment,
+  StorePropExcludedFields,
+  StorePropIncludedFields>
   ) => {
     const existing = internalCache.get(id);
     if (existing) {

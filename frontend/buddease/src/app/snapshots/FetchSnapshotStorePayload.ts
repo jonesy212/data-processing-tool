@@ -1,6 +1,6 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface FetchedSnapshotStore<  T extends BaseDataEntity,
   K extends T = T,

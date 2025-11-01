@@ -1,9 +1,9 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
+import { DatabaseService } from '@/app/config/DatabaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import DatabaseClient from '@/app/todos/tasks/DatabaseClient';
-import { DatabaseService } from '@/config//DatabaseConfig';
 
 type AppProject = Project<
   ProjectEntity,
@@ -23,8 +23,8 @@ type ProjectExcludedFields = DefaultExcludedFields<ProjectEntity>;
 type ProjectIncludedFields = keyof ProjectEntity; // defaults to everything
 
 // Concrete aliases
-type ProjectSnapshot = Snapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
-type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
+type ProjectSnapshot = Snapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 class ProjectModel <
   T extends BaseDataEntity,

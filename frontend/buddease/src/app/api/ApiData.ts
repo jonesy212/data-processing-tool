@@ -7,12 +7,12 @@ import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { notificationStore } from '@/app/features/support/NotificationProvider';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { addLog } from '@/app/state/redux/slices/LogSlice';
-import HighlightEvent from '@/components/documents/screenFunctionality/HighlightEvent';
-import { YourResponseType } from '@/components/typings/types';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import HighlightEvent from '@/app/documents/highlighting/screenFunctionality/HighlightEvent';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/api/headers/HeadersConfig';
-import { Version } from '@/versions/Version';
+import { VersionData } from "@/app/versions/VersionData";
 import { AxiosError, AxiosResponse } from 'axios';
 import internalApiService from "./ApiClient"; // ✅ ADD THIS
 

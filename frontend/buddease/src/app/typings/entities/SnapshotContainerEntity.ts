@@ -1,3 +1,15 @@
+
+
+import { SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity'
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer'
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/config/BaseConfig";
+
 export type SnapshotContainerEntity<
   T extends BaseDataEntity,
   K extends T = T,

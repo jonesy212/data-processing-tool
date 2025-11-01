@@ -3,6 +3,8 @@ import { sendEmail } from "@/api/sendEmail";
 import { sendSMS } from "@/api/sendSMS";
 import * as articleApi from '@/app/api/articleApi';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
+import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
     NotificationTypeEnum,
     useNotification,
@@ -10,6 +12,7 @@ import {
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData } from '@/app/models/data/Data';
 import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "@/app/models/data/StatusType";
@@ -19,16 +22,15 @@ import { Article } from "@/app/pages/blog/Blog";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { updateProject } from "@/app/state/redux/slices/ProjectManagerSlice";
-import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import NotificationManager from "@/app/components/support/NotificationManager";
+import { useMeta } from '@/app/config/useMeta';
+import { useMetadata } from '@/app/config/useMetadata';
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { CombinedEvents, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
@@ -37,9 +39,7 @@ import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
-import { useMeta } from '@/config/useMeta';
-import { useMetadata } from '@/config/useMetadata';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
  const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -240,7 +240,7 @@ const {
           Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
         > {
           // Prepare the necessary inputs
-          const snapshotManager = await useSnapshotManager<T, K>(storeId);
+          const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId);
           const snapshotId = await snapshot.store.snapshotId;
           const eventData: BaseData<any, any, StructuredMetadata<any, any>> = {/* your event data */};
           const category = "EventSystem"; // Your category

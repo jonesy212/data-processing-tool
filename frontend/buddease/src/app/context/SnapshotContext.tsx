@@ -1,17 +1,16 @@
 // // SnapshotContext.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import {
+  createCompleteSnapshot
+} from '@/app/snapshots/createSnapshotStoreOptions';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
-import {
-  createBasicSnapshot,
-  createCompleteSnapshot
-} from '@/app/snapshots/createSnapshotStoreOptions';
 const fetchSnapshotFromAPI = async <  
   T extends BaseDataEntity,
   K extends T = T,

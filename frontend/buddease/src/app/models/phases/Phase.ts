@@ -1,6 +1,9 @@
 import { AppPhase, PhaseMilestone } from '@/app//typings/entities/PhaseEntity';
 import { addPhase } from "@/app/api/ApiPhases";
 import { Label } from '@/app/branding/BrandingSettings';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
@@ -16,11 +19,8 @@ import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { ValidationResult } from '@/app/snapshots/ValidationRule';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { PhaseMeta } from '@/app/typings/phaseTypes';
 import { FC } from "react";
-import { PhaseMeta } from '@/app/typings/phaseTypes'
 
 interface PhaseData<
   T extends BaseDataEntity,
@@ -82,17 +82,12 @@ export interface Phase<
   id: string;
   index?: number;
   name: string;
+  duration?: number;
   description: string | undefined
   startDate?: Date | undefined;
   endDate?: Date | undefined;
-  subPhases?: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  component?: FC<any>; // Adjust to accept any props
-  hooks?: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  component?: FC<any>; 
   data?: any;
-  lessons?: Lesson[];
-  duration?: number;
-  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  members?: Member[];
   color?: string;
   status?: string;
   isActive?: boolean;
@@ -100,15 +95,20 @@ export interface Phase<
   responsibleUsers?: string[]; // IDs of users responsible for the phase
   isComplete?: boolean;
   projectId: string;
-  // status: 'planned' | 'active' | 'completed' | 'cancelled';
-  progress?: number; // 0-100
-  dependencies?: Dependency[]; // Phase IDs this phase depends on
   assignedTeamIds?: string[];
   budget?: number;
   actualCost?: number;
-  milestones?: PhaseMilestone[];
+  progress?: number;
+  members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  lessons?: Lesson[];
   documents?: string[]; // Document IDs associated with this phase
+  subPhases?: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  hooks?: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  dependencies?: Dependency[]; // Phase IDs this phase depends on
+  milestones?: PhaseMilestone[];
   __typename?: "Phase";
+  // status: 'planned' | 'active' | 'completed' | 'cancelled';
 }
 
 export class PhaseImpl<
@@ -140,7 +140,7 @@ export class PhaseImpl<
   duration: number = 0;
   lessons: Lesson[] = [];
   tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  members?: Member[];
+  members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   color?: string;
   status?: string;
   isActive?: boolean = true;
@@ -158,7 +158,7 @@ export class PhaseImpl<
   title: string = "";
   date: Date = new Date();
   collaborationOptions?: CollaborationOptions[];
-  participants?: Member[];
+  participants?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   details?: DetailsItem<any>;
   categories?: string[];
@@ -192,7 +192,7 @@ export class PhaseImpl<
     duration?: number;
     lessons?: Lesson[];
     tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-    members?: Member[];
+    members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     color?: string;
     status?: string;
     isActive?: boolean;
@@ -210,7 +210,7 @@ export class PhaseImpl<
     title?: string;
     date?: Date;
     collaborationOptions?: CollaborationOptions[];
-    participants?: Member[];
+    participants?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     details?: DetailsItem<any>;
     categories?: string[];

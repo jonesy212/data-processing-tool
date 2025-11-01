@@ -1,9 +1,9 @@
-import { BackendConfig } from '@/config/BackendConfig';
-import { DataVersions } from '@/configs/DataVersionsConfig';
-import { FrontendConfig } from '@/config/FrontendConfig';
-import { UserSettings } from '@/config/UserSettings';
+import { BackendConfig } from '@/app/config/BackendConfig';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
+import { FrontendConfig } from '@/app/config/FrontendConfig';
+import { UserSettings } from '@/app/config/UserSettings';
 import BackendStructure from '@/config/appStructure/BackendStructure';
-import FrontendStructure from '@/config/appStructure/FrontendStructure';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import { AsyncHook } from 'async_hooks';
 import axios from 'axios';
 import { RealtimeData } from '@/models/realtime/RealtimeData';

@@ -1,15 +1,14 @@
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
-// Import from your existing types and classes
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // --- Enhanced delegate helper with SimulatedDataSource support ---
 async function getDelegate<

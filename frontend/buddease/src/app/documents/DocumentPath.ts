@@ -7,8 +7,8 @@ import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
-import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface DocumentPath<

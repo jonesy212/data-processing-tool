@@ -1,9 +1,9 @@
-import { SecuritySettings } from '@/app/components/settings/SecuritySettings';
-import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
-import { DocumentEditingPermissions } from "@/app/permissions/Permission";
-import { GeneralNotificationTypes } from "@/app/settings/NotificationChannels";
-import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import { CryptoPreferences } from "@/config/UserPreferences";
+import { SecuritySettings } from '@/app/settings/SecuritySettings'
+import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
+import { DocumentEditingPermissions } from '@/app/permissions/Permission';
+import { GeneralNotificationTypes } from '@/app/notifications/NotificationChannels';
+import { PrivacySettings } from '@/app/settings/PrivacySettings';
+import { CryptoPreferences } from '@/app/config/UserPreferences';
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {

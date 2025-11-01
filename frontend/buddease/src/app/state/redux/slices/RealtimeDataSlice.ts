@@ -1,5 +1,5 @@
 import { RealtimeData } from '@/app/components/models/realtime/RealtimeData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 

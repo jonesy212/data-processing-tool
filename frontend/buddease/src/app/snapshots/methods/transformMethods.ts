@@ -7,7 +7,7 @@ import { SnapshotCoreBase } from '@/app/snapshots';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
 import { Subscriber } from "@/app/users/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 
 // -------------------------------
 // SnapshotStore Cnfig with Core

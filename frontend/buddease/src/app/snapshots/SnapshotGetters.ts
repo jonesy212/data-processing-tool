@@ -1,6 +1,6 @@
 // SnapshotGetters.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 
 interface SnapshotGetters<

@@ -1,4 +1,5 @@
 // ApiDataAnalysis.ts
+import {DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
@@ -21,7 +22,7 @@ import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 
@@ -615,7 +616,7 @@ export const fetchAnalysisResults = <
 };
 
 // Function to check if an object conforms to DataAnalysisResult interface
-const isDataAnalysisResult = (obj: any): obj is DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+const isDataAnalysisResult = (obj: any): obj is DataAnalysisResult<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> => {
   return (
     typeof obj === "object" &&
     typeof obj.id === "number" &&

@@ -12,13 +12,13 @@ import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import MobXEntityStore from '@/app/state/stores/MobXEntityStore';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import getAppPath from '@/config//appStructure/appPath';
-import { AppStructureItem, AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { DataVersions } from "@/configs/DataVersionsConfig";
+import getAppPath from '@/app/config/appStructure/appPath';
+import { AppStructureItem, AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
+import FrontendStructure, { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { BuildVersion, Version, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
 
@@ -80,7 +80,7 @@ interface SharedUpdateHistory<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T> {
-  lastUpdated?: Date | VersionHistory<T, K>;
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   changeLogSummary?: string;
 }
 
@@ -96,7 +96,7 @@ interface VersionHistory<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedUpdateHistory {
+> extends SharedUpdateHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | {};
   latestVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   history?: HistoryEntry[];
@@ -106,12 +106,16 @@ interface VersionHistory<
 
 interface VersionedDataItem<
   T extends BaseDataEntity,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
-  extends CoreDataItem<T, K> {
-  versions?: DataVersions;
-  versionData?: VersionData<T, K> | null;
-  items?: Record<string, VersionedDataItem<T, K>>;
+  extends CoreDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  items?: Record<string, VersionedDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 
@@ -122,10 +126,10 @@ interface AppStructureDataItem<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends CoreDataItem<T, K>,
+> extends CoreDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versions?: DataVersions;
+  versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: VersionData<BaseDataEntity, BaseDataEntity> | null;
   items?: Record<string, AppStructureDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
@@ -138,22 +142,22 @@ interface ExtendedVersionData<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >
-  extends VersionedDataItem<T, K>,
+  extends VersionedDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedVersioning,
   SharedAuditInfo,
   SharedTimestamps {
 
   // Version-specific properties
   url?: string;
-  appVersion?: string;
+  appVersion: string;
   documentId?: string;
   userId?: string;
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
-  versionHistory: VersionHistory<T, K>;
+  versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   releaseDate?: string | Date;
-  lastUpdated?: Date | VersionHistory<T, K>;
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   buildVersions?: BuildVersion;
   currentHash: string;
 
@@ -170,8 +174,15 @@ interface SharedVersionData {
   patch?: number,
 }
 
-interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity, K extends T = T> {
-  lastUpdated?: Date | VersionHistory<T, K>;  // Match the broader type
+interface SharedUpdateHistory<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;  // Match the broader type
   timestamp: string | number | Date | undefined;
   changeLogSummary?: string;
 }
@@ -245,7 +256,7 @@ export interface VersionData<
   services?: Record<string, any>;
 
   // Structure
-  _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 

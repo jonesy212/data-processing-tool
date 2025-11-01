@@ -1,14 +1,13 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
+import { Tag } from "@/app/components/models/tracker/Tag";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { T } from '@/app/models/data/dataStoreMethods';
-import { Member } from "@/app/components/models/teams/TeamMembers";
-import { Tag } from "@/app/components/models/tracker/Tag";
+import { Member } from '@/app/models/members/Member';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
-import { produce } from "immer"; 
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { produce } from "immer";
 // Import immer for immutable updates
 import { WritableDraft } from "@/app/ReducerGenerator";
 

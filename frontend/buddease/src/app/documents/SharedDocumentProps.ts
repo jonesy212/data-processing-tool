@@ -15,9 +15,9 @@ import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import AccessHistory from '@/app/versions/AccessHistory';
 import AppVersionImpl from "@/app/versions/AppVersion";
 import { VersionData } from '@/app/versions/VersionData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
 

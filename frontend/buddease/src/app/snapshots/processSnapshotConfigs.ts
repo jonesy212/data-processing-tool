@@ -7,7 +7,7 @@ import { SnapshotStoreConfig, snapshotStoreConfigs } from '@/app/snapshots/Snaps
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields} from '@/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields} from '@/app/config/BaseConfig';
 
 
 const processSnapshotConfigs = async <

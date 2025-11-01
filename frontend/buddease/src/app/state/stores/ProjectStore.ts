@@ -12,7 +12,7 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { StateType } from "@/app/typings/StateType";
 import { User, VisualizationData } from "@/app/users/User";
 
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";

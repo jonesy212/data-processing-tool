@@ -1,9 +1,28 @@
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typiings/entities/VideoEntity'
+
 import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+
+
+export interface Video {
+  id: string; 
+  content: string;
+  watchLater: boolean;
+  tags: string[];
+  isActive: boolean;
+  url?: string;
+
+  resolution?: string;
+  duration?: number;
+  uploadedBy?: string;
+  thumbnailUrl?: string;
+  currentMeta?: any;
+  currentMetadata?: any;
+  [key: string]: any;
+}
 
 interface VideoData<
   T extends BaseDataEntity,
@@ -85,7 +104,7 @@ interface VideoData<
 // Now the videos record:
 const videos: Record<
   string,
-  Video<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>[]
+  Video[]
 > = {
   someCategory: [
     {

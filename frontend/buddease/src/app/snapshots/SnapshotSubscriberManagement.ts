@@ -1,4 +1,5 @@
 // SnapshotSubscriberManagement.ts
+import { EventManagement } from '@/app/snapshots/SnapshotEvents'
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
@@ -8,7 +9,7 @@ import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataS
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { SnapshotEvent } from '@/typings/eventTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 
@@ -25,8 +26,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Content } from '@/app/models/content/AddContent';
 import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 

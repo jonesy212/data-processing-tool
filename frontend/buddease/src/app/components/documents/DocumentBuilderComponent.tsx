@@ -4,12 +4,13 @@ import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentB
 import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import AccessHistory from '@/app/versions/AccessHistory';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { getDefaultDocumentOptions } from "@/documents/DocumentOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DocumentFormattingOptions } from "./DocumentFormattingOptionsComponent";
+
 const dispatch = useDispatch()
 
 function formatDocument<
@@ -20,9 +21,9 @@ function formatDocument<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  documentObject: DocumentObject<T, K>,
+  documentObject: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   options: DocumentFormattingOptions
-): DocumentObject<T, K> {
+): DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Apply formatting options to the document (e.g., page size, margins, styles)
   documentObject.size = options.pageSize;
   documentObject.margins = options.margins;

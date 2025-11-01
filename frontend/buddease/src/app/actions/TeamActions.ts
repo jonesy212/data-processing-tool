@@ -2,7 +2,7 @@
 
 import { createAction } from "@reduxjs/toolkit";
 import { Team } from "@/app/models/teams/Team";
-import { Member } from "@/app/models/teams/TeamMembers";
+import { Member } from "@/app/models/members/Member";
 
 export const TeamActions = {
   // Standard actions

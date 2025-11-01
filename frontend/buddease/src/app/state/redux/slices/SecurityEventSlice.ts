@@ -1,4 +1,4 @@
-import { endpoints } from '@/app/api/ApiEndpoints';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { StatusUpdate, SubscriptionCriteria } from '@/app/generators/SubscriptionCriteria';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';

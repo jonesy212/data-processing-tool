@@ -1,6 +1,6 @@
 // DocumentPage.tsx
 import RootLayout from "@/app/RootLayout";
-import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import { ReactNode, useState } from "react";
 import DocumentBuilder from "@/app/documents/editing/DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";

@@ -3,7 +3,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DocumentMetadata } from '@/app/state/stores/DocumentStore';
 import { DocumentContent } from '@/CommonData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Data } from '@/Data';
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 

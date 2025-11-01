@@ -7,7 +7,7 @@ import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { Tag } from '@/appp/models/tracker/Tag';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CommonData, Customizations } from '@/models/CommonDetails';
 import React from 'react';
 

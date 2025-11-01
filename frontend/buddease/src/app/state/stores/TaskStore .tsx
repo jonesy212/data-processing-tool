@@ -30,7 +30,7 @@ import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";

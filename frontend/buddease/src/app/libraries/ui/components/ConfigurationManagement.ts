@@ -2,7 +2,7 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface ConfigurationManagement<

@@ -1,16 +1,14 @@
 // NotificationContext.ts
 
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { NOTIFICATION_TYPES } from '@/app/features/support/NotificationTypes'
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { NotificationPosition, PriorityTypeEnum } from '@/app/models/data/StatusType';
-import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice';
 import NotificationStore from '@/app/state/stores/NotificationStore';
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { createContext, useContext } from 'react';
-import { 
-  NOTIFICATION_TYPES, 
-  NotificationType as MainNotificationType 
-} from '@/app/features/support/NotificationTypes';
-
 
 interface NotificationOptions {
   dataId?: string;
@@ -26,7 +24,14 @@ interface NotificationOptions {
   };
 }
 
-interface NotificationContextProps {
+interface NotificationContextProps <
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >{
   notify: (
     id: string,
     message: string,
@@ -38,10 +43,10 @@ interface NotificationContextProps {
   setDuration: (duration: number) => void;
   setNotifications: (notifications: Notification[]) => void;
   
-  showNotification: (title: string, message: string | Message, content?: any) => void;
-  showSuccessNotification: (title: string, message: string | Message, content?: any) => void;
-  showErrorNotification: (title: string, message: string | Message, content?: any) => void;
-  showInfoNotification: (title: string, message: string | Message, content?: any) => void;
+  showNotification: (title: string, message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content?: any) => void;
+  showSuccessNotification: (title: string, message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content?: any) => void;
+  showErrorNotification: (title: string, message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content?: any) => void;
+  showInfoNotification: (title: string, message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content?: any) => void;
   addNotification: (notification: NotificationData<any>) => void;
   sendNotification: (
     notification: NotificationData<any> | string,
@@ -65,11 +70,13 @@ type CustomNotificationType = "RandomDismiss";
 
 const NotificationTypeEnum = NOTIFICATION_TYPES;
 
-type NotificationType = MainNotificationType 
-  | DocumentTypeEnum 
+type NotificationType =  DocumentTypeEnum 
   | PriorityTypeEnum 
-  | CustomNotificationType;
+  | CustomNotificationType
+  | typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES]; // Add this line
 
+
+type MainNotificationType = NotificationType
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
 
 const NotificationContext = createContext<NotificationStore | null>(null);
@@ -99,4 +106,5 @@ export const useNotificationStore = (): NotificationStore => {
 };
  
 export { NotificationTypeEnum, useNotification };
-export type { NotificationContextProps, NotificationContextType, NotificationOptions, NotificationType };
+export type { NotificationContextProps, NotificationContextType, NotificationOptions, NotificationType, MainNotificationType };
+

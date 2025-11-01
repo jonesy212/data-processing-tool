@@ -1,7 +1,5 @@
 // useSnapshotManager.ts
 import { getStoreId } from '@/app/api/ApiData';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { fetchEventId } from '@/app/api/ApiEvent';
 import createSnapshot from '@/app/api/SnapshotApi';
 import {
@@ -17,11 +15,11 @@ import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/projec
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { processSnapshot, Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';
@@ -33,16 +31,16 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { isSnapshotWithCriteria } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UpdateSnapshotPayload } from "@/server/database/Payload";
-import { createMetadata } from '@/server/metadata/createMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 import { useEffect, useState } from "react";
 import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
-
+import { ExtractContextArgs } from '@/app/snapshots/SnapshotEvents'
 const { notify } = useNotification();
 
 interface CombinedEvents<
@@ -122,7 +120,7 @@ interface SnapshotManager<
   IncludedFields extends keyof T = keyof T,
 >  {
     // Composition: HAS a snapshot instead of IS a snapshot
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  // snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Manager-specific properties
   state: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

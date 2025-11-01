@@ -2,7 +2,8 @@
 // import { SnapshotStoreOptions } from '@/app/hooks/SnapshotStoreOptions';
 // import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 // import { Data } from '@/app/models/data/Data';
-// import { Callback, MultipleEventsCallbacks } from '@/app/snapshots/index';
+// import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+// import { MultipleEventsCallbacks } from '@/app/snapshots/index';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 
 

@@ -1,43 +1,45 @@
 // CollaborationSlice.ts
-import { WritableDraft } from "@/app/ReducerGenerator";
 import UserService, {
-  userId,
-  userService,
+    userId,
+    userService,
 } from "@/app/api/ApiUser";
-import { Communication } from "@/app/communications/chat/Communication";
 import Milestone from "@/app/components/calendar/CalendarSlice";
+import { Communication } from "@/app/components/communications/CommunicationPage";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
+import CommunityContribution from "@/app/components/crypto/CommunityContribution";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-import { mergeChanges } from "@/app/components/documents/editing/autosave";
-import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
-import { Todo } from "@/app/components/todos/Todo";
-import { Idea } from "@/app/components/users/Ideas";
-import CommunityContribution from "@/app/crypto/CommunityContribution";
+import { Whiteboard } from "@/app/components/whiteboard/Whiteboard";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { DocumentBuilderOptions } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { Change } from "@/app/documents/NoteData";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { mergeChanges } from "@/app/documents/editing/autosave";
 import { Feedback } from "@/app/features/support/Feedback";
+import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { Member } from '@/app/models/members/Member';
 import { Project } from '@/app/models/projects/Project';
 import CollaborationSettings from "@/app/pages/community/CollaborationSettings";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
+import { SecurityMeasure } from "@/app/server/security/SecurityMeasures";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { useUIManager } from "@/app/state/stores/UISlice";
 import { Document } from "@/app/stores/DocumentStore";
-import { useUIManager } from "@/app/stores/UISlice";
+import { Todo } from "@/app/todos/Todo";
+import { Idea } from "@/app/users/Ideas";
 import { VersionData } from "@/app/versions/VersionData";
-import { Whiteboard } from "@/app/whiteboard/Whiteboard";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { RootState } from "@/state/redux/slices/RootSlice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-;
+
 interface Resource {
   id: string;
   name: string;
@@ -68,7 +70,7 @@ interface CollaborationState<
   sharedResources: Resource[];
   projects: Project[];
   milestones: Milestone[];
-  members: Member[];
+  members: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   cryptoTransactions: CryptoTransaction[];
   cryptoHoldings: CryptoHolding[];
   communityCoinLiquidity: CommunityCoinLiquidity;

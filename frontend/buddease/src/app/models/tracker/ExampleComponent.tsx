@@ -5,8 +5,8 @@ import React from 'react';
 import { NotificationData } from '@/app/components/features/support/NofiticationsSlice';
 import { UserData } from '@/app/components/users/User';
 import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
-import { Data } from '@/data/Data';
-import FileData from '@/data/FileData';
+import { Data } from '@/app/models/data/Data';
+import FileData from '@/app/models/data/FileData';
 import FolderData from '@/data/FolderData';
 import { CommonTrackerProps, TrackerProps } from '@/Tracker';
 

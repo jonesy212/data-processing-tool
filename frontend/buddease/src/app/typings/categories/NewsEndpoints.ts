@@ -1,7 +1,7 @@
 // NewsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface NewsEndpoints {
+export interface NewsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (newsId: number) => EndpointConfig;
   add: EndpointConfig;

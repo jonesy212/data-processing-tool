@@ -1,7 +1,7 @@
 // MetadataEntity.ts
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { AppBaseParams } from '@/app/typings/entities/AppEntity';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 
 type AppMetadataEntity = UnifiedMetadata<
   AppBaseParams["T"],

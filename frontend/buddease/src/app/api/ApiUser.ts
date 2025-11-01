@@ -22,7 +22,14 @@ interface AdminUser extends UserProfile {
   canDeleteProjects: boolean;
 }
 
-interface UserProfile extends User {
+interface UserProfile<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends UserT, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   name: string;
   email: string;
@@ -63,7 +70,7 @@ class UserService {
  // Define the API base URL
 
 // Update the createUser method
-createUser = async (newUser: User) => {
+createUser = async (newUser: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   try {
     const API_ADD_ENDPOINT = API_BASE_URL.add;
     if (!API_ADD_ENDPOINT) {
@@ -85,7 +92,7 @@ createUser = async (newUser: User) => {
 
 // We can then import and use these actions wherever needed in our application.
 
-static fetchUser = async (userId: User["id"], authToken: string) => {
+static fetchUser = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], authToken: string) => {
   try {
     // Construct the API endpoint without using dot-prop
     const API_SINGLE_ENDPOINT = `${API_BASE_URL}/single/${userId}`;
@@ -248,7 +255,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
     }
   };
 
-  updateUser = async (userId: User["id"], updatedUserData: User) => {
+  updateUser = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], updatedUserData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
       const response = await axiosInstance.put(
         `${dotProp.getProperty(API_BASE_URL, "update", [userId as number])}`,
@@ -311,7 +318,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
     }
   };
 
-  updateUsers = async (updatedUsersData: User) => {
+  updateUsers = async (updatedUsersData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
       const updateListEndpoint = dotProp.getProperty(
         API_BASE_URL,
@@ -338,7 +345,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
     }
   };
 
-  deleteUser = async (user: User) => {
+  deleteUser = async (user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
       const removeEndpoint = dotProp.getProperty(API_BASE_URL, "remove", [
         user.id as number,
@@ -360,7 +367,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
     }
   };
 
-  deleteUsers = async (userIds: User["id"][]) => {
+  deleteUsers = async (userIds: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"][]) => {
     try {
       const listEndpoint = dotProp.getProperty(API_BASE_URL, "list") as string;
       if (!listEndpoint) {
@@ -368,7 +375,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
       }
       await axiosInstance.delete(listEndpoint, { data: { userIds } });
       // Dispatch the success action
-      UserActions.deleteUsersSuccess(userIds as User["id"][] as number[]);
+      UserActions.deleteUsersSuccess(userIds as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"][] as number[]);
       sendNotification("Users deleted successfully");
     } catch (error) {
       // Dispatch the failure action
@@ -404,7 +411,7 @@ static fetchUser = async (userId: User["id"], authToken: string) => {
   };
 
   // Assign role to user
-   assignUserRole = async (userId: User["id"], role: string) => {
+   assignUserRole = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], role: string) => {
     try {
       // Implement logic to assign the role to the user
       const assignRoleEndpoint = dotProp.getProperty(
@@ -468,7 +475,7 @@ updateUserRoles = async (users: {
 };
 
   // Assign project ownership to a user
-  assignProjectOwner = async (userId: User["id"], projectId: string) => {
+  assignProjectOwner = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], projectId: string) => {
     try {
       // Implement logic to assign project ownership
       const assignProjectOwnerEndpoint = dotProp.getProperty(
@@ -489,7 +496,7 @@ updateUserRoles = async (users: {
   };
 
   // Remove project ownership from a user
-  removeProjectOwner = async (userId: User["id"], projectId: string) => {
+  removeProjectOwner = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], projectId: string) => {
     try {
       // Implement logic to remove project ownership
       const removeProjectOwnerEndpoint = dotProp.getProperty(
@@ -510,7 +517,7 @@ updateUserRoles = async (users: {
   };
 
   // Ensure NFT reflects user role accurately
-  updateNFTUserRole = async (userId: User["id"], role: string) => {
+  updateNFTUserRole = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], role: string) => {
     try {
       // Implement logic to update the user's NFT to reflect their role
       const updateNFTUserRoleEndpoint = dotProp.getProperty(
@@ -530,7 +537,7 @@ updateUserRoles = async (users: {
     }
   };
 
-  updateUserRole = async (userId: User["id"], role: User["role"]) => {
+  updateUserRole = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], role: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["role"]) => {
     try {
       const updateRoleEndpoint = dotProp.getProperty(
         API_BASE_URL,
@@ -554,9 +561,9 @@ updateUserRoles = async (users: {
   };
 
   bulkUpdateUserRoles = async (usersWithUpdatedRoles: {
-    userId: User["id"];
-    role: User["role"];
-  }): Promise<User[]> => {
+    userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"];
+    role: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["role"];
+  }): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
     try {
       const bulkUpdateRoleEndpoint = dotProp.getProperty(
         API_BASE_URL,

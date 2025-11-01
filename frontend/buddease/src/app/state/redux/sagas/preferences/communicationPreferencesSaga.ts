@@ -1,5 +1,5 @@
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { UserCommunicationPreferencesActions } from '@/config//UserPreferencesActions';
+import { UserCommunicationPreferencesActions } from '@/app/config/UserPreferencesActions';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, put, takeLatest } from 'redux-saga/effects';
 

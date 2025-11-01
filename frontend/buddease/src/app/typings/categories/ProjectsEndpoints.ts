@@ -1,8 +1,8 @@
 // ProjectsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
 
-export interface ProjectsEndpoints {
+export interface ProjectsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (projectId: number) => EndpointConfig;
   add: EndpointConfig;

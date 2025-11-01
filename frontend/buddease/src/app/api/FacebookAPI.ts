@@ -5,7 +5,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { Note, handleNoteApiErrorAndNotify } from '@/ApiNote';
 import axiosInstance from '@/app/api/csrfToken';
 import { headersConfig } from '@/components/shared/SharedHeaders';
-import { authToken } from '@/server/auth/authToken';
+import { authToken } from '@/app/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
 
 // Define the base URL for Facebook API

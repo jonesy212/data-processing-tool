@@ -1,4 +1,4 @@
-import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Member } from '@/app/models/members/Member';
 
 // InvitationData.tsx
 interface InvitationData {

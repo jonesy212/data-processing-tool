@@ -2,9 +2,9 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import { createErrorNotificationContent, errorLogger } from "@/app/libraries/logging/Logger";
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import { Payload } from '@/server/database/Payload';
+import { Payload } from '@/app/server/database/Payload';
 import React, { useState } from 'react';
 
 

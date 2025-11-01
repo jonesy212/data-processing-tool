@@ -1,16 +1,16 @@
 // CourseBuilder.tsx
 
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from '@/app/models/phases/Phase';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMetadata } from "@/config/useMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMetadata } from "@/app/config/useMetadata";
 import { createMeta } from "@/server/metadata/MetadataHooks";
-import { Attachment } from '@/app/documents/attachment/Attachment'
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Interfaces for course structure
 interface Lesson {

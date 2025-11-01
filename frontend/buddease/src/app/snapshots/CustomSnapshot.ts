@@ -1,40 +1,11 @@
-import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
-import { Order } from "@/app/components/crypto/Orders";
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
-import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
-import { ChildRelationship, SharedRelationshipData } from '@/app/models/data/Data';
-import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
+import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
-import { SnapshotInitialization } from '@/app/snapshots/SnapshotInitialization';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { AuditRecord } from "@/app/subscribers/Subscriber";
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscription } from "@/app/subscriptions/Subscription";
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { VersionHistory } from "@/app/versions/VersionData";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotMethods } from "./SnapshotMethods";
-import { SnapshotSecurity } from "./SnapshotSecurity";
-import SnapshotStore from "./SnapshotStore";
-import { InitializedData } from "./SnapshotStoreOptions";
-import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface CustomSnapshot<

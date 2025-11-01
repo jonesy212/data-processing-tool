@@ -1,13 +1,28 @@
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { UILogger } from '@/app/libraries/loggiing/Logger';
+import { UILogger } from '@/app/libraries/logging/Logger';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType } from "@/context/NotificationContext";
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
 
 interface AreaDimensions {
   width: number;
   height: number;
+}
+
+interface Area {
+  prefix: string;
+  name: string;
+  type: NotificationType;
+  id: string;
+  title: string;
+  chatThreadName?: string; 
+  chatMessageId?: string; 
+  chatThreadId?: string; 
+  dataDetails?: { [key: string]: any }; 
+  generatorType?: string; 
+  dimensions: AreaDimensions; 
 }
 
 interface FetchOptions<  
@@ -96,19 +111,6 @@ interface FetchOptions<
   };
 }
 
-interface Area {
-  prefix: string;
-  name: string;
-  type: NotificationType;
-  id: string;
-  title: string;
-  chatThreadName?: string; 
-  chatMessageId?: string; 
-  chatThreadId?: string; 
-  dataDetails?: { [key: string]: any }; 
-  generatorType?: string; 
-  dimensions: AreaDimensions; 
-}
 
 export const fetchUserAreaDimensions = <
   T extends BaseDataEntity,
@@ -217,10 +219,10 @@ const initializeArea = async (): Promise<Area> => {
 
   console.log('Initialized Area:', area);
 
-  const options: FetchOptions = {
+  const options: FetchOptions<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> = {
     elementId: area.id, 
     listenForResize: true, 
-    onChange: (dimensions) => {
+    onChange: (dimensions: AreaDimensions) => {
       console.log(`Updated dimensions for area "${area.name}":`, dimensions);
     }
   };
@@ -233,5 +235,5 @@ const initializeArea = async (): Promise<Area> => {
 
 initializeArea();
 
-export type { Area, FetchOptions };
+export type { Area, FetchOptions, AreaDimensions };
 

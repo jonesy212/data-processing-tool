@@ -1,11 +1,13 @@
 import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields } from '@/app/typings/entities/TaskEntity';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { AllTypes } from '@/app/typings/PropTypes';
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SpecificMetadata } from '@/config/StructuredMetadata';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SpecificMetadata } from '@/app/config/StructuredMetadata';
 import React from 'react';
+import { TagComponent } from '@/app/components/models/tracker/TagComponent'
 
 interface TagOptions<
   T extends BaseDataEntity,
@@ -24,6 +26,7 @@ interface TagOptions<
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   timestamp: number;
 }
+
 
 // Define the Tag interface and TagOptions interface
 interface Tag<
@@ -73,13 +76,7 @@ const tagOptions1: TagOptions<BaseDataEntity> = {
   nulltype: {} as AllTypes
 };
 
-const tagOptions2: TagOptions<TagEntity,
-TagK,
-TagMeta,
-TagAttachment,
-TagIncludedFields,
-TagExcludedFields
-> = {
+const tagOptions2: TagOptions<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -94,8 +91,8 @@ TagExcludedFields
   nulltype: {} as AllTypes
 };
 
-const tag1: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions1} />;
-const tag2: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions2} />;
+const tag1: React.ReactElement = <TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> tagOptions={tagOptions1} />;
+const tag2: React.ReactElement = <TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> tagOptions={tagOptions2} />;
 
 // Example usage of functions
 tag1.props.children;
@@ -118,7 +115,14 @@ const localeCompare = <
   return nameA.localeCompare(nameB);
 };
 
-const sortTags = <T extends BaseDataEntity, K extends T = T>(tags: TagOptions<T, K>[]) => {
+const sortTags = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(tags: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
   tags.sort(localeCompare);
   return tags;
 };

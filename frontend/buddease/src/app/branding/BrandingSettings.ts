@@ -26,7 +26,7 @@ interface BrandingSettings {
   successColor: string;
   errorColor: string;
   warningColor: string;
-  infoColor: string;
+  infoColor?: string;
   
   // ===== DARK MODE =====
   darkModeBackground: string;

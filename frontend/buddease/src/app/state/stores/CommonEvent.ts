@@ -1,10 +1,10 @@
 // CommonEvent.ts
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -26,7 +26,7 @@ import { VideoData } from '@/app/typings/videoTypes';
 import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { useMetadata } from '@/config/useMetadata';
+import { useMetadata } from '@/app/config/useMetadata';
 
 interface CommonEvent<
   T extends BaseDataEntity,
@@ -55,7 +55,7 @@ interface CommonEvent<
   // Other common properties
   category?: symbol | string | Category | undefined;
   timezone?: string;
-  participants: Member[];
+  participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   language?: string;
   agenda?: string;
   collaborationTool?: string;
@@ -275,17 +275,17 @@ export function implementThen<
       callback(newSnapshot as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
     
       // Return an appropriate SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> value.
-      return [newSnapshot as unknown as SnapshotUnion<T, K, Meta>];
+      return [newSnapshot as unknown as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;];
     }
   }
   callback(snapshot);
   return snapshot;
 }
 
-const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any>>(area);
+const metadata: UnifiedMetadata<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> = useMetadata<BaseData<any>>(area);
 
 // Define the `defaultCommonEvent` object using the `CommonEvent` interface
-const defaultCommonEvent: CommonEvent = {
+const defaultCommonEvent: CommonEvent<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> = {
   _id: "",
   id: "",
   title: "",
@@ -307,11 +307,14 @@ const defaultCommonEvent: CommonEvent = {
   tags: { },
   phase: null,
   // Implement the `then` function using the reusable function
-  then: <T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-    callback: (newData: Snapshot<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K>) => void) => implementThen(callback),
+  then: (
+    callback: (
+      newData: Snapshot<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields>
+    ) => void) => implementThen(callback),
   analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
   analysisResults: [],
-  videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  videoData: {} as VideoData<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields>,
 };
-export { CommonEvent, defaultCommonEvent };
+export { defaultCommonEvent };
+export type { CommonEvent };
 

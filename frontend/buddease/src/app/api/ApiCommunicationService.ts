@@ -1,11 +1,11 @@
-import { handleApiError, handleSnapshotApiError } from '@/app//errorHandlers';
+import { handleApiError, handleSnapshotApiError } from '@/app/api/SnapshotApi'
 import axiosInstance from '@/app/api/csrfToken';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ApiConfig } from "@/app/services/ConfigurationService";
+import { ApiConfig } from '@/app/api/ApiConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosResponse } from 'axios';
 

@@ -1,17 +1,26 @@
 import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { determineSubscriberType } from "@/app/subscriptions/SubscriptionLevel";
-import { Subscription } from "./Subscription";
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
  // Helper function to generate a unique event name based on user and snapshot
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;
 
-
-function getSubscription<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function getSubscription<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   userId: string,
   snapshotId: string
-): { subscription: Subscription<T, K> | null; subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null } {
+): { subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null } {
   const eventName = getEventName(userId, snapshotId);
   const subscribers = subscriptionServiceInstance.subscribers<T, K>(userId, snapshotId);
 

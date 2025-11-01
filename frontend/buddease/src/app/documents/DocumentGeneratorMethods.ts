@@ -6,10 +6,10 @@ import {
   getDocument,
   loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
-import { loadCryptoWatchlistFromDatabase } from "@/app/crypto/CryptoWatchlist";
-import { generateCryptoWatchlistJSON } from "@/app/crypto/generateCryptoWatchlistJSON";
+import { loadCryptoWatchlistFromDatabase } from "@/app/models/crypto/CryptoWatchlist";
+import { generateCryptoWatchlistJSON } from "@/app/models/crypto/generateCryptoWatchlistJSON";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { allowedDiagramFormats } from "@/app/form/FormatEnum";
+import { allowedDiagramFormats } from "@/app/components/form/FormatEnum";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
 import {
   Drawing,
@@ -19,7 +19,7 @@ import { generatePresentationJSON } from "@/app/libraries/presentations/generate
 import {
   DocumentSize
 } from "@/app/models/data/StatusType";
-import { sanitizeInput } from "@/app/security/SanitizationFunctions";
+import { sanitizeInput } from "@/app/models/crypto/SanitizationFunctions";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import {
@@ -28,16 +28,16 @@ import {
   CustomPDFProxyPage,
   DocumentPath,
   DocumentTypeEnum,
-} from "@/app/typings/documents";
-import { parseCSV } from "@/components/documents/parseCSV";
-import { parseDocx } from "@/components/documents/parseDocx";
-import { parseExcel } from "@/components/documents/parseExcel";
-import { extractPDFContent, PDFData, pdfParser } from "@/components/documents/parsePDF";
-import { parseXML } from "@/components/documents/parseXML";
-import { DatabaseConfig } from "@/config/DatabaseConfig";
-import { loadDrawingFromDatabase } from "@/config/database/updateDocumentInDatabase";
-import { fetchTextContentFromDatabase } from "@/server/database/DataBaseMethods";
-import loadDraftFromDatabase from "@/server/database/loadDraftFromDatabase";
+} from "@/app/typings/documentTypes";
+import { parseCSV } from "@/app/documents/parseCSV";
+import { parseDocx } from "@/app/documents/parseDocx";
+import { parseExcel } from "@/app/documents/parseExcel";
+import { extractPDFContent, PDFData, pdfParser } from "@/app/documents/parsePDF";
+import { parseXML } from "@/app/documents/parseXML";
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
+import { loadDrawingFromDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
+import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
 import Papa from "papaparse";
 import { PDFDocument } from "pdf-lib";
 import { AppType } from "vite";

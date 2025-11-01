@@ -1,5 +1,5 @@
 import Logger from '@/app/libraries/logging/Logger';
-import { databaseConfig } from '@/config/DatabaseConfig';
+import { databaseConfig } from '@/app/config/DatabaseConfig';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { User } from '@/app/users/User';

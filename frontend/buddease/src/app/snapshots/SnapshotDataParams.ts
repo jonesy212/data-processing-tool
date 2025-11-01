@@ -7,11 +7,11 @@ import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataS
 import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SnapshotEvent } from "@/app/typings/eventTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-import { BaseDataRoot } from '@/config/BaseConfig';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 
 
 interface SnapshotDataParams<

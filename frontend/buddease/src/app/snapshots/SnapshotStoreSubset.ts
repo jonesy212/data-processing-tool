@@ -1,6 +1,5 @@
 import { SnapshotData } from '@/app/snapshots';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { SnapshotEvent } from '@/app/typings/eventTypes';
 
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -12,8 +11,8 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import {
   Payload,
   UpdateSnapshotPayload
-} from "@/server/database/Payload";
-import { SnapshotOperation } from "./SnapshotActions";
+} from "@/app/server/database/Payload";
+import { SnapshotOperation } from "../actions/SnapshotActions";
 import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 
@@ -23,7 +22,7 @@ import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 
 // SnapshotStoreSubset.ts

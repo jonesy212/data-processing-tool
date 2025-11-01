@@ -1,7 +1,7 @@
 // ClientEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ClientEndpoints {
+export interface ClientEndpoints extends EndpointCategoryConfig {
   fetchClientDetails: (clientId: number) => EndpointConfig;
   updateClientDetails: (clientId: number) => EndpointConfig;
   connectWithTenant: (tenantId: number) => EndpointConfig;

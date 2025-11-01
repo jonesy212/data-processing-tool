@@ -1,6 +1,6 @@
 // app/api/toolbarApi.ts
 import internalApiService from './ApiClient';
-import { ToolbarItem } from '@/app/components/documents/ToolbarItem';
+import  ToolbarItem from '@/app/components/documents/ToolbarItem';
 
 export interface ToolbarItemData {
   id: string;

@@ -1,6 +1,6 @@
 // MyBlog.tsx
 import React from 'react';
-import BlogGenerator from '@/BlogGenerator';
+import BlogGenerator from '@/app/pages/blog/BlogGenerator';
 
 const MyBlog: React.FC = () => {
   const posts = [

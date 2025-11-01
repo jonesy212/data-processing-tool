@@ -1,5 +1,5 @@
 // Import necessary dependencies and constants
-import { UserVisualPreferencesActions } from "@/config/UserPreferencesActions";
+import { UserVisualPreferencesActions } from "@/app/config/UserPreferencesActions";
 import { ThemeService } from "@/app/libraries/theme/ThemeService";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { PayloadAction } from "@reduxjs/toolkit";

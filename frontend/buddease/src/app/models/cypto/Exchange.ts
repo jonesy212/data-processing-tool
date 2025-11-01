@@ -1,8 +1,8 @@
 // Exchange.ts
 
-import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { ExchangeData } from "@/app/models/data/ExchangeData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface Exchange<
   T extends BaseDataEntity = AppEntity,

@@ -4,8 +4,8 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UpdateSnapshotPayload } from "@/server/database/Payload";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 interface UpdateSnapshotParams<

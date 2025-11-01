@@ -1,6 +1,6 @@
 // BlogOverview.ts
 import React from 'react';
-import '@/BlogOverview.css'; // Import CSS for styling
+import '@/app/pages/blog/BlogOverview.css'; // Import CSS for styling
 
 interface BlogOverviewProps {
   title: string;

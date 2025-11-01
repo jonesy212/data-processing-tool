@@ -8,7 +8,7 @@ import { Persona } from '@/app/pages/personas/Persona';
 import { ProfileAccessControl } from '@/app/pages/profile/Profile';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { addMessage } from '@/app/state/redux/slices/ChatSlice';
-import { UserSettings } from '@/config//UserSettings';
+import { UserSettings } from '@/app/config/UserSettings';
 import { initiateBitcoinPayment, initiateEthereumPayment } from '@/initCryptoPayments';
 import { NotificationSettings } from '@/support/NotificationSettings';
 import { UserRole } from '@/users/UserRole';

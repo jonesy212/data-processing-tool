@@ -13,7 +13,7 @@ import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
-} from '@/config/BaseConfig';
+} from '@/app/config/BaseConfig';
 import { SimulatedDataSource } from '@/createSnapshotOptions';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";

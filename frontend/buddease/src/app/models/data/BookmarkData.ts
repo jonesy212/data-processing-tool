@@ -1,15 +1,14 @@
 // BookmarkData.ts
 
-import { Phase } from '@/app/models/phases/Phase';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { ProjectPhaseTypeEnum } from "./StatusType";
 import { PhaseDefault } from '@/app/typings/phaseTypes';
+import { ProjectPhaseTypeEnum } from "./StatusType";
 // Define the interface for BookmarkData
 interface BookmarkData {
     _id?: string;
     id: string;
     title?: string;
-    description?: string | null | undefined;
+    description?: string | undefined;
     startDate?: Date;
     endDate?: Date;
     createdAt?: Date;

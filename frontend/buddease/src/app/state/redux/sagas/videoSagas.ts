@@ -1,5 +1,5 @@
 // videoSaga.ts
-import { Video } from "@/app/stores/VideoStore";
+import { Video } from '@/app/typings/videoTypes/Video'
 import { videoService } from "@/app/api/ApiVideo";
 import { VideoActions } from "@/app/components/users/VideoActions";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";

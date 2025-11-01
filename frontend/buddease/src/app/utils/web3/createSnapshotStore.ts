@@ -5,7 +5,7 @@ import { SnapshotData } from '@/app/snapshots';
 import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotEvents } from "@/app/typings/eventTypes";
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -19,7 +19,7 @@ import {
   DefaultExcludedFields,
   DefaultIncludedFields,
   DefaultMeta
-} from '@/config/BaseConfig';
+} from '@/app/config/BaseConfig';
 
 // createSnapshotStore.ts
 function createSnapshotStore <
@@ -75,7 +75,7 @@ function createSnapshotStore <
       id: string,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
-      snapshotData: SnapshotData<T, K, Meta>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,

@@ -5,7 +5,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { CalendarEventManager } from '@/calendarEventManager';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface ScheduleConflict {
   eventId: string;

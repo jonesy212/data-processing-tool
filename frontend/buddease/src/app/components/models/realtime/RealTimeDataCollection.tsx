@@ -1,22 +1,22 @@
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
-import { DEX } from "@/app/crypto/DEX";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import useRealtimeDextData from "@/app/hooks/commHooks/useRealtimeDextData";
-import useRealtimeExchangeData from "@/app/hooks/commHooks/useRealtimeExchangeData";
-import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
-import { Exchange } from "@/app/models/cypto/Exchange";
-import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/models/cypto/exchangeIntegration";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import useRealtimeDextData from '@/app/hooks/commHooks/useRealtimeDextData';
+import useRealtimeExchangeData from '@/app/hooks/commHooks/useRealtimeExchangeData';
+import RealtimeUpdateCallback from '@/app/hooks/commHooks/useUIRealtimeData';
+import { DEX } from '@/app/models/cypto/DEX'
+import { Exchange } from '@/app/models/cypto/Exchange';
+import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from '@/app/models/cypto/exchangeIntegration';
 import { Data } from '@/app/models/data/Data';
 import SnapshotList, { SnapshotItem } from '@/app/snapshots/SnapshotList';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from "react-redux";
-import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
+import { useDispatch } from 'react-redux';
 
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import {
   BaseDataEntity
-} from '@/config/BaseConfig';
+} from '@/app/config/BaseConfig';
   
 
 
@@ -76,7 +76,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
       convertedDataItems.forEach((item) => {
         const snapshotItem: SnapshotItem<AnyData, AnyData> = {
           message: (type, content, additionalData, userId, sender, channel) => ({
-            id: UniqueIDGenerator.generateID("msg", "system", NotificationTypeEnum.MessageID),
+            id: UniqueIDGenerator.generateID("msg", "system", NotificationTypeEnum.MESSAGE_ID),
             sender,
             senderId: sender?.id,
             channel,
@@ -90,6 +90,14 @@ const RealTimeDataCollection: React.FC<{}> = () => {
             isUserMessage: true,
             receiver: undefined,
             isOnline: false,
+            isAuthorized: false,
+            //update these here after adding remaining missing
+            hasQuota: "",
+            processingTasks: "",
+            activityStatus: "",
+           
+// _______________________________________remove once above are finished being updated
+
             lastSeen: new Date(),
             description: "",
             createdAt: new Date(),

@@ -2,10 +2,10 @@ import { makeAutoObservable } from "mobx";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { isBrowser } from "@/app/utils/isBrowser"; // Import the isBrowser utility
-import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/app/BrowserBehaviorManager";
+import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import { RootStores } from "./RootStores";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscriber } from '@/app/users/Subscriber';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 
 class BrowserCheckStore {
   rootStores?: RootStores;

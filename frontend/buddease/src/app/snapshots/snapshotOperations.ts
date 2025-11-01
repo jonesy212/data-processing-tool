@@ -1,47 +1,48 @@
 // snapshotOperations.ts
-import { snapshotApi } from '@/app/api/snapshotApi';
-import { Member } from '@/app/models/teams/TeamMembers';
-import { ProjectStateEnum } from '@/app/models/data/StatusType';
-import { ProjectType } from '@/app/models/projects/Project';
+import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
+import { snapshotApi } from '@/app/api/snapshotApi';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
+import { ProjectStateEnum } from '@/app/models/data/StatusType';
+import { ProjectType } from '@/app/models/projects/Project';
+import { Member } from '@/app/models/teams/TeamMembers';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { Subscriber } from '@/app/subscribers/Subscriber';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { convertSnapshotContainerToStore } from '@/app/typings/YourSpecificSnapshotType';
-import { createVersionInfo } from '@/app/versions/createVersionInfo';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { SchemaField } from '@/server/database/SchemaField';
-import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
-import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
-import { VersionData } from '@/versions/VersionData';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotOperation } from '@/app/snapshots/SnapshotActions';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import {   SnapshotEntity,
-  SnapshotK,
-  SnapshotMeta,
-  SnapshotAttachment,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
+import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import {
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
+} from '@/app/typings/entities/SnapshotEntity';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { convertSnapshotContainerToStore } from '@/app/typings/YourSpecificSnapshotType';
+import { createVersionInfo } from '@/app/versions/createVersionInfo';
+import { VersionData } from '@/versions/VersionData';
 
 interface SnapshotOperations<
   T extends BaseDataEntity,
@@ -873,7 +874,7 @@ const takeSnapshot = async <
   projectType: ProjectType,                                                     // Param 3
   projectId: string,                                                            // Param 4
   projectState: ProjectStateEnum,                                               // Param 5
-  projectMembers: Member[]                                                      // Param 6
+  projectMembers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]                                                      // Param 6
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   
   // Create the snapshot via API or local factory
@@ -1106,9 +1107,9 @@ const configureSnapshot = <
 
 
 export {
-  clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-  getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
-  takeSnapshot, updateSnapshot, validateSnapshot
+    clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
+    getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+    takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };
 

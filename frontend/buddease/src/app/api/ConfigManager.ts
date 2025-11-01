@@ -1,7 +1,7 @@
 // ConfigManager.ts
 import { handleApiError } from "@/app/api/ApiLogs";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
-import { SharedConfig } from '@/config/BaseConfig';
+import { SharedConfig } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 // Import any other necessary dependencies

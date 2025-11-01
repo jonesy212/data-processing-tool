@@ -1,24 +1,24 @@
-import { AppStructurePermissions } from '@/app/config/appStructure/AppStructurePermissions'
-import { SharedSnapshotProperties } from '@/app/documents/RelatedProps'
+import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
+
+import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
+import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
-import { SecurityScanResult, SecurityReport } from '@/app/snapshots/SecurityMeasureTypes'
-import SnapshotVersioningSystemProps from '@/app/snapshots/useSnapshotVersioningSystem'
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { SecurityReport, SecurityScanResult } from '@/app/typings/securityMeasureTypes';
 import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
 
-import { CustomSnapshotData } from '@/app/snapshots/SnapshotData'
-import { DataWithPriority } from "@/app/utils/versionUtils";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DataWithPriority } from "@/app/utils/versionUtils";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,

@@ -1,6 +1,6 @@
 // PersonasEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface PersonasEndpoints {
+export interface PersonasEndpoints extends EndpointCategoryConfig {
   selectedPersona: EndpointConfig;
 }

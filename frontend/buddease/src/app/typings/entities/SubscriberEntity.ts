@@ -10,7 +10,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Core Subscriber type definitions
 type SubscriberEntity = BaseDataEntity & {
@@ -61,14 +61,12 @@ type ApplySubscriberFieldFilters<
 > = Pick<Omit<SubscriberEntity, Excluded>, Included>;
 
 export type {
-  SubscriberAttachment,
+  ApplySubscriberFieldFilters, SubscriberAttachment,
   SubscriberBaseParams,
   SubscriberEntity,
   SubscriberExcludedFields,
   SubscriberIncludedFields,
-  SubscriberK,
-  ApplySubscriberFieldFilters,
-  SubscriberMeta,
+  SubscriberK, SubscriberMeta,
   SubscriberParams,
   SubscriberRealtimeDataItem,
   SubscriberSnapshot,

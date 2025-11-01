@@ -17,16 +17,16 @@ import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from '@/app/users/Ideas';
 import { User } from '@/app/users/User';
-import { UserSettings } from '@/config/UserSettings';
+import { UserSettings } from '@/app/config/UserSettings';
 
 import {
   CodingLanguageEnum,
   LanguageEnum,
 } from '@/app/communications/LanguageEnum';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
-import { DefaultMeta } from '@/config/BaseConfig';
+import { DefaultMeta } from '@/app/config/BaseConfig';
 
-import { updateProgress } from '@/app/calendar/CalendarApp';
+import { updateProgress } from '@/app/components/calendar/CalendarApp';
 import { CommonDetails } from '@/app/components/models/details/CommonDetails';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';

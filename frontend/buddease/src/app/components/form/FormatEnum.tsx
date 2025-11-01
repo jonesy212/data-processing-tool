@@ -10,8 +10,8 @@ import {
     CustomDocxtemplater,
     DocumentPath,
 } from "@/app/typings/documents";
-import { DatabaseConfig } from "@/config/DatabaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 enum FormatEnum {
   JSON = "json",

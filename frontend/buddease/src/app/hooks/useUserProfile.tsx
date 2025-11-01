@@ -1,5 +1,5 @@
 // UseUserProfile.tsx
-import { endpoints } from '@/app/api/ApiEndpoints';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import { useState } from 'react';

@@ -1,12 +1,14 @@
 //CalendarEvent.ts
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Label } from '@/app/branding/BrandingSettings';
-import { Team } from "@/app/components/models/teams/Team";
-import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Team } from "@/app/models/teams/Team";
 import { NotificationType } from '@/app/context/NotificationContext';
+import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
+import { Member } from '@/app/models/members/Member';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
@@ -17,14 +19,14 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
-import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
-import { Attendee } from "./Attendee";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
+import { Attendee } from "../components/calendar/Attendee";
 
 type CalendarEventBase = BaseDataEntity & {
   title: string;
@@ -38,38 +40,6 @@ type CalendarEventBase = BaseDataEntity & {
 };
 
 
-
-// Sensitive fields that should never be exposed
-type CalendarExcludedFields = 
-  | DefaultExcludedFields<CalendarEventBase> 
-  | 'attendeeEmails'
-  | 'organizerPersonalNotes'
-  | 'internalMeetingId'
-  | 'recurrenceRule' // Hide complex recurrence logic
-  | 'reminders'; // Keep reminder logic internal
-
-
-
-type CalendarEventEntity = CalendarEvent<
-  CalendarEntity,                              // T
-  CalendarK,                                   // K
-  CalendarMeta,                                // Meta
-  CalendarAttachment,                          // AttachmentType
-  CalendarExcludedFields,                      // ExcludedFields
-  CalendarIncludedFields                       // IncludedFields
->;
-
-// Only expose safe, public-facing fields by default
-type CalendarIncludedFields = 
-  | 'id'
-  | 'title'
-  | 'description'
-  | 'startDate'
-  | 'endDate'
-  | 'location'
-  | 'status'
-  | 'visibility'
-  | 'categories';
 
 // Calendar-specific validation: endDate must be after startDate
 interface CalendarEventMeta extends DefaultMeta<CalendarEventBase, CalendarEventBase> {
@@ -110,8 +80,7 @@ interface CalendarEvent<
   content: string;
   topics: string[];
   //remove if conficting
-  category?: string;
-  date: string;
+  category?: Category;
   description?: string;
 
   highlights: string[];
@@ -139,10 +108,10 @@ interface CalendarEvent<
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
   priority?: AllStatus;
   location?: string;
-  host?: boolean | Member;
-  guestSpeakers?: Member[];
-  participants: Member[];
-  hosts?: Member[];
+  host?: boolean | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  guestSpeakers?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  hosts?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   attendees?: Attendee[];
   color?: string;
   isImportant?: boolean;
@@ -170,7 +139,7 @@ interface CalendarEvent<
 }
 
 // Destructure `latestVersion` with a default value
-const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
+const { latestVersion = createLatestVersion<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
 const currentMeta: AppStructuredMetadata = useMeta(area)

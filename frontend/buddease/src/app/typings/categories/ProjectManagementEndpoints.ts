@@ -1,7 +1,7 @@
 // ProjectManagementEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ProjectManagementEndpoints {
+export interface ProjectManagementEndpoints extends EndpointCategoryConfig {
   createProject: EndpointConfig;
   updateProject: (projectId: number) => EndpointConfig;
   deleteProject: (projectId: number) => EndpointConfig;

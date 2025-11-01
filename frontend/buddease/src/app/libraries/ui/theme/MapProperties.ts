@@ -1,5 +1,5 @@
     import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
-import { UserSettings } from "@/config/UserSettings";
+import { UserSettings } from "@/app/config/UserSettings";
 
     // Define color properties for the design system
     interface ColorProperties {

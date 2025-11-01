@@ -1,12 +1,14 @@
 // api/ApiDetails.ts
 import { handleApiError } from '@/app/api/ApiLogs';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import axiosInstance from '@/app/api/csrfToken';
-import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { BaseData, Data } from '@/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseData, Data } from '@/app/models/data/Data';
 
 const API_BASE_URL = "/api/details";
 
@@ -26,7 +28,7 @@ export const detailsApiService = {
         "Fetch Details Item Success",
         NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationStart
+        NotificationTypeEnum.OPERATION_START
       );
       return { detailsItem: response.data };
     } catch (error) {
@@ -42,7 +44,14 @@ export const detailsApiService = {
     }
   },
 
-  updateDetailsItem: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  updateDetailsItem: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T ,
+  >(
     detailsItemId: string,
     updatedDetailsItemData: any
   ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta> }> => {
@@ -72,10 +81,17 @@ export const detailsApiService = {
     }
   },
 
-  fetchDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  fetchDetailsItems: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
   
   ): Promise<{ 
-    detailsItems: DetailsItem<T, K, Meta>[]
+    detailsItems: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   }> => {
     try {
       const response = await axiosInstance.get(API_BASE_URL);
@@ -99,7 +115,14 @@ export const detailsApiService = {
       throw error;
     }
   },
-  updateDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta>[] }> => {
+  updateDetailsItems: async <  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }> => {
     try {
       const response = await axiosInstance.put(API_BASE_URL, updatedDetailsItemsData);
       notify(
@@ -122,6 +145,7 @@ export const detailsApiService = {
       throw error;
     }
   },
+
   deleteDetailsItems: async (detailsItemIds: string[]): Promise<void> => {
     try {
       await axiosInstance.delete(`${API_BASE_URL}`, {

@@ -1,7 +1,7 @@
 // VersionEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface VersionEndpoints {
+export interface VersionEndpoints extends EndpointCategoryConfig {
   getVersion: EndpointConfig;
   updateVersion: EndpointConfig;
   deleteVersion: EndpointConfig;

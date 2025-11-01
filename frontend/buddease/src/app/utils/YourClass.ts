@@ -1,6 +1,7 @@
+import { fluenceApiKey, DappProps } from './web3/dAppAdapter/DAppAdapterConfig';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { CustomDocumentOptionProps } from "@/app/utils/web3/dAppAdapter/DApp";
-import { DappProps, fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DApp";
+import { UserRole } from "@/app/models/UserRole";
 
 
 // YourClass.ts
@@ -271,15 +272,15 @@ const dappProps: DappProps = {
   appVersion: "1.0",
   currentUser: {
     id: "",
-    name: "",
-    role: "",
+    username: "",
+    role: UserRole.Member,
     teams: [],
     projects: [],
     teamMembers: [],
   },
   currentProject: {
     id: "",
-    name: "",
+    username: "",
     description: "",
     tasks: [],
     teamMembers: [],

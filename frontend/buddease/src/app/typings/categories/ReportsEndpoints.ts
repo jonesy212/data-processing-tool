@@ -1,7 +1,7 @@
 // ReportsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ReportsEndpoints {
+export interface ReportsEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   generate: EndpointConfig;
   download: (reportId: string) => EndpointConfig;

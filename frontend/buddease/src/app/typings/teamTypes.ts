@@ -1,9 +1,8 @@
 // teamTypes.ts
-import UniqueIDGenerator  from '@/app/generators/GenerateUniqueIds';
-import { Member } from '@/app/models/teams/TeamMembers';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { Team } from '@/app/models/teams/Team';
+import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
@@ -11,10 +10,9 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { TeamEntity } from '@/app/typings/entities/TeamEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Team } from '@/app/models/teams/Team'
-import { TeamEntity } from '@/app/typings/entities/TeamEntity'
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type TeamK = TeamEntity;
 type TeamMeta = DefaultMeta<TeamEntity, TeamK>;
@@ -133,27 +131,27 @@ const createDefaultTeam = (options: Partial<TeamFull> = {}): TeamFull => ({
 const emptyTeam: TeamFull = createDefaultTeam();
 
 export type {
-  TeamAttachment, 
-  TeamBaseParams, 
-  TeamEntity, 
-  TeamExcludedFields, 
-  TeamFull, 
-  TeamIncludedFields, 
+  TeamAttachment,
+  TeamBaseParams,
+  TeamEntity,
+  TeamExcludedFields,
+  TeamFull,
+  TeamIncludedFields,
   TeamK,
-  TeamMeta, 
-  TeamNotificationSettings, 
-  TeamParams, 
-  TeamPermissions, 
-  TeamRealtimeDataItemFull, 
-  TeamSettings, 
-  TeamSnapshotDataFull, 
-  TeamSnapshotFull, 
-  TeamSnapshotsArrayFull, 
-  TeamSnapshotStoreConfigFull, 
-  TeamSnapshotStoreFull, 
-  TeamSnapshotWithCriteriaFull, 
+  TeamMeta,
+  TeamNotificationSettings,
+  TeamParams,
+  TeamPermissions,
+  TeamRealtimeDataItemFull,
+  TeamSettings,
+  TeamSnapshotDataFull,
+  TeamSnapshotFull,
+  TeamSnapshotsArrayFull,
+  TeamSnapshotStoreConfigFull,
+  TeamSnapshotStoreFull,
+  TeamSnapshotWithCriteriaFull,
   TeamSubscriberCollectionFull
 };
 
-export { createDefaultTeam, emptyTeam };
+  export { createDefaultTeam, emptyTeam };
 

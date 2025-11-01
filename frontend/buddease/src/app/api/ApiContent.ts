@@ -1,16 +1,17 @@
 // ApiContent.ts
-import { BaseData } from '@/app/models/data/Data';
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 
-import axiosInstance from "@/app/api/csrfToken";
-import headersConfig from "@/app/api/headers/HeadersConfig";
-import { YourResponseType } from '@/app/components/typings/responseTypes'
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { AxiosError } from "axios";
-import { ContentState } from "draft-js";
-import { endpoints } from "@/app/api/endpointConfigurations";
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import headersConfig from '@/app/api/headers/HeadersConfig';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AxiosError } from 'axios';
+import { ContentState } from 'draft-js';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.content
@@ -311,8 +312,8 @@ const getContentIdFromURL = (url: string): string => {
   };
 
   export {
-    createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
-    fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
-    getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
+  createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
+  fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
+  getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
 };
 

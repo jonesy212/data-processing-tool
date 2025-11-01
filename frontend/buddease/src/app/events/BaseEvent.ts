@@ -1,6 +1,6 @@
 import { BaseData } from '@/app/models/data/Data';
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface BaseEvent {

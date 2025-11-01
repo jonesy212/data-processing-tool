@@ -1,7 +1,7 @@
 // TaskEntity.ts
-import { AppMetadata } from '@/config/MetaDataOptions';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+
+import { BaseTaskEntity, Task} from '@/app/models/tasks/Task';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -10,10 +10,10 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from '@/config/MetaDataOptions';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { BaseTaskEntity } from '@/app/models/tasks/Task'
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { AppMetadata, UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 // 2. Type definitions with 6 parameters
 type TaskEntity = BaseTaskEntity;
@@ -65,18 +65,18 @@ type TaskBaseParams = {
 };
 
 // 6. Snapshot types
-type TaskSnapshot = Snapshot<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotData = SnapshotData<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotStore = SnapshotStore<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotWithCriteria = SnapshotWithCriteria<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSubscriberCollection = SubscriberCollection<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskRealtimeDataItem = RealtimeDataItem<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshot = Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshotData = SnapshotData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshotStore = SnapshotStore<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshotWithCriteria = SnapshotWithCriteria<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSubscriberCollection = SubscriberCollection<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskRealtimeDataItem = RealtimeDataItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 type TaskCollection = TaskEntity[];
 
 // 7. Config types
-type TaskSnapshotStoreConfig = SnapshotStoreConfig<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskSnapshotsArray = SnapshotsArray<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
-type TaskParams = SnapshotConfigParams<BaseTaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshotStoreConfig = SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskSnapshotsArray = SnapshotsArray<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+type TaskParams = SnapshotConfigParams<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 
 // 8. Utility
 type ApplyTaskFieldFilters<
@@ -89,16 +89,8 @@ type ApplyTaskFieldFilters<
 export type AppTask = Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 
 export type {
-  ApplyTaskFieldFilters, AppTaskMetadata,
-  TaskBaseParams,
-  TaskEntity,
-  TaskK,
-  TaskMeta,
-  TaskAttachment,
-  TaskExcludedFields,
-  TaskIncludedFields,
-  TaskParams, TaskRealtimeDataItem, TaskSnapshot, TaskSnapshotData, TaskSnapshotsArray, TaskSnapshotStore, TaskSnapshotStoreConfig, TaskSnapshotWithCriteria, TaskStructuredMetadata, TaskSubscriberCollection, TaskUnifiedMetadata,
-  TaskCollection
-
+  ApplyTaskFieldFilters, AppTaskMetadata, TaskAttachment, TaskBaseParams, TaskCollection, TaskEntity, TaskExcludedFields,
+  TaskIncludedFields, TaskK,
+  TaskMeta, TaskParams, TaskRealtimeDataItem, TaskSnapshot, TaskSnapshotData, TaskSnapshotsArray, TaskSnapshotStore, TaskSnapshotStoreConfig, TaskSnapshotWithCriteria, TaskStructuredMetadata, TaskSubscriberCollection, TaskUnifiedMetadata
 };
 

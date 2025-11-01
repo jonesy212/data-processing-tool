@@ -1,4 +1,4 @@
-import { ParsedData } from '@/app/documents/DocType';
+import { ParsedData } from '@/app/dataIntegration/parseData';
 import { FileLogger } from '@/app/libraries/logging/Logger';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import safeParseData from '@/components/crypto/SafeParseData';

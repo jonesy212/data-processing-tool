@@ -1,7 +1,7 @@
 // CollaborationToolsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface CollaborationToolsEndpoints {
+export interface CollaborationToolsEndpoints extends EndpointCategoryConfig {
   createTask: EndpointConfig;
   updateTask: (taskId: number) => EndpointConfig;
   deleteTask: (taskId: number) => EndpointConfig;

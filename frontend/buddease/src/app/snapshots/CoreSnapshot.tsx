@@ -13,17 +13,17 @@ import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SnapshotBase, SnapshotData } from ".";
 
 import { Label } from "@/app/branding/BrandingSettings";
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import {
   SnapshotEquality,
   Snapshots,
@@ -35,15 +35,15 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { AllTypes } from "@/app/typings/PropTypes";
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { User } from "@/app/users/User";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { SnapshotOperation } from "./SnapshotActions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import {
   SnapshotRelationships,
 } from "./SnapshotData";
-import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotInitialization } from "./SnapshotInitialization";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotMethods } from "./SnapshotMethods";

@@ -3,8 +3,8 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/config/MetaDataOptions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 
 
 // Base comment shared by all comment types

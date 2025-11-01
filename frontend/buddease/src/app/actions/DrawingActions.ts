@@ -1,8 +1,8 @@
 // DrawingActions.ts
-import { createAction } from "@reduxjs/toolkit";
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import TextType from "@/app/documents/TextType";
-import Milestone from '@/app/state/redux/slices/CalendarSlice';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import Milestone from "@/app/typings/milestoneTypes";
+import { createAction } from "@reduxjs/toolkit";
 
 export const DrawingActions = {
 

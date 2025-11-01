@@ -6,7 +6,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { useDetailsContext } from '@/app/models/data/DetailsContext';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {

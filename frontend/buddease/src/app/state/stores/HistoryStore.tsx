@@ -5,7 +5,7 @@ import { getUsersData, saveUserProfiles } from "@/app/api/UsersApi";
 import useDataExport from "@/app/hooks/dataHooks/useDataExport";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { TaskHistoryEntry } from "@/app/interfaces/history/TaskHistoryEntry";
-import { authToken } from "@/server/auth/authToken";
+import { authToken } from "@/app/server/auth/authToken";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library for generating unique IDs

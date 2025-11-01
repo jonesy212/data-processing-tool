@@ -1,6 +1,6 @@
 // FeedbackEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface FeedbackEndpoints {
+export interface FeedbackEndpoints extends EndpointCategoryConfig {
   customizeFeedbackForm: EndpointConfig;
 }

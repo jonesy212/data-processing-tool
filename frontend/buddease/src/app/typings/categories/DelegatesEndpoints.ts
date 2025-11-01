@@ -1,7 +1,7 @@
-# DelegatesEndpoints.t
-import { EndpointConfig } from '@/config/EndpointConfig';
+// DelegatesEndpoints.ts
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface DelegatesEndpoints {
+export interface DelegatesEndpoints extends EndpointCategoryConfig {
   list: EndpointConfig;
   single: (delegateId: number) => EndpointConfig;
   add: EndpointConfig;

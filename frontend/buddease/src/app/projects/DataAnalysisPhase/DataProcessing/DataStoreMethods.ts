@@ -11,8 +11,8 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { DataStore } from "./DataStore";
 
 interface DataStoreWithSnapshotMethods<

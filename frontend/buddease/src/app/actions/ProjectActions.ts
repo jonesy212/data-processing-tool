@@ -1,7 +1,6 @@
 // projects/ProjectActions.ts
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { createAction } from "@reduxjs/toolkit";
-import Milestone from "@/app/state/redux/slices/CalendarSlice";
+import Milestone from "@/app/typings/milestoneTypes";
 import { Task } from "@/app/models/tasks/Task";
 import { Phase } from '@/app/models/phases/Phase';
 import { Product } from "@/app/products/Product";
@@ -127,25 +126,25 @@ export const ProjectActions = {
   toggleActiveStatus: createAction<{ id: number; isActive: boolean }>(
     "toggleProjectActiveStatus"
   ),
-  updateLeader: createAction<{ id: number; newLeader: User | null }>(
+  updateLeader: createAction<{ id: number; newLeader: User<any, any, any, any, any, any> | null }>(
     "updateProjectLeader"
   ),
   updateBudget: createAction<{ id: number; newBudget: number | null }>(
     "updateProjectBudget"
   ),
-  addMember: createAction<{ id: number; member: User }>("addProjectMember"),
+  addMember: createAction<{ id: number; member: User<any, any, any, any, any, any> }>("addProjectMember"),
   removeMember: createAction<{ id: number; memberId: string }>(
     "removeProjectMember"
   ),
-  updatePhase: createAction<{ id: number; newPhase: Phase | null }>(
+  updatePhase: createAction<{ id: number; newPhase: Phase<any, any, any, any, any, any> | null }>(
     "updateProjectPhase"
   ),
-  addPhase: createAction<{ id: number; newPhase: Phase }>("addProjectPhase"),
-  removePhase: createAction<{ id: number; phaseId: number, phaseName: Phase["name"] }>(
+  addPhase: createAction<{ id: number; newPhase: Phase<any, any, any, any, any, any> }>("addProjectPhase"),
+  removePhase: createAction<{ id: number; phaseId: number, phaseName: Phase<any, any, any, any, any, any>["name"] }>(
     "removeProjectPhase"
   ),
 
-  addTaskToProject: createAction<{ projectId: number; task: Task<T, K> }>(
+  addTaskToProject: createAction<{ projectId: number; task: Task<any, any, any, any, any, any> }>(
     "addTaskToProject"
   ),
   removeTaskFromProject: createAction<{ projectId: number; taskId: number }>(
@@ -164,17 +163,17 @@ export const ProjectActions = {
   unarchiveProject: createAction<number>("unarchiveProject"),
 
   // New actions
-  createTeam: createAction<{ projectId: number; teamMembers: User[] }>(
+  createTeam: createAction<{ projectId: number; teamMembers: User<any, any, any, any, any, any>[] }>(
     "createTeam"
   ),
   brainstormProduct: createAction<{ projectId: number; ideas: string[] }>(
     "brainstormProduct"
   ),
-  launchProduct: createAction<{ projectId: string, productId: string, product: Product }>("launchProduct"),
+  launchProduct: createAction<{ projectId: string, productId: string, product: Product<any, any, any, any, any, any> }>("launchProduct"),
   performDataAnalysis: createAction<{ projectId: string, productId: string, insights: { id: string, description: string }[] }>("performDataAnalysis"),
   rewardContributors: createAction<{
     projectId: number;
-    contributors: User[];
+    contributors: User<any, any, any, any, any, any>[];
     earnings: number;
   }>("rewardContributors"),
   investInCommunityCoin: createAction<number>("investInCommunityCoin"),

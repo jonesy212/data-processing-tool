@@ -1,7 +1,7 @@
 // apiSagas.ts
-import { ApiActions } from "@/app/api/ApiActions";
+import { ApiActions } from "@/app/actions/ApiActions";
 import { Config, configManager } from "@/app/api/ApiConfig";
-import { ApiConfig } from "@/app/services/ConfigurationService";
+import ApiConfig from '@/app/api/ApiConfig';
 import axios, { AxiosResponse } from "axios";
 import { call, put, select, takeLatest } from "redux-saga/effects";
 

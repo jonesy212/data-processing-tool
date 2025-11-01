@@ -1,32 +1,39 @@
 // PropTypes.tsx
 import {
-    NotificationType,
-    NotificationTypeEnum,
+  NotificationType
 } from "@/app/context/NotificationContext";
-import { MessageType } from "@/app/generators/MessaageType";
-import React from "react";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes'
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultIncludedFields,
+  DefaultMeta
+} from '@/app/config/BaseConfig';
 import TextType from "@/app/documents/TextType";
+import { MessageType } from "@/app/generators/MessaageType";
 import { DataType } from "@/app/models/CommonData";
 import { LogData } from "@/app/models/LogData";
 import {
-    CalendarStatus,
-    ChatType,
-    CustomNotificationType,
-    MessageNotificationStatusType,
-    PriorityTypeEnum,
-    StatusType,
-    TeamStatus
+  CalendarStatus,
+  ChatType,
+  CustomNotificationType,
+  MessageNotificationStatusType,
+  PriorityTypeEnum,
+  StatusType,
+  TeamStatus
 } from "@/app/models/data/StatusType";
-
-import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import React from "react";
+import { FileType } from '@/app/documents/attachment/Attachment'
 import {
-    ProgressBarAnimationType,
-    ProgressBarProps,
-    ProgressPhase,
+  ProgressBarAnimationType,
+  ProgressBarProps,
+  ProgressPhase,
 } from "@/app/models/tracker/ProgressBar";
-import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
 type NotificationCategory = "general" | "urgent" | "important";
@@ -58,13 +65,20 @@ type AllTypes =
 interface BaseProps {
   id: string;
   title?: string;
-  description?: string | null | undefined;
+  description?: string | undefined;
   startDate?: Date;
   endDate?: Date;
   // Add common properties here
 }
 
-interface NotificationProps extends BaseProps {
+interface NotificationProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > extends BaseProps {
   category?: NotificationCategory;
   message: string;
   content: any;
@@ -76,7 +90,7 @@ interface NotificationProps extends BaseProps {
   fontSize: string;
   fontColor: string;
   sendStatus: SendStatus;
-  completionMessageLog: LogData<T, K, Meta<T, K>> | undefined;
+  completionMessageLog: LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   type: NotificationType;
 }
 
@@ -152,11 +166,11 @@ const progressBarProps: ProgressBarProps = {
 
 export { chatCardProps, notificationProps, progressBarProps };
 export type {
-    AllTypes,
-    BaseProps,
-    ChatCardProps,
-    NotificationProps,
-    ProgressProps,
-    TextType
+  AllTypes,
+  BaseProps,
+  ChatCardProps,
+  NotificationProps,
+  ProgressProps,
+  TextType
 };
 

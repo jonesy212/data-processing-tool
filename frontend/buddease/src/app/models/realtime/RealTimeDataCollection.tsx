@@ -1,5 +1,5 @@
 import {
-  BaseDataEntity
+    BaseDataEntity
 } from "@/app/a_analysis/frontend/buddease/src/app/configs/BaseConfig";
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
@@ -76,7 +76,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
       convertedDataItems.forEach((item) => {
         const snapshotItem: SnapshotItem<AnyData, AnyData> = {
           message: (type, content, additionalData, userId, sender, channel) => ({
-            id: UniqueIDGenerator.generateID("msg", "system", NotificationTypeEnum.MessageID),
+            id: UniqueIDGenerator.generateID("msg", "system", NotificationTypeEnum.MESSAGE_ID),
             sender,
             senderId: sender?.id,
             channel,

@@ -1,7 +1,7 @@
 // UiEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface UiEndpoints {
+export interface UiEndpoints extends EndpointCategoryConfig {
   // User Data & Settings
   userData: (userId: string) => EndpointConfig;
   userSettings: (userId: string) => EndpointConfig;

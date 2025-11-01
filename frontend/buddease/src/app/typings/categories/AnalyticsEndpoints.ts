@@ -1,7 +1,7 @@
 // AnalyticsEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface AnalyticsEndpoints {
+export interface AnalyticsEndpoints extends EndpointCategoryConfig {
   dashboard: EndpointConfig;
   reports: EndpointConfig;
   metrics: (metricId: string) => EndpointConfig;

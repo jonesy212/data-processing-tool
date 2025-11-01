@@ -11,17 +11,17 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 // --- Core Snapshot type definitions ---
 
-type SnapshotEntity, = BaseDataEntity 
-type SnapshotK, = SnapshotEntity;
-type SnapshotMeta, = DefaultMeta<SnapshotEntity, SnapshotK>;
-type SnapshotAttachment, = Attachment;
-type SnapshotExcludedFields, = DefaultExcludedFields<SnapshotEntity>;
+type SnapshotEntity = BaseDataEntity 
+type SnapshotK = SnapshotEntity;
+type SnapshotMeta = DefaultMeta<SnapshotEntity, SnapshotK>;
+type SnapshotAttachment = Attachment;
+type SnapshotExcludedFields = DefaultExcludedFields<SnapshotEntity>;
 type SnapshotIncludedFields = keyof SnapshotEntity;
 
 // --- Main parameters container ---

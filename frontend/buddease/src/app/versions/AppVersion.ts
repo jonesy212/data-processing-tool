@@ -1,9 +1,9 @@
-import getAppPath from '@/config//appStructure/appPath';
+import getAppPath from '@/app/config/appStructure/appPath';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
-import FrontendStructure from "@/config/appStructure/FrontendStructure";
-import BackendStructure from '@/server/database/BackendStructure';
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { VersionData } from "./VersionData";
 
 interface Versionable {

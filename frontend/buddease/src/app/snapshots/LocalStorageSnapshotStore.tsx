@@ -1,80 +1,84 @@
 // LocalStorageSnapshotStore.tsx
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { SnapshotContainerEntity } from '@/app/typings/entities/SnapshotContainerEntity';
+import { SnapshotAttachment, SnapshotEntity, SnapshotEntityData, SnapshotEntityStore, SnapshotEntityStoreConfig, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
+import { SnapshotStorage } from '@/app/utils/storage/SnapshotStorage';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { isCategoryProperties } from '@/app/libraries/categories/generateCategoryProperties';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import {
   AppAttachment,
   AppEntity,
   AppExcludedFields,
   AppK,
   AppMeta,
-} from "@/app/typings/entities/AppEntity";
+} from '@/app/typings/entities/AppEntity';
 
-import { Task, TaskData } from "@/app/components/models/tasks/Task";
-import { Data } from "@/app/models/data/Data";
+import { Task, TaskData } from '@/app/components/models/tasks/Task';
+import { Data } from '@/app/models/data/Data';
 import {
   PriorityTypeEnum,
   ProjectPhaseTypeEnum,
   StatusType,
   SubscriberTypeEnum,
-} from "@/app/models/data/StatusType";
-import { fetchUserAreaDimensions } from "@/app/pages/layouts/fetchUserAreaDimensions";
-import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import createSnapshotOptions from "@/app/snapshots/createSnapshotOptions";
-import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
-import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SnapshotEvents } from "@/app/typings/eventTypes";
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { NotificationType } from "@/context/NotificationContext";
-import { UpdateSnapshotPayload } from "@/server/database/Payload";
+} from '@/app/models/data/StatusType';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { NotificationType } from '@/context/NotificationContext';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
 
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
-import { AddReport, AddReportType } from "@/app/api/ApiReport";
-import { endpoints } from "@/app/api/endpointConfigurations";
-import { ChatRoom } from "@/app/communications/Chatroom";
-import { Sender } from "@/app/components/communications/CommunicationPage";
-import { BaseEntity } from "@/app/components/routing/FuzzyMatch";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { BaseData } from "@/app/models/data/Data";
-import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
-import { PhaseData } from "@/app/models/phases/Phase";
-import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { SharedMetadata } from "@/app/shared/SharedMetadata";
+import { AddReport, AddReportType } from '@/app/api/ApiReport';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { ChatRoom } from '@/app/communications/ChatRoom';
+import { Sender } from '@/app/components/communications/CommunicationPage';
+import { ModifiedDate } from '@/app/documents/DocType';
+import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { BaseData } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { PhaseData } from '@/app/models/phases/Phase';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import {
   createCompleteSnapshot,
   createSnapshot,
-} from "@/app/snapshots/createSnapshot";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+} from '@/app/snapshots/createSnapshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
   snapshotContainer,
   SnapshotContainer,
-} from "@/app/snapshots/SnapshotContainer";
-import { SnapshotDataParams } from "@/app/snapshots/SnapshotDataParams";
-import { SnapshotOperations } from "@/app/snapshots/snapshotOperations";
-import { SnapshotSecurity } from "@/app/snapshots/SnapshotSecurity";
-import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
-import { SnapshotStoreProps } from "@/app/snapshots/useSnapshotStore";
-import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { isSnapshotData } from "@/app/utils/snapshotUtils";
+} from '@/app/snapshots/SnapshotContainer';
+import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
+import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
+import { isSnapshotData } from '@/app/utils/snapshotUtils';
 import {
   getCommunityEngagement,
   getMarketUpdates,
   getTradeExecutions,
-} from "@/app/utils/trading/TradingUtils";
+} from '@/app/utils/trading/TradingUtils';
 import {
   logActivity,
   notifyEventSystem,
@@ -82,21 +86,24 @@ import {
   triggerIncentives,
   unsubscribe,
   updateProjectState,
-} from "@/app/utils/web3/applicationUtils";
+} from '@/app/utils/web3/applicationUtils';
 import {
   BaseDataEntity,
   BaseDataRoot,
   DefaultExcludedFields,
   DefaultMeta,
-} from "@/config/BaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import baseMeta from "@/server/database/baseMeta";
-import { FC } from "react";
-import { ExcludedFields } from "../components/routing/Fields";
-import { NoteAttachment } from "../documents/NoteData";
-import { subscription } from "../subscriptions/SubscriptionService";
-import { SnapshotIdentity } from "./SnapshotIdentity";
-import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
+} from '@/app/config/BaseConfig';
+
+
+import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import baseMeta from '@/app/server/database/baseMeta';
+import { FC } from 'react';
+import { ExcludedFields } from '../components/routing/Fields';
+import { NoteAttachment } from '../documents/NoteData';
+import { subscription } from '../subscriptions/SubscriptionService';
+import { SnapshotIdentity } from './SnapshotIdentity';
+import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 
 const SNAPSHOT_URL = endpoints.snapshots;
 
@@ -415,7 +422,7 @@ const getCriteria = async (): Promise<CriteriaType> => {
       snapshotContainerData?:
         | SnapshotEntityStore
         | SnapshotEntityType
-        | SnapshotEntityContainer
+        | SnapshotContainerEntity
         | null
     ) => Promise<SnapshotEntityData>;
 
@@ -437,7 +444,7 @@ const getCriteria = async (): Promise<CriteriaType> => {
       snapshotContainerData?:
         | SnapshotEntityStore
         | SnapshotEntityType
-        | SnapshotEntityContainer
+        | SnapshotContainerEntity
         | null
     ): Promise<SnapshotEntityData> => {
       return Promise.resolve().then(async () => {
@@ -500,66 +507,23 @@ const getCriteria = async (): Promise<CriteriaType> => {
       return {
         core: {
           ...snapshot.core,
-        } as CoreSnapshot<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        } as CoreSnapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
-        shared: { ...snapshot.shared } as SharedSnapshotProperties<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        shared: { ...snapshot.shared } as SharedSnapshotProperties<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
-        identity: { ...snapshot.identity } as SnapshotIdentity,
+        identity: { ...snapshot.identity } as SnapshotIdentity<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
         security: { ...snapshot.security } as SnapshotSecurity,
-        versioning: { ...snapshot.versioning } as SnapshotVersioning<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
-        >,
-        storage: { ...snapshot.storage } as SnapshotStorage<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        versioning: { ...snapshot.versioning } as SnapshotVersioning<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+        storage: { ...snapshot.storage } as SnapshotStorage<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
         operations: {
           ...snapshot.operations,
-        } as SnapshotOperations<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        } as SnapshotOperations<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
 
-        base: { ...snapshot.base } as BaseEntity<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        base: { ...snapshot.base } as BaseEntity<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
-        sharedMetadata: { ...snapshot.sharedMetadata } as SharedMetadata<
-          SnapshotEntity,
-          SnapshotK,
-          SnapshotMeta,
-          SnapshotAttachment,
-          SnapshotExcludedFields,
-          SnapshotIncludedFields
+        sharedMetadata: { ...snapshot.sharedMetadata } as SharedMetadata<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
         >,
         snapshotStore: snapshot.snapshotStore ?? null,
 
@@ -588,13 +552,7 @@ const getCriteria = async (): Promise<CriteriaType> => {
         auditTrail: snapshot.auditTrail ?? [],
         snapshotIds: snapshot.snapshotIds ?? [],
         methods: snapshot.methods ?? [],
-      } as SnapshotData<
-        T,
-        K,
-        Meta,
-        AttachmentType,
-        ExcludedFields,
-        IncludedFields
+      } as SnapshotData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
       >;
     };
 
@@ -619,8 +577,8 @@ const getCriteria = async (): Promise<CriteriaType> => {
       return input && typeof input.storeId === "number";
     };
 
-    return snapshotApi.getSnapshotCriteria<CustomData, CustomK>(
-      snapshotContainer as unknown as SnapshotContainer<CustomData, CustomK>,
+    return snapshotApi.getSnapshotCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>(
+      snapshotContainer as unknown as SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
       handleSnapshot
     );
   } catch (error) {
@@ -633,14 +591,14 @@ const getCriteria = async (): Promise<CriteriaType> => {
 
 const criteria = await getCriteria();
 
-const snapshotObj = {} as Snapshot<Data<BaseDataEntity>, K>;
+const snapshotObj = {} as Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
 const options = createSnapshotOptions(snapshotObj, snapshotFunction);
 const snapshotId = await snapshotApi.getSnapshotId(criteria);
 const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId));
 if (snapshotId !== null && snapshotId !== undefined) {
   const snapshotStore = snapshotApi.getSnapshotStore(
     snapshotId,
-    snapshotContainer as unknown as SnapshotContainer<Data<BaseDataEntity>, K>,
+    snapshotContainer as unknown as SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     storeId,
     criteria,
     snapshotFunction
@@ -648,18 +606,28 @@ if (snapshotId !== null && snapshotId !== undefined) {
 
   const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(
     String(snapshotId),
-    snapshotContainer as unknown as SnapshotContainer<T, K>,
+    snapshotContainer as unknown as SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     criteria,
     storeId,
     snapshotFunction
   );
 
-  const SNAPSHOT_STORE_CONFIG: SnapshotStoreConfig<T, K> = snapshotStoreConfig;
+  const SNAPSHOT_STORE_CONFIG: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = snapshotStoreConfig;
 }
 
 // const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(null, {} as SnapshotContainer<BaseDataEntity, BaseData>, {}, storeId)
-const SNAPSHOT_STORE_CONFIG: SnapshotStoreConfig<T, K> =
-  snapshotStoreConfigInstance as SnapshotStoreConfig<Data<BaseDataEntity>, K>;
+const SNAPSHOT_STORE_CONFIG: SnapshotStoreConfig<SnapshotEntity,
+          SnapshotK,
+          SnapshotMeta,
+          SnapshotAttachment,
+          SnapshotExcludedFields,
+          SnapshotIncludedFields> =
+  snapshotStoreConfigInstance as SnapshotStoreConfig<SnapshotEntity,
+          SnapshotK,
+          SnapshotMeta,
+          SnapshotAttachment,
+          SnapshotExcludedFields,
+          SnapshotIncludedFields>;
 
 interface SnapshotEquality<
   T extends BaseDataEntity,
@@ -1543,7 +1511,7 @@ export type {
   SnapshotsObject,
   SnapshotStoreObject,
   SnapshotStoreUnion,
-  SnapshotUnion,
+  SnapshotUnion
 };
 
 const subscriber = new Subscriber<

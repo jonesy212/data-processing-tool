@@ -1,33 +1,32 @@
 // CommonDetails.tsx
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import DetailsProps from "@/app/components/models/data/Details";
+import { TradeData } from "@/app/components/trading/TradeData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { NotificationType } from '@/app/context/NotificationContext';
-import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { CryptoData } from "@/app/dataIntegration/parseData";
 import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentData } from "@/app/config/DocumentBuilder";
+import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { ProjectData } from "@/app/models/projects/Project";
-import { SharedMetadata } from "@/app/config/metadata/MetadataHooks";
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
-import { TradeData } from "@/app/trading/TradeData";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { UserData } from "@/app/users/User";
 import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import AccessHistory from "@/app/versions/AccessHistory";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/config/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { createDefaultVersionData } from '@/versions/VersionData';
+import { createDefaultVersionData } from '@/app/versions/VersionData';
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { CommunityData } from "./CommunityData";
@@ -104,7 +103,7 @@ interface Taggable<
 
 interface Describable {
   title?: string;
-  description?: string | null | undefined;
+  description?: string;
 }
 
 interface DocumentContent {
@@ -134,7 +133,7 @@ type ConditionalCommonData<
   IncludedFields extends keyof T = keyof T
 > = T extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ? CommonData<T, K, Meta, AttachmentType, never, keyof T>  
-  : T extends SupportedData<any>
+  : T extends SupportedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ? CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
   : CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
@@ -170,7 +169,7 @@ interface CommonData<
   status?: AllStatus | null;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Participant[];
-  members?: Member[];
+  members?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   details?: DetailsItem<T>;
   data?: DataWithOmittedFields<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -190,7 +189,7 @@ interface CommonData<
   folderPath?: string;
   
   accessHistory?: AccessHistory[];
-  folders?: FolderData[];
+  folders?: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   documentAccess?: string;
   documentSharing?: string;
   documentSecurity?: string;
@@ -202,10 +201,15 @@ interface CommonData<
   documentBackup?: string;
   date: string | Date | undefined;
   completed?: boolean;
-  then?: <T extends BaseDataEntity,
+  then?: <
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-    >(callback: (newData: Snapshot<BaseDataEntity, K>) => void
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+    >(callback: (
+      newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
     ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
   // Moved from VideoCommonData
@@ -228,13 +232,15 @@ type CommonDataTypes<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = 
-  | UserData<T, K>
-  | Todo<T, K, Meta>
-  | Task<T, K, Meta>
-  | LogData<T, K, Meta>
-  | DataDetails<T, K, Meta>;
+  | UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 
@@ -249,11 +255,11 @@ type AdditionalDataTypes<
 > = 
 | CommunityData
 | ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-| TeamData<T, K, Meta>
+| TeamData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 | ScheduledData<T>
 | MeetingData
 | CryptoData
-| TradeData
+| TradeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 | FakeData;
 
 
@@ -279,13 +285,17 @@ type SupportedData<
 
 
 const CommonDetails = <
-  T extends SupportedData<BaseData<any, any>>,
+  T extends BaseDataEntity,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   data,
   details,
   customizations,
-}: DetailsProps<BaseData<any, any, StructuredMetadata<any, any>>>) => {
+}: DetailsProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   const [showDetails, setShowDetails] = useState(false);
   const userId = localStorage.getItem("id") || "";
   const timestamp = new Date().toISOString();
@@ -386,7 +396,7 @@ const CommonDetails = <
         transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
         event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`
         signature={data?.signature || ""} // Add fallback value `""` if `signature` is `undefined`
-        latestVersion={data?.latestVersion || createDefaultVersionData<BaseData<any>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>()}
+        latestVersion={data?.latestVersion || createDefaultVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>()}
         schema={data?.schema || {}}
       />
     </div>

@@ -1,68 +1,28 @@
 
-import { ContextMenuActions } from "@/app/actions/ContextMenuActions";
 import { DragActions } from "@/app/actions/DragActions";
-import { ListActions } from "@/app/actions/ListActions";
 import { SearchActions } from "@/app/actions/SearchActions";
 import { TooltipActions } from "@/app/actions/TooltipActions";
 import { UIActions } from "@/app/actions/UIActions";
 import * as ApiAnalysis from "@/app/api/service/ApiAnalysisService";
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { EventDetails } from "@/app/calendar/CalendarEventViewingDetails";
-import getSocketConnection from "@/app/communication/getSocketConnection";
-import { SettingsEvent } from '@/app/typings/eventHandlers/eventTypes'
-import { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
-import { saveCryptoPortfolioData } from "@/app/documents/editing/autosave";
 import updateUI, { updateUIWithCopiedText } from "@/app/documents/editing/updateUI";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { currentAppType } from "@/app/hooks/getCurrentAppType";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import useWebSocket from "@/app/hooks/useWebSocket";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
-import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
-import { BlogActions } from "@/app/models/blogs/BlogAction";
-import { ProgressDataProps } from "@/app/components/models/data/ProgressData";
-import { SortingType } from "@/app/models/data/StatusType";
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import {
   initiateBitcoinPayment,
   initiateEthereumPayment,
 } from "@/app/payment/initCryptoPayments";
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import { SettingsEvent } from '@/app/typings/eventHandlers/eventTypes';
 
-import { PhaseActions } from "@/app/actions/phases/PhaseActions";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { DataAnalysisActions } from "@/app/actions/DataAnalysisActions";
-import { brandingSettings } from "@/app/branding/BrandingSettings";
 import { ContentActions } from "@/app/actions/ContentActions";
-import { sanitizeData, sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
+import { CustomMouseEvent } from "@/app/services/EventService";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { addMessage } from "@/app/state/redux/slices/ChatSlice";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { historyManagerStore } from "@/app/state/stores/HistoryStore";
-import { Subscription } from "@/app/subscriptions/Subscription";
-import { UIApi } from "@/app/users/APIUI";
-import { snapshotId } from "@/app/utils/snapshotUtils";
-import { RetryConfig } from "@/app/services/ConfigurationService";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AxiosResponse } from "axios";
-import { callback } from 'chart.js/helpers';
-import { Router, useRouter } from "next/router";
-import React, {
-  BaseSyntheticEvent,
-  MouseEventHandler,
-  SyntheticEvent,
-  UIEvent,
-  UIEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { GestureHandlerGestureEvent } from "react-native-gesture-handler";
+import React from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import * as apiSnapshot from "@/app/api/SnapshotApi";
-import { BaseCustomEvent } from "@/app/events/BaseCustomEvent";
-import { CustomMouseEvent } from "@/app/services/EventService";
 
 function handleEvent(e: CustomEvent) {
   if (e.type === "mouse") {
@@ -650,20 +610,9 @@ const handleScrolling = (event: React.UIEvent<HTMLDivElement>) => {
 };
 
 // Export individual handlers
-export { handleFocus, handleBlur, 
-    handleFocusIn, handleFocusOut, 
-    handleEvent, handleTouchEnd,
-    handleTouchCancel,
-
-    handleDragStart,
-handleDragEnd,
-handleDragEnter,
-handleDragOver,
-
-
-handleCopyPaste,
-processCopiedText,
-
-handleKeyboardShortcuts,
-handleScrolling
+export {
+  handleBlur, handleCopyPaste, handleDragEnd,
+  handleDragEnter,
+  handleDragOver, handleDragStart, handleEvent, handleFocus, handleFocusIn, handleFocusOut, handleKeyboardShortcuts,
+  handleScrolling, handleTouchCancel, handleTouchEnd, processCopiedText
 };

@@ -27,10 +27,10 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
 import { Tag } from '@/app/models/tracker/Tag';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType } from '@/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { Payload } from '@/server/database/Payload';
+import { Payload } from '@/app/server/database/Payload';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 
 
@@ -325,7 +325,7 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
     dataCallback?: (
       subscribers: Subscriber<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[],
       snapshots: Snapshots<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
-    ) => Promise<SnapshotUnion<T, K, Meta>[]>
+    ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]>
   ): Promise<Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[]> {
     throw new Error("Function not implemented.");
   },

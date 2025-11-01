@@ -1,6 +1,6 @@
 // FrontendStructureViewer.tsx
 
-import FrontendStructure from '@/config//appStructure/FrontendStructureComponent';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructureComponent';
 import React from 'react';
 
 interface FrontendStructureViewerProps {

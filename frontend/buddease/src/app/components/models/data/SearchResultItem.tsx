@@ -1,9 +1,9 @@
 // SearchResultItem.tsx
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import ListGenerator from '@/app/generators/ListGenerator';
+import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { Data } from '@/app/modes/data/Data';
 import React from 'react';
-import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
-import { Data } from '@/Data';
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 
 
 interface SearchResultItemProps extends BaseEntity {

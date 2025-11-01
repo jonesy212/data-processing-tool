@@ -6,15 +6,15 @@ import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import UserService from '@/app/components/api/ApiUser';
+import UserService from '@/app/api/ApiUser';
 import { UIActions } from "@/app/actions/UIActions";
 import useNotificationBar from "@/app/hooks/commHooks/useNotificationBar";
 import useUIRealtimeData from "@/app/hooks/commHooks/useUIRealtimeData";
 import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
 import useDarkModeToggle from "@/app/hooks/userInterface/useDarkModeToggle";
-import { logData } from "@/app/notifications/NotificationService";
+import { logData } from "@/app/services/NotificationService";
 import { updateCallback } from "@/app/state/stores/CalendarEvent";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/app/features/support/NotificationMessagesFactory";
 

@@ -1,7 +1,7 @@
 // ParameterCustomizationEndpoints.ts
-import { EndpointConfig } from '@/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
 
-export interface ParameterCustomizationEndpoints {
+export interface ParameterCustomizationEndpoints extends EndpointCategoryConfig {
   getParameterForm: EndpointConfig;
   fetchParameterCustomization: EndpointConfig;
 }

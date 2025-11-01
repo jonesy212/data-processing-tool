@@ -1,5 +1,5 @@
 // endpointMerger.ts
-import { EndpointConfigurations } from '@/config/EndpointConfig';
+import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 import mergeConfigurations from './mergeConfigurations';
 import { generateEndpointUrl } from './urlGenerator';
 
@@ -370,6 +370,73 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       search: generateEndpointUrl("news", "search"),
       publish: (newsId: number) => generateEndpointUrl("news", "publish"),
       unpublish: (newsId: number) => generateEndpointUrl("news", "unpublish"),
+    }),
+
+    notes: mergeConfigurations(endpointConfigurations.notes, {
+      // Core CRUD operations
+      list: generateEndpointUrl("notes", "list"),
+      single: (noteId: number) => generateEndpointUrl("notes", "single")(noteId),
+      create: generateEndpointUrl("notes", "create"),
+      update: (noteId: number) => generateEndpointUrl("notes", "update")(noteId),
+      delete: (noteId: number) => generateEndpointUrl("notes", "delete")(noteId),
+      
+      // State management
+      archive: (noteId: number) => generateEndpointUrl("notes", "archive")(noteId),
+      restore: (noteId: number) => generateEndpointUrl("notes", "restore")(noteId),
+      move: (noteId: number) => generateEndpointUrl("notes", "move")(noteId),
+      pin: (noteId: number) => generateEndpointUrl("notes", "pin")(noteId),
+      unpin: (noteId: number) => generateEndpointUrl("notes", "unpin")(noteId),
+      duplicate: (noteId: number) => generateEndpointUrl("notes", "duplicate")(noteId),
+      
+      // Content operations
+      merge: generateEndpointUrl("notes", "merge"),
+      split: (noteId: number) => generateEndpointUrl("notes", "split")(noteId),
+      
+      // Search and filter
+      search: generateEndpointUrl("notes", "search"),
+      filter: generateEndpointUrl("notes", "filter"),
+      
+      // Bulk operations
+      bulkUpdate: generateEndpointUrl("notes", "bulkUpdate"),
+      bulkDelete: generateEndpointUrl("notes", "bulkDelete"),
+      
+      // Import/Export
+      export: generateEndpointUrl("notes", "export"),
+      import: generateEndpointUrl("notes", "import"),
+      
+      // Tag management
+      tags: (noteId: number) => generateEndpointUrl("notes", "tags")(noteId),
+      addTag: (noteId: number) => generateEndpointUrl("notes", "addTag")(noteId),
+      removeTag: (noteId: number, tagId: number) => generateEndpointUrl("notes", "removeTag")(noteId, tagId),
+      
+      // Attachment management
+      attachments: (noteId: number) => generateEndpointUrl("notes", "attachments")(noteId),
+      addAttachment: (noteId: number) => generateEndpointUrl("notes", "addAttachment")(noteId),
+      removeAttachment: (noteId: number, attachmentId: number) => generateEndpointUrl("notes", "removeAttachment")(noteId, attachmentId),
+      
+      // Version management
+      versions: (noteId: number) => generateEndpointUrl("notes", "versions")(noteId),
+      restoreVersion: (noteId: number, versionId: number) => generateEndpointUrl("notes", "restoreVersion")(noteId, versionId),
+      
+      // Collaboration
+      share: (noteId: number) => generateEndpointUrl("notes", "share")(noteId),
+      unshare: (noteId: number) => generateEndpointUrl("notes", "unshare")(noteId),
+      collaborators: (noteId: number) => generateEndpointUrl("notes", "collaborators")(noteId),
+      addCollaborator: (noteId: number) => generateEndpointUrl("notes", "addCollaborator")(noteId),
+      removeCollaborator: (noteId: number, collaboratorId: number) => generateEndpointUrl("notes", "removeCollaborator")(noteId, collaboratorId),
+      
+      // Comments
+      comments: (noteId: number) => generateEndpointUrl("notes", "comments")(noteId),
+      addComment: (noteId: number) => generateEndpointUrl("notes", "addComment")(noteId),
+      updateComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "updateComment")(noteId, commentId),
+      deleteComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "deleteComment")(noteId, commentId),
+      
+      // Analytics
+      analytics: (noteId: number) => generateEndpointUrl("notes", "analytics")(noteId),
+      
+      // Templates
+      templates: generateEndpointUrl("notes", "templates"),
+      createFromTemplate: (templateId: number) => generateEndpointUrl("notes", "createFromTemplate")(templateId),
     }),
 
     parameterCustomization: mergeConfigurations(endpointConfigurations.parameterCustomization, {

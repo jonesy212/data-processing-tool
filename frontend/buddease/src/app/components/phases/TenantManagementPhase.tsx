@@ -1,6 +1,7 @@
 // TenantManagementPhase.tsx
 import React, { useEffect } from "react";
-import { ConfigureTenantComponent } from '@/app/components/tenants/ConfigureTenantComponent'
+import ConfigureTenantComponent from '@/app/components/tenants/ConfigureTenantComponent'
+import { DocumentManagement } from '@/app/utils/web3/dAppAdapter/functionality/DocumentManagement'
 export enum TenantManagementPhaseEnum {
   CONFIGURE_TENANT,
   INVITE_USERS,

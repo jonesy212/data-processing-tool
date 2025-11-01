@@ -1,11 +1,11 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { snapshotStoreInstance } from '@/app/snapshots/SnapshotStore';
-import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useSnapshot } from "@/context/SnapshotContext";
 import { useCallback } from 'react';
 

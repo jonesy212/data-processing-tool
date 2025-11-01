@@ -2,63 +2,91 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { BaseApiService } from '@/BaseApiService';
-import { Data } from '@/components/models/data/Data';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseApiService } from '@/app/api/BaseApiService';
+import { Data } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-export class DetailsApiService extends BaseApiService {
-  constructor() {
-    super(endpoints.details.list);
+export abstract class BaseApiService {
+  protected baseUrl: string;
+  protected apiConfig: ApiConfig; // Add apiConfig reference
+
+  constructor(baseUrl: string, apiConfig?: ApiConfig) {
+    this.baseUrl = baseUrl;
+    this.apiConfig = apiConfig || new ApiConfig(endpointConfigurations, endpoints);
   }
 
-  async fetchDetails<
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T,
-  >(): Promise<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    return this.get<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>('');
+  // HTTP methods
+  protected async get<T>(endpoint: string = '', config?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...config?.headers,
+      },
+      ...config,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
   }
 
-  async createDetails<    
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(newDetails: DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): Promise<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
-    return this.post<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>('', newDetails);
+  protected async post<T>(endpoint: string = '', data?: any, config?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...config?.headers,
+      },
+      body: JSON.stringify(data),
+      ...config,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
   }
 
-  async addDetails<
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(newDetails: Omit<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, 'id'>): Promise<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
-    return this.post<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>('', newDetails);
+  protected async put<T>(endpoint: string = '', data?: any, config?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...config?.headers,
+      },
+      body: JSON.stringify(data),
+      ...config,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
   }
 
-  async removeDetails(detailsId: string): Promise<void> {
-    return this.delete<void>(`/${detailsId}`);
-  }
-
-  async updateDetails<
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    detailsId: string,
-    newData: any
-  ): Promise<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
-    return this.put<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>(`/${detailsId}`, newData);
+  protected async delete<T>(endpoint: string = '', config?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...config?.headers,
+      },
+      ...config,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json() as T;
   }
 }

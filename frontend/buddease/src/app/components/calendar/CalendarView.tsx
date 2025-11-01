@@ -2,7 +2,7 @@
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import React from "react";
-import { CommonCalendarProps } from "@/app/calendar/Calendar";
+import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
 import { Task } from "@/app/models/tasks/Task";
 import { Project } from "@/app/models/projects/Project";
 import { selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";

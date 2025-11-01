@@ -1,4 +1,4 @@
-import { userService } from '@/app/components/api/ApiUser';
+import { userService } from '@/app/api/ApiUser';
 import { sendNotification } from '@/app/state/redux/slices/UserSlice';
 import isValidAuthToken from '@/security/AuthValidation';
 import { UserActions } from '@/users/UserActions';

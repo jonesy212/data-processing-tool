@@ -1,5 +1,6 @@
 // generateNewApiConfig.ts
-import { ApiConfig, CacheConfig, RetryConfig } from "@/app/services/ConfigurationService";
+import { CacheConfig, RetryConfig } from "@/app/services/ConfigurationService";
+import { ApiConfigInterface } from "@/app/services/ApiConfig";
 import dataLoader from "@/configs/database/dataLoader";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import UniqueIDGenerator from "./GenerateUniqueIds";
@@ -9,7 +10,7 @@ import UniqueIDGenerator from "./GenerateUniqueIds";
 
 const generateUniqueApiId = (): string => {
   const apiName = "YourApiName"; // Replace "YourApiName" with your actual API name or use a dynamic value
-  const id = UniqueIDGenerator.generateID("api", apiName, NotificationTypeEnum.GeneratedID);
+  const id = UniqueIDGenerator.generateID("api", apiName, NotificationTypeEnum.GENERATED_ID);
   return id;
 };
 
@@ -19,7 +20,7 @@ const generateNewApiConfig = (
   timeout: number
 ): ApiConfig => {
   // You can generate an ID using a library or some unique logic
-  const id = UniqueIDGenerator.generateID("apiConfigs", name, NotificationTypeEnum.GeneratedID);
+  const id = UniqueIDGenerator.generateID("apiConfigs", name, NotificationTypeEnum.GENERATED_ID);
   
   const newApiConfig: ApiConfig = {
       id,

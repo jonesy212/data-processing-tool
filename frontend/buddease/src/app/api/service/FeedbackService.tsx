@@ -1,7 +1,7 @@
 // FeedbackService.tsx
 import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/app/api/service/DataProcessingService';
 import { Channel, ChannelType } from "@/app/interfaces/chat/Channel";
-import { Feedback } from '@/app/features/suppport/Feedback';
+import { Feedback } from '@/app/features/support/Feedback';
 import { YourProductContentType } from '@/app/products/YourProductContentType';
 
 class FeedbackService {
