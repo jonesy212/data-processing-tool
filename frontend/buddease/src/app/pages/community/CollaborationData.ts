@@ -3,10 +3,10 @@ import { Communication } from '@/app/components/communications/CommunicationPage
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
 import { CollaborationOptions } from '@/app/components/interfaces/options/CollaborationOptions';
 import { Task } from '@/app/components/models/tasks/Task';
-import { Member } from '@/app/components/models/teams/Contributor';
 import { User } from '@/app/components/users/User';
 import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { BaseData } from '@/app/models/data/Data';
+import { Member } from '@/app/models/teams/Contributor';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';

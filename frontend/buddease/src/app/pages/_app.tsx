@@ -1,4 +1,5 @@
 // _app.tsx
+
 import { DataProvider, Refine } from "@refinedev/core";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
@@ -6,6 +7,7 @@ import { useParams } from "next/navigation";
 import React, { SetStateAction, useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
+import { AppStoresProvider } from "@/app/state/context/AppContext";
 
 import BlogComponent from "@/app/components/blogs/BlogComponent";
 import ChartComponent from "@/app/components/charts/ChartComponent";
@@ -37,17 +39,15 @@ import { LogData } from "@/app/models/LogData";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
-import { DynamicPromptProvider } from "@/app/prompts/DynamicPromptContext";
+import { DynamicPromptProvider } from "@/app/state/context/DynamicPromptContext";
 import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
 import ErrorHandler from "@/app/shared/ErrorHandler";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
 import { DocumentTree } from "@/app/users/User";
-import {
-    NotificationProvider,
-    NotificationTypeEnum,
-} from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationProvider } from '@/app/features/support/NotificationProvider';
 import {
     Route,
     Router,
@@ -79,7 +79,7 @@ import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { authProvider } from "@/app/interfaces/provider/authProviderInstance";
 import ToolbarItemsContext from "@/app/libraries/toolbar/ToolbarItemsProvider";
 import steps from "@/app/phases/steps/steps";
-import { RouteGuard } from "@/app/routing/RouteGuard";
+import { RouteGuard } from "@/app/components/routing/RouteGuard";
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -212,7 +212,7 @@ async function MyApp({
   notificationState,
   toolbarOptions,
 }: ExtendedAppProps) {
-  const [currentPhase, setCurrentPhase] = useState<Phase>(phases[0]);
+  const [currentPhase, setCurrentPhase] = useState<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(phases[0]);
   const [progress, setProgress] = useState(0);
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   // const editorState = useEditorState();
@@ -304,7 +304,7 @@ async function MyApp({
       createdAt: new Date(),
       type: {} as NotificationType,
       content: "",
-      completionMessageLog: {} as LogData,
+      completionMessageLog: {} as LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       status: undefined,
       sendStatus: "Sent",
       notificationType: NotificationTypeEnum.NEW_NOTIFICATION,
@@ -340,7 +340,7 @@ async function MyApp({
 
   // Generate hooks dynamically based on your phases
   const hooks: { [key: string]: Function } = {};
-  phases.forEach((phase: Phase) => {
+  phases.forEach((phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     hooks[phase.name] = () => {};
   });
 
@@ -417,7 +417,9 @@ async function MyApp({
     }, utilities);
   };
 
-  const getNextPhase = (currentPhase: Phase): Phase => {
+  const getNextPhase = (
+    currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     // Add your logic to determine the next phase
     const currentIndex = phases.findIndex(
       (phase) => phase.name === currentPhase.name
@@ -504,300 +506,302 @@ async function MyApp({
 
   return (
     <ErrorBoundaryProvider ErrorHandler={ErrorHandler}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        {isUserLoggedIn ? (
-          <div>
-            <h1>Welcome User!</h1>
-            {/* Render the UserSettingsForm component to allow administrators to configure idle timeout */}
-            <UserSettingsForm onSubmit={handleIdleTimeout} />
-          </div>
-        ) : (
-          <h1>User Logged Out (due to inactivity)</h1>
-        )}
-        <ToolbarItemsContext.Provider value={contextValue}>
-          <ChatSidebarProvider>
-            <DynamicErrorBoundary>
-              <Refine
-                dataProvider={{
-                  default: {} as DataProvider,
-                }}
-                authProvider={authProvider}
-                routerProvider={{
-                  // basename: "",
-                  Link: React.Component<{
-                    to: string;
-                    children?: React.ReactNode;
-                  }>,
-                  Router: Router,
-                  Route: Route,
-                  Routes: Routes,
-                  useParams: useParams,
-                  useLocation: useLocation,
-                  useNavigate: useNavigate,
-                  useSearchParams: useSearchParams,
-                }}
-                resources={[
-                  {
-                    name: "posts",
-                    list: "/posts",
-                    show: "/posts/show/:id",
-                  },
-                  {
-                    name: "categories",
-                    list: "/categories",
-                    show: "/categories/show/:id",
-                  },
-                ]}
-              >
-                
-                <StepProvider initialStep={0} steps={stepContents}>
-                  <StepComponent />
-                </StepProvider>
-                <SearchComponent {...pageProps}>
-                  {({ children, componentSpecificData }: Props) => (
-                    <ThemeConfigProvider>
-                      <ThemeCustomization
-                        infoColor=""
-                        themeState={themeConfig ?? defaultThemeConfig}
-                        setThemeState={setThemeState}
-                        notificationState={notificationState}
-                        tableStyle={{
-                          backgroundColor: "#000000",
-                          textColor: "#ffffff",
-                          borderColor: "#cccccc",
-                          borderWidth: 1,
-                          borderStyle: "solid",
-                          padding: "10px",
-                          margin: "20px",
-                        }}
-                      />
-                      <CollaborationDashboard />
-                      <NotificationProvider>
-                        <DynamicPromptProvider>
-                          <AuthProvider token={token}>
-                            <StoreProvider>
-                              <Router
-                                location={useLocation()}
-                                navigator={{} as Navigator}
-                              >
-                                <Routes location={location}>
-                                  {/* Routes to render only the first matching route */}
-                                  <Route path="/login">
-                                    <LoginForm
-                                      onSubmit={(
-                                        username: string,
-                                        password: string
-                                      ) => handleLogin(username, password)}
-                                      setUsername={setUsername}
-                                      setPassword={setPassword}
-                                    />
-                                    <input
-                                      type="text"
-                                      value={username}
-                                      onChange={(e) =>
-                                        setUsername(e.target.value)
-                                      }
-                                    />
-                                    <input
-                                      type="password"
-                                      value={password}
-                                      onChange={(e) =>
-                                        setPassword(e.target.value)
-                                      }
-                                    />
-                                  </Route>
-                                  <Route path="/register">
-                                    <RegisterForm />
-                                  </Route>
-                                  <Route path="/forgot-password">
-                                    <ForgotPasswordForm />
-                                  </Route>
-                                  <Route path="/reset-password">
-                                    <ChangePasswordForm
-                                      onSuccess={() => {}}
-                                      onChangePassword={(
-                                        currentPassword: string,
-                                        newPassword: string
-                                      ): Promise<void> => {
-                                        // Perform password change logic here
-                                        return new Promise<void>(
-                                          (resolve, reject) => {
-                                            currentPassword = newPassword;
-                                            // Simulate password change operation
-                                            // For example, you can make an API call to change the password
-                                            // Replace the setTimeout with your actual password change logic
-                                            setTimeout(() => {
-                                              // Resolve the Promise when the password change is successful
-                                              resolve();
-                                            }, 1000); // Simulating a delay of 1 second
-                                          }
-                                        );
-                                      }}
-                                    />
-                                  </Route>
-                                  <Route path="/app">
-                                    <Layout>
-                                      <NotificationManager
-                                        notifications={notifications}
-                                        onConfirm={handleConfirm}
-                                        onCancel={handleCancel}
-                                        notify={addNotifications}
-                                        setNotifications={setNotifications}
-                                      />
-                                      <StoreProvider>
-                                        <Component
-                                          {...pageProps}
-                                          initialState={appTree}
-                                          utilities={utilities}
-                                          hooks={hooks}
-                                          phases={phases}
-                                          currentPhase={currentPhase}
-                                          setCurrentPhase={setCurrentPhase}
-                                          progress={progress}
-                                          setProgress={setProgress}
-                                          activeDashboard={activeDashboard}
-                                          setActiveDashboard={
-                                            setActiveDashboard
-                                          }
-                                          addNotifications={addNotifications}
-                                          componentSpecificData={
-                                            componentSpecificData
-                                          }
-                                          personaType={personaType}
-                                        />
-                                      </StoreProvider>
-                                    </Layout>
-                                  </Route>
-                                  <Route path="/blog">
-                                    <BlogComponent
-                                      title=""
-                                      content=""
-                                      subscriberId=""
-                                    />
-                                  </Route>
-                                </Routes>
-                                <OnboardingComponent />
-                                {/* Use componentSpecificData wherever it's needed */}
-                                {componentSpecificData.map((data, index) => (
-                                  <div key={index}>
-                                    {/* Your component logic here using data */}
-                                  </div>
-                                ))}
-                                {/* Pass hooks and utilities to children */}
-                                {children({ hooks, utilities })}{" "}
-                                {/* Render ConfirmationModal with appropriate props */}
-                                <ConfirmationModal
-                                  isOpen={confirmationOpen}
-                                  onConfirm={handleConfirm}
-                                  onCancel={handleCancel}
-                                />
-                                {/* Generate appTree and render TreeView */}
-                                {appTree && (
-                                  <TreeView
-                                    data={[appTree]}
-                                    onClick={(node) => handleNodeClick(node)}
-                                    searchQuery=""
-                                  />
-                                )}
-                                <EditorWithPrompt
-                                  userId="user1"
-                                  teamId="team1"
-                                  project="project1"
-                                />
-                                {/* ButtonGenerator component with handleButtonClick */}
-                                <ButtonGenerator
-                                  onSubmit={handleButtonClick}
-                                  onReset={handleButtonClick}
-                                  onCancel={handleButtonClick}
-                                  onLogicalAnd={handleButtonClick}
-                                  onLogicalOr={handleButtonClick}
-                                  onStartPhase={handleButtonClick}
-                                  onEndPhase={handleButtonClick}
-                                  onRoutesLayout={handleButtonClick}
-                                  onOpenDashboard={handleButtonClick}
-                                />
-                                <RouteGuard
-                                  path="/logs"
-                                  component={LogViewer}
-                                />
-                                <RouteGuard
-                                  path="/"
-                                  component={OtherComponent}
-                                />
-                              </Router>
-                            </StoreProvider>
-                          </AuthProvider>
-                        </DynamicPromptProvider>
-                        <NotificationManager
-                          notifications={notifications}
-                          onConfirm={handleConfirm}
-                          onCancel={handleCancel}
-                          notify={addNotifications}
-                          setNotifications={setNotifications}
-                        />
-                        <FormBuilder />
-                        {/* Toolbar component with activeDashboard and progress props */}
-                        <Toolbar
-                          editorState={editorState}
-                          onEditorStateChange={setEditorState}
-                          activeDashboard={activeDashboard}
-                          progress={{
-                            id: "toolbar",
-                            name: "Progress",
-                            color: "blue",
-                            value: progress,
-                            label: "Progress",
-                            current: progress,
-                            max: 100,
-                            min: 0,
-                            percentage: 0,
-                            description: "Progress",
-                            done: false,
+      <AppStoresProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {isUserLoggedIn ? (
+            <div>
+              <h1>Welcome User!</h1>
+              {/* Render the UserSettingsForm component to allow administrators to configure idle timeout */}
+              <UserSettingsForm onSubmit={handleIdleTimeout} />
+            </div>
+          ) : (
+            <h1>User Logged Out (due to inactivity)</h1>
+          )}
+          <ToolbarItemsContext.Provider value={contextValue}>
+            <ChatSidebarProvider>
+              <DynamicErrorBoundary>
+                <Refine
+                  dataProvider={{
+                    default: {} as DataProvider,
+                  }}
+                  authProvider={authProvider}
+                  routerProvider={{
+                    // basename: "",
+                    Link: React.Component<{
+                      to: string;
+                      children?: React.ReactNode;
+                    }>,
+                    Router: Router,
+                    Route: Route,
+                    Routes: Routes,
+                    useParams: useParams,
+                    useLocation: useLocation,
+                    useNavigate: useNavigate,
+                    useSearchParams: useSearchParams,
+                  }}
+                  resources={[
+                    {
+                      name: "posts",
+                      list: "/posts",
+                      show: "/posts/show/:id",
+                    },
+                    {
+                      name: "categories",
+                      list: "/categories",
+                      show: "/categories/show/:id",
+                    },
+                  ]}
+                >
+                  
+                  <StepProvider initialStep={0} steps={stepContents}>
+                    <StepComponent />
+                  </StepProvider>
+                  <SearchComponent {...pageProps}>
+                    {({ children, componentSpecificData }: Props) => (
+                      <ThemeConfigProvider>
+                        <ThemeCustomization
+                          infoColor=""
+                          themeState={themeConfig ?? defaultThemeConfig}
+                          setThemeState={setThemeState}
+                          notificationState={notificationState}
+                          tableStyle={{
+                            backgroundColor: "#000000",
+                            textColor: "#ffffff",
+                            borderColor: "#cccccc",
+                            borderWidth: 1,
+                            borderStyle: "solid",
+                            padding: "10px",
+                            margin: "20px",
                           }}
-                          toolbarOptions={toolbarOptions}
                         />
-                        <div>
-                          {/* Include router and brandingSettings in JSX */}
-                          <Component
-                            {...pageProps}
-                            router={router}
-                            brandingSettings={brandingSettings}
-                            personaType={
-                              personaType
-                            } /* Pass personaType down to Component */
+                        <CollaborationDashboard />
+                        <NotificationProvider>
+                          <DynamicPromptProvider>
+                            <AuthProvider token={token}>
+                              <StoreProvider>
+                                <Router
+                                  location={useLocation()}
+                                  navigator={{} as Navigator}
+                                >
+                                  <Routes location={location}>
+                                    {/* Routes to render only the first matching route */}
+                                    <Route path="/login">
+                                      <LoginForm
+                                        onSubmit={(
+                                          username: string,
+                                          password: string
+                                        ) => handleLogin(username, password)}
+                                        setUsername={setUsername}
+                                        setPassword={setPassword}
+                                      />
+                                      <input
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) =>
+                                          setUsername(e.target.value)
+                                        }
+                                      />
+                                      <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) =>
+                                          setPassword(e.target.value)
+                                        }
+                                      />
+                                    </Route>
+                                    <Route path="/register">
+                                      <RegisterForm />
+                                    </Route>
+                                    <Route path="/forgot-password">
+                                      <ForgotPasswordForm />
+                                    </Route>
+                                    <Route path="/reset-password">
+                                      <ChangePasswordForm
+                                        onSuccess={() => {}}
+                                        onChangePassword={(
+                                          currentPassword: string,
+                                          newPassword: string
+                                        ): Promise<void> => {
+                                          // Perform password change logic here
+                                          return new Promise<void>(
+                                            (resolve, reject) => {
+                                              currentPassword = newPassword;
+                                              // Simulate password change operation
+                                              // For example, you can make an API call to change the password
+                                              // Replace the setTimeout with your actual password change logic
+                                              setTimeout(() => {
+                                                // Resolve the Promise when the password change is successful
+                                                resolve();
+                                              }, 1000); // Simulating a delay of 1 second
+                                            }
+                                          );
+                                        }}
+                                      />
+                                    </Route>
+                                    <Route path="/app">
+                                      <Layout>
+                                        <NotificationManager
+                                          notifications={notifications}
+                                          onConfirm={handleConfirm}
+                                          onCancel={handleCancel}
+                                          notify={addNotifications}
+                                          setNotifications={setNotifications}
+                                        />
+                                        <StoreProvider>
+                                          <Component
+                                            {...pageProps}
+                                            initialState={appTree}
+                                            utilities={utilities}
+                                            hooks={hooks}
+                                            phases={phases}
+                                            currentPhase={currentPhase}
+                                            setCurrentPhase={setCurrentPhase}
+                                            progress={progress}
+                                            setProgress={setProgress}
+                                            activeDashboard={activeDashboard}
+                                            setActiveDashboard={
+                                              setActiveDashboard
+                                            }
+                                            addNotifications={addNotifications}
+                                            componentSpecificData={
+                                              componentSpecificData
+                                            }
+                                            personaType={personaType}
+                                          />
+                                        </StoreProvider>
+                                      </Layout>
+                                    </Route>
+                                    <Route path="/blog">
+                                      <BlogComponent
+                                        title=""
+                                        content=""
+                                        subscriberId=""
+                                      />
+                                    </Route>
+                                  </Routes>
+                                  <OnboardingComponent />
+                                  {/* Use componentSpecificData wherever it's needed */}
+                                  {componentSpecificData.map((data, index) => (
+                                    <div key={index}>
+                                      {/* Your component logic here using data */}
+                                    </div>
+                                  ))}
+                                  {/* Pass hooks and utilities to children */}
+                                  {children({ hooks, utilities })}{" "}
+                                  {/* Render ConfirmationModal with appropriate props */}
+                                  <ConfirmationModal
+                                    isOpen={confirmationOpen}
+                                    onConfirm={handleConfirm}
+                                    onCancel={handleCancel}
+                                  />
+                                  {/* Generate appTree and render TreeView */}
+                                  {appTree && (
+                                    <TreeView
+                                      data={[appTree]}
+                                      onClick={(node) => handleNodeClick(node)}
+                                      searchQuery=""
+                                    />
+                                  )}
+                                  <EditorWithPrompt
+                                    userId="user1"
+                                    teamId="team1"
+                                    project="project1"
+                                  />
+                                  {/* ButtonGenerator component with handleButtonClick */}
+                                  <ButtonGenerator
+                                    onSubmit={handleButtonClick}
+                                    onReset={handleButtonClick}
+                                    onCancel={handleButtonClick}
+                                    onLogicalAnd={handleButtonClick}
+                                    onLogicalOr={handleButtonClick}
+                                    onStartPhase={handleButtonClick}
+                                    onEndPhase={handleButtonClick}
+                                    onRoutesLayout={handleButtonClick}
+                                    onOpenDashboard={handleButtonClick}
+                                  />
+                                  <RouteGuard
+                                    path="/logs"
+                                    component={LogViewer}
+                                  />
+                                  <RouteGuard
+                                    path="/"
+                                    component={OtherComponent}
+                                  />
+                                </Router>
+                              </StoreProvider>
+                            </AuthProvider>
+                          </DynamicPromptProvider>
+                          <NotificationManager
+                            notifications={notifications}
+                            onConfirm={handleConfirm}
+                            onCancel={handleCancel}
+                            notify={addNotifications}
+                            setNotifications={setNotifications}
                           />
-                          {/* You can also pass them down to child components */}
-                          <ChildComponent
-                            router={router}
-                            brandingSettings={brandingSettings}
+                          <FormBuilder />
+                          {/* Toolbar component with activeDashboard and progress props */}
+                          <Toolbar
+                            editorState={editorState}
+                            onEditorStateChange={setEditorState}
+                            activeDashboard={activeDashboard}
+                            progress={{
+                              id: "toolbar",
+                              name: "Progress",
+                              color: "blue",
+                              value: progress,
+                              label: "Progress",
+                              current: progress,
+                              max: 100,
+                              min: 0,
+                              percentage: 0,
+                              description: "Progress",
+                              done: false,
+                            }}
+                            toolbarOptions={toolbarOptions}
                           />
-                        </div>
-                        <div>
-                          <input
-                            type="text"
-                            value={filePath}
-                            onChange={(e) => setFilePath(e.target.value)}
-                            placeholder="Enter file path"
-                          />
-                          {filePath && (
-                            <DetermineFileType filePath={filePath} />
-                          )}
-                        </div>
-                        <FilePreview />
-                      </NotificationProvider>
-                    </ThemeConfigProvider>
-                  )}
+                          <div>
+                            {/* Include router and brandingSettings in JSX */}
+                            <Component
+                              {...pageProps}
+                              router={router}
+                              brandingSettings={brandingSettings}
+                              personaType={
+                                personaType
+                              } /* Pass personaType down to Component */
+                            />
+                            {/* You can also pass them down to child components */}
+                            <ChildComponent
+                              router={router}
+                              brandingSettings={brandingSettings}
+                            />
+                          </div>
+                          <div>
+                            <input
+                              type="text"
+                              value={filePath}
+                              onChange={(e) => setFilePath(e.target.value)}
+                              placeholder="Enter file path"
+                            />
+                            {filePath && (
+                              <DetermineFileType filePath={filePath} />
+                            )}
+                          </div>
+                          <FilePreview />
+                        </NotificationProvider>
+                      </ThemeConfigProvider>
+                    )}
 
-                  <ChartComponent {...pageProps} />
+                    <ChartComponent {...pageProps} />
 
-                  <Layout>{Component && <Component {...pageProps} />}</Layout>
-                </SearchComponent>
-                <ContentItemComponent item={contentItem} />
-              </Refine>
-            </DynamicErrorBoundary>
-          </ChatSidebarProvider>
-        </ToolbarItemsContext.Provider>
-      </GestureHandlerRootView>
+                    <Layout>{Component && <Component {...pageProps} />}</Layout>
+                  </SearchComponent>
+                  <ContentItemComponent item={contentItem} />
+                </Refine>
+              </DynamicErrorBoundary>
+            </ChatSidebarProvider>
+          </ToolbarItemsContext.Provider>
+        </GestureHandlerRootView>
+      </AppStoresProvider>
     </ErrorBoundaryProvider>
   );
 }

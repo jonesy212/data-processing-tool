@@ -1,5 +1,8 @@
 // MessageType.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { MessageBaseParams } from '@/app/typings/entities/MessageEntity';
+import { Message } from '@/app/models/messages/Message';
+import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
 
 export enum MessageType {
   Success = "success",
@@ -19,7 +22,20 @@ export enum MessageType {
   MessageType = "text",
 }
 
-export function showMessageWithType(message: Message, type: MessageType) {
+
+
+type AppMessage = Message<
+  MessageBaseParams['T'],
+  MessageBaseParams['K'],
+  MessageBaseParams['Meta'],
+  MessageBaseParams['AttachmentType'],
+  MessageBaseParams['ExcludedFields'],
+  MessageBaseParams['IncludedFields']
+>;
+
+export type { AppMessage };
+
+export function showMessageWithType(message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>, type: MessageType) {
   // Create a new div element to hold the message
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message');

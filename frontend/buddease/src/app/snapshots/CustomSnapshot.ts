@@ -1,11 +1,11 @@
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { InitializedState } from '@/app/state/stores/DataStore';
 
 
 interface CustomSnapshot<

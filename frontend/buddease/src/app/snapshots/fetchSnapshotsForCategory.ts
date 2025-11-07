@@ -1,8 +1,8 @@
 // fetchSnapshotsForCategory.ts
-import internalApiService from "@/app/api/ApiClient";
+import internalApiService from '@/app/api/ApiClient';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 
 /**
  * Fetches snapshots for a specific category asynchronously.//+

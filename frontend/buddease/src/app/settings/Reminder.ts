@@ -1,106 +1,31 @@
 import { EscalationAction } from "./EscalationAction";
-
-
+import { CustomAction } from '@/app/settings/CustomAction';
+import { NotificationChannels } from '@/app/notifications/NotificationChannels';
+import { ReminderCondition } from '@/app/settings/ReminderConditionEngine'
 // Core reminder definition
+
+// Option B: With dedicated ReminderType if you need more complexity
+interface ReminderType {
+  id: string;
+  category: 'reminder' | 'alert' | 'follow-up' | 'notification' | 'action';
+  severity: 'info' | 'warning' | 'error' | 'critical';
+  defaultSettings: {
+    method: 'email' | 'push' | 'sms' | 'in-app';
+    timing: number; // minutes before
+    template: string;
+  };
+}
+
 interface Reminder {
   id: string;
   trigger: ReminderTrigger;
-  method: ReminderMethod;
-  type?: 'reminder' | 'alert' | 'follow-up'; // Optional categorization
-  messageTemplate?: string;
+  method: 'email' | 'push' | 'sms' | 'in-app' | 'desktop';
+  reminderType: ReminderType; // Use the complex type
+  customMessage?: string;
   isActive: boolean;
   sent: boolean;
+  minutes?: number;
   customActions?: CustomAction[];
-}
-
-interface ReminderCondition {
-  id: string;
-  name?: string;
-  description?: string;
-
-  // Type of condition logic
-  conditionType:
-    | 'time_based'
-    | 'event_property'
-    | 'user_property'
-    | 'custom_expression'
-    | 'location_based'
-    | 'priority_based'
-    | 'status_check';
-
-  // Core condition logic
-  field?: string; // e.g., 'event.startTime', 'user.role', 'priority'
-  operator?:
-    | 'equals'
-    | 'not_equals'
-    | 'greater_than'
-    | 'less_than'
-    | 'includes'
-    | 'excludes'
-    | 'exists'
-    | 'not_exists'
-    | 'matches';
-  value?: any;
-
-  // Optional advanced logic
-  expression?: string; // e.g., "event.priority === 'high' && user.isActive"
-
-  // Time and recurrence filters
-  validDuring?: {
-    start?: string | Date;
-    end?: string | Date;
-    recurrence?: string; // iCal-style recurrence rule
-  };
-
-  // Nested subconditions
-  subConditions?: ReminderCondition[];
-  logicOperator?: 'AND' | 'OR'; // How to combine subconditions
-
-  // Contextual conditions
-  appliesTo?: {
-    eventType?: string;
-    userRole?: string;
-    location?: string;
-    priorityLevel?: 'low' | 'medium' | 'high';
-  };
-
-  active: boolean;
-}
-
-
-interface CustomAction {
-  id: string;
-  name: string;
-  description?: string;
-  
-  // The type of action to perform
-  actionType: 'api_call' | 'open_url' | 'run_script' | 'send_message' | 'update_status' | 'log_entry';
-  
-  // When this action should trigger
-  triggerEvent: 'on_send' | 'on_dismiss' | 'on_complete' | 'on_expire' | 'manual';
-  
-  // Configuration for dynamic execution
-  config?: {
-    endpoint?: string; // For API calls
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    headers?: Record<string, string>;
-    body?: Record<string, any>;
-    url?: string; // For open_url
-    script?: string; // For custom script execution
-    targetUserId?: string;
-    messageTemplate?: string;
-  };
-
-  // Optional conditions for executing this action
-  conditions?: ReminderCondition[];
-
-  // Whether this action can be retried automatically if it fails
-  retryPolicy?: {
-    maxRetries: number;
-    retryIntervalSeconds: number;
-  };
-
-  enabled: boolean;
 }
 
 interface ReminderPreferences {
@@ -329,7 +254,6 @@ export type {
   BlackoutPeriod,
 
   // ✅ Newly added / missing exports
-  CustomAction,
   ReminderPreferences,
   ReminderCondition,
 
@@ -391,6 +315,53 @@ const userNotificationChannels: NotificationChannels = {
     payloadFormat: 'json',
     events: ['user.updated', 'payment.failed'],
   },
+
+  advanced: {
+    chat: {
+      enabled: false,
+      realTimeChatEnabled: false,
+      notificationEmailEnabled: false,
+      enableEmojis: false,
+      enableAudioChat: false,
+      enableVideoChat: false,
+      enableFileSharing: false,
+      enableBlockchainCommunication: false,
+      enableDecentralizedStorage: false,
+      collaborationPreference1: '',
+      collaborationPreference2: '',
+      platforms: [],
+      messageFormat: 'text',
+      mentionUsers: false
+    },
+    calendar: {
+      enabled: false,
+      syncDirection: 'one-way',
+      updateExisting: false,
+      addAs: 'event',
+      visibility: 'default'
+    },
+    audioCall: {
+      enabled: false,
+      provider: 'custom',
+      voice: 'custom',
+      language: '',
+      retryAttempts: 0
+    },
+    videoCall: {
+      enabled: false,
+      autoJoin: false,
+      enableVideo: false,
+      enableAudio: false,
+      recording: {enabled: false, requireConsent: true }
+    },
+    screenShare: {
+      enabled: false,
+      quality: 'original',
+      frameRate: 0,
+      includeAudio: false,
+      requireApproval: false
+    }
+  }
 };
 
 
@@ -398,7 +369,16 @@ const reminderExample: Reminder = {
   id: "rem-001",
   trigger: { type: "time_before_event", minutesBefore: 30 },
   method: "push",
-  type: "alert",
+  reminderType: { 
+    id: "alert-type",
+    category: "alert",
+    severity: "warning",
+    defaultSettings: {
+      method: "push",
+      timing: 30,
+      template: "Upcoming event in {minutes} minutes"
+    }
+  },
   isActive: true,
   sent: false,
   customActions: [

@@ -28,7 +28,7 @@ interface DocumentPhase<
   copyright?: string;
   license?: string;
   links?: string[];
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[];
+  tags?: TagsRecord<T>| string[];
   phaseType: ProjectPhaseTypeEnum;
   customProp1: string;
   customProp2: number;

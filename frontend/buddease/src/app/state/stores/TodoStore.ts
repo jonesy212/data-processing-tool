@@ -7,9 +7,10 @@ import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import { Snapshot, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
@@ -26,7 +27,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 const { notify } = useNotification();
 
 interface TodoManagerStoreProps {
-  initialTodos?: Record<string, Todo<T, K, Meta>>; // Optional initial todos
+  initialTodos?: Record<string, Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Optional initial todos
 }
 
 export interface TodoManagerStore<
@@ -38,39 +39,42 @@ export interface TodoManagerStore<
   IncludedFields extends keyof T = keyof T 
 > {
   dispatch: (action: any) => void;
-  todos: Record<string, Todo<T, K, Meta>>;
-  todoList: Todo<T>[];
+  todos: Record<string, Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  todoList: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   toggleTodo: (id: string) => void;
-  addTodo: (todo: Todo<T>) => void;
+  addTodo: (todo: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   loading: MutableRefObject<boolean>;
   error: string | null;
   addTodos: (
-    newTodos: Todo<T>[],
-    data: SnapshotStore<Snapshot<any, any, any>>
+    newTodos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    data: SnapshotStore<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
-  fetchTodosSuccess: (payload: { todos: Todo<T>[] }) => void;
+  fetchTodosSuccess: (payload: { todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => void;
   fetchTodosFailure: (payload: { error: string }) => void;
   openTodoSettingsPage: (todoId: number, teamId: number) => void;
-  getTodoId: (todo: Todo<T>) => string | null;
-  getTeamId: (todo: Todo<T>) => string | null;
+  getTodoId: (todo: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => string | null;
+  getTeamId: (todo: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => string | null;
   fetchTodosRequest: () => void;
   completeAllTodosSuccess: () => void;
   completeAllTodos: () => void;
   completeAllTodosFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  
+   setDynamicNotificationMessage: (
+    message: Message,<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    type: NotificationType
+  ) => void;
+
   subscribeToSnapshot: (
     id: string,
-    callback: (snapshot: Snapshot<Todo<T, K, Meta>, Meta, Data>) => void,
-    snapshot: Snapshot<Todo<T, K, Meta>, Meta, Data>
+    callback: (snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Data>) => void,
+    snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Data>
   ) => void;
   
-  batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo<T>[]>) => void;
+  batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   assignedTaskStore: (id: string, assignedTo: string) => void;
   updateTaskTitle: (id: string, newTitle: string) => void;
   updateTaskDescription: (id: string, newDescription: string) => void;
@@ -86,9 +90,9 @@ const useTodoManagerStore = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(props: TodoManagerStoreProps): TodoManagerStore<T, K> => {
+>(props: TodoManagerStoreProps): TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   
-  const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});
+  const [todos, setTodos] = useState<Record<string, Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>(props.initialTodos || {});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
     >({});
@@ -105,9 +109,9 @@ const useTodoManagerStore = <
     throw new Error("Store ID is required in order to create notification todo store");
   }
   // Inside useTodoManagerStore function
-  const snapshotStore = useSnapshotManager(storeId);
+  const snapshotStore = useSnapshotManager(storeId, storeProps);
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo<T, K, Meta>, K, Meta>) => void)[] = [];
+  const onSnapshotCallbacks: ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[] = [];
 
   const dispatch = (action: any) => {
     switch (action.type) {
@@ -155,8 +159,8 @@ const useTodoManagerStore = <
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Todo<T, K, Meta>>,
-    subscribers?: SubscriberCollection<T, K>
+    data: SnapshotStore<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
@@ -167,7 +171,7 @@ const useTodoManagerStore = <
         // Take snapshot for each todo
         if (data) {
           // Convert todo to snapshot format
-          const snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
+          const snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
             todoSnapshotId: generateSnapshotId,
             initialState: todo,
             category: "todo",
@@ -195,8 +199,8 @@ const useTodoManagerStore = <
   const todoList = Object.values(todos);
   const subscribeToSnapshot = (
     id: string,
-    callback: (snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo>) => void,
-    snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> // Add 'snapshot' as an argument
+    callback: (snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo>) => void,
+    snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> // Add 'snapshot' as an argument
   ) => {
     // Define the conversion functions
     const todoToData = (todo: Todo): Data => {
@@ -231,7 +235,9 @@ const useTodoManagerStore = <
         },
         snapshot: {
           timestamp: "",
-          category: undefined
+          category: undefined,
+          deleted, initialState, isCore, initialConfig,
+          
         },
         timestamp: "",
         category: undefined
@@ -253,7 +259,7 @@ const useTodoManagerStore = <
     // Check the type of 'data' and 'convertedTodo' to determine the correct conversion
     if ('id' in data && 'id' in convertedTodo) {
       // Perform conversion logic specific to Todo
-      const convertedSnapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         id,
         data: {
@@ -333,7 +339,7 @@ const useTodoManagerStore = <
 
       
       // Perform conversion logic specific to Data
-      const convertedSnapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         data: {
           ...snapshot.data,

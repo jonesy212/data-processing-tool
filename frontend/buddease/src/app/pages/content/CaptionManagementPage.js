@@ -26,8 +26,6 @@ const CaptionManagementPage = () => {
   }, []);
 
   return (
-    <RootLayout>
-
     <div>
       <h1>Caption Management Page</h1>
       <ul>
@@ -35,9 +33,7 @@ const CaptionManagementPage = () => {
           <li key={index}>{caption.text}</li>
         ))}
       </ul>
-      </div>
-      </RootLayout>
-
+     </div>
   );
 };
 

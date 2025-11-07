@@ -6,10 +6,11 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig } from '@/app/snapshots/';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
+
 
 
 // Shared method signatures for category behavior
@@ -26,6 +27,13 @@ type SnapshotCategoryMethods = {
   getSnapshotCategory: (id: string) => Category | undefined;
 };
 
+interface CategoryPropertyBundle<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T
+> {
+  simple: string[];
+  detailed?: CategoryProperties<T, K>[]; // plural because real-world category arrays
+}
 
 // Type Guard to check if category is CategoryProperties
 function isCategoryProperties(category: Category): category is CategoryProperties {
@@ -375,4 +383,4 @@ function generateOrVerifySnapshotId <
 }
 export { generateCategoryProperties, generateOrVerifySnapshotId, getCategoryLabelForSnapshot, getOrSetCategoryForSnapshot, isCategoryProperties };
 
-    export type { Category, CategoryIdentifier, SnapshotCategoryMethods };
+export type { Category, CategoryIdentifier, SnapshotCategoryMethods, CategoryPropertyBundle };

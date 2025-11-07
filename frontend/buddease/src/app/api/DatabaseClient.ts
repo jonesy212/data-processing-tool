@@ -10,8 +10,8 @@ import {
     QueryResult,
     QueryResultRow
 } from "pg";
-import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
-import internalApiService from "@/app/api/ApiClient"; // ADD THIS
+import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
+import internalApiService from '@/app/api/ApiClient'; // ADD THIS
 import { endpoints } from "@/app/api/endpointConfigurations"; // ADD THIS
 
 
@@ -21,16 +21,26 @@ pg.native = null; // ← This disables pg-native
 
 class DatabaseClient {
   private pool: Pool;
-  private config: PoolConfig; // Declare config as an instance variable
+  private config: PoolConfig;
 
-  constructor(config: PoolConfig) {
-    // Force non-native client
+  // Option A: Make config optional with default
+  constructor(config?: PoolConfig) {
+    this.config = config || this.getDefaultConfig();
     this.pool = new Pool({
-      ...config,
-      // Add connection options to avoid native
+      ...this.config,
       connectionTimeoutMillis: 10000,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
+  }
+
+  private getDefaultConfig(): PoolConfig {
+    return {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'your_database',
+      user: process.env.DB_USER || 'your_username',
+      password: process.env.DB_PASSWORD || 'your_password',
+    };
   }
 
   private async apiRequestHandler(
@@ -154,21 +164,7 @@ class DatabaseClient {
   }
 
   // Method to run a hypothesis test
-  static async runHypothesisTest(
-    datasetId: number,
-    testType: string
-  ): Promise<void> {
-    try {
-      const response: AxiosResponse<void> = await axiosInstance.post(
-        "/api/hypothesis-test",
-        { datasetId, testType }
-      );
-      console.log("Hypothesis test executed successfully:", response.data);
-    } catch (error) {
-      console.error("Error running hypothesis test:", error);
-    }
-  }
-
+  
   static async runHypothesisTest(
     datasetId: number,
     testType: string

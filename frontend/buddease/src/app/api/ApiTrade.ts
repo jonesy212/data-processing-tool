@@ -1,7 +1,7 @@
 // ApiTrade.ts - MobX Observable Trade API
 import { AxiosResponse } from "axios";
 import { observable } from "mobx";
-import internalApiService from "@/app/api/ApiClient"; // Use the service
+import internalApiService from '@/app/api/ApiClient'; // Use the service
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { TradeLogger } from "./TradeLogger";
 

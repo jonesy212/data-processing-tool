@@ -1,36 +1,36 @@
 import { AppActions } from '@/app/actions/AppActions';
-import { UserProfile, userService } from "@/app/api/ApiUser";
-import { CalendarManagerState } from "@/app/calendar/CalendarSlice";
-import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { ProjectOwnerState } from "@/app/users/ProjectOwnerSlice";
-import { UserManagerState } from "@/app/users/UserSlice";
-import { useSecureUserId } from "@/app/hooks/useSecureUserId";
-import { RealtimeDataState } from "@/app/state/redux/slices/RealtimeDataSlice";
-import { UIState } from "@/app/stores/UISlice";
-import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
-import EntityId from "@/app/state/redux/slices/RootSlice";
-import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
-import { ApiManagerState } from "./ApiSlice";
-import { BlogState } from "./BlogSlice";
-import { CollaborationState } from "./CollaborationSlice";
-import { DataSliceState } from "./DataSlice";
-import { DocumentSliceState } from "./DocumentSlice";
-import { DrawingState } from "./DrawingSlice";
-import { EventState } from "./EventSlice";
-import { NotificationState } from "./NotificationSlice";
-import { PagingState } from "./pagingSlice";
-import { ProjectState } from "./ProjectSlice";
-import { RandomWalkState } from "./RandomWalkManagerSlice";
-import { SettingsState } from "./SettingsSlice";
-import { TaskState } from "./TaskSlice";
-import { TodoManagerState } from "./TodoSlice";
-import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
-import { TrackerManagerState } from "./TrackerSlice";
-import { VersionState } from "./VersionSlice";
-import { VideoState } from "./VideoSlice";
+import { UserProfile, userService } from '@/app/api/ApiUser';
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
+import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice
+import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
+import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
+import { UIState } from '@/app/state/redux/slices/UISlice';
+import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
+import EntityId from '@/app/state/redux/slices/RootSlice';
+import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
+import { BlogState } from '@/app/state/redux/slices/BlogSlice';
+import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
+import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
+import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
+import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
+import { EventState } from '@/app/state/redux/slices/EventSlice';
+import { NotificationState } from '@/app/state/redux/slices/NotificationSlice';
+import { PagingState } from '@/app/state/redux/slices/pagingSlice';
+import { ProjectState } from '@/app/state/redux/slices/ProjectSlice';
+import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
+import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
+import { TaskState } from '@/app/state/redux/slices/TaskSlice';
+import { TodoManagerState } from '@/app/state/redux/slices/TodoSlice';
+import { AlignmentOptions, ToolbarState } from '@/app/state/redux/slices/toolbarSlice';
+import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
+import { VersionState } from '@/app/state/redux/slices/VersionSlice';
+import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 
 interface AppState {
-    user: UserProfile,
+    user: UserProfile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     currentPage: null,
     currentLayout: null,
     currentTheme: null,

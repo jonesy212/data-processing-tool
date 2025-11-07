@@ -1,25 +1,28 @@
 
 // Base types for context
 import { SnapshotStoreConfig } from '@/app/snapshots';
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
-import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { AppDocument } from '@/app/typings/entities/CommonEntities'
-import { internalCache } from '@/app/utils/cache/InternalCache';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import {   StorePropEntity,
-  StorePropK,
-  StorePropMeta,
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import {
   StorePropAttachment,
+  StorePropEntity,
   StorePropExcludedFields,
-  StorePropIncludedFields
-} from '@/app/snapshots/StorePropEntity'
-import { Attachment } from '@/app/documents/attachment/Attachment';
+  StorePropIncludedFields,
+  StorePropK,
+  StorePropMeta
+} from '@/app/typings/entities/StorePropEntity';
+import { useDataStore } from '@/app/state/stores/DataStore';
+import { internalCache } from '@/app/utils/cache/InternalCache';
 
 
 export interface BaseDataEntity {
   id?: string | number;
   createdAt?: Date;
   updatedAt?: Date;
+  tempData?: { 
+    tempResults: any[];
+    cacheTime: Date;
+  };
   [key: string]: any;
 }
 
@@ -147,7 +150,7 @@ export const CommonValidationRules = {
   }),
 
   /** Custom regex pattern validation */
-  pattern: <T extends BaseDataEntity>(
+  pattern: <T extends BaseDataEntity, K extends T = T>(
     field: keyof T,
     pattern: RegExp,
     message?: string
@@ -165,9 +168,13 @@ export const CommonValidationRules = {
   })
 };
 
-/// In the ValidationEngine class, fix the errors array:
-export class ValidationEngine<T extends BaseDataEntity, K extends T = T> {
-  static validateEntity(
+
+export class ValidationEngine {
+
+  static validateEntity<
+    T extends BaseDataEntity, 
+    K extends T = T
+  >(
     entity: Partial<T>,
     rules: ValidationRule<T, K>[],
     meta?: ValidationMeta<T, K>
@@ -270,13 +277,8 @@ const exampleConfig: SnapshotStoreConfig<
 
   getOrCreateSnapshot: async(
     id: string,
-    baseData: T,
-    storeProps: SnapshotStoreProps<  StorePropEntity,
-  StorePropK,
-  StorePropMeta,
-  StorePropAttachment,
-  StorePropExcludedFields,
-  StorePropIncludedFields>
+    baseData: StorePropEntity,
+    storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
   ) => {
     const existing = internalCache.get(id);
     if (existing) {
@@ -284,7 +286,7 @@ const exampleConfig: SnapshotStoreConfig<
     }
 
     // if not found, create a new one
-    return await createSnapshot(baseData, new Map(), id, undefined, null, null, null, false, storeProps);
+    return await createSnapshot(baseData, new Map(), id, null, null, null, null, false, storeProps);
   }
   // ... other SnapshotStoreConfig properties
 };

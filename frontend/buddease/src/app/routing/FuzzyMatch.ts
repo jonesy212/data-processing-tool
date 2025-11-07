@@ -1,44 +1,15 @@
+import { Entity } from '@/app/routing/FuzzyMatch';
 // FuzzyMatch.ts
 import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/documents/RelatedProps";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
-import { AppMetadata } from "@/app/config/MetaDataOptions";
+import { AppMetadata } from '@/app/typings/metadataTypes'
 import { useAuth } from "@/context/AuthContext";
 
 import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import fuzzysort from "fuzzysort";
-
-interface BaseEntity<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          SharedTimestamps
-{
-  description?: string;
-  appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  filePathOrUrl?: string;
-  source?: string;
-}
-
-// Define a type for your entities
-interface Entity<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-          BaseEntityProperties 
-{
-  type?: string | AllTypes | null;
-}
 
 // Function to perform fuzzy matching with spaCy processing
 export const fuzzyMatchEntities = async <
@@ -112,4 +83,3 @@ const query = "Microsft Corp"; // Intentional typo for demonstration
 const matchedEntities = fuzzyMatchEntities(query, entities);
 const filteredEntities = entities.filter((entity) => entity.type === "company");
 console.log("Matched Entities:", matchedEntities, filteredEntities);
-export type { BaseEntity, Entity };

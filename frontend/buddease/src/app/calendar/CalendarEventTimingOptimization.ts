@@ -32,11 +32,11 @@ export interface ExtendedCalendarEventProps<
   reminder?: string;
   pinned?: boolean;
   archived?: boolean;
-  suggestedDay?: DayOfWeekProps["day"] | null;
+  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["day"] | null;
   suggestedWeeks?: number[] | null;
   suggestedMonths?: Month[] | null;
   suggestedSeasons?: Season[] | null;
-  assignedTo?: User | null;
+  assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 // =========================================
@@ -55,16 +55,17 @@ class ExtendedCalendarEvent<
   id: string;
   title: string;
   description: string;
-  startTime?: Date;
-  endTime?: Date;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  duration?: number;
   attendees: Attendee[];
-  assignedTo?: User | null;
+  assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   timestamp?: string | number | Date;
   location?: string;
   reminder?: string;
   pinned?: boolean;
   archived?: boolean;
-  suggestedDay?: DayOfWeekProps["day"] | null;
+  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["day"] | null;
   suggestedWeeks?: number[] | null;
   suggestedMonths?: Month[] | null;
   suggestedSeasons?: Season[] | null;
@@ -73,21 +74,22 @@ class ExtendedCalendarEvent<
     id: string,
     title: string,
     description: string,
-    startTime?: Date,
-    endTime?: Date,
+    startTime?: string | Date,
+    endTime?: string | Date,  
+  
     attendees: Attendee[] = [],
-    assignedTo?: User | null
+    assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ) {
     this.id = id;
     this.title = title;
     this.description = description;
-    this.startTime = startTime;
-    this.endTime = endTime;
+    this.startTime = typeof startTime === 'string' ? new Date(startTime) : startTime;
+    this.endTime = typeof endTime === 'string' ? new Date(endTime) : endTime;
     this.attendees = attendees;
     this.assignedTo = assignedTo ?? null;
   }
 
-  forEach?(callback: (event: ExtendedCalendarEvent) => void): void {
+  forEach?(callback: (event: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
     callback(this);
   }
 }
@@ -112,17 +114,21 @@ interface CalendarEventTimingOptimization<
   duration?: number;
   status?: AllStatus;
   assignedTo: string;
-  suggestedDay?: DayOfWeekProps['day'] | null
+  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['day'] | null
   suggestedWeeks?: number[] | null
   suggestedMonths?: Month[] | null
   suggestedSeasons?: Season[] | null
-  assignees?: Record<string, User>; // Record of user IDs to User objects
+  assignees?: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Record of user IDs to User objects
   comments?: Record<string, string[]>; // Record of event IDs to arrays of comments
   notifications?: Record<string, NotificationType[]>; // Record of event IDs to arrays of notification types
   reassignmentHistory?: Record<string, ReassignEventResponse[]>; // Record of event IDs to arrays of reassignment responses
   todoIds?: string[]; // Array of todo IDs associated with the event
   relatedEventsList?: string[]; // Array of related event IDs
-  
+  eventId?: string;
+  suggestedStartTime?: Date;
+  suggestedEndTime?: Date;
+  suggestedDuration?: number;
+
 }
 
 
@@ -137,75 +143,76 @@ class CalendarEventTimingOptimization<
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
 > {
-  events: Record<string, ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Store events as a dictionary with IDs as keys
+  events: Record<string, ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 
   constructor(events: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) {
     this.events = {};
-
-    const eventsDictionary: Record<string, ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
-    events.forEach((event: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-      eventsDictionary[event.id] = event;
+    
+    // Convert string dates to Date objects in constructor
+    events.forEach((event) => {
+      // Convert startTime and endTime from string to Date if needed
+      if (event.startTime && typeof event.startTime === 'string') {
+        event.startTime = new Date(event.startTime);
+      }
+      if (event.endTime && typeof event.endTime === 'string') {
+        event.endTime = new Date(event.endTime);
+      }
+      this.events[event.id] = [event];
     });
   }
-  
+
+  // Helper method to safely get time from string | Date
+  private getTime(value: string | Date | undefined): number {
+    if (!value) return 0;
+    if (typeof value === 'string') {
+      return new Date(value).getTime();
+    }
+    return value.getTime();
+  }
+
   optimizeTiming(): void {
-    // Retrieve events from the dictionary
-    const eventsList = Object.values(this.events).flat(); // Flatten the array
-  
-    // Sort events by start time (or any other relevant criteria)
+    const eventsList = Object.values(this.events).flat();
+    
+    // Use the helper method to safely get times
     const sortedEvents = eventsList.sort(
-      (a, b) => (a.startTime?.getTime() || 0) - (b.startTime?.getTime() || 0)
+      (a, b) => this.getTime(a.startTime) - this.getTime(b.startTime)
     );
-  
-    // Implement optimization algorithm
+
     for (let i = 0; i < sortedEvents.length - 1; i++) {
       const currentEvent = sortedEvents[i];
       const nextEvent = sortedEvents[i + 1];
-  
-      // Check for overlapping events or gaps and adjust timings if needed
-      const currentEndTime = currentEvent.endTime?.getTime() || 0;
-      const nextStartTime = nextEvent.startTime?.getTime() || 0;
-  
-      // If the current event ends after the next event starts, there's an overlap
+
+      const currentEndTime = this.getTime(currentEvent.endTime);
+      const nextStartTime = this.getTime(nextEvent.startTime);
+
       if (currentEndTime > nextStartTime) {
-        // Calculate the duration of overlap
         const overlapDuration = currentEndTime - nextStartTime;
-  
-        // Adjust the timing of the next event to resolve the overlap
+        
+        // Update times using helper
         nextEvent.startTime = new Date(nextStartTime + overlapDuration);
-  
-        // Optionally, you may want to update the end time of the current event
         currentEvent.endTime = new Date(currentEndTime - overlapDuration);
-  
-        // Notify about the adjustment or log any relevant information
-        console.log(
-          `Adjusted timings to resolve overlap between ${currentEvent.title} and ${nextEvent.title}`
-        );
+
+        console.log(`Adjusted timings to resolve overlap between ${currentEvent.title} and ${nextEvent.title}`);
       } else {
-        // Calculate the duration of the gap between events
         const gapDuration = nextStartTime - currentEndTime;
-  
-        // Optionally, you can adjust timings to fill the gap or take any other actions
-        // For example, you could extend the end time of the current event to fill the gap
-        if (currentEvent.endTime && nextEvent.startTime) {
+        
+        if (currentEvent.endTime) {
           currentEvent.endTime = new Date(currentEndTime + gapDuration);
         }
-  
-        // Log information about the gap and the action taken
-        console.log(
-          `Adjusted end time of ${currentEvent.title} to fill the gap between events`
-        );
+
+        console.log(`Adjusted end time of ${currentEvent.title} to fill the gap between events`);
       }
     }
-  
-    // Update event timing in the dictionary based on optimization results
+
+    // Update events in dictionary
     Object.values(this.events).forEach((eventArray) => {
-      eventArray.forEach((event: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-        event.startTime = event.startTime ? new Date(event.startTime.getTime()) : new Date();
+      eventArray.forEach((event) => {
+        if (event.startTime && typeof event.startTime === 'string') {
+          event.startTime = new Date(event.startTime);
+        }
       });
     });
-  
-    // Notify success or any relevant information
+
     console.log("Timing optimization completed!");
   }
 }

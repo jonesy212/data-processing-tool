@@ -1,24 +1,23 @@
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { Team } from '@/app/components/teams/Team';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { UserRole } from "@/app/models/UserRole";
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { Task } from '@/app/models/tasks/Task';
-import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { Team } from '@/app/models/teams/Team';
 import { Persona } from "@/app/pages/personas/Persona";
-import { User } from "@/app/users/User";
-import { UserRole } from "@/app/models/UserRole";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import UserRoles from '@/app/models/UserRoles';
+import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import {
-	MemberEntity,
-	MemberK,
-	MemberMeta,
-	MemberData,
-	MemberAttachment,
-	MemberExcludedFields,
-	MemberIncludedFields,
-} from '@/app/typings/entities/MemberEntity'
-import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder'
+  MemberAttachment,
+  MemberData,
+  MemberEntity,
+  MemberExcludedFields,
+  MemberIncludedFields,
+  MemberK,
+  MemberMeta,
+} from '@/app/typings/entities/MemberEntity';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { User } from "@/app/users/User";
 
 
 export interface Member<

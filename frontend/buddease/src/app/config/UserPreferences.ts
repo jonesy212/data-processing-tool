@@ -8,6 +8,8 @@ import FolderData from "@/app/models/data/FolderData";
 import { CommonTrackerProps } from "@/app/models/tracker/Tracker";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { User } from "@/app/users/User";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';
 
@@ -23,7 +25,14 @@ interface CryptoPreferences {
 
 
 
-interface UserPreferences extends Partial<CommonTrackerProps> {
+interface UserPreferences<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Partial<CommonTrackerProps> {
   // General Preferences
   theme?: 'light' | 'dark'; // Example of a theme preference
   language?: LanguageEnum; // Preferred language

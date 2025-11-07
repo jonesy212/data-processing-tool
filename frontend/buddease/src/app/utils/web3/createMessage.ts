@@ -22,7 +22,7 @@ type MessageProps<
   type: NotificationType; 
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;  // Align content type
   additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  sender: Sender; 
+  sender: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   channel: ChatRoom; 
 }
 
@@ -32,11 +32,11 @@ export const createMessage = (
   content: string, // The main content of the message
   additionalData?: string, // Additional data, if any
   userId?: number, // User ID, optional
-  sender?: Sender, // Sender information, optional
+  sender?: Sender<SenderEntity, SenderK, SenderMeta, SenderAttachment, SenderExcludedFields, SenderIncludedFields>,
   channel?: ChatRoom, // Channel information, optional
-): Message<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
+): Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields> => {
   // Default system sender
-  const defaultSender: Sender = {
+  const defaultSender: Sender<SenderEntity, SenderK, SenderMeta, SenderAttachment, SenderExcludedFields, SenderIncludedFields>= {
     _id: "system",
     id: "system",
     username: "System",
@@ -89,14 +89,11 @@ export const createMessage = (
   };
 
   // Construct the Message object
-  const message: Message<
-    AppEntity, 
-    AppK, 
-    AppMeta, 
-    AppAttachment, 
-    AppExcludedFields, 
-    AppIncludedFields
-  > = {
+ const message: Message<MessageEntity, MessageK,
+  MessageMeta, MessageAttachment, 
+  MessageExcludedFields, MessageIncludedFields
+ > = {
+
     id: uuidv4(),
     sender: sender || defaultSender,
     senderId: sender?.id || defaultSender.id,

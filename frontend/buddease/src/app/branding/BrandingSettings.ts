@@ -226,7 +226,7 @@ interface BrandingSettings {
 interface Label {
   text: string;
   color: string;
-  localeCompare?: (otherTag: Tag<T, K>) => number;
+  localeCompare?: (otherTag: Tag<T>) => number;
 }
 
 // Define a default branding settings object
@@ -236,6 +236,7 @@ const defaultBrandingSettings: BrandingSettings = {
   secondaryThemeColor: "default-secondary-theme-color",
   backgroundColor: "default-background-color",
   textColor: "default-text-color",
+  
 };
 
 // Create a function to override default values with custom values

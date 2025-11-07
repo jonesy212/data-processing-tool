@@ -1,10 +1,12 @@
 import Logger from '@/app/libraries/logging/Logger';
-import { databaseConfig } from '@/app/config/DatabaseConfig';
+import { databaseConfig } from '@/app/config/endponts/databaseConfig';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { User } from '@/app/users/User';
-import UserService from '@/ApiUser';
-
+import UserService from '@/app/api/ApiUser';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 // Function to log API errors
 const handleApiError = (error: any) => {
   console.error('API Error: ', error);
@@ -66,7 +68,7 @@ export const processUserData = (userData: any): any => {
 
 //api pattern
 // Function to save user profiles to the database
-export const saveUserProfiles = async (profiles: User[]): Promise<{ success: boolean, message?: string, error?: string }> => {
+export const saveUserProfiles = async (profiles: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[]): Promise<{ success: boolean, message?: string, error?: string }> => {
   try {
     // Check if the databaseConfig object has a saveUserProfiles method
     if (!databaseConfig.saveUserProfiles) {

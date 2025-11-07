@@ -1,25 +1,23 @@
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { BaseData, Data } from '@/app/models/data/Data';
+import { Data } from '@/app/models/data/Data';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
   CustomSnapshotData,
   Snapshot,
   SnapshotConfig,
   SnapshotContainer,
   SnapshotData,
-  SnapshotStoreConfig,
-  SnapshotStoreProps,
+  SnapshotStoreConfig
 } from "@/app/snapshots";
-import {
-  Snapshot
-} from "@/app/snapshots/Snapshot";
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps'
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useEffect, useState } from "react";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 type CreateSnapshotType<
   T extends BaseDataEntity,

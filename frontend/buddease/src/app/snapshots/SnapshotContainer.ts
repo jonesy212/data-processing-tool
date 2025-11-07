@@ -1,30 +1,28 @@
 // SnapshotContainer.ts
-import { createCompleteSnapshot } from '@/app/snapshots/createSnnapshot'
-import { SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { ContentItem } from '@/app/cards/DummyCardLoader';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Category, SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
 import { K } from '@/app/models/data/dataStoreMethods';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { createCompleteSnapshot } from '@/app/snapshots/createSnnapshot';
 import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Version } from "@/app/versions/Version";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotData, SnapshotRelationships } from "@/app/snapshots/SnapshotData";
 import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { InitializedData } from "@/app/snapshots/SnapshotStoreOptions";
 import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const API_BASE_URL = endpoints.snapshots
 
@@ -57,7 +55,7 @@ interface SnapshotBase<
 > extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           SnapshotCategoryMethods // reuse the shared signatures
 {
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   items: ItemUnion[];
   contentItems?: ContentItem[];
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
@@ -65,7 +63,7 @@ interface SnapshotBase<
   currentcategory?: Category;
   snapshotId?: string | number | null;
   title?: string;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   key?: string;
   state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topic?: string;
@@ -84,7 +82,7 @@ interface SnapshotContainerData<
   IncludedFields extends keyof T = keyof T
 > extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   items: ItemUnion[];
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   timestamp?: string | number | Date;
@@ -125,7 +123,7 @@ interface SnapshotContainer<
   initialConfig: InitializedConfig | {};
   removeSubscriber: any;
   onError: (error: any) => void;
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   snapshotsArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotsObject?: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -136,7 +134,7 @@ interface SnapshotContainer<
   snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   createSnapshotData(params: {
     id: string | number | null;
-    data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     // ... other parameters as an object
   }): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;

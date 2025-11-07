@@ -1,7 +1,10 @@
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { SnapshotCategory, SnapshotCategoryType } from "./getSnapshotEndpoint";
+import { SnapshotCategory, SnapshotCategoryType } from "@/app/api/getSnapshotEndpoint";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 class SnapshotCategoryManager <
   T extends BaseDataEntity,

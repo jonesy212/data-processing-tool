@@ -1,7 +1,8 @@
+// fileUtils.ts
 import { FileMetadata } from "@/app/typings/file/FileManager";
 
-// fileUtils.ts
 interface MyFile extends File {
+  id: string;
   metadata: FileMetadata;
 }
 
@@ -31,5 +32,5 @@ const updateFileMetadata = (fileId: string, newMetadata: Partial<FileMetadata>) 
 };
 
 
-
+export type { MyFile }
 export { updateFileMetadata };

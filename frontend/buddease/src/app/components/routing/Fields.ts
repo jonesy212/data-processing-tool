@@ -1,5 +1,6 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Task, TaskData } from '@/app/models/tasks/Task';
+import { Task } from '@/app/models/tasks/Task';
+import { ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields } from "@/app/typings/entities/ExampleEntity";
 import {
   ProjectAttachment,
   ProjectEntity,
@@ -8,6 +9,7 @@ import {
   ProjectK,
   ProjectMeta
 } from '@/app/typings/entities/ProjectEntity';
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { ProjectMetadata, StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -33,30 +35,11 @@ type InclusiveExclusiveFields<
 
 // Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
 // Use the Fields utility type to get specific fields from UnifiedMetaDataOptions
-type ProjectFields = Fields<ProjectMetadata<Task<TaskData>, Task<ProjectEntity,
-  ProjectK,
-  ProjectMeta,
-  ProjectAttachment,
-  ProjectExcludedFields,
-  ProjectIncludedFields
-  >
->, 'projectId'>; // { projectId: string }
+type ProjectFields = Fields<ProjectMetadata<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields
+>, 'projectId'>; 
 
 // Use ExcludeKeys to create a type without specific keys
-type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<ProjectEntity,
-    ProjectK,
-    ProjectMeta,
-    ProjectAttachment,
-    ProjectExcludedFields,
-    ProjectIncludedFields>,
-    Task<ProjectEntity,
-    ProjectK,
-    ProjectMeta,
-    ProjectAttachment,
-    ProjectExcludedFields,
-    ProjectIncludedFields
-  >
->, 'taskId'>; // { taskName: string }
+type TaskWithoutId = ExcludeKeys<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 'taskId'>; // { taskName: string }
 
 // If needed, we can also define ExcludedFields as a generic utility for clarity
 type ExcludedFields<T, K extends keyof T> = {
@@ -132,18 +115,18 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
 }
 
 // Example: use BaseDataEntity directly
-const exampleTaskMetadata: UnifiedMetaDataOptions<
-  BaseDataEntity,                  // T
-  BaseDataEntity,                  // K
-  StructuredMetadata<BaseDataEntity, BaseDataEntity>, // Meta
-  never                            // ExcludedFields
-> = {
+const exampleTaskMetadata: UnifiedMetaDataOptions<ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields> = {
   taskMetadata: {
     taskId: '123',
     taskName: 'Complete documentation',
     id: 'task-1',
     priority: 'High',
     assignedTo: null,
+    isActive: true, 
+    metadataEntries: {}, 
+    keywords: [], 
+    schema: {},
+    date, major, minor, patch, 
   },
   source: 'TaskMetadata',
   timestamp: new Date(),
@@ -152,7 +135,7 @@ const exampleTaskMetadata: UnifiedMetaDataOptions<
 };
 
 // Call a function that processes the metadata
-processMetadata(exampleTaskMetadata);
+processMetadata<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>(exampleTaskMetadata);
 
 
 export type { ExcludedFields, ExcludeKeys, Fields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys };

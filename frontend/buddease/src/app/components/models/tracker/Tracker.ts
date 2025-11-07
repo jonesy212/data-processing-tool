@@ -2,9 +2,8 @@
 
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { BaseData } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
@@ -24,6 +23,7 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { useAuth } from "@/context/AuthContext";
 import path from "path";
 import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields} from '@/app/typings/entities/UserEntity'
+import { TrackerProps } from '@/app/models/tracker/Tracker'
 
 export interface SharedFormattingOptions {
   borderColor?: string;
@@ -159,7 +159,7 @@ class Tracker<
   }
 
   // Method to track changes for a file
-  trackFileChanges<
+trackFileChanges<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -184,7 +184,14 @@ class Tracker<
 
   }
 
-  detectContentChanges<T extends BaseData<any>>(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
+  detectContentChanges<
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     // Dummy implementation: Check if the content length has changed
     const previousContentLength = file.previousContent?.length;
     const currentContentLength = file.currentContent?.length;
@@ -266,7 +273,14 @@ class Tracker<
   }
 
   // Function to track access history of the document
-  trackAccessHistory<T extends BaseData<T>>(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
+  trackAccessHistory<
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     // Implement logic to track access history (actual implementation)
     const currentTime = new Date().toISOString();
     const accessRecord = `Accessed at: ${currentTime}`;
@@ -355,7 +369,7 @@ class Tracker<
     }
   }
 
-  sendNotification(notification: NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, userData: User): void {
+  sendNotification(notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 

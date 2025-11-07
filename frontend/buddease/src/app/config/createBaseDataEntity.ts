@@ -2,39 +2,29 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-function createBaseDataEntity<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(): T {
+
+function createBaseDataEntity<T extends BaseDataEntity>(overrides?: Partial<T>): T {
   const timestamp = new Date();
-  
-  // Create a basic entity with required BaseDataEntity fields
-  const baseEntity: BaseDataEntity = {
+
+  const entity: BaseDataEntity = {
     id: `entity-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     createdAt: timestamp,
     updatedAt: timestamp,
     version: "1.0.0",
     isActive: true,
     isDeleted: false,
-    metadata: {} as any
+    metadata: {},
+    ...overrides
   };
-  
-  // Return as the generic type T
-  return baseEntity as T;
+
+  return entity as T;
 }
+
 
 // Alternative version with more customization options
 function createBaseDataEntityWithOptions<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
 >(options?: Partial<T>): T {
   const timestamp = new Date();
   

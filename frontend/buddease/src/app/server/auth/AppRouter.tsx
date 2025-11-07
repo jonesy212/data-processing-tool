@@ -1,6 +1,5 @@
 // AppRouter.tsx
 
-import RootLayout from "@/app/RootLayout";
 import authService from "@/app/server/auth/AuthService";
 import Home from "@/app/page";
 import Dashboard from "@/app/pages/dashboards/UserDashboard";
@@ -43,7 +42,6 @@ const AppRouter: React.FC = () => {
 
   return (
     <Router>
-      <RootLayout>
         <Routes>
           {/* Public routes */}
           <Route path="/unauthorized" element={<Unauthorized />} />
@@ -147,7 +145,6 @@ const AppRouter: React.FC = () => {
             </div>
           } />
         </Routes>
-      </RootLayout>
     </Router>
   );
 };

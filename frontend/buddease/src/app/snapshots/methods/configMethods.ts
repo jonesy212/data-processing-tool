@@ -1,10 +1,10 @@
 // configMethods.ts
 
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from "@/app/Snapshot";
 import { SnapshotConfig } from "@/app/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { InitializedState } from "@/app/state/stores/DataStore";
 import TransformMethods from "./transformMethods";
 
 
@@ -46,7 +46,7 @@ export class ConfigMethods<
   protected config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> =
     Promise.resolve(null);
 
-  constructor(initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
+  constructor(initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     if (initialConfig) {
       this.config = Promise.resolve(initialConfig);
     }

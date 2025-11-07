@@ -1,4 +1,6 @@
 // AssignTeamMemberStore.tsx
+import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
 import { AssignBaseStore, useAssignBaseStore } from "@/app/AssignBaseStore";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -32,6 +34,8 @@ export interface AssignTeamMemberStore extends AssignBaseStore {
   trackTaskProgress: (teamId: string, taskId: string,  progress: number) => void;
   
 }
+
+
 const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
   const { ...baseStore } = useAssignBaseStore();
 
@@ -188,11 +192,11 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
     setDynamicNotificationMessage(
 
       NOTIFICATION_MESSAGES.Team.ASSIGN_TEAM_MEMBER_FAILURE,
-      NotificationType.ERROR
+      NotificationTypeEnum.ERROR
     );
   };
 
-  const setDynamicNotificationMessage = (message: Message, type: NotificationType) => {
+  const setDynamicNotificationMessage = (message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>, type: NotificationType) => {
     setDynamicNotificationMessage(message, type);
   };
 

@@ -1,14 +1,12 @@
 import { CalendarActions } from '@/app/actions/CalendarEventActions';
 import { UserActions } from "@/app/actions/UserActions";
-import axiosInstance from "@/app/api/csrfToken";
-import { endpoints } from '@/app/api/endpointConfigurations';
+import internalApiService from '@/app/api/ApiClient';
+import { getEndpointUrl, getConfiguredEndpoint } from '@/app/api/endpointConfigurations';
 import { fetchEventsRequest } from '@/app/calendar/CalendarEvent';
 import { User } from "@/app/users/User";
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { useAuth } from "@/context/AuthContext";
-import dotProp from 'dot-prop';
 import { observable, runInAction } from 'mobx';
-
-const API_BASE_URL = endpoints.users;
 
 const handleSuccess = <T>(action: (payload: T) => void) => async (
   request: (...args: any[]) => Promise<T>,
@@ -44,11 +42,12 @@ const handleFailure = (action: (payload: { error: string }) => void) => async (
 };
 
 export const userApiService = observable({
-  fetchUser: handleSuccess((payload: { user: User }) => UserActions.fetchUserSuccess(payload))(
-    async (userId: number): Promise<{ user: User }> => {
+  fetchUser: handleSuccess((payload: { user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }) => UserActions.fetchUserSuccess(payload))(
+    async (userId: number): Promise<{ user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }> => {
       try {
-        const response = await axiosInstance.get(`${API_BASE_URL}/${userId}`);
-        return { user: response.data as User };
+        const userEndpoint = getEndpointUrl('users', 'getUser', userId);
+        const response = await internalApiService.get(userEndpoint);
+        return { user: response.data as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> };
       } catch (error) {
         console.error("Error fetching user:", error);
         throw error;
@@ -56,11 +55,12 @@ export const userApiService = observable({
     }
   ),
 
-  saveUserProfiles: handleSuccess((payload: { profiles: User[] }) => UserActions.saveUserProfilesSuccess(payload))(
-    async (profiles: User[]): Promise<{  profiles: User[] }> => {
+  saveUserProfiles: handleSuccess((payload: { profiles: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] }) => UserActions.saveUserProfilesSuccess(payload))(
+    async (profiles: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[]): Promise<{ profiles: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] }> => {
       try {
-        const response = await axiosInstance.post(`${API_BASE_URL}`, profiles);
-        return { profiles: response.data as User[] };
+        const createUsersEndpoint = getEndpointUrl('users', 'createUsers');
+        const response = await internalApiService.post(createUsersEndpoint, profiles);
+        return { profiles: response.data as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] };
       } catch (error) {
         console.error("Error saving user profiles:", error);
       }
@@ -69,11 +69,12 @@ export const userApiService = observable({
     },
   ),
 
-  updateUser: handleSuccess((payload: { user: User }) => UserActions.updateUserSuccess(payload))(
-    async (userId: number, updatedUserData: any): Promise<{ user: User }> => {
+  updateUser: handleSuccess((payload: { user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }) => UserActions.updateUserSuccess(payload))(
+    async (userId: number, updatedUserData: any): Promise<{ user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }> => {
       try {
-        const response = await axiosInstance.put(`${API_BASE_URL}/${userId}`, updatedUserData);
-        return { user: response.data as User };
+        const updateUserEndpoint = getEndpointUrl('users', 'updateUser', userId);
+        const response = await internalApiService.put(updateUserEndpoint, updatedUserData);
+        return { user: response.data as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> };
       } catch (error) {
         console.error("Error updating user:", error);
         throw error;
@@ -81,46 +82,12 @@ export const userApiService = observable({
     }
   ),
 
-
-
-  fetchEvents: handleSuccess((payload: any) => {CalendarActions.fetchCalendarEventsRequest();})(
-    async (): Promise<any> => {
-      try {
-        const events =  fetchEventsRequest(); // Use the fetchEventsRequest function
-        return events;
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        throw error;
-      }
-    }
-  ),
-
-  updateUserFailure: handleFailure(UserActions.updateUserFailure)(
-    async (): Promise<void> => {
-      try {
-        const updateListEndpoint = dotProp.getProperty(API_BASE_URL, 'endpoints.updateList', 'default_endpoint_value');
-        if (updateListEndpoint) {
-          await axiosInstance.get(updateListEndpoint);
-        } else {
-          throw new Error('Update list endpoint is undefined');
-        }
-      } catch (error) {
-        console.error("Error updating user:", error);
-        throw error;
-      }
-    }
-  ),
-  
   fetchUsers: handleSuccess(UserActions.fetchUsersSuccess)(
-    async (): Promise<{ users: User[] }> => {
+    async (): Promise<{ users: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] }> => {
       try {
-        const listEndpoint = dotProp.getProperty(API_BASE_URL, 'list', 'default_endpoint_value');
-        if (listEndpoint) {
-          const response = await axiosInstance.get(String(listEndpoint));
-          return { users: response.data as User[] };
-        } else {
-          throw new Error('List endpoint is undefined');
-        }
+        const listUsersEndpoint = getEndpointUrl('users', 'listUsers');
+        const response = await internalApiService.get(listUsersEndpoint);
+        return { users: response.data as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] };
       } catch (error) {
         console.error("Error fetching users:", error);
         throw error;
@@ -129,15 +96,11 @@ export const userApiService = observable({
   ),
   
   updateUsers: handleSuccess(UserActions.updateUsersSuccess)(
-    async (updatedUsersData: any): Promise<{ users: User[] }> => {
+    async (updatedUsersData: any): Promise<{ users: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] }> => {
       try {
-        const updateListEndpoint = dotProp.getProperty(API_BASE_URL, 'endpoints.updateList', 'default_endpoint_value');
-        if (updateListEndpoint) {
-          const response = await axiosInstance.put(updateListEndpoint, updatedUsersData);
-          return { users: response.data as User[] };
-        } else {
-          throw new Error('Update list endpoint is undefined');
-        }
+        const updateUsersEndpoint = getEndpointUrl('users', 'updateUsers');
+        const response = await internalApiService.put(updateUsersEndpoint, updatedUsersData);
+        return { users: response.data as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] };
       } catch (error) {
         console.error("Error updating users:", error);
         throw error;
@@ -149,7 +112,8 @@ export const userApiService = observable({
     async (userIds: number[]): Promise<void> => {
       try {
         if (useAuth() && useAuth().state.isAuthenticated) {
-          const response = await axiosInstance.delete(`${API_BASE_URL}`, {
+          const deleteUsersEndpoint = getEndpointUrl('users', 'deleteUsers');
+          const response = await internalApiService.delete(deleteUsersEndpoint, {
             data: { userIds },
           });
           runInAction(() => {
@@ -163,5 +127,3 @@ export const userApiService = observable({
     }
   ),
 });
-
-// todo connect the root sagas as where api Servicer first looks to connect the natural language processor

@@ -16,6 +16,10 @@ import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { NotificationType } from "@/context/NotificationContext";
 
 export type PriorityValue = string | PriorityTypeEnum | null | undefined;
+// -------------------
+// Priority Types
+// -------------------
+type ValidPriority = "low" | "medium" | "high" | "scheduled" | "completed";
 
 // Define CriteriaType incorporating FilterCriteria
 export type CriteriaType = {
@@ -106,3 +110,4 @@ function hasCriteriaProperties(snapshot: any): snapshot is FilterState {
   }
   
   export { hasCriteriaProperties };
+export type { ValidPriority }

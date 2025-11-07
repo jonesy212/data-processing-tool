@@ -1,12 +1,11 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { EventData } from "@/app/state/stores/AssignEventStore";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface BaseRealtimeData<
   T extends BaseDataEntity,
@@ -15,7 +14,7 @@ interface BaseRealtimeData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedIdentifiers<T, K> {
   id: string | number; // Override id to ensure it's required (remove undefined)
   name: string;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -58,7 +57,7 @@ interface RealtimeDataItem<
   userId: string;
   dispatch: (action: any) => void;
   timestamp: Date;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 export type { RealtimeData, RealtimeDataItem };

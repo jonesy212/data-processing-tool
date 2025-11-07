@@ -7,7 +7,7 @@ import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { SnapshotData, SnapshotDataType } from '@/app/snapshots';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
@@ -73,8 +73,8 @@ const snapshotDelegate = <
           snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-          data: InitializedData | null | undefined;
-          newData: InitializedData | null | undefined;
+          data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+          newData: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
           unsubscribe: () => void; // Example of unsubscribing function
           addSnapshotFailure: (
             date: Date,
@@ -129,7 +129,7 @@ const snapshotDelegate = <
             callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
             snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
             category?:  Category,
-             categoryProperties?: CategoryProperties;
+             categoryProperties?: CategoryProperties
           ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
           batchTakeSnapshot: (
             id: number,
@@ -204,19 +204,23 @@ const snapshotDelegate = <
             event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             id: number,
             snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            category?: Category,            categoryProperties: CategoryProperties | undefined,
+            categoryProperties: CategoryProperties | undefined,
             dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             data: T,
           filter?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean,
           dataCallback?: (
             subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
             snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]>
+          ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
+          category?: Category
         ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
         setData: (id: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
         addData: (id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
-        getData: (id: number | string, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-        ) =>  BaseData<any> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined
+        getData: (
+          id: number | string,
+          snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        ) => BaseData<any>
+          | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined
 
           dataItems: () => T[];
           getStore: (
@@ -259,14 +263,15 @@ const snapshotDelegate = <
             snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
             type: string,
             event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void;
+            callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void,
           events: any; // Adjust type as needed
-          notify: (message: string) => void;
+          notify: (message: string) => void,
           notifySubscribers: (
-            message: string, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+            message: string, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+            data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
           ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-          parentId: string;
-          childIds?: K[];
+          parentId: string,
+          childIds?: K[],
           getParentId: (id: string) => string;
           getChildIds: (id: string) => string[];
           addChild: (parentId: string, childId: string) => void;
@@ -276,7 +281,8 @@ const snapshotDelegate = <
           isDescendantOf: (childId: string, parentId: string) => boolean;
 
           generateId: () => string;
-          compareSnapshots: (snap1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snap2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+          compareSnapshots: (snap1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+            snap2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
             snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
             snapshot2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
             differences: Record<string, { snapshot1: any; snapshot2: any }>;

@@ -44,6 +44,9 @@ import { AppType } from "vite";
 import { extractTextFromPage } from "./CustomPDFPage";
 import { ModifiedDate, ParsedData, YourPDFType } from "./DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 var xl = require("excel4node");
 

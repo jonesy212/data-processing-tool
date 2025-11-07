@@ -7,14 +7,14 @@ import { Version } from "@/app/versions/Version";
 import { database } from "@/app/generators/GenerateDatabase";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import ApiConfig from "@/app/components/configs/ApiConfigComponent";
-import dataVersions from "@/app/components/configs/DataVersionsConfig";
-import LazyLoadScriptConfig from '@/app/components/configs/LazyLoadScriptConfig';
+import dataVersions from "@/app/configs/DataVersionsConfig";
+import LazyLoadScriptConfig from '@/app/config/LazyLoadScriptConfig';
 import { userPreferences } from "@/app/config/UserPreferences";
 import userSettings from "@/app/config/UserSettings";
 import BackendStructure from "@/app/server/database/BackendStructure";
-import FrontendStructure from "./appStructure/FrontendStructure";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
-import appDetailsConfig from '@/config/appDetailsConfig';
+import appDetailsConfig from '@/config/endpoints/appDetailsConfig';
 
 
 

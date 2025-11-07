@@ -1,13 +1,31 @@
+// config/DatabaseConfig.ts
+import { PoolConfig } from 'pg';
+import configData from "@/app/config/endpoints/configData";
 
-interface DatabaseConfig {
+export interface DatabaseConfig {
   url: string;
   host: string;
+  database: string;
   username: string;
   password: string;
-  database?: string;
-  authToken: string | undefined;
   port: number;
-  saveUserProfiles?(userProfiles: any[]): Promise<void>;
+  authToken?: string;
 }
 
-export type { DatabaseConfig };
+export const getDatabaseConfig = (): DatabaseConfig => ({
+  url: process.env.DB_URL!,
+  host: process.env.DB_HOST!,
+  database: process.env.DB_NAME!,
+  username: process.env.DB_USER!,
+  password: process.env.DB_PASSWORD!,
+  port: parseInt(process.env.DB_PORT!, 10),
+  authToken: process.env.AUTH_TOKEN,
+});
+
+export const getPoolConfig = (): PoolConfig => ({
+  host: configData.database.host,
+  port: configData.database.port,
+  database: configData.database.database,
+  user: configData.database.username,
+  password: configData.database.password
+});

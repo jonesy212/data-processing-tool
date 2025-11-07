@@ -1,10 +1,10 @@
 // Comments.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 
 
 // Base comment shared by all comment types
@@ -56,7 +56,7 @@ interface Comment<
   IncludedFields extends keyof T = keyof T
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     BaseComment {
-  text?: string | Content<T, K, Meta>;
+  text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   postId?: string | number;
   data?: string | Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   replies?: Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -107,10 +107,10 @@ export type EntityComments<T extends keyof EntityCommentMap> = EntityCommentMap[
 
 
 export type {
-    BlogComment,
-    ChatComment, Comment,
-    CommentData,
-    CommentMeta,
-    CommentType, CustomComment, EntityCommentMap, ForumComment, VideoComment
+  BlogComment,
+  ChatComment, Comment,
+  CommentData,
+  CommentMeta,
+  CommentType, CustomComment, EntityCommentMap, ForumComment, VideoComment
 };
 

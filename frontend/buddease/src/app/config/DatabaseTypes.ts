@@ -1,11 +1,11 @@
 // DatabaseTypes.ts
 // Frontend-safe types and interfaces only - NO pg imports!
 import { DatabaseConfig } from '@/app/config/DatabaseConfig'
+
 interface DatabaseQuery {
   query: string;
   params?: any[];
 }
-
 
 interface DatabaseService {
   createDatabase(config: DatabaseConfig, databaseQuery: string): Promise<any>;

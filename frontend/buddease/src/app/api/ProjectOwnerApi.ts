@@ -3,13 +3,13 @@ import { ProjectOwnerActions } from "@/app/actions/ProjectOwnerActions";
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import MemberData from "@/app/components/models/teams/Contributor";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Project, ProjectData } from '@/app/models/projects/Project';
+import MemberData from "@/app/models/teams/Contributor";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 

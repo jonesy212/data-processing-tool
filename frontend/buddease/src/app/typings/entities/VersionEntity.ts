@@ -216,7 +216,6 @@ interface VersionEntityDataInterface<
 // --- Default empty version ---
 const emptyVersionData: VersionEntityDataInterface<
   VersionEntity,
-  VersionK,
   VersionMeta,
   VersionAttachment,
   VersionExcludedFields,

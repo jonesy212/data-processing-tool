@@ -36,7 +36,7 @@ import { DocumentData } from "@/app/documents/DocumentBuilder";
 import { SupportedData } from "@/app/models/CommonData";
 import { User } from "@/app/users/User";
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { Team } from "@/app/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import { Project } from "@/app/models/projects/Project";
 
 interface SearchCriteria extends BaseData {

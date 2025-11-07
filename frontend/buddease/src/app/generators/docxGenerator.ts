@@ -92,7 +92,7 @@ fileInput.onchange = async (e) => {
       name: "John Doe",
       date: new Date().toLocaleDateString()
     },
-    user: {} as User // Provide actual user data
+    user: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>// Provide actual user data
   };
 
   const docxGenerator = new DocxGenerator(options);

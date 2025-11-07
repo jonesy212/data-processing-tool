@@ -1,5 +1,8 @@
 // AccessDenied.tsx
 // app/pages/Unauthorized.tsx
+import Unauthorized from '@/app/pages/Unauthorized';
+import AccessDenied from '@/app/pages/AccessDenied';
+
 export default function Unauthorized() {
   return (
     <div className="unauthorized-page">

@@ -1,14 +1,13 @@
-import { sharedMetadata } from '@/config/metadata/MetadataStateManager';
 
 // server/metadata/createMetadata.ts
-import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
-import { createLatestVersion } from '@/versions/createLatestVersion';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import crypto from 'crypto';
 
 
@@ -161,7 +160,7 @@ export const createMetadata = <
     encryptedFields = {
       apiKey: encryptedApiKey,
       createdBy: encryptedCreatedBy,
-      config: encryptedConfig,
+      encryptedConfig,
       baseUrl: encryptedBaseUrl,
       metadata: secureMetadataManager as any,
     };

@@ -9,8 +9,9 @@ import { Data } from '@/app/models/data/Data';
 import { CollaborationOptions } from '@/app/interfaces/options/CollaborationOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment'
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from '@/app/typiings/entities/CalendarEntity'
 
-type CalendarDataAndEventDetails = Data | CommonEvent;
+type CalendarDataAndEventDetails = Data | CommonEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 
 interface CalendarDetailsProps<
   T extends BaseDataEntity = BaseDataRoot,
@@ -25,6 +26,10 @@ interface CalendarDetailsProps<
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;
 }
+
+const formatDate = (date: Date | undefined): string => {
+  return date ? date.toLocaleDateString('en-US') : 'Not set';
+};
 
 const CalendarDetails: React.FC<CalendarDetailsProps<CalendarDataAndEventDetails>
 > = observer(({ details, data, collaborationOptions }) => {
@@ -98,8 +103,8 @@ const CalendarDetails: React.FC<CalendarDetailsProps<CalendarDataAndEventDetails
         <h4>Cryptocurrency Event Details</h4>
         <p>Event Title: {data?.title}</p>
         <p>Description: {data?.description}</p>
-        <p>Start Date: {data?.startDate}</p>
-        <p>End Date: {data?.endDate}</p>
+        <p>Start Date: {formatDate(data?.startDate)}</p>
+        <p>End Date: {formatDate(data?.endDate)}</p>
         {/* Add more properties as needed */}
       </div>
       <div>

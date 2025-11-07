@@ -1,7 +1,8 @@
 // teamTypes.ts
+import { Team } from '@/app/components/teams/Team';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { Team } from '@/app/models/teams/Team';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -12,7 +13,6 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { TeamEntity } from '@/app/typings/entities/TeamEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type TeamK = TeamEntity;
 type TeamMeta = DefaultMeta<TeamEntity, TeamK>;

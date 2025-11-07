@@ -1,6 +1,6 @@
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { InitializedState } from "@/app/state/stores/DataStore";
 import { InitializedConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotInitialization<

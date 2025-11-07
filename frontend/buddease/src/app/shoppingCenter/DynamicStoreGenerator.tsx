@@ -17,7 +17,6 @@ const validateStoreMetadata = (metadata: StoreMetadataEntry[]) => {
     });
 };
 
-
 // Analyze project structure and extract metadata
 const storeMetadata = [
   { name: 'BrowserCompatibility', components: ['BrowserCheckStore'] },

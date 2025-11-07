@@ -1,12 +1,12 @@
 // createSnapshotOptions.ts
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SharedIdentifiers } from '@/app/documents/SharedIdentifiers';
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "@/app/libraries/categories/generateCategoryProperties";
 import { displayToast } from "@/app/models/display/ShowToast";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore, InitializedState, initializeState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
@@ -14,10 +14,10 @@ import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { InitializedData, SnapshotInstanceProps } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
+import { DataStore, InitializedState, initializeState, useDataStore } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { addToSnapshotList, category } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SubscribeResult } from '@/users/Subscriber';
 import { SnapshotData } from ".";
 import { SnapshotOperation } from "../actions/SnapshotActions";
@@ -40,7 +40,7 @@ interface SimulatedDataSource<
   SnapshotInstanceProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedIdentifiers  {
   // Define the properties of the simulated data source
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   fetchData: () => Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   // You can add more properties if needed
 }

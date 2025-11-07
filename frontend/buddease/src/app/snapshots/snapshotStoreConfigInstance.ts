@@ -11,10 +11,11 @@ import determineFileCategory, { fetchFileSnapshotData } from "@/app/libraries/ca
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
 
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, snapshotConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
@@ -22,6 +23,7 @@ import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
@@ -29,25 +31,29 @@ import { generateSnapshotId } from "@/app/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/app/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/app/utils/web3/applicationUtils";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { NotificationType } from "@/context/NotificationContext";
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Subscription } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
 import { fetchData } from "@/app/api/ApiData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
-  AppEntity, AppExcludedFields, AppK, AppMeta,
+  AppEntity,
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields,
   AppParams,
   AppSnapshot,
   AppSnapshotsArray,
-  AppSnapshotStoreConfig
+  AppSnapshotStoreConfig,
+
 } from '@/app/typings/entities/AppEntity';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
@@ -394,7 +400,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
   createSnapshotStore: async (
     id: string,
     storeId: number,
-    snapshotStoreData: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[], // Array of Snapshotstore objects
+    snapshotStoreData: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[], // Array of SnapshotStore objects
     categoryProperties: CategoryProperties | undefined,
     callback?: (snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>) => void,
     category?: Category,

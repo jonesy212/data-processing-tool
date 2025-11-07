@@ -44,8 +44,8 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
 
 // Data store and methods
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { DataStore } from '@/app/state/stores/DataStore';
 
 // Operations and config
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
@@ -79,8 +79,8 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import configData from "@/app/config/endpoints/configData";
 
 // Version management
-import { createDefaultVersionData } from '@/versions/VersionData';
-import { createLatestVersion } from '@/versions/createLatestVersion';
+import { createDefaultVersionData } from '@/app/versions/VersionData';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 // Utils
 import { isSnapshotFunction } from '@/app/snapshots/SnapshotMap';

@@ -73,19 +73,6 @@ interface CommonTrackerProps<
     newBorderColor?: string,  // Optional new border color
     newHighlightColor?: string, // Optional new highlight color
   ) => void;
-  
-  // todo verify above works original
-  // updateAppearance?: (
-  //   updates: {
-  //     stroke: {
-  //       width: number;
-  //       color: string;
-  //     },
-  //   },
-
-  //   newStroke: { width: number; color: string },
-  //   newFillColor: string
-  // ) => void;
 }
 
 interface TrackerProps<

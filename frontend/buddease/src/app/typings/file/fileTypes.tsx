@@ -1,7 +1,7 @@
-interface File {
+interface AppFile {
   id?: string;
-  name?: string | undefined;
-  fileMetadata: FileMetadata
+  name?: string;
+  fileMetadata: FileMetadata;
 }
 
 
@@ -29,4 +29,4 @@ interface FileMetadata {
 
 
 
-  export type { File, FileMetadata };
+  export type { AppFile, FileMetadata };

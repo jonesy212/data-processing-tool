@@ -10,7 +10,7 @@ import { Progress } from "@/app/models/tracker/ProgressBar";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
-import { TaskMeta, TaskEntity, TaskAttachment, TaskExcludedFields } from '@/app/typings/entities/TaskEntity'
+import { TaskMeta, TaskEntity, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
 
 const API_BASE_URL = endpoints.tasks;
 

@@ -3,7 +3,7 @@ import fetchSnapshotById from '@/app/api/SnapshotApi';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';

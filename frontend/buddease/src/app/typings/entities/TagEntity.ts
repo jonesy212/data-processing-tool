@@ -79,6 +79,32 @@ type TagEntitySnapshotsArray = SnapshotsArray<
 >;
 
 
+// Semantic extension for roadmap and audience logic
+export interface TagSemantic {
+  label?: string;
+  color?: string;
+  phase?: string;
+  domain?: 'project' | 'crypto' | 'community' | 'global';
+  description?: string;
+
+  // Semantic rule-based relationships
+  includes?: string[];
+  excludes?: string[];
+  synonyms?: string[];
+
+  // Audience visibility
+  audiences?: RoadmapAudience[];
+  hiddenFor?: RoadmapAudience[];
+}
+
+export type TagWithRules = TagEntity & {
+  metadata?: {
+    taggable?: {
+      semantic?: TagSemantic
+    }
+  }
+};
+
 export type {
   TagAttachment, TagBaseParams, TagEntity, TagEntitySnapshotsArray, TagEntityStore,
   TagEntityStoreConfig, TagExcludedFields, TagIncludedFields, TagK,

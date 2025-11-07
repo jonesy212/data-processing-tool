@@ -47,6 +47,49 @@ class UniqueIDGenerator {
       NotificationTypeEnum.SYSTEM
     );
   }
+
+  static generateReportId(
+    reportType?: "financial" | "technical" | "research" | string,
+    reportTitle?: string,
+    fiscalYear?: number,
+    options?: {
+      customId?: string;
+      timestamp?: Date;
+      includeRandom?: boolean;
+    }
+  ): string {
+    const timestamp = options?.timestamp || new Date();
+    const year = fiscalYear || timestamp.getFullYear();
+    const type = reportType ? reportType.toLowerCase() : 'general';
+    const titleSlug = reportTitle 
+      ? reportTitle.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
+      : 'report';
+    
+    const randomSuffix = options?.includeRandom ? `_${Math.random().toString(36).substr(2, 5)}` : '';
+    const customIdPart = options?.customId ? `_${options.customId}` : '';
+    
+    return `RPT_${type}_${titleSlug}_${year}_${timestamp.getTime()}${customIdPart}${randomSuffix}`;
+  }
+
+  // Async version if needed for future use
+  static async generateReportAsync(
+    reportType?: "financial" | "technical" | "research" | string,
+    reportTitle?: string,
+    fiscalYear?: number,
+    options?: {
+      customId?: string;
+      timestamp?: Date;
+      includeRandom?: boolean;
+    }
+  ): Promise<string> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const reportId = this.generateReportId(reportType, reportTitle, fiscalYear, options);
+        resolve(reportId);
+      }, 0);
+    });
+  }
+
   static generateSnapshoItemID(arg0: string): string {
     return `${arg0}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
   }

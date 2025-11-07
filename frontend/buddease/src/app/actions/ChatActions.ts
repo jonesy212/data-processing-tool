@@ -14,8 +14,8 @@ export const ChatActions = {
     message: string;
     roomId: string;
   }>("sendMessage"),
-  sendMessageRequest: createAction<Message>("sendMessageRequest"),
-  sendMessageSuccess: createAction<Message>("sendMessageSuccess"),
+  sendMessageRequest: createAction<Message<any, any, any, any, any, any>>("sendMessageRequest"),
+  sendMessageSuccess: createAction<Message<any, any, any, any, any, any>>("sendMessageSuccess"),
   sendMessageFailure: createAction<{ error: string }>("sendMessageFailure"),
 
   sendMessageToChatRoom: createAction<{
@@ -23,7 +23,7 @@ export const ChatActions = {
     room_id?: string
     payload: {
       type: string;
-    calendarEvent?: WritableDraft<CalendarEvent>;
+    calendarEvent?: WritableDraft<CalendarEvent<any, any, any, any, any, any>>;
     text?: string;
     calendarEventId?: string;
     }
@@ -40,7 +40,7 @@ export const ChatActions = {
 
   // Actions for fetching chat history
   fetchChatHistoryRequest: createAction<ChatRoom>("fetchChatHistoryRequest"),
-  fetchChatHistorySuccess: createAction<Message[]>("fetchChatHistorySuccess"),
+  fetchChatHistorySuccess: createAction<Message<any, any, any, any, any, any>[]>("fetchChatHistorySuccess"),
   fetchChatHistoryFailure: createAction<{ error: string }>(
     "fetchChatHistoryFailure"
   ),
@@ -61,7 +61,7 @@ export const ChatActions = {
   // Action to handle successful discussion of calendar event in a chat room
   discussCalendarEventInChatRoomSuccess: createAction<{
     chatRoomId: string;
-    message: Message;
+    message: Message<any, any, any, any, any, any>;
   }>("discussCalendarEventInChatRoomSuccess"),
 
   // Action to handle failure while discussing calendar event in a chat room

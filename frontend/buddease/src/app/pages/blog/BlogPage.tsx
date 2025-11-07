@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import RootLayout from "@/app/RootLayout";
 import createDynamicHook, { DynamicHookParams } from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
 import { BlogActions } from "@/app/components/models/blogs/BlogAction";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
@@ -24,7 +23,6 @@ const BlogPage: React.FC = () => {
   }, [dispatch]);
 
   return (
-    <RootLayout>
       <div>
         <h1>Blog</h1>
         {posts.map((post) => (
@@ -44,7 +42,6 @@ const BlogPage: React.FC = () => {
           />
         ))}
       </div>
-    </RootLayout>
   );
 };
 

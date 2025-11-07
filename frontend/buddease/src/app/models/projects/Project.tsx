@@ -18,7 +18,7 @@ import {
     PhaseData,
 } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import {
     PhaseEntity,
     PhaseExcludedFields,
@@ -141,19 +141,13 @@ export type ClientProjectEntity = BaseDataEntity & {
 };
 
 // Simplified version for basic project operations
-export type SimpleClientProject = {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
-  status: AllStatus;
-  type: ProjectType;
+export type SimpleClientProject = Pick<Project, 
+  'id' | 'name' | 'title' | 'description' | 'status' | 'type' | 'startDate' | 'endDate' | 'isActive'
+> & {
   progress: number;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
   members: string[];
   hasCryptoSection: boolean;
-};
+} & Pick<SharedTimestamps, 'createdAt' | 'updatedAt'>;
 
 
 interface Project<

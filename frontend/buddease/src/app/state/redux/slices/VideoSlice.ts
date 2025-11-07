@@ -1,14 +1,17 @@
 // video/VideoSlice.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
+import { T, K, Meta, AttachmentType, ExcludedFields, IncludedFields } from '@/app/typings/entities/VideoEntity'
 import { Video } from '@/app/typings/videoTypes/Video'
-
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { Channel } from "@/app/interfaces/chat/Channel";
-import { VideoData } from "@/app/components/video/Video";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import { VideoMetadata } from "@/app/config/StructuredMetadata";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDraft } from "immer";
-import { implementThen } from '@/app/components/stores/CommonEvent';
+import { implementThen } from '@/app/state/stores/CommonEvent';
 import { ApiManagerState } from "./ApiSlice";
 import { CustomComment } from "./BlogSlice";
 
@@ -22,9 +25,16 @@ const generateCaptions = (video: any): string[] => {
 };
 
 
-interface VideoState {
-  video: Video | null;
-  videos: Video[];
+interface VideoState<
+  T extends BaseDataEntity = MeetingEntity, 
+  K extends T = MeetingK, 
+  Meta extends DefaultMeta<T, K> = MeetingMeta, 
+  AttachmentType extends Attachment = MeetingAttachment,
+  ExcludedFields extends keyof T = MeetingExcludedFields,
+  IncludedFields extends keyof T = MeetingIncludedFields
+>  {
+  video: Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  videos: Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   currentVideoId: string | null;
   comments: (Comment | CustomComment)[] | undefined;
   watchLater: string[];
@@ -33,7 +43,7 @@ interface VideoState {
   subscribedChannels: string[];
   blockedUsers: string[];
   skipped: string[];
-  content: VideoData | null;
+  content: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   pinned: string[];
   snapshots: { [videoId: string]: string }; // Map of video ID to snapshot URL
   playbackHistory: string[]; // Array of video IDs representing the playback history
@@ -41,10 +51,8 @@ interface VideoState {
     // Other properties...
     playbackSpeed: number; // Current playback speed (e.g., 1 for normal speed)
     playbackQuality: string; // Playback quality (e.g., '720p', '1080p')
-    videoMetadata: { [videoId: string]: VideoMetadata }; // Map of video ID to metadata
+    videoMetadata: { [videoId: string]: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }; // Map of video ID to metadata
     videoTags: { [videoId: string]: string[] }; // Map of video ID to an array of tags
-  
-
 }
 
 const initialState: VideoState = {
@@ -73,11 +81,11 @@ export const useVideoManagerSlice = createSlice({
   name: "video",
   initialState,
   reducers: {
-    setVideo: (state, action: PayloadAction<WritableDraft<Video>>) => {
+    setVideo: (state, action: PayloadAction<WritableDraft<Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>) => {
       const video = action.payload;
       state.videos.push(video);
     },
-    setVideos: (state, action: PayloadAction<WritableDraft<Video[]>>) => {
+    setVideos: (state, action: PayloadAction<WritableDraft<Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>) => {
       state.videos = action.payload;
     },
     setCurrentVideoId: (state, action: PayloadAction<string | null>) => {
@@ -312,7 +320,7 @@ export const useVideoManagerSlice = createSlice({
     },
 
 
-    reportVideo: (state, action: PayloadAction<{ videoId: Video['id'], reason: string }>) => {
+    reportVideo: (state, action: PayloadAction<{ videoId: VideoVideo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['id'], reason: string }>) => {
       const { videoId, reason } = action.payload;
       const video = state.videos.find(video => video.id === videoId);
       if (video) {
@@ -342,7 +350,7 @@ export const useVideoManagerSlice = createSlice({
     removeVideoFromWatchLater: (state, action: PayloadAction<string>) => {
       const videoId = action.payload;
       // Filter out the video from the watch later list
-      state.watchLater = state.watchLater.filter((id: Video['id']) => id !== videoId);
+      state.watchLater = state.watchLater.filter((id: VideoVideo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['id']) => id !== videoId);
     },
 
 
@@ -359,7 +367,7 @@ export const useVideoManagerSlice = createSlice({
     markVideoAsUnwatched: (state, action: PayloadAction<string>) => {
       const videoId = action.payload;
       // Filter out the video from the watched list
-      state.watched = state.watched.filter((id: Video['id']) => id !== videoId);
+      state.watched = state.watched.filter((id: VideoVideo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['id']) => id !== videoId);
     },
     
 
@@ -395,7 +403,7 @@ export const useVideoManagerSlice = createSlice({
     unblockUser: (state, action: PayloadAction<string>) => {
       const userId = action.payload;
       // Filter out the user from the blocked users list
-      state.blockedUsers = state.blockedUsers.filter((id: User['id']) => id !== userId);
+      state.blockedUsers = state.blockedUsers.filter((id: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>['id']) => id !== userId);
     },
 
 
@@ -441,7 +449,7 @@ export const useVideoManagerSlice = createSlice({
       }
     },
 
-    generateVideoSummary: (state, action: PayloadAction<{ videoId: string, videos: Video[] }>) => {
+    generateVideoSummary: (state, action: PayloadAction<{ videoId: string, videos: Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }>) => {
       const { videoId, videos } = action.payload;
       const video = videos.find(video => video.id === videoId);
       if (video) {
@@ -531,7 +539,7 @@ export const useVideoManagerSlice = createSlice({
     // Function to integrate virtual collaboration spaces into a video
     integrateVirtualCollaborationSpaces: (
       state,
-      action: PayloadAction<{ videos: Video[], videoId: string, spaces: string[] }>
+      action: PayloadAction<{ videos: Video<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], videoId: string, spaces: string[] }>
     ): WritableDraft<VideoState> => {
       // Extract necessary data from the action payload
       const { videos, videoId, spaces } = action.payload;

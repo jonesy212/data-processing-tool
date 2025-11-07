@@ -1,4 +1,7 @@
-import { Content } from '@/app/components/models/content/AddContent';
+
+import React from "react";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Content } from '@/app/models/content/AddContent';
 import ListGenerator from "@/app/generators/ListGenerator";
 import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -6,8 +9,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import React from "react";
- 
+import { BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields } from '@/app/typiings/entities/BlogEntity'
 // Define a type representing the data structure for blog posts
 interface BlogData<
   T extends BaseDataEntity,
@@ -30,10 +32,10 @@ interface BlogData<
 }
 
 // Define a type representing the details item specific to blog posts
-interface BlogDetailsItem extends DetailsItem<BlogData<Data<any>, Data<any>>> {}
+interface BlogDetailsItem extends DetailsItem<BlogData<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>> {}
 
 interface BlogListProps {
-  blogPosts: BlogData<Data<any>, Data<any>>[];
+  blogPosts: BlogData<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>[];
 }
 
 const blogData: Data<any> = {} as Data<any>;
@@ -45,7 +47,7 @@ const BlogList: React.FC<BlogListProps> = ({ blogPosts }) => {
     title: post.title,
     status: StatusType.Pending,
     description: post.description,
-    phase: {} as Phase,
+    phase: {} as Phase<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>,
     data: blogData,
     subtitle: post.subtitle,
     value: post.author,
@@ -57,7 +59,9 @@ const BlogList: React.FC<BlogListProps> = ({ blogPosts }) => {
   return (
     <div>
       <h2>Blog Posts</h2>
-      <ListGenerator items={detailsItems} />
+      <ListGenerator<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>
+      items={detailsItems} 
+      />
     </div>
   );
 };

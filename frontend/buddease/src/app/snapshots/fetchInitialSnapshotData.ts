@@ -3,7 +3,7 @@
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
-import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import useDocumentStore from "@/app/state/stores/DocumentStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'

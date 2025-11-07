@@ -1,5 +1,6 @@
 import { AnalyticsEndpoints } from '@/app/typings/categories/AnalyticsEndpoints';
 import { ApiConfigEndpoints } from '@/app/typings/categories/ApiConfigEndpoints';
+import { CategoryEndpoints } from '@/app/typings/categories/CategoryEndpoints';
 import { ApiWebBaseEndpoints } from '@/app/typings/categories/ApiWebBaseEndpoints';
 import { AuthEndpoints } from '@/app/typings/categories/AuthEndpoints';
 import { BatchEndpoints } from '@/app/typings/categories/BatchEndpoints';
@@ -107,8 +108,10 @@ export type EndpointKey<T extends EndpointCategory> = keyof EndpointConfiguratio
 
 export interface EndpointConfigurations {
   [category: string]: EndpointCategoryConfig; 
+  apiConfig: ApiConfigEndpoints;
   apiWebBase: ApiWebBaseEndpoints;
   analytics: AnalyticsEndpoints; 
+  categories: CategoryEndpoints,
   comments: CommentsEndpoints;
   content: ContentEndpoints;
   data: DataEndpoints;
@@ -176,7 +179,6 @@ export interface EndpointConfigurations {
   userSettings: UserSettingsEndpoints;
   videos: VideosEndpoints;
   database: DatabaseEndpoints;
-  apiConfig: ApiConfigEndpoints;
   dev: DevEndpoints;
   participants: ParticipantsEndpoints;
   messages: MessagesEndpoints;

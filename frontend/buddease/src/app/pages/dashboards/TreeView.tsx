@@ -1,5 +1,5 @@
 // TreeView.tsx
-import DummyCard from "@/app/components/cards/DummyCard";
+import DummyCard from "@/app/cards/DummyCard";
 import useSearchPagination from "@/app/hooks/commHooks/useSearchPagination";
 import React, { useState } from "react";
 import { useSearch } from "@/app/context/SearchContext";

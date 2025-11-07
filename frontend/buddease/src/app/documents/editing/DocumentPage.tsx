@@ -1,8 +1,8 @@
 // DocumentPage.tsx
-import RootLayout from "@/app/RootLayout";
+ 
 import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
-import { ReactNode, useState } from "react";
 import DocumentBuilder from "@/app/documents/editing/DocumentBuilder";
+import { ReactNode, useState } from "react";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 
 interface DynamicHooks {
@@ -58,8 +58,6 @@ const DocumentPage = () => {
   };
   
   return (
-    <RootLayout>
-
     <div>
       <h1>Your Document Page</h1>
 
@@ -79,9 +77,7 @@ const DocumentPage = () => {
           {dynamicHooks[key].hook()}
         </div>
       ))}
-      </div>
-      </RootLayout>
-
+    </div>
   );
 };
 

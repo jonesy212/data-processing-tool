@@ -1,10 +1,11 @@
 // convertSnapshot.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/app/snapshot/SnapshotStoreConfig";
@@ -13,12 +14,11 @@ import { Snapshot, SnapshotDataType } from '@/app/snapshots';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore, useDataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/app/typings/YourSpecificSnapshotType";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import SnapshotStore from "./SnapshotStore";

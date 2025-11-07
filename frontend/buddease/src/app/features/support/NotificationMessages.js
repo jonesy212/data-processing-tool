@@ -284,7 +284,8 @@ const NOTIFICATION_MESSAGES = {
         ONBOARDING_ERROR: "Error in the onboarding process. Please try again",
         ERROR_FETCHING_TASK: "Error fetching task. Please try again",
         TASK_NOT_FOUND: "Task not found",
-        FETCH_HIGHLIGHTS_ERROR: "Error fetching highlighting"
+        FETCH_HIGHLIGHTS_ERROR: "Error fetching highlighting",
+        DATA_NOT_FOUND: 'Data not found'
     },
     // Event-related
     Event: {

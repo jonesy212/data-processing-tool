@@ -16,6 +16,7 @@ import { NotificationType, useNotification } from '@/context/NotificationContext
 import React, { useEffect, useState } from 'react';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields } from '@/app/typings/entities/BlogEntity'
 
 type BlogContentType<
   T extends BaseDataEntity,
@@ -58,7 +59,7 @@ type BlogContentMeta<
   IncludedFields extends keyof T = keyof T 
   > = {
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;  // Align content type
-} & Base
+}
 
 interface BlogProps<
   T extends BaseDataEntity,
@@ -97,16 +98,12 @@ type BlogDataMeta<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T 
   > = 
-  BlogContentMeta<T, K> & 
+  BlogContentMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & 
   BlogOptionalType & 
   BlogMetaType;
 
 // Use correct types in SnapshotData
-type SnapshotDataWithBlogData = SnapshotData<
-  BlogData<Data<BaseData<any>>, BlogDataMeta<Data<BaseData<any>>>>,
-  BlogDataMeta<Data<BaseData<any>>>
->;
-
+type SnapshotDataWithBlogData = SnapshotData<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>;
 // Example function to validate and sanitize input
 const validateAndSanitizeInput = (input: string) => {
   const parser = new DOMParser();
@@ -114,13 +111,13 @@ const validateAndSanitizeInput = (input: string) => {
   return doc.body.textContent || "";
 };
 
-const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataMeta>> = ({
+const BlogComponent: React.FC<BlogProps<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>> = ({
   title,
   content,
   subscriberId,
   metaData,
 }) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta> | undefined>(); 
+  const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields> | undefined>(); 
   const { sendNotification } = useNotification(); 
 
   const tracker = new Tracker("blogPost123", "Blog Post Tracker", [], {
@@ -128,7 +125,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
     color: "black",
   }, 2, "#ff6347", false, false, 0, 0);
 
-  const optionalData: CustomSnapshotData<BaseData> | null = null;
+  const optionalData: CustomSnapshotData<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields> | null = null;
   const name = "Blog"; 
 
 
@@ -137,7 +134,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
   let id: string | number | undefined = undefined;
   let subtitle = "Blog Post";
 
-  let data: Partial<SnapshotStore<BlogData<Data<BaseData<any>>>>> = {
+  let data: Partial<SnapshotStore<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>> = {
     id: String(id || ""),
     // Add other properties as needed
   };
@@ -203,15 +200,18 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
       restore: () => {},
       getHistory: () => [],
       clearHistory: () => {},
-    } as unknown as Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>;
+      validate: "",
+      serialize: "",
+      get: () => {}
+    } as unknown as Snapshot<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>;
   }
 
   
   const subscribedId = subscriberApi.getSubscriberByIdAPI(subscriberId).toString();
   // Ensure that subscriptionData is set properly
-  const subscription = subscriptionData || ({} as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>);
+  const subscription = subscriptionData || ({} as Subscription<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>);
   
-  const subscriber = new Subscriber<BlogData<Data<BaseData<any>>, BlogDataMeta>>(
+  const subscriber = new Subscriber<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>(
     String(id), // id
     name, // name
     subscription, // subscription
@@ -238,7 +238,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
       // Track file changes (Example)
       tracker.trackFileChanges({
         title,
-        createdBy,
+        createdBy: new Date(),
         previousMetadata: { title: "Old Title" },
         metadata: { title },
         fileSize: 0,
@@ -266,21 +266,20 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
         fontFamily: "Arial",
       });
     
-    subscriber.subscribe(((data: Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>) => {
-      const subscription = data.data as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>;
+    subscriber.subscribe(((data: Snapshot<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>) => {
+      const subscription = data.data as Subscription<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>;
       setSubscriptionData(subscription);
   
       sendNotification(
         "BlogUpdated" as NotificationType,
         `Blog "${title}" has been updated.`
       );
-    }) as unknown as SubscriberCallback<
-    BlogData<Data<BaseData<any, any, any>>, Meta>, BlogDataMeta>);
+    }) as unknown as SubscriberCallback<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>);
   
     return () => {
       if (subscriber) {
-        const data = {} as Snapshot<BlogData<Data<BaseData<any>>>, BlogData<Data<BaseData<any>>>>;
-        const callback = (data: Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>) => {
+        const data = {} as Snapshot<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>;
+        const callback = (data: Snapshot<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>) => {
           console.log("Received snapshot:", data);
           // Add more logic as needed
         };

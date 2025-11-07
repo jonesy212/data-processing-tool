@@ -76,7 +76,7 @@ import { AllStatus } from "../state/stores/DetailsListStore";
 import {
   SnapshotEntity,
   SnapshotK,
-  SnapshotMeta
+  SnapshotMeta,
   SnapshotAttachment,
   SnapshotExcludedFields,
   SnapshotIncludedFields
@@ -141,7 +141,7 @@ const delegateFunction: SnapshotStoreDelegate<
 > = (
   snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   initialState: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-  snapshotConfig: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+  snapshotConfig: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
   console.log("Initial state:", initialState);

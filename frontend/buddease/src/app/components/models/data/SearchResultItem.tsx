@@ -1,8 +1,8 @@
 // SearchResultItem.tsx
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { BaseEntity } from '@/app/config/BaseConfig';
 import ListGenerator from '@/app/generators/ListGenerator';
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import { Data } from '@/app/modes/data/Data';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import React from 'react';
 
 

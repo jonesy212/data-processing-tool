@@ -1,29 +1,41 @@
 // CalendarEntity.ts
+import { Reminder } from '@/app/settings/Reminder'
+import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Attendee } from "@/app/components/calendar/Attendee";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+
 // Combined Calendar Entity System
 
 // 1. Unified Base Calendar Entity
 export interface CalendarEntity extends BaseDataEntity {
+  // Calendar-specific properties only
   title: string;
   startDate: Date;
   endDate: Date;
-  description?: string;
   location?: string;
   isAllDay?: boolean;
   recurrenceRule?: string;
   timeZone: string;
-  attendees?: string[];
-  category?: string;
+  attendees?: Attendee[];
   status: 'scheduled' | 'cancelled' | 'completed' | 'tentative';
   visibility: 'public' | 'private' | 'shared';
-  categories: string[];
-  organizerPersonalNotes?: string; // Sensitive
-  internalMeetingId?: string; // Sensitive
-  attendeeEmails?: string[]; // Sensitive
-  reminders?: any[]; // Sensitive - internal logic
+  
+  // Sensitive calendar-specific fields
+  organizerPersonalNotes?: string;
+  internalMeetingId?: string;
+  attendeeEmails?: string[];
+  reminders?: Reminder[];
 }
 
 // 2. Sensitive fields that should never be exposed
@@ -56,11 +68,33 @@ export type CalendarBaseParams = {
   IncludedFields: CalendarIncludedFields;
 };
 
-// 7. Field filtering utility
+// 7. Snapshot types (MISSING FROM ORIGINAL)
+export type CalendarSnapshot = Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarSnapshotData = SnapshotData<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarSnapshotStore = SnapshotStore<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarSnapshotWithCriteria = SnapshotWithCriteria<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarSubscriberCollection = SubscriberCollection<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarRealtimeDataItem = RealtimeDataItem<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+
+// 8. Configuration types (MISSING FROM ORIGINAL)
+export type CalendarSnapshotStoreConfig = SnapshotStoreConfig<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+export type CalendarSnapshotsArray = SnapshotsArray<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+
+// 9. PARAMS type (MISSING FROM ORIGINAL)
+export type CalendarParams = SnapshotConfigParams<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+
+// 10. Utility to pick or omit fields dynamically (MISSING FROM ORIGINAL)
+export type ApplyCalendarFieldFilters<
+  T extends BaseDataEntity,
+  Excluded extends keyof T = never,
+  Included extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
+> = Pick<Omit<T, Excluded>, Included>;
+
+// 11. Field filtering utility
 export type PublicCalendarEvent = Pick<CalendarEntity, CalendarIncludedFields>;
 export type SensitiveCalendarEvent = Omit<CalendarEntity, CalendarIncludedFields>;
 
-// 8. Realtime calendar data items
+// 12. Realtime calendar data items
 export type CalendarEntityRealtimeDataItem = RealtimeDataItem<
   CalendarBaseParams['T'],
   CalendarBaseParams['K'],
@@ -70,7 +104,7 @@ export type CalendarEntityRealtimeDataItem = RealtimeDataItem<
   CalendarBaseParams['IncludedFields']
 >;
 
-// 9. Subscriber collection type
+// 13. Subscriber collection type
 export type CalendarEntitySubscriberCollection = SubscriberCollection<
   CalendarBaseParams['T'],
   CalendarBaseParams['K'],
@@ -80,7 +114,7 @@ export type CalendarEntitySubscriberCollection = SubscriberCollection<
   CalendarBaseParams['IncludedFields']
 >;
 
-// 10. Factory function for creating safe calendar events
+// 14. Factory function for creating safe calendar events
 export const createPublicCalendarEvent = (
   event: Partial<CalendarEntity>
 ): PublicCalendarEvent => {
@@ -96,8 +130,7 @@ export const createPublicCalendarEvent = (
   return publicEvent as PublicCalendarEvent;
 };
 
-
-// 11. Type guard for safe data exposure
+// 15. Type guard for safe data exposure
 export const isPublicCalendarField = (
   field: string
 ): field is CalendarIncludedFields => {
@@ -109,13 +142,12 @@ export const isPublicCalendarField = (
   return publicFields.includes(field as CalendarIncludedFields);
 };
 
-// 12. Complete type exports
+// 16. Complete type exports
 export type {
   CalendarExcludedFields,
   CalendarIncludedFields
 };
 
-// Usage example:
 const sensitiveEvent: CalendarEntity = {
   id: "event-123",
   title: "Team Meeting",
@@ -125,15 +157,33 @@ const sensitiveEvent: CalendarEntity = {
   location: "Conference Room A",
   status: "scheduled",
   visibility: "private",
-  categories: ["work", "planning"],
+  categories: [defaultCategoryProperties], // Add the category object
   timeZone: "UTC",
+  isAllDay: false, // Add missing required field
   // Sensitive fields (will be excluded by default)
   organizerPersonalNotes: "Discuss layoffs",
   internalMeetingId: "int-789",
   attendeeEmails: ["ceo@company.com", "hr@company.com"],
-  reminders: [{ type: "email", minutes: 15 }]
+  reminders: [{
+    id: "rem-1",
+    method: "email", // Fix: 'email' goes to method, not type
+    minutes: 15,
+    trigger: { type: "time_before_event", minutesBefore: 15 }, // Add trigger
+    isActive: true,
+    sent: false,
+    reminderType: {
+      id: "email-reminder",
+      category: "reminder",
+      severity: "info",
+      defaultSettings: {
+        method: "email",
+        timing: 15,
+        template: "Reminder: {event.title} in {minutes} minutes"
+      }
+    }
+  }],
+  attendees: [] // Add missing required field
 };
-
 // Public version automatically excludes sensitive fields
 const publicEvent: PublicCalendarEvent = createPublicCalendarEvent(sensitiveEvent);
 // publicEvent only contains: id, title, description, startDate, endDate, location, status, visibility, categories

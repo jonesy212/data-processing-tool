@@ -1,6 +1,7 @@
 // snapshotHandlers.ts
 import axiosInstance from '@/app/api/csrfToken';
-import { SnapshotContainer } '@/app/snapshots/SnapshotContainer'
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer'
+
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import updateUI from '@/app/documents/editing/updateUI';
@@ -10,7 +11,7 @@ import { SnapshotManager, useSnapshotManager } from '@/app/hooks/useSnapshotMana
 import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotData } from '@/app/snapshots';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
@@ -953,7 +954,14 @@ export const determinePrefix = async <
 };
 
 
-export const handleSnapshotSuccess = <T extends Data<T>>(message: string, snapshot: Snapshot<T>): Promise<Snapshot<T>> => {
+export const handleSnapshotSuccess = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(message: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const initialStoreId = useSecureStoreId()

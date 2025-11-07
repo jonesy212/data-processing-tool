@@ -9,7 +9,7 @@ import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
-import { Team } from "@/app/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
@@ -823,7 +823,7 @@ class DetailsListStoreClass <
         NotificationTypeEnum.InvalidCredentials
       );
 
-      const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> Meta, AttachmentType, ExcludedFields, IncludedFields>({
+      const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
         initialState,
         snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,

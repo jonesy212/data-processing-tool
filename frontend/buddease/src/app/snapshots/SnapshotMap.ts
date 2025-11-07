@@ -1,14 +1,14 @@
 // Function to add or update a snapshot in the map
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

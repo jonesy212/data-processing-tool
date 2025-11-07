@@ -13,7 +13,7 @@ interface BookmarkData {
     endDate?: Date;
     createdAt?: Date;
     isActive?: boolean;
-    tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
+    tags?: string[] | TagsRecord<T> | undefined; 
     phase?: PhaseDefault | null;
     phaseType?: ProjectPhaseTypeEnum;
     status?: AllStatus;

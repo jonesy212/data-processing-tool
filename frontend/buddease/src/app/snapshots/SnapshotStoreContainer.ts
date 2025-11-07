@@ -4,16 +4,16 @@ import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from '@/app/config/BaseConfig';
 import { Category, generateCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
-import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
-} from '@/app/config/BaseConfig';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { SimulatedDataSource } from '@/createSnapshotOptions';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";

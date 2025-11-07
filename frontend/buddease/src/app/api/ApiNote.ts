@@ -1,6 +1,7 @@
 // ApiNotes.ts
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
+import internalApiService from '@/app/api/ApiClient'; // ✅ ADD THIS
 import { NotificationOptions } from '@/app/context/NotificationContext'
 import { NotificationPosition } from '@/app/models/data/StatusType';
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -9,6 +10,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import {
   NotificationType,
+  NotificationTypeEnum,
   useNotification
 } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -128,7 +130,6 @@ interface NoteNotificationMessages {
 }
 
 // Define API notification messages
-// Define API notification messages
 const apiNotificationMessages: NoteNotificationMessages = {
   // Core CRUD operations
   FETCH_NOTE_SUCCESS: "Note fetched successfully",
@@ -219,6 +220,42 @@ const apiNotificationMessages: NoteNotificationMessages = {
   CREATE_FROM_TEMPLATE_SUCCESS: "Note created from template successfully",
   CREATE_FROM_TEMPLATE_ERROR: "Failed to create note from template",
 };
+// Success notification for note-related actions
+const notifyNoteSuccess = (
+  id: string,
+  messageKey: keyof NoteNotificationMessages,
+  data: any = null
+) => {
+  const messageText = apiNotificationMessages[messageKey];
+  useNotification().notify({
+    id,
+    message: messageText,
+    data,
+    timestamp: new Date(),
+    type: NotificationTypeEnum.SUCCESS
+  });
+};
+
+// Error handler with notification for notes
+const handleNoteApiErrorAndNotify = (
+  error: AxiosError<unknown>,
+  errorMessage: string,
+  messageKey: keyof NoteNotificationMessages
+) => {
+  console.error(errorMessage, error);
+
+  if (messageKey) {
+    const messageText = apiNotificationMessages[messageKey];
+    useNotification().notify({
+      id: `note-${String(messageKey)}`,
+      message: messageText,
+      data: { originalError: errorMessage },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR
+    });
+  }
+};
+
 
 // Extend SearchNotesResponse with attributes from YourResponseType
 type SearchNotesResponse<
@@ -229,9 +266,8 @@ type SearchNotesResponse<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > = {
-  // Add specific attributes related to search notes if needed
-  results: Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Assuming an array of Note objects in the response
-  totalCount: number; // Total count of search results
+  results: Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  totalCount: number;
   searchData: SearchResponseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
@@ -257,75 +293,37 @@ interface Note<
   createdAt: Date | undefined;
   createdBy: string
   updatedAt: Date | undefined;
-  tags: Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> [];
+  tags: Tag<T>[];
   previousMetadata: string;
   currentMetadat: string;
   accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate;
-
   permissions: string;
-
   encryption: Encryption;
   currentMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   searchHistory: SearchHistory[];
   version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  // Add more properties as needed
 }
 
-// Function to handle API errors and notify
-export const handleNoteApiErrorAndNotify = (
-  error: AxiosError<unknown>,
-  errorMessage: string,
-  errorMessageId: keyof NoteNotificationMessages
-) => {
-  handleApiError(error, errorMessage);
-  
-  if (errorMessageId) {
-    // Access the error message directly using standard property access
-    const errorMessageText = apiNotificationMessages[errorMessageId];
-    
-     // Create notification options
-    const notificationOptions: NotificationOptions = {
-      dataId: errorMessageId,
-      type: 'error',
-      position: 'top-right',
-      persistent: false,
-      duration: 5000 // 5 seconds
-    };
-
-    // Notify using the extracted message
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      notificationOptions,
-      new Date(),
-      "NoteError" as NotificationType,
-    );
-  }
-};
-
-// Fetch note by ID API
 export const fetchNoteByIdAPI = async (
   noteId: number,
   dataCallback: (data: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>) => void
 ): Promise<any> => {
   try {
-    const fetchNoteEndpoint = `${API_BASE_URL}/notes/${noteId}`;
-    const response = await axiosInstance.get(fetchNoteEndpoint, {
-      headers: headersConfig,
-    });
+    const response = await internalApiService.get(
+      `${API_BASE_URL}/notes/${noteId}`,
+      { headers: headersConfig },
+      "FETCH_NOTE_SUCCESS" as any,
+      "FETCH_NOTE_ERROR" as any,
+      { noteId }
+    );
 
-    // Call the provided data callback with the fetched note data
     dataCallback(response.data);
-
-    // Return the fetched note data if needed
     return response.data;
   } catch (error) {
-    console.error("Error fetching note:", error);
-    const errorMessage = "Failed to fetch note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to fetch note",
       "FETCH_NOTE_ERROR"
     );
     throw error;
@@ -334,23 +332,21 @@ export const fetchNoteByIdAPI = async (
 
 export const addNote = async (
   newNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
-): Promise<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
-> => {
+): Promise<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes`,
       newNote,
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig },
+      "ADD_NOTE_SUCCESS" as any,
+      "ADD_NOTE_ERROR" as any,
+      { newNote }
     );
     return response.data;
   } catch (error) {
-    console.error("Error adding note:", error);
-    const errorMessage = "Failed to add note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to add note",
       "ADD_NOTE_ERROR"
     );
     throw error;
@@ -362,20 +358,19 @@ export const updateNote = async (
   updatedNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
 ): Promise<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>> => {
   try {
-    const response = await axiosInstance.put(
+    const response = await internalApiService.put(
       `${API_BASE_URL}/api/notes/${noteId}`,
       updatedNote,
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig },
+      "UPDATE_NOTE_SUCCESS" as any,
+      "UPDATE_NOTE_ERROR" as any,
+      { noteId, updatedNote }
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating note:", error);
-    const errorMessage = "Failed to update note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to update note",
       "UPDATE_NOTE_ERROR"
     );
     throw error;
@@ -387,17 +382,20 @@ export const archiveNote = async (noteId: string): Promise<any> => {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes/archive/${noteId}`,
       null,
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig }
     );
+    
+    notifyNoteSuccess(
+      `archive-note-${noteId}`,
+      "Note archived successfully",
+      { noteId }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error archiving note:", error);
-    const errorMessage = "Failed to archive note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to archive note",
       "ARCHIVE_NOTE_ERROR"
     );
     throw error;
@@ -409,17 +407,20 @@ export const restoreNote = async (noteId: string): Promise<any> => {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes/restore/${noteId}`,
       null,
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig }
     );
+    
+    notifyNoteSuccess(
+      `restore-note-${noteId}`,
+      "Note restored successfully",
+      { noteId }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error restoring note:", error);
-    const errorMessage = "Failed to restore note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to restore note",
       "RESTORE_NOTE_ERROR"
     );
     throw error;
@@ -434,17 +435,20 @@ export const moveNote = async (
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes/move/${noteId}`,
       { destination },
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig }
     );
+    
+    notifyNoteSuccess(
+      `move-note-${noteId}`,
+      "Note moved successfully",
+      { noteId, destination }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error moving note:", error);
-    const errorMessage = "Failed to move note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to move note",
       "MOVE_NOTE_ERROR"
     );
     throw error;
@@ -456,17 +460,20 @@ export const mergeNotes = async (noteIds: string[]): Promise<any> => {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes/merge`,
       { noteIds },
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig }
     );
+    
+    notifyNoteSuccess(
+      `merge-notes-${noteIds.join('-')}`,
+      "Notes merged successfully",
+      { noteIds }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error merging notes:", error);
-    const errorMessage = "Failed to merge notes";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to merge notes",
       "MERGE_NOTES_ERROR"
     );
     throw error;
@@ -478,107 +485,109 @@ export const splitNote = async (noteId: string): Promise<any> => {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/notes/split`,
       { noteId },
-      {
-        headers: headersConfig,
-      }
+      { headers: headersConfig }
     );
+    
+    notifyNoteSuccess(
+      `split-note-${noteId}`,
+      "Note split successfully",
+      { noteId }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error splitting note:", error);
-    const errorMessage = "Failed to split note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to split note",
       "SPLIT_NOTE_ERROR"
     );
     throw error;
   }
 };
-// Add note API
+
 export const addNoteAPI = async (noteData: any): Promise<any> => {
   try {
-    const addNoteEndpoint = `${API_BASE_URL}/notes`;
-    const response = await axiosInstance.post(addNoteEndpoint, noteData, {
-      headers: headersConfig,
-    });
+    const response = await internalApiService.post(
+      `${API_BASE_URL}/notes`,
+      noteData,
+      { headers: headersConfig },
+      "ADD_NOTE_SUCCESS" as any,
+      "ADD_NOTE_ERROR" as any,
+      { noteData }
+    );
     return response.data;
   } catch (error) {
-    console.error("Error adding note:", error);
-    const errorMessage = "Failed to add note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to add note",
       "ADD_NOTE_ERROR"
     );
     throw error;
   }
 };
 
-// Update note API
 export const updateNoteAPI = async (
   noteId: number,
   updatedData: any
 ): Promise<any> => {
   try {
-    const updateNoteEndpoint = `${API_BASE_URL}/notes/${noteId}`;
-    const response = await axiosInstance.put(updateNoteEndpoint, updatedData, {
-      headers: headersConfig,
-    });
+    const response = await internalApiService.put(
+      `${API_BASE_URL}/notes/${noteId}`,
+      updatedData,
+      { headers: headersConfig },
+      "UPDATE_NOTE_SUCCESS" as any,
+      "UPDATE_NOTE_ERROR" as any,
+      { noteId, updatedData }
+    );
     return response.data;
   } catch (error) {
-    console.error("Error updating note:", error);
-    const errorMessage = "Failed to update note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to update note",
       "UPDATE_NOTE_ERROR"
     );
     throw error;
   }
 };
 
-// Delete note API
 export const deleteNoteAPI = async (noteId: number): Promise<void> => {
   try {
-    const deleteNoteEndpoint = `${API_BASE_URL}/notes/${noteId}`;
-    await axiosInstance.delete(deleteNoteEndpoint, {
-      headers: headersConfig,
-    });
+    await internalApiService.delete(
+      `${API_BASE_URL}/notes/${noteId}`,
+      { headers: headersConfig },
+      "DELETE_NOTE_SUCCESS" as any,
+      "DELETE_NOTE_ERROR" as any,
+      { noteId }
+    );
   } catch (error) {
-    console.error("Error deleting note:", error);
-    const errorMessage = "Failed to delete note";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to delete note",
       "DELETE_NOTE_ERROR"
     );
     throw error;
   }
 };
 
-// List all notes API
 export const listAllNotesAPI = async (): Promise<any[]> => {
   try {
-    const fetchAllNotesEndpoint = `${API_BASE_URL}/notes`;
-    const response = await axiosInstance.get(fetchAllNotesEndpoint, {
-      headers: headersConfig,
-    });
+    const response = await internalApiService.get(
+      `${API_BASE_URL}/notes`,
+      { headers: headersConfig },
+      "FETCH_NOTE_SUCCESS" as any,
+      "FETCH_NOTE_ERROR" as any
+    );
     return response.data;
   } catch (error) {
-    console.error("Error fetching all notes:", error);
-    const errorMessage = "Failed to fetch all notes";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to fetch all notes",
       "FETCH_NOTE_ERROR"
     );
     throw error;
   }
 };
 
-// Search notes API
-
-// function with type annotations and centralized error handling
 export const searchNotesAPI = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -590,55 +599,46 @@ export const searchNotesAPI = async <
   searchQuery: string
 ): Promise<SearchNotesResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
   try {
-    const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(
-      searchQuery
-    )}`;
+    const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(searchQuery)}`;
     const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(searchNotesEndpoint);
 
-    // Ensure that response data matches SearchNotesResponse type
     const responseData: SearchNotesResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = response.data;
 
-    // Access the properties directly from responseData
     return {
-      results: responseData.results || [], // Access 'results' property
-      totalCount: responseData.totalCount || 0, // Access 'totalCount' property
-      searchData: responseData.searchData || {}, // Access 'searchData' property
+      results: responseData.results || [],
+      totalCount: responseData.totalCount || 0,
+      searchData: responseData.searchData || {},
     };
   } catch (error) {
-    console.error("Error searching notes:", error);
-    const errorMessage = "Failed to search notes";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to search notes",
       "SEARCH_NOTE_ERROR"
     );
     throw error;
   }
 };
 
-// Filter notes API
+// Continue updating remaining functions with the same pattern...
+
 export const filterNotesAPI = async (
   filters: Record<string, any>
 ): Promise<any> => {
   try {
-    // Construct the filter query based on the provided filters
     const filterQuery = Object.entries(filters)
-      .map(
-        ([key, value]) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-      )
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join("&");
-    const filterNotesEndpoint = `${API_BASE_URL}/notes/filter?${filterQuery}`;
-    const response = await axiosInstance.get(filterNotesEndpoint, {
-      headers: headersConfig,
-    });
+    
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/notes/filter?${filterQuery}`,
+      { headers: headersConfig }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error filtering notes:", error);
-    const errorMessage = "Failed to filter notes";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to filter notes",
       "FILTER_NOTE_ERROR"
     );
     throw error;
@@ -653,8 +653,8 @@ export const searchNotes = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-    keyword: string
-  ): Promise<Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> []> => {
+  keyword: string
+): Promise<Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/api/notes/search`,
@@ -665,36 +665,36 @@ export const searchNotes = async <
     );
     return response.data;
   } catch (error) {
-    console.error("Error searching notes:", error);
-    const errorMessage = "Failed to search notes";
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+      "Failed to search notes",
       "SEARCH_NOTES_ERROR"
     );
     throw error;
   }
 };
 
-
+// Continue with the remaining functions using the same pattern...
 
 export const bulkUpdateNotesAPI = async (
   noteIds: number[],
   updateData: Partial<NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>>
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.put(
+    const response = await internalApiService.put(
       `${API_BASE_URL}/notes/bulk`,
       { noteIds, updateData },
-      { headers: headersConfig }
+      { headers: headersConfig },
+      "BULK_UPDATE_NOTE_SUCCESS" as any,
+      "BULK_UPDATE_NOTE_ERROR" as any,
+      { noteIds, updateData }
     );
     return response.data;
   } catch (error) {
-    console.error("Error bulk updating notes:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to bulk update notes",
-      "UPDATE_NOTE_ERROR"
+      "BULK_UPDATE_NOTE_ERROR"
     );
     throw error;
   }
@@ -702,38 +702,41 @@ export const bulkUpdateNotesAPI = async (
 
 export const bulkDeleteNotesAPI = async (noteIds: number[]): Promise<void> => {
   try {
-    await axiosInstance.delete(
+    await internalApiService.delete(
       `${API_BASE_URL}/notes/bulk`,
       { 
         data: { noteIds },
         headers: headersConfig 
-      }
+      },
+      "BULK_DELETE_NOTE_SUCCESS" as any,
+      "BULK_DELETE_NOTE_ERROR" as any,
+      { noteIds }
     );
   } catch (error) {
-    console.error("Error bulk deleting notes:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to bulk delete notes",
-      "DELETE_NOTE_ERROR"
+      "BULK_DELETE_NOTE_ERROR"
     );
     throw error;
   }
 };
-
 // Export/Import
 export const exportNotesAPI = async (format: 'json' | 'csv' | 'pdf' = 'json'): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/export?format=${format}`,
-      { headers: headersConfig }
+      { headers: headersConfig },
+      "EXPORT_NOTE_SUCCESS" as any,
+      "EXPORT_NOTE_ERROR" as any,
+      { format }
     );
     return response.data;
   } catch (error) {
-    console.error("Error exporting notes:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to export notes",
-      "FETCH_NOTE_ERROR"
+      "EXPORT_NOTE_ERROR"
     );
     throw error;
   }
@@ -741,25 +744,27 @@ export const exportNotesAPI = async (format: 'json' | 'csv' | 'pdf' = 'json'): P
 
 export const importNotesAPI = async (importData: any, format: 'json' | 'csv' = 'json'): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/notes/import?format=${format}`,
       importData,
-      { headers: headersConfig }
+      { headers: headersConfig },
+      "IMPORT_NOTE_SUCCESS" as any,
+      "IMPORT_NOTE_ERROR" as any,
+      { format, importData }
     );
     return response.data;
   } catch (error) {
-    console.error("Error importing notes:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to import notes",
-      "ADD_NOTE_ERROR"
+      "IMPORT_NOTE_ERROR"
     );
     throw error;
   }
 };
 
 // Tag management
-export const getNoteTagsAPI = async (noteId: number): Promise<Tag<any, any>[]> => {
+export const getNoteTagsAPI = async (noteId: number): Promise<Tag<any>[]> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/notes/${noteId}/tags`,
@@ -767,30 +772,63 @@ export const getNoteTagsAPI = async (noteId: number): Promise<Tag<any, any>[]> =
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching note tags:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to fetch note tags",
-      "FETCH_NOTE_ERROR"
+      "FETCH_TAGS_ERROR"
     );
     throw error;
   }
 };
 
-export const addNoteTagAPI = async (noteId: number, tagData: Partial<Tag<any, any>>): Promise<any> => {
+export const addNoteTagAPI = async (noteId: number, tagData: Partial<Tag<any>>): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/tags`,
       tagData,
-      { headers: headersConfig }
+      { headers: headersConfig },
+      "ADD_TAG_SUCCESS" as any,
+      "ADD_TAG_ERROR" as any,
+      { noteId, tagData }
     );
+    
+    notifyNoteSuccess(
+      `add-tag-${noteId}`,
+      "Tag added successfully",
+      { noteId, tagData }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error adding note tag:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to add note tag",
-      "UPDATE_NOTE_ERROR"
+      "ADD_TAG_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const removeNoteTagAPI = async (noteId: number, tagId: number): Promise<void> => {
+  try {
+    await internalApiService.delete(
+      `${API_BASE_URL}/notes/${noteId}/tags/${tagId}`,
+      { headers: headersConfig },
+      "REMOVE_TAG_SUCCESS" as any,
+      "REMOVE_TAG_ERROR" as any,
+      { noteId, tagId }
+    );
+    
+    notifyNoteSuccess(
+      `remove-tag-${noteId}-${tagId}`,
+      "Tag removed successfully",
+      { noteId, tagId }
+    );
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to remove note tag",
+      "REMOVE_TAG_ERROR"
     );
     throw error;
   }
@@ -805,11 +843,10 @@ export const getNoteVersionsAPI = async (noteId: number): Promise<Version<any, a
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching note versions:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to fetch note versions",
-      "FETCH_NOTE_ERROR"
+      "FETCH_VERSIONS_ERROR"
     );
     throw error;
   }
@@ -817,18 +854,27 @@ export const getNoteVersionsAPI = async (noteId: number): Promise<Version<any, a
 
 export const restoreNoteVersionAPI = async (noteId: number, versionId: number): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/versions/${versionId}/restore`,
       null,
-      { headers: headersConfig }
+      { headers: headersConfig },
+      "RESTORE_VERSION_SUCCESS" as any,
+      "RESTORE_VERSION_ERROR" as any,
+      { noteId, versionId }
     );
+    
+    notifyNoteSuccess(
+      `restore-version-${noteId}-${versionId}`,
+      "Version restored successfully",
+      { noteId, versionId }
+    );
+    
     return response.data;
   } catch (error) {
-    console.error("Error restoring note version:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to restore note version",
-      "UPDATE_NOTE_ERROR"
+      "RESTORE_VERSION_ERROR"
     );
     throw error;
   }
@@ -843,11 +889,10 @@ export const getNoteCollaboratorsAPI = async (noteId: number): Promise<any[]> =>
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching note collaborators:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to fetch note collaborators",
-      "FETCH_NOTE_ERROR"
+      "FETCH_COLLABORATORS_ERROR"
     );
     throw error;
   }
@@ -855,18 +900,207 @@ export const getNoteCollaboratorsAPI = async (noteId: number): Promise<any[]> =>
 
 export const shareNoteAPI = async (noteId: number, shareSettings: any): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/share`,
       shareSettings,
+      { headers: headersConfig },
+      "SHARE_NOTE_SUCCESS" as any,
+      "SHARE_NOTE_ERROR" as any,
+      { noteId, shareSettings }
+    );
+    
+    notifyNoteSuccess(
+      `share-note-${noteId}`,
+      "Note shared successfully",
+      { noteId, shareSettings }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to share note",
+      "SHARE_NOTE_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const unshareNoteAPI = async (noteId: number): Promise<any> => {
+  try {
+    const response = await internalApiService.post(
+      `${API_BASE_URL}/notes/${noteId}/unshare`,
+      null,
+      { headers: headersConfig },
+      "UNSHARE_NOTE_SUCCESS" as any,
+      "UNSHARE_NOTE_ERROR" as any,
+      { noteId }
+    );
+    
+    notifyNoteSuccess(
+      `unshare-note-${noteId}`,
+      "Note unshared successfully",
+      { noteId }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to unshare note",
+      "UNSHARE_NOTE_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const addNoteCollaboratorAPI = async (noteId: number, collaboratorData: any): Promise<any> => {
+  try {
+    const response = await internalApiService.post(
+      `${API_BASE_URL}/notes/${noteId}/collaborators`,
+      collaboratorData,
+      { headers: headersConfig },
+      "ADD_COLLABORATOR_SUCCESS" as any,
+      "ADD_COLLABORATOR_ERROR" as any,
+      { noteId, collaboratorData }
+    );
+    
+    notifyNoteSuccess(
+      `add-collaborator-${noteId}`,
+      "Collaborator added successfully",
+      { noteId, collaboratorData }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to add collaborator",
+      "ADD_COLLABORATOR_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const removeNoteCollaboratorAPI = async (noteId: number, collaboratorId: number): Promise<void> => {
+  try {
+    await internalApiService.delete(
+      `${API_BASE_URL}/notes/${noteId}/collaborators/${collaboratorId}`,
+      { headers: headersConfig },
+      "REMOVE_COLLABORATOR_SUCCESS" as any,
+      "REMOVE_COLLABORATOR_ERROR" as any,
+      { noteId, collaboratorId }
+    );
+    
+    notifyNoteSuccess(
+      `remove-collaborator-${noteId}-${collaboratorId}`,
+      "Collaborator removed successfully",
+      { noteId, collaboratorId }
+    );
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to remove collaborator",
+      "REMOVE_COLLABORATOR_ERROR"
+    );
+    throw error;
+  }
+};
+
+// Comments
+export const getNoteCommentsAPI = async (noteId: number): Promise<any[]> => {
+  try {
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/notes/${noteId}/comments`,
       { headers: headersConfig }
     );
     return response.data;
   } catch (error) {
-    console.error("Error sharing note:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "Failed to share note",
-      "UPDATE_NOTE_ERROR"
+      "Failed to fetch note comments",
+      "FETCH_COMMENTS_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const addNoteCommentAPI = async (noteId: number, commentData: any): Promise<any> => {
+  try {
+    const response = await internalApiService.post(
+      `${API_BASE_URL}/notes/${noteId}/comments`,
+      commentData,
+      { headers: headersConfig },
+      "ADD_COMMENT_SUCCESS" as any,
+      "ADD_COMMENT_ERROR" as any,
+      { noteId, commentData }
+    );
+    
+    notifyNoteSuccess(
+      `add-comment-${noteId}`,
+      "Comment added successfully",
+      { noteId, commentData }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to add comment",
+      "ADD_COMMENT_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const updateNoteCommentAPI = async (noteId: number, commentId: number, commentData: any): Promise<any> => {
+  try {
+    const response = await internalApiService.put(
+      `${API_BASE_URL}/notes/${noteId}/comments/${commentId}`,
+      commentData,
+      { headers: headersConfig },
+      "UPDATE_COMMENT_SUCCESS" as any,
+      "UPDATE_COMMENT_ERROR" as any,
+      { noteId, commentId, commentData }
+    );
+    
+    notifyNoteSuccess(
+      `update-comment-${noteId}-${commentId}`,
+      "Comment updated successfully",
+      { noteId, commentId, commentData }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to update comment",
+      "UPDATE_COMMENT_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const deleteNoteCommentAPI = async (noteId: number, commentId: number): Promise<void> => {
+  try {
+    await internalApiService.delete(
+      `${API_BASE_URL}/notes/${noteId}/comments/${commentId}`,
+      { headers: headersConfig },
+      "DELETE_COMMENT_SUCCESS" as any,
+      "DELETE_COMMENT_ERROR" as any,
+      { noteId, commentId }
+    );
+    
+    notifyNoteSuccess(
+      `delete-comment-${noteId}-${commentId}`,
+      "Comment deleted successfully",
+      { noteId, commentId }
+    );
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to delete comment",
+      "DELETE_COMMENT_ERROR"
     );
     throw error;
   }
@@ -881,14 +1115,60 @@ export const getNoteAnalyticsAPI = async (noteId: number): Promise<any> => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error fetching note analytics:", error);
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to fetch note analytics",
-      "FETCH_NOTE_ERROR"
+      "FETCH_ANALYTICS_ERROR"
+    );
+    throw error;
+  }
+};
+
+// Templates
+export const getNoteTemplatesAPI = async (): Promise<any[]> => {
+  try {
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/notes/templates`,
+      { headers: headersConfig }
+    );
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to fetch note templates",
+      "FETCH_TEMPLATES_ERROR"
+    );
+    throw error;
+  }
+};
+
+export const createNoteFromTemplateAPI = async (templateId: number, noteData: any): Promise<any> => {
+  try {
+    const response = await internalApiService.post(
+      `${API_BASE_URL}/notes/templates/${templateId}/create`,
+      noteData,
+      { headers: headersConfig },
+      "CREATE_FROM_TEMPLATE_SUCCESS" as any,
+      "CREATE_FROM_TEMPLATE_ERROR" as any,
+      { templateId, noteData }
+    );
+    
+    notifyNoteSuccess(
+      `create-from-template-${templateId}`,
+      "Note created from template successfully",
+      { templateId, noteData }
+    );
+    
+    return response.data;
+  } catch (error) {
+    handleNoteApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to create note from template",
+      "CREATE_FROM_TEMPLATE_ERROR"
     );
     throw error;
   }
 };
 
 export type { Note, SearchNotesResponse };
+export { apiNotificationMessages };

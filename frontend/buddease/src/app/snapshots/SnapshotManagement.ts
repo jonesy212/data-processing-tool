@@ -8,6 +8,9 @@ import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // SnapshotManagement interface for snapshot operations
 export interface SnapshotManagement<  T extends BaseDataEntity,

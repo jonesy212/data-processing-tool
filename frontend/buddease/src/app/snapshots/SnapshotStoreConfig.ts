@@ -9,7 +9,6 @@ import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { determineCategory } from "@/app/libraries/categories/determineCategory";
 import determineFileCategory, { fetchFileSnapshotData } from "@/app/libraries/categories/determineFileCategory";
@@ -20,7 +19,6 @@ import { Meta } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -31,10 +29,12 @@ import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { PortfolioUpdatesLastUpdated } from "@/app/trading/PortfolioUpdatesLastUpdated";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { generateSnapshotId, storeId } from "@/app/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/app/utils/trading/TradingUtils";
@@ -136,7 +136,7 @@ export interface SnapshotStoreConfig<
   SnapshotConfiguration<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SnapshotErrorHandling<T, K, Meta>,
   SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  SharedIdentifiers<T, K>,
   Partial<SnapshotCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   Partial<SnapshotStoreCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   forEach<U extends BaseDataEntity, V extends U = U, M extends DefaultMeta<U, V> = DefaultMeta<U, V>, A extends Attachment = Attachment, E extends keyof U = DefaultExcludedFields<U>, I extends keyof U = keyof U>(
@@ -214,7 +214,7 @@ export interface SnapshotStoreConfig<
   operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   title?: string;
   description?: string | null;
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
   createdAt?: string | Date | undefined
   updatedAt?: string | Date | undefined
 
@@ -241,8 +241,8 @@ export interface SnapshotStoreConfig<
     payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     categoryProperties: CategoryProperties | undefined,
+    callback: (createdStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     category?: Category,
-    callback: (createdStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void,
     snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] // Array of SnapshotStoreConfig objects
   ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
 
@@ -303,7 +303,7 @@ export interface SnapshotStoreConfig<
     snapshotContainer?: T,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
-  getSnapshotId: (data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => Promise<string>;
+  getSnapshotId: (data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<string>;
   fetchSnapshotData: (endpoint: string, id: string | number) => SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Adjust the return type as necessary
   snapshot: (
     id: string | number | undefined,
@@ -398,7 +398,7 @@ export interface SnapshotStoreConfig<
   };
 
   setSnapshot?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  setSnapshotStore?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void;
+  setSnapshotStore?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
   configureSnapshotStore: (
     currentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, //
@@ -410,7 +410,7 @@ export interface SnapshotStoreConfig<
     payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // just one
     callback?: (
-      store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void
+      store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => Promise<{
     currentSnapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -468,7 +468,7 @@ export interface SnapshotStoreConfig<
 
   processSnapshotData?: (
     id: string | number | null,
-    data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -555,7 +555,7 @@ export interface SnapshotStoreConfig<
     snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }>;
 
-  // addSnapshot: (snapshot: T, subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void;
+  // addSnapshot: (snapshot: T, subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
   addSnapshotSuccess: (
     snapshot: T,
@@ -617,7 +617,7 @@ export interface SnapshotStoreConfig<
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-      data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+      data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
       newData: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
       unsubscribe: () => void;
       addSnapshotFailure: (
@@ -659,7 +659,7 @@ export interface SnapshotStoreConfig<
         payload: { error: Error; }
       ) => void;
       batchUpdateSnapshotsRequest: (
-        snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => Promise<{
+        snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<{
           subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         }>,
@@ -979,7 +979,7 @@ export interface SnapshotStoreConfig<
   expirationDate?: Date;
   isExpired?: (() => boolean) | undefined;
   priority?: AllStatus;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
   status?: StatusType | undefined
   isCompressed?: boolean;
@@ -2311,7 +2311,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
           category?: Category,
           categoryProperties?: CategoryProperties,
           callback?: (
-            snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void
+            snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
         ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => { },
         deleteSnapshot: (id: string) => {
 
@@ -4268,7 +4268,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
 ];
 
 export {
-    snapshotStoreConfigs
+  snapshotStoreConfigs
 };
 
   export type { InitializedConfig, UserConfig };

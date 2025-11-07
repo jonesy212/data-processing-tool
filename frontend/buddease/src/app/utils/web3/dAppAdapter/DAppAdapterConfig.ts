@@ -1,19 +1,23 @@
 import ApiConfig from '@/app/api/ApiConfig';
 import { ClientConfig } from "@/app/client/Client";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { ThemeConfig } from '@/app/libraries/ui/theme/ThemeConfig';
 import { BaseData } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { UserRole } from "@/app/models/UserRole";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
-import { ThemeConfig } from '@/app/libraries/ui/theme/ThemeConfig'
-import { PluginConfig } from '@/app/typings/pluginTypes/PluginConfig'
-
+import { PluginConfig } from '@/app/config/PluginConfig';
+import { LocalizationConfig } from '@/app/config/LocalizationConfig'
+import { StorageConfig } from '@/app/config/StorageConfig'
+import { CacheConfig } from '@/app/config/CacheConfig'
+import { LoggingConfig } from '@/app/config/LoggingConfig'
+import { BaseDataRoot } from '@/app/config/BaseConfig'
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
 
@@ -26,7 +30,6 @@ export interface DappProps<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-
   // General props
   appName: string;
   appVersion: string;
@@ -35,12 +38,10 @@ export interface DappProps<
   currentUser: {
     id: string | number;
     username: string;
-    role?: UserRole;
+    role?: string | UserRole;
     teams?: Team[];
-    
     projects?: Project[];
-    teamMembers?: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-    
+    teamMembers?: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   };
 
   // Project-related props
@@ -49,87 +50,110 @@ export interface DappProps<
     username: string;
     description: string;
     tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-    teamMembers: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+    teamMembers: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   };
 
   // Document-related props
   documentSize: DocumentSize;
   documentOptions: DocumentOptions;
+  
   // Real-time updates props
   enableRealTimeUpdates: boolean;
-// All configurations grouped
+
+  // All configurations grouped under a single configurations object
   configurations: {
+    // Fluence configuration
     fluenceConfig: {
       ethereumPrivateKey: typeof fluenceApiKey;
-      networkId: 1 | 3 | number; // Added other possible network IDs
+      networkId: 1 | 3 | number;
       gasPrice: number;
       contractAddress: string;
-      // Possible missing: providerUrl, chainId, etc.
+      providerUrl?: string;
+      chainId?: number;
     };
 
+    // Aqua configuration
     aquaConfig: {
       maxConnections: number;
       timeout: number;
       secureConnection: boolean;
       reconnectAttempts: number;
       autoReconnect: boolean;
-      // Possible missing: peerId, relayNodes, etc.
+      peerId?: string;
+      relayNodes?: string[];
     };
 
+    // Real-time communication configuration
     realtimeCommunicationConfig: {
       audio: boolean;
       video: boolean;
       text: boolean;
       collaboration: boolean;
-      // Possible missing: screenShare, fileTransfer, etc.
+      screenShare?: boolean;
+      fileTransfer?: boolean;
     };
 
+    // Project phases configuration
     phasesConfig: {
       ideation: boolean;
       teamCreation: boolean;
       productBrainstorming: boolean;
       productLaunch: boolean;
       dataAnalysis: boolean;
-      // Possible missing: planning, development, testing, deployment
+      planning?: boolean;
+      development?: boolean;
+      testing?: boolean;
+      deployment?: boolean;
     };
 
+    // Communication preferences
     communicationPreferences: {
       defaultCommunicationMode: "text" | "audio" | "video";
       enableRealTimeUpdates: boolean;
-      // Possible missing: notificationPreferences, language, etc.
+      notificationPreferences?: Record<string, boolean>;
+      language?: string;
     };
 
+    // Data analysis configuration
     dataAnalysisConfig: {
       meaningfulResultsThreshold: number;
-      // Possible missing: analyticsEnabled, dataRetention, etc.
+      analyticsEnabled?: boolean;
+      dataRetention?: number;
     };
 
+    // Collaboration options
     collaborationOptionsConfig: {
       collaborativeEditing: boolean;
       documentVersioning: boolean;
-      // Possible missing: commentSystem, changeTracking, etc.
+      commentSystem?: boolean;
+      changeTracking?: boolean;
     };
 
+    // Project team configuration
     projectTeamConfig: {
       maxTeamMembers: number;
       teamRoles: string[];
-      // Possible missing: defaultRoles, permissionLevels, etc.
+      defaultRoles?: string[];
+      permissionLevels?: Record<string, string[]>;
     };
 
+    // Security configuration
     securityConfig: {
       encryptionEnabled: boolean;
       twoFactorAuthentication: boolean;
-      sessionTimeout: number; // in minutes
+      sessionTimeout: number;
       passwordPolicy: {
         minLength: number;
         requireSpecialChars: boolean;
         requireNumbers: boolean;
+        requireUppercase?: boolean;
+        requireLowercase?: boolean;
       };
-      // Possible missing: sessionTimeout, passwordPolicy, etc.
+      sessionEncryption?: boolean;
+      dataEncryption?: boolean;
     };
-  
 
-    // From AppConfig.ts, MainConfig.tsx
+    // Application configuration
     appConfig: {
       environment: 'development' | 'staging' | 'production';
       debugMode: boolean;
@@ -138,15 +162,17 @@ export interface DappProps<
       defaultLanguage: string;
     };
 
-    // From BackendConfig.ts, FrontendConfig.ts
+    // Backend configuration
     backendConfig: {
       apiBaseUrl: string;
       graphqlEndpoint: string;
       restEndpoint: string;
       timeout: number;
       retryAttempts: number;
+      headers?: Record<string, string>;
     };
 
+    // Frontend configuration
     frontendConfig: {
       theme: 'light' | 'dark' | 'auto';
       layout: 'fluid' | 'fixed';
@@ -158,7 +184,7 @@ export interface DappProps<
       };
     };
 
-    // From DatabaseConfig.tsx, DatabaseTypes.ts
+    // Database configuration
     databaseConfig: {
       type: 'sqlite' | 'postgresql' | 'mongodb' | 'fluence';
       host: string;
@@ -167,9 +193,11 @@ export interface DappProps<
       synchronize: boolean;
       logging: boolean;
       connectionTimeout: number;
+      username?: string;
+      password?: string;
     };
 
-    // From Web3Config.ts, CustomWeb3Config.ts
+    // Web3 configuration
     web3Config: {
       network: 'mainnet' | 'testnet' | 'local';
       rpcUrl: string;
@@ -177,9 +205,12 @@ export interface DappProps<
       contracts: Record<string, string>;
       gasLimit: number;
       gasPrice: number;
+      walletConnect?: {
+        projectId: string;
+      };
     };
 
-    // From DocumentBuilderConfig.ts, FrontendDocumentConfig.ts
+    // Document configuration
     documentConfig: {
       maxFileSize: number;
       allowedFileTypes: string[];
@@ -187,9 +218,10 @@ export interface DappProps<
       autoSaveInterval: number;
       versioning: boolean;
       maxVersions: number;
+      compression?: boolean;
     };
 
-    // From DynamicFormConfig.ts
+    // Form configuration
     formConfig: {
       validationMode: 'onChange' | 'onBlur' | 'onSubmit';
       showValidationErrors: boolean;
@@ -197,123 +229,175 @@ export interface DappProps<
       submitMode: 'auto' | 'manual';
     };
 
-    // From LayoutConfig.tsx
+    // Layout configuration
     layoutConfig: {
       header: {
         visible: boolean;
         fixed: boolean;
+        height?: number;
       };
       sidebar: {
         visible: boolean;
         collapsed: boolean;
         position: 'left' | 'right';
+        width?: number;
       };
       footer: {
         visible: boolean;
         fixed: boolean;
+        height?: number;
       };
     };
 
-    // From LoggerConfig.ts
+    // Logging configuration
     loggingConfig: {
       level: 'error' | 'warn' | 'info' | 'debug';
       enableConsole: boolean;
       enableFile: boolean;
       maxFileSize: number;
       logDirectory: string;
+      format?: string;
     };
 
-    // From UserPreferences.ts, GenerateUserPreferences.ts
+    // User preferences
     userPreferences: {
       notifications: {
         email: boolean;
         push: boolean;
         sms: boolean;
+        inApp?: boolean;
       };
       privacy: {
         dataSharing: boolean;
         analyticsEnabled: boolean;
         personalizedAds: boolean;
+        dataRetention?: number;
       };
       accessibility: {
         highContrast: boolean;
         largeText: boolean;
         screenReader: boolean;
+        reducedMotion?: boolean;
       };
     };
 
-    // From MetadataManager.tsx, StructuredMetadata.ts
+    // Metadata configuration
     metadataConfig: {
       autoGenerate: boolean;
       validation: boolean;
       indexing: boolean;
       searchable: boolean;
       maxTags: number;
+      schemaValidation?: boolean;
     };
 
-    // From IPFSConfig.ts
+    // IPFS configuration
     ipfsConfig: {
       gateway: string;
       apiUrl: string;
       timeout: number;
       pinning: boolean;
+      fallbackGateways?: string[];
     };
 
-    // From IdleTimeout.ts
+    // Session configuration
     sessionConfig: {
       idleTimeout: number;
       sessionTimeout: number;
       extendSession: boolean;
+      maxSessions?: number;
     };
 
-    // From DataVersionsConfig.tsx
+    // Versioning configuration
     versioningConfig: {
       enable: boolean;
       maxVersions: number;
       autoPrune: boolean;
       retentionPeriod: number;
+      backupEnabled?: boolean;
     };
 
-    // From MappingConfig.tsx
+    // Mapping configuration
     mappingConfig: {
       autoMap: boolean;
       strictMode: boolean;
       fieldValidation: boolean;
+      caseSensitive?: boolean;
     };
 
-    uiConfig?: {
+    // UI configuration
+    uiConfig: {
       theme: 'light' | 'dark' | 'auto';
       language: string;
       accessibility: {
         highContrast: boolean;
         fontSize: number;
+        reducedMotion?: boolean;
       };
-    }
-    deploymentConfig?: {
+      components?: Record<string, any>;
+    };
+
+    // Deployment configuration
+    deploymentConfig: {
       version: string;
       buildNumber: string;
       environmentVariables: Record<string, string>;
+      deploymentId?: string;
+      region?: string;
     };
-    apiConfig?: ApiConfig
-    // From StopwatchConfig.tsx
+
+    // API configuration
+    apiConfig?: ApiConfig;
+
+    // Performance configuration
     performanceConfig: {
       enableMetrics: boolean;
       sampleRate: number;
       reportErrors: boolean;
+      monitoringEndpoint?: string;
     };
-    // Browser-specific from browserConfig.ts
+
+    // Browser configuration
     browserConfig: {
       supportedBrowsers: string[];
       minimumVersions: Record<string, string>;
       featureDetection: boolean;
+      polyfills?: string[];
     };
-  }
-  // Additional top-level props that might be needed
+
+    // Additional optional configurations can be added here
+    cacheConfig?: {
+      enabled: boolean;
+      ttl: number;
+      maxSize: number;
+    };
+
+    storageConfig?: {
+      type: 'local' | 'session' | 'indexedDB';
+      encryption: boolean;
+      quota: number;
+    };
+
+    themeConfig?: {
+      primaryColor: string;
+      secondaryColor: string;
+      fonts: Record<string, string>;
+    };
+
+    localizationConfig?: {
+      defaultLocale: string;
+      supportedLocales: string[];
+      fallbackLocale: string;
+    };
+  };
+
+  // Additional top-level props
   environment: 'development' | 'staging' | 'production';
   apiKeys?: Record<string, string>;
   plugins?: PluginConfig[];
   customThemes?: Record<string, any>;
-  // Possible missing top-level props that might be needed:
+  
+  // Optional top-level configurations (kept for backward compatibility or specific use cases)
   theme?: ThemeConfig;
   localization?: LocalizationConfig;
   storage?: StorageConfig;
@@ -321,24 +405,17 @@ export interface DappProps<
   logging?: LoggingConfig;
 
   // Additional props as needed
+  [key: string]: any; // Allow for additional properties
 }
 
 
 export interface DAppAdapterConfig<
-  T extends DappProps<
-    BaseDataEntity,                            // T
-    BaseDataEntity,                            // K
-    DefaultMeta<BaseDataEntity, BaseDataEntity>, // Meta
-    Attachment,                                // AttachmentType
-    DefaultExcludedFields<BaseDataEntity>      // ExcludedFields
-  > = DappProps<
-    BaseDataEntity,
-    BaseDataEntity,
-    DefaultMeta<BaseDataEntity, BaseDataEntity>,
-    Attachment,
-    DefaultExcludedFields<BaseDataEntity>
-  >,
-  K = Extract<T, BaseData<any>>
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   // Common properties for DAppAdapter configuration
   appName: string;
@@ -352,5 +429,12 @@ export interface DAppAdapterConfig<
   postgresConfig: ClientConfig | undefined;
 
   // Additional properties related to DappProps
-  dappProps: T;
+  dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
+
+
+
+// ✅ Access configurations like this:
+// const fluenceConfig = dappProps.configurations.fluenceConfig;
+// const aquaConfig = dappProps.configurations.aquaConfig;
+// const securityConfig = dappProps.configurations.securityConfig;

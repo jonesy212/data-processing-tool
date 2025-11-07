@@ -6,9 +6,12 @@ import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import performDatabaseOperation from '@/app/server/database/DatabaseOperations';
+import { database } from '@/app/generators/GenerateDatabase'; // Adjust the path as needed
 
 export abstract class BaseDatabaseService implements DatabaseService {
   protected pool: any;
+  protected client: any;
+  protected validTables: Set<string> = new Set(['users', 'orders', 'products']);
 
   constructor(connectionString: string) {
     this.pool = new Pool({ connectionString });
@@ -25,34 +28,50 @@ export abstract class BaseDatabaseService implements DatabaseService {
     await this.pool.end();
     console.log("Database pool disconnected");
   }  
-  abstract query(sql: string, params?: any[]): Promise<any>;
+
+  public async disconnect(): Promise<void> {
+    if (this.client) {
+      this.client.release();
+    }
+    await this.pool.end();
+    console.log("Database pool disconnected");
+  }
+
+  // Abstract CRUD methods - must be implemented by subclasses
   abstract insert(tableName: string, data: Record<string, any>): Promise<any>;
-  abstract update(
-    tableName: string,
-    data: Record<string, any>,
-    where: Record<string, any>
-  ): Promise<any>;
+  abstract update(tableName: string, data: Record<string, any>, where: Record<string, any>): Promise<any>;
   abstract delete(tableName: string, where: Record<string, any>): Promise<any>;
+  abstract findOne(params: { tableName: string; query: Record<string, any> }): Promise<any>;
+  abstract findAll(tableName?: string): Promise<any[]>;
+  abstract query(sql: string, params?: any[]): Promise<any>;
 
 
   private validTables: Set<string> = new Set(['users', 'orders', 'products']);  // Define allowed tables
 
-   // Validate that the table name is in the allowed set
-   private validateTableName(table: string): string {
+ protected validateTableName(table: string): string {
     if (!this.validTables.has(table)) {
       throw new Error(`Invalid table name: ${table}`);
     }
     return table;
   }
 
-  // Basic validation for column names (could use more specific criteria)
-  private validateColumnName(column: string): string {
+  protected validateColumnName(column: string): string {
     if (!/^[a-zA-Z0-9_]+$/.test(column)) {
       throw new Error(`Invalid column name: ${column}`);
     }
     return column;
   }
 
+  protected async executeQuery(queryText: string, params: any[]): Promise<any> {
+    const client = await this.pool.connect();
+    try {
+      const res = await client.query(queryText, params);
+      return res.rows;
+    } finally {
+      client.release();
+    }
+  }
+  
   public async findAllByAttributes(
     table: string,
     column1: string,
@@ -446,10 +465,6 @@ export abstract class BaseDatabaseService implements DatabaseService {
     return await this.executeQuery(queryText, [value]);
   }
 
-  // Close the pool when the service is no longer needed
-  public async disconnect(): Promise<void> {
-    await this.pool.end();
-  }
 
   // Generic method to execute queries
   protected async executeQuery(queryText: string, params: any[]): Promise<any> {
@@ -478,33 +493,43 @@ export abstract class BaseDatabaseService implements DatabaseService {
 const YOUR_AUTH_TOKEN = getAuthToken();
 
 //todo make dynamic and use
-// Example usage (replace with your actual database logic)
-const databaseConfig: DatabaseConfig = {
-  url: "your_database_url",
-  database: "your_database_name",
-  username: sanitizeInput("your_username"),
-  authToken: `${YOUR_AUTH_TOKEN}`,
-  host: "",
-  password: "",
-  port: 0
+const initializeDatabase = async (): Promise<boolean> => {
+  const databaseConfig: DatabaseConfig = {
+    url: process.env.DB_URL!,
+    database: process.env.DB_NAME!,
+    username: sanitizeInput(process.env.DB_USER!),
+    authToken: `${YOUR_AUTH_TOKEN}`,
+    host: process.env.DB_HOST!,
+    password: process.env.DB_PASSWORD!,
+    port: parseInt(process.env.DB_PORT!, 10)
+  };
+
+  const databaseQuery: DatabaseQuery = {} as DatabaseQuery;
+  
+  try {
+    const result = await performDatabaseOperation("createDatabase", databaseConfig, databaseQuery);
+    
+    if (result.success) {
+      console.log("Database created successfully!");
+      return true;
+    } else {
+      console.error("Error creating database:", result.error);
+      return false;
+    }
+  } catch (error) {
+    console.error("Database operation failed:", error);
+    return false;
+  }
 };
 
-const databaseQuery: DatabaseQuery = {} as DatabaseQuery;
-const operation = "createDatabase";
-performDatabaseOperation(operation, databaseConfig, databaseQuery)
-  .then(() => {
-    console.log("Database operation successful");
-  })
-  .catch((error) => {
-    console.error("Database operation failed:", error);
-  });
-
-if (database.success) {
-  console.log("Database created successfully!");
-} else {
-  console.error("Error creating database:");
-  // Handle errors appropriately
-}
+// Usage
+initializeDatabase().then(success => {
+  if (success) {
+    // Proceed with application startup
+  } else {
+    // Handle initialization failure
+  }
+});
 
 export { databaseConfig, databaseQuery };
 export type { DatabaseConfig, DatabaseService };

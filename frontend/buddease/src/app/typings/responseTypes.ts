@@ -1,8 +1,10 @@
 // responseTypes.ts
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { SearchNotesResponse, Note } from "@/app/api/ApiNote";
+import { SearchNotesResponse } from "@/app/api/ApiNote";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attendee } from "@/app/components/calendar/Attendee";
+import { Team } from "@/app/components/teams/Team";
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataWithComment } from "@/app/dataIntegration/SafeParseData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
@@ -11,7 +13,6 @@ import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { Phase } from "@/app/models/phases/Phase";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -27,7 +28,6 @@ import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { BaseResponseType } from "@/app/typings/baseResponseType";
 import { User } from "@/app/users/User";
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -152,7 +152,7 @@ interface YourResponseType<
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
 
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   projectInfo?: {
     id: number;

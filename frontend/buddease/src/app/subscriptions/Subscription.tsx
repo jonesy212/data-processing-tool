@@ -5,7 +5,6 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
@@ -111,7 +110,7 @@ type Subscription<
     subscriptionType?: SubscriptionTypeEnum;
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+    data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
     triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
     getSubscriptionLevel: (price: number) => SubscriptionLevel | undefined;
     unsubscribe: (

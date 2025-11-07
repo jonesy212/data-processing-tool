@@ -1,6 +1,6 @@
 // AuthStore.ts
 import { UserRoleEnum } from '@/app/models/UserRoles';
-import { NFT } from "@/app/nft/NFT";
+import { NFT } from '@/pp/models/cypto/NFT'
 import { Permission } from "@/app/permissions/Permission";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";

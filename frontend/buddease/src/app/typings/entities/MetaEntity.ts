@@ -10,8 +10,9 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { AppMetadata, UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AppMetadata } from '@/app/typings/metadataTypes'
 
 // 1. Define your base metadata entity (adjust according to your actual base entity)
 interface BaseMetaEntity extends BaseDataEntity {
@@ -95,17 +96,17 @@ type ApplyMetaFieldFilters<
 // export type AppMeta = Meta<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>;
 
 export type {
-  ApplyMetaFieldFilters, 
-  AppMetaMetadata, 
-  BaseMetaEntity,
-  MetaAttachment, 
-  MetaBaseParams, 
-  MetaCollection, 
   MetaEntity, 
-  MetaExcludedFields,
-  MetaIncludedFields, 
   MetaK,
   MetaMeta, 
+  MetaAttachment, 
+  MetaExcludedFields,
+  MetaIncludedFields, 
+  AppMetaMetadata, 
+  ApplyMetaFieldFilters, 
+  BaseMetaEntity,
+  MetaBaseParams, 
+  MetaCollection, 
   MetaParams, 
   MetaRealtimeDataItem, 
   MetaSnapshot, 

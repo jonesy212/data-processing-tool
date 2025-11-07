@@ -1,8 +1,9 @@
 // advancedTransform.ts
 
-import SnapshotStore from "@/app/snapshotstore";
+import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from "..";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // ✅ Keep this as a standalone utility function (not in TransformMethods)
 export function transformSubscriberAdvanced<
@@ -73,7 +74,7 @@ export function transformSubscriberMappedAdvanced<
   IncludedFields extends keyof T = keyof T,
   U extends BaseDataEntity = T,
   V extends U = U,
-  Meta2 = DefaultMeta<U, V>,
+  Meta2 = DefaultMeta<U, V> = DefaultMeta<T, K>,
   ExcludedFields2 extends keyof U = DefaultExcludedFields<U>
 >(
   subscriber: (

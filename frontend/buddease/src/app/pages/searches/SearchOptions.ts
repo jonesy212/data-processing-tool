@@ -86,7 +86,7 @@ interface AdvancedSearchOptions extends BaseSearchOptions {
 }
 
 // Union type
-type SearchOptions = TeamSearchOptions | UiSearchOptions | AdvancedSearchOptions;
+type SearchOptionsUnion = TeamSearchOptions | UiSearchOptions | AdvancedSearchOptions;
 
 // Example usage
 const teamOptions: TeamSearchOptions = {
@@ -223,7 +223,7 @@ interface CustomFilter {
 
   const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
-  size: "medium",
+    size: "medium",
   animations: {
     type: "slide",
     duration: 300,
@@ -330,40 +330,6 @@ interface CustomFilter {
     }
   };
 
-
-
-
-// Assume 'options' is provided elsewhere
-const options: SearchOptions = {
-  communicationMode: "email", // Example communication mode
-  size: "medium",
-  animations: {
-    type: "slide",
-    duration: 300,
-  },
-  additionalOptions: {
-    filters: [],
-  },
-  additionalOption2: undefined,
-  defaultFileType: FileTypeEnum.Document,
-  realTimeUpdates: false,
-  theme: "",
-  language: LanguageEnum.English,
-  notificationPreferences: NotificationPreferenceEnum.Email,
-  privacySettings: [],
-  taskManagement: false,
-  projectView: "",
-  calendarSettings: undefined,
-  dashboardPreferences: undefined,
-  securityFeatures: [],
-  newsOptions: {
-    newsCategory: "",
-    newsLanguage: "",
-    sortBy: SortCriteria.Date,
-    searchKeywords: [],
-    excludeKeywords: []
-  }
-};
-export type { AdditionalOptions, CustomFilter, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
+export type { AdditionalOptions, CustomFilter, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption, Filter };
   
-  export { searchOptions };
+export { searchOptions };

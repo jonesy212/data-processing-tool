@@ -4,6 +4,110 @@ import { SnapshotDataType } from "@/app/snapshots";
 import { DatabaseConfig } from "@/app/DatabaseConfig";
 
 
+
+
+
+// app/state/snapshots/snapshotUtils.ts
+import { runInAction, toJS } from "mobx";
+
+/**
+ * Snapshot data shape expected for hydration and persistence.
+ */
+export interface SnapshotData {
+  timestamp: number;
+  state: Record<string, any>;
+  version?: string;
+}
+
+/**
+ * Generic interface for any store or object supporting MobX-like state hydration.
+ */
+export interface HydratableStore {
+  hydrate?: (state: Record<string, any>) => void;
+  setState?: (state: Record<string, any>) => void;
+  [key: string]: any;
+}
+
+/**
+ * Retrieve snapshot data from localStorage (or any persistence layer).
+ */
+const readSnapshotFromStorage = async (key: string): Promise<SnapshotData | null> => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = localStorage.getItem(`snapshot:${key}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.error(`[hydrateSnapshot] Error reading snapshot for ${key}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Write updated snapshot data to localStorage.
+ */
+export const persistSnapshot = async (store: any, key: string): Promise<void> => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const snapshot: SnapshotData = {
+      timestamp: Date.now(),
+      state: toJS(store),
+    };
+
+    localStorage.setItem(`snapshot:${key}`, JSON.stringify(snapshot));
+  } catch (error) {
+    console.error(`[persistSnapshot] Failed to persist snapshot for ${key}:`, error);
+  }
+};
+
+/**
+ * Hydrate a MobX or plain JS store from snapshot storage.
+ *
+ * Supports:
+ * - MobX stores with `.hydrate()` or `.setState()` methods.
+ * - Plain objects with direct property assignment.
+ * - Automatically skips if no snapshot or invalid structure.
+ */
+export const hydrateSnapshot = async <T extends HydratableStore>(
+  store: T,
+  key: string
+): Promise<T> => {
+  try {
+    const snapshot = await readSnapshotFromStorage(key);
+    if (!snapshot || !snapshot.state) {
+      console.info(`[hydrateSnapshot] No snapshot found for ${key}`);
+      return store;
+    }
+
+    runInAction(() => {
+      if (typeof store.hydrate === "function") {
+        store.hydrate(snapshot.state);
+      } else if (typeof store.setState === "function") {
+        store.setState(snapshot.state);
+      } else {
+        // fallback direct assignment
+        Object.assign(store, snapshot.state);
+      }
+    });
+
+    console.log(
+      `[hydrateSnapshot] Successfully hydrated store "${key}" (version: ${
+        snapshot.version ?? "N/A"
+      })`
+    );
+
+    return store;
+  } catch (error) {
+    console.error(`[hydrateSnapshot] Failed to hydrate store "${key}":`, error);
+    return store;
+  }
+};
+
+
+
+
+
 // Unified persistSnapshot function to handle both types (Snapshot, SnapshotData) and database operations
 async function persistSnapshot<
   T extends BaseDataEntity,
@@ -46,3 +150,61 @@ async function persistSnapshot<
     await dbClient.close();
   }
 }
+
+
+🧩 How It Works
+1. Flexible Store Handling
+
+Works seamlessly for:
+
+MobX stores with hydrate() or setState()
+
+Plain JS or Redux-compatible stores (via Object.assign)
+
+2. Type Safety
+
+HydratableStore interface enforces known methods.
+
+Generic T ensures correct typing for returned hydrated store.
+
+3. MobX-Safe Hydration
+
+Uses runInAction() to batch updates within MobX’s reactive context, preventing redundant observer reactions.
+
+4. Self-Contained Storage I/O
+
+Reads and writes from localStorage by default.
+
+You can later extend it to use IndexedDB or a hybrid cache (CacheManager) without modifying the hydration logic.
+
+⚙️ Example Integration
+
+In your AppStoresProvider:
+
+import { hydrateSnapshot, persistSnapshot } from "@/app/state/snapshots/snapshotUtils";
+
+useEffect(() => {
+  const hydrate = async () => {
+    await hydrateSnapshot(stores.projectStore, "projectStore");
+    await hydrateSnapshot(stores.cryptoStore, "cryptoStore");
+  };
+  hydrate();
+
+  const interval = setInterval(() => {
+    persistSnapshot(stores.projectStore, "projectStore");
+    persistSnapshot(stores.cryptoStore, "cryptoStore");
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [stores]);
+
+🧠 Optional Enhancements
+
+Later, you can extend this to support:
+
+type PersistenceStrategy = "localStorage" | "indexedDB" | "hybrid" | "remote";
+
+
+and then dynamically route reads/writes depending on your CacheConfig.strategy.
+
+Would you like me to show the IndexedDB + hybrid extension for this hydrateSnapshot (so it aligns with your CacheConfig.strategy: 'memory' | 'persistent' | 'hybrid')?

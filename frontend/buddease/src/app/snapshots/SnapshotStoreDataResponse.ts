@@ -1,18 +1,18 @@
-import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Data } from '@/app/models/data/Data';
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
-import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from "@/app/snapshots/Snapshot";
 
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -298,7 +298,7 @@ interface SnapshotStoreDataResponse<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> extends SharedIdentifiers<T, K>
 // extends OptionalSnapshotDataResponse
  {
   id: string | number;

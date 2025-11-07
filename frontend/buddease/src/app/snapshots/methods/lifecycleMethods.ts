@@ -491,7 +491,7 @@ export const LifecycleMethods = {
     event?: Event
   ): SnapshotStore<T, K, Meta> | null {
     if (snapshotId) {
-      const existingSnapshot = this.snapshots.find((s: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;) => {
+      const existingSnapshot = this.snapshots.find((s: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(s) && s.id === snapshotId;
       });
 

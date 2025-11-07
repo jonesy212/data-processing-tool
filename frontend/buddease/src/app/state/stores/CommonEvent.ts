@@ -46,7 +46,7 @@ interface CommonEvent<
   // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[] | undefined;
+  tags?: TagsRecord<T>| string[] | undefined;
 
   // Recurrence properties
   recurring?: boolean;

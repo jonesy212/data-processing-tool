@@ -1,8 +1,8 @@
 // TeamActions.ts
 
-import { createAction } from "@reduxjs/toolkit";
-import { Team } from "@/app/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import { Member } from "@/app/models/members/Member";
+import { createAction } from "@reduxjs/toolkit";
 
 export const TeamActions = {
   // Standard actions
@@ -31,7 +31,7 @@ export const TeamActions = {
   removeTeamFailure: createAction<{ error: string }>("removeTeamFailure"),
 
   // Additional actions for updating team members
-  addMemberToTeam: createAction<{ teamId: number, member: Member }>("addMemberToTeam"),
+  addMemberToTeam: createAction<{ teamId: number, member: Member<any, any, any, any, any, any> }>("addMemberToTeam"),
   removeMemberFromTeam: createAction<{ teamId: number, memberId: string }>("removeMemberFromTeam"),
   updateMemberRole: createAction<{ teamId: number, memberId: string, newRole: string }>("updateMemberRole"),
 

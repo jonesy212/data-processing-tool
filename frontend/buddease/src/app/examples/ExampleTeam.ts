@@ -31,7 +31,7 @@ import { CommonDetails } from '@/app/components/models/details/CommonDetails';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import generateTimeBasedCode '@/app/models/realtime/TimeBasedCodeGenerator';
-import { Team } from '@/app/models/teams/Team';
+import { Team } from '@/app/components/teams/Team';
 import { Snapshot } from '@/app/snapshots';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

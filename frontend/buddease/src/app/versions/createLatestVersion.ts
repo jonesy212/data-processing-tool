@@ -257,7 +257,7 @@ export function createLatestVersion<
       author: "system",
       timestamp: now,
       area: "default",
-      metadataEntries: {},
+      metadataEntries: [{}],
       latestVersion: defaultLatestVersion, // no recursion here
       schema: {
         // Provide actual SchemaField objects
@@ -345,6 +345,8 @@ export function createLastUpdatedWithVersion<
         getStructure: function (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> {
           return Promise.resolve({});
         },
+        versionNotes: "",
+        toData: "",
       } as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       description: "Initial version", // Example description
       createdAt: now,

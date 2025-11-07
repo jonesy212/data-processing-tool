@@ -1,27 +1,27 @@
 // SnapshotCore.ts
 import { MapExcludedFieldsToMetaKeys } from '@/app/components/routing/Fields';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SharedIdentifiers } from "@/app/documents/RelatedProps";
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { EventRecord, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { InitializedData, UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { AuditRecord } from '@/app/subscribers/Subscriber';
-import { MultipleEventsCallbacks } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { MemberEntity } from '@/app/typings/entities/MemberEntity';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { ExtendedVersionData } from '@/versions/VersionData';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { TagsRecord } from '@/app/models/tracker/Tag';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { EventRecord, InitializedState } from '@/app/state/stores/DataStore';
+import { AuditRecord } from '@/app/subscribers/Subscriber';
+import { MultipleEventsCallbacks } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { MemberEntity } from '@/app/typings/entities/MemberEntity';
+import { ExtendedVersionData } from '@/app/versions/VersionData';
 
 interface SnapshotCore<
   T extends BaseDataEntity = MemberEntity,
@@ -30,7 +30,7 @@ interface SnapshotCore<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->  extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+>  extends SharedIdentifiers<T, K> {
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};  
   schema: string | Record<string, SchemaField>
   versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
@@ -45,7 +45,7 @@ interface SnapshotCore<
   
   // Metadata
   description?: string | null;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[] | undefined;
+  tags?: TagsRecord<T>| string[] | undefined;
   state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topic?: string;
   meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -74,7 +74,7 @@ interface SnapshotCore<
   auditTrail?: AuditRecord[];
   
   // Data
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   dataStoreMethods?: DataStoreMethods<T, K, Meta> | null;
   
@@ -93,7 +93,7 @@ interface SnapshotStoreCore<
   IncludedFields extends keyof T = keyof T
 > {
   id?: string | number | undefined;             
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;  
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;  
   createdAt: string | Date;
   updatedAt: string | Date;
   

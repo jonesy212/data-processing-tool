@@ -1,5 +1,8 @@
 // useNotificationSystem.ts
 
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { NotificationType } from '@/app/context/NotificationContext';
+
 import { Style }  from '@/app/documents/DocumentOptions'
 import { LogData } from "@/app/models/LogData";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -9,7 +12,7 @@ import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { displayToast, showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
 import { NotificationOptions } from '@/context/NotificationContext';
 import { useCallback, useMemo, useRef } from 'react';
 import { Data } from '@/app/models/data/Data'
@@ -46,7 +49,7 @@ export interface NotificationData<
   email?: string;
   status?: AllStatus;
   inApp?: boolean;
-  notificationType?: NotificationTypeEnum | string;
+  notificationType?: NotificationType | string;
   
   // Options
   options?: {
@@ -70,7 +73,7 @@ export interface NotificationData<
 
 // Main NotificationSystem interface with proper generics
 export interface NotificationSystem<
-  T extends BaseDataEntity = any,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -291,7 +294,7 @@ export const useNotificationSystem = <
     content: any, 
     options: NotificationOptions = {}
   ): string => {
-    const message: Message = {
+    const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       content: typeof content === 'string' ? content : JSON.stringify(content),
       type: options.type || 'info'
     };

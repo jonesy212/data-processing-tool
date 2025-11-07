@@ -1,4 +1,4 @@
-// TaskDataSource.ts
+// TaskEntitySource.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from "@/app/models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
@@ -11,7 +11,6 @@ import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Task } from "@/app/models/tasks/Task";
-import { TaskData } from "./Task";
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
 // Define the tasks data source with proper generic parameters
@@ -39,7 +38,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     dependencies: [],
     previouslyAssignedTo: [],
     done: false,
-    data: {} as TaskData,
+    data: {} as TaskEntity,
     source: "user",
     
     // Timeline properties
@@ -132,7 +131,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     dependencies: [],
     previouslyAssignedTo: [],
     done: false,
-    data: {} as TaskData,
+    data: {} as TaskEntity,
     source: "system",
     
     // Timeline properties
@@ -179,10 +178,10 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     analysisResults: [1, 2, 3],
     
     // Complex type properties
-    phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<PhaseData<BaseData<any>>>, PhaseMeta<PhaseData<BaseData<any>>>>,
+    phase: {} as Phase<PhaseData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
     videoData: {} as VideoData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     ideas: [] as Idea[],
-    details: {} as DetailsItem<BaseData<any>>,
+    details: {} as DetailsItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     
     // Meta property (correct type)
     meta: {} as TaskMeta,
@@ -212,7 +211,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
         createdBy: "creator1",
         timestamp: new Date().getTime(),
         nulltype: {
-          relatedTags: [],
+          relatedTags: {},
           color: "",
           description: "",
           enabled: "",
@@ -231,3 +230,5 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     }
   }
 };
+
+export { tasksDataSource }

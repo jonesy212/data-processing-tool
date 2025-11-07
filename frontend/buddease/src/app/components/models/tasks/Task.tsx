@@ -6,8 +6,7 @@ import { Task } from '@/app/models/tasks/Task';
 import { Permission } from '@/app/permissions/Permission';
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
-export type TaskData = BaseData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
  
 export interface TaskEntityExtended extends TaskEntity {
   permissions?: Permission[] | string[];

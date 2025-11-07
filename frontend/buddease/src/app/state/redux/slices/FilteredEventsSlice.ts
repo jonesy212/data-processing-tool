@@ -1,36 +1,48 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
-import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
-import { Tag } from "@/app/components/models/tracker/Tag";
+import { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
+import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent'
+import { Tag } from '@/app/models/tracker/Tag';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { T } from '@/app/models/data/dataStoreMethods';
 import { Member } from '@/app/models/members/Member';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { produce } from "immer";
-// Import immer for immutable updates
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { produce } from 'immer';
 
-interface FilteredEventsState<T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
-  filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent)[];
-  addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent) => void; // Define methods
-  payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams } from '@/app/typiings/entities/FilterEntity';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+
+interface FilteredEventsState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent)[];
+  addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent) => void; // Define methods
+  payload: (ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent)[];
 }
 
-export const initialState: FilteredEventsState<T, Data> = {
+export const initialState: FilteredEventsState<TFilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams> = {
   filteredEvents: [],
-  addFilteredEvent: function (event: ExtendedCalendarEvent | CalendarEvent<T, Data> | HighlightEvent): void {
+  addFilteredEvent: function (event: ExtendedCalendarEvent | CalendarEvent<TFilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams> | HighlightEvent): void {
     this.filteredEvents.push(event);
   },
   payload: []
 };
 
 export const useFilteredEventsSlice = createSlice({
-  name: "filteredEvents",
+  name: 'filteredEvents',
   initialState,
   reducers: {
-    addFilteredEvent: (state, action: PayloadAction<CalendarEvent<T, Data>>) => {
-      state.filteredEvents.push(action.payload as WritableDraft<CalendarEvent<T, Data>>);
+    addFilteredEvent: (state, action: PayloadAction<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>) => {
+      state.filteredEvents.push(action.payload as WritableDraft<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>);
     },
     removeFilteredEvent: (state, action: PayloadAction<string>) => {
       state.filteredEvents = state.filteredEvents.filter(
@@ -45,7 +57,7 @@ export const useFilteredEventsSlice = createSlice({
       state,
       action: PayloadAction<{
         eventId: string;
-        updatedEvent: Partial<CalendarEvent<T, Data>>;
+        updatedEvent: Partial<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>;
       }>
     ) => {
       const { eventId, updatedEvent } = action.payload;
@@ -56,15 +68,15 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>;
           Object.assign(draftEvent, updatedEvent);
           draftEvent.id = eventId;
         });
       }
     },
-    replaceFilteredEvents: (state, action: PayloadAction<CalendarEvent<T, Data>[]>) => {
+    replaceFilteredEvents: (state, action: PayloadAction<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>[]>) => {
       state.filteredEvents = action.payload.map(
-        (event) => event as WritableDraft<CalendarEvent<T, Data>>
+        (event) => event as WritableDraft<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>
       );
     },
     toggleFilteredEventStatus: (state, action: PayloadAction<string>) => {
@@ -76,9 +88,9 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>;
           draftEvent.status =
-            draftEvent.status === "completed" ? "scheduled" : "completed";
+            draftEvent.status === 'completed' ? 'scheduled' : 'completed';
         });
       }
     },
@@ -91,19 +103,19 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>;
           draftEvent.status =
-            draftEvent.status === "completed" ? "scheduled" : "completed";
+            draftEvent.status === 'completed' ? 'scheduled' : 'completed';
         });
       }
     },
-    sortFilteredEvents: (state, action: PayloadAction<"title" | "date">) => {
+    sortFilteredEvents: (state, action: PayloadAction<'title' | 'date'>) => {
       const sortCriteria = action.payload;
       produce(state.filteredEvents, (draftEvents) => {
         draftEvents.sort((a, b) => {
-          if (sortCriteria === "title") {
+          if (sortCriteria === 'title') {
             return a.title.localeCompare(b.title);
-          } else if (sortCriteria === "date") {
+          } else if (sortCriteria === 'date') {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
           }
           return 0;
@@ -111,7 +123,7 @@ export const useFilteredEventsSlice = createSlice({
       });
     },
 
-    selectFilteredEvents: (state, action: PayloadAction<(CalendarEvent<T, Data> | ExtendedCalendarEvent | HighlightEvent)[]>) => { 
+    selectFilteredEvents: (state, action: PayloadAction<(CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams> | ExtendedCalendarEvent | HighlightEvent)[]>) => { 
       const selectedIds = action.payload;
       produce(state, (draftState) => {
         draftState.filteredEvents = draftState.filteredEvents.filter(event =>
@@ -142,7 +154,7 @@ export const useFilteredEventsSlice = createSlice({
       const attendees = action.payload;
       produce(state, (draftState) => {
         draftState.filteredEvents = draftState.filteredEvents.filter((event) =>
-          event.attendees.some((attendee: Member["memberName"]) =>
+          event.attendees.some((attendee: Member<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>['memberName']) =>
             attendees.includes(attendee)
           )
         );
@@ -150,11 +162,11 @@ export const useFilteredEventsSlice = createSlice({
     },
 
 
-    filterByTags: (state, action: PayloadAction<Tag<T, K>[]>) => {
+    filterByTags: (state, action: PayloadAction<Tag<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>[]>) => {
       const tags = action.payload;
       produce(state, (draftState) => {
         draftState.filteredEvents = draftState.filteredEvents.filter((event) =>
-          event.tags?.some((tag: Tag<T, K>) => tags.includes(tag))
+          event.tags?.some((tag: Tag<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>) => tags.includes(tag))
         );
       });
     },
@@ -170,7 +182,7 @@ export const useFilteredEventsSlice = createSlice({
 
     filterByCustomFields: (
       state,
-      action: PayloadAction<Partial<CalendarEvent<T, Data>>>
+      action: PayloadAction<Partial<CalendarEvent<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams>>>
     ) => {
       const customFields = action.payload;
       produce(state, (draftState) => {
@@ -327,13 +339,17 @@ export const {
 } = useFilteredEventsSlice.actions;
 
 
+// ✅ Your main slice reducer export
 export default useFilteredEventsSlice.reducer;
+
+// ✅ Explicit type export
 export type { FilteredEventsState };
 
+// ✅ Selector: gets the entire filteredEvents slice
+export const selectFilteredEvents = (state: RootState): FilteredEventsState => state.filteredEvents;
 
-
-// Alternatively, if you want to get only the events array
-const selectFilteredEventIds = createSelector(
+// ✅ Optional: get only the event IDs
+export const selectFilteredEventIds = createSelector(
   (state: RootState) => state.filteredEvents.filteredEvents,
   (filteredEvents) => filteredEvents.map(event => event.id)
 );

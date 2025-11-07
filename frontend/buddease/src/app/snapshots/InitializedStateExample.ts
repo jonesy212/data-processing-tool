@@ -4,7 +4,7 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from "@/app/models/data/dataStoreMethods";
-import { InitializedState, initializeState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedState, initializeState } from "@/app/state/stores/DataStore";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';

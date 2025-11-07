@@ -4,6 +4,9 @@ import { SupportedData } from "@/app/models/CommonData";
 import { CommonData } from "@/app/components/models/CommonDetails";
 import { StatusType } from "@/app/models/data/StatusType";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 export interface MappingConfig<

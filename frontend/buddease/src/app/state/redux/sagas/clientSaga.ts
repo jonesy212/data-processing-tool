@@ -1,5 +1,5 @@
 import { ClientActions } from "@/app/actions/ClientActions";
-import internalApiService from "@/app/api/ApiClient"; // Import the internalApiService
+import internalApiService from '@/app/api/ApiClient'; // Import the internalApiService
 import { ClientConfig } from "@/app/client/Client";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";

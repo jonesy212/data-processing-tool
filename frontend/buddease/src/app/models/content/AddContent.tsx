@@ -10,7 +10,6 @@ import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { TaskData } from '@/app/models/tasks/Task';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
-import {ppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields} from '@/app/typings/entities/ContentEntity'
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import UserRoles from '@/app/models/UserRoles';
@@ -42,7 +41,7 @@ interface Content<
   description: string;
   subscriberId: string;
   category?: Category;
-  categoryProperties: string | CategoryProperties | undefined;
+  categoryProperties?: CategoryProperties;
   timestamp: string | number | Date;
   length: number;
   items: ItemUnion[];
@@ -63,7 +62,7 @@ interface ContentProps {
   onComplete: () => void;
 }
 
-type DefaultContent = Content<BaseData<any>, BaseData<any>>;
+type DefaultContent = Content<AppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>;
 
 const AddContent: React.FC<{
   onComplete: (content: DefaultContent) => void;

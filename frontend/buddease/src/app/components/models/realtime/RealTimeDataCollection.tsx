@@ -2,8 +2,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import useRealtimeDextData from '@/app/hooks/commHooks/useRealtimeDextData';
 import useRealtimeExchangeData from '@/app/hooks/commHooks/useRealtimeExchangeData';
-import RealtimeUpdateCallback from '@/app/hooks/commHooks/useUIRealtimeData';
-import { DEX } from '@/app/models/cypto/DEX'
+import { DEX } from '@/app/models/cypto/DEX';
 import { Exchange } from '@/app/models/cypto/Exchange';
 import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from '@/app/models/cypto/exchangeIntegration';
 import { Data } from '@/app/models/data/Data';
@@ -13,10 +12,10 @@ import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import {
   BaseDataEntity
 } from '@/app/config/BaseConfig';
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
   
 
 
@@ -43,7 +42,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
     events: Record<string, AnyCalendarEvent[]>,
     snapshotStore: SnapshotStore<AnyRealtime, AnyRealtime>,
     dataItems: AnyRealtimeItem[],
-    data?: InitializedData<T>  // optional InitializedData<...> if your type includes it
+    data?: Data<T>  // optional InitializedData<...> if your type includes it
   ): Promise<void> => {
     try {
       // Convert RealtimeData (or RealtimeDataItem -> label/value) into UI items

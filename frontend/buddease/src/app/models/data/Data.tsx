@@ -1,26 +1,27 @@
-import { VersionData } from "@/app/versions/VersionData";
+import { Label } from '@/app/branding/BrandingSettings';
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { HighlightColor } from "@/app/components/styling/Palette";
+import { Team } from "@/app/components/teams/Team";
 import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
+    BaseDataEntity,
+    BaseDataRoot,
+    DefaultExcludedFields,
+    DefaultIncludedFields,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
 import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata,
+    fetchUserAreaDimensions,
+    UnifiedMetadata,
 } from "@/app/config/MetaDataOptions";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import userSettings from "@/app/config/UserSettings";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-  SharedIdentifiers,
-  SharedStatusFlags,
-  SharedTimestamps,
+    SharedIdentifiers,
+    SharedStatusFlags,
+    SharedTimestamps,
 } from "@/app/documents/RelatedProps";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -33,29 +34,27 @@ import { Content } from "@/app/models/content/AddContent";
 import { Member } from "@/app/models/members/Member";
 import { Phase } from "@/app/models/phases/Phase";
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
 import { TrackerProps } from "@/app/models/tracker/Tracker";
 import UserRoles from "@/app/models/UserRoles";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { taskService } from "@/app/services/TaskService";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-  Snapshots,
-  SnapshotsArray,
+    Snapshots,
+    SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
-  SnapshotStoreReference,
+    SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import {
-  SnapshotWithCriteria,
-  TagsRecord,
+    SnapshotWithCriteria,
+    TagsRecord,
 } from "@/app/snapshots/SnapshotWithCriteria";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
@@ -63,10 +62,12 @@ import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AuthStore } from "@/app/state/stores/AuthStore";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
@@ -76,15 +77,15 @@ import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { cleanEmptyStrings } from "@/app/utils/web3/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { VersionData } from "@/app/versions/VersionData";
 import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
-import { K, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
-  PriorityTypeEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriptionTypeEnum,
+    PriorityTypeEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriptionTypeEnum,
 } from "./StatusType";
 
 interface SharedRelationshipData<K> {
@@ -129,7 +130,7 @@ interface DataDetails<
   createdAt?: string | Date;
   updatedAt?: string | Date;
   type?: AllTypes;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[];
+  tags?: string[] | TagsRecord<T>;
   isActive?: boolean;
   status?: AllStatus | null;
   uploadedAt?: Date;
@@ -157,7 +158,7 @@ interface DataDetailsProps<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 type TodoSubtasks<
@@ -195,7 +196,7 @@ interface BaseData<
   IncludedFields extends keyof T = keyof T
 > extends SharedTimestamps,
     SharedStatusFlags,
-   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+   SharedIdentifiers<T, K> {
   sharedData?: SharedRelationshipData<K>;
   children?:
     | ChildRelationship<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -208,7 +209,7 @@ interface BaseData<
   isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   phase?: PhaseDefault | null;
   phaseType?: ProjectPhaseTypeEnum;
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -266,7 +267,7 @@ interface Data<
   actions?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  label?: any;
+  label?: Label | string | Record<string, string> | null;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   toInitializedData?(): InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   [key: string]: any;
@@ -307,19 +308,19 @@ const DataDetailsComponent = <
   // Type-specific safe get functions
   const safeGetAnalysisResults = (
     obj: any
-  ): DataAnalysisResult<any, any, any, any, any, any>[] | undefined => {
+  ): DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined => {
     return safeGet(obj, 'analysisResults');
   };
 
   const safeGetCurrentMetadata = (
     obj: any
-  ): UnifiedMetadata<any, any, any, any, any, any> | undefined => {
+  ): UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
     return safeGet(obj, 'currentMetadata');
   };
 
   const safeGetLatestVersion = (
     obj: any
-  ): Pick<VersionData<any, any, any, any, any, any>, "id" | "versionNumber" | "createdAt" | "createdBy"> | undefined => {
+  ): Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "createdAt" | "createdBy"> | undefined => {
     return safeGet(obj, 'latestVersion');
   };
 
@@ -334,7 +335,7 @@ const DataDetailsComponent = <
 
   // Get tag names with safe access
   const getTagNames = (
-    tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
+    tags?: string[] | TagsRecord<T>
   ): string[] => {
     if (!tags) return [];
 
@@ -366,7 +367,7 @@ const DataDetailsComponent = <
 
   // Now TypeScript knows data has CommonData properties
   return (
-    <CommonDetails
+    <CommonDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       data={{
         id: safeGetString(data, 'id'),
         title: safeGetString(data, 'title') || "Data Details",
@@ -382,25 +383,25 @@ const DataDetailsComponent = <
         latestVersion: safeGetLatestVersion(data),
         status: safeGet(data, 'status') as StatusType | undefined,
       }}
-      details={{
-        _id: safeGetString(data, '_id'),
-        id: safeGetString(data, 'id'),
-        title: safeGetString(data, 'title'),
-        createdBy: safeGetString(data, 'createdBy'),
-        description: safeGetString(data, 'description'),
-        phase: safeGet(data, 'phase'),
-        date: safeGet(data, 'date'),
-        isActive: safeGetBoolean(data, 'isActive'),
-        tags: safeGet(data, 'tags') ? getTagNames(safeGet(data, 'tags')) : [],
-        status: safeGet(data, 'status'),
-        type: safeGet(data, 'type', "DefaultType"),
-        analysisType: safeGet(data, 'analysisType'),
-        analysisResults: safeGetAnalysisResults(data),
-        updatedAt: safeGetDate(data, 'updatedAt') || new Date(),
-        currentMetadata: safeGetCurrentMetadata(data),
-        currentMeta: safeGet(data, 'currentMeta'),
-        latestVersion: safeGetLatestVersion(data),
-      }}
+      // details={{
+      //   _id: safeGetString(data, '_id'),
+      //   id: safeGetString(data, 'id'),
+      //   title: safeGetString(data, 'title'),
+      //   createdBy: safeGetString(data, 'createdBy'),
+      //   description: safeGetString(data, 'description'),
+      //   phase: safeGet(data, 'phase'),
+      //   date: safeGet(data, 'date'),
+      //   isActive: safeGetBoolean(data, 'isActive'),
+      //   tags: safeGet(data, 'tags') ? getTagNames(safeGet(data, 'tags')) : [],
+      //   status: safeGet(data, 'status'),
+      //   type: safeGet(data, 'type', "DefaultType"),
+      //   analysisType: safeGet(data, 'analysisType'),
+      //   analysisResults: safeGetAnalysisResults(data),
+      //   updatedAt: safeGetDate(data, 'updatedAt') || new Date(),
+      //   currentMetadata: safeGetCurrentMetadata(data),
+      //   currentMeta: safeGet(data, 'currentMeta'),
+      //   latestVersion: safeGetLatestVersion(data),
+      // }}
     />
   );
 };
@@ -989,7 +990,8 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         clearAllTasks: () => {},
         archiveCompletedTasks: () => {},
         updateTaskAssignee:
-          (taskId: string, assignee: User<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) =>
+          (taskId: string, 
+            assignee: User<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>) =>
           async (dispatch: any): Promise<void> => {
             // Implement logic to update the assignee of a task
             const taskIndex = coreData.tasks.findIndex(
@@ -1736,15 +1738,15 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
 };
 
 export type {
-  BaseData,
-  ChildRelationship,
-  CommonRelationship,
-  Data,
-  DataDetails,
-  DataDetailsComponent,
-  DataDetailsProps, DataWithOmittedFields,
-  SharedRelationshipData,
-  TodoSubtasks
+    BaseData,
+    ChildRelationship,
+    CommonRelationship,
+    Data,
+    DataDetails,
+    DataDetailsComponent,
+    DataDetailsProps, DataWithOmittedFields,
+    SharedRelationshipData,
+    TodoSubtasks
 };
 
 // Clean the coreData to replace empty strings with null

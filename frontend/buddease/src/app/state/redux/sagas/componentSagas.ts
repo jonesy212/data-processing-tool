@@ -1,53 +1,31 @@
-import { ComponentActions } from '@/app/libraries/ui/components/ComponentActions';
-import { apiComponent } from '@/app/libraries/api/apiComponent';
-import ApiConfigComponent from '@/config//ApiConfigComponent';
-//componentSagas.ts
+// /app/sagas/componentSagas.ts
+import { takeLatest, call, put } from "redux-saga/effects";
+import { ComponentActions } from "@/app/actions/ComponentActions";
+import { apiComponentService } from "@/app/services/apiComponentService";
 
-import { call, put } from "redux-saga/effects";
-
-// Saga function to handle fetching a component
-const apiComponent: ApiConfigComponent = {
-  props: {
-    // Provide the required props here
-  },
-};
-function* fetchComponent(action: ReturnType<typeof ComponentActions.fetchComponentRequest>) {
+function* fetchComponentSaga(
+  action: ReturnType<typeof ComponentActions.fetchComponentRequest>
+): Generator<any, void, any> {
   try {
-    const response = yield call(apiComponent.fetchComponent, action.payload);
+    const response = yield call(apiComponentService.fetchComponent, action.payload);
     yield put(ComponentActions.fetchComponentSuccess(response.data));
-  } catch (error: any) {
-    yield put(ComponentActions.fetchComponentFailure(error.message));
+  } catch (err: any) {
+    yield put(ComponentActions.fetchComponentFailure(err?.message ?? "Unknown error"));
   }
 }
 
-// Saga function to handle updating a component success
-function* updateComponentSuccessSaga(action) {
+function* updateComponentSaga(
+  action: ReturnType<typeof ComponentActions.updateComponent>
+): Generator<any, void, any> {
   try {
-    // Perform any additional logic needed for update success
-    yield put(ComponentActions.updateComponentSuccessAdditionalLogic(action.payload));
-  } catch (error: any) {
-    // Handle error if additional logic fails
-    yield put(ComponentActions.updateComponentFailure(error.message));
+    const response = yield call(apiComponentService.updateComponent, action.payload);
+    yield put(ComponentActions.updateComponentSuccess(response.data));
+  } catch (err: any) {
+    yield put(ComponentActions.updateComponentFailure(err?.message ?? "Unknown error"));
   }
 }
 
-// Saga function to handle updating a component failure
-function* updateComponentFailureSaga(action) {
-  try {
-    // Perform any additional logic needed for update failure
-    yield put(ComponentActions.updateComponentFailureAdditionalLogic(action.payload));
-  } catch (error: any) {
-    // Handle error if additional logic fails
-    yield put(ComponentActions.updateComponentFailure(error.message));
-  }
-}
-
-// Watcher saga to listen for specific actions and run corresponding sagas
-export function* watchComponentActions() {
-  yield takeLatest(ComponentActions.addComponent.type, addComponentSaga);
-  yield takeLatest(ComponentActions.removeComponent.type, removeComponentSaga);
-  yield takeLatest(ComponentActions.updateComponent.type, updateComponentSaga);
+export function* watchComponentActions(): Generator {
   yield takeLatest(ComponentActions.fetchComponentRequest.type, fetchComponentSaga);
-  yield takeLatest(ComponentActions.updateComponentSuccess.type, updateComponentSuccessSaga);
-  yield takeLatest(ComponentActions.updateComponentFailure.type, updateComponentFailureSaga);
+  yield takeLatest(ComponentActions.updateComponent.type, updateComponentSaga);
 }

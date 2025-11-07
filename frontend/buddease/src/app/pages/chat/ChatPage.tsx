@@ -1,13 +1,13 @@
 // ChatPage.tsx
-import RootLayout from "@/app/RootLayout";
-import {
-    Channel,
-    ChannelMember,
-    ChannelMessage,
-    ChannelRole,
-    ChannelType,
-} from "@/app/interfaces/chat/Channel";
+ 
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import {
+  Channel,
+  ChannelMember,
+  ChannelMessage,
+  ChannelRole,
+  ChannelType,
+} from "@/app/interfaces/chat/Channel";
 import { User } from "@/app/users/User";
 import React, { useEffect, useState } from "react";
 
@@ -83,7 +83,6 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
   }, []); // Empty dependency array to run the effect only once on mount
 
   return (
-    <RootLayout>
       <div>
         <h1>Chat Page</h1>
         {/* Render the list of channels */}
@@ -165,7 +164,6 @@ const ChatPage: React.FC<ChatPageProps> = (props) => {
           </ul>
         </div>
       </div>
-    </RootLayout>
   );
 };
 

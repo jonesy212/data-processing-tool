@@ -5,6 +5,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMe
 import { Snapshot, SnapshotStoreConfig } from ".";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Separate interface for store operations
 interface SnapshotStoreMethods<

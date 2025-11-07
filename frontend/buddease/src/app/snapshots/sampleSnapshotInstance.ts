@@ -9,7 +9,7 @@ import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/typings/entities/AppEntity";
 

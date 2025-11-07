@@ -1,5 +1,5 @@
+import { Team } from '@/app/components/teams/Team';
 import { Project, ProjectData } from '@/app/models/projects/Project';
-import { Team } from '@/app/models/teams/Team';
 import MemberData, { TeamMember } from '@/app/models/teams/TeamMembers';
 import { User } from '@/app/users/User';
 import { createAction } from '@reduxjs/toolkit';

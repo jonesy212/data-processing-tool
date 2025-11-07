@@ -1,13 +1,14 @@
 // subscriberTypeGuads.ts
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { SnapshotData, SnapshotsArray } from "@/app/snapshots";
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 // Type guard to differentiate between SnapshotSubscriberManagement and SnapshotStoreOptions
 function isSnapshotSubscriberManagement<

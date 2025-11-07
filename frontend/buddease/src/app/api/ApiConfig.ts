@@ -1,7 +1,8 @@
 // ApiConfig.ts
 import { Endpoints } from './ApiEndpoints';
 import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
-import { RetryConfig, CacheConfig } from "@/app/services/ConfigurationService";
+import { RetryConfig } from "@/app/services/ConfigurationService";
+import { CacheConfig } from "@/app/config/CacheConfig";
 
 type EndpointCategory = keyof EndpointConfigurations;
 type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
@@ -21,7 +22,7 @@ export interface ApiConfigInterface {
 }
 
 
-class ApiConfig implements ApiConfigInterface {
+class ApiConfigService implements ApiConfigInterface {
   [x: string]: any;
   name: any;
   baseURL: string;
@@ -131,4 +132,4 @@ class ApiConfig implements ApiConfigInterface {
   }
 }
 
-export default ApiConfig;
+export default ApiConfigService;

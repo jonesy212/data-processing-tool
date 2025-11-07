@@ -5,7 +5,7 @@ import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import SnapshotStore from "@/app/snapshots/Snapshotstore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
@@ -20,13 +20,11 @@ import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { T, K, Meta } from '@/app/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 
 export const SnapshotMethodsImplementation = {

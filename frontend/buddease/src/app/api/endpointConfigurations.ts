@@ -26,6 +26,7 @@ import { tasksConfig } from '@/app/config/endpoints/tasksConfig';
 import { teamsConfig } from '@/app/config/endpoints/teamsConfig';
 import { todosConfig } from '@/app/config/endpoints/todosConfig';
 
+import { categoryConfig } from '@/app/config/endpoints/categoryConfig';
 import { authConfig } from '@/app/config/endpoints/authConfig';
 import { blogsConfig } from '@/app/config/endpoints/blogsConfig';
 import { calendarConfig } from '@/app/config/endpoints/calendarConfig';
@@ -95,6 +96,7 @@ export const endpointConfigurations: EndpointConfigurations = {
   batch: batchConfig,
   blogs: blogsConfig,
   calendar: calendarConfig,
+  categories: categoryConfig,
   chat: chatConfig,
   client: clientConfig,
   collaborationTools: collaborationToolsConfig,
@@ -179,6 +181,7 @@ export {
   batchConfig,
   blogsConfig,
   calendarConfig,
+  categoryConfig,
   chatConfig,
   clientConfig,
   collaborationToolsConfig,
@@ -251,19 +254,16 @@ export {
   uiSettingsConfig
 };
 
-// Create merged endpoints
-const updatedEndpoints = createMergedEndpoints(endpointConfigurations);
+// Merge endpoints and keep strong typing
+export const endpoints: EndpointConfigurations = createMergedEndpoints(endpointConfigurations);
 
-// Export endpoints alias
-export const endpoints = updatedEndpoints;
-
-// Create API config instance
+// Create API config instance with typed endpoints
 export const apiConfig = new ApiConfig(endpointConfigurations, endpoints);
 
-// Factory function for custom instances
+// Factory function for custom ApiConfig instances
 export const createApiConfig = (
   configurations: EndpointConfigurations,
-  endpoints: any // Use proper type from your ApiEndpoints
+  endpoints: EndpointConfigurations
 ): ApiConfig => {
   return new ApiConfig(configurations, endpoints);
 };
@@ -273,26 +273,18 @@ export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
   ...params: any[]
-) => {
-  return apiConfig.getEndpointInfo(category, endpointKey, ...params);
-};
+) => apiConfig.getEndpointInfo(category, endpointKey, ...params);
 
 // Helper function to get endpoint URL
 export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
   ...params: any[]
-) => {
-  return apiConfig.getUrl(category, endpointKey, ...params);
-};
+) => apiConfig.getUrl(category, endpointKey, ...params);
 
-// Export default instance
+// Export default API instance
 export default apiConfig;
 
-// Export endpoints for backward compatibility
-export { updatedEndpoints };
-
-// UI hooks (keep these if they're used)
+// UI hooks (keep if used)
 const { handleFilterTasks } = useSearchOptions();
 const { addFilter } = useFiltering(searchOptions);
-

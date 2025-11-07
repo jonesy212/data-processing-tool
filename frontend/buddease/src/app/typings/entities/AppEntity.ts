@@ -52,8 +52,15 @@ type ApplyFieldFilters<
 
 
 export type {
-  AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
-  AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
+  AppEntity, 
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields,
+  ApplyFieldFilters,
+  AppParams, AppRealtimeDataItem, AppSnapshot,
+  AppBaseParams,
   AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppSubscriberCollection
 };
 

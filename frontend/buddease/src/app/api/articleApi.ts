@@ -1,5 +1,4 @@
 // articleApi.ts
-import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -7,25 +6,71 @@ import { addLog } from "@/app/state/redux/slices/LogSlice";
 import { useArticleStore } from "@/app/state/stores/ArticleStore";
 import { User } from "@/app/users/User";
 import { useNotification } from "@/context/NotificationContext";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { handleApiError } from '@/app/api/ApiLogs';
+
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields } from '@/app/typings/entities/ArticleEntity'
+import internalApiService, { clientNotificationMessages } from './ApiClient';
+import  ClientApiService from '@/app/api/ApiClient'
 
 const API_BASE_URL = endpoints.apiConfig;
 
-interface ArticleApiService {
+
+
+// Define article-specific notification messages
+const articleNotificationMessages = {
+  CREATE_ARTICLE_SUCCESS: "Article created successfully",
+  CREATE_ARTICLE_ERROR: "Failed to create article",
+  FETCH_ARTICLE_SUCCESS: "Article fetched successfully", 
+  FETCH_ARTICLE_ERROR: "Failed to fetch article",
+  UPDATE_ARTICLE_SUCCESS: "Article updated successfully",
+  UPDATE_ARTICLE_ERROR: "Failed to update article",
+  DELETE_ARTICLE_SUCCESS: "Article deleted successfully",
+  DELETE_ARTICLE_ERROR: "Failed to delete article",
+  FETCH_RECENT_ARTICLES_SUCCESS: "Recent articles fetched successfully",
+  FETCH_RECENT_ARTICLES_ERROR: "Failed to fetch recent articles"
+};
+
+// Combine with existing client messages
+const combinedMessages = {
+  ...clientNotificationMessages,
+  ...articleNotificationMessages
+};
+
+
+interface ArticleApiService<
+  T extends ArticleEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends ArticleAttachment = ArticleAttachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   notificationContext: {
-    notify: (title: string, message: string | Message, type: string, content?: any) => void;
+    notify: (title: string, message: string | Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, content?: any) => void;
   };
-  createArticle: (articleData: any) => Promise<AxiosResponse<any, any>>;
-  fetchRecentArticles: () => Promise<AxiosResponse>;
-  // Add the displayArticles method here
-  displayArticles: (articles: any[]) => void;
+  createArticle: (articleData: T) => Promise<AxiosResponse<T>>;
+  fetchArticleByName: (articleName: string) => Promise<AxiosResponse<T>>;
+  fetchArticle: (articleId?: string) => Promise<AxiosResponse<T | T[]>>;
+  updateArticle: (articleId: string, updatedArticleData: Partial<T>) => Promise<AxiosResponse<T>>;
+  deleteArticle: (articleId: string) => Promise<void>;
+  fetchRecentArticles: () => Promise<AxiosResponse<T[]>>;
+  displayArticles: (articles: T[]) => void;
 }
 
 // Example values for the Message object
 const generateUniqueID = UniqueIDGenerator.generateMessageID();
-const createMessage = (type: string, content: string): Partial<Message> => ({
+
+const createMessage = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(type: string, content: string): Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => ({
   id: generateUniqueID,
   senderId: "system",
   sender: {
@@ -33,7 +78,26 @@ const createMessage = (type: string, content: string): Partial<Message> => ({
     firstName: "System",
     lastName: "User",
     email: "system@example.com",
-  } as User,
+    isUserMessage: false,
+    tier: "",
+    isAuthorized: true,
+    uploadQuota: 0,
+    hasQuota: false,
+    processingTasks: [],
+    activityStatus: "",
+    persona: null,
+    friends: [],
+    blockedUsers: [],
+    activityLog: [],
+    tags: [], 
+    createdAt: new Date().toISOString(), 
+    updatedAt: new Date().toISOString(), 
+} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
+    isUserMessage: boolean;
+    tags: string[];
+    createdAt: string;
+    updatedAt: string;
+  },
   channel: {
     id: "",
     creatorId: "",
@@ -45,17 +109,16 @@ const createMessage = (type: string, content: string): Partial<Message> => ({
   content,
 });
 
-export const articleApiService: ArticleApiService = observable({
+export const articleApiService: ArticleApiService<ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields> = observable({
   notificationContext: {
     notify: (
       title: string,
-      message: string | Message,
+      message: string | Message<ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields>,
       type: string,
       content?: any
     ) => {
       // Access the notification context
-      const notificationContext = useNotification();
-
+      const notificationContext = useNotification<ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields>();
       // Check the type of notification and call the appropriate method from the notification context
       switch (type) {
         case "success":
@@ -76,186 +139,89 @@ export const articleApiService: ArticleApiService = observable({
   },
 
   
-  createArticle: async (articleData: any): Promise<AxiosResponse> => {
-    try {
-      // Access `getUserApiConfig` directly on `API_BASE_URL`
-      const userApiConfig = API_BASE_URL.getUserApiConfig;
-
-      if (!userApiConfig) {
-        throw new Error("API configuration for user is missing");
-      }
-
-      const response: AxiosResponse = await axiosInstance.post(
-        String(userApiConfig),
-        articleData
-      );
-      
-      runInAction(() => {
-        addLog(`Created article: ${articleData.title}`);
-      });
-
-      // Utilize the notification system directly
-      const notificationContext = useNotification();
-      const message = createMessage(
-        "success",
-        `Article "${articleData.title}" was created successfully.`
-      );
-
-      notificationContext.showSuccessNotification(
-        "Article Created",
-        {
-          id: "article-created",
-          content: `Article "${articleData.title}" was created successfully.`,
-          type: "success"
-        } as Message
-      );
-
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to create article");
-      throw error;
-    }
+  createArticle: async (articleData: ArticleEntity): Promise<AxiosResponse<ArticleEntity>> => {
+    const response = await internalApiService.post<ArticleEntity>(
+      "/api/articles",
+      articleData,
+      undefined, // config (optional)
+      "CREATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+      "CREATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+    );
+    
+    runInAction(() => {
+      addLog(`Created article: ${articleData.title}`);
+    });
+    
+    return response;
   },
 
-  fetchArticleByName: async (articleName: string): Promise<AxiosResponse> => {
-    try {
-      const response: AxiosResponse = await axiosInstance.get(
-        `${API_BASE_URL}/${articleName}`
-      );
-
-      return response;
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to fetch article data"
-      );
-      throw error;
-    }
+  fetchArticleByName: async (articleName: string): Promise<AxiosResponse<ArticleEntity>> => {
+    return await internalApiService.get<ArticleEntity>(
+      `/api/articles/name/${articleName}`,
+      undefined, // config
+      "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+      "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+    );
   },
 
-  fetchArticle: async (
-    articleId?: string
-  ): Promise<AxiosResponse<any, any>> => {
-    try {
-      // Check if articleId is provided
-      const url = articleId
-        ? `${API_BASE_URL}/${articleId}`
-        : `${API_BASE_URL}`;
-      const response: AxiosResponse = await axiosInstance.get(url);
-      return response;
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to fetch article data"
-      );
-      throw error;
-    }
+  fetchArticle: async (articleId?: string): Promise<AxiosResponse<ArticleEntity | ArticleEntity[]>> => {
+    const url = articleId ? `/api/articles/${articleId}` : "/api/articles";
+    return await internalApiService.get<ArticleEntity | ArticleEntity[]>(
+      url,
+      undefined,
+      "FETCH_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+      "FETCH_ARTICLE_ERROR" as keyof typeof combinedMessages
+    );
   },
 
-  updateArticle: async (
-    articleId: string,
-    updatedArticleData: any
-  ): Promise<AxiosResponse> => {
-    try {
-      const response: AxiosResponse = await axiosInstance.put(
-        `${API_BASE_URL}/${articleId}`,
-        updatedArticleData
-      );
-      runInAction(() => {
-        addLog(`Updated article: ${articleId}`);
-      });
-
-      const notificationContext = useNotification();
-      const message = createMessage(
-        "success",
-        `Article with ID "${articleId}" was updated successfully.`
-      );
-      notificationContext.showSuccessNotification(
-        "Article Updated",
-        {
-          ...message,
-          id: "article-updated",
-          sender: undefined,
-          senderId: undefined,
-        } as Message,
-        `Article with ID "${articleId}" was updated successfully.`
-      );
-
-      return response.data;
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to update article");
-      throw error;
-    }
+  updateArticle: async (articleId: string, updatedArticleData: Partial<ArticleEntity>): Promise<AxiosResponse<ArticleEntity>> => {
+    const response = await internalApiService.put<ArticleEntity>(
+      `/api/articles/${articleId}`,
+      updatedArticleData,
+      undefined,
+      "UPDATE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+      "UPDATE_ARTICLE_ERROR" as keyof typeof combinedMessages
+    );
+    
+    runInAction(() => {
+      addLog(`Updated article: ${articleId}`);
+    });
+    
+    return response;
   },
 
   deleteArticle: async (articleId: string): Promise<void> => {
-    try {
-      await axiosInstance.delete(`${API_BASE_URL}/${articleId}`);
-      runInAction(() => {
-        addLog(`Deleted article: ${articleId}`);
-      });
-
-      const notificationContext = useNotification();
-      const message = createMessage(
-        "success",
-        `Article with ID "${articleId}" was deleted successfully.`
-      );
-      notificationContext.showSuccessNotification(
-        "Article Deleted",
-        {
-          ...message,
-          id: "article-deleted",
-          sender: undefined,
-          senderId: undefined,
-        } as Message,
-        `Article with ID "${articleId}" was deleted successfully.`
-      );
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to delete article");
-      throw error;
-    }
+    await internalApiService.delete(
+      `/api/articles/${articleId}`,
+      undefined,
+      "DELETE_ARTICLE_SUCCESS" as keyof typeof combinedMessages,
+      "DELETE_ARTICLE_ERROR" as keyof typeof combinedMessages
+    );
+    
+    runInAction(() => {
+      addLog(`Deleted article: ${articleId}`);
+    });
   },
 
-  fetchRecentArticles: async (): Promise<AxiosResponse> => {
-    try {
-      const response: AxiosResponse = await axiosInstance.get(
-        `${API_BASE_URL}/recent-articles`
-      );
-      runInAction(() => {
-        addLog("Fetched recent articles");
-      });
-
-      const notificationContext = useNotification();
-      const message = createMessage(
-        "success",
-        "Recent articles were fetched successfully."
-      );
-      notificationContext.showSuccessNotification(
-        "Recent Articles Fetched",
-        {
-          ...message,
-          id: "recent-articles-fetched",
-          sender: undefined,
-          senderId: undefined,
-        } as Message,
-        "Recent articles were fetched successfully."
-      );
-
-      return response.data;
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to fetch recent articles"
-      );
-      throw error;
-    }
+  fetchRecentArticles: async (): Promise<AxiosResponse<ArticleEntity[]>> => {
+    const response = await internalApiService.get<ArticleEntity[]>(
+      "/api/articles/recent",
+      undefined,
+      "FETCH_RECENT_ARTICLES_SUCCESS" as keyof typeof combinedMessages,
+      "FETCH_RECENT_ARTICLES_ERROR" as keyof typeof combinedMessages
+    );
+    
+    runInAction(() => {
+      addLog("Fetched recent articles");
+    });
+    
+    return response;
   },
   
-  displayArticles: (articles: any[]): void => {
+  displayArticles: (articles: ArticleEntity[]): void => {
     const store = useArticleStore();
     store.setArticles(articles);
-    console.log("Displaying articles:", articles);
-    // Add any additional logic to update the UI if necessary
+    console.log("Displaying articles:", articles.map(a => a.title));
   }
 });
 

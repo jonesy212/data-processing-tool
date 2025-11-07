@@ -1,8 +1,8 @@
 // AssignTaskStore.tsx
-import { AssignBaseStore, useAssignBaseStore } from "@/app/AssignBaseStore";
+import { AssignBaseStore, useAssignBaseStore } from '@/app/app/state/stores/AssignBaseStore';
+import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Task } from "@/app/models/tasks/Task";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { NotificationType } from "@/context/NotificationContext";
@@ -12,7 +12,7 @@ export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
-  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+  setDynamicNotificationMessage: (message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>, type: NotificationType) => void;
   snapshotStore: SnapshotStore<Task<T, K>>;
 
   reassignUsersToTasks: (

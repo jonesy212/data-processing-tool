@@ -1,16 +1,39 @@
-// persistenceMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '@/types';
+import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/types';
+import { Logger } from '@/app/logger/Logger';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-export const persistenceMiddleware: MiddlewareFunction = async (context, next) => {
-  const { operation, payload, store } = context;
-  
+/**
+ * Persistence Middleware
+ * 
+ * Responsibilities:
+ * - Handles saving snapshots to persistence layers.
+ * - Skips operations if persistence is disabled.
+ * - Adds pre- and post-persistence metadata.
+ * - Uses async fire-and-forget logging to record persistence operations.
+ */
+export const persistenceMiddleware: MiddlewareFunction = async <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>(
+  context: MiddlewareContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  next: MiddlewareNext
+) => {
+  const { operation, payload, store, userId } = context;
+
   // Skip if no store or persistence not enabled
   if (!store || !store.options?.persistence?.enabled) {
     return await next(context);
   }
-  
-  console.log(`[Persistence Middleware] Handling operation: ${operation}`);
-  
+
+  // Fire-and-forget log for starting persistence
+  Logger.logWithPayload('Persistence Middleware', `Handling operation: ${operation}`, { payload }, userId)
+    .catch(err => console.error('Logger failed', err));
+
   try {
     // Pre-persistence logic
     if (operation === 'addSnapshot' && store.options.persistence.strategy === 'autoSave') {
@@ -20,9 +43,9 @@ export const persistenceMiddleware: MiddlewareFunction = async (context, next) =
         autoSave: true
       };
     }
-    
+
     const result = await next(context);
-    
+
     // Post-persistence logic
     if (operation.includes('Snapshot') && store.getDataStore) {
       const dataStore = await store.getDataStore();
@@ -30,12 +53,19 @@ export const persistenceMiddleware: MiddlewareFunction = async (context, next) =
         await dataStore.persist(operation, result);
       }
     }
-    
+
+    // Fire-and-forget log for completed persistence
+    Logger.logWithPayload('Persistence Middleware', `Completed operation: ${operation}`, { result }, userId)
+      .catch(err => console.error('Logger failed', err));
+
     return result;
-    
   } catch (error) {
-    console.error(`[Persistence Middleware] Persistence failed for ${operation}:`, error);
-    // Don't throw - persistence failures shouldn't break the operation
+    // Fire-and-forget log for failed persistence
+    Logger.logWithPayload('Persistence Middleware', `Failed operation: ${operation}`, {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, userId).catch(err => console.error('Logger failed', err));
+
+    // Don’t block the operation; rethrow optional or return default
     return await next(context);
   }
 };

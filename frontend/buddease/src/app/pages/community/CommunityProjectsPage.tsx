@@ -1,5 +1,4 @@
 // app/pages/community/CommunityProjectsPage.tsx
-import RootLayout from '@/app/RootLayout';
 import { CommunityData } from '@/app/components/models/CommunityData';
 import { Team } from '@/app/components/models/teams/Team';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
@@ -34,7 +33,7 @@ const CommunityProjectsPage: React.FC<CommunityProjectsPageProps> = ({ community
   };
 
   return (
-    <RootLayout>
+    
       <div>
         <h1>Community Projects</h1>
         
@@ -52,7 +51,7 @@ const CommunityProjectsPage: React.FC<CommunityProjectsPageProps> = ({ community
         {showFeedbackForm && <FeedbackForm onSubmit={handleSubmitFeedback} />}
         {feedback && <p>Thank you for your feedback: {feedback}</p>}
       </div>
-    </RootLayout>
+    
   );
 };
 

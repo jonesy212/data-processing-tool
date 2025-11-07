@@ -1,5 +1,6 @@
-import RootLayout from "@/app/RootLayout";
+ 
 import { ToolbarActions } from "@/app/actions/ToolbarActions";
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { MobXRootState } from "@/app/state/stores/RootStores";
@@ -26,7 +27,7 @@ interface Participant {
 // Function to create a default User object
 
 // Function to create a default User object
-const getDefaultUser = (userId: string): User => ({
+const getDefaultUser = (userId: string): User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> => ({
   id: userId,
   username: "default",
   firstName: "",
@@ -123,22 +124,20 @@ const ParticipantManagementPage = () => {
   };
 
   return (
-    <RootLayout>
-      <div>
-        <h1>Participant Management</h1>
-        <button onClick={handleAddParticipant}>Add Participant</button>
-        <ul>
-          {participantData.map((participant) => (
-            <li key={participant.id}>
-              {participant.name} - {participant.role}
-              <button onClick={() => handleRemoveParticipant(participant.id)}>
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </RootLayout>
+    <div>
+      <h1>Participant Management</h1>
+      <button onClick={handleAddParticipant}>Add Participant</button>
+      <ul>
+        {participantData.map((participant) => (
+          <li key={participant.id}>
+            {participant.name} - {participant.role}
+            <button onClick={() => handleRemoveParticipant(participant.id)}>
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

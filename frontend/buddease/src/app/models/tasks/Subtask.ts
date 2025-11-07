@@ -1,4 +1,8 @@
 // Subtask.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 interface Subtask<
   T extends BaseDataEntity,
   K extends T = T,
@@ -14,6 +18,6 @@ interface Subtask<
   status?: string;
   dueDate?: string | Date;
   completed?: boolean;
-  tags?: Record<string, Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Use your Tag type
+  tags?: Record<string, Tag<T>>; // Use your Tag type
   [key: string]: any; // Flexible for additional subtask properties
 }

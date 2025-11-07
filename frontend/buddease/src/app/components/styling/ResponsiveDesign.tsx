@@ -9,6 +9,7 @@ import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import { ColorSwatchProps } from "./ColorPalette";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {

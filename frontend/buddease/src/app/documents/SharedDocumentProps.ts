@@ -8,7 +8,7 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { TagsRecord } from '@/app/models/tracker/Tag'
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
@@ -20,6 +20,8 @@ import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
+import { DocumentPhase } from '@/app/models/phases/DocumentPhase'
+
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -36,8 +38,7 @@ export interface DocumentBuilderProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->
-  extends DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
+>  extends DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
   isDynamic: boolean;
   setDocumentPhase?: (
     docPhase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
@@ -50,32 +51,15 @@ export interface DocumentBuilderProps<
   previousContent?: string | ContentState;
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    accessHistory: AccessHistory[];
-  lastModifiedDate: ModifiedDate | undefined;
+  accessHistory: AccessHistory[];
+  lastModifiedDate?: ModifiedDate | undefined; 
   versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  documentPhase:
+  documentPhase: 
     | string
-    | {
-        name?: string;
-        originalPath?: string;
-        alternatePaths?: string[];
-        fileType?: string;
-        title?: string;
-        description?: string;
-        keywords?: string[];
-        authors?: string[];
-        contributors?: string[];
-        publisher?: string;
-        copyright?: string;
-        license?: string;
-        links?: string[];
-         tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
-        phaseType: ProjectPhaseTypeEnum;
-        customProp1: string;
-        customProp2: number;
-        onChange: (phase: ProjectPhaseTypeEnum) => void;
-      } | undefined;
-  version: AppVersionImpl | undefined;
+    | DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: Dispatch<SetStateAction<DocumentOptions>>; 

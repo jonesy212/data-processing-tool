@@ -1,7 +1,8 @@
 import React from 'react';
 import { setCurrentPhase } from '@/app/hooks/phaseHooks/EnhancePhase';
 import { PhaseHookConfig } from '@/app/hooks/phaseHooks/PhaseHooks';
-import { Phase, PhaseData, PhaseMeta  } from '@/app/models/phases/Phase';
+import { AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntiity';
+import { Phase } from "@/app/models/phases/Phase";
 
 export enum IdeaCreationPhaseEnum {
   CREATE_IDEA,
@@ -16,7 +17,7 @@ interface IdeaFormProps {
   duration: number
 }
 
-type PhaseConfig = PhaseHookConfig & Phase<PhaseData, PhaseMeta>;
+type PhaseConfig = PhaseHookConfig & Phase<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
 
 const handlePhaseTransition = async (nextPhase: PhaseConfig) => {
   try {
@@ -66,8 +67,8 @@ const IdeaCreationPhaseManager: React.FC<IdeaFormProps> = ({ onSubmit, onTransit
       name: "Review Idea",
       condition: async (idleTimeoutDuration: Duration) => true,
       duration: '10',
-      canTransitionTo: (nextPhase: Phase) => true,
-      handleTransitionTo: async (nextPhase: Phase) => console.log("Handling transition to:", nextPhase),
+      canTransitionTo: (nextPhase: Phase<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>) => true,
+      handleTransitionTo: async (nextPhase: Phase<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>) => console.log("Handling transition to:", nextPhase),
       isActive: false,
       asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
         return () => {

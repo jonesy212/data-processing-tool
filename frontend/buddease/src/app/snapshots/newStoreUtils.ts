@@ -1,14 +1,14 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
-import { ExcludedFields } from '@/routing/Fields';
 import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
+import { EventRecord } from '@/app/state/stores/DataStore';
+import { ExcludedFields } from '@/routing/Fields';
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";

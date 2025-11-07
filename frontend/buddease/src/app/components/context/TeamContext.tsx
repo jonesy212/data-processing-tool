@@ -1,5 +1,5 @@
 // TeamContext.tsx
-import { Team } from '@/models/teams/Team';
+import { Team } from '@/app/components/teams/Team';
 import React, { createContext, useContext, useState } from 'react';
 
 // Define the type for the context props

@@ -3,13 +3,13 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { brandingSettings } from "@/app/branding/BrandingSettings";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { DataDetailsComponent } from "@/app/components/teams/Team";
 import CustomBox from "@/app/containers/CustomBox";
 import useFileUpload from "@/app/hooks/commHooks/useFileUpload";
 import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";
 import InputLabel, { Input } from "@/app/hooks/userInterface/InputFields";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { SupportedData } from "@/app/models/CommonData";
-import { DataDetailsComponent } from "@/app/models/teams/Team";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -20,6 +20,8 @@ import { Router, useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+ import { Attachment } from '@/app/documents/attachment/Attachment';
  
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component

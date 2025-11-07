@@ -1,10 +1,18 @@
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // convertSnapshotsToRecord.ts
 function convertSnapshotsToRecord<
-    T extends BaseDataEntity,
-    K extends T = T>(
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
     snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ): Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     const record: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};

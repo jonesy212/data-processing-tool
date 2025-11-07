@@ -5,7 +5,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { useAuth } from '@/context/AuthContext';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
-import { createLastUpdatedWithVersion, createLatestVersion } from '@/versions/createLatestVersion';
+import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { useMemo, useState } from "react";
 import { StructuredMetadata } from "./StructuredMetadata";
 
@@ -32,7 +32,7 @@ function useMetadata<
   const [options, setOptions] = useState<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>({
     area,
     metadataEntries: {} as Meta['metadataEntries'],
-    latestVersion: createLatestVersion<T,K>(),
+    latestVersion: createLatestVersion<T, K>(),
     schema: {},
   } as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
 

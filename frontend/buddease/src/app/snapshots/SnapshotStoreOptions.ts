@@ -1,4 +1,5 @@
 import { SnapshotOperationType } from '@/app/actions/SnapshotActions';
+import { ProjectMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
@@ -6,16 +7,15 @@ import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
-import { ProjectMetadata } from '@/app/config/StructuredMetadata';
 
 import { SnapshotOperation } from "@/app/actions/SnapshotActions";
 
@@ -29,17 +29,17 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SimulatedDataSource } from "./createSnapshotOptions";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
-import { DataStore, EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreCore } from '@/app/snapshots/SnapshotCore';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore, EventRecord } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { SchemaField } from '@/app/config/metadata/SchemaField';
 
 
 type UnifiedConfigOption<
@@ -215,9 +215,9 @@ interface SnapshotStoreOptions<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedIdentifiers<T, K> {
   storeId: number;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   baseURL: string;
   enabled: boolean;
   maxRetries: number;
@@ -436,12 +436,37 @@ interface SnapshotStoreOptions<
   };
 }
 
+export type InitialData<
+  T extends BaseDataEntity,
+  K extends T = T
+> = Partial<Record<keyof T, any>> | T | null;
+
+function normalizeInitializedData<
+  T extends BaseDataEntity,
+  K extends T
+>(data: InitializedData<T, K>): InitialData<T, K> {
+  if (data === null) return null;
+  if (data instanceof Map) {
+    // Convert map snapshots into a serializable object
+    const obj: Record<string, any> = {};
+    data.forEach((value, key) => (obj[key] = value));
+    return obj as InitialData<T, K>;
+  }
+  if ('id' in (data as any) && 'config' in (data as any)) {
+    // SnapshotStoreConfig case
+    return (data as any).data ?? null;
+  }
+  return data as InitialData<T, K>;
+}
+
+
 export type {
-  InitializedData, InitializedDataStore,
-  InitializedDelegate, InitializedDelegateSearch,
-  InitializedSnapshot, MetaDataOptions,
-  SnapshotConfigOption, SnapshotInstanceProps,
-  SnapshotStoreOptions,
-  SnapshotWithCriteriaAsBase, UnifiedConfigOption
+    InitializedData, InitializedDataStore,
+    InitializedDelegate, InitializedDelegateSearch,
+    InitializedSnapshot, MetaDataOptions,
+    SnapshotConfigOption, SnapshotInstanceProps,
+    SnapshotStoreOptions,
+    SnapshotWithCriteriaAsBase, UnifiedConfigOption,
+    normalizeInitializedData
 };
 

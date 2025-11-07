@@ -1,4 +1,7 @@
 import fs from "fs";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 async function loadMarkdownDocumentContent<
   T extends BaseDataEntity,

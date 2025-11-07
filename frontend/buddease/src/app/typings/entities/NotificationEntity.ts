@@ -133,11 +133,19 @@ type ApplyNotificationFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  ApplyNotificationFieldFilters, NotificationAttachment, NotificationBaseParams, NotificationEntity, NotificationExcludedFields,
-  NotificationIncludedFields, NotificationK,
-  NotificationMeta, NotificationParams, NotificationSnapshot,
+  NotificationEntity,
+  NotificationK,
+  NotificationMeta,
+  NotificationAttachment, 
+  NotificationExcludedFields,
+  NotificationIncludedFields, 
+  NotificationBaseParams, 
+  NotificationParams, 
+  NotificationSnapshot,
+  ApplyNotificationFieldFilters, 
   NotificationSnapshotData, NotificationSnapshotsArray, NotificationSnapshotStore,
   NotificationSnapshotStoreConfig,
-  NotificationSnapshotWithCriteria, NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
+  NotificationSnapshotWithCriteria, 
+  NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
 };
 

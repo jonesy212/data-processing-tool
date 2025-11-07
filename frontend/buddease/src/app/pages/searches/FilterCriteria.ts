@@ -1,5 +1,7 @@
 
-import { extractCriteria } from '@/app/api/SnapshotApi';
+import { NotificationTypeEnum } from "@/context/NotificationContext";
+import extractCriteria from '@/app/api/SnapshotApi';
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -429,7 +431,7 @@ type CalendarEventWithCriteria = BaseCalendarEvent &
 
 
 // Sample CalendarEvent data
-const events: CalendarEvent[] = [
+const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>[] = [
   {
     description: "This is a sample event",
     startDate: new Date("2024-06-01"),

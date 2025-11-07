@@ -1,12 +1,21 @@
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
-import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Task } from '@/models/tasks/Task';
 import React from 'react';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-interface DayOfWeekProps extends CommonCalendarProps{
+interface DayOfWeekProps<
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonCalendarProps{
   day: string;
-  events: CalendarEvent<any, any>[];
-  tasks: Task[]; // Assuming each task has a 'name' property
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Assuming each task has a 'name' property
 }
 
 const DayOfWeek: React.FC<DayOfWeekProps> = ({ day, events, tasks,  ...taskHandlers  }) => {

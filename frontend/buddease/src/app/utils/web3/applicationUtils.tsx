@@ -6,8 +6,8 @@ import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
@@ -34,9 +34,9 @@ import { useMetadata } from '@/app/config/useMetadata';
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { CombinedEvents, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
-import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { useDataStore } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
@@ -202,7 +202,7 @@ const {
         participants: [],
         teamMemberId: "",
         currentMeta: currentMeta,
-        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
    
         getCalendarSnapshotStoreData: function (): Promise<CalendarEventWithCriteria[]> {
           const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
@@ -227,8 +227,7 @@ const {
             snapshot,
             snapshotId,
             snapshotData,
-          ).map((snapshot: Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, 
-            BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
+          ).map((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
           ) => ({
             ...snapshot, // Spread properties
             // Add any CalendarEvent-specific fields if necessary
@@ -237,8 +236,7 @@ const {
           return Promise.resolve(calendarSnapshots);
         },
         getData: async function (): Promise<
-          Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
-        > {
+          Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
           // Prepare the necessary inputs
           const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId);
           const snapshotId = await snapshot.store.snapshotId;
@@ -247,7 +245,7 @@ const {
           const storeProps: SnapshotStoreProps<BaseData<any, any>, BaseData<any, any>> = {/* your store props */};
 
           // Create a snapshot instance using createSnapshot
-          const newSnapshot = createSnapshot<BaseData<any, any>, BaseData<any, any>>(
+          const newSnapshot = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
             eventData, // data
             {
               baseMeta: {
@@ -309,7 +307,7 @@ const {
           const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({  storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId, initialState });
           return Promise.resolve([snapshotStore]);
         },
-        getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+        getData: function (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
           throw new Error("Function not implemented.");
         }
       }
@@ -490,7 +488,7 @@ const isValidStatus = (status: StatusType): boolean => {
   };
   
   // Helper function to validate tasks array
-  const isValidTasks = (tasks: Task[]): boolean => {
+  const isValidTasks = (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): boolean => {
     // Check if tasks array is not empty
     if (tasks.length === 0) {
       return false;
@@ -634,7 +632,7 @@ const userId = useSecureUserId()
 const unsubscribe = (
   snapshotId: number,
   unsubscribeDetails: UnsubscribeDetails,
-  callback: SubscriberCallbackType<T, K> | null
+  callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ) => {
   // Log the snapshot unsubscribe action
   console.log(`Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`);
@@ -670,11 +668,11 @@ const triggerEvent = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
+  event: string | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   eventDate: Date,
   snapshotId: string,
-  subscribers: SubscriberCollection<T, K>,
+  subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
@@ -715,7 +713,7 @@ const sendEventToAnalyticsService = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  event: AnalyticsEvent<T, K>
+  event: AnalyticsEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   // Replace with actual analytics service logic
   console.log("Sending event to analytics service:", event);
@@ -789,7 +787,7 @@ const isValidParameters = (params: any): boolean => {
     // Your generic actions here
     // For example, fetching and displaying recent articles from a news API
     articleApi.articleApiService.fetchRecentArticles()
-    .then((response: AxiosResponse<Article[]>) => {
+    .then((response: AxiosResponse<ArticleEntity[]>) => {
       const articles = response.data;
       articleApi.articleApiService.displayArticles(articles);
     })
@@ -804,7 +802,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-    logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
+  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
 };
 
   export type { LogActivityParams, TriggerIncentivesParams };

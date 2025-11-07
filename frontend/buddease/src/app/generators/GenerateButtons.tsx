@@ -3,26 +3,26 @@ import { fetchEventData } from '@/app/api/ApiEvent';
 import userService from "@/app/api/ApiUser";
 import { Label } from '@/app/branding/BrandingSettings';
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
-import {
-  startVoiceRecognition,
-  stopVoiceRecognition,
-} from "@/app/intelligence/VoiceControl";
 import { RealtimeDataComponent } from "@/app/components/models/realtime/RealtimeData";
 import { Phase } from "@/app/components/phases/Phase";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import {
+    startVoiceRecognition,
+    stopVoiceRecognition,
+} from "@/app/intelligence/VoiceControl";
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import {
-  nextPhase,
-  previousPhase,
+    nextPhase,
+    previousPhase,
 } from "@/app/models/phases/PhaseTransitions";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 startVoiceRecognition;
@@ -81,9 +81,8 @@ interface ButtonGeneratorProps<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K> {
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;
   timestamp?: string | Date;
@@ -169,7 +168,7 @@ const defaultVariants: Record<string, string> = {
   // ... (other cases)
 };
 
-const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
+const ButtonGenerator: React.FC<ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = async ({
   label = defaultLabels, // Use the provided label or default to the defaultLabels
   variant = defaultVariants,
   onSubmit,
@@ -348,7 +347,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
 };
 
 // Define buttonGeneratorProps
-const buttonGeneratorProps: ButtonGeneratorProps = {
+const buttonGeneratorProps: ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   label: defaultLabels,
   variant: defaultVariants,
   onSubmit: () => console.log("Submit clicked"),

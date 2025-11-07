@@ -1,6 +1,6 @@
 import { User } from "@/app/users/User";
 import configData from "@/app/config/endpoints/configData";
-
+import { AppUserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 type Token = string | null;
 
 type AuthenticationHeaders = {
@@ -35,7 +35,7 @@ export  const createAuthenticationHeaders = (
 
 // Get tokens from localStorage
 const accessToken: Token = localStorage.getItem('accessToken');
-const userId: User['id'] | null = localStorage.getItem('userId');
+const userId: User<AppUserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>['id'] | null = localStorage.getItem('userId');
 
 // Check if userId is not null before creating authentication headers
 const authenticationHeaders: Record<string, string> = createAuthenticationHeaders(

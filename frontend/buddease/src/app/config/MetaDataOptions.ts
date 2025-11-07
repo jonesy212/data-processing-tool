@@ -1,8 +1,9 @@
+import { TagsRecord } from '@/app/models/tracker/Tag'
+import { StatusType } from '@/app/models/data/StatusType';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/calendar/ScheduledData';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Task } from '@/app/components/models/tasks/Task';
 import { taskMetadata } from '@/app/components/models/tasks/TaskMetadata';
-import { ExcludedFields } from '@/app/components/routing/Fields';
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -14,36 +15,32 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { ChangeLogEntry } from '@/app/libraries/logging/ChangeLogEntry';
 import { SharedRelationshipData } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { PhaseMeta } from '@/app/models/phases/Phase';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { TransactionData } from '@/app/payment/Transaction';
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CoreMetadata } from '@/app/server/metadata/MetadataStateManager';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+
+import { InitializedState } from "@/app/state/stores/DataStore";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import {   VersionEntity,
-  VersionK,
-  VersionMeta,
-  VersionAttachment,
-  VersionExcludedFields,
-  VersionIncludedFields, } from '@/app/typings/entities/VersionEntity';
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/app/typings/entities/TaskEntity";
-import { FileMetadata } from '@/app/typings/file/fileTypes'
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
+import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
+import { FileMetadata } from '@/app/typings/file/fileTypes';
 import { User } from '@/app/users/User';
 import { category } from '@/app/utils/snapshotUtils';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from '@/app/typings/entities/MetaEntity'
+import { SharedVersioning } from '@/app/versions/VersionData'
+
 
 export type BaseAudit = AuditEntry<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
 
@@ -70,7 +67,7 @@ export interface AuditEntry<
   category?: Category;
 
   // Who and when
-  performedBy: User | { id: string; name?: string }; // partial user or full User
+  performedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | { id: string; name?: string }; // partial user or full User
   timestamp: Date;
   ipAddress?: string;
   location?: string;
@@ -86,31 +83,6 @@ export interface AuditEntry<
 }
 
 
-interface AppMetadata<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
-  createdBy?: string;
-  updatedBy?: string;
-    // App-specific metadata properties
-  appVersion: string;
-  appId: string;
-  environment: 'development' | 'staging' | 'production';
-  featureFlags: Record<string, boolean>;
-  
-  // Task-specific metadata (if needed)
-  taskMetadata?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
-  version?: number;
-  tags?: string[];
-  relatedEntities?: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-  customData?: Record<string, any>;
-}
-
 // Version-related properties
 interface VersionMetadata<
   T extends BaseDataEntity = BaseDataRoot,
@@ -119,7 +91,7 @@ interface VersionMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+>  extends SharedVersioning {
   // General version information
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -128,9 +100,8 @@ interface VersionMetadata<
   timestamp?: string | number | Date;
   author?: string;
   description?: string;
-  tags?: string[];
+    tags?: TagsRecord<T> | string[]
   commitHash?: string;
-  buildNumber?: string;
   date: string | Date
   // Extended version tracking
   latestVersion?: Pick<
@@ -140,10 +111,12 @@ interface VersionMetadata<
   // Historical tracking
   lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
+
 // Status/access control properties
 interface StatusMetadata {
   isActive: boolean;
-  permissions?: AppStructurePermissions[];
+  appPermissions?: AppStructurePermissions[];
+  permissions?: string[] | Permission[]
   maxAge?: string | number;
 }
 
@@ -159,7 +132,7 @@ interface DescriptiveMetadata<
   title?: string;
   description?: string;
   category?: Category;
-  tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined; // Adjusted for flexibility
+  tags?: string[] | TagsRecord<T>; // Adjusted for flexibility
 }
 
 // Author/ownership properties
@@ -184,6 +157,7 @@ interface ConfigMetadata<
   baseUrl?: string;
   customFields?: Record<string, any>;
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
+  encryptedConfig?: string;
 }
 
 // Structural properties
@@ -261,7 +235,7 @@ interface SnapshotMetaDataOptions<
   Omit<BaseMetaDataOptions<T, K>, 'tags' | 'version' | 'customFields'> {
   structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   simulatedDataSource?: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[];
+  tags?: string[] | TagsRecord<T>
   version: VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
@@ -351,7 +325,7 @@ type UnifiedMetadata<
   apiKey?: string;
   apiEndpoint?: string;
   baseUrl?: string;
-  config?: any;
+  config?: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   createdBy?: string;
 };
 
@@ -368,6 +342,9 @@ interface UnifiedMetaDataOptions<
   BaseMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
+  setOptions?: (
+    options: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ) => this;
   timestamp?: string | number | Date;
   revisionNotes?: string;
   area: string | undefined;
@@ -545,7 +522,7 @@ function transformProjectToUnifiedMetadata<
       isPublished: true,
       publishedAt: new Date(),
       source: "Generated",
-      status: "Active",
+      status: StatusType.Active,
       comments: [{ id: "1", text: "First comment", timestamp: new Date(), author: "author", content: [] }], // Assuming a Comment type
       workspaceName: "Main Workspace",
     }),
@@ -607,7 +584,7 @@ function transformProjectToUnifiedMetadata<
       workspaceViewers: [],
       workspaceAdmins: [],
       workspaceMembers: [],
-      data: data as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      data: data as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       _structure: {},
       versionHistory: {
         versionData: {},
@@ -641,7 +618,7 @@ function transformProjectToUnifiedMetadata<
       latestVersion: {
         id: "0",
         parentId: null,
-        parentType: null,
+        parentType: undefined,
         parentVersion: '',
         parentTitle: '',
         parentContent: '',
@@ -734,11 +711,6 @@ function transformProjectToUnifiedMetadata<
     schema: {}
   };
 }
-
-export type {
-  AdditionalMetaDataOptions, AppMetadata, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-  SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
-};
 
 
 interface MyDataType extends BaseDataEntity {
@@ -953,7 +925,7 @@ function createMediaMetadata(
     metadataEntries: Record<string, MetadataEntry<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>>;
     config: Promise<SnapshotStoreConfig<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> | null>;
   }
-): UnifiedMetadata<MyDataType>["mediaMetadata"] {
+): UnifiedMetadata<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>["mediaMetadata"] {
   const {
     id,
     createdBy,
@@ -1088,17 +1060,17 @@ const task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields
 };
 
 
-const { latestVersion = createLatestVersion<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>(), ...rest } = data;
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 
 // console.log(area);  // Output: "1920x1080"
 // const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>(area)
-const myMetaData: UnifiedMetadata<BaseDataEntity> = {
+const myMetaData: UnifiedMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields,MetaIncludedFields> = {
   area: '',
   tags: [],
   videoMetadata: dynamicVideoMetadata,
   mediaMetadata: dynamicMediaMetadata,
   projectMetadata: projectMetadata,
-  taskMetadata: taskMetadata(task), // Invoke the function with `task`
+  taskMetadata: taskMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields,MetaIncludedFields>(task), // Invoke the function with `task`
   meetingMetadata: dynamicMeetingMetadata,
   structuredMetadata: currentMeta,
   latestVersion,
@@ -1118,4 +1090,9 @@ const myMetaData: UnifiedMetadata<BaseDataEntity> = {
   customMetadata: { customField: 'customValue' }
 };
 
-export { fetchUserAreaDimensions };
+export { fetchUserAreaDimensions, transformProjectToUnifiedMetadata };
+
+export type {
+  AdditionalMetaDataOptions, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
+  SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
+};

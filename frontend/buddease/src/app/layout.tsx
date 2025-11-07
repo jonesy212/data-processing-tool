@@ -1,27 +1,42 @@
 // layout.tsx
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseData } from "@/app/models/data/Data";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AppSnapshot, AppEntity } from '@/app/typings/entities/AppEntity';
-import { AppUnifiedMetadata, AppStructuredMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseData } from "@/app/models/data/Data";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { EventManager } from "@/app/state/stores/DataStore";
+import { AppEntity, AppSnapshot } from '@/app/typings/entities/AppEntity';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import React from "react";
 import { useSnapshot } from "./context/SnapshotContext";
 import { version } from "./versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
+import RootLayout from './RootLayout';
+
 
 const area = fetchUserAreaDimensions().toString()
 const metadata: AppUnifiedMetadata = useMetadata(area);
 const currentMeta: AppStructuredMetadata = useMeta(area);
 const { snapshotMap } = useSnapshot<AppEntity>(); // Or a root alias snapshot
 const mappedSnapshot: Map<string, AppSnapshot> = snapshotMap;
+
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <RootLayout>
+          {children} {/* Your data-driven pages/components go here */}
+        </RootLayout>
+      </body>
+    </html>
+  );
+}
 
 
 export const defaultMetadata = <
@@ -120,17 +135,6 @@ export const defaultMetadata = <
 
   // Duplicate fields removed
 });
-
-export default function RootLayout({ children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
-}
 
 
 export const videoMetadataExample: AppUnifiedMetadata = {

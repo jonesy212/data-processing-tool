@@ -1,21 +1,23 @@
 // CalendarEvent.tsx
 
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-    getDefaultDocumentOptions,
+  getDefaultDocumentOptions,
 } from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
-import { createSubscriber } from '@/app/models/cypto/exchangeIntegration';
+import createSubscriber from '@/app/models/cypto/exchangeIntegration';
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-    PriorityTypeEnum,
-    StatusType,
+  PriorityTypeEnum,
+  StatusType,
 } from "@/app/models/data/StatusType";
-import { Member } from "@/app/models/teams/TeamMembers";
+import { Member } from "@/app/models/members/Member";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
@@ -28,14 +30,14 @@ import { VideoData } from '@/app/typings/videoTypes/Video';
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
-    NotificationTypeEnum,
-    useNotification
+  NotificationTypeEnum,
+  useNotification
 } from "@/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import {
-    AssignEventStore,
-    ReassignEventResponse,
-    useAssignEventStore,
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
@@ -44,40 +46,39 @@ import { useStore } from "./StoreProvider";
 
 import { EventActions } from "@/app/actions/EventActions";
 import {
-    SnapshotOperation,
-    SnapshotOperationType,
+  SnapshotOperation,
+  SnapshotOperationType,
 } from "@/app/actions/SnapshotActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
-import { combinedEvents } from "@/app/event/Event";
+import { combinedEvents } from "@/app/events/Event";
 import {
-    createSnapshotStore,
-    SnapshotStoreOptions,
-    useSnapshotManager,
+  createSnapshotStore,
+  SnapshotStoreOptions,
+  useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import {
-    AddEventPayload,
-    CalendarActionPayload,
-    CalendarActionType,
-    RemoveEventPayload,
-    SetEventStatusPayload,
-    UpdateEventPayload,
+  AddEventPayload,
+  CalendarActionPayload,
+  CalendarActionType,
+  RemoveEventPayload,
+  SetEventStatusPayload,
+  UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
 import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
 import { useDispatch } from "react-redux";
 
 import {
-    defaultCalendarEventManager
+  defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 import {
-    defaultScheduleCoordinator
+  defaultScheduleCoordinator
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
 import { dataStoreMethods, K, T } from '@/app/models/data/dataStoreMethods';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
-import { EventRecord } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
 import { SnapshotConfigProps } from "@/app/snapshots/SnapshotConfigProps";
 import SnapshotManagerOptions from "@/app/snapshots/SnapshotManagerOptions";
@@ -85,6 +86,7 @@ import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import { EventRecord } from "@/app/state/stores/DataStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
@@ -92,6 +94,13 @@ import { MobXRootState } from "./RootStores";
 
 const dispatch = useDispatch()
 const { subscriber, tempSubscriber } = createSubscriber();
+
+const exchangeData = {
+  type: ExchangeDataTypeEnum.TRADES, // or whatever type you need
+  data: {
+    getAll: () => [] // Your actual data here
+  }
+};
 
 type SnapshotWithCriteriaOrBase = Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>;
 
@@ -157,7 +166,7 @@ interface CommonCalendarManagerMethods<
     reassignData: ReassignEventResponse[]
   ) => void;
   completeAllEvents: () => void;
-  setDynamicNotificationMessage: (message: Message) => void;
+  setDynamicNotificationMessage: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 }
 
 export type ActionType =
@@ -187,7 +196,7 @@ export interface CalendarManagerStore<
   IncludedFields extends keyof T = keyof T
 > {
   // dispatch: (action: PayloadAction<any, string, any, any>) => void;
-  openScheduleEventModal: (content: JSX.Element) => void;
+  openScheduleEventModal: (content: React.JSX.Element) => void;
   openCalendarSettingsPage: () => void;
   getData: (id: string) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
@@ -234,7 +243,7 @@ export interface CalendarManagerStore<
   completeAllEventsSuccess: () => void;
   completeAllEvents: () => void;
   completeAllEventsFailure: (payload: { error: string }) => void;
-  setDynamicNotificationMessage: (message: Message) => void;
+  setDynamicNotificationMessage: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   handleRealtimeUpdate: (
     storeId: number,
     documentId: number,

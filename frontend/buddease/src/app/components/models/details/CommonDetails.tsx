@@ -33,7 +33,8 @@ const CommonDetails = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>({
+  IncludedFields extends keyof T = keyof T
+>({
   data,
   customizations,
 }: CommonDetailsProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {

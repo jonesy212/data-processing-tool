@@ -638,17 +638,24 @@ export interface DocumentOptions<
 const area = fetchUserAreaDimensions().toString()
 
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
-export const getDefaultDocumentOptions = (): DocumentOptions => {
+export const getDefaultDocumentOptions = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): DocumentOptions => {
   // todo update dynamic conent version
   const versionData = "document of version 1.0.0";
   const checksum = computeChecksum(versionData);
 
   return {
-    previousMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
-    currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+    previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     documentOptions: {
-      previousMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
-      currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+      previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,
@@ -875,22 +882,22 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   setServices: [],
   notes: [],
   buildNumber: "1",
-  latestVersion: createLatestVersion<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(),
+  latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
   schema: {},
   metadata: {
     author: "system",
     timestamp: new Date().toISOString(),
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
-    metadataEntries: {} as MetadataEntriesType<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
-    latestVersion: createLatestVersion<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(),
+    metadataEntries: {} as MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     schema: {}
     },
     backend: undefined,
     frontend: undefined,
 
     checksum: "",
-    version: version as VersionImpl<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
+    version: version as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: new Date().toISOString(),
     user: "Buddease",
     comments: [],
@@ -920,7 +927,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   additionalOptions: undefined,
   language: LanguageEnum.English,
   setDocumentPhase: (
-    phase: string | Phase<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | undefined,
+    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     // Internal logic for additional parameters

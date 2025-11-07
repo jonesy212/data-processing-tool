@@ -86,7 +86,7 @@ type AppUserData = UserData<
   UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
 >;
 
-type AppUserProfile = UserProfile;
+type AppUserProfile = UserProfile<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
 type AppUserSnapshot = Snapshot<
   UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields

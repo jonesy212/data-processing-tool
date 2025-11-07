@@ -1,15 +1,19 @@
 // Import necessary libraries or modules
+import { create } from 'ipfs-core';
 import { ethers } from 'ethers';
-import IPFS from 'ipfs';
 import { getConfigsData } from '@/app/api/getConfigsApi';
 import { ipfsConfig } from '@/app/config/ipfsConfig';
 import { useAuth } from '@/context/AuthContext';
-import { CustomDAppAdapter } from '@/DApp';
-import { DAppAdapterConfig, DappProps } from '@/DAppAdapterConfig';
+import { CustomDAppAdapter } from '@/app/utils/web3/dAppAdapter/DApp'
+import { DAppAdapterConfig, DappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { documentOptions } from '@/app/hooks/userScenarioCreation';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { PoolConfig } from 'mysql';
-  
+import { ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields } from '@/app/typings/entities/ExtendedDappEntity'
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BassDataRoot } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+
 // Get configs data and handle the case where it returns undefined
 const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
 
@@ -24,22 +28,34 @@ interface ExtendedDappProps extends DappProps {
   userApiResponse: any;
 }
 
-interface ExtendedDAppAdapterConfig extends DAppAdapterConfig<ExtendedDappProps> {
-  // Additional properties related to IPFS
+
+interface ExtendedDAppAdapterConfig<
+  T extends BaseDataEntity,
+  K extends T,
+  Meta extends DefaultMeta<T, K>,
+  AttachmentType extends Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   ipfsConfig: typeof ipfsConfig;
   ethereumRpcUrl: string; // Add ethereumRpcUrl property
-
 }
 
 
 const currentUser = useAuth().state.user; // Get the current user using the useAuth hook
 
 
-let dappAdapterConfig: DAppAdapterConfig<ExtendedDappProps>;
+let dappAdapterConfig: DAppAdapterConfig<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>;
 
 if (currentUser) {
   // Ensure that currentUser is properly structured according to DappProps['currentUser']
-  const currentUserForDapp: DappProps['currentUser'] = {
+  const currentUserForDapp: DappProps<
+    ExtendedDappEntity,
+    ExtendedDappK,     
+    ExtendedDappMeta,  
+    ExtendedDappAttachment,
+    ExtendedDappExcludedFields,
+    ExtendedDappIncludedFields>['currentUser'] = {
     id: currentUser.id, // Assign the user's ID
     username: currentUser.username, // Assign the user's name
     role: String(currentUser.role), // Convert UserRole to string and assign it as the user's role
@@ -61,26 +77,84 @@ if (currentUser) {
 }
 
 
-export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
-  private ipfs: IPFS;
+export class ExtendedDAppAdapter<
+  T extends BaseDataEntity = BassDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  extends CustomDAppAdapter {
+  private ipfs: Awaited<ReturnType<typeof create>> | null = null;
   private ethereumProvider: ethers.JsonRpcProvider;
   
-  constructor(config: ExtendedDAppAdapterConfig) {
-    super(config as DAppAdapterConfig<ExtendedDappProps>);
+  constructor(config: ExtendedDAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
+    super(config);
 
     // Initialize IPFS
-    this.ipfs = new IPFS(config.ipfsConfig);
+  this.initializeIPFS(config.ipfsConfig);
 
     // Initialize Ethereum provider
     this.ethereumProvider = new ethers.JsonRpcProvider(config.ethereumRpcUrl);
+
+    // ✅ MOVED: Check extendedProps inside constructor or a method
+    this.initializeWithConfig();
   }
 
-  // Extend other methods as needed
+  // ✅ ADD: Method to handle config initialization
+  private initializeWithConfig(): void {
+    // Check if extendedProps is defined before using it
+    if (extendedProps && 'systemApiData' in extendedProps && 'userApiData' in extendedProps) {
+      // Use extendedProps here
+      console.log(extendedProps.systemApiData);
+      console.log(extendedProps.userApiData);
+    } else {
+      console.error('Failed to fetch configs data');
+    }
+  }
+
+  private async initializeIPFS(ipfsConfig: any): Promise<void> {
+    try {
+      this.ipfs = await create({
+        // ✅ Correct ipfs-core configuration
+        start: true,
+        repo: `ipfs-repo-${Math.random()}`, // Unique repo for each instance
+        config: {
+          Addresses: {
+            Swarm: [
+              `/ip4/${ipfsConfig.ipfsHost || '127.0.0.1'}/tcp/${ipfsConfig.swarmPort || 4001}`,
+              `/ip4/${ipfsConfig.ipfsHost || '127.0.0.1'}/tcp/${ipfsConfig.swarmPort || 4002}/ws`
+            ],
+            API: `/ip4/${ipfsConfig.ipfsHost || '127.0.0.1'}/tcp/${ipfsConfig.apiPort || 5001}`,
+            Gateway: `/ip4/${ipfsConfig.ipfsHost || '127.0.0.1'}/tcp/${ipfsConfig.gatewayPort || 8080}`
+          }
+        }
+      });
+      console.log('IPFS node initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize IPFS:', error);
+      throw error;
+    }
+  }
+
+  private async ensureIPFSReady(): Promise<void> {
+    if (!this.ipfs) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      return this.ensureIPFSReady();
+    }
+  }
 
   async storeFileOnIPFS(file: Buffer): Promise<string> {
-    // Add the file to IPFS and get the hash
+    // ✅ FIXED: Wait for IPFS to be ready
+    await this.ensureIPFSReady();
+    
+    if (!this.ipfs) {
+      throw new Error('IPFS not initialized');
+    }
+
+    // ✅ FIXED: Use ipfs-core API (different from old IPFS package)
     const result = await this.ipfs.add(file);
-    const ipfsHash = result[0].hash;
+    const ipfsHash = result.cid.toString(); // ✅ Different property access
 
     // Store the IPFS hash on the Ethereum blockchain
     await this.storeIPFSHashOnEthereum(ipfsHash);
@@ -88,32 +162,24 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
     return ipfsHash;
   }
 
-  
-
-
   private async getConfigsData(): Promise<ExtendedDappProps> {
     // Get configuration data from your application
-    // Get the current user using the useAuth hook
     const currentUser = useAuth().state.user;
 
-    let dappAdapterConfig: DAppAdapterConfig<ExtendedDappProps>;
+    let dappAdapterConfig: DAppAdapterConfig<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>;
 
     if (currentUser) {
-      // Ensure that currentUser is properly structured according to DappProps['currentUser']
       const currentUserForDapp: DappProps['currentUser'] = {
-        id: currentUser.id, // Assign the user's ID
-        name: currentUser.username, // Assign the user's name
-        role: String(currentUser.role), // Assign the user's role
-        teams: currentUser.teams, // Assign the user's teams
-        projects: currentUser.projects, // Assign the user's projects
-        teamMembers: currentUser.teamMembers, // Assign the user's team members
+        id: currentUser.id,
+        username: currentUser.username,
+        role: String(currentUser.role),
+        teams: currentUser.teams,
+        projects: currentUser.projects,
+        teamMembers: currentUser.teamMembers,
       };
 
-      // Now you can use `currentUser` in your DAppAdapterConfig
       dappAdapterConfig = {
-        // Other properties...
         dappProps: {
-          // Include other DappProps configurations...
           currentUser: currentUserForDapp,
           ipfsConfig: ipfsConfig,
           ethereumRpcUrl: '',
@@ -177,14 +243,13 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
         },
       };
     }
-    return 
+
+    return dappAdapterConfig?.dappProps as ExtendedDappProps;
   }
 
   private async storeIPFSHashOnEthereum(ipfsHash: string): Promise<void> {
-    // Connect to Ethereum wallet (you may need to handle user authentication)
     const config = this.getConfig();
   
-    // Ensure that the Ethereum private key is available in the config
     if (!config.dappProps.fluenceConfig.ethereumPrivateKey) {
       throw new Error('Ethereum private key is missing in the configuration');
     }
@@ -192,39 +257,16 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
     const privateKey = config.dappProps.fluenceConfig.ethereumPrivateKey;
     const wallet = new ethers.Wallet(privateKey, this.ethereumProvider);
   
-    // Retrieve contract address and ABI from environment variables
-    const contractAddress = process.env.CONTRACT_ADDRESS; // Replace with your contract address from .env
-    const contractABI: any[] = JSON.parse(process.env.CONTRACT_ABI || '[]'); // Replace with your contract ABI from .env
+    const contractAddress = process.env.CONTRACT_ADDRESS;
+    const contractABI: any[] = JSON.parse(process.env.CONTRACT_ABI || '[]');
   
-    // Check if contract address is provided
     if (!contractAddress) {
       throw new Error('Contract address is missing in the configuration');
     }
 
-    // Connect to the contract
     const contract = new ethers.Contract(contractAddress, contractABI, wallet);
-  
-    // Call the Ethereum contract function to store IPFS hash
     await contract.storeIPFSHash(ipfsHash);
-
-    // The function should return void, so we don't return anything here
-    return;
   }
-
-
-
-
-// Check if extendedProps is defined before using it
-if (extendedProps: { systemApiData: any; userApiData: any; }) {
-  // Use extendedProps here
-  // For example:
-  console.log(extendedProps.systemApiData);
-  console.log(extendedProps.userApiData);
-} else {
-  console.error('Failed to fetch configs data');
-}
-
-  
 }
 
 // Usage example

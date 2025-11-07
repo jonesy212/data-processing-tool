@@ -1,6 +1,6 @@
 // ApiVideo.ts
 import { VideoActions } from "@/app/actions/VideoActions";
-import internalApiService from "./ApiClient";
+import internalApiService from '@/app/api/ApiClient';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";

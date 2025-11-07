@@ -1,14 +1,25 @@
 // TaskSlice.ts
-import { updateTaskPosition } from "@/app/api/TasksApi";
+import { TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields } from '@/app/typings/entities/TagEntity';
+import { MeetingEntity,
+MeetingK,
+MeetingMeta,
+MeetingAttachment,
+MeetingExcludedFields,
+MeetingIncludedFields} from '@/app/typings/entities/MeetingEntity';
+import { updateTaskPositionAPI } from '@/app/api/TasksApi';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Action } from '@/app/hooks/userInterface/ActionList'
+
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Tag } from "@/app/components/models/tracker/Tag";
+import { Tag } from "@/app/models/tracker/Tag";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { WritableDraft } from "@/app/ReducerGenerator";
-import { AllStatus } from "@/app/stores/DetailsListStore";
-import { MobXRootState } from "@/app/stores/RootStores";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { MobXRootState } from "@/app/state/stores/RootStores";
 import {
   PayloadAction,
   ThunkAction,
@@ -16,13 +27,20 @@ import {
 } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { updateTask } from "./CollaborationSlice";
-
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
 // Inside the function where `notify` is used
 const { notify } = useNotification();
 
-interface TaskState {
+interface TaskState<
+  T extends BaseDataEntity = MeetingEntity, 
+  K extends T = MeetingK, 
+  Meta extends DefaultMeta<T, K> = MeetingMeta, 
+  AttachmentType extends Attachment = MeetingAttachment,
+  ExcludedFields extends keyof T = MeetingExcludedFields,
+  IncludedFields extends keyof T = MeetingIncludedFields
+> {
   id: string;
-  tasks: Task[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   loading: boolean;
   error: string | null;
   updateTaskTitle: (title: { id: string; title: string }) => void;
@@ -33,8 +51,8 @@ interface TaskState {
   dueDate: Date | null;
   priority: PriorityTypeEnum;
   taskStatus: AllStatus;
-  entitiesLoaded: { [key: string]: Task };
-  tags: Tag<BaseData<any>>[];
+  entitiesLoaded: { [key: string]: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
+  tags: Tag<TagEntity>[];
   draggingTaskId: string | null;
 }
 
@@ -148,8 +166,8 @@ export const filterTasks = async (
   return Promise.resolve({ userId, query });
 };
 
-type DraftableTask = WritableDraft<Omit<Task, 'assignedTo' | 'scheduled'>> & {
-  assignedTo: User[] | User | null;
+type DraftableTask = WritableDraft<Omit<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 'assignedTo' | 'scheduled'>> & {
+  assignedTo: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] | User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> | null;
   scheduled?: WritableDraft<ScheduledData>;
 };
 
@@ -158,7 +176,7 @@ export const useTaskManagerSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    createTask: (state, action: PayloadAction<WritableDraft<Task>>) => {
+    createTask: (state, action: PayloadAction<WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>>) => {
       state.tasks.push(action.payload);
     },
 
@@ -169,7 +187,7 @@ export const useTaskManagerSlice = createSlice({
 
     fetchTasksSuccess(
       state,
-      action: PayloadAction<{ tasks: WritableDraft<Task>[] }>
+      action: PayloadAction<{ tasks: WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>[] }>
     ) {
       state.loading = false;
       state.tasks = action.payload.tasks;
@@ -186,7 +204,7 @@ export const useTaskManagerSlice = createSlice({
             : Object.values(task.tags);
     
           tagArray.forEach((tag) => {
-            let writableTag: WritableDraft<Tag<BaseData<any>>>;
+            let writableTag: WritableDraft<Tag<TagEntity>>;
     
             if (typeof tag === "string") {
               // Create a mock Tag object from string
@@ -196,10 +214,10 @@ export const useTaskManagerSlice = createSlice({
                 getOptions: () => [],
                 getId: () => tag,
                 localeCompare: () => 0,
-              } as unknown as WritableDraft<Tag<BaseData<any>>>;
+              } as unknown as WritableDraft<Tag<TagEntity>>;
             } else {
               // Use immer `produce` to create a writable draft
-              writableTag = produce(tag, () => {}) as WritableDraft<Tag<BaseData<any>>>;
+              writableTag = produce(tag, () => {}) as WritableDraft<Tag<TagEntity>>;
             }
     
             // Add if not already in tags
@@ -213,7 +231,7 @@ export const useTaskManagerSlice = createSlice({
 
     entitiesLoaded(
       state,
-      action: PayloadAction<{ tasks: WritableDraft<Task>[] }>
+      action: PayloadAction<{ tasks: WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>[] }>
     ) {
       state.tasks = action.payload.tasks;
     },
@@ -223,11 +241,11 @@ export const useTaskManagerSlice = createSlice({
       state.error = action.payload.error;
     },
 
-    addTask: (state, action: PayloadAction<WritableDraft<Task>>) => {
+    addTask: (state, action: PayloadAction<WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>>) => {
       state.tasks.push(action.payload);
     },
 
-    addTaskSuccess(state, action: PayloadAction<{ task: WritableDraft<Task> }>) {
+    addTaskSuccess(state, action: PayloadAction<{ task: WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> }>) {
       state.tasks.push(action.payload.task);
     },
 
@@ -306,7 +324,7 @@ export const useTaskManagerSlice = createSlice({
     },
 
     
-    resizeTask(state, action: PayloadAction<{ task: Task; newSize: number }>) {
+    resizeTask(state, action: PayloadAction<{ task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>; newSize: number }>) {
       const { task, newSize } = action.payload;
       const index = state.tasks.findIndex((t) => t.id === task.id);
 
@@ -318,9 +336,9 @@ export const useTaskManagerSlice = createSlice({
           if (task.assignedTo) {
             draft.assignedTo = Array.isArray(task.assignedTo)
               ? task.assignedTo.map((user) =>
-                  produce(user, (userDraft) => userDraft) as WritableDraft<User>
+                  produce(user, (userDraft) => userDraft) as WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>
                 )
-              : produce(task.assignedTo, (userDraft) => userDraft) as WritableDraft<User>;
+              : produce(task.assignedTo, (userDraft) => userDraft) as WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>;
           } else {
             draft.assignedTo = null;
           }
@@ -530,7 +548,7 @@ export const useTaskManagerSlice = createSlice({
       state.tasks = state.tasks.filter((task) => task.id !== taskId);
     },
 
-    selectTasks(state, action: PayloadAction<WritableDraft<Task>[]>) {
+    selectTasks(state, action: PayloadAction<WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>[]>) {
       state.tasks = action.payload;
     },
 

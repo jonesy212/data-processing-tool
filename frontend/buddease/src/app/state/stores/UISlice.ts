@@ -10,26 +10,24 @@ import { CollaborationState } from "@/app/state/redux/slices/CollaborationSlice"
 import { produce } from 'immer';
 
 // Define interface for UI-related state
+// Define interface for UI-related state
 interface UIState {
+  // Layout
+  currentPage: string | null;
+  currentLayout: string | null;
+  isSidebarOpen: boolean;
+  showModal: boolean;
+  
+  // Loading & Errors
   isLoading: boolean;
   error: string | null;
-  showModal: boolean;
-  notification: {
-    message: string;
-    type: "success" | "error" | "warning" | "info" | null;
-  };
-  currentPhase: PhaseHookConfig | null;
-  previousPhase: PhaseHookConfig | null;
-  isSidebarOpen: false,
-  selectedTheme: 'light',
-  selectedLanguage: 'en'
+  
+  // Interaction
   pointerPosition: {
-    x: 0,
-    y: 0
-  },
-  isPointerDown: false,
-  collaborationState: CollaborationState | null
-  // Define UI-related state properties here
+    x: number;
+    y: number;
+  };
+  isPointerDown: boolean;
 }
 
 

@@ -2,14 +2,14 @@
 import  { useState } from "react";
 import CustomFile from "@/app/documents/File";
 import React from "react";
-
+import { AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields } from '@/app/typings/entities/FileEntity'
 const FilePreview: React.FC = () => {
-  const [file, setFile] = useState<CustomFile | null>(null);
+  const [file, setFile] = useState<CustomFile<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      const customFile: CustomFile = {
+      const customFile: CustomFile<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> = {
         ...selectedFile,
         uploader: "User123",
         uploadDate: new Date(),

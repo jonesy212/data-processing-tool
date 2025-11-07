@@ -9,9 +9,12 @@ import {
   fetchDataSuccess,
   removeData as removeDataAction,
   updateDataDetails as updateDataDetailsAction
-} from '@/app/state/redux/slices/DataSlices'; // Adjust based on your project structure
+} from '@/app/state/redux/slices/DataSlice'; // Adjust based on your project structure
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useDispatch } from 'react-redux';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 interface BaseDataOperations<
   T extends BaseDataEntity,
@@ -33,7 +36,8 @@ class BaseDataManager<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> implements BaseDataOperations<T> {
+  IncludedFields extends keyof T = keyof T
+> implements BaseDataOperations<T> {
   private dispatch = useDispatch();
 
   async fetchData(): Promise<void> {
@@ -47,11 +51,11 @@ class BaseDataManager<
     }
   }
 
-  addData(newData: Snapshot<T>): void {
+  addData(newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     this.dispatch(addDataAction(newData)); // Ensure you have the correct action for adding
   }
 
-  updateData(id: number, newData: Snapshot<T>): void {
+  updateData(id: number, newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     this.dispatch(updateDataDetailsAction({ dataId: id.toString(), updatedDetails: newData }));
   }
 

@@ -1,11 +1,12 @@
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { SecurityReport, SecurityScanResult } from '@/app/typings/securityMeasureTypes';
 import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
@@ -18,7 +19,6 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { DataWithPriority } from "@/app/utils/versionUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,
@@ -97,7 +97,7 @@ function isEnhancedSnapshotData<
       // Core nested properties with proper types
       core: firstEntry.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       shared: firstEntry.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      identity: firstEntry.identity || {} as SnapshotIdentity,
+      identity: firstEntry.identity || {} as SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       security: firstEntry.security || {
         isEncrypted: false,
         isSigned: false,
@@ -122,7 +122,7 @@ function isEnhancedSnapshotData<
           hipaaCompliant: false,
           pciCompliant: false,
         },
-        getSecurityMeasure: () => "",
+        getSecurityMeasure: (measureId: string) => undefined,
         validateIntegrity: () => true,
         verifySignature: () => true,
         checkPermissions: () => true,
@@ -193,7 +193,7 @@ function isEnhancedSnapshotData<
       ...input,
       core: input.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       shared: input.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      identity: input.identity || {} as SnapshotIdentity,
+      identity: input.identity || {} as SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       security: input.security || {} as SnapshotSecurity,
       // ... other required properties
     } as unknown as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -429,7 +429,7 @@ function hasPriority<T extends Partial<DataWithPriority>>(
 }
 
 export {
-  findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
+    findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
 };
 export type { EnhancedSnapshotData };
 

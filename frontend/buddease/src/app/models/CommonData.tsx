@@ -5,10 +5,12 @@ import DetailsProps from "@/app/components/models/data/Details";
 import { TradeData } from "@/app/components/trading/TradeData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CryptoData } from "@/app/dataIntegration/parseData";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
@@ -18,7 +20,6 @@ import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { ProjectData } from "@/app/models/projects/Project";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
 import { AllTypes } from "@/app/typings/PropTypes";
@@ -81,24 +82,11 @@ interface UserOwned<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
   > extends SharedTimestamps,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   assignedUser?: string | null;
   documentOwner?: string;
 }
 
-
-interface Taggable<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
-  categories?: string[];
-  keywords?: string[];
-}
 
 
 interface Describable {
@@ -148,7 +136,7 @@ interface CommonData<
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
   UserOwned<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  Taggable<T>,
   Identifiable,
   Describable,
   Timestamped,
@@ -175,7 +163,7 @@ interface CommonData<
   data?: DataWithOmittedFields<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
   projectId?: string;
-  categories?: string[];
+  categories?: Category[];
   documentType?: DocumentTypeEnum | string | null;
   documentStatus?: string;
   documentOwner?: string;
@@ -403,5 +391,5 @@ const CommonDetails = <
   );
 };                                                            
 export default CommonDetails;
-export type { CommonData, ConditionalCommonData, Customizations, DocumentContent, SharedTimestamps, StatusTrackable, SupportedData, Taggable, Timestamped };
+export type { CommonData, ConditionalCommonData, Customizations, DocumentContent, SharedTimestamps, StatusTrackable, SupportedData, Timestamped };
 

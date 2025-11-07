@@ -1,39 +1,37 @@
+import { Contributor } from '@/app/collaborators/Collaborator';
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Comment } from '@/app/models/comments/Comments';
+import { Taggable } from '@/app/models/tracker/Tag'
+import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
+import { Task } from '@/app/models/tasks/Task';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Permission } from '@/app/permissions/Permission';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { TagsRecord } from '@/app/models/tracker/Tag'
+import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
+import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
+import { Video } from '@/app/typings/videoTypes/Video';
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
+import { Version } from '@/app/versions/Version';
+import { VersionData, VersionHistory } from '@/app/versions/VersionData';
+import * as path from 'path';
+import { useState } from 'react';
 // StructuredMetadata.ts
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
-import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Permission } from '@/app/permissions/Permission'
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { Taggable } from '@/app/models/CommonData';
-import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
-import { Video } from '@/app/typings/videoTypes/Video';
-import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
-import { Version } from '@/app/versions/Version';
-import { Comment } from '@/app/models/comments/Comments';
-import { Task } from '@/app/models/tasks/Task';
-import { Contributor } from '@/app/collaborators/Collaborator';
-import { BaseConfig, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { MyDataType } from '@/app/config/MetaDataOptions';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { VersionData, VersionHistory } from '@/app/versions/VersionData';
-import * as path from 'path';
-import { useState } from 'react';
 
 // Full 4-argument version (recommended)
 interface SpecificMetadata<
@@ -44,7 +42,7 @@ interface SpecificMetadata<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   categories?: CategoryProperties<T, K>[];
   priority?: number;
   customFields?: Record<string, any>;
@@ -66,7 +64,7 @@ type TagsType<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-> = TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+> = TagsRecord<T> | string[] | undefined;
 
 type MetaBase = {
   id?: string;                 // identifier
@@ -116,11 +114,11 @@ interface StructuredMetadata<
 > extends
   SharedTimestamps,
   SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedMetadata: SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedBaseData: SharedRelationshipData<K>;
-  taggable: Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  taggable: Taggable<T>;
   description?: string;
   fileType?: string;
   alternatePaths?: string[];
@@ -150,7 +148,7 @@ interface VideoMetadata<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedTimestamps,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   baseData: Omit<BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>; // Updated
   meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   title: string;
@@ -186,7 +184,7 @@ interface VideoMetadata<
   chapters: string[];
   thumbnailUrl: string;
   metadataSource: string;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   childIds: K[]; // Add childIds
   relatedData: K[]; // Add relatedData
@@ -200,7 +198,7 @@ interface ProjectMetadata<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedTimestamps,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   projectName: string;
   startDate: Date | undefined;
   endDate?: Date | undefined;
@@ -216,7 +214,7 @@ interface ProjectMetadata<
   contributors: Contributor[]
   links: string[]
   customFields?: Record<string, any>
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined
+  tags?: string[] | TagsRecord<T> | undefined
   isActive: boolean;
   permissions?: Permission[] | string[];
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
@@ -263,7 +261,7 @@ interface MetadataEntry<
   copyright: string;
   license: string;
   links: string[];
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[];
+  tags?: string[] | TagsRecord<T>;
 }
 
 type StringKeys<T> = Extract<keyof T, string>;
@@ -276,12 +274,12 @@ function convertTags<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
-): TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] {
+  tags?: string[] | TagsRecord<T>
+): TagsRecord<T> | string[] {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags;
 
-  const newTags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  const newTags: TagsRecord<T> = {} as TagsRecord<T>;
   for (const key in tags) {
     const stringKey = key as StringKeys<T>;
     newTags[stringKey] = tags[stringKey]; // K-compatible
@@ -478,7 +476,14 @@ const useUndoRedo = <T>(initialState: T) => {
 };
 
 
-function validateVideoMetadata<T extends BaseData<any>>(metadata: VideoMetadata<T>): VideoMetadata<T> {
+function validateVideoMetadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(metadata: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     ...metadata,
     // Validate strings: Replace empty strings with "N/A" or another default value
@@ -499,12 +504,7 @@ function validateVideoMetadata<T extends BaseData<any>>(metadata: VideoMetadata<
 
 
 
-const videoMetadata: VideoMetadata<
-  MyDataType,
-  MyDataType,
-  DefaultMeta<MyDataType, MyDataType>,
-  never,
-  string | number | symbol> = {
+const videoMetadata: VideoMetadataVideo<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields> = {
   title: "Example Video",
   url: "https://example.com/video",
   duration: 300, // 5 minutes
@@ -533,8 +533,9 @@ const videoMetadata: VideoMetadata<
     name: "Sample Data",
     createdAt: new Date(),
     updatedAt: new Date(),
-    childIds: [] as K[],
-    relatedData: []
+    childIds: [] as VideoK[],
+    relatedData: [],
+    transactionHistory: []
   },
   frameRate: 30,
   bitrate: 0,
@@ -548,8 +549,8 @@ const videoMetadata: VideoMetadata<
   metadataSource: '',
 
   baseData: [],
-  metadata: {} as UnifiedMetadata<MyDataType, MyDataType, DefaultMeta<MyDataType, MyDataType>, , never, string | number | symbol>,
-  meta: {} as StructuredMetadata<MyDataType, MyDataType>,
+  metadata: {} as UnifiedMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>,
+  meta: {} as StructuredMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>,
   childIds: [],
   relatedData: [],
 
@@ -561,3 +562,4 @@ const validatedVideoMetadata = validateVideoMetadata(videoMetadata);
 
 export { getStructureMetadataPath, projectMetadata, transformProjectToStructured, useUndoRedo, videoMetadata };
 export type { MetadataEntriesType, MetadataEntry, ProjectMetadata, SpecificMetadata, StructuredMetadata, VideoMetadata };
+

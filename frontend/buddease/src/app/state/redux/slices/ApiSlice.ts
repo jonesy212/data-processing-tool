@@ -13,9 +13,10 @@ import { Phase } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
 import { EncryptionSetting, Permission } from "@/app/permissions/Permission";
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { ApiConfig } from "@/app/services/ConfigurationService";
+import  ApiConfig from '@/app/api/ApiConfig';
+
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { InitializedState } from "@/app/state/stores/DataStore";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { Attachment, PhaseEntity, PhaseExcluded, PhaseK, PhaseMetaType } from '@/app/typings/entities/PhaseEntity';

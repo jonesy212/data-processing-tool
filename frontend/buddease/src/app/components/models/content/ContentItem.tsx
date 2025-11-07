@@ -4,6 +4,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { Tag } from "@/app/models/tracker/Tracker";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { useState } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Check if the tag is an instance of Tag
 function isTagObject(tag: string | Tag<any>): tag is Tag<any> {
@@ -40,13 +41,20 @@ interface ContentItem {
 }
 
 // Define the props interface for the ContentItem component
-interface ContentItemProps {
+interface ContentItemProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
   // Common props
   id?: string;
   title?: string;
   content?: string;
   // Specific props
-  item?: DetailsItem<Data<any>>;
+  item?: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 const ContentItemComponent: React.FC<ContentItemProps> = ({

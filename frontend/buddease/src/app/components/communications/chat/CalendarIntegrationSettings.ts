@@ -33,7 +33,7 @@ interface ScreenShareSettings {
 
 
 
-export { ChatSettings,
+export type {
 CalendarIntegrationSettings,
 VoiceSettings,
 VideoSettings,

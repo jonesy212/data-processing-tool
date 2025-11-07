@@ -1,16 +1,27 @@
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Task } from "@/app/components/models/tasks/Task";
+import { ProjectManagementEntity, ProjectManagementK, ProjectManagementMeta, ProjectManagementAttachment, ProjectManagementExcludedFields, ProjectManagementIncludedFields } from '@/app/typings/entities/ProjectManagementEntity';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { useNotification } from '@/app/context/NotificationContext';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Project } from '@/app/models/projects/Project';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectState } from "./ProjectSlice";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Define and export the Notification type
 
-interface ProjectManagerState extends ProjectState {
-  tasks: Record<string, Task>;
+interface ProjectManagerState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  extends ProjectState {
+  tasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   milestones: Record<string, Milestone>;
   notifications: Record<string, NotificationData>;
   loading: boolean;
@@ -19,7 +30,7 @@ interface ProjectManagerState extends ProjectState {
 
 const initialState: ProjectManagerState = {
   projects: [],
-  tasks: {} as Record<string, Task>,
+  tasks: {} as Record<string, Task<ProjectManagementEntity, ProjectManagementK, ProjectManagementMeta, ProjectManagementAttachment, ProjectManagementExcludedFields, ProjectManagementIncludedFields>>,
   milestones: {},
   notifications: {},
   loading: false,
@@ -30,6 +41,11 @@ const initialState: ProjectManagerState = {
     current: 0,
     max: 100,
     percentage: 0,
+    name: '',
+    color: '',
+    description: '',
+    min: '',
+    done: '',
   },
   project: null,
   error: null,
@@ -54,13 +70,13 @@ export const projectManagerSlice = createSlice({
     updateProject: (state, action: PayloadAction<Project>) => {
       // Add logic to update a project here
     },
-    addTask: (state, action: PayloadAction<Task>) => {
+    addTask: (state, action: PayloadAction<Task<ProjectManagementEntity, ProjectManagementK, ProjectManagementMeta, ProjectManagementAttachment, ProjectManagementExcludedFields, ProjectManagementIncludedFields>>) => {
       // Add logic to add a task here
     },
     removeTask: (state, action: PayloadAction<string>) => {
       // Add logic to remove a task here
     },
-    updateTask: (state, action: PayloadAction<Task>) => {
+    updateTask: (state, action: PayloadAction<Task<ProjectManagementEntity, ProjectManagementK, ProjectManagementMeta, ProjectManagementAttachment, ProjectManagementExcludedFields, ProjectManagementIncludedFields>>) => {
       // Add logic to update a task here
     },
     addMilestone: (state, action: PayloadAction<Milestone>) => {

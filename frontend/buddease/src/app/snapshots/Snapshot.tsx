@@ -18,11 +18,6 @@ import {
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
-import {
-  DataStore,
-  EventRecord,
-  InitializedState,
-} from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
   SnapshotsArray,
@@ -30,11 +25,16 @@ import {
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
+import {
+  DataStore,
+  EventRecord,
+  InitializedState,
+} from "@/app/state/stores/DataStore";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/DataEntity";
-import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from "@/app/typings/entities/AppEntity";
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from "@/app/typings/entities/DataEntity";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
@@ -626,7 +626,7 @@ const plainDataObject: Record<string, Data<DataEntity,
       persona: new Persona(PersonaTypeEnum.Default),
       settings: {
         id: "",
-        filter: (key: keyof Settings) => {},
+        filter: (key: keyof UserSettings) => {},
         appName: "buddease",
         userId: 123,
         userSettings: setTimeout(() => {}, 1000), // Example timeout
@@ -945,12 +945,14 @@ const plainDataObject: Record<string, Data<DataEntity,
           activity: "",
           action: "Logged in",
           timestamp: new Date(),
+          type: ''
         },
         {
           id: "",
           activity: "",
           action: "Updated profile",
           timestamp: new Date(),
+          type: ''
         },
       ],
       socialLinks: {
@@ -978,6 +980,7 @@ const plainDataObject: Record<string, Data<DataEntity,
         allowMessagesFromFriendContacts: true,
         activityStatus: {} as ActivityStatus,
         isAuthorized: true,
+        canSendMessages, canViewProfile, canSeeFriends, canSeeActivity,
       },
       activityStatus: "Online",
       isAuthorized: true,
@@ -1256,6 +1259,7 @@ const plainDataObject: Record<string, Data<DataEntity,
                 { action: "Created snapshot", timestamp: new Date() },
                 { action: "Edited snapshot", timestamp: new Date() },
               ],
+              transactionType, currency, timestamp, status,
             };
             return clonedData;
           },
@@ -1357,6 +1361,9 @@ const {
   categoryProperties,
   delegate,
   snapshotData,
+  timestamp
+  tags,
+  initialState
 } = storeProps;
 
 
@@ -1547,13 +1554,14 @@ const snapshotConfig: SnapshotConfig<MyEntity, MyK, MyMeta, MyExcludedFields> = 
       // Implement your emit logic here
     },
 
-    initialConfig: {} as SnapshotConfig<MyEntity, MyK, MyMeta, MyExcludedFields>,
+    initialConfig: {} as InitializedConfig,
     records: {} as Record<
       string,
       CalendarManagerStoreClass<MyEntity, MyK, MyMeta, MyExcludedFields>[]
     >,
     onInitialize: (callback: () => void) => {},
     subscribe: (
+      snapshotId: string,
       event: string,
       callback: (snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>) => void
     ) => {},
@@ -1974,8 +1982,8 @@ const snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields> = {
 
     const {
       schema,
-expirationDate,
-callback,
+      expirationDate,
+      callback,
       endpointCategory,
       initialState,
       name

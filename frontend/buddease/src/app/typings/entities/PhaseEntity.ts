@@ -12,12 +12,13 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseEntity  } from '@/app/config/BaseConfig';
 import { PhaseStructuredMetadata } from '@/app/typings/phaseTypes'
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
 // Define the actual PhaseEntity interface
-interface PhaseEntity extends BaseDataEntity {
+interface PhaseEntity
+  extends BaseEntity<BaseDataRoot> {
   id: string;
   name: string;
   description?: string;
@@ -165,7 +166,7 @@ export type {
   PhaseEntity, 
   PhaseNotificationSettings, 
   PhaseSettings ,
-  // Metadata types
+  // Metadata tmypes
   PhaseUnifiedMetadata, PhaseWithDetails, PublicPhaseProfile,
 
 };

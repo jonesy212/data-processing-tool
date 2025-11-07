@@ -3,6 +3,9 @@ import { RealtimeData } from "@/app/models/realtime/RealtimeData";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 const useRealtimeExchangeData = <

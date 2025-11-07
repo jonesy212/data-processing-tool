@@ -1,12 +1,12 @@
 // pages/index.tsx
-import RootLayout from "@/app/RootLayout";
 import useMessagingSystem from "@/app/components/communications/chat/useMessagingSystem";
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { UserRole } from "@/app/models/UserRole";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import PaymentForm from "@/app/payment/PaymentForm";
 import { rootStores } from "@/app/state/stores/RootStores";
 import { User } from "@/app/users/User";
-import generateDynamicContent from '@/components/documents/DynamicContentGenerator';
+import generateDynamicContent from '@/app/documents/DynamicContentGenerator';
 import { useAuth } from "@/context/AuthContext";
 import { authToken } from "@/app/server/auth/authToken";
 import { create } from "mobx-persist";
@@ -39,7 +39,7 @@ const Index: React.FC<{}> = () => {
 
     const authenticateUser = async () => {
       const timeBasedCode = generateTimeBasedCode();
-      const user: User = {
+      const user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
         // user object
         _id: "123",
         id: 1,
@@ -123,8 +123,6 @@ const Index: React.FC<{}> = () => {
 
 
   return (
-    <RootLayout>
-
       <Layout>
         <div>
           <YourApp />
@@ -136,7 +134,6 @@ const Index: React.FC<{}> = () => {
 
         </div>
       </Layout>
-    </RootLayout>
   );
 };
 

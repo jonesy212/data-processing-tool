@@ -19,17 +19,13 @@ import { BaseData, Data, DataDetails, DataDetailsComponent } from '@/app/models/
 import { CalendarStatus, MeetingStatus, StatusType } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/members/Member";
 import { Project, ProjectType } from "@/app/models/projects/Project";
-import { Team, TeamDetails } from "@/app/models/teams/Team";
+import { Team, TeamDetails } from "@/app/components/teams/Team";
 import { TeamMember } from '@/app/models/teams/TeamMembers';
 import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import AnalyzeData from "@/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import {
-  DataStore,
-  useDataStore,
-} from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
   snapshotFunction,
   SnapshotsArray,
@@ -49,16 +45,20 @@ import {
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import {
+  DataStore,
+  useDataStore,
+} from "@/app/state/stores/DataStore";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
 import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 import { User } from "@/app/users/User";
 import { addToSnapshotList, castToSnapshot, isSnapshotContainer } from '@/app/utils/snapshotUtils';
 import { processSnapshotData } from '@/app/utils/versionUtils';
 import { useEffect, useState } from "react";
-;
 
 
 // Define SnapshotWithData to include only essential properties and methods
@@ -172,7 +172,7 @@ export const addSnapshotHandler = <
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-  delegate: SnapshotStoreConfig<T, K>[],
+  delegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   typeGuard: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   if (delegate && delegate.length > 0) {
@@ -514,7 +514,6 @@ function CalendarApp<
     mapSnapshots: async function (
       storeIds: number[],
       snapshotId: string,
-      category?: Category,      
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
@@ -526,7 +525,6 @@ function CalendarApp<
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category?: Category,        
         categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         timestamp: string | number | Date | undefined,
@@ -535,8 +533,10 @@ function CalendarApp<
         id: number,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: K,
-        index: number
+        index: number,
+        category?: Category,        
       ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      category?: Category,      
     ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       // Initialize an array to store results from callback executions
       const result: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
@@ -574,14 +574,15 @@ function CalendarApp<
     mapSnapshotStore: function (
       storeId: number,
       snapshotId: string,
-      category?: Category,      categoryProperties: CategoryProperties | undefined,
-      snapshot: Snapshot<any, any>,
+      categoryProperties: CategoryProperties | undefined,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
       id: number,
-      snapshotStore: SnapshotStore<any, any>,
-      data: any
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      data: any,
+      category?: Category,      
     ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
@@ -608,7 +609,7 @@ function CalendarApp<
       throw new Error("Function not implemented.");
     },
     updateStoreData: function (
-      data: Data<T>,
+      data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       id: number,
       newData: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): void {
@@ -616,13 +617,13 @@ function CalendarApp<
     },
     getDelegate: function (context: {
       useSimulatedDataSource: boolean;
-      simulatedDataSource: SnapshotStoreConfig<T, K>[];
-    }): Promise<SnapshotStoreConfig<T, K>[]> {
+      simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    }): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       throw new Error("Function not implemented.");
     },
     updateDelegate: function (
-      config: SnapshotStoreConfig<T, K>[]
-    ): Promise<SnapshotStoreConfig<T, K>[]> {
+      config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+    ): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       throw new Error("Function not implemented.");
     },
     getSnapshot: function (
@@ -632,7 +633,7 @@ function CalendarApp<
           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           category?: Category;
           categoryProperties: CategoryProperties;
-          dataStoreMethods: DataStore<T, K>;
+          dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           timestamp: string | number | Date | undefined;
           id: string | number | undefined;
           snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -644,13 +645,13 @@ function CalendarApp<
       throw new Error("Function not implemented.");
     },
     getSnapshotWithCriteria: function (
-      category?: Category,
       timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: T
-    ): Promise<SnapshotWithCriteria<T, K> | undefined> {
+      data: T,
+      category?: Category,
+    ): Promise<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
     getSnapshotContainer: function (
@@ -676,12 +677,13 @@ function CalendarApp<
       throw new Error("Function not implemented.");
     },
     getSnapshotWithCriteriaVersions: function (
-      category?: Category,      timestamp: any,
+      timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: T
-    ): Promise<SnapshotWithCriteria<T, K>[] | undefined> {
+      data: T,
+      category?: Category   
+    ): Promise<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
       throw new Error("Function not implemented.");
     },
   };
@@ -716,10 +718,10 @@ function CalendarApp<
 
   const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots, } =  new useSnapshotStore(addToSnapshotList);
 
-  const snapshotManager = useSnapshotManager<Todo<T, K, Meta>, K>(storeId); // Initialize the snapshot manager
+  const snapshotManager = useSnapshotManager<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(storeId, storeProps); // Initialize the snapshot manager
 
   // Define the CalendarEvent object
-  const calendarEvent: CalendarEvent<T, K> = {
+  const calendarEvent: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> = {
     id: "1",
     title: "Meeting",
     description: "Discuss project plans",
@@ -751,16 +753,16 @@ function CalendarApp<
     status: StatusType.Upcoming,
     rsvpStatus: "yes",
     priority: "",
-    host: {} as Member,
+    host: {} as Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     teamMemberId: "",
     participants: [],
     then: function<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T>(callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
       if (this as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
         callback(this as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       }
@@ -776,8 +778,7 @@ function CalendarApp<
     meta: {},
     getSnapshotStoreData: async function (
       
-    ): Promise<SnapshotStore<CalendarEvent<T, K>, K, 
-    UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]> {
+    ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       return [];
     }
   };
@@ -994,7 +995,7 @@ function CalendarApp<
           leader: {
             username: "Charlie Brown",
             role: UserRoles.TeamLeader,
-          } as User,
+          } as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           pointOfContact: {
             username: "Dana White",
             role: UserRoles.Coordinator,

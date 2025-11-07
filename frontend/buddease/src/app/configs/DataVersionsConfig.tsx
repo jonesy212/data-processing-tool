@@ -1,7 +1,7 @@
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import AppStructure, { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { useDataStore } from "@/app/state/stores/DataStore";
 import React from "react";
 
 interface DataVersionsProps {

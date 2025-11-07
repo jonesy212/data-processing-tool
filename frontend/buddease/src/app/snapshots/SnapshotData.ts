@@ -1,43 +1,39 @@
 // SnapshotData.ts
-import { Data } from '@/app/models/data/Data'
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { Order } from "@/app/components/crypto/Orders";
-import { Attachment } from '@/app/documents/attachment/Attachment'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { SharedIdentifiers, SharedSnapshotProperties, BaseEntityProperties } from "@/app/documents/RelatedProps";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { ChildRelationship, SharedRelationshipData } from '@/app/models/data/Data';
+import { Category, SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
+import { ChildRelationship, Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { BaseEntity } from '@/app/config/BaseConfig';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
-import { SnapshotInitialization } from '@/app/snapshots/SnapshotInitialization';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { AuditRecord } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
 import { VersionHistory } from "@/app/versions/VersionData";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotMethods } from "./SnapshotMethods";
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import SnapshotStore from "./SnapshotStore";
-import { InitializedData } from "./SnapshotStoreOptions";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 
 interface SnapshotBaseProperties<
   T extends BaseDataEntity,
@@ -66,7 +62,7 @@ interface SnapshotBaseProperties<
     snapshotId: number,
     snapshotData: T,
     dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-     categoryProperties?: CategoryProperties,
+    categoryProperties?: CategoryProperties,
     category?: Category
   ) => Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
   deleteSnapshot: (id: string) => void;
@@ -94,7 +90,7 @@ interface SnapshotBaseProperties<
   // Optional common properties with defaults
   methods?: any[];
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
 }
 
 // Optional: If you need type-safe methods
@@ -116,7 +112,7 @@ interface CustomSnapshotData<
   IncludedFields extends keyof T = keyof T
 > extends BaseDataEntity,
   SharedRelationshipData<K>,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  SharedIdentifiers<T, K>,
   SnapshotBaseProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   timestamp: string | number | Date
@@ -135,12 +131,15 @@ interface SnapshotCoreBase<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedIdentifiers<T, K> {
   dataObject?: Record<string, unknown>;
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isCore?: boolean;
-  initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-  config?: any;
+  initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+  config?: 
+  | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
+  | null;
   onInitialize?: (callback: () => void) => void;
   onError?: (error: Error) => void;
   taskIdToAssign?: string;
@@ -154,7 +153,7 @@ interface SnapshotCoreBase<
   storage: SnapshotStorage<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotIds?: string[];
   description?: string;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[];
+  tags?: TagsRecord<T>| string[];
   state?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topic?: string;
   meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -162,7 +161,7 @@ interface SnapshotCoreBase<
   // Config and category
   configOption?: string | SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   priority?: string | PriorityTypeEnum;
-   categoryProperties?: CategoryProperties;
+  categoryProperties?: CategoryProperties;
   
   // Lifecycle and status
   isExpired: () => boolean | undefined;
@@ -266,12 +265,12 @@ interface SnapshotCoreBaseWithoutMethods<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedIdentifiers<T, K> {
   dataObject?: Record<string, unknown>;
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isCore?: boolean;
-  initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  config?: any;
+  initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   onError?: (error: Error) => void;
   taskIdToAssign?: string;
 }
@@ -307,7 +306,7 @@ interface SnapshotData<
   versionHistory?: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Additional lifecycle
-  initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
   taskIdToAssign?: string;
   schema?: Record<string, SchemaField>;
@@ -440,6 +439,6 @@ interface HierarchyExport<
 }
 
 export type {
-  CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotCoreBase, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
+    CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotCoreBase, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
 };
 

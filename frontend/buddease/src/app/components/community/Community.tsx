@@ -1,14 +1,14 @@
 // Community.tsx
-import ProjectManagementApp from '@/app/projects/projectManagement/ProjectManagementApp';
-import ProjectManagementSimulation from '@/app/projects/projectManagement/ProjectManagementSimulation';
 import BlogComponent from '@/app/components/blogs/BlogComponent';
 import CommunityDetails from '@/app/components/community/CommunityDetails';
-import CommunityProjectsPage from '@/app/pages/community/CommunityProjectsPage';
-import { Team } from '@/app/models/teams/Team';
-import { TeamMember } from '@/app/models/teams/TeamMembers';
-import { Product } from '@/app/products/Product';
-import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/app/utils/web3/dAppAdapter/IPFS';
 import WeThePeoplePage from '@/app/components/community/WeThePeoplePage';
+import { Team } from '@/app/components/teams/Team';
+import { TeamMember } from '@/app/models/teams/TeamMembers';
+import CommunityProjectsPage from '@/app/pages/community/CommunityProjectsPage';
+import { Product } from '@/app/products/Product';
+import ProjectManagementApp from '@/app/projects/projectManagement/ProjectManagementApp';
+import ProjectManagementSimulation from '@/app/projects/projectManagement/ProjectManagementSimulation';
+import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/app/utils/web3/dAppAdapter/IPFS';
 import React from 'react';
 
 

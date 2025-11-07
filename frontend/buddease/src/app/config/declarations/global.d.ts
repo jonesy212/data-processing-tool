@@ -62,3 +62,10 @@ declare module 'presentationsLibrary' {
     createPresentation(name: string, slides: Slide[]): Presentation;
   }
 }
+
+
+declare module '@/app/config/MetaDataOptions' {
+  interface Taggable<T> {
+    semantic?: TagSemantic;
+  }
+}

@@ -1,5 +1,6 @@
 // urlGenerator.ts
-import { EndpointConfigurations, EndpointConfig } from '@/app/api/endpointConfigurations';
+import { endpointConfigurations } from '@/app/api/endpointConfigurations'
+import { EndpointConfigurations, EndpointConfig } from '@/app/api/EndpointConfig';
 import { BASE_URL } from '@/app/api/baseUrl';
 
 /**

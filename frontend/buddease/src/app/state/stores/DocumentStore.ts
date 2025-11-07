@@ -1,27 +1,46 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { ClientInformation } from '@/app/client/ClientInformation';
 import { DocumentPhaseTypeEnum } from "@/app/components/documents/editing/DocumentPhaseType";
-import { useNotification } from '@/app/context/NotificationContext';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Version } from '@/versions/Version';
-import { DocumentPath } from "@/app/documents/DocumentPath";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Comment } from "@/app/models/comments/Comments";
-import { Content } from "@/app/models/content/AddContent";
-import { BaseData } from '@/app/models/data/Data';
-import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
-import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
-import { UserRoleEnum } from '@/app/models/UserRoles';
-import { AllTypes } from "@/app/typings/PropTypes";
+import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
+import { useNotification } from '@/app/context/NotificationContext';
+import { ResearchReport, TechnicalReport } from '@/app/documentation/documents/report/Report';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ModifiedDate } from '@/app/documents/DocType';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { DocumentPath } from "@/app/documents/DocumentPath";
+import { DocumentPermissions } from '@/app/documents/DocumentPermissions';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Comment } from "@/app/models/comments/Comments";
+import { Content } from "@/app/models/content/AddContent";
+import { BaseData, TodoSubtasks } from '@/app/models/data/Data';
+import { FileData } from '@/app/models/data/FileData';
+import { FolderData } from '@/app/models/data/FolderData';
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
+import { UserRoleEnum } from '@/app/models/UserRoles';
+import { FinancialReport } from '@/app/server/ServerDocumentGenerator';
+import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import { AllTypes } from "@/app/typings/PropTypes";
+import { AccessHistory } from '@/app/versions/AccessHistory';
+import { Version } from '@/app/versions/Version';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
+import { DocumentSize } from './../../documents/DocumentOptions';
+import { DocumentWithBuilderProps } from './../../hooks/userScenarioCreation';
+import { VersionData } from './../../versions/VersionData';
+import { WritableDraft } from './../redux/ReducerGenerator';
+import { AllStatus } from './DetailsListStore';
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -63,7 +82,9 @@ interface DocumentContent<
 // Base Document Interfaces
 // ---------------------------
 
-
+// ---------------------------
+// Base Document Interfaces
+// ---------------------------
 interface DocumentBase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -71,30 +92,31 @@ interface DocumentBase<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SharedTimestamps
-{
+> extends SharedIdentifiers<T, K>,
+          SharedTimestamps,
+          Entity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+
   // Core identification
   id: string | number;
-  _id: string;
+  _id?: string; // optional here for domain-only
   _rev?: string;
   
   // Document metadata
   name?: string;
   title: string;
   description?: string;
-  
+
   // Versioning
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
+
   // Status and type
   status?: AllStatus;
   type?: AllTypes;
   documentType: string | DocumentTypeEnum;
   visibility: AllTypes;
   phaseType: PhaseTypeEnums;
-  
+
   // Timestamps
   createdDate?: string | Date;
   createdByRenamed?: string;
@@ -103,69 +125,70 @@ interface DocumentBase<
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
   timestamp?: Date;
-  
+
   // Content
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
-  
+
   // Metadata
   currentMeta: Meta;
   previousMeta?: Meta;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
+
   // File handling
   file?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   files?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   filePath?: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   folder?: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   folders: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  
+
   // Document structure
   document?: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
   selectedDocuments?: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
-  artwork?: any[]; // Should be properly typed based on your usage
+
+  // Optional additional content
+  artwork?: any[];
   clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   supportedLanguages?: string[];
   body?: WritableDraft<HTMLElement> | HTMLElement;
-  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
-  
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
+
   // Organization
   topics?: string[];
   highlights?: string[];
   keywords?: string[];
-  category?: string;
-  
+  category?: Category;
+
   // Permissions and access
   permissions?: DocumentPermissions;
   accessHistory: AccessHistory[];
   requiredRole?: UserRoleEnum;
   isPrivate?: boolean;
-  
+
   // Document properties
   locked?: boolean;
   changes?: boolean | string | string[];
   documentSize: DocumentSize;
   url?: string;
   source?: string;
-  
+
   // Reports
   report?: FinancialReport | TechnicalReport | ResearchReport;
-  
+
   // Options and configuration
   options?: DocumentOptions;
   folderPath: string;
   documentOptions?: DocumentWithBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
+
   // Workflow
-  documentPhase?: DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentPhase?: DocumentPhaseEnum<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subtasks?: TodoSubtasks;
-  
+
   // Browser/document properties
   bgColor?: string;
   documentURI?: string;
@@ -175,47 +198,17 @@ interface DocumentBase<
   ownerDocument?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   scrollingElement?: Element | null;
   timeline?: DocumentTimeline;
-  
-  // Database specific fields
-  _attachments?: Record<string, any>;
-  _links?: Record<string, any>;
-  _etag?: string;
-  _local?: boolean;
-  _revs?: string[];
-  _source?: Record<string, any>;
-  _shards?: Record<string, any>;
-  _size?: number;
-  _version?: number;
-  _version_conflicts?: number;
-  _seq_no?: number;
-  _primary_term?: number;
-  _routing?: string;
-  _parent?: string;
-  _parent_as_child?: boolean;
-  
-  // Search/Elasticsearch fields
-  _slices?: any[];
-  _highlight?: Record<string, any>;
-  _highlight_inner_hits?: Record<string, any>;
-  _source_as_doc?: boolean;
-  _source_includes?: string[];
-  _routing_keys?: string[];
-  _routing_values?: string[];
-  _routing_values_as_array?: string[];
-  _routing_values_as_array_of_objects?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
-  
+
   // Methods
   load?(content: any): void;
 }
+
 
 interface DocumentMetadata {
   characterSet: string;
   charset: string;
   compatMode: string;
-contentType: string;
+  contentType: string;
   cookie: string;
   designMode: string;
   dir: string;
@@ -242,14 +235,15 @@ interface DocumentAdditionalProps <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> {
+  IncludedFields extends keyof T = keyof T
+  > {
   URL: string;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
   defaultView: Window | undefined;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, K, Meta> | null;
+  ownerDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   scrollingElement: Element | null;
   readyState: string;
   timeline: DocumentTimeline | undefined;
@@ -265,12 +259,12 @@ interface DocumentAdditionalProps <
   implementation?: DOMImplementation;
   links?: any;
   location?: Location;
-  onfullscreenchange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
-  onfullscreenerror?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
-  onpointerlockerror?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
-  onpointerlockchange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null
-  onreadystatechange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
-  onvisibilitychange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
+  onfullscreenchange?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null;
+  onfullscreenerror?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null;
+  onpointerlockerror?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null;
+  onpointerlockchange?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null
+  onreadystatechange?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null;
+  onvisibilitychange?: ((this: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ev: Event) => any) | null;
   pictureInPictureEnabled?: boolean;
 
   plugins?: any;
@@ -296,7 +290,7 @@ interface Document<
     DocumentAdditionalProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
   artwork?: any[];
-  clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  clientInformation?: ClientInformation;
   supportedLanguages?: string[];
   body?: WritableDraft<HTMLElement> | HTMLElement;
   comments?: Comment[] | Comment;
@@ -327,7 +321,6 @@ export interface DocumentStore<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  AttachmentType extends Attachment = Attachment
 > {
   documents: Record<string, Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   fetchDocuments: () => void;
@@ -351,7 +344,7 @@ const useDocumentStore = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, AttachmentType> => {
+>(): DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const [documents, setDocuments] = useState<Record<string, Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -409,7 +402,7 @@ const useDocumentStore = <
   const loadCalendarEventsDocumentContent = async (
     eventId: string,
     area?: string
-  ): Promise<DocumentContent<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
+  ): Promise<DocumentContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     try {
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
       const meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
@@ -518,7 +511,7 @@ const useDocumentStore = <
     }
   };
 
-  const store: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, AttachmentType> = makeAutoObservable({
+  const store: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = makeAutoObservable({
     documents,
     isLoading,
     error,

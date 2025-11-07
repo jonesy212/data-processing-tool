@@ -245,6 +245,7 @@ function* completeAllTasksSuccessSaga(): Generator<Effect, void, any> {
   } catch (error) {
     yield put(TaskActions.completeAllTasksFailure({ error: String(error) }));
   }
+}
 
 function resetStateVariables() {
   return TaskActions.resetTaskState(); // Uses the actual action creator
@@ -510,7 +511,10 @@ export function* watchTaskSagas() {
   // Ideas operations
   yield takeLatest(TaskActions.updateTaskIdeas.type, updateTaskIdeasSaga);
 }
+
 export function* taskSagas()
 {
   yield watchTaskSagas()
 }
+
+

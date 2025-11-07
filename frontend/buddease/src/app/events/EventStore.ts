@@ -5,7 +5,6 @@ import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { EventRecord, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -14,6 +13,7 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { EventRecord, InitializedState } from "@/app/state/stores/DataStore";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 

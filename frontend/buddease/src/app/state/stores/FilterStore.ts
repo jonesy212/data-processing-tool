@@ -8,16 +8,32 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch
 import { FilterActions } from "@/app/actions/FilterActions";
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
-import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
+import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
-interface FilteredEventsState {
-  payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
+interface FilteredEventsState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  payload: (ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent)[];
 }
 
-class FilterStore {
-  filteredEvents: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[] = [];
+class FilterStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent)[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -48,14 +64,14 @@ const filtered = useSelector<RootState, FilteredEventsState>((state) => state.fi
   };
 
   setFilteredEvents = (
-    events: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[]
+    events: (ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent)[]
   ) => {
     this.filteredEvents = events;
   };
 
 
 
-  addFilteredEvent = (event: ExtendedCalendarEvent | CalendarEvent | HighlightEvent) => {
+  addFilteredEvent = (event: ExtendedCalendarEvent | CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | HighlightEvent) => {
     this.filteredEvents = [...this.filteredEvents, event];
   };
 

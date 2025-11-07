@@ -8,11 +8,14 @@ import { TokenActionTypes } from '@/app/tokens/TokenActions';
 import { Dispatch, useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { AppActions, AppActionsType } from '@/app/actions/AppActions';
-import { RealtimeData, RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
+import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { EventActions } from '@/app/actions/EventActions';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 

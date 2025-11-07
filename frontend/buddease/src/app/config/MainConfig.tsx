@@ -10,11 +10,23 @@ import { FrontendConfig } from "./FrontendConfig";
 import BackendStructure from "@/app/server/database/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
 import getAppPath from "./appStructure/appPath";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+
 const { TabPane } = Tabs;
 
-interface MainConfigProps {
-  frontendStructure: FrontendStructure;
-  backendStructure: BackendStructure;
+interface MainConfigProps<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backendStructure: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendConfig: FrontendConfig;
   backendConfig: BackendConfig;
 }

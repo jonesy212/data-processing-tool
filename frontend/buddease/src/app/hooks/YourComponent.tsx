@@ -11,7 +11,8 @@ import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from "@/app/models/data/StatusType";
-import { ApiConfig } from "@/app/services/ConfigurationService";
+import  ApiConfig from '@/app/api/ApiConfig';
+
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { storeProps, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
@@ -455,7 +456,7 @@ const updatedPayload: UpdateSnapshotPayload<Data<BaseData<any>>> = {
 
 export type UpdateSnapshotFn = (
   snapshotId: string,
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   events: any,
   snapshotStore: any,
   dataItems: any[],

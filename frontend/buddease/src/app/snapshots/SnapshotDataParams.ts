@@ -1,13 +1,13 @@
 // SnapshotDataParams.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SnapshotEvent } from "@/app/typings/eventTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 

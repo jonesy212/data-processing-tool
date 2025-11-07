@@ -1,11 +1,16 @@
+import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
 //CalendarEvent.ts
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Label } from '@/app/branding/BrandingSettings';
-import { Team } from "@/app/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import { NotificationType } from '@/app/context/NotificationContext';
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
 import { Member } from '@/app/models/members/Member';
@@ -14,18 +19,15 @@ import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimens
 import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
 import { ReminderSettings } from '@/app/settings/Reminder';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { data, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { data } from "@/app/snapshots/SnapshotWithCriteria";
+
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { useMeta } from "@/app/config/useMeta";
-import { useMetadata } from "@/app/config/useMetadata";
 import { Attendee } from "../components/calendar/Attendee";
 
 type CalendarEventBase = BaseDataEntity & {
@@ -91,7 +93,7 @@ interface CalendarEvent<
   action?: string;
   changes?: string[];
   date: string | Date | undefined;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
+  tags?: string[] | TagsRecord<T> | undefined; 
   meta: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
   options?: {
@@ -101,7 +103,7 @@ interface CalendarEvent<
     additionalOptionsLabel?: string;
     // ...  
   };
-  documentPhase?: WritableDraft<Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>>>;   // Add more properties if needed
+  documentPhase?: WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;   // Add more properties if needed
   status?: AllStatus;
   isCompleted?: boolean;
   isActive?: boolean;

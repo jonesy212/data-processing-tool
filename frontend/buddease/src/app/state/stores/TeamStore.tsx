@@ -3,14 +3,16 @@ import userService from "@/app/api/ApiUser";
 import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
 import { useAssignBaseStore } from "@/app/AssignBaseStore";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useNotification } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Meta } from '@/app/models/data/dataStoreMethods';
 import { Phase } from '@/app/models/phases/Phase';
 import { Project } from "@/app/models/projects/Project";
-import { Team } from "@/app/models/teams/Team";
 import { TeamData } from "@/app/models/teams/TeamData";
 import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig, SnapshotStoreProps, TagsRecord } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
@@ -21,12 +23,10 @@ import { VideoData } from "@/app/video/Video";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import {
-    AssignTeamMemberStore,
-    useAssignTeamMemberStore,
+  AssignTeamMemberStore,
+  useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CustomPhase<T extends BaseData<any>, K extends T> = Phase<CustomData<T, K>, BaseData<any>>;
 
@@ -36,7 +36,7 @@ interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
   title: string;
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
-  tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  tags: TagsRecord<T>;
   phase: CustomPhasea<T, K> | null;
   // Add other properties as needed to match the structure of Data
 }

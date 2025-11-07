@@ -1,7 +1,7 @@
 import { Snapshot } from '@/app/snapshots/Snapshot'; // Removed snapshotStore import as it's not used
 import useSnapshotManager from '@/app/hooks/useSnapshotManager';
 import { Data } from '@/app/models/data/Data';
-import { Team } from '@/models/teams/Team';
+import { Team } from '@/app/components/teams/Team';
 import { useAssignTeamMemberStore } from '@/app/state/stores/AssignTeamMemberStore';
 
 interface TeamSnapshot extends Snapshot<Team[]> {

@@ -2,15 +2,16 @@
 import {
   SnapshotsArray,
   SnapshotsObject
-} from "@/app/LocalStorageSnapshotStore";
+} from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
-import { WrappedU } from "@/app/isCompatibleTempData";
+import { WrappedU } from "@/app/snapshots/isCompatibleTempData";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // ------------------------
 // mapSnapshots
@@ -39,7 +40,6 @@ export const MapMethods = {
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       timestamp: string | number | Date | undefined,
@@ -48,7 +48,8 @@ export const MapMethods = {
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       data: K,
-      index: number
+      index: number,
+      category?: Category,
     ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     
     category?: Category,

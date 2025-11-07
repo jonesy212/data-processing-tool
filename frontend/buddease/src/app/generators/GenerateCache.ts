@@ -31,8 +31,11 @@ import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import { backendConfig } from "@/app/config/BackendConfig";
 import { frontendConfig } from "@/app/config/FrontendConfig";
 import userSettings from "@/app/config/UserSettings";
-import BackendStructure from "@/app/config/appStructure/IBackendStructure";
+import IBackendStructure from "@/app/config/appStructure/IBackendStructure";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 const initialData: any = {}; 
 
@@ -47,12 +50,12 @@ export interface CacheData<
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-> extends Data<CacheData> {
+> extends Data<CacheData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   _id: string,
   lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendStructure: FrontendStructure<BaseData<any>, BaseData<any>>;
-  backendStructure: BackendStructure;
+  backendStructure: IBackendStructure;
   frontendConfig: typeof frontendConfig
   userSettings: typeof userSettings;
   realtimeData:  RealtimeData

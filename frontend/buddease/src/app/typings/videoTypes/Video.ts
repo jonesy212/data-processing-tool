@@ -1,10 +1,10 @@
 
 import { Label } from '@/app/branding/BrandingSettings';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 
 
 export interface Video {
@@ -34,7 +34,7 @@ interface VideoData<
 > extends
   SharedTimestamps,
   SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   // explicitly redefine conflicting fields to match both
   id: string; // Video says string, overrides SharedIdentifiers
   isActive: boolean; // Video says boolean, overrides SharedStatusFlags

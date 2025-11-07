@@ -10,9 +10,16 @@ export interface TaskReport {
   // Define the properties of the task report
 }
 
-class TaskReportGenerator {
+class TaskReportGenerator<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   // Generate task report based on task data
-  static generateTaskReport(tasks: Task[]): TaskReport {
+  static generateTaskReport(tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): TaskReport {
     // Implement logic to generate task report
     const taskReport: TaskReport = {
         // Initialize task report properties and calculate metrics

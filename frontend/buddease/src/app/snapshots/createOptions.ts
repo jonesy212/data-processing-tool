@@ -10,11 +10,11 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from "@/app/models/display/ShowToast";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore, EventRecord, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { convertSnapshotsObjectToArray } from '@/app/snapshots/createSnapshotStoreOptions';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore, EventRecord, useDataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
@@ -34,9 +34,9 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import {
-	InitializedDelegate,
-	MetaDataOptions,
-	SnapshotStoreOptions
+  InitializedDelegate,
+  MetaDataOptions,
+  SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
 
 

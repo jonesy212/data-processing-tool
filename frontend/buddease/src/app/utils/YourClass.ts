@@ -1,13 +1,23 @@
+// YourClass.ts
 import { fluenceApiKey, DappProps } from './web3/dAppAdapter/DAppAdapterConfig';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { CustomDocumentOptionProps } from "@/app/utils/web3/dAppAdapter/DApp";
-import { UserRole } from "@/app/models/UserRole";
+import UserRoles from '@/app/models/UserRoles';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
-// YourClass.ts
 // Example implementation of YourClass with combined functionality
-class YourClass {
-  customizeTheme(themeConfig: any, dappProps?: DappProps): YourClass {
+class YourClass<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> {
+  customizeTheme(themeConfig: any, dappProps?: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): YourClass {
     console.log("Customizing theme with:", themeConfig);
     // Implement your customization logic here
     // Example: Applying theme configuration to UI elements
@@ -273,7 +283,7 @@ const dappProps: DappProps = {
   currentUser: {
     id: "",
     username: "",
-    role: UserRole.Member,
+    role: UserRoles.Member,
     teams: [],
     projects: [],
     teamMembers: [],
@@ -288,54 +298,230 @@ const dappProps: DappProps = {
   documentOptions: {} as CustomDocumentOptionProps,
   documentSize: {} as DocumentSize, 
   enableRealTimeUpdates: false,
-  fluenceConfig: {
-    //todo update
-    ethereumPrivateKey: fluenceApiKey,
-    networkId: 1,
-    gasPrice: 1000000000,
-    contractAddress: "0x...",
+  
+  // ✅ All configurations are now nested under the configurations object
+  configurations: {
+    fluenceConfig: {
+      ethereumPrivateKey: fluenceApiKey,
+      networkId: 1,
+      gasPrice: 1000000000,
+      contractAddress: "0x...",
+    },
+    aquaConfig: {
+      maxConnections: 10,
+      timeout: 30000,
+      secureConnection: true,
+      reconnectAttempts: 3,
+      autoReconnect: true,
+    },
+    realtimeCommunicationConfig: {
+      audio: true,
+      video: true,
+      text: true,
+      collaboration: true,
+    },
+    phasesConfig: {
+      ideation: true,
+      teamCreation: true,
+      productBrainstorming: true,
+      productLaunch: true,
+      dataAnalysis: true,
+    },
+    communicationPreferences: {
+      defaultCommunicationMode: "text",
+      enableRealTimeUpdates: true,
+    },
+    dataAnalysisConfig: {
+      meaningfulResultsThreshold: 80,
+    },
+    collaborationOptionsConfig: {
+      collaborativeEditing: true,
+      documentVersioning: true,
+    },
+    projectTeamConfig: {
+      maxTeamMembers: 10,
+      teamRoles: [
+        "Project Manager", "Product Owner",
+        "Scrum Master", "Business Analyst",
+        "UI/UX Designer", "Software Developer",
+        "Quality Assurance Engineer",
+        "DevOps Engineer", "Data Scientist",
+        "Marketing Specialist", "Sales Representative",
+        "Customer Support", "Legal Counsel",
+      ]
+    },
+    securityConfig: {
+      encryptionEnabled: true,
+      twoFactorAuthentication: true,
+      sessionTimeout: 30,
+      passwordPolicy: {
+        minLength: 8,
+        requireSpecialChars: true,
+        requireNumbers: true,
+      },
+    },
+    
+    // ✅ Add all the other required configurations from your interface
+    appConfig: {
+      environment: 'development',
+      debugMode: true,
+      featureFlags: {},
+      supportedLanguages: ['en'],
+      defaultLanguage: 'en',
+    },
+    backendConfig: {
+      apiBaseUrl: '',
+      graphqlEndpoint: '',
+      restEndpoint: '',
+      timeout: 30000,
+      retryAttempts: 3,
+    },
+    frontendConfig: {
+      theme: 'light',
+      layout: 'fluid',
+      enableAnimations: true,
+      responsiveBreakpoints: {
+        mobile: 768,
+        tablet: 1024,
+        desktop: 1200,
+      },
+    },
+    databaseConfig: {
+      type: 'sqlite',
+      host: 'localhost',
+      port: 5432,
+      database: 'app',
+      synchronize: true,
+      logging: false,
+      connectionTimeout: 30000,
+    },
+    web3Config: {
+      network: 'testnet',
+      rpcUrl: '',
+      chainId: 1,
+      contracts: {},
+      gasLimit: 21000,
+      gasPrice: 20000000000,
+    },
+    documentConfig: {
+      maxFileSize: 10485760, // 10MB
+      allowedFileTypes: ['.pdf', '.doc', '.docx'],
+      autoSave: true,
+      autoSaveInterval: 30000,
+      versioning: true,
+      maxVersions: 10,
+    },
+    formConfig: {
+      validationMode: 'onChange',
+      showValidationErrors: true,
+      autoComplete: true,
+      submitMode: 'manual',
+    },
+    layoutConfig: {
+      header: {
+        visible: true,
+        fixed: true,
+      },
+      sidebar: {
+        visible: true,
+        collapsed: false,
+        position: 'left',
+      },
+      footer: {
+        visible: true,
+        fixed: false,
+      },
+    },
+    loggingConfig: {
+      level: 'info',
+      enableConsole: true,
+      enableFile: false,
+      maxFileSize: 5242880, // 5MB
+      logDirectory: './logs',
+    },
+    userPreferences: {
+      notifications: {
+        email: true,
+        push: true,
+        sms: false,
+      },
+      privacy: {
+        dataSharing: false,
+        analyticsEnabled: true,
+        personalizedAds: false,
+      },
+      accessibility: {
+        highContrast: false,
+        largeText: false,
+        screenReader: false,
+      },
+    },
+    metadataConfig: {
+      autoGenerate: true,
+      validation: true,
+      indexing: true,
+      searchable: true,
+      maxTags: 10,
+    },
+    ipfsConfig: {
+      gateway: 'https://ipfs.io/ipfs/',
+      apiUrl: 'https://api.ipfs.io',
+      timeout: 30000,
+      pinning: true,
+    },
+    sessionConfig: {
+      idleTimeout: 900000, // 15 minutes
+      sessionTimeout: 86400000, // 24 hours
+      extendSession: true,
+    },
+    versioningConfig: {
+      enable: true,
+      maxVersions: 50,
+      autoPrune: true,
+      retentionPeriod: 2592000000, // 30 days
+    },
+    mappingConfig: {
+      autoMap: true,
+      strictMode: false,
+      fieldValidation: true,
+    },
+    uiConfig: {
+      theme: 'light',
+      language: 'en',
+      accessibility: {
+        highContrast: false,
+        fontSize: 14,
+      },
+    },
+    deploymentConfig: {
+      version: '1.0.0',
+      buildNumber: '1',
+      environmentVariables: {},
+    },
+    apiConfig: {} as ApiConfig, // You'll need to provide actual ApiConfig instance
+    performanceConfig: {
+      enableMetrics: true,
+      sampleRate: 0.1,
+      reportErrors: true,
+    },
+    browserConfig: {
+      supportedBrowsers: ['chrome', 'firefox', 'safari', 'edge'],
+      minimumVersions: {
+        chrome: '90',
+        firefox: '88',
+        safari: '14',
+        edge: '90',
+      },
+      featureDetection: true,
+    },
   },
-  aquaConfig: {} as DappProps["aquaConfig"],
-  realtimeCommunicationConfig: {
-    audio: true,
-    video: true,
-    text: true,
-    collaboration: true,
-  },
-
-  phasesConfig: { ideation: true, teamCreation: true,
-     productBrainstorming: true,
-     productLaunch: true,
-     dataAnalysis: true,
-   },
-  communicationPreferences: {
-    defaultCommunicationMode: "text",
-    enableRealTimeUpdates: true,
- },
-  dataAnalysisConfig: {
-    meaningfulResultsThreshold: 80,
-  },
-  collaborationOptionsConfig: {
-    collaborativeEditing: true,
-     documentVersioning: true,
-   },
-  projectTeamConfig: {
-    maxTeamMembers: 10,
-    teamRoles: [
-      "Project Manager", "Product Owner",
-      "Scrum Master", "Business Analyst",
-      "UI/UX Designer", "Software Developer",
-      "Quality Assurance Engineer",
-      "DevOps Engineer", "Data Scientist",
-      "Marketing Specialist", "Sales Representative",
-      "Customer Support", "Legal Counsel",
-    ]
- },
-  securityConfig: {
-    encryptionEnabled: true,
-     twoFactorAuthentication: true,
-   }
-}
+  
+  // ✅ Add any other top-level properties
+  environment: 'development',
+  apiKeys: {},
+  plugins: [],
+  customThemes: {},
+};
 
 // Use the concrete instance to call methods
 concreteInstance.enableRealtimeCollaboration()

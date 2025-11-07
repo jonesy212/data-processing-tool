@@ -1,12 +1,11 @@
-import { Taggable } from '@/app/models/CommonData';
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { BaseConfig } from '@/app/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Taggable } from '@/app/models/tracker/Tag'
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
 function convertBaseConfig<
   U extends BaseDataEntity,
@@ -53,7 +52,8 @@ function convertMetadata<
       category: "",
       timestamp: "",
       author: "",
-
+      isActive: true, 
+      meta: {} as StructuredMetadata<, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       mappedSnapshot: {} as Map<string, Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       events: {} as EventManager<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       latestVersion: createLatestVersion<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
@@ -64,7 +64,7 @@ function convertMetadata<
       schema: {},
     },
     sharedBaseData: {},
-    taggable: {} as Taggable<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    taggable: {} as Taggable<U>,
     metadataEntries: {} as MetadataEntriesType<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     keywords: [],
     permissions: [],

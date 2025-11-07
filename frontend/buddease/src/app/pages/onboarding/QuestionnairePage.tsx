@@ -1,7 +1,6 @@
 // QuestionnairePage.tsx
 import baseQuestionnaireData from "@/app/hooks/baseQuestionnaireData";
 import generateDynamicQuestions from "@/app/hooks/dynamicHooks/dynamicQuestionGenerator";
-import RootLayout from "@/app/RootLayout";
 import { UserData } from "@/app/users/User";
 import React from "react";
 import { Question } from "./Question"; // Adjust the import path as needed
@@ -62,7 +61,6 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
   };
 
   return (
-    <RootLayout>
       <div>
         <h2>{title}</h2>
         <p>{description}</p>
@@ -78,7 +76,6 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
           <button type="submit">Submit</button>
         </form>
       </div>
-    </RootLayout>
   );
 };
 

@@ -11,7 +11,7 @@ import { Category, generateOrVerifySnapshotId } from '@/app/libraries/categories
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/state/stores/DataStore';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { processSnapshot, Snapshot } from '@/app/snapshots/Snapshot';
@@ -219,7 +219,6 @@ const completeDataStoreMethods: <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  IncludedFields extends keyof T = keyof T
 >(
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
@@ -232,7 +231,6 @@ const completeDataStoreMethods: <
   }
 
 // Function to convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to Content
-// Updated function to convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to Content
 const convertSnapshotToContent = < 
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -261,10 +259,10 @@ const convertSnapshotToContent = <
     title: snapshot.title ?? "default-title",
     description: snapshot.description ?? "default-description",
     subscriberId: snapshot.subscriberId ?? "default-subscriber-id",
-    apiEndpoint: snapshot.apiEndpoint ? "default-apiEndpoint",
-    apiKey: snapshot.apiKey ? "default-apiKey",
-    timeout: snapshot.timeout ? "default-",
-    retryAttempts: snapshot.retryAttempts ? "default-retryAttempts",
+    apiEndpoint: snapshot.apiEndpoint ? "default-apiEndpoint" : undefined,
+    apiKey: snapshot.apiKey ? "default-apiKey" : undefined,
+    timeout: snapshot.timeout ? "default-" : undefined,
+    retryAttempts: snapshot.retryAttempts ? "default-retryAttempts" : undefined,
    
     category: snapshot.category,
     timestamp: snapshot.timestamp ?? new Date(),
@@ -611,8 +609,8 @@ const createSnapshotConfig = <
       timestamp: new Date(),
       category: "default-category",
       subscriberId: "default-subscriber-id",
-      meta: {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-      events: {} as CombinedEvents<T, K>
+      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      events: {} as CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     })
   }
 };
@@ -624,7 +622,6 @@ interface SnapshotStoreConfigWithMethods<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  IncludedFields extends keyof T = keyof T
 > extends SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   getAllSnapshots: (ref: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 }
@@ -638,7 +635,6 @@ export const useSnapshotManager = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  IncludedFields extends keyof T = keyof T
 >(
   initialStoreId: number,
   storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // ✅ explicitly passed in

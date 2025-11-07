@@ -1,24 +1,29 @@
 import { AllTypes } from '@/app/typings/PropTypes';
+import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SecuritySettings } from '@/app/settings/SecuritySettings'import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
+import { SecuritySettings } from '@/app/settings/SecuritySettings';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { CustomTransaction, SmartContractInteraction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { T } from "@/app/models/data/dataStoreMethods";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { Phase } from "@/app/models/phases/Phase";
 import { Project } from "@/app/models/projects/Project";
-import { Task, TaskData } from "@/app/models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
+import { TaskEntity } from "@/app/typings/entities/TaskEntity";
 import { Member } from "@/app/models/members/Member";
-import { NFT } from "@/app/models/crypto/NFT";
+import { NFT } from "@/app/service/crypto/NFT";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
-import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedState } from "@/app/state/stores/DataStore";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import { Snapshots } from "@/app/snapshots/";
+import { AppTask, TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
+import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import {  SnapshotWithCriteria, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import {  SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
@@ -27,13 +32,12 @@ import { Deadline } from "@/app/state/redux/slices/ProjectSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { Todo } from "@/app/todos/Todo";
-import { BaseResponseType } from "@/app/typings/responseType";
+import { BaseResponseType } from '@/app/typings/responseTypes'
 import { BlockchainAsset } from "@/app/typings/cryptoTypes/BlockchainAsset";
 import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
-import { VideoData } from "@/app/typings/videoTypes";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import { UserSettings } from "@/app/config/UserSettings";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 
 
 interface ActivityLogEntry {
@@ -174,7 +178,7 @@ export const userManagerSlice = createSlice({
       }
     },
 
-    updateData: (state, action: PayloadAction<WritableDraft<User>>) => {
+    updateData: (state, action: PayloadAction<WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>>) => {
       state.data = {
         ...state.data,
         ...action.payload,
@@ -226,7 +230,7 @@ export const userManagerSlice = createSlice({
 
     addUserFriend: (
       state,
-      action: PayloadAction<{ userId: string; friendId: WritableDraft<User> }>
+      action: PayloadAction<{ userId: string; friendId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
     ) => {
       const { userId, friendId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -237,7 +241,7 @@ export const userManagerSlice = createSlice({
 
     removeUserFriend: (
       state,
-      action: PayloadAction<{ userId: string; friendId: WritableDraft<User> }>
+      action: PayloadAction<{ userId: string; friendId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
     ) => {
       const { userId, friendId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -250,7 +254,7 @@ export const userManagerSlice = createSlice({
 
     blockUser: (
       state,
-      action: PayloadAction<{ userId: string; blockedUserId: WritableDraft<User> }>
+      action: PayloadAction<{ userId: string; blockedUserId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
     ) => {
       const { userId, blockedUserId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -269,7 +273,7 @@ export const userManagerSlice = createSlice({
         state.users[userIndex].blockedUsers = state.users[
           userIndex
         ].blockedUsers.filter(
-          (blockedUser: WritableDraft<User>) =>
+          (blockedUser: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>) =>
             blockedUser.id !== unblockedUserId
         );
       }
@@ -344,7 +348,7 @@ export const userManagerSlice = createSlice({
 
     assignUserToProject: (
       state,
-      action: PayloadAction<{ userId: string; projectId: WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>
+      action: PayloadAction<{ userId: string; projectId: WritableDraft<Project<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>> }>
     ) => {
       const { userId, projectId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -426,9 +430,9 @@ export const userManagerSlice = createSlice({
             // Ensure each task property is compatible with WritableDraft<Task>
             assignedTo: task.assignedTo as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | null,
             dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
-            previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User>[],
-            data: task.data as WritableDraft<TaskData> | null,
-            tags: task.tags as WritableDraft<TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,
+            previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>[],
+            data: task.data as WritableDraft<TaskEntity> | null,
+            tags: task.tags as WritableDraft<TagsRecord<T>> | undefined,
             subtasks: task.subtasks as WritableDraft<TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
             actions: task.actions as WritableDraft<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | undefined,
             snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,

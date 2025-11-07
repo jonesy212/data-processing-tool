@@ -1,7 +1,8 @@
 // DocumentEntity.ts
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import  UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { Version } from '@/app/versions/Version';import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { Content } from "@/app/models/content/AddContent";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -446,13 +447,19 @@ type DocumentComment = {
 
 
 
+// Assume createDefaultDocument returns AppDocument
+const createDefaultDocumentData = (
+  options: Partial<AppDocumentData> = {}
+): AppDocumentData => {
+  const base: AppDocument = createDefaultDocument({ ...options } as Partial<AppDocument>);
 
-// Helper for creating document data
-const createDefaultDocumentData = (options: Partial<AppDocumentData> = {}): AppDocumentData => ({
-  ...createDefaultDocument(options),
-  // Add any DocumentData specific fields here
-  ...options
-} as AppDocumentData);
+  return {
+    ...base,
+    ...options,
+    // You can initialize AppDocumentData-specific fields here
+  };
+};
+
 // Helper to extract version string from Version object
 const extractVersionString = (version: Version<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | string): string => {
   if (typeof version === 'string') {

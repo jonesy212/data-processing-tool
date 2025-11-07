@@ -16,6 +16,13 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       logout: generateEndpointUrl("apiWebBase", "logout"),
     }),
 
+    apiConfig: mergeConfigurations(endpointConfigurations.apiConfig, {
+      getUserApiConfig: generateEndpointUrl("apiConfig", "getUserApiConfig"),
+      updateUserApiConfig: generateEndpointUrl("apiConfig", "updateUserApiConfig"),
+      aquaConfig: generateEndpointUrl("apiConfig", "aquaConfig"),
+      // Add any other apiConfig endpoints that might be missing
+    }),
+
     analytics: mergeConfigurations(endpointConfigurations.analytics, {
       single: generateEndpointUrl("analytics", "single"),
       list: generateEndpointUrl("analytics", "list"),
@@ -51,6 +58,25 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       removeEvent: generateEndpointUrl("calendar", "removeEvent"),
     }),
 
+    categories: mergeConfigurations(endpointConfigurations.categories, {
+      createCategory: generateEndpointUrl("categories", "createCategory"),
+      updateCategory: generateEndpointUrl("categories", "updateCategory"),
+      deleteCategory: generateEndpointUrl("categories", "deleteCategory"),
+      listCategories: generateEndpointUrl("categories", "listCategories"),
+      getSubcategories: generateEndpointUrl("categories", "getSubcategories"),
+      moveCategory: generateEndpointUrl("categories", "moveCategory"),
+      updateCategoryOrder: generateEndpointUrl("categories", "updateCategoryOrder"),
+      getCategoryContent: generateEndpointUrl("categories", "getCategoryContent"),
+      addContentToCategory: generateEndpointUrl("categories", "addContentToCategory"),
+      removeContentFromCategory: generateEndpointUrl("categories", "removeContentFromCategory"),
+      bulkUpdateCategories: generateEndpointUrl("categories", "bulkUpdateCategories"),
+      bulkDeleteCategories: generateEndpointUrl("categories", "bulkDeleteCategories"),
+      searchCategories: generateEndpointUrl("categories", "searchCategories"),
+      filterCategories: generateEndpointUrl("categories", "filterCategories"),
+      getCategoryStats: generateEndpointUrl("categories", "getCategoryStats"),
+      getCategoryUsage: generateEndpointUrl("categories", "getCategoryUsage"),
+    }),
+    
     chat: mergeConfigurations(endpointConfigurations.chat, {
       sendMessage: generateEndpointUrl("chat", "sendMessage"),
       fetchMessages: generateEndpointUrl("chat", "fetchMessages"),
@@ -375,22 +401,22 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
     notes: mergeConfigurations(endpointConfigurations.notes, {
       // Core CRUD operations
       list: generateEndpointUrl("notes", "list"),
-      single: (noteId: number) => generateEndpointUrl("notes", "single")(noteId),
+      single: (noteId: number) => generateEndpointUrl("notes", "single"),
       create: generateEndpointUrl("notes", "create"),
-      update: (noteId: number) => generateEndpointUrl("notes", "update")(noteId),
-      delete: (noteId: number) => generateEndpointUrl("notes", "delete")(noteId),
+      update: (noteId: number) => generateEndpointUrl("notes", "update"),
+      delete: (noteId: number) => generateEndpointUrl("notes", "delete"),
       
       // State management
-      archive: (noteId: number) => generateEndpointUrl("notes", "archive")(noteId),
-      restore: (noteId: number) => generateEndpointUrl("notes", "restore")(noteId),
-      move: (noteId: number) => generateEndpointUrl("notes", "move")(noteId),
-      pin: (noteId: number) => generateEndpointUrl("notes", "pin")(noteId),
-      unpin: (noteId: number) => generateEndpointUrl("notes", "unpin")(noteId),
-      duplicate: (noteId: number) => generateEndpointUrl("notes", "duplicate")(noteId),
+      archive: (noteId: number) => generateEndpointUrl("notes", "archive"),
+      restore: (noteId: number) => generateEndpointUrl("notes", "restore"),
+      move: (noteId: number) => generateEndpointUrl("notes", "move"),
+      pin: (noteId: number) => generateEndpointUrl("notes", "pin"),
+      unpin: (noteId: number) => generateEndpointUrl("notes", "unpin"),
+      duplicate: (noteId: number) => generateEndpointUrl("notes", "duplicate"),
       
       // Content operations
       merge: generateEndpointUrl("notes", "merge"),
-      split: (noteId: number) => generateEndpointUrl("notes", "split")(noteId),
+      split: (noteId: number) => generateEndpointUrl("notes", "split"),
       
       // Search and filter
       search: generateEndpointUrl("notes", "search"),
@@ -405,38 +431,38 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       import: generateEndpointUrl("notes", "import"),
       
       // Tag management
-      tags: (noteId: number) => generateEndpointUrl("notes", "tags")(noteId),
-      addTag: (noteId: number) => generateEndpointUrl("notes", "addTag")(noteId),
-      removeTag: (noteId: number, tagId: number) => generateEndpointUrl("notes", "removeTag")(noteId, tagId),
+      tags: (noteId: number) => generateEndpointUrl("notes", "tags"),
+      addTag: (noteId: number) => generateEndpointUrl("notes", "addTag"),
+      removeTag: (noteId: number, tagId: number) => generateEndpointUrl("notes", "removeTag"),
       
       // Attachment management
-      attachments: (noteId: number) => generateEndpointUrl("notes", "attachments")(noteId),
-      addAttachment: (noteId: number) => generateEndpointUrl("notes", "addAttachment")(noteId),
-      removeAttachment: (noteId: number, attachmentId: number) => generateEndpointUrl("notes", "removeAttachment")(noteId, attachmentId),
+      attachments: (noteId: number) => generateEndpointUrl("notes", "attachments"),
+      addAttachment: (noteId: number) => generateEndpointUrl("notes", "addAttachment"),
+      removeAttachment: (noteId: number, attachmentId: number) => generateEndpointUrl("notes", "removeAttachment"),
       
       // Version management
-      versions: (noteId: number) => generateEndpointUrl("notes", "versions")(noteId),
-      restoreVersion: (noteId: number, versionId: number) => generateEndpointUrl("notes", "restoreVersion")(noteId, versionId),
+      versions: (noteId: number) => generateEndpointUrl("notes", "versions"),
+      restoreVersion: (noteId: number, versionId: number) => generateEndpointUrl("notes", "restoreVersion"),
       
       // Collaboration
-      share: (noteId: number) => generateEndpointUrl("notes", "share")(noteId),
-      unshare: (noteId: number) => generateEndpointUrl("notes", "unshare")(noteId),
-      collaborators: (noteId: number) => generateEndpointUrl("notes", "collaborators")(noteId),
-      addCollaborator: (noteId: number) => generateEndpointUrl("notes", "addCollaborator")(noteId),
-      removeCollaborator: (noteId: number, collaboratorId: number) => generateEndpointUrl("notes", "removeCollaborator")(noteId, collaboratorId),
+      share: (noteId: number) => generateEndpointUrl("notes", "share"),
+      unshare: (noteId: number) => generateEndpointUrl("notes", "unshare"),
+      collaborators: (noteId: number) => generateEndpointUrl("notes", "collaborators"),
+      addCollaborator: (noteId: number) => generateEndpointUrl("notes", "addCollaborator"),
+      removeCollaborator: (noteId: number, collaboratorId: number) => generateEndpointUrl("notes", "removeCollaborator"),
       
       // Comments
-      comments: (noteId: number) => generateEndpointUrl("notes", "comments")(noteId),
-      addComment: (noteId: number) => generateEndpointUrl("notes", "addComment")(noteId),
-      updateComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "updateComment")(noteId, commentId),
-      deleteComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "deleteComment")(noteId, commentId),
+      comments: (noteId: number) => generateEndpointUrl("notes", "comments"),
+      addComment: (noteId: number) => generateEndpointUrl("notes", "addComment"),
+      updateComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "updateComment"),
+      deleteComment: (noteId: number, commentId: number) => generateEndpointUrl("notes", "deleteComment"),
       
       // Analytics
-      analytics: (noteId: number) => generateEndpointUrl("notes", "analytics")(noteId),
+      analytics: (noteId: number) => generateEndpointUrl("notes", "analytics"),
       
       // Templates
       templates: generateEndpointUrl("notes", "templates"),
-      createFromTemplate: (templateId: number) => generateEndpointUrl("notes", "createFromTemplate")(templateId),
+      createFromTemplate: (templateId: number) => generateEndpointUrl("notes", "createFromTemplate"),
     }),
 
     parameterCustomization: mergeConfigurations(endpointConfigurations.parameterCustomization, {

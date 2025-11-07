@@ -12,7 +12,7 @@ function getCategoryProperties(category: CategoryKeys): CategoryProperties {
             id: '', 
             type: "", 
             chartType: "", 
-            dataProperties: {}, 
+            dataProperties: [], 
             formFields: [],
             description: "Notes related to the user",
             icon: "fa-notes",

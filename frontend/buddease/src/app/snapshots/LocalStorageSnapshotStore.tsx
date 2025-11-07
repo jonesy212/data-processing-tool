@@ -25,15 +25,15 @@ import {
   SubscriberTypeEnum,
 } from '@/app/models/data/StatusType';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import { EventManager } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { NotificationType } from '@/context/NotificationContext';
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
@@ -49,6 +49,12 @@ import { AddReport, AddReportType } from '@/app/api/ApiReport';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { ChatRoom } from '@/app/communications/ChatRoom';
 import { Sender } from '@/app/components/communications/CommunicationPage';
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from '@/app/config/BaseConfig';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
@@ -56,7 +62,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { PhaseData } from '@/app/models/phases/Phase';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import {
   createCompleteSnapshot,
@@ -87,17 +93,11 @@ import {
   unsubscribe,
   updateProjectState,
 } from '@/app/utils/web3/applicationUtils';
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from '@/app/config/BaseConfig';
 
 
-import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import baseMeta from '@/app/server/database/baseMeta';
+import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
 import { FC } from 'react';
 import { ExcludedFields } from '../components/routing/Fields';
 import { NoteAttachment } from '../documents/NoteData';

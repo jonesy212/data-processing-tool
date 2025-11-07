@@ -3,7 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { TeamPermissions } from '@/app/permissions/Permission';
+import { TeamPermission } from '@/app/permissions/Permission';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -13,7 +13,24 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields} from '@/app/typings/entities/MemberEntity';
+import { TeamSettings } from '@/app/typings/teamTypes'
+
 // Define the actual TeamEntity interface
+
+type TeamMembers = Members<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>[]
+
+export interface Members<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  members: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+}
+
 interface TeamEntity extends BaseDataEntity {
   id: string;
   name: string;
@@ -23,9 +40,9 @@ interface TeamEntity extends BaseDataEntity {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
-  members: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // User IDs
+  members: Members;
   createdDate: Date;
-  permissions: TeamPermissions;
+  permissions: TeamPermission;
   settings?: TeamSettings;
   avatar?: string;
 

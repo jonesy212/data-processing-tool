@@ -12,7 +12,7 @@ export const UserActions = {
   // General User Actions
   updateUser: createAction<{ id: number, newData: any }>("updateUser"),
   deleteUser: createAction<number>("deleteUser"),
-  createUserSuccess: createAction<{user: User}>("createUserSuccess"),
+  createUserSuccess: createAction<{user: User<any, any, any, any, any, any>}>("createUserSuccess"),
   createUserFailure: createAction<{ error: string }>("createUserFailure"),
   // User Profile Actions
   updateProfile: createAction<{ id: number, newFullName: string, newBio: string, newProfilePicture: string }>("updateProfile"),
@@ -28,12 +28,12 @@ export const UserActions = {
   
   fetchUserSuccess: createAction<{ user: UserData }>("fetchUserSuccess"),
   fetchUserFailure: createAction<{ error: string }>("fetchUserFailure"),
-  fetchUserRequest: createAction<{userId: User["id"]}>("fetchUserRequest"),
-  fetchUserDataSuccess: createAction<{ users: User[], totalCount: number }>("fetchUserDataSuccess"),
+  fetchUserRequest: createAction<{userId: User<any, any, any, any, any, any>["id"]}>("fetchUserRequest"),
+  fetchUserDataSuccess: createAction<{ users: User<any, any, any, any, any, any>[], totalCount: number }>("fetchUserDataSuccess"),
   fetchUserDataFailure: createAction<{ error: string }>("fetchUserDataFailure"),
   
-  fetchUserById: createAction<{ userId: User['id'] }>("fetchUserById"),
-  fetchUserByIdSuccess: createAction<{ user: User }>("fetchUserByIdSuccess"),
+  fetchUserById: createAction<{ userId: User<any, any, any, any, any, any>['id'] }>("fetchUserById"),
+  fetchUserByIdSuccess: createAction<{ user: User<any, any, any, any, any, any> }>("fetchUserByIdSuccess"),
   fetchUserByIdFailure: createAction<{ error: string }>("fetchUserByIdFailure"),
   
 
@@ -41,11 +41,11 @@ export const UserActions = {
   fetchUserProfileSuccess: createAction<{ userProfile: UserProfile }>("fetchUserProfileSuccess"),
   fetchUserProfileFailure: createAction<{ error: string }>("fetchUserProfileFailure"),
   updateUserRequest: createAction<{ updatedUserData: any }>("updateUserRequest"),
-  updateUserSuccess: createAction<{ user: User }>("updateUserSuccess"),
+  updateUserSuccess: createAction<{ user: User<any, any, any, any, any, any> }>("updateUserSuccess"),
   updateUserFailure: createAction<{ error: string }>("updateUserFailure"),
   
   //Search Requests
-  searchUsersSuccess: createAction<{ users: User[] }>("searchUsersSuccess"),
+  searchUsersSuccess: createAction<{ users: User<any, any, any, any, any, any>[] }>("searchUsersSuccess"),
   searchUsersRequest: createAction<{ searchTerm: string }>("searchUsersRequest"),
   searchUsersFailure: createAction<{ error: string }>("searchUsersFailure"),
   
@@ -56,7 +56,7 @@ export const UserActions = {
     batchDeleteSuccess: createAction<number[]>("batchDeleteSuccess"),
     batchDeleteFailure: createAction<{ error: string }>("batchDeleteFailure"),
   
-  createUsers: createAction<User[]>("createUsers"),
+  createUsers: createAction<User<any, any, any, any, any, any>[]>("createUsers"),
   deleteUsers: createAction<number[]>("deleteUsers"),
   deleteUserSuccess: createAction<number>("deleteUserSuccess"),
   deleteUserFailure: createAction<{ error: string }>("deleteUserFailure"),
@@ -69,10 +69,10 @@ export const UserActions = {
   
   updateUsers: createAction<{ ids: number[], newData: any[] }>("updateUsers"),
   updateUsersRequest: createAction<{ updatedUsersData: any }>("updateUserRequest"),
-  updateUsersSuccess: createAction<{ users: User[] }>("updateUserSuccess"),
+  updateUsersSuccess: createAction<{ users: User<any, any, any, any, any, any>[] }>("updateUserSuccess"),
   updateUsersFailure: createAction<{ error: string }>("updateUsersFailure"),
   
-  updateUserRoleSuccess: createAction<{ user: User }>("updateUserRoleSuccess"),
+  updateUserRoleSuccess: createAction<{ user: User<any, any, any, any, any, any> }>("updateUserRoleSuccess"),
   updateUserRoleFailure: createAction<{ error: string }>("updateUserRoleFailure"),
 
   updateUserRoles: createAction<{ ids: number[], newRole: string }>("updateUserRoles"),

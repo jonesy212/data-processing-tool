@@ -35,8 +35,6 @@ setupReactionForStore(
   }
 );
 
-
-
 setupRactionFortStor(
   useThemeManagerStore,
   'theme',

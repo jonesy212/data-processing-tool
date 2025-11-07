@@ -1,24 +1,44 @@
 // DocumentBuilder.tsx
-
+import VersionImpl from "@/app/versions/Version";
 import {
   createContentStateFromText,
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { DocumentPhase } from '@/app/models/phases/DocumentPhase'
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import { DocumentFormattingOptions } from "@/app/components/documents/DocumentFormattingOptionsComponent";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
+import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import getAppPath from "@/app/config/appStructure/appPath";
+import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { useMetadata } from "@/app/config/useMetadata";
+import { ResearchReport, TechnicalReport } from "@/app/documentation/documents/report/Report";
+import { ModifiedDate } from "@/app/documents/DocType";
 import {
   getFormattedOptions
 } from "@/app/documents/DocumentCreationUtils";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentPath } from "@/app/documents/DocumentPath";
+import DocumentPermissions from "@/app/documents/DocumentPermissions";
+import {
+  DocumentAnimationOptions,
+  DocumentBuilderProps,
+} from "@/app/documents/SharedDocumentProps";
+import { FinancialReport } from "@/app/documents/documentation/report/Report";
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
@@ -35,9 +55,9 @@ import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { K, Meta, T, } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
-import { Team } from "@/app/models/teams/Team";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import PromptViewer from "@/app/prompts/PromptViewer";
+import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
   addDocumentSuccess,
@@ -59,16 +79,6 @@ import AppVersionImpl from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
-import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
-import getAppPath from "@/app/config/appStructure/appPath";
-import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
-import { useMetadata } from "@/app/config/useMetadata";
-import { FinancialReport } from "@/app/documents/documentation/report/Report";
-import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
@@ -81,16 +91,9 @@ import {
 import "draft-js/dist/Draft.css";
 import { versions } from "process";
 import React, { useState } from "react";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-import {
-  DocumentAnimationOptions,
-  DocumentBuilderProps,
-} from "@/app/documents/SharedDocumentProps";
-import { DocumentFormattingOptions } from "@/app/components/documents/DocumentFormattingOptionsComponent";
-import { ResearchReport, TechnicalReport } from "@/app/documentation/documents/report/Report";
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields } from '@/app/typings/entities/DocumentEntity'
+  
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -164,14 +167,19 @@ interface DocumentData<
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   accessHistory: AccessHistory[];
-  documentPhase?: DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentPhase: 
+    | string
+    | DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   visibility: AllTypes;
   url?: string;
   updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentSize: DocumentSize;
-  lastModifiedDate?: ModifiedDate;
+  lastModifiedDate: ModifiedDate | undefined; 
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
@@ -212,7 +220,7 @@ const initialOptions: DocumentOptions = {
   previousMeta: {
     metadataEntries: [],
     keywords: [],
-    version: {},
+    version: 'document-options-version',
     isActive: true,
   },
   currentMeta: undefined,
@@ -410,7 +418,11 @@ const initialOptions: DocumentOptions = {
     externalLinks: [],
     externalReferences: [],
     externalRelatedItems: [],
-  } as unknown as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  } as unknown as VersionData<DocumentEntity, DocumentK,
+    DocumentMeta,
+  DocumentAttachment,
+  DocumentExcludedFields,
+  >,
   currentContent: new ContentState(),
   previousContent: undefined,
   additionalOptionsLabel: "additionalOptionsLabel",
@@ -625,7 +637,7 @@ const convertedAccessHistory = options.accessHistory.map(
 
 
 // Now you can use these values in DocumentBuilderProps
-const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = {
   isDynamic: true,
   documents: [],
   projectPath: projectPath,
@@ -656,7 +668,8 @@ const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, Exc
   _attachments: options._attachments,
   _links: options._links,
 
-  version: new AppVersionImpl({
+
+  version: new VersionImpl({
     id: 0,
     content: contentState.toString(),
     versionNumber: versionNumber,
@@ -829,7 +842,7 @@ const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, Exc
     workspaceVersion: "1.0.0",
     workspaceVersionHistory: ["1.0.0", "1.1.0"],
   }),
-    buildDocument: async (documentData: DocumentData<T, K>): Promise<void> => {
+    buildDocument: async (options: DocumentFormattingOptions, documentData: DocumentData<T, K>): Promise<void> => {
       // Implementation of buildDocument function
       const dispatch = useAppDispatch(); // Assuming you're using useDispatch from react-redux
       const { handleError } = useErrorHandling();

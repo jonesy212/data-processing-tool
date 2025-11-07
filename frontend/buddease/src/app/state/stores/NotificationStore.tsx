@@ -1,7 +1,9 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { NotificationPosition } from '@/app/models/data/StatusType';
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
+import { apiNotificationMessages } from "@/app/api/ApiData";
 import { LogData } from '@/app/models/LogData';
-import { NotificationChannels } from '@/app/notifications/NotificationChannels'
+import { NotificationChannels, BasicNotificationChannels } from '@/app/notifications/NotificationChannels'
 import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper'
 import { NotificationContextProps, NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
@@ -58,8 +60,10 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 };
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: AppUnifiedMetadata = useMetadata('notification-area');
+const currentMetadata: AppUnifiedMetadata = useMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>('notification-area');
 const currentMeta: AppStructuredMetadata = useMeta(area);
+
+type NotificationMessageKey = string | keyof typeof apiNotificationMessages; // adjust to your messages type
 
 class NotificationStore {
   @observable notifications: NotificationData<
@@ -72,6 +76,7 @@ class NotificationStore {
   >[] = [];
   
   @observable setNotifications: NotificationContextProps['setNotifications'] = () => {};
+  @observable showMessageWithType: NotificationContextProps['showMessageWithType'] = () => {};
   
   @observable sendNotification: NotificationContextProps['sendNotification'] = (
     notification: string | NotificationData<
@@ -90,21 +95,114 @@ class NotificationStore {
 
   channelHelper: NotificationChannelHelper;
 
-  constructor() {
-    makeObservable(this);
+  private channels: NotificationChannels;
 
-    const channels: NotificationChannels = {
-      email: true,
-      push: true,
-      sms: false,
-      chat: true,
-      calendar: true,
-      audioCall: true,
-      videoCall: true,
-      screenShare: true
+  constructor(channels: NotificationChannels | BasicNotificationChannels) {
+    this.channels = this.normalizeChannels(channels);
+  }
+
+  /**
+   * Normalize input to a full NotificationChannels structure.
+   * This allows passing either BasicNotificationChannels (flat booleans)
+   * or the full NotificationChannels object.
+   */
+  private normalizeChannels(
+    input: NotificationChannels | BasicNotificationChannels
+  ): NotificationChannels {
+    // Case 1: Already a complex NotificationChannels object
+    if (typeof (input as NotificationChannels).email === "object") {
+      return input as NotificationChannels;
+    }
+
+    // Case 2: It's a BasicNotificationChannels (flat booleans)
+    const basic = input as BasicNotificationChannels;
+
+    return {
+      email: { enabled: !!basic.email },
+      push: { enabled: !!basic.push },
+      sms: { enabled: !!basic.sms },
+      inApp: { enabled: !!basic.inApp },
+      webhook: { enabled: !!basic.webhook },
+
+      advanced: {
+        chat: { enabled: !!basic.chat },
+        calendar: { enabled: !!basic.calendar },
+        audioCall: { enabled: !!basic.audioCall },
+        videoCall: { enabled: !!basic.videoCall },
+        screenShare: { enabled: !!basic.screenShare }
+      },
+
+      deliveryStrategy: "all",
+      retryPolicy: {
+        maxRetries: 3,
+        retryInterval: 5000
+      },
+      quietHours: {
+        enabled: false,
+        startTime: "22:00",
+        endTime: "07:00",
+        timeZone: "UTC",
+        days: [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ]
+      }
     };
-    
-    this.channelHelper = new NotificationChannelHelperImpl(channels);
+  }
+
+  /**
+   * Returns the normalized channel configuration
+   */
+  public getChannels(): NotificationChannels {
+    return this.channels;
+  }
+
+  /**
+   * Check if a given channel (basic or advanced) is enabled
+   */
+  public isChannelEnabled(channel: keyof NotificationChannels["advanced"] | keyof NotificationChannels): boolean {
+    const ch = (this.channels as any)[channel];
+    if (ch?.enabled !== undefined) return ch.enabled;
+
+    const advancedCh = (this.channels.advanced as any)[channel];
+    return advancedCh?.enabled ?? false;
+  }
+
+  /**
+   * Return only active channels
+   */
+  public getEnabledChannels(): string[] {
+    const enabled: string[] = [];
+
+    for (const key of Object.keys(this.channels)) {
+      const ch = (this.channels as any)[key];
+      if (ch?.enabled) enabled.push(key);
+    }
+
+    for (const key of Object.keys(this.channels.advanced)) {
+      const ch = (this.channels.advanced as any)[key];
+      if (ch?.enabled) enabled.push(`advanced:${key}`);
+    }
+
+    return enabled;
+  }
+
+  /**
+   * Update a channel’s enabled state dynamically
+   */
+  public setChannelEnabled(channel: string, enabled: boolean): void {
+    if ((this.channels as any)[channel]) {
+      (this.channels as any)[channel].enabled = enabled;
+    } else if ((this.channels.advanced as any)[channel]) {
+      (this.channels.advanced as any)[channel].enabled = enabled;
+    } else {
+      console.warn(`Channel "${channel}" not found`);
+    }
   }
 
   @action
@@ -138,9 +236,9 @@ class NotificationStore {
   notify = (
     id: string | null,
     content: string,
-    notificationMessage: string | object | null,
     date: Date,
     type: NotificationType,
+    messageKey?: keyof typeof NOTIFICATION_MESSAGES,
     position?: NotificationPosition,
     notificationType?: NotificationType,
     options?: {
@@ -150,26 +248,44 @@ class NotificationStore {
     },
     userName?: string
   ) => {
-    const notificationId = id ?? UniqueIDGenerator.generateNotificationIDFromMessage(notificationMessage);
+    // 1️⃣ Generate or reuse notification ID
+    const notificationId = id ?? UniqueIDGenerator.generateNotificationIDFromMessage(content);
+
+    // 2️⃣ Normalize other properties
     const actualNotificationType = notificationType ?? type;
     const actualPosition = position ?? NotificationPosition.TopRight;
 
-    const message = this.generateNotificationMessage(type, userName);
+    // 3️⃣ Calculate area (if needed by logs or visuals)
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
+    // 4️⃣ Resolve message text based on priority:
+    // messageKey → content → generated fallback
+    let resolvedMessage: string;
+    if (messageKey && NOTIFICATION_MESSAGES[messageKey]) {
+      const candidate = NOTIFICATION_MESSAGES[messageKey];
+      resolvedMessage = typeof candidate === "function"
+        ? candidate(userName || "User")
+        : String(candidate);
+    } else if (typeof content === "string" && content.trim().length > 0) {
+      resolvedMessage = content;
+    } else {
+      resolvedMessage = this.generateNotificationMessage(type, userName);
+    }
+
+    // 5️⃣ Create the new notification object
     this.addNotification({
-      id,
-      content: message,
+      id: notificationId,
+      content: resolvedMessage,
       date,
       notificationType: actualNotificationType,
-      message: "",
+      message: resolvedMessage,
       createdAt: new Date(),
       type: AuthNotificationTypes.ACCOUNT_CREATED,
       sendStatus: "Sent",
       completionMessageLog: {
-        timestamp: new Date(Date.now()),
+        timestamp: new Date(),
         level: "info",
-        message: `Notification of type ${notificationType} sent to ${content}`,
+        message: `Notification of type ${String(actualNotificationType)} sent to ${resolvedMessage}`,
         sent: new Date(),
         delivered: null,
         opened: null,
@@ -199,9 +315,10 @@ class NotificationStore {
       highlights: [],
       files: [],
       currentMeta: currentMeta,
-      meta: currentMetadata
+      meta: currentMetadata,
     });
   };
+
 
   @action
   showNotification = (
@@ -237,14 +354,10 @@ class NotificationStore {
       } as LogData<
         NotificationEntity,
         NotificationK,
-        StructuredMetadata<
-          NotificationEntity,
-          NotificationK,
-          NotificationMeta,
-          NotificationAttachment,
-          NotificationExcludedFields,
-          NotificationIncludedFields
-        >
+        NotificationMeta,
+        NotificationAttachment,
+        NotificationExcludedFields,
+        NotificationIncludedFields
       >
     };
     this.addNotification(notification);
@@ -284,14 +397,10 @@ class NotificationStore {
       } as LogData<
         NotificationEntity,
         NotificationK,
-        StructuredMetadata<
-          NotificationEntity,
-          NotificationK,
-          NotificationMeta,
-          NotificationAttachment,
-          NotificationExcludedFields,
-          NotificationIncludedFields
-        >
+        NotificationMeta,
+        NotificationAttachment,
+        NotificationExcludedFields,
+        NotificationIncludedFields
       >
     };
     this.addNotification(notification);
@@ -331,14 +440,10 @@ class NotificationStore {
       } as LogData<
         NotificationEntity,
         NotificationK,
-        StructuredMetadata<
-          NotificationEntity,
-          NotificationK,
-          NotificationMeta,
-          NotificationAttachment,
-          NotificationExcludedFields,
-          NotificationIncludedFields
-        >
+        NotificationMeta,
+        NotificationAttachment,
+        NotificationExcludedFields,
+        NotificationIncludedFields
       >
     };
     this.addNotification(notification);
@@ -378,14 +483,11 @@ class NotificationStore {
       } as LogData<
         NotificationEntity,
         NotificationK,
-        StructuredMetadata<
-          NotificationEntity,
-          NotificationK,
-          NotificationMeta,
-          NotificationAttachment,
-          NotificationExcludedFields,
-          NotificationIncludedFields
-        >
+        NotificationMeta,
+        NotificationAttachment,
+        NotificationExcludedFields,
+        NotificationIncludedFields
+        
       >
     };
     this.addNotification(notification);
@@ -422,7 +524,7 @@ class NotificationStore {
 }
 
 // Create an instance of the NotificationStore
-const notificationStoreInstance = new NotificationStore();
+const notificationStoreInstance = new NotificationStore(NOTIFICATION_MESSAGES);
 
 // Create a context for accessing the notification store
 const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);

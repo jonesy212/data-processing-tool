@@ -1,44 +1,40 @@
-import { handleApiError } from '@/app/api/ApiLogs';
 import ApiConfig from '@/app/api/ApiConfig';
+import { handleApiError } from '@/app/api/ApiLogs';
+import { createSystemConfigs } from '@/app/api/systemConfigs';
 import { UserConfigs } from '@/app/api/userConfigs';
+import {
+    BackendConfig,
+    backendConfig,
+} from '@/app/config/BackendConfig';
+import {
+    FrontendConfig,
+    frontendConfig,
+} from '@/app/config/FrontendConfig';
 import { useNotification } from '@/app/context/NotificationContext';
 import { Project, isProjectInSpecialPhase } from '@/app/models/projects/Project';
 import StoreConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
 import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
-import { createSystemConfigs } from '@/app/api/systemConfigs';
-import {
-  BackendConfig,
-  backendConfig,
-} from '@/app/config/BackendConfig';
-import {
-  FrontendConfig,
-  frontendConfig,
-} from '@/app/config/FrontendConfig';
 
 import { getConfigsData } from '@/api/getConfigsApi';
 import LazyLoadScriptConfigImpl from '@/app/components/configs/LazyLoadScriptConfig';
-import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { API_VERSION_HEADER } from '@/app/config/AppConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import dataVersions from '@/app/configs/DataVersionsConfig';
-import { VersionHistory } from '@/versions/VersionData';
+import { EventRecord } from '@/app/state/stores/DataStore';
+import { VersionHistory } from '@/app/versions/VersionData';
 
 
+import { configConfig } from '@/app/config/endpoints/configConfig';
 import { ModuleType, userPreferences } from '@/app/config/UserPreferences';
-import userSettings from '@/app/config/UserSettings'
+import userSettings from '@/app/config/UserSettings';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import authenticationHeaders from '../api/headers/authenticationHeaders';
-import { configConfig } from '@/app/config/endpoints/configConfig'
 
 interface BaseRetryConfig {
   maxRetries?: number;
   retryDelay?: number;
 }
 
-interface BaseCacheConfig {
-  maxAge?: string | number;
-  staleWhileRevalidate?: number;
-}
 
 
 interface BaseMetadataConfig<
@@ -57,29 +53,6 @@ export interface RetryConfig {
   enabled: boolean;
   maxRetries: number;
   retryDelay: number;
-}
-
-export interface CacheConfig {
-  enabled: boolean;
-  maxAge: number;
-  staleWhileRevalidate: number;
-  cacheKey: string;
-  strategy: 'memory' | 'persistent' | 'hybrid';
-  ttl: number;
-  versioning: {
-    enabled: boolean;
-    key: string;
-  };
-  invalidation: {
-    onUpdate: boolean;
-    onDelete: boolean;
-    pattern?: string;
-  };
-  persistence?: {
-    enabled: boolean;
-    storageKey: string;
-    autoRehydrate: boolean;
-  };
 }
 
 

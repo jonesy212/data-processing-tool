@@ -15,7 +15,7 @@ import { Task } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { TagsRecord } from '@/app/models/tracker/Tag'
 import { ValidationResult } from '@/app/snapshots/ValidationRule';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
@@ -176,7 +176,7 @@ export class PhaseImpl<
   documentBackup?: string;
 
   // Flexible tags to satisfy TS
-  tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = [];
+  tags?: string[] | TagsRecord<T> | undefined = [];
 
   constructor(options: {
     id?: string;
@@ -226,7 +226,7 @@ export class PhaseImpl<
     documentIntegration?: string;
     documentReporting?: string;
     documentBackup?: string;
-    tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    tags?: string[] | TagsRecord<T>;
   } = {}) {
     Object.assign(this, options);
   }

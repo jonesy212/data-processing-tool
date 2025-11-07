@@ -2,6 +2,8 @@
 import { Shared } from '@/api/instances/createSharedSnapshotContainer';
 import { default as getSnapshot, default as snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
@@ -9,8 +11,8 @@ import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -23,6 +25,7 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps, storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
@@ -37,9 +40,6 @@ import {
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Version } from '@/app/versions/Version';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
 
 const snapshotContainerInstance: SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> & Shared = {
   childIds: undefined,
@@ -1132,7 +1132,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotEntity, SnapshotK, Sn
   SnapshotExcludedFields,
   SnapshotIncludedFields>[] | undefined,
     category?: string | Category,
-     categoryProperties?: CategoryProperties;): Snapshot<  SnapshotEntity,
+     categoryProperties?: CategoryProperties): Snapshot<  SnapshotEntity,
   SnapshotK,
   SnapshotMeta,
   SnapshotAttachment,

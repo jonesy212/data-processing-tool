@@ -1,18 +1,18 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { Team } from "@/app/models/teams/Team";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { BaseEntity } from "@/app/routing/FuzzyMatch";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface DatasetModel<
@@ -42,7 +42,7 @@ interface DatasetModel<
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath<T, K, Meta>;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
+  tags?: string[] | TagsRecord<T> | undefined; 
   createdBy: string | undefined;
   updatedBy: string;
   documents: WritableDraft<DocumentObject<T, K, Meta>>[];

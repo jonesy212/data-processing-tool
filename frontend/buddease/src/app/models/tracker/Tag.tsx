@@ -1,47 +1,47 @@
-import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields } from '@/app/typings/entities/TaskEntity';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
-import { AllTypes } from '@/app/typings/PropTypes';
+import { TagComponent } from '@/app/components/models/tracker/TagComponent';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SpecificMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { TagsRecord } from '@/app/models/tracker/Tag';
+import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import { TagAttachment, TagEntity, TagExcludedFields, TagIncludedFields, TagK, TagMeta } from '@/app/typings/entities/TaskEntity';
+import { AllTypes } from '@/app/typings/PropTypes';
 import React from 'react';
-import { TagComponent } from '@/app/components/models/tracker/TagComponent'
 
-interface TagOptions<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-          BaseEntityProperties, 
-          SharedTimestamps {
+// Define the Tag interface and TagOptions interface
+// Main Tag interface
+interface Tag<T extends BaseDataEntity> extends TagOptions<T>, SharedTimestamps, SharedStatusFlags {
+  relatedTags: string[];
+  attribs?: Record<string, any>;
+}
+
+// Taggable interface for anything that can have tags/categories/keywords
+interface Taggable<T extends BaseDataEntity> {
+  tags?: string[] | TagsRecord<T>;
+  categories?: string[];
+  keywords?: string[];
+}
+
+
+
+// Define BaseData interface
+interface TagsRecord<T extends BaseDataEntity> {
+  [tagName: string]: Tag<T>;
+}
+
+
+
+interface TagOptions<T extends BaseDataEntity> extends BaseEntityProperties, BaseMetadataProperties {
   color: string;
   description: string;
   enabled: boolean;
   nulltype: AllTypes;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T>;
   timestamp: number;
 }
 
 
-// Define the Tag interface and TagOptions interface
-interface Tag<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SharedTimestamps,
-    SharedStatusFlags {
-  relatedTags: string[];
-  attribs?: Record<string, any>;
-}
 
 
 // Example usage of TagComponent
@@ -76,7 +76,7 @@ const tagOptions1: TagOptions<BaseDataEntity> = {
   nulltype: {} as AllTypes
 };
 
-const tagOptions2: TagOptions<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> = {
+const tagOptions2: TagOptions<TagEntity> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -107,8 +107,8 @@ const localeCompare = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  a: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  b: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  a: TagOptions<T>,
+  b: TagOptions<T>
 ): number => {
   const nameA = a.name ?? '';
   const nameB = b.name ?? '';
@@ -122,7 +122,7 @@ const sortTags = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(tags: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
+>(tags: TagOptions<T>[]) => {
   tags.sort(localeCompare);
   return tags;
 };
@@ -139,11 +139,11 @@ export const createTag = <
   name: string, 
   color: string,
   p0: {
-    tags: (string[] | Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) & TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    tags: (string[] | Tag<T>[]) & TagsRecord<T>;
     description: string; 
     enabled: boolean;
   }
-): TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => ({
+): TagOptions<T> => ({
   id,
   name,
   color,
@@ -167,7 +167,7 @@ function processTags<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[]
+  tags: TagsRecord<T>| string[]
 ): void {
   if (Array.isArray(tags)) {
     console.log("Simple tags:", tags);
@@ -197,4 +197,5 @@ function processVideoMetadata<
 }
 
 
-export type { Tag, TagOptions };
+export type { Tag, Taggable, TagOptions, TagsRecord };
+

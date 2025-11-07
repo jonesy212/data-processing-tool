@@ -1,6 +1,7 @@
 // components/Details.tsx
 
 import { Label } from '@/app/branding/BrandingSettings';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import ListGenerator from "@/app/generators/ListGenerator";
@@ -17,7 +18,6 @@ import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
 import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { observer } from "mobx-react-lite";
 import React from "react";
 
@@ -34,7 +34,7 @@ interface SharedDetails<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+          SharedIdentifiers<T, K> {
   participants: Participant[];
   uploadedAt: Date;
   phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

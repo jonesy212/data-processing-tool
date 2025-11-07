@@ -1,3 +1,5 @@
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { TaskActions } from '@/app/actions/TaskActions';
 import endpointConfigurations from '@/app/api/endpointConfigurations';
 import { Task } from '@/app/components/models/tasks/Task';
@@ -91,23 +93,30 @@ function useFiltering(options: SearchOptions) {
 
 
  
-const updateTaskPriority = (
-  taskId: Task["id"],
+const updateTaskPriority = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  taskId: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,["id"],
   priority: PriorityTypeEnum
 ): ThunkAction<void, RootState, unknown, Action<string>> =>
   async (dispatch: Dispatch<Action<string>>, getState: () => RootState) => {
     try {
       // Get the full task object from the state
       const state = getState();
-      const task: Task | undefined = state.taskManager.tasks.find(
-        (task: Task) => task.id === taskId
+      const task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, | undefined = state.taskManager.tasks.find(
+        (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.id === taskId
       );
 
       if (!task) {
         throw new Error(`Task with id ${taskId} not found`);
       }
  
-      setTasks((prevTasks: Record<PriorityTypeEnum, Task[]>): Record<PriorityTypeEnum, Task[]> => {
+      setTasks((prevTasks: Record<PriorityTypeEnum, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,[]>): Record<PriorityTypeEnum, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,[]> => {
         const updatedTasks = { ...prevTasks };
         
         // Ensure taskId is of type PriorityTypeEnum
@@ -128,7 +137,7 @@ const updateTaskPriority = (
       // Dispatch the action with the full task object
       dispatch(
         TaskActions.updateTaskPrioritySuccess({
-          taskId: {} as Task,
+          taskId: {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,,
           priority,
         })
       );
@@ -141,7 +150,7 @@ const updateTaskPriority = (
   };
 
 export default useFiltering;
-function setTasks(arg0: (prevTasks: Record<string, Task[]>) => { [x: string]: Task[]; }) {
+function setTasks(arg0: (prevTasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,[]>) => { [x: string]: Task[]; }) {
   const prevTasks = arg0;
   return prevTasks;
 }

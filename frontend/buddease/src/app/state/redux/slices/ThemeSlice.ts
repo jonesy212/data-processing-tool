@@ -31,124 +31,183 @@ interface ThemeSetterState {
   // collaborateOnThemeDevelopment: React.Dispatch<React.SetStateAction<string>>; // Setter for collaborating on theme development
 }
 
+interface ColorFontUsage {
+  colorsUsed: { [key: string]: number };
+  fontsUsed: { [key: string]: number };
+}
+
+
 interface ThemeState {
-  theme: Theme;
-  infoColor: string;
-  notificationState: React.Dispatch<React.SetStateAction<string | null>>;
-  isDarkMode: boolean;
-  themeUsage: {
-    colorsUsed: {
-      [key: string]: number;
+  // Core Theme
+  core: {
+    theme: Theme;
+    currentTheme: string | null;
+    selectedTheme: 'light' | 'dark';
+    isDarkMode: boolean;
+    infoColor: string;
+  };
+  
+  // State Management
+  management: {
+    notificationState: React.Dispatch<React.SetStateAction<string | null>>;
+    setThemeState: ThemeSetterState;
+  };
+  
+  // Analytics & Metrics
+  analytics: {
+    themeUsage: {
+      colorsUsed: { [key: string]: number };
+      fontsUsed: { [key: string]: number };
     };
-    fontsUsed: {
-      [key: string]: number;
+    themeMetrics: {
+      colorsUsed: { [key: string]: number };
+      fontsUsed: { [key: string]: number };
     };
   };
-  setThemeState: ThemeSetterState;
-  themeMetrics: {
-    colorsUsed: {},
-    fontsUsed: {},
-  },
-  themeSecurity: {
-    colorsUsed: {},
-    fontsUsed: {},
-  },
-  themeGovernance: {
-    colorsUsed: {},
-    fontsUsed: {},
-  },
-  themeCompliance: {
-    colorsUsed: {},
-    fontsUsed: {},
-  },
-  themeDesignSystems: {},
-  themeDevelopment: {},
-  themeChanges: {},
-  themeBackup: {},
-  themeDeployment: {},
-  themeDependencies: {},
-  themeHealth: {},
-  themeCustomization: {},
-  themeTheming: {},
-  themeMigration: {},
-  themeConflicts: {},
-  themeConsistency: {},
-  themeWorkflow: {},
-  themeFunctionality: {},
-  themeComponents: {},
-  themePlatforms: {},
-  themeConfigurations: {},
+  
+  // Governance & Compliance
+  governance: {
+    themeSecurity: { colorsUsed: { [key: string]: number }; fontsUsed: { [key: string]: number } };
+    themeGovernance: { colorsUsed: { [key: string]: number }; fontsUsed: { [key: string]: number } };
+    themeCompliance: { colorsUsed: { [key: string]: number }; fontsUsed: { [key: string]: number } };
+  };
+  
+  // Development & Operations
+  development: {
+    themeDesignSystems: Record<string, any>;
+    themeDevelopment: Record<string, any>;
+    themeChanges: Record<string, any>;
+    themeBackup: Record<string, any>;
+    themeDeployment: Record<string, any>;
+    themeDependencies: Record<string, any>;
+  };
+
+  // Color Font Usage
+  colorFontUsage: {
+    themeUsage: ColorFontUsage;
+    themeMetrics: ColorFontUsage;
+    themeSecurity: ColorFontUsage;
+    themeGovernance: ColorFontUsage;
+    themeCompliance: ColorFontUsage;
+  }
+  
+  // Quality & Customization
+  quality: {
+    themeHealth: Record<string, any>;
+    themeCustomization: Record<string, any>;
+    themeTheming: Record<string, any>;
+    themeMigration: Record<string, any>;
+    themeConflicts: Record<string, any>;
+    themeConsistency: Record<string, any>;
+  };
+  
+  // Functionality & Platforms
+  functionality: {
+    themeWorkflow: Record<string, any>;
+    themeFunctionality: Record<string, any>;
+    themeComponents: Record<string, any>;
+    themePlatforms: Record<string, any>;
+    themeConfigurations: Record<string, any>;
+  };
 }
 
 const initialState: ThemeState = {
-  theme: {
-    primaryColor: "#007bff",
-    secondaryColor: "#6c757d",
-    fontSize: "16px",
-    fontFamily: "Arial, sans-serif",
-    logoUrl: "default.png",
-    themeColor: "primary",
-    headerColor: "",
-    footerColor: "",
-    bodyColor: "",
-    borderColor: "",
-    borderStyle: "",
-    padding: "",
-    margin: "",
-    brandIcon: "",
-    brandName: "",
-    borderWidth: "",
-    borderRadius: "",
-    boxShadow: "",
-  },
-  themeUsage: {
-    colorsUsed: {
-      primary: 0,
-      secondary: 0,
+  // Core Theme
+  core: {
+    theme: {
+      primaryColor: "#007bff",
+      secondaryColor: "#6c757d",
+      fontSize: "16px",
+      fontFamily: "Arial, sans-serif",
+      logoUrl: "default.png",
+      themeColor: "primary",
+      headerColor: "",
+      footerColor: "",
+      bodyColor: "",
+      borderColor: "",
+      borderStyle: "",
+      padding: "",
+      margin: "",
+      brandIcon: "",
+      brandName: "",
+      borderWidth: "",
+      borderRadius: "",
+      boxShadow: "",
     },
-    fontsUsed: {
-      default: 0,
-      heading: 0,
+    currentTheme: "default",
+    selectedTheme: 'light',
+    isDarkMode: false,
+    infoColor: "",
+  },
+  
+  // State Management
+  management: {
+    notificationState: {} as React.Dispatch<React.SetStateAction<string | null>>,
+    setThemeState: {} as ThemeSetterState,
+  },
+  
+  // Analytics & Metrics
+  analytics: {
+    themeUsage: {
+      colorsUsed: {
+        primary: 0,
+        secondary: 0,
+      },
+      fontsUsed: {
+        default: 0,
+        heading: 0,
+      },
+    },
+    themeMetrics: {
+      colorsUsed: {},
+      fontsUsed: {},
     },
   },
-  themeSecurity: {
-    colorsUsed: {},
-    fontsUsed: {},
+  
+  // Governance & Compliance
+  governance: {
+    themeSecurity: {
+      colorsUsed: {},
+      fontsUsed: {},
+    },
+    themeGovernance: {
+      colorsUsed: {},
+      fontsUsed: {},
+    },
+    themeCompliance: {
+      colorsUsed: {},
+      fontsUsed: {},
+    },
   },
-  themeMetrics: {
-    colorsUsed: {},
-    fontsUsed: {},
+  
+  // Development & Operations
+  development: {
+    themeDesignSystems: {},
+    themeDevelopment: {},
+    themeChanges: {},
+    themeBackup: {},
+    themeDeployment: {},
+    themeDependencies: {},
   },
-  themeGovernance: {
-    colorsUsed: {},
-    fontsUsed: {},
+  
+  // Quality & Customization
+  quality: {
+    themeHealth: {},
+    themeCustomization: {},
+    themeTheming: {},
+    themeMigration: {},
+    themeConflicts: {},
+    themeConsistency: {},
   },
-  themeCompliance: {
-    colorsUsed: {},
-    fontsUsed: {},
+  
+  // Functionality & Platforms
+  functionality: {
+    themeWorkflow: {},
+    themeFunctionality: {},
+    themeComponents: {},
+    themePlatforms: {},
+    themeConfigurations: {},
   },
-  themeDesignSystems: {},
-  themeDevelopment: {},
-  themeChanges: {},
-  themeBackup: {},
-  themeDeployment: {},
-  themeDependencies: {},
-  themeHealth: {},
-  themeCustomization: {},
-  themeTheming: {},
-  themeMigration: {},
-  themeConflicts: {},
-  themeConsistency: {},
-  themeWorkflow: {},
-  themeFunctionality: {},
-  themeComponents: {},
-  themePlatforms: {},
-  themeConfigurations: {},
-
-  isDarkMode: false,
-  infoColor: "",
-  notificationState: {} as  React.Dispatch<SetStateAction<string | null>>,
-  setThemeState: {} as ThemeSetterState,
 };
 
 const dispatch = useDispatch();
@@ -818,3 +877,15 @@ export const themeReducer = themeSlice.reducer;
 export { initialState as initialThemeState };
 export type { ThemeState };
 
+// Theme selectors
+export const selectThemeCore = (state: { theme: ThemeState }) => state.theme.core;
+export const selectCurrentTheme = (state: { theme: ThemeState }) => state.theme.core.currentTheme;
+export const selectIsDarkMode = (state: { theme: ThemeState }) => state.theme.core.isDarkMode;
+export const selectThemeColors = (state: { theme: ThemeState }) => state.theme.core.theme;
+export const selectThemeManagement = (state: { theme: ThemeState }) => state.theme.management;
+export const selectThemeAnalytics = (state: { theme: ThemeState }) => state.theme.analytics;
+export const selectThemeGovernance = (state: { theme: ThemeState }) => state.theme.governance;
+export const selectThemeDevelopment = (state: { theme: ThemeState }) => state.theme.development;
+export const selectThemeQuality = (state: { theme: ThemeState }) => state.theme.quality;
+export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.theme.functionality;
+export const selectFontColor = (state: { theme: ThemeState }) => state.theme.colorFontUsage;

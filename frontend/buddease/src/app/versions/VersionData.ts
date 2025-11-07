@@ -1,26 +1,29 @@
+// VersionData.ts
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import getAppPath from '@/app/config/appStructure/appPath';
+import { AppStructureItem, AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
+import FrontendStructure, { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
+import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { createBaseData } from "@/app/hooks/useSnapshotManager";
-import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'import { Comment } from '@/app/models/comments/Comments';
+import { createBaseData } from '@/app/hooks/useSnapshotManager';
+import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
-import { K, T } from "@/app/models/data/dataStoreMethods";
+import { Data } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { InitializedData } from "@/app/snapshots/SnapshotStoreOptions";
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import MobXEntityStore from '@/app/state/stores/MobXEntityStore';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import getAppPath from '@/app/config/appStructure/appPath';
-import { AppStructureItem, AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
-import FrontendStructure, { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { DataVersions } from "@/app/configs/DataVersionsConfig";
-import { BuildVersion, Version, version } from "./Version";
-import { getCurrentAppInfo } from "./VersionGenerator";
+import { BuildVersion, Version, version } from '@/app/versions/Version';
+import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
 
 const { snapshotData } = storeProps
 
@@ -62,12 +65,12 @@ interface CoreDataItem<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+> extends SharedIdentifiers<T, K>,
   SharedTimestamps {
   id?: string | number;
   name?: string;
 
-  type?: SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['type'] | Promise<FileType>;
+  type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
   path?: string;
   draft?: boolean;
   permissions?: AppStructurePermissions;
@@ -127,10 +130,10 @@ interface AppStructureDataItem<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends CoreDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versionData?: VersionData<BaseDataEntity, BaseDataEntity> | null;
+  versionData?: string | VersionData<BaseDataEntity, BaseDataEntity> | null;
   items?: Record<string, AppStructureDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
@@ -201,14 +204,20 @@ export function createLastUpdated<T extends BaseDataEntity = BaseDataEntity>(
 
 
 // A minimal version slice (use Pick to set the baseline)
-type MinimalVersion<T extends BaseDataEntity, K extends T = T> =
+type MinimalVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> =
   Partial<
-    Pick<VersionData<T, K>, "versionNumber" | "timestamp" | "author" | "schema">> & {
+    Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "versionNumber" | "timestamp" | "author" | "schema">> & {
   };
 
 
-// VersionData.ts
-export interface VersionData<
+interface VersionData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -252,16 +261,17 @@ export interface VersionData<
   workspaceMembers: string[];
 
   // Data
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   services?: Record<string, any>;
 
   // Structure
+  source: string;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Misc
-  checksum?: string;
+  checksum: string;
   currentHash?: string;
   versionNumber?: string;
 }
@@ -274,10 +284,15 @@ const revisionNotes = "Added new section and fixed typos.";
 
 
 
-const transformToStructureItems = (data: Record<string, AppStructureDataItem<T, K, DefaultMeta<T, K>,
-  DefaultExcludedFields<T>>>): {
-    [key: string]: AppStructureDataItem<T, K, DefaultMeta<T, K>,
-      DefaultExcludedFields<T>>
+const transformToStructureItems = (data: Record<string, AppStructureDataItem<  AppEntity, 
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields>
+  >
+): {
+    [key: string]: AppStructureDataItem<AppEntity,  AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
   } => {
   // Validate input data
   if (!data || typeof data !== "object") {
@@ -321,12 +336,12 @@ const createDefaultVersionData = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  overrides?: Partial<VersionData<T, K>>
-): VersionData<T, K> => {
+  overrides?: Partial<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const now = new Date();
 
   // Create a complete base version with ALL required properties in one object
-  const baseVersion: VersionData<T, K> = {
+  const baseVersion: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     // Required properties from VersionData and ExtendedVersionData
     id: 0,
     parentId: null,
@@ -509,7 +524,7 @@ const mobXEntityStore = new MobXEntityStore();
 const { globalState } = mobXEntityStore
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
-const backendStructure = new BackendStructure(projectPath, globalState);
+const backendStructure = new IBackendStructure(projectPath, globalState);
 
 const versionHistory: VersionHistory<BaseDataEntity, BaseDataEntity> = {
   history: [],
@@ -523,7 +538,7 @@ const versionHistory: VersionHistory<BaseDataEntity, BaseDataEntity> = {
 };
 
 
-const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
+const versionData: Promise<VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>> = (async () => {
   let databaseSchema: Record<string, any> | undefined;
   let services: Record<string, any> | undefined;
   const area = fetchUserAreaDimensions().toString()
@@ -535,12 +550,12 @@ const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
   const appPathWithVersion = getAppPath(versionNumber, appVersion);
 
   // Simulate the structure for demonstration purposes
-  const getStructure = async (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined> => {
+  const getStructure = async (): Promise<Record<string, AppStructureItem<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>> | undefined> => {
     return undefined; // Simulate structure or return an actual structure
   };
 
   // Call getStructure and await its result
-  let structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
+  let structure: Record<string, AppStructureItem<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>> | undefined;
   try {
     structure = await getStructure();
   } catch (error) {
@@ -554,14 +569,14 @@ const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
 
 
   // Then create mockVersion and other dependencies
-  const mockVersion: Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>> = {
+  const mockVersion: Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
     id: 0,
     major: 1,
     minor: 0,
     patch: 0,
     name: "Initial Version",
     // ... all other required properties
-  } as Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>>;
+  } as Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>;
 
 
   const latestVersionData = createLatestVersion();
@@ -579,7 +594,7 @@ const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
   });
 
   // Define the resolved VersionData object
-  const resolvedVersionData: VersionData<BaseDataEntity<any>> = {
+  const resolvedVersionData: VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
     id: "version-1",
     name: "Initial Version",
     lastUpdated: new Date(),
@@ -753,5 +768,5 @@ function calculateChecksum(content: string): string {
 }
 
 export { createDefaultVersionData, versionHistory };
-export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, VersionData, VersionHistory };
+export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, SharedVersioning, VersionData, VersionHistory };
 

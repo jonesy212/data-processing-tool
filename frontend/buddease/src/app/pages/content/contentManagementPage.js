@@ -7,13 +7,10 @@ const contentManagementPage = (Component) => {
   return () => {
     
     return (
-      <RootLayout>
       <div>
         {/* You can add any additional content management features here */}
         <Component />
       </div>
-      </RootLayout>
-
     );
   };
 };

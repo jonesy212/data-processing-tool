@@ -112,7 +112,12 @@ export const ApiProject = observable({
   assignTaskToCurrentUserAPI: async (
     projectId: string,
     taskId: string,
-    assignedTo: WritableDraftUser<any, any, any, any, any, any>i
+    assignedTo: WritableDraft<User<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>>
   ): Promise<any> => {
     try {
       const response = await axiosInstance.put(
@@ -296,7 +301,12 @@ export const ApiProject = observable({
   updateMeetingDetailsAPI: async (
     projectId: string,
     meetingId: string,
-    updatedMeetingData: Partial<Meeting>
+    updatedMeetingData: Partial<Meeting<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>>
   ): Promise<void> => {
     try {
       await axiosInstance.put(
@@ -401,7 +411,12 @@ export const ApiProject = observable({
 
   uploadFileToProjectAPI: async (
     projectId: string,
-    fileData: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    fileData: FileData<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>
   ): Promise<void> => {
     try {
       await axiosInstance.post(`${API_BASE_URL}/${projectId}/files`, fileData);

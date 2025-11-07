@@ -1,12 +1,17 @@
+import React from "react";
+import { observer } from "mobx-react";
 import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { AxiosError } from 'axios';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { apiNotificationMessages } from "@/app/api/ApiData";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { LogData } from "@/app/models/LogData";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import React from "react";
+import { createNotifier } from "@/app/hooks/useNotifier";
+import { useNotification } from '@/app/context/NotificationContext';
 
 type NotificationMessages = typeof NOTIFICATION_MESSAGES;
 
@@ -19,19 +24,25 @@ interface NotificationManagerProps<
   IncludedFields extends keyof T = keyof T
 > {
   notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+
   notify: (
     id: string,
-    message: string,
-    data: any,
-    date: Date,
-    type: NotificationType
+    messageKey: keyof NotificationMessages,
+    data?: any,
+    date?: Date,
+    type?: NotificationType
   ) => void;
-  setNotifications: React.Dispatch<
-    React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
-  >;
+
+ setNotifications?: (
+    updater: (
+      prev: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+    ) => NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ) => void;
+
   onConfirm: (message: string, randomBytes: any) => void;
   onCancel: (message: string, randomBytes: any) => void;
 }
+
 
 class NotificationManager<
   T extends BaseDataEntity = BaseDataEntity,
@@ -40,127 +51,196 @@ class NotificationManager<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends React.Component<NotificationManagerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-  private notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+> extends React.Component<
+  NotificationManagerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> {
+  private notifier: ReturnType<typeof useNotification<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  private notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
-  // Method to get notifications
+  constructor(
+    props: NotificationManagerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) {
+    super(props);
+
+    // Use dependency injection or static assignment.
+    this.notifier = useNotification<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+    this.notifications = props.notifications || [];
+  }
+
+  // =====================================================
+  // 🔹 Generic Notification Handlers
+  // =====================================================
+
+  notify(
+    id: string,
+    messageKey: keyof NotificationMessages,
+    data?: any,
+    date: Date = new Date(),
+    type: NotificationType = NotificationTypeEnum.INFO
+  ): void {
+    if (type === NotificationTypeEnum.SUCCESS) {
+      this.notifier.showSuccessNotification({
+        id,
+        message: String(messageKey),
+        data,
+        timestamp: date,
+      });
+    } else if (type === NotificationTypeEnum.ERROR) {
+      this.notifier.showErrorNotification({
+        id,
+        message: String(messageKey),
+        data,
+        timestamp: date,
+      });
+    } else {
+      this.notifier.showInfoNotification({
+        id,
+        message: String(messageKey),
+        data,
+        timestamp: date,
+      });
+    }
+  }
+
+  notifySuccess(id: string, message: string, data: any = null): void {
+    this.notifier.showSuccessNotification({
+      id,
+      message,
+      data,
+      timestamp: new Date(),
+    });
+  }
+
+  notifyError(id: string, message: string, data?: any): void {
+    this.notifier.showErrorNotification({
+      id,
+      message,
+      data,
+      timestamp: new Date(),
+    });
+  }
+
+  // =====================================================
+  // 🔹 Context-Aware API Error Handler
+  // =====================================================
+
+  handleApiErrorAndNotify<Ctx extends string>(
+    context: Ctx,
+    error: AxiosError<unknown>,
+    errorMessage: string,
+    errorMessageId: keyof NotificationMessages
+  ): void {
+    console.error(`[${context}] API Error:`, errorMessage, error);
+
+    const errorMessageText =
+      apiNotificationMessages?.[context]?.[errorMessageId] ??
+      apiNotificationMessages?.[errorMessageId] ??
+      errorMessage;
+
+    this.notifier.showErrorNotification({
+      id: `${context}-${String(errorMessageId)}`,
+      message: errorMessageText,
+      data: { context, originalError: errorMessage },
+      timestamp: new Date(),
+    });
+  }
+
+  // =====================================================
+  // 🔹 Notification CRUD Operations
+  // =====================================================
+
   getNotifications(): NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.notifications;
   }
 
-  // Method to add a notification
   addNotification(
     messageData: Partial<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     date: Date = new Date(),
-    notificationType: NotificationTypeEnum = NotificationTypeEnum.INFO,
+    notificationType: NotificationType = NotificationTypeEnum.INFO,
     completionMessageLog?: LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
     const newNotification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-      // Core required properties
       id: UniqueIDGenerator.generateNotificationID(
         messageData.message || '',
         date,
         notificationType,
-        completionMessageLog,
+        completionMessageLog
       ),
       message: messageData.message || '',
-      type: messageData.type || 'info',
+      type: messageData.type || NotificationTypeEnum.INFO,
       timestamp: date,
       read: false,
-
-      // Notification specific properties
-      notificationType: notificationType,
+      notificationType,
       createdAt: new Date(),
-      date: date,
+      date,
       content: messageData.content || '',
-      completionMessageLog: completionMessageLog,
+      completionMessageLog,
       sendStatus: "Sent" as SendStatus,
-
-      // Data properties
       topics: messageData.topics || [],
       highlights: messageData.highlights || [],
       files: messageData.files || [],
-      meta: messageData.meta || {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-
-      // CalendarEvent properties
+      meta: messageData.meta || ({} as Meta),
       rsvpStatus: messageData.rsvpStatus || "notResponded",
       participants: messageData.participants || {},
       teamMemberId: messageData.teamMemberId || "",
-
-      // Optional properties
-      dataId: messageData.dataId,
-      error: messageData.error,
-      updatedAt: messageData.updatedAt,
-      email: messageData.email,
-      status: messageData.status,
-      inApp: messageData.inApp,
-      metadata: messageData.metadata,
-      options: messageData.options,
-
-      // Spread any additional properties from messageData
-      ...messageData
+      ...messageData,
     };
 
     this.notifications.push(newNotification);
-    
-    // Update parent component state if setNotifications is provided
+
     if (this.props.setNotifications) {
-      this.props.setNotifications(prev => [...prev, newNotification]);
+      this.props.setNotifications((prev) => [...prev, newNotification]);
     }
   }
 
-  // Method to mark notification as read
   markAsRead(notificationId: string): void {
-    const notification = this.notifications.find(n => n.id === notificationId);
+    const notification = this.notifications.find((n) => n.id === notificationId);
     if (notification) {
       notification.read = true;
       notification.updatedAt = new Date();
     }
   }
 
-  // Method to remove notification
   removeNotification(notificationId: string): void {
-    this.notifications = this.notifications.filter(n => n.id !== notificationId);
-    
+    this.notifications = this.notifications.filter((n) => n.id !== notificationId);
     if (this.props.setNotifications) {
-      this.props.setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      this.props.setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     }
   }
 
-  // Method to clear all notifications
   clearNotifications(): void {
     this.notifications = [];
-    
     if (this.props.setNotifications) {
       this.props.setNotifications([]);
     }
   }
 
-  // Method to get unread notifications
   getUnreadNotifications(): NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    return this.notifications.filter(notification => !notification.read);
+    return this.notifications.filter((notification) => !notification.read);
   }
 
-  // Method to update notification
   updateNotification(
-    notificationId: string, 
+    notificationId: string,
     updates: Partial<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): void {
-    const notificationIndex = this.notifications.findIndex(n => n.id === notificationId);
-    if (notificationIndex !== -1) {
-      this.notifications[notificationIndex] = {
-        ...this.notifications[notificationIndex],
+    const idx = this.notifications.findIndex((n) => n.id === notificationId);
+    if (idx !== -1) {
+      this.notifications[idx] = {
+        ...this.notifications[idx],
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      
+
       if (this.props.setNotifications) {
         this.props.setNotifications([...this.notifications]);
       }
     }
   }
 
-  // Communication and collaboration methods
+  // =====================================================
+  // 🔹 Collaboration / Confirmation Handlers
+  // =====================================================
+
   handleConfirm(message: string, randomBytes: any): void {
     this.props.onConfirm(message, randomBytes);
   }
@@ -170,5 +250,6 @@ class NotificationManager<
   }
 }
 
-export default NotificationManager;
+
+export default observer(NotificationManager);
 export type { NotificationManagerProps, NotificationMessages };

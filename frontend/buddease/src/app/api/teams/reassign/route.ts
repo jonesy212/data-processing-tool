@@ -1,6 +1,6 @@
 // app/api/teams/reassignProject/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { DatabaseClient } from '@/app/api/DatabaseClient';
+import DatabaseClient from '@/app/api/DatabaseClient';
 
 export async function POST(request: NextRequest) {
   try {

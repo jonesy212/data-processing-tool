@@ -1,123 +1,112 @@
+// RealtimeDataComponent.tsx
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { Data } from "@/app/models/data/Data";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { processSnapshotStore } from "@/app/hooks/commHooks/RealtimeData";
 
-
-const processSnapshotStore = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
->(
-  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-) => {
-  Object.keys(snapshotStore).forEach((snapshotId) => {
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    const snapshotData = snapshotStore[typedSnapshotId];
-    console.log(`Processing snapshot with ID ${String(typedSnapshotId)}:`, snapshotData);
-  });
+/** Safely render any value */
+const renderValue = (v: unknown): React.ReactNode => {
+  if (v === null || v === undefined) return "-";
+  if (typeof v === "object") return JSON.stringify(v, null, 2);
+  return String(v);
 };
 
+interface RealtimeDataProps {
+  id: string;
+  name: string;
+  date?: Date;
+  userId: string;
+  value?: string | number;
+}
 
-type ConcreteRealtimeDataItem = RealtimeDataItem<BaseDataEntity>;
+/** Define the exact generic type for the realtime hook */
+type ConcreteRealtimeItem = RealtimeDataItem<
+  BaseDataEntity,
+  BaseDataEntity,
+  DefaultMeta<BaseDataEntity, BaseDataEntity>,
+  Attachment,
+  never,
+  keyof BaseDataEntity
+>;
 
-
-const RealtimeDataComponent: React.FC<ConcreteRealtimeDataItem> = ({
-  userId,
-  date,
-  dispatch,
-  value,
-  name,
-  timestamp,
-  title,
-}) => {
-  const initialData: ConcreteRealtimeDataItem[] = [];
+const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ id, name, date, userId, value }) => {
   const { error, handleError, clearError } = useErrorHandling();
+  const dispatch = useDispatch();
 
-const updateCallback = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
-  id: string,
-  events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-): void => {
-  const exchangeData: ExchangeData[] = [];
-  const dexData: any[] = [];
+  /** Initial empty array with correct type */
+  const initialData: ConcreteRealtimeItem[] = [];
 
-  try {
-    dispatch(ExchangeActions.fetchExchangeData(exchangeData));
-    dispatch(fetchDEXData(dexData, dispatch));
-    console.log("Snapshot store data:", data);
+  /** Callback for realtime updates */
+  const updateCallback = (
+    _id: string,
+    events: Record<string, CalendarEvent<any, any, any, any, any, any>[]>,
+    snapshotStore: SnapshotStore<any, any, any, any, any, any>,
+    dataItems: ConcreteRealtimeItem[],
+    data?: Data<any, any, any, any, any, any> | null
+  ) => {
+    try {
+      const exchangeData: ExchangeData[] = [];
+      const dexData: any[] = [];
+      dispatch(ExchangeActions.fetchExchangeData(exchangeData));
+      dispatch(fetchDEXData(dexData, dispatch));
 
-    dataItems.forEach((dataItem) => {
-      console.log(`Updated data item with ID ${dataItem.id}:`, dataItem);
-    });
-    clearError();
-  } catch (error: any) {
-    handleError(error.message);
-  }
+      dataItems.forEach((item) => console.log(`Realtime update: ID=${item.id}`, item));
+      processSnapshotStore(snapshotStore);
 
-  processSnapshotStore(snapshotStore);
+      Object.entries(events).forEach(([eventId, calendarEvents]) =>
+        calendarEvents.forEach((event) => console.log(`Calendar Event ID=${eventId}:`, event))
+      );
 
-  Object.keys(events).forEach((eventId: string) => {
-    const calendarEvents = events[eventId];
-    calendarEvents.forEach((event) => {
-      console.log(`Updated event with ID ${eventId}:`, event);
-    });
-  });
-};
+      clearError();
+    } catch (err: any) {
+      handleError(err.message || "Unknown error in updateCallback");
+    }
+  };
 
+  /** Use the custom hook */
+  const { realtimeData, fetchData } = useRealtimeData<ConcreteRealtimeItem, ConcreteRealtimeItem>(
+    initialData,
+    updateCallback
+  );
 
-  const { realtimeData, fetchData } = useRealtimeData<
-    ConcreteRealtimeDataItem,
-    ConcreteRealtimeDataItem
-  >(initialData, updateCallback);
-
-  const reduxDispatch = useDispatch();
-
+  /** Fetch initial data and set interval */
   useEffect(() => {
-    fetchData(userId, reduxDispatch as any);
-  }, [userId, value, fetchData]);
+    fetchData(userId, dispatch as any);
+    const intervalId = setInterval(() => fetchData(userId, dispatch as any), 5000);
+    return () => clearInterval(intervalId);
+  }, [userId, dispatch, fetchData]);
 
   return (
     <div>
-      {error && <div>Error: {error}</div>}
+      <h3>{name}</h3>
+      <p>ID: {id}</p>
+      <p>User ID: {userId}</p>
+      <p>Date: {date?.toLocaleString() ?? "-"}</p>
+      <p>Value: {renderValue(value)}</p>
+
+      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+
       {realtimeData.map((dataItem, index) => (
-        <div key={index}>
-          <h3>{name}</h3>
-          <p>User ID: {userId}</p>
-          <p>Value: {value}</p>
-          <p>Date: {date.toString()}</p>
-          <p>Timestamp: {timestamp.toString()}</p>
-          {title && <p>Title: {title}</p>}
-          <p>{dataItem.id}</p>
-          <p>{dataItem.value}</p>
+        <div
+          key={index}
+          style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}
+        >
+          <p>Data ID: {dataItem.id}</p>
+          <p>Realtime Value: {renderValue(dataItem.value)}</p>
         </div>
       ))}
     </div>
   );
 };
 
-
-export default RealtimeDataComponent 
-
+export default RealtimeDataComponent;

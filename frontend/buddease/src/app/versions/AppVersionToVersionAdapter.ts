@@ -16,7 +16,7 @@ class AppVersionToVersionAdapter<
   IncludedFields extends keyof T = keyof T
 > implements Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
-  private _appVersion: AppVersionImpl;
+  private _appVersion: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Declare all properties that are initialized in constructor
   id: string;
@@ -50,7 +50,7 @@ class AppVersionToVersionAdapter<
   workspaceMembers: any[] = [];
 
   // Data + structure
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as any;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as any;
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};
   structureData: string = "";

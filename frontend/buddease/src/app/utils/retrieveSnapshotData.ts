@@ -1,39 +1,40 @@
 import { SnapshotOperation, SnapshotOperationType } from '@/app/actions/SnapshotActions';
+import internalApiService from '@/app/api/ApiClient';
 import axiosInstance from '@/app/api/csrfToken';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/app/typings/YourSpecificSnapshotType';
-import { snapshotId } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Version } from '@/app/versions/Version';
+import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { DataStoreWithSnapshotMethods } from '@/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { Version } from '@/versions/Version';
 
 
 // Define the API endpoint for retrieving snapshot data
@@ -70,7 +71,7 @@ interface RetrievedSnapshot<
   id: string;
   responseData: T; // This property should extend `Data`
   timestamp: string | Date;
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   category?:  Category;
   categoryProperties?: CategoryProperties;
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>>;
@@ -255,7 +256,7 @@ const convertSnapshotStore = <
   const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory, core, security, storage, isExpired} = storeProps
   const snapshotData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
     initialState, storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory,
-    core, security, storage, isExpired, 
+    core, security, storage, isExpired,  data, snapshotStore, timestamp
   });
   // Create the Snapshot object from retrievedSnapshot
   const snapshot = {
@@ -661,7 +662,7 @@ const convertSnapshotStore = <
         callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
         snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
         category?:  Category,
-         categoryProperties?: CategoryProperties;,
+         categoryProperties?: CategoryProperties,
       ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null,
       batchTakeSnapshot: (snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
       batchTakeSnapshotsRequest: (snapshotIds: string[], snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
@@ -798,7 +799,7 @@ const convertSnapshotStore = <
         callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
       ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
-      compareSnapshotState: (snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => boolean;
+      compareSnapshotState: (snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
   
       getConfigOption: (key: string) => any;
       getTimestamp: () => Date;
@@ -1159,7 +1160,7 @@ const convertSnapshotStore = <
     addSnapshotSuccess: () => {},
     getParentId: () => '',
     getChildIds: () => [],
-    compareSnapshotState: (state1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, state2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => false,
+    compareSnapshotState: (state1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, state2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => false,
     deepCompare: () => false,
     shallowCompare: () => false,
     getDataStoreMethods: () => ({}),
@@ -1412,51 +1413,105 @@ const retrievedSnapshot: <
   return snapshotData; // Correctly return the `RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>` instance
 };
 
-const retrieveData = async () => {
-   
-  const snapshot = await retrieveSnapshotData(snapshotId);
-  return snapshot;
-};
 
 export const retrieveSnapshotData = <
-    T extends BaseDataEntity,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T ,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(id: string
-): Promise<RetrievedSnapshot<SnapshotDataResponse<T, K>, K> | null> => {
+  IncludedFields extends keyof T = keyof T
+>(
+  id: string,
+  options: {
+    timeout?: number;
+    retryCount?: number;
+    includeMetadata?: boolean;
+    successMessageId?: keyof ClientNotificationMessages;
+    errorMessageId?: keyof ClientNotificationMessages;
+    useEnvironmentEndpoint?: boolean;
+  } = {}
+): Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
+  const { 
+    timeout = 10000, 
+    retryCount = 3, 
+    includeMetadata = true,
+    successMessageId,
+    errorMessageId,
+    useEnvironmentEndpoint = true
+  } = options;
+
   return new Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(
     async (resolve, reject) => {
-    try {
-      const response = await axiosInstance.get<SnapshotDataResponse<T, K>>(`${SNAPSHOT_DATA_API_URL}/${id}`);
+      try {
+        let url: string;
+        
+        // Use environment-aware endpoints if configured
+        if (useEnvironmentEndpoint && environmentAwareEndpointManager) {
+          url = environmentAwareEndpointManager.getEndpoint('snapshots', 'getSnapshotById', id);
+        } else {
+          // Fallback to direct URL
+          url = `${SNAPSHOT_DATA_API_URL}/${id}`;
+        }
 
-      // Ensure response.data is of type SnapshotDataResponse<T, K>
-      const snapshotData: RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        timestamp: new Date(response.data.timestamp),
-        category: response.data.category,
-        data: null, // Adjust this as per your data structure
-        snapshotStoreConfig: response.data.snapshotStoreConfig,
-        getSnapshotItems: response.data.getSnapshotItems,
-        defaultSubscribeToSnapshots: response.data.defaultSubscribeToSnapshots,
-       
-        transformSubscriber: response.data.transformSubcriber,
-        responseData: response.data.responseData,
-        callbacks: response.data.callbacks,
-        initialState: response.data.initialState,
-        isCore: response.data.isCore,
-       
+        // Use internalApiService with built-in error handling and notifications
+        const response = await internalApiService.get<SnapshotDataResponse<T, K>>(
+          url,
+          { 
+            timeout,
+            params: includeMetadata ? { includeMetadata: 'true' } : {}
+          },
+          successMessageId,
+          errorMessageId
+        );
 
-      };
+        // Validate response structure
+        if (!response.data || typeof response.data !== 'object') {
+          throw new Error('Invalid response data structure');
+        }
 
-      resolve(snapshotData);
-    } catch (error) {
-      console.error("Error retrieving snapshot data by id:", error);
-      reject(error);
+        // Create the snapshot data object
+        const snapshotData: RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          id: response.data.id || id,
+          snapshotId: response.data.snapshotId || id,
+          timestamp: response.data.timestamp ? new Date(response.data.timestamp) : new Date(),
+          category: response.data.category,
+          data: response.data.data || null,
+          snapshotStoreConfig: response.data.snapshotStoreConfig,
+          getSnapshotItems: response.data.getSnapshotItems,
+          defaultSubscribeToSnapshots: response.data.defaultSubscribeToSnapshots,
+          transformSubscriber: response.data.transformSubscriber,
+          responseData: response.data.responseData,
+          callbacks: response.data.callbacks,
+          initialState: response.data.initialState,
+          isCore: response.data.isCore ?? false,
+          metadata: (response.data.metadata || {}) as Meta,
+          attachments: (response.data.attachments || []) as AttachmentType[],
+          excludedFields: (response.data.excludedFields || []) as ExcludedFields[],
+          includedFields: (response.data.includedFields || []) as IncludedFields[],
+          version: response.data.version || '1.0',
+          checksum: response.data.checksum,
+          size: response.data.size
+        };
+
+        console.log(`✅ Successfully retrieved snapshot ${id}`);
+        resolve(snapshotData);
+        
+      } catch (error: any) {
+        // internalApiService already handles notifications, so we just need to handle resolution
+        if (error?.response?.status === 404) {
+          console.warn(`❌ Snapshot with id ${id} not found`);
+          resolve(null);
+          return;
+        }
+        
+        console.error(`❌ Failed to retrieve snapshot ${id}:`, error);
+        reject(error);
+      }
     }
-  });
+  );
 };
+
 export type { RetrievedSnapshot, SnapshotDataResponse };
 
 

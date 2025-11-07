@@ -1,8 +1,9 @@
 // Filter.tsx
 import React, { useState } from 'react';
 import { SortingOption } from '@/app/pages/searches/SearchOptions';
+import { DrawingEntity } from '@/app/typings/entities/DrawingEntity'
 
-interface Filter {
+interface Filter extends DrawingEntity {
   label: string;
   options: string[]; // Options for the filter
   onChange: (selectedOption: SortingOption | undefined, field: string) => void; // Adjusted onChange function
@@ -16,7 +17,9 @@ interface Filter {
   autoFocus?: boolean; // Whether the filter should receive focus automatically
   multiple?: boolean; // Whether the filter should allow multiple selections
   placeholder?: string; // Placeholder text for the filter input/select
-
+  filterType: 'blur' | 'brightness' | 'contrast' | 'saturation' | 'hue';
+  value: number;
+  unit?: string;
 }
 
 const FilterComponent: React.FC<Filter> = ({ label, options, onChange, field }) => {

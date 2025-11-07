@@ -1,3 +1,4 @@
+import { CategoryPropertyBundle } from '@app/libraries/categories/generateCategoryProperties';
 // RelatedProps.ts
 import { Label } from '@/app/branding/BrandingSettings';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
@@ -25,18 +26,15 @@ interface BaseEntityProperties {
   name?: string;
   category?: Category;
   criteria?: CriteriaType;
+  storeId?: string | number
  }
 
 interface SharedIdentifiers<  
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > extends BaseEntityProperties {
   snapshotId?: string | number | null;
-   categoryProperties?: CategoryProperties;
+  categoryProperties?: CategoryPropertyBundle<T, K>;
 }
 
 interface SharedSnapshotProperties<

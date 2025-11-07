@@ -1,5 +1,5 @@
 // Define structure for FinancialMetrics
-export interface FinancialMetrics {
+interface FinancialMetrics {
     revenue: number;
     expenses: number;
     profitMargin: number;
@@ -8,7 +8,7 @@ export interface FinancialMetrics {
   }
   
   // Process function for FinancialMetrics
-  export const processFinancialMetrics = (metrics: FinancialMetrics): void => {
+const processFinancialMetrics = (metrics: FinancialMetrics): void => {
     console.log("Processing Financial Metrics...");
   
     const profit = metrics.revenue - metrics.expenses;
@@ -37,4 +37,5 @@ export interface FinancialMetrics {
   };
   
 
-  export type { FinancialMetrics }
+export type { FinancialMetrics }
+  export { processFinancialMetrics }

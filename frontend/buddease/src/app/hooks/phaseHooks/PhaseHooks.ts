@@ -1,7 +1,9 @@
 // PhaseHooks.ts
 
-import { ipfsConfig } from '@/app/components/config/ipfsConfig';
-import createDynamicHook from "@/app/dynamicHooks/dynamicHookGenerator";
+import IdeationPhaseComponent from "@/app/components/phases/IdeationPhaseComponent";
+import { ipfsConfig } from '@/app/config/ipfsConfig';
+import userSettings from "@/app/config/UserSettings";
+import createDynamicHook from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
@@ -9,21 +11,17 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import IdeationPhaseComponent from "@/app/phases/IdeationPhaseComponent";
 import {
   ExtendedDAppAdapter,
   ExtendedDappProps
-} from "@/app/web3/dAppAdapter/IPFS";
-import userSettings from "@/app/config/UserSettings";
-import configData from "@/config/endpoints/Data";
+} from "@/app/utils/web3/dAppAdapter/IPFS";
+import configData from "@/config/endpoints/configData";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
-;
 
 
 
-
-const phaseHooks: { [key: string]: CustomPhaseHooks } = {};
+const phaseHooks: { [key: string]: CustomPhaseHooks<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
 let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
 let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
 
@@ -32,8 +30,8 @@ let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
    name: string;
    progressCallbacks?: (progress: Progress) => void;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
-  canTransitionTo?: (nextPhase: Phase) => boolean;
-  handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
+  canTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
+  handleTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
    duration: string | undefined;
   isActive?: boolean;
   initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
@@ -75,8 +73,8 @@ export interface TestPhaseHookConfig {
   name: string;
   condition: (idleTimeoutDuration: number) => Promise<boolean>
   asyncEffect: () => Promise<() => void>;
-  canTransitionTo?: (nextPhase: Phase) => boolean;
-  handleTransitionTo?: (nextPhase: Phase) => Promise<void>;
+  canTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
+  handleTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
   duration: number;
 }
 
@@ -104,8 +102,8 @@ const useTestPhaseHooks = (): TestPhaseHooks => {
         // Logic to execute when the test phase ends
         console.log("Test phase ended");
       },
-      canTransitionTo: (nextPhase: Phase) => true,
-      handleTransitionTo: function (nextPhase: Phase): void {
+      canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true,
+      handleTransitionTo: function (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
         throw new Error("Function not implemented.");
       },
       resetIdleTimeout: function (): Promise<void> {

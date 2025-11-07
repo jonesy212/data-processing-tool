@@ -1,13 +1,26 @@
-import { uiStore } from '@/components/state/stores/UIStore';
 // ChatApi.ts
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
+import { uiStore } from '@/app/components/state/stores/UIStore';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { CalendarManagerState, ChatRoom } from "@/app/components/calendar/CalendarSlice";
+import { ChatRoom } from '@/app/communications/ChatRoom'
 import ChatMessage from "@/app/components/communications/chat/ChatMessage";
 import Group from "@/app/components/communications/chat/Group";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { User } from "@/app/users/User";
 import { AxiosResponse } from "axios";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
+interface AudioOptions {
+  microphone?: boolean;
+  speakers?: boolean;
+  volume?: number;
+  noiseCancellation?: boolean;
+  inputDevice?: string;
+  outputDevice?: string;
+  [key: string]: any; // for additional dynamic properties
+}
 
 
 class ChatApi {
@@ -89,12 +102,19 @@ class ChatApi {
     }
   }
 
-  static async createGroup(
+  static async createGroup<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     groupName: string,
     isPublic: boolean
-  ): Promise<Group<User>> {
+  ): Promise<Group<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     try {
-      const response: AxiosResponse<Group<User>> = await axiosInstance.post(
+      const response: AxiosResponse<Group<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> = await axiosInstance.post(
         `${this.API_BASE_URL}/groups`,
         {
           name: groupName,
@@ -188,21 +208,18 @@ class ChatApi {
     }
   }
 
-
-
   static displayAudioOptionsMenu = async (roomId: string) => {
     try {
       // Fetch audio options
-      const audioOptions = await this.fetchAudioOptions(roomId);
+          const audioOptions = await this.fetchAudioOptions(roomId);
 
-      // Display modal
-      uiStore.displayAudioOptionsModal(async (selectedOptions) => {
-        await this.saveAudioOptionsToBackend(
-          selectedOptions,
-          roomId,
-          audioOptions
-        );
-      });
+    uiStore.displayAudioOptionsModal(async (selectedOptions: AudioOptions) => {
+      await this.saveAudioOptionsToBackend(
+        selectedOptions,
+        roomId,
+        audioOptions
+      );
+    });
 
     } catch (error) {
       console.error('Error displaying audio options menu:', error);
@@ -211,6 +228,86 @@ class ChatApi {
   }
 
   
+  // Additional methods for ChatApi class
+static async startVideoCall(roomId: string, participants: string[]): Promise<{ callId: string; joinUrl: string }> {
+  try {
+    const response = await axiosInstance.post(`${this.API_BASE_URL}/rooms/${roomId}/video-call`, {
+      participants
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error starting video call:", error);
+    throw error;
+  }
+}
+
+static async startAudioCall(roomId: string, participants: string[]): Promise<{ callId: string; joinUrl: string }> {
+  try {
+    const response = await axiosInstance.post(`${this.API_BASE_URL}/rooms/${roomId}/audio-call`, {
+      participants
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error starting audio call:", error);
+    throw error;
+  }
+}
+
+static async createProjectPhaseChannel(projectId: string, phaseName: string, members: string[]): Promise<ChatRoom> {
+  try {
+    const response = await axiosInstance.post(`${this.API_BASE_URL}/projects/${projectId}/phase-channels`, {
+      phaseName,
+      members
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating project phase channel:", error);
+    throw error;
+  }
+}
+
+static async getCryptoDiscussionGroups(): Promise<Group[]> {
+  try {
+    const response = await axiosInstance.get(`${this.API_BASE_URL}/groups/crypto`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching crypto discussion groups:", error);
+    throw error;
+  }
+}
+
+static async shareCryptoPortfolio(roomId: string, portfolioData: any): Promise<void> {
+  try {
+    await axiosInstance.post(`${this.API_BASE_URL}/rooms/${roomId}/share-portfolio`, {
+      portfolioData
+    });
+  } catch (error) {
+    console.error("Error sharing crypto portfolio:", error);
+    throw error;
+  }
+}
+
+static async brainstormIdeas(roomId: string, ideas: string[]): Promise<{ sessionId: string; ideas: any[] }> {
+  try {
+    const response = await axiosInstance.post(`${this.API_BASE_URL}/rooms/${roomId}/brainstorm`, {
+      ideas
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error starting brainstorming session:", error);
+    throw error;
+  }
+}
+
+static async getCollaborationTools(roomId: string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(`${this.API_BASE_URL}/rooms/${roomId}/collaboration-tools`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching collaboration tools:", error);
+    throw error;
+  }
+}
 
   // Add more methods as needed for various chat functionalities
 

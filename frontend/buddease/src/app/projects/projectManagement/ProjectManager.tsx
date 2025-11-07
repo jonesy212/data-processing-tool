@@ -8,6 +8,8 @@ import {
   takeSnapshot,
   updateSnapshotStore
 } from "@/app/api/SnapshotApi";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";

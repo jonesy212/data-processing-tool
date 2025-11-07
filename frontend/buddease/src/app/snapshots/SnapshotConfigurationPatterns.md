@@ -86,7 +86,7 @@ For example, your SimulatedDataSourceFromParams:
 interface SimulatedDataSourceFromParams<
   Params extends SnapshotConfigParam any, any, any, any[]> = SnapshotConfigParams
 > extends SnapshotInstanceProps<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]> {
-  data: InitializedData<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
+  data: Data<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
   fetchData: () => Promise<SnapshotStoreConfig<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>>;
 }
 

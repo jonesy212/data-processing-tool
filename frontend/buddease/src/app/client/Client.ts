@@ -1,7 +1,7 @@
 // Client.ts
 import { Pool, QueryResult } from 'pg';
 
-import internalApiService from "@/app/api/ApiClient";
+import internalApiService from '@/app/api/ApiClient';
 import { ClientInformation } from '@/app/client/ClientInformation';
 import { mapLanguageToEnum } from '@/app/communications/Language';
 import { DatabasePool } from '@/app/server/database/DatabasePool';

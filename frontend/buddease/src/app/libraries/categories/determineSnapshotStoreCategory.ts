@@ -1,7 +1,11 @@
+//determineSnapshotStoreCategory.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-//determineSnapshotStoreCategory.ts
 function determineSnapshotStoreCategory<
   T extends BaseDataEntity,
   K extends T = T,

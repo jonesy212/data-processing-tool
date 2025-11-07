@@ -17,7 +17,9 @@ export interface ContentEntity extends BaseDataEntity {
   description: string;
   subscriberId: string;
   category?: Category;
-  categoryProperties: string | CategoryProperties | undefined;
+
+  // categories?: CategoryProperties[];
+
   timestamp: string | number | Date;
   length: number;
   items: ItemUnion[];

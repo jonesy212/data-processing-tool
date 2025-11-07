@@ -7,6 +7,7 @@ import { NotificationType } from '@/app/context/NotificationContext';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
@@ -15,10 +16,8 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
@@ -31,7 +30,7 @@ interface SnapshotItem<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  SharedIdentifiers<T, K> {
   id: string | number | undefined;
   message?: (
     type: NotificationType, 
@@ -42,7 +41,7 @@ interface SnapshotItem<
     channel?: ChatRoom
   ) => Message
   itemContent?: ContentItem; 
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   user?: User;
   categories?: Category[];
   label?: string | Label | Record<string, string> | null

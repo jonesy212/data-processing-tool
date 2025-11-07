@@ -8,7 +8,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotUnion, SnapshotsArray } from '@/LocalStorageSnapshotStore';
 

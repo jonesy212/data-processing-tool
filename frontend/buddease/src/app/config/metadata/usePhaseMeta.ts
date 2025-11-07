@@ -5,9 +5,12 @@ import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { useEffect } from 'react';
+import { useMeta } from "@/app/config/useMeta";
+
 
 // Utility hooks for handling metadata
-export const usePhaseMeta = <  T extends BaseDataEntity,
+export const usePhaseMeta = <  
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -17,13 +20,13 @@ export const usePhaseMeta = <  T extends BaseDataEntity,
   initialPhaseMetadata: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ) => {
   // Use `useMeta` hook to manage metadata
-  const { metadata, setMetadata, updateMetadata } = useMeta<T, K>({
+  const { metadata, setMetadata, updateMetadata } = useMeta<T, K, Meta>({
     ...createMeta<T, K>({ area, ...initialPhaseMetadata })
   });
 
   // Use `useMetadata` hook for unified metadata options
-  const { options, setOptions, updateOptions } = useMetadata<T, K>({
-    ...createMetadata<T, K>({ area })
+  const { options, setOptions, updateOptions } = useMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+    ...createMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({ area })
   });
 
   // Update the metadata when area changes

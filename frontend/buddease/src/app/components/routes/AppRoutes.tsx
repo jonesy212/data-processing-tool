@@ -3,7 +3,7 @@ import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import ProfilePage from '@/app/pages/profile/ProfilePage';
 import VerificationPage from '@/app/pages/profile/VerificationPage';
-import TeamManagementPage from '@/app/pages/team/TeamManagementPage';
+import TeamManagementPage from '@/app/pages/teams/TeamManagementPage';
 import Unauthorized from '@/app/pages/Unauthorized';
 import AccessDenied from '@/app/pages/AccessDenied';
 import { RouteGuard } from '@/app/components/routing/RouteGuard';
@@ -28,7 +28,6 @@ const AppRoutes: React.FC = () => {
             </RouteGuard>
           }
         />
-        
         <Route
           path="/verification"
           element={

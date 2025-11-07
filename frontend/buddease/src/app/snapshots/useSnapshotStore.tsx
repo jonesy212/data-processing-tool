@@ -1,9 +1,11 @@
 // useSnapshotStore.ts
+import { useDebouncedCallback } from '@/app/hooks/useDebouncedCallback'
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import {
     ConfigureSnapshotStorePayload,
     SnapshotConfig,
 } from "@/app/snapshots/SnapshotConfig";
+import { useCallback } from 'react';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from '@/app/snapshots/snapshotUtils';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -33,7 +35,9 @@ import {
 import useSubscription from "@/app/hooks/useSubscription";
 import { SnapshotLogger } from "@/app/libraries/logging/Logger";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, Data, DataEntity, DataK, DataMeta, DataExcludedFields } from '@/app/models/data/Data';
+import { BaseData, Data, DataEntity } from '@/app/models/data/Data';
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
+
 import {
     ActivityActionEnum,
     ActivityTypeEnum,
@@ -51,7 +55,7 @@ import {
     showToast,
 } from "@/app/models/display/ShowToast";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { Member } from "@/app/models/teams/TeamMembers";
+import { Member } from "@/app/models/members/Member";
 import {
     DataStoreMethods,
     DataStoreWithSnapshotMethods,
@@ -59,7 +63,7 @@ import {
 import {
     DataStore,
     EventRecord
-} from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+} from "@/app/state/stores/DataStore";
 import { Project, ProjectData, ProjectType } from "@/app/models/projects/Project";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
@@ -505,7 +509,7 @@ const useSnapshotStore = <
   }, [storeConfig, handleStoreError]);
 
   // Plugin-aware operation execution
-  const executeWithPlugins = useCallback(async <R>(operation: string, payload: any): Promise<R> => {
+  const executeWithPlugins = useCallback(async <R,>(operation: string, payload: any): Promise<R> => {
     if (!middlewarePipeline) {
       throw new Error('Middleware pipeline not initialized');
     }
@@ -994,6 +998,106 @@ const useSnapshotStore = <
   // === REST OF THE HOOK LOGIC (from previous version) ===
   // [Previous useEffect, state management, and public API code would go here]
 
+  useEffect(() => {
+    storeRef.current = new SnapshotStore(props);
+    storeRef.current.mount();
+    const payload: SubscriptionPayloadActions = {
+      id: "unique_id",
+      subscriberId: "unique_id",
+      email: "<EMAIL>",
+      value: 100,
+      category: "category",
+      notify: (message: string) => {},
+      content: "",
+      date: new Date(),
+      subscribers: [],
+      
+      notifyEventSystem: notifyEventSystem,
+      updateProjectState: updateProjectState,
+      logActivity: logActivity,
+      triggerIncentives: triggerIncentives,
+      name: undefined,
+      data: undefined,
+      subscribe: subscribe,
+      unsubscribe: unsubscribe,
+      toSnapshotStore: undefined,
+      getId: undefined,
+      getUserId: undefined,
+      receiveSnapshot: undefined,
+      getState: undefined,
+      onError: undefined,
+      triggerError: undefined,
+      onUnsubscribe: undefined,
+      onSnapshot: undefined,
+      triggerOnSnapshot: triggerOnSnapshot,
+      subscriber: undefined,
+    };
+
+    const takeSnapshot = async (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+      const snapshotUrl = `${SNAPSHOT_URL}/snapshot`;
+      const response = await fetch(snapshotUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(snapshot),
+      });
+      const data = await response.json();
+      console.log(data);
+    };
+    // Create a new Subscriber instance with the required arguments
+    const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>(
+      payload.id, // Replace 'unique_id' with the actual subscriber ID
+      payload.name,
+      {
+        subscriberId: "subscriber_id", // Replace 'subscriber_id' with the actual subscriber ID
+        subscriberType: SubscriberTypeEnum.FREE, // or appropriate value
+        subscriptionType: SubscriptionTypeEnum.Snapshot, // or appropriate value
+        getPlanName: () => SubscriberTypeEnum.FREE, // or appropriate function
+        portfolioUpdates: () => {},
+        tradeExecutions: () => {},
+        marketUpdates: () => {},
+        communityEngagement: () => {},
+        triggerIncentives: () => {},
+        unsubscribe: (subscriberId: string) => {},
+        determineCategory: (data) => data.category,
+        portfolioUpdatesLastUpdated: {
+          value: new Date(),
+          isModified: false,
+        } as ModifiedDate,
+        subscribers: [], 
+        data: {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
+        getSubscriptionLevel: getSubscriptionLevel,
+
+      },
+      "subscriber_id", // Replace 'subscriber_id' with the actual subscriber ID
+      notifyEventSystem, // Replace with your actual function
+      updateProjectState, // Replace with your actual function
+      logActivity, // Replace with your actual function
+      triggerIncentives, // Replace with your actual function
+      {
+        email: "<EMAIL>", // Replace '<EMAIL>' with the subscriber's email
+        timestamp: new Date(),
+        value: 100, // Replace with the appropriate value
+        category: "category", // Replace 'category' with the appropriate value or leave empty string if not applicable
+      }
+    );
+
+    subscribe();
+
+    return () => {
+      const subscriberId = subscriber.id!;
+      unsubscribe(subscriberId);
+      };
+    }, [
+    notifyEventSystem,
+    updateProjectState,
+    logActivity,
+    triggerIncentives,
+    subscribe,
+    unsubscribe,
+
+  ]);
   // Combine all state and functionality into public API
   const publicAPI = useMemo(() => ({
     // Core state
@@ -1064,17 +1168,7 @@ const useSnapshotStore = <
         throw error;
       }
     },
-    subscribe: subscriptions.subscribe,
-    unsubscribe: subscriptions.unsubscribe,
-    getSubscribers: subscriptions.getSubscribers,
-
-    // Configuration and status
-    config: storeProps?.config,
-    errorState: {}, // You'll want to manage this state
-    syncState: {}, // You'll want to manage this state
-
-
-
+    
     // ... rest of API
   }), [
     // === STATE DEPENDENCIES ===
@@ -1162,6 +1256,9 @@ const useSnapshotStore = <
   ]);
   return publicAPI;
 };
+
+export { useSnapshotStore };
+export type { SnapshotStoreOptions, SnapshotStoreProps };
 
 
 // However, for complex objects, we might need more specific dependencies:
@@ -1384,106 +1481,8 @@ const specificDependencies = [
 //   const [project, setProject] = useState<Project>();
   
 
-//   useEffect(() => {
-//     storeRef.current = new SnapshotStore(props);
-//     storeRef.current.mount();
-//     const payload: SubscriptionPayloadActions = {
-//       id: "unique_id",
-//       subscriberId: "unique_id",
-//       email: "<EMAIL>",
-//       value: 100,
-//       category: "category",
-//       notify: (message: string) => {},
-//       content: "",
-//       date: new Date(),
-//       subscribers: [],
-      
-//       notifyEventSystem: notifyEventSystem,
-//       updateProjectState: updateProjectState,
-//       logActivity: logActivity,
-//       triggerIncentives: triggerIncentives,
-//       name: undefined,
-//       data: undefined,
-//       subscribe: subscribe,
-//       unsubscribe: unsubscribe,
-//       toSnapshotStore: undefined,
-//       getId: undefined,
-//       getUserId: undefined,
-//       receiveSnapshot: undefined,
-//       getState: undefined,
-//       onError: undefined,
-//       triggerError: undefined,
-//       onUnsubscribe: undefined,
-//       onSnapshot: undefined,
-//       triggerOnSnapshot: triggerOnSnapshot,
-//       subscriber: undefined,
-//     };
 
-//     const takeSnapshot = async (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-//       const snapshotUrl = `${SNAPSHOT_URL}/snapshot`;
-//       const response = await fetch(snapshotUrl, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(snapshot),
-//       });
-//       const data = await response.json();
-//       console.log(data);
-//     };
-//     // Create a new Subscriber instance with the required arguments
-//     const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>(
-//       payload.id, // Replace 'unique_id' with the actual subscriber ID
-//       payload.name,
-//       {
-//         subscriberId: "subscriber_id", // Replace 'subscriber_id' with the actual subscriber ID
-//         subscriberType: SubscriberTypeEnum.FREE, // or appropriate value
-//         subscriptionType: SubscriptionTypeEnum.Snapshot, // or appropriate value
-//         getPlanName: () => SubscriberTypeEnum.FREE, // or appropriate function
-//         portfolioUpdates: () => {},
-//         tradeExecutions: () => {},
-//         marketUpdates: () => {},
-//         communityEngagement: () => {},
-//         triggerIncentives: () => {},
-//         unsubscribe: (subscriberId: string) => {},
-//         determineCategory: (data) => data.category,
-//         portfolioUpdatesLastUpdated: {
-//           value: new Date(),
-//           isModified: false,
-//         } as ModifiedDate,
-//         subscribers: [], 
-//         data: {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
-//         getSubscriptionLevel: getSubscriptionLevel,
-
-//       },
-//       "subscriber_id", // Replace 'subscriber_id' with the actual subscriber ID
-//       notifyEventSystem, // Replace with your actual function
-//       updateProjectState, // Replace with your actual function
-//       logActivity, // Replace with your actual function
-//       triggerIncentives, // Replace with your actual function
-//       {
-//         email: "<EMAIL>", // Replace '<EMAIL>' with the subscriber's email
-//         timestamp: new Date(),
-//         value: 100, // Replace with the appropriate value
-//         category: "category", // Replace 'category' with the appropriate value or leave empty string if not applicable
-//       }
-//     );
-
-//     subscribe();
-
-//     return () => {
-//       const subscriberId = subscriber.id!;
-//       unsubscribe(subscriberId);
-//     };
-//   }, [
-//     notifyEventSystem,
-//     updateProjectState,
-//     logActivity,
-//     triggerIncentives,
-//     subscribe,
-//     unsubscribe,
-
-//   ]);
+// ***** TODO move useEffect from her ***** //
 //   const dispatch = useDispatch();
 //   const { notify } = useNotification();
 //   const notificationContext = useNotification();
@@ -1693,11 +1692,11 @@ const specificDependencies = [
 //           throw new Error("Function not implemented.");
 //         },
 //         getData: function <  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(): Promise<
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T>(): Promise<
 //           Snapshot<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
 //         > {
 //           throw new Error("Function not implemented.");
@@ -1823,11 +1822,11 @@ const specificDependencies = [
 //       throw new Error("Function not implemented.");
 //     },
 //     getData: function <  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(): Promise<
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T>(): Promise<
 //       Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 //     > {
 //       throw new Error("Function not implemented.");
@@ -4651,7 +4650,4 @@ const specificDependencies = [
 //     config: {} as Promise<SnapshotStoreConfig<Snapshot<any>, any>[]>,
 //   };
 // };
-
-export { useSnapshotStore };
-export type { SnapshotStoreOptions, SnapshotStoreProps };
 

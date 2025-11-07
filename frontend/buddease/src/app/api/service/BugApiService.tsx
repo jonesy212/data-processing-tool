@@ -1,9 +1,9 @@
 // BugApiService
 
-import { ClientNotificationMessages, clientNotificationMessages } from '@/ApiClient';
-import { endpoints } from '@/app/api/endpointConfigurations';
+import { ClientNotificationMessages, clientNotificationMessages } from '@/app/api/ApiClient';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken'; // Assuming you have an axios instance configured
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { NotificationType } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { AxiosError, AxiosResponse } from 'axios';

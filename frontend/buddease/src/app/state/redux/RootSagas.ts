@@ -1,4 +1,5 @@
 // RootSaga.ts
+import { useNotification } from '@/context/NotificationContext';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -52,11 +53,12 @@ export function* rootSaga() {
     ]);
   } catch (error) {
     console.error('Error in rootSaga:', error);
-    notify(
+    notify.useNotification({
       "rootSagaError",
       "Error in rootSaga",
       NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR,
       new Date,
-      NotificationTypeEnum.OPERATION_ERROR);
+      NotificationTypeEnum.OPERATION_ERROR
+    });
   }
 }

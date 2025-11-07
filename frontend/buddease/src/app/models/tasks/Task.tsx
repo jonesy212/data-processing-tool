@@ -3,45 +3,29 @@
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedTimestamps } from '@/app/documents/RelatedProps';
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { taskMetadata } from '@/app/models/data/TaskMetadata';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from "@/app/shared/SharedMetadata";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskStructuredMetadata } from '@/app/typings/entities/TaskEntity';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { TaskMetadata } from '@/app/config/MetaDataOptions';
 
-export type  TaskData = BaseDataEntity<
-  TaskEntity,             // T
-  TaskK,             // K
-  TaskStructuredMetadata,   // Meta
-  TaskAttachment,           // AttachmentType
-  TaskExcludedFields,       // ExcludedFields
-  TaskIncludedFields        // IncludedFields
->;
- 
-interface BaseTaskEntity extends BaseDataEntity {
-  id: string;
+interface SubtaskData extends BaseDataEntity {
+  parentId: string;
   title: string;
-  description?: string;
-  status?: AllStatus;
-  priority?: PriorityTypeEnum;
-  dueDate?: Date | null;
-  startDate?: Date | undefined;
-  endDate?: Date | undefined;
-  isComplete?: boolean;
-  userId?: number;
-  projectName?: string;
+  isCompleted: boolean;
 }
 
+export type TaskDataEntity = BaseDataEntity;
+ 
 
 interface Task<
   T extends BaseDataEntity,
@@ -59,8 +43,8 @@ interface Task<
   id: string;
   title: string;
   description: string;
-  assignedTo: User | User[] | null;
-  assigneeId: User["id"];
+  assignedTo: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+  assigneeId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"];
   dueDate: Date | null | undefined;
   done: boolean;
   data: TaskData | undefined;
@@ -80,15 +64,15 @@ interface Task<
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
-  previouslyAssignedTo: User[];
+  previouslyAssignedTo: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
   dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   details?: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
-  isActive: boolean;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  isActive?: boolean;
+  tags?: string[] | TagsRecord<T> | undefined;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: any[];
   videoThumbnail?: string;
@@ -104,10 +88,11 @@ interface Task<
     thisArg?: any
   ) => boolean;
 }
-
-export type { Task };
-
-
+// Assuming TaskDetails has a structure similar to Task interface
+interface TaskDetails {
+  taskId: string;
+  details: TaskEntity; // Complete task data structure
+}
 
 const createTask = <
   T extends BaseDataEntity,
@@ -123,6 +108,7 @@ const createTask = <
     id: "default-id",
     title: "New Task",
     description: "Task Description",
+    date: new Date(),
     metadataEntries: {},
     scheduled: undefined,
     isScheduled: false,
@@ -168,6 +154,7 @@ const createTask = <
 };
 
 
-  export { createTask };
+export { createTask };
 
-  export type { BaseTaskEntity };
+    export type { Task, TaskDetails };
+

@@ -1,15 +1,15 @@
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotUnion, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/config/s/StructuredMetadata';
-import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { SnapshotData } from './SnapshotData';
 import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { StructuredMetadata } from '@/config/s/StructuredMetadata';
+import { SnapshotData } from './SnapshotData';
 import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 

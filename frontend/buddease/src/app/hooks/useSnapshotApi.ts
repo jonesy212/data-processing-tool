@@ -4,7 +4,7 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback } from 'react';
-import snapshotApi from '@/app/api/snapshotApi';
+import snapshotApi from '@/app/api/SnapshotApi';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 export const useSnapshotApi = <

@@ -1,4 +1,7 @@
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export function addDebugInfo<
   T extends BaseDataEntity,

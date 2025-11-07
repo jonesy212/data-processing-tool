@@ -12,7 +12,9 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { AppMetadata, UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { AppMetadata } from '@/app/typings/metadataTypes'
+
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 // 2. Type definitions with 6 parameters

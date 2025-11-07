@@ -1,6 +1,7 @@
 // DrawingSlice.ts
 import { DrawingActions } from "@/app/actions/DrawingActions";
-import Tracker, { TrackerProps } from '@/app/components/models/tracker/Tracker';
+import Tracker from '@/app/components/models/tracker/Tracker';
+import { TrackerProps } from '@/app/components/models/tracker/Tracker';
 import { autosaveDrawing } from "@/app/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import FolderData from '@/app/models/data/FolderData';
@@ -9,6 +10,8 @@ import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields } from '@/app/typings/entities/DrawingEntity'
+
 import {
   createMilestone
 } from "./TrackerSlice";
@@ -61,9 +64,13 @@ interface Guide {
 }
 
 interface Stroke {
-  width: number;            // Width of the stroke in pixels
-  color: string;            // Color of the stroke (e.g., hex, RGB)
-  style?: 'solid' | 'dashed' | 'dotted'; // Optional stroke style
+  width: number;
+  color: string;
+  style?: 'solid' | 'dashed' | 'dotted';
+  dashArray?: number[];
+  dashOffset?: number;
+  lineCap?: 'butt' | 'round' | 'square';
+  lineJoin?: 'miter' | 'round' | 'bevel';
 }
 
 interface AppearanceUpdate {
@@ -111,26 +118,51 @@ interface Shape extends SharedDrawingProps {
 }
 
 
-interface DrawingOptions {
+ interface DrawingOptions {
   opacity: number;
-  // Add any other shared properties here
+  blendMode: BlendMode;
+  visible: boolean;
+  locked: boolean;
 }
 
-
-interface BrushOptions extends DrawingOptions {
-  size: number;           // Size of the brush in pixels       // Opacity of the brush (0 to 1)
-  hardness: number;      // Hardness of the brush (0 to 1)
-  texture: string;       // Path or identifier for the brush texture
-  color: string;         // Color of the brush (e.g., hex color code)
-  brushType: string;
+interface Shadow extends DrawingEntity {
+  color: string;
+  blur: number;
+  offsetX: number;
+  offsetY: number;
+  spread: number;
+  inset?: boolean;
 }
 
+interface BrushOptions {
+  size: number;
+  hardness: number;
+  spacing: number;
+  opacity: number;
+  flow: number;
+  pressureSensitive: boolean;
+  texture: string;  // optional alias to UI texture override
+}
 
-interface Brush {
-  id: string;            // Unique identifier for the brush
-  name: string;          // Name of the brush
-  options: BrushOptions; // Options for configuring the brush
-  texture: string;       // Texture applied to the brush, e.g., 'grainy', 'smooth', or a file path
+interface Brush extends DrawingEntity {
+  id: string;                     // Unique brush ID
+  name: string;                   // UI label
+  brushType: 'pencil' | 'brush' | 'airbrush' | 'eraser';
+  
+  // Core Brush Physics
+  size: number;
+  hardness: number;
+  spacing: number;
+  opacity: number;
+  flow: number;
+  pressureSensitive: boolean;
+
+  // Visual / material property
+  texture: string;                // 'grainy', 'smooth', or file path
+  color: string;                  // RGBA or hex
+
+  // Config bundle for advanced UI editing panels
+  options?: BrushOptions;         // Optional wrapper
 }
 
 interface DrawingElement {
@@ -255,17 +287,14 @@ interface DrawingState<
   // Define drawing-related state properties here
 }
 
-type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten";
+export type BlendMode = 
+  | "normal" | "multiply" | "screen" | "overlay" 
+  | "darken" | "lighten" | "color-dodge" | "color-burn" 
+  | "hard-light" | "soft-light" | "difference" | "exclusion" 
+  | "hue" | "saturation" | "color" | "luminosity";
 
 // Define initial state
-const initialState: DrawingState<
-  Shape,
-  LayerEffect,
-  DefaultMeta<Shape, LayerEffect>,
-  Attachment,
-  DefaultExcludedFields<Shape>,
-  keyof Shape
-> = {  
+const initialState: DrawingState<DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields> = {  
   stroke: {
     width: 0,
     color: ''
@@ -469,6 +498,12 @@ export const createMilestoneForTrackers = (trackers: TrackerProps[]) => (dispatc
       date: new Date(),
       dueDate: null,
       startDate: null,
+      name: '',
+      status: '',
+      completed: '',
+      progress: '',
+    
+
     };
     dispatch(createMilestone(milestone));  // Assuming createMilestone is an action
   });
@@ -527,7 +562,12 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
         refreshFolderContents(folder.id);
         syncFolderWithServer(folder.id);
       } catch (error) {
-        console.error(`Error tracking folder changes: ${error.message}`);
+       // Check if it's an Error instance
+        if (error instanceof Error) {
+          console.error(`Error tracking folder changes: ${error.message}`);
+        } else {
+          console.error(`Unknown error tracking folder changes:`, error);
+        }
       }
     },
 
@@ -774,13 +814,13 @@ export const useDrawingManagerSlice = createSlice({
     },
 
     // other reducers...
-    initializeTextTool: (
-      state: WritableDraft<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>,
-      action: PayloadAction<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>
-    ) => {
-      state.activeTool = "text";
-      state.selectedTextId = action.payload.id;
-    },
+    // initializeTextTool: (
+    //   state: WritableDraft<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>,
+    //   action: PayloadAction<DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>>>
+    // ) => {
+    //   state.activeTool = "text";
+    //   state.selectedTextId = action.payload.id;
+    // },
 
     resetTrackers: (
       state,
@@ -1862,7 +1902,7 @@ export const {
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-export type { AppearanceUpdate, DrawingState, Stroke, TrackerDrawingElement };
+export type { AppearanceUpdate, DrawingState, Stroke, TrackerDrawingElement, Shadow, DrawingElement};
 
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;

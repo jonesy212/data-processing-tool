@@ -1,9 +1,9 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
@@ -12,9 +12,9 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
+import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
 import { internalCache } from '@/app/utils/cache/InternalCache';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { deepEqual } from 'assert';
 
 export const createBasicSnapshot = <
@@ -139,7 +139,6 @@ export const enhanceSnapshotWithMethods = <
   return enhancedSnapshot;
 };
 
-
 export const createCompleteSnapshot = async <
   T extends BaseDataEntity,
   K extends T = T,
@@ -157,7 +156,17 @@ export const createCompleteSnapshot = async <
   isSubscribed: boolean = false,
   category?: Category,
   storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  storeOptions?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  storeOptions?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  // ADD MISSING PARAMS:
+  categoryProperties?: CategoryProperties,
+  dataStore?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataStoreMethods?: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  subscriberId?: string,
+  endpointCategory?: string | number,
+  subscription?: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotConfigData?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     if (!storeProps) {
@@ -177,7 +186,7 @@ export const createCompleteSnapshot = async <
     const builder = defaultSnapshotBuilder(baseData, baseMeta, storeProps, storeOptions);
     const { data: baseBuiltSnapshot } = await builder.buildBaseConfig();
     
-    // Create basic snapshot from built data
+    // Create basic snapshot from built data - ADD MISSING PROPS
     const basicSnapshot = createBasicSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       id,
       data: baseBuiltSnapshot.data,
@@ -185,7 +194,18 @@ export const createCompleteSnapshot = async <
       category,
       isCore: baseBuiltSnapshot.isCore,
       initialState: baseBuiltSnapshot.initialState,
-      // Add other properties from baseBuiltSnapshot as needed
+      // ADD MISSING PROPS:
+      categoryProperties,
+      dataStore,
+      dataStoreMethods,
+      subscriberId,
+      endpointCategory: endpointCategory?.toString(),
+      subscription,
+      snapshotConfig: snapshotConfigData,
+      snapshotStoreConfig: snapshotStoreConfig,
+      snapshotContainer,
+      // Add unified metadata if available
+      ...(metadata && { metadata: { ...baseBuiltSnapshot.metadata, ...metadata } })
     });
 
     // Enhance with methods
@@ -199,6 +219,19 @@ export const createCompleteSnapshot = async <
     if (snapshotStore) {
       snapshotStores.set(0, snapshotStore);
     }
+
+    // ADD MISSING PROPERTIES TO ENHANCED SNAPSHOT:
+    enhancedSnapshot.snapshotId = snapshotId;
+    enhancedSnapshot.categoryProperties = categoryProperties;
+    enhancedSnapshot.dataStore = dataStore;
+    enhancedSnapshot.dataStoreMethods = dataStoreMethods;
+    enhancedSnapshot.subscriberId = subscriberId;
+    enhancedSnapshot.endpointCategory = endpointCategory?.toString();
+    enhancedSnapshot.storeProps = storeProps;
+    enhancedSnapshot.subscription = subscription;
+    enhancedSnapshot.snapshotConfig = snapshotConfigData;
+    enhancedSnapshot.snapshotStoreConfig = snapshotStoreConfig;
+    enhancedSnapshot.snapshotContainer = snapshotContainer;
 
     internalCache.set(id, enhancedSnapshot);
     return enhancedSnapshot;

@@ -76,7 +76,13 @@ export const ContentNotificationTypes = {
   SNAPSHOT: 'Snapshot',
   SNAPSHOT_ID: 'SnapshotID',
   SNAPSHOT_DETAILS: 'SnapshotDetails',
+  SNAPSHOT_GENERATED: 'SnapshotGenerated'
 } as const;
+
+
+export const EventNotificationTypes = {
+  EVENT: 'Event'
+}
 
 // Calendar & Events
 export const CalendarNotificationTypes = {
@@ -345,7 +351,8 @@ export const NOTIFICATION_TYPES = {
   ...AnalyticsNotificationTypes,
   ...CustomNotificationTypes,
   ...OnboardingNotificationTypes,
-   ...PhaseNotificationTypes, 
+   ...PhaseNotificationTypes,
+   ...EventNotificationTypes
 } as const;
 
 

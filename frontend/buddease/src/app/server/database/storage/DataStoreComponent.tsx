@@ -1,5 +1,5 @@
 // DataStoreComponent.tsx
-import { DataStore } from '@/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from "@/app/state/stores/DataStore";
 import { BaseData } from '@/components/models/data/Data';
 import StorageManager from '@/StorageManager';
 

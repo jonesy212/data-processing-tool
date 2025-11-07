@@ -4,9 +4,16 @@ import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SecurityEvent {
-  // Define the structure of a security event
   id: string;
+  type: 'login' | 'logout' | 'mfa_failure' | 'password_change' | 'suspicious_activity';
+  timestamp: Date;
+  ipAddress: string;
+  userAgent: string;
+  location?: string;
+  riskScore: number;
+  details: any;
 }
+
 
 interface SecurityEventState {
   events: SecurityEvent[];

@@ -1,8 +1,8 @@
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { triggerEvent, unsubscribe } from "@/app/utils/web3/applicationUtils";
+import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity'
 
 interface CalendarSnapshotEvents {
     [eventId: string]: ExtendedCalendarEvent[];
@@ -10,7 +10,7 @@ interface CalendarSnapshotEvents {
 
 
 // Example implementation of CombinedEvents
-const combinedEvents: CombinedEvents<T, K> = {
+const combinedEvents: CombinedEvents<EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields> = {
   eventRecords: {},
   callbacks: {
       default: [(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {

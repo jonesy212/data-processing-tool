@@ -1,4 +1,8 @@
 // NoteEntity.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 // --- 1️⃣ Core entity definition ---
 interface NoteEntity extends BaseDataEntity {
   id: string | number;

@@ -1,5 +1,4 @@
 // FolderData.ts
-
 import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
   

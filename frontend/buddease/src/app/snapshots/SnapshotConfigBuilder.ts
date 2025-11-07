@@ -51,7 +51,7 @@ interface SimulatedDataSourceFromParams<
     Params[4], // ExcludedFields
     Params[5]  // IncludedFields
   > {
-  data: InitializedData<
+  data: Data<
     Params[0],
     Params[1],
     Params[2],

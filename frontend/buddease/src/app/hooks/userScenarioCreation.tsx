@@ -1,48 +1,99 @@
-import { useState } from "react";
-import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
-import { DocumentBuilderProps } from "@/app/documents/SharedDocumentProps";
+import { useState } from 'react';
+import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
+import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields } from '@/app/typings/entities/DocumentEntity'
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { Phase } from '@/app/models/phases/Phase';
-import PhaseManager from "@/app/phases/PhaseManager";
-import useDocumentManagerSlice from "@/app/state/redux/slices/DocumentSlice";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/models/BaseTypes";
-import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
-
-// ---------------------------
-// Helper types for DocumentData
-// ---------------------------
-type DocEntity = BaseDataEntity;
-type DocK = DocEntity;
-type DocMeta = DefaultMeta<DocEntity, DocK>;
-type DocExcludedFields = DefaultExcludedFields<DocEntity>;
-
+import PhaseManager from '@/app/models/phases/PhaseManager';
+import useDocumentManagerSlice from '@/app/state/redux/slices/DocumentSlice';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import PersonaTypeEnum, { PersonaBuilder } from '@/app/pages/personas/PersonaBuilder';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Version } from '@/app/versions/Version';
 
 // ---------------------------
 // DocumentWithBuilderProps interface
 // ---------------------------
 export interface DocumentWithBuilderProps<
-  T extends BaseDataEntity = DocEntity,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DocMeta,
-  ExcludedFields extends keyof T = DocExcludedFields
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {}
 
+
+
 // ---------------------------
-// Module-level document options
+// DocumentOptions for DAppAdapterConfig
 // ---------------------------
-const documentOptions: DocumentWithBuilderProps = {
+const documentOptions: DocumentOptions<
+  DocumentEntity,
+  DocumentK,
+  DocumentMeta,
+  DocumentAttachment,
+  DocumentExcludedFields,
+  DocumentIncludedFields
+> = getDefaultDocumentOptions<
+  DocumentEntity,
+  DocumentK,
+  DocumentMeta,
+  DocumentAttachment,
+  DocumentExcludedFields,
+  DocumentIncludedFields
+>();
+
+
+documentOptions.documentId = "default-document-id";
+documentOptions.uniqueIdentifier = "default-unique-id";
+documentOptions.additionalOptionsLabel = "Additional Options";
+
+// ---------------------------
+// DocumentWithBuilderProps for builder functionality
+// ---------------------------
+const documentWithBuilderProps: DocumentWithBuilderProps<
+  DocumentEntity,
+  DocumentK,
+  DocumentMeta,
+  DocumentAttachment,
+  DocumentExcludedFields,
+  DocumentIncludedFields
+  > = {
+  
+  id, title, content, documents,
+    
   isDynamic: true,
-  options: getDefaultDocumentOptions(),
+  options: documentOptions, // Reference the documentOptions above
+
   documentPhase: "YourDocumentPhase",
-  version: "YourDocumentVersion",
-  onOptionsChange: (
-    newOptions: DocumentData<DocEntity, DocK, DocMeta, DocExcludedFields>,
-    id: number,
-    topics: string[],
-    highlights: string[],
-    files: string[]
-  ) => {
+
+  version: {} as Version<
+    DocumentEntity,
+    DocumentK,
+    DocumentMeta,
+    DocumentAttachment,
+    DocumentExcludedFields,
+    DocumentIncludedFields
+  >,
+
+  onOptionsChange: (newOptions) => {
+    // Access extra info from additionalOptions/customProperties
+    const extra = newOptions.customProperties as {
+      id?: number;
+      topics?: string[];
+      highlights?: string[];
+      files?: string[];
+    } | undefined;
+
     console.log("Options changed:", newOptions);
+    if (extra) {
+      console.log("ID:", extra.id);
+      console.log("Topics:", extra.topics);
+      console.log("Highlights:", extra.highlights);
+      console.log("Files:", extra.files);
+    }
   },
 };
 
@@ -60,13 +111,13 @@ export function createUserScenarios() {
   const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
 
   // Create phases if PhaseManager exists
-  let phases: Phase[] = [];
+  let phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   if (phaseManager && typeof phaseManager.createPhases === "function") {
     phases = phaseManager.createPhases();
   }
 
   // Define documents array
-  const documentsData: DocumentData<DocEntity, DocK, DocMeta, DocExcludedFields>[] = [
+  const documentsData: DocumentData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>[] = [
     {
       ...getDefaultDocumentOptions(),
       id: 1,
@@ -105,4 +156,4 @@ export function createUserScenarios() {
   return { userPersona, phases, documents, documentOptions };
 }
 
-export { documentOptions };
+export { documentOptions, documentWithBuilderProps };

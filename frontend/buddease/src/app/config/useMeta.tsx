@@ -1,13 +1,12 @@
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { PhaseData } from "@/app/models/phases/Phase";
-import { Taggable } from '@/app/models/CommonData';
-import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Version } from "@/app/versions/Version";
-import VersionImpl from "@/app/versions/Version";
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta  } from '@/app/config/BaseConfig';
+import { Taggable } from '@/app/models/tracker/Tag';
 import { backendStructure } from "@/app/server/database/BackendStructure";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { EventManager } from "@/app/state/stores/DataStore";
+import VersionImpl, { Version } from "@/app/versions/Version";
 import { useMemo } from "react";
 import { frontendStructure } from "./appStructure/FrontendStructure";
 import { StructuredMetadata } from "./StructuredMetadata";
@@ -107,7 +106,7 @@ function useMeta<
       baseConfig: {} as BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       sharedMetadata: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       sharedBaseData: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      taggable: {} as Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      taggable: {} as Taggable<T>,
      
     };
   }, [description, childIds, relatedData]);

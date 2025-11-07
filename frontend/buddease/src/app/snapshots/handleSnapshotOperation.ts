@@ -31,7 +31,7 @@ function handleMapOperation<
   IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
   operationType: SnapshotOperationType
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Create a new instance preserving the prototype chain

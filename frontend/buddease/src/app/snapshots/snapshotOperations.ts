@@ -42,7 +42,7 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { convertSnapshotContainerToStore } from '@/app/typings/YourSpecificSnapshotType';
 import { createVersionInfo } from '@/app/versions/createVersionInfo';
-import { VersionData } from '@/versions/VersionData';
+import { VersionData } from '@/app/versions/VersionData';
 
 interface SnapshotOperations<
   T extends BaseDataEntity,
@@ -556,7 +556,7 @@ const handleSnapshot = <
       // processSnapshotData function - FIXED return type
       processSnapshotData: async (
         id: string | number | null,
-        data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

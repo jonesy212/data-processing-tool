@@ -1,16 +1,33 @@
 import Milestone, {
   ProductMilestone,
-} from "@/app/calendar/CalendarSlice";
+} from "@/app/state/redux/slices/CalendarSlice";
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
+import { ProjectManagerEntity,
+  ProjectManagerK,
+  ProjectManagerMeta,
+  ProjectManagerAttachment, 
+  ProjectManagerIncludedFields,
+  ProjectManagerExcludedFields } from '@/app/typings/entities/ProjectManagerEntity'
+  import { 
+    MeetingEntity,
+    MeetingEntityK,
+    MeetingEntityMeta,
+    MeetingEntityAttachment, 
+    MeetingEntityIncludedFields,
+    MeetingEntityExcludedFields
+  } from '@/app/typings/entities/MeetingEntity'
+
 import { StatusType } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
-import { Contributor, Member } from "@/app/models/teams/TeamMembers";
+import { Team } from "@/app/components/teams/Team";
+import { Contributor } from "@/app/models/teams/Contributor";
+import { Member } from "@/app/models/members/Member";
 import { JobRole } from '@/app/models/UserRoles';
 import { Product } from "@/app/products/Product";
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
@@ -21,17 +38,23 @@ import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
 import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
 
-interface ProjectState {
-  project: Project | null;
-  projects: Project[];
+interface ProjectState<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  {
+  project: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   
   loading: boolean;
   error: string | null;
-  currentProject: Project | null;
-  selectedProject: Project | null;
+  currentProject: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  selectedProject: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   projectFeedback: ProjectFeedback[] | null;
 }
-
 
 interface Deadline {
   id: string;
@@ -53,7 +76,7 @@ const initialState: ProjectState = {
 };
 
 interface YourStateType {
-  projects: Project[];
+  projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -66,8 +89,8 @@ export interface ProjectMetrics {
 
 
 function createUpdatedProject(
-  payload: WritableDraft<Project>
-): WritableDraft<Project> {
+  payload: WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   return {
     _id: payload._id,
     id: payload.taskId,
@@ -92,6 +115,8 @@ function createUpdatedProject(
     analysisType: payload.analysisType,
     analysisResults: payload.analysisResults,
     videoData: payload.videoData,
+    done: payload.done
+    
   };
 }
 
@@ -132,9 +157,17 @@ export const useProjectManagerSlice = createSlice({
     },
 
 
-    fetchProjectSuccess(state, action: PayloadAction<Project>) {
+    fetchProjectSuccess(state, action: PayloadAction<Project<
+      ProjectManagerEntity, ProjectManagerK, 
+      ProjectManagerMeta, ProjectManagerAttachment,  
+      ProjectManagerIncludedFields, ProjectManagerExcludedFields>>
+    ) {
       state.loading = false;
-      state.project = produce(action.payload, (draft: Draft<Project>) => draft); // Specify the type of draft
+      state.project = produce(action.payload, (draft: Draft<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>
+    >
+      ) => draft); // Specify the type of draft
     },
 
     fetchProjectFailure(state, action: PayloadAction<string>) {
@@ -143,21 +176,33 @@ export const useProjectManagerSlice = createSlice({
     },
 
     // Add Project
-    addProject(state, action: PayloadAction<Project>) {
-      state.projects.push(action.payload as WritableDraft<Project>); // Cast to WritableDraft
+    addProject(state, action: PayloadAction<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>) {
+      state.projects.push(action.payload as WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>); // Cast to WritableDraft
     },
 
     // Update Project
-    updateProject(state, action: PayloadAction<Project>) {
+    updateProject(state, action: PayloadAction<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>) {
       const index = state.projects.findIndex((p) => p.id === action.payload.id);
       if (index !== -1) {
-        state.projects[index] = action.payload as WritableDraft<Project>; // Cast to WritableDraft
+        state.projects[index] = action.payload as WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>; // Cast to WritableDraft
       }
     },
 
     // Set Current Project
-    currentProject(state, action: PayloadAction<Project>) {
-      state.project = action.payload as WritableDraft<Project>; // Cast to WritableDraft
+    currentProject(state, action: PayloadAction<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>) {
+      state.project = action.payload as WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>; // Cast to WritableDraft
     },
   
 
@@ -168,18 +213,24 @@ export const useProjectManagerSlice = createSlice({
     
     assignUserToProject(
       state,
-      action: PayloadAction<{ projectId: string; userId: Member }>
+      action: PayloadAction<{ projectId: string; userId: Member<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields> }>
     ) {
       const { projectId, userId } = action.payload;
       const project = state.projects.find((project) => project.id === projectId);
       if (project) {
-        project.members = [...project.members, userId as WritableDraft<Member>];
+        project.members = [...project.members, userId as WritableDraft<Member<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>];
       }
     },
 
     removeUserFromProject(
       state,
-      action: PayloadAction<{ projectId: string; userId: Member }>
+      action: PayloadAction<{ projectId: string; userId: Member<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields> }>
     ) {
       const { projectId, userId } = action.payload;
       const project = state.projects.find((project) => project.id === projectId);
@@ -205,7 +256,7 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        task: WritableDraft<Task>;
+        task: WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>;
       }>
     ) {
       const { projectId, task } = action.payload;
@@ -228,7 +279,7 @@ export const useProjectManagerSlice = createSlice({
 
     updateTaskInProject(
       state,
-      action: PayloadAction<{ projectId: string; task: WritableDraft<Task> }>
+      action: PayloadAction<{ projectId: string; task: WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> }>
     ) {
       const { projectId, task } = action.payload;
       const project = state.projects.find((project) => project.id === projectId);
@@ -298,7 +349,9 @@ export const useProjectManagerSlice = createSlice({
       );
 
       if (projectIndex !== -1) {
-        const draftProject = state.projects[projectIndex];  // This will be a WritableDraft<Project>
+        const draftProject = state.projects[projectIndex];  // This will be a WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>
 
         const teamIndex = draftProject.teams.findIndex(
           (team: Team) => team.id === teamId
@@ -432,7 +485,7 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        product: WritableDraft<Product>;
+        product: WritableDraft<Product<ProductEntity, ProductK, ProductMeta, ProductAttachment, ProductExcludedFields, ProductIncludedFields>>;
         productId: string;
         productMilestones: WritableDraft<ProductMilestone[]>;
         milestones: WritableDraft<Milestone[]>;
@@ -455,7 +508,7 @@ export const useProjectManagerSlice = createSlice({
       if (projectIndex !== -1) {
         const project = state.projects[projectIndex];
         const productIndex = project.products.findIndex(
-          (product: Product) => product.id === productId
+          (product: Product<ProductEntity, ProductK, ProductMeta, ProductAttachment, ProductExcludedFields, ProductIncludedFields>) => product.id === productId
         );
         if (productIndex !== -1) {
           const product = project.products[productIndex];
@@ -494,7 +547,7 @@ export const useProjectManagerSlice = createSlice({
       action: PayloadAction<{
         projectId: string;
         productId: string;
-        product: WritableDraft<Product>;
+        product: WritableDraft<Product<ProductEntity, ProductK, ProductMeta, ProductAttachment, ProductExcludedFields, ProductIncludedFields>>;
       }>
     ) {
       const { projectId, productId, product } = action.payload;
@@ -507,7 +560,7 @@ export const useProjectManagerSlice = createSlice({
           (project) => project.id === projectId
         );
         const productIndex = updatedProject.products.findIndex(
-          (product: Product) => product.id === productId
+          (product: Product<ProductEntity, ProductK, ProductMeta, ProductAttachment, ProductExcludedFields, ProductIncludedFields>) => product.id === productId
         );
         if (productIndex !== -1) {
           updatedProject.products[productIndex].status = "launched";
@@ -536,7 +589,7 @@ export const useProjectManagerSlice = createSlice({
           (project) => project.id === projectId
         );
         const productIndex = updatedProject.products.findIndex(
-          (product: Product) => product.id === productId
+          (product: Product<ProductEntity, ProductK, ProductMeta, ProductAttachment, ProductExcludedFields, ProductIncludedFields>) => product.id === productId
         );
       
 
@@ -673,7 +726,9 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        userId: WritableDraft<Member>;
+        userId: WritableDraft<Member<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>;
       }>
     ) {
       const { projectId, userId } = action.payload;
@@ -803,7 +858,9 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        invitedMembers: WritableDraft<Member>[];
+        invitedMembers: WritableDraft<Member<ProjectManagerEntity, ProjectManagerK, 
+        ProjectManagerMeta, ProjectManagerAttachment,  
+        ProjectManagerIncludedFields, ProjectManagerExcludedFields>>[];
       }>
     ) {
       const { projectId, invitedMembers } = action.payload;
@@ -828,7 +885,7 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        tasks: Task[];
+        tasks: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[];
       }>
     ) {
       const { projectId, tasks } = action.payload;
@@ -838,7 +895,7 @@ export const useProjectManagerSlice = createSlice({
       
       if (project) {
         // Mutate the project tasks directly
-        project.tasks = tasks.map((task) => task as WritableDraft<Task>); // Cast each task to WritableDraft
+        project.tasks = tasks.map((task) => task as WritableDraft<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>); 
       }
     
       return state; // `immer` automatically handles state updates
@@ -848,7 +905,7 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        meetings: Meeting[];
+        meetings: Meeting<MeetingEntity, MeetingEntityK, MeetingEntityMeta, MeetingEntityAttachment, MeetingEntityIncludedFields>[];
       }>
     ) {
       const { projectId, meetings } = action.payload;

@@ -21,8 +21,12 @@ type ConfigBaseParams = {
 };
 
 export type {
-  ConfigAttachment, ConfigBaseParams, ConfigEntity, ConfigExcludedFields,
-  ConfigIncludedFields, ConfigK,
+  ConfigEntity, 
+  ConfigK,
   ConfigMeta
+  ConfigAttachment, 
+  ConfigExcludedFields,
+  ConfigIncludedFields, 
+  ConfigBaseParams, 
 };
 

@@ -3,6 +3,8 @@ import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { ChatRoom } from '@/app/communications/ChatRoom';
 import { Sender } from '@/app/components/communications/CommunicationPage';
 import { Task } from '@/app/components/models/tasks/Task';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
@@ -10,24 +12,22 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Content } from "@/app/models/content/AddContent";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SnapshotBase, SnapshotData } from ".";
 
 import { Label } from "@/app/branding/BrandingSettings";
+import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import {
-  SnapshotEquality,
-  Snapshots,
-  SnapshotsArray
+    SnapshotEquality,
+    Snapshots,
+    SnapshotsArray
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
@@ -37,12 +37,10 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { User } from "@/app/users/User";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import {
-  SnapshotRelationships,
+    SnapshotRelationships,
 } from "./SnapshotData";
 import { SnapshotInitialization } from "./SnapshotInitialization";
 import { SnapshotItem } from "./SnapshotList";
@@ -61,7 +59,7 @@ interface CoreSnapshot<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Partial<SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+> extends Partial<SharedIdentifiers<T, K>>,
           Partial<SnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotRelationships<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotCRUD<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -120,7 +118,7 @@ interface CoreSnapshot<
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   nestedStores?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   events?: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[];
+  tags?: string[] | TagsRecord<T>;
   setSnapshotData?: (
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -130,7 +128,7 @@ interface CoreSnapshot<
   ) => void;
   processSnapshotData?: (
     id: string | number | null,
-    data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

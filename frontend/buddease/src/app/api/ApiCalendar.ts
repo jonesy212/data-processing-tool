@@ -13,7 +13,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AxiosResponse } from "axios";
-import internalApiService from "./ApiClient";
+import internalApiService from '@/app/api/ApiClient';
 
 const API_BASE_URL = endpoints.calendar
 

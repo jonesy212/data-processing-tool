@@ -1,4 +1,13 @@
 // AppMetadata.ts
+
+import { ValidationRule } from './../snapshots/ValidationRule';
+import { TaskMetadata } from '@/app/config/MetaDataOptions';
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
 interface AppMetadata<
   T extends BaseDataEntity,
   K extends T = T,
@@ -47,7 +56,15 @@ interface AppMetadata<
     maxVersion: string;
     supportedFeatures: string[];
   };
+
+
+  taskMetadata?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  relatedEntities?: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  customData?: Record<string, any>;
 }
+
+
 
 // Supporting types
 interface BusinessRule {
@@ -80,7 +97,7 @@ interface AppSchema<
   lastModified: Date;
   
   // ✅ Integrated Backend Structure
-  backendStructure: BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  backendStructure: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // ✅ Schema Definitions
   databaseSchema: DatabaseSchema;
@@ -128,3 +145,6 @@ interface EntityMetadata<
   validationSchema?: any;
   accessControl?: AccessControlRule[];
 }
+
+
+export type { AppMetadata }

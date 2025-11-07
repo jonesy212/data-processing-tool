@@ -12,7 +12,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { createDataStore, DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { createDataStore, DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
 import {
     Snapshots,
@@ -43,11 +43,9 @@ import { BaseSnapshotProps } from '@/app/snapshots/createBaseSnapshot';
 import { displayToast } from '@/app/models/display/ShowToast';
 import { Payload } from "@/app/server/database/Payload";
 import { SchemaField } from "@/app/config/metadata/SchemaField";
-import baseMeta from "@/app/server/database/baseMeta";
 import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import { version } from "react";
-import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
-import { StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields } from '@/app/typings/entities/StorePropEntit '
+import { StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields } from '@/app/typings/entities/StorePropEntity'
 // Base interface for all snapshot store properties
 
 interface BaseSnapshotStoreProps<
@@ -87,7 +85,7 @@ interface BaseSnapshotStoreProps<
   schema: Record<string, SchemaField>;
 
   // Data storage
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   additionalData?: CustomSnapshotData<T> | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotsArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -128,7 +126,7 @@ type SnapshotStoreProps<
   IncludedFields extends keyof T = keyof T
 > = BaseSnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
-  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
+  SharedIdentifiers<T, K> &
   SnapshotEventBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   BaseSnapshotProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
     // Ensure these specific properties are properly typed
@@ -332,24 +330,14 @@ const { latestVersion = createLatestVersion<
 type ExampleEntity = BaseDataEntity & { name: string };
 
 // Initialize storeProps with meaningful values
-const storeProps: SnapshotStoreProps<
-  ExampleEntity,
-  ExampleK,
-  ExampleMeta,
-  ExampleAttachment,
-  ExampleExcludedFields,
-  ExampleIncludedFields
-> = {
+const storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> = {
   category: "storeProp-category",  // Assuming category can be a string
   initialState: "",
   callback: (snapshotStore: SnapshotStore<
-    ExampleEntity,
-    ExampleK,
-    ExampleMeta,
-    ExampleAttachment,
-    ExampleExcludedFields,
-    ExampleIncludedFields
-  >) => { },
+    StorePropEntity, StorePropK,
+    StorePropMeta, StorePropAttachment,
+    StorePropExcludedFields, StorePropIncludedFields>
+  ) => { },
   storeProps: [],
   endpointCategory: "",
   expirationDate: new Date(),
@@ -545,7 +533,7 @@ const storeProps: SnapshotStoreProps<
     subscribeToSnapshots: (
       snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       snapshotId: string,
-      snapshotData: SnapshotData<StorePropEntity, torePropK,  StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      snapshotData: SnapshotData<StorePropEntity, StorePropK,  StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       snapshotConfig: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       callback: (
         snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
@@ -554,7 +542,7 @@ const storeProps: SnapshotStoreProps<
       snapshots: SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       category?: Category,
       unsubscribe?: UnsubscribeDetails,
-    ): SnapshotsArray<ExampleEntity, ExampleEntity, DefaultMeta<ExampleEntity, ExampleEntity>, DefaultExcludedFields<ExampleEntity>> | [] => {
+    ): SnapshotsArray<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedField> | [] => {
       // Implement your logic here
       return snapshots; // or modify the snapshots as needed
     },
@@ -576,7 +564,8 @@ const storeProps: SnapshotStoreProps<
     ) => {
       // Implement your logic here
     },
-    unsubscribeToSnapshot: (snapshotId: string,
+    unsubscribeToSnapshot: (
+      snapshotId: string,
       snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       type: string,
       event: SnapshotEvent<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
@@ -792,8 +781,9 @@ const storeProps: SnapshotStoreProps<
       categoryProperties?: CategoryProperties,
       callback?: (snapshotStore: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => void,
       snapshotStoreConfig?: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
-    ): Promise<Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, Store ncludedFields> | null> => {
-        const baseData: BaseData = createBaseData({ 
+    ): Promise<Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null> => {
+        
+      const baseData: BaseData = createBaseData({ 
           ...snapshotData 
         });
         
@@ -809,7 +799,8 @@ const storeProps: SnapshotStoreProps<
 
         callback?.(newSnapshot);
         return Promise.resolve(newSnapshot);
-      },
+    },
+    
     configureSnapshotStore: (
       snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
       snapshotId: string,
@@ -863,35 +854,31 @@ const storeProps: SnapshotStoreProps<
         storeConfig,
       });
     },
+
     getDataStoreMethods: (
-      snapshotStoreConfig,
-      dataStoreMethods
-    ) => {
+      snapshotStoreConfig: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+      dataStoreMethods: DataStoreWithSnapshotMethods<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+    ): Partial<DataStoreWithSnapshotMethods<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>> => {
       // Implement your logic here
-      return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<
-      //  ExampleEntity,
-        ExampleK,
-        ExampleMeta,
-        ExampleAttachment,
-        ExampleExcludedFields,
-        ExampleIncludedFields>>
+      // Return partial data store methods
+      return {
+        // Add specific methods you want to override or extend
+        // Example:
+        // createSnapshot: (entity: StorePropEntity) => Promise.resolve('snapshot-id'),
+        // getSnapshot: (id: string) => Promise.resolve(null),
+      };
     },
-    // Array of SnapshotStoreMethods<
-    //  ExampleEntity,
-        ExampleK,
-        ExampleMeta,
-        ExampleAttachment,
-        ExampleExcludedFields,
-        ExampleIncludedFields>
     snapshotMethods: [],
+
     handleSnapshotOperation: (
-      snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
-      data: SnapshotStoreConfig<Stor Entity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExc Fields, StorePropIncludedFields>,
-      mappedData: Map<string, Snapsh reConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttach  StorePropExcludedFields, StorePropIncludedFields>>,
-      operation: SnapshotOperation<S ropEntity,StorePropK, StorePropMeta, StorePropAttachment, StorePropE edFields, StorePropIncludedFields>, // Ensure you use this in your logic
-      operationType: SnapshotOperati 
-    ): Promise<Snapshot<StorePropEnt StorePr StorePropM StorePropAttachm StorePropExcludedFie StorePropIncludedFields> | null> => {
-      return new Promise((resolve) => {
+        snapshot: Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+        data: SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+        mappedData: Map<string, SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>>,
+        operation: SnapshotOperation<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+        operationType: SnapshotOperationType
+      ): Promise<Snapshot<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> | null> => {
+        return new Promise((resolve) => {
+    
 
         // Use useSecureUserId to get the current user's ID and ensure the user is authenticated
         const { userId, error: userError } = useSecureUserId();

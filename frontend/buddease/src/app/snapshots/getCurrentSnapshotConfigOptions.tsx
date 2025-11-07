@@ -4,7 +4,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';

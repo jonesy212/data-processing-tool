@@ -1,46 +1,85 @@
 // BaseConfig.ts
+import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
+import { SharedTimestamps } from '@/app/models/CommonData';
+import { AllTypes } from '@/app/typings/PropTypes';
 
-import { Attachment } from '@/app/documents/attachment/Attachment'
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { Taggable } from '@/app/models/CommonData';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
-import {
-  ConfigAttachment,
-  ConfigEntity,
-  ConfigExcludedFields,
-  ConfigIncludedFields,
-  ConfigK,
-  ConfigMeta
-} from "@/app/typings/entities/ConfigEntity";
-import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { BaseMetaInfo } from '@/app/config/metadata/BaseMetaInfo';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { BaseMetadata } from '@/app/config/MetaDataOptions';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { TagsRecord, Taggable } from '@/app/models/tracker/Tag'
+import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import {
+    ConfigAttachment,
+    ConfigEntity,
+    ConfigExcludedFields,
+    ConfigIncludedFields,
+    ConfigK,
+    ConfigMeta
+} from "@/app/typings/entities/ConfigEntity";
+import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { useSnapshot } from '@/context/SnapshotContext';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
+import { AppMetadata } from '@/app/typings/metadataTypes'
 
 interface BaseDataRoot {
   [key: string]: any;
   snapshotId?: string | number | null;
-   categoryProperties?: CategoryProperties;
+  categoryIds?: string[];
+  
+  // Full category objects (when populated)
+  categories?: CategoryProperties[]; 
+  categoryProperties?: CategoryPropertyBundle; 
 }
+
+interface CoreRecordProperties {
+  description?: string;
+  source?: string;
+}
+interface BaseEntity<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K>,
+          SharedTimestamps, CoreRecordProperties
+{
+  appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  filePathOrUrl?: string;
+}
+
+// Define a type for your entities
+interface Entity<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+          BaseEntityProperties 
+{
+  type?: string | AllTypes | null;
+}
+
+
 
 type BaseDataEntity = BaseDataRoot;
 
 type DefaultMeta<
   T extends BaseDataEntity,
   K extends T = T,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T
   > = BaseMetaInfo & {
     structured?: Partial<Record<string, any>>;
 };
@@ -74,24 +113,24 @@ interface BaseConfig<
   BaseCacheConfig, 
   BaseMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   BaseMetadataConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id?: string | number;
-  apiEndpoint: string;
-  apiKey: string | undefined;
-  timeout: number;
-  retryAttempts: number;
-  isActive: boolean
-  name: string;
-  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  schema?: Record<string, SchemaField>
-  description?: string
-  category?: Category,
-  timestamp: string | number | Date | undefined;
-  createdBy?: string | undefined;
-  tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-  mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  Taggable<T> {
+    id?: string | number;
+    apiEndpoint: string;
+    apiKey: string | undefined;
+    timeout: number;
+    retryAttempts: number;
+    isActive: boolean
+    name: string;
+    initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    schema?: Record<string, SchemaField>
+    description?: string
+    category?: Category,
+    timestamp: string | number | Date | undefined;
+    createdBy?: string | undefined;
+    tags?: TagsRecord<T> | string[]
+    mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 // Specific configuration for project management features
@@ -181,8 +220,9 @@ const baseConfig: BaseConfig<
 }
 
 export { baseConfig, mappedSnapshot };
-  
-  export type {
-    BaseConfig, BaseDataEntity, BaseDataRoot, CryptoConfig, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, ProjectManagementConfig, SharedConfig
-  };
+
+    export type {
+        BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
+        DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, SharedConfig
+    };
 

@@ -1,20 +1,19 @@
 // ApiMetadata.ts
 // External API calls for metadata operations
 
+import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
-import internalApiService from "./ApiClient";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import HeadersConfig from "@/app/api/headers/HeadersConfig";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { VersionData } from '@/app/versions/VersionData';
 import { NotificationType } from "@/context/NotificationContext";
-import { VersionData } from '@/versions/VersionData';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 const API_BASE_URL = endpoints.metadata;
 
@@ -590,3 +589,4 @@ const internalMetadataApiService = new MetadataApiService(useNotification, metad
 export default internalMetadataApiService;
 export { metadataNotificationMessages };
 export type { MetadataNotificationMessages };
+

@@ -9,6 +9,7 @@ import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from
 import { CoreMetadata } from "@/app/server/metadata/MetadataStateManager";
 import { Version } from '../versions/Version';
 import { VersionData, VersionHistory } from '../versions/VersionData';
+import { Permissions } from '@app/server/security/getPermissions'
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -17,7 +18,7 @@ interface SharedMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Omit<CoreMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "schema">,
+> extends Omit<CoreMetadata<T, K>, "schema">,
     Partial<VersionMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     Partial<ConfigMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     Partial<StatusMetadata>,
@@ -30,7 +31,8 @@ interface SharedMetadata<
   >;
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 
-  permissions?: AppStructurePermissions[]; 
+  appPermissions?: AppStructurePermissions[]; 
+  permissions?: string[] | Permissions[]
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   category?: Category;

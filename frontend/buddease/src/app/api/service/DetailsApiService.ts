@@ -2,13 +2,14 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { BaseApiService } from '@/app/api/BaseApiService';
 import { Data } from '@/app/models/data/Data';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import  ApiConfig from '@/app/api/ApiConfig';
+import { endpointConfigurations } from '@/app/api/endpointConfigurations'
 
 export abstract class BaseApiService {
   protected baseUrl: string;
-  protected apiConfig: ApiConfig; // Add apiConfig reference
+  protected apiConfig: ApiConfig; 
 
   constructor(baseUrl: string, apiConfig?: ApiConfig) {
     this.baseUrl = baseUrl;

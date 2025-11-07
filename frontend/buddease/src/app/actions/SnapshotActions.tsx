@@ -1,5 +1,4 @@
 // snapshots/SnapshotActions.ts
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
@@ -20,7 +19,7 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AppEntity } from "@/app/typings/entities/AppEntity";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshot, TaskSnapshotsArray, TaskSnapshotWithCriteria } from '@/app/typings/entities/TaskEntity';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshotsArray, TaskSnapshotWithCriteria, TaskSnapshotStore } from '@/app/typings/entities/TaskEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
@@ -33,18 +32,6 @@ import { SnapshotData } from "../snapshots/SnapshotData";
 import { SnapshotItem } from "../snapshots/SnapshotList";
 
 const dispatch = useDispatch()
-
-interface TaskData extends BaseDataEntity {
-  title: string;
-  description: string;
-}
-
-interface SubtaskData extends BaseDataEntity {
-  parentId: string;
-  title: string;
-  isCompleted: boolean;
-}
-
 
 interface CallbackAction {
   request?: () => void;
@@ -259,7 +246,7 @@ export const TaskWithSubtasksSnapshotActions = <
 
 
 
-const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = {
+const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = {
   id: '1',
   data: {
     id: '1',
@@ -290,14 +277,15 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     subscribers: [],
     eventIds: [],
   },
-  meta: new Map<string, TaskSnapshot>(),
+  mappedSnapshot: new Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>(),
+  meta: {} as TaskMeta,
   
   getSnapshotId: (key: string | SnapshotData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => {
     if (typeof key === 'string') {
       return UniqueIDGenerator.generateID(
         "snapshotGeneration",
         "snapshot",
-        NotificationTypeEnum.Event,
+      NotificationTypeEnum.SNAPSHOT_GENERATED,
         "SnapshotCreation" as NotificationType
       );
     } else {
@@ -305,21 +293,21 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     }
   },
 
-  compareSnapshotState: (snapshot: TaskSnapshot | null, state: any) => {
+  compareSnapshotState: (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null, state: any) => {
     if (!snapshot) return null;
     return JSON.stringify(snapshot.data) === JSON.stringify(state)
       ? 'States are identical'
       : 'States are different';
   },
 
-  unsubscribe: function(callback: Callback<TaskSnapshot>) {
+  unsubscribe: function(callback: Callback<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>) {
     if (!this.subscribers || Object.keys(this.subscribers).length === 0) return;
     const filtered = Object.entries(this.subscribers).filter(([_, sub]) => sub.getCallback() !== callback);
     this.subscribers = Object.fromEntries(filtered) as unknown as TaskSubscriber[];
   },
   addSnapshotFailure: function (
     snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: { error: Error }
   ): void {
     throw new Error('Function not implemented.');
@@ -328,10 +316,10 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
   configureSnapshotStore: function (
     snapshotStore: TaskSnapshotStore,
     snapshotId: string,
-    data: Map<string, TaskSnapshot>,
-    events: Record<string, CalendarManagerStoreClass<TaskEntity, TaskK>[]>,
+    data: Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
+    events: Record<string, CalendarManagerStoreClass<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]>,
     dataItems: RealtimeDataItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[],
-    newData: TaskSnapshot,
+    newData: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: ConfigureSnapshotStorePayload<Data>,
     store: SnapshotStore<any, any>,
     callback: (snapshotStore: TaskSnapshotStore) => void
@@ -342,7 +330,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
   updateSnapshotSuccess: function (
     snapshotId: string,
     snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: { error: Error }
   ): void | null {
     throw new Error('Function not implemented.');
@@ -352,7 +340,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     date: Date,
     snapshotId: string,
     snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: { error: Error }
   ): Promise<void> {
     throw new Error('Function not implemented.');
@@ -369,7 +357,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     category?: Category,
     snapshotContainer?: TaskEntity,
     snapshotStoreConfig?: SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
-  ): Promise<TaskSnapshot | null> {
+  ): Promise<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null> {
     throw new Error('Function not implemented.');
   },
 
@@ -411,7 +399,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     storeId: number,
     snapshotStore: TaskSnapshotStore,
     snapshotId: string,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     type: string,
     event: Event
   ): TaskSnapshotStore | null {
@@ -426,7 +414,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     storeId: number,
     snapshotId: string,
     snapshotStore: TaskSnapshotStore,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     type: string,
     event: Event
   ): void {
@@ -451,7 +439,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     snapshotId: string | number,
     snapshotStore: TaskSnapshotStore,
     snapshotId: string,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     type: string,
     event: Event
   ): Promise<string | undefined> | null {
@@ -475,8 +463,8 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
 
   defaultSubscribeToSnapshots: function (
     snapshotId: string,
-    callback: (snapshots: Snapshots<TaskEntity>) => Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null,
-    snapshot?: TaskSnapshot | null
+    callback: (snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null,
+    snapshot?: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null
   ): void {
     throw new Error('Function not implemented.');
   },
@@ -510,7 +498,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  updateData: function (id: number, newData: TaskSnapshot): void {
+  updateData: function (id: number, newData: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
 
@@ -526,15 +514,15 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  addDataSuccess: function (payload: { data: TaskSnapshot[] }): void {
+  addDataSuccess: function (payload: { data: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[] }): void {
     throw new Error('Function not implemented.');
   },
 
-  getDataVersions: function (id: number): Promise<TaskSnapshot[] | undefined> {
+  getDataVersions: function (id: number): Promise<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[] | undefined> {
     throw new Error('Function not implemented.');
   },
 
-  updateDataVersions: function (id: number, versions: TaskSnapshot[]): void {
+  updateDataVersions: function (id: number, versions: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]): void {
     throw new Error('Function not implemented.');
   },
 
@@ -552,16 +540,16 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
 
   defaultSubscribeToSnapshot: function (
     snapshotId: string,
-    callback: Callback<TaskSnapshot>,
-    snapshot: TaskSnapshot
+    callback: Callback<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
   ): string {
     throw new Error('Function not implemented.');
   },
 
   handleSubscribeToSnapshot: function (
     snapshotId: string,
-    callback: Callback<TaskSnapshot>,
-    snapshot: TaskSnapshot
+    callback: Callback<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
   ): void {
     throw new Error('Function not implemented.');
   },
@@ -575,14 +563,14 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
       category: any;
       timestamp: any;
       id: any;
-      snapshot: TaskSnapshot;
+      snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
       snapshotStore: TaskSnapshotStore;
       data: Data;
     }> | undefined
-  ): Promise<TaskSnapshot> {
+  ): Promise<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> {
     throw new Error('Function not implemented.');
   },
-  getSnapshotSuccess: function (snapshot: TaskSnapshot): Promise<TaskSnapshotStore> {
+  getSnapshotSuccess: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): Promise<TaskSnapshotStore> {
     throw new Error('Function not implemented.');
   },
 
@@ -614,7 +602,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  determineCategory: function (snapshot: TaskSnapshot | null | undefined): string {
+  determineCategory: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null | undefined): string {
     throw new Error('Function not implemented.');
   },
 
@@ -626,7 +614,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  addSnapshotItem: function (item: TaskSnapshot | SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
+  addSnapshotItem: function (item: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
 
@@ -639,16 +627,16 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
   },
 
   addSnapshot: function (
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     snapshotId: string,
     subscribers: SubscriberCollection<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
-  ): Promise<TaskSnapshot | undefined> {
+  ): Promise<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | undefined> {
     throw new Error('Function not implemented.');
   },
 
   createSnapshot: undefined,
 
-  createInitSnapshot: function (id: string, snapshotData: SnapshotData<any, TaskEntity>, category: string): TaskSnapshot {
+  createInitSnapshot: function (id: string, snapshotData: SnapshotData<any, TaskEntity>, category: string): Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> {
     throw new Error('Function not implemented.');
   },
 
@@ -664,7 +652,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[], snapshot: Snapshots<TaskEntity>) => void): void {
+  updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[], snapshot: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => void): void {
     throw new Error('Function not implemented.');
   },
 
@@ -676,11 +664,11 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  takeSnapshot: function (snapshot: TaskSnapshot, subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]): Promise<{ snapshot: TaskSnapshot }> {
+  takeSnapshot: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]): Promise<{ snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> }> {
     throw new Error('Function not implemented.');
   },
 
-  takeSnapshotSuccess: function (snapshot: TaskSnapshot): void {
+  takeSnapshotSuccess: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
 
@@ -702,7 +690,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  validateSnapshot: function (snapshot: TaskSnapshot): boolean {
+  validateSnapshot: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): boolean {
     throw new Error('Function not implemented.');
   },
 
@@ -710,7 +698,7 @@ const newTaskSnapshot: TaskSnapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment,
     throw new Error('Function not implemented.');
   },
 
-  setSnapshot: function (snapshot: TaskSnapshot): void {
+  setSnapshot: function (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error('Function not implemented.');
   },
 
@@ -728,14 +716,14 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
 
 
   // Snapshot collections
-  setSnapshots: function (snapshots: Snapshots<TaskEntity>): void {
+  setSnapshots: function (snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   clearSnapshot: function (): void {
     throw new Error("Function not implemented.");
   },
   mergeSnapshots: function (
-    snapshots: Snapshots<TaskEntity>,
+    snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     category: string
   ): void {
     throw new Error("Function not implemented.");
@@ -743,7 +731,7 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
 
   // Reducers / utilities
   reduceSnapshots: function <U>(
-    callback: (acc: U, snapshot: TaskSnapshot) => U,
+    callback: (acc: U, snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => U,
     initialValue: U
   ): U | undefined {
     throw new Error("Function not implemented.");
@@ -761,10 +749,10 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
   // Subscribers & notifications
   getSubscribers: async function (
     subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[],
-    snapshots: Snapshots<TaskEntity>
+    snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
   ): Promise<{
     subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[];
-    snapshots: Snapshots<TaskEntity>;
+    snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
   }> {
     throw new Error("Function not implemented.");
   },
@@ -795,8 +783,8 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
   getAllSnapshots: async function (
     fetcher: (
       subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[],
-      snapshots: Snapshots<TaskEntity>
-    ) => Promise<Snapshots<TaskEntity>>
+      snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
+    ) => Promise<Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>
   ): Promise<void> {
     throw new Error("Function not implemented.");
   },
@@ -806,28 +794,11 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
     return `task_${Date.now()}`;
   },
 
-  notify: function (id: string, message: string, content: any, date: Date, type: NotificationType, notificationPosition?: NotificationPosition | undefined): void {
-    throw new Error('Function not implemented.');
-  },
-  notifySubscribers: function (
-    subscribers: Subscriber<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, any>[],
-    data: Partial<SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>
-  ): SubscriberCollection<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, any> {
-    throw new Error('Function not implemented.');
-  },
-  getSnapshots: function (category: string, data: Snapshots<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>): void {
-    throw new Error('Function not implemented.');
-  },
-  getAllSnapshots: function (data: (subscribers: Subscriber<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, any>[], snapshots: Snapshots<Task>) => Promise<Snapshots<Task>>): void {
-    throw new Error('Function not implemented.');
-  },
-  generateId: function (): string {
-    throw new Error('Function not implemented.');
-  },
-  
+
+
 batchFetchSnapshots: function (
   subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[],
-  snapshots: Snapshots<TaskEntity>
+  snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
 ): void {
   if (!Array.isArray(subscribers) || !snapshots) return;
 
@@ -869,7 +840,7 @@ batchTakeSnapshotsRequest: function (snapshotData: any): void {
 batchUpdateSnapshotsRequest: function (
   snapshotDataFn: (
     subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]
-  ) => Promise<{ subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]; snapshots: Snapshots<TaskEntity>; }>
+  ) => Promise<{ subscribers: Subscriber<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]; snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>; }>
 ): void {
   // Gather current subscribers (best-effort). If you store subscribers differently,
   // adjust this line to pull the correct array.
@@ -964,7 +935,7 @@ batchUpdateSnapshotsRequest: function (
   },
 
   handleSnapshotSuccess: function (
-    snapshot: TaskSnapshot | null,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null,
     snapshotId: string
   ): void {
     if (!snapshot) {
@@ -987,14 +958,14 @@ batchUpdateSnapshotsRequest: function (
 
   getData: function ():
     | Data
-    | Map<string, TaskSnapshot>
+    | Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>
     | null
     | undefined {
     // Default: return null until a datastore is wired
     return null;
   },
 
-  setData: function (data: Map<string, TaskSnapshot>): void {
+  setData: function (data: Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>): void {
     // Example: attach the map to this object for later use
     (this as any)._dataStore = data;
     console.log("Data set successfully:", data);
@@ -1039,15 +1010,15 @@ batchUpdateSnapshotsRequest: function (
       data: Data,
       delegate: TaskSnapshotWithCriteria[],
       category?: Category,
-    ) => TaskSnapshot
-  ): TaskSnapshot {
+    ) => Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
+  ): Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> {
     throw new Error("Function not implemented.");
   },
 
   createSnapshotSuccess: function (
     snapshotId: string,
     snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: { error: Error }
   ): void | null {
     throw new Error("Function not implemented.");
@@ -1056,22 +1027,22 @@ batchUpdateSnapshotsRequest: function (
   createSnapshots: function (
     id: string,
     snapshotId: string,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     snapshotManager: SnapshotManager<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     payload: CreateSnapshotsPayload<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    callback: (snapshots: TaskSnapshot[]) => void | null,
+    callback: (snapshots: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[] | undefined,
     category?: string | symbol | Category
-  ): TaskSnapshot[] | null {
+  ): Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[] | null {
     throw new Error("Function not implemented.");
   },
 
   onSnapshot: function (
     snapshotId: string,
-    snapshot: TaskSnapshot,
+    snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     type: string,
     event: SnapshotEvent<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    callback: (snapshot: TaskSnapshot) => void
+    callback: (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => void
   ): void {
     throw new Error("Function not implemented.");
   },
@@ -1092,17 +1063,17 @@ batchUpdateSnapshotsRequest: function (
 // const subscriber = new Subscriber(
 //   '1',
 //   'Subscriber Name',
-//   {} as Subscription<TaskData, SubtaskData>,
+//   {} as Subscription<TaskEntity, SubtaskData>,
 //   'subscriberId',
-//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Event System:', data); },
-//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Update Project State:', data); },
-//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Log Activity:', data); },
-//   (data: Snapshot<TaskData, SubtaskData>) => { console.log('Trigger Incentives:', data); },
+//   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Event System:', data); },
+//   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Update Project State:', data); },
+//   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Log Activity:', data); },
+//   (data: Snapshot<TaskEntity, SubtaskData>) => { console.log('Trigger Incentives:', data); },
 //   null, // or provide an appropriate CustomSnapshotData if available
-//   null  // or provide appropriate TaskData if available
+//   null  // or provide appropriate TaskEntity if available
 // );
 
-// const newTaskWithSubtasksSnapshot: Snapshot<TaskData, SubtaskData> = {
+// const newTaskWithSubtasksSnapshot: Snapshot<TaskEntity, SubtaskData> = {
 //   id: '2',
 //   data: {
 //     id: '2',
@@ -1127,7 +1098,7 @@ batchUpdateSnapshotsRequest: function (
 //     type: 'snapshot',
 //     subscribers: [
 //       // Subscriber as an array entry
-//       new Subscriber<TaskData, SubtaskData>(
+//       new Subscriber<TaskEntity, SubtaskData>(
 //         subscriber?.getUniqueId ?? '',
 //         '',
 //         {
@@ -1139,12 +1110,12 @@ batchUpdateSnapshotsRequest: function (
 //           communityEngagement: getCommunityEngagement,
 //           portfolioUpdatesLastUpdated: portfolioUpdatesLastUpdated,
 //           determineCategory: determineFileCategory
-//         } as Subscription<TaskData, SubtaskData>,
+//         } as Subscription<TaskEntity, SubtaskData>,
 //         '',
-//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
-//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
-//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
-//         (data: Snapshot<TaskData, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskEntity, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskEntity, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskEntity, SubtaskData>) => { throw new Error('Function not implemented.'); },
+//         (data: Snapshot<TaskEntity, SubtaskData>) => { throw new Error('Function not implemented.'); },
 //         null,
 //         undefined
 //       )
@@ -1153,7 +1124,7 @@ batchUpdateSnapshotsRequest: function (
 
 //     store: null,    stores: null,
 
-//     data: new Map<string, Snapshot<TaskData, SubtaskData>>([
+//     data: new Map<string, Snapshot<TaskEntity, SubtaskData>>([
 //         [
 //           'subtask1',
 //         {

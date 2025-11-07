@@ -9,6 +9,8 @@ import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
 import { NotificationType } from "@/context/NotificationContext";
 import { useAssignEventStore } from "./AssignEventStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export type PresentationEventAssignment =
   | BaseCustomEvent
@@ -38,18 +40,25 @@ type EventStoreSubset = Pick<
 
 const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 
-export interface UserPresentation {
+export interface UserPresentation<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   reassignUsersForArray: (
     user: string,
-    newUsers: ExtendedCalendarEvent[],
-    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent,
+    newUsers: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    oldUserId: CalendarEventTimingOptimization | ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     newUserId: PresentationEventAssignment,
     eventOrTodo: BaseCustomEvent | Todo
   ) => void;
 
   reassignUserForSingle: (
     user: string,
-    newUser: ExtendedCalendarEvent,
+    newUser: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     eventOrTodo: BaseCustomEvent | Todo
   ) => void;
 
@@ -58,11 +67,11 @@ export interface UserPresentation {
     oldUserId: CalendarEventTimingOptimization,
     newUserId: PresentationEventAssignment
   ) => void;
-  assignEvent: (eventId: string, userId: User) => void;
+  assignEvent: (eventId: string, userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   assignedUsers: Record<string, string[]>;
   assignedEvents: Record<
     string,
-    (ExtendedCalendarEvent | CalendarEventTimingOptimization)[]
+    (ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CalendarEventTimingOptimization)[]
   >;
   assignedTodos: Record<string, string[]>;
   assignUsersToEvents: (
@@ -76,7 +85,7 @@ export interface UserPresentation {
     eventOrTodoId: string
   ) => void;
   setDynamicNotificationMessage: (
-    message: Message,
+    message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: NotificationType
   ) => void;
   reassignUsersInTodos: (
@@ -97,12 +106,25 @@ export interface UserPresentation {
   assignUserFailure: (error: string) => void;
 }
 
-const transformExtendedCalendarEventToOptimization = (
-  extendedEvent: ExtendedCalendarEvent
-): CalendarEventTimingOptimization => {
+const transformExtendedCalendarEventToOptimization = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>(
+  extendedEvent: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): CalendarEventTimingOptimization<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
-    eventId: extendedEvent.eventId,
-    assignedTo: extendedEvent.assignedTo,
+    id: extendedEvent.id,
+    startTime: extendedEvent.startTime,
+    endTime: extendedEvent.endTime,
+    duration: extendedEvent.duration,
+    timestamp: extendedEvent.timestamp
+    
+    eventId: extendedEvent.eventId || extendedEvent.id,
+    assignedTo: extendedEvent.assignedTo ? 'user-id-placeholder' : '', // You'll need to extract user ID
     suggestedStartTime: extendedEvent.suggestedStartTime,
     suggestedEndTime: extendedEvent.suggestedEndTime,
     suggestedDuration: extendedEvent.suggestedDuration,
@@ -110,6 +132,7 @@ const transformExtendedCalendarEventToOptimization = (
     suggestedWeeks: extendedEvent.suggestedWeeks,
     suggestedMonths: extendedEvent.suggestedMonths,
     suggestedSeasons: extendedEvent.suggestedSeasons,
+
   };
 };
 

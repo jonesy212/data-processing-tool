@@ -1,13 +1,18 @@
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Data } from '@/app/models/data/Data';
-import { SnapshotStoreConfig } from "./snapshotStoreConfig";
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 
 export function storeTempData<
-T extends  BaseData<any>,
- K extends T = T>(
-  configs: SnapshotStoreConfig<T, K>,
+  T extends BaseDataEntity = AppEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  configs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   configId: string,
   tempResults: T[]
 ): void {
@@ -25,11 +30,14 @@ T extends  BaseData<any>,
 }
 
 export function getTempData<
-  T extends  
-  BaseData<any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  configs: SnapshotStoreConfig<T extends  BaseData<any>>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  configs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   configId: string
 ): T[] | undefined {
   for (const config of configs) {

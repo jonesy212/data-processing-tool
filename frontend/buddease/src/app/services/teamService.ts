@@ -1,7 +1,7 @@
 // teamService.ts
 // app/services/teamService.ts
+import { Team } from '@/app/components/teams/Team';
 import { Project } from '@/app/models/projects/Project';
-import { Team } from '@/app/models/teams/Team';
 
 export interface ReassignmentRecord {
   projectId: string;

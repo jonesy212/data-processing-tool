@@ -2,7 +2,7 @@
 // PortfolioService.ts
 import { AxiosError, AxiosResponse } from 'axios';
 import axiosInstance from '@/app/api/csrfToken';
-import { getMarketPrice, priceService } from './priceService';
+import { getMarketPrice, priceService } from '@/app/api/service/PriceApiService'
 import { TradeLogger } from '@/libraries/logging/TradeLogger'
 // Types
 export interface PortfolioAsset {
@@ -355,25 +355,6 @@ class PortfolioService {
   }
 
   /**
-   * Get portfolio performance history
-   */
-  async getPortfolioPerformance(
-    userId: string, 
-    days: number = 30
-  ): Promise<PortfolioPerformance[]> {
-    try {
-      const response = await axiosInstance.get(
-        `${this.baseUrl}/${userId}/performance`,
-        { params: { days } }
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching portfolio performance for user ${userId}:`, error);
-      throw new Error(`Failed to get portfolio performance`);
-    }
-  }
-
-  /**
    * Get rebalancing recommendations
    */
   async getRebalanceRecommendations(
@@ -489,6 +470,8 @@ class PortfolioService {
       throw new Error(`Failed to get diversification metrics`);
     }
   }
+
+  
 
   /**
    * Clear portfolio cache
@@ -738,8 +721,11 @@ class PortfolioService {
 export const portfolioService = PortfolioService.getInstance();
 
 // Export individual functions for convenience
-export { 
-  PortfolioService,
-  updateUserPortfolio,
-  logTradeActivity
-};
+export { PortfolioService };
+
+// Create singleton instance
+const portfolioServiceInstance = PortfolioService.getInstance();
+
+// Export bound instance methods as named functions
+export const updateUserPortfolio = portfolioServiceInstance.updateUserPortfolio.bind(portfolioServiceInstance);
+export const logTradeActivity = portfolioServiceInstance.logTradeActivity.bind(portfolioServiceInstance);

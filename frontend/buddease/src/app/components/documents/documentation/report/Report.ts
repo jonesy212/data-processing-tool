@@ -1,9 +1,10 @@
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 // Report.ts
 // Define the structure of a report
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 
 export interface BaseReport {
   id: number;
@@ -11,6 +12,7 @@ export interface BaseReport {
   description: string;
   reportContent: string;
   reportFileName: string;
+  category?: Category
 }
 
 
@@ -24,7 +26,7 @@ interface AddReportBase<
 > extends BaseReport {
   createdBy: string;
   content: string;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   createdAt: Date;
 }
 

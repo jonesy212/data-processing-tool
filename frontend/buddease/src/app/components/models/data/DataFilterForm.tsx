@@ -7,23 +7,23 @@ import snapshotStore from "@/app/snapshots/SnapshotStore";
 import {
   DataAnalysisAction,
   DataAnalysisDispatch,
-} from "@/app/typings/dataAnalysisTypes";
+} from "@/app/typings/phasses/dataAnalysisTypes";
 import { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Data } from "./Data";
+import { Data } from "@/app/models/data/Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from '@/DataFrameComponent';
-import { authToken } from "@/app/auth/authToken";
+import { authToken } from "@/app/server/auth/authToken";
 import { Phase } from '@/app/models/phases/Phase';
 import ListGenerator from "@/app/generators/ListGenerator";
 import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T } from "@/app/snapshots/SnapshotConfig";
 import SnapshotList from "@/app/snapshots/SnapshotList";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { shuffleArray } from "@/app/utils/shuffleArray";
+import { SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -60,15 +60,24 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
     updateCallback
   );
   // Use processed snapshot data in your component logic
-  const [snapshotList, setSnapshotList] = useState<SnapshotList>(
-    new SnapshotList()
-
-
-
-  );
+  const [snapshotList, setSnapshotList] = useState<SnapshotList<
+  SnapshotEntity,           // T
+  SnapshotK,                // K  
+  SnapshotMeta,             // Meta
+  SnapshotAttachment,       // AttachmentType
+  SnapshotExcludedFields,   // ExcludedFields
+  SnapshotIncludedFields    // IncludedFields
+>>(new SnapshotList<
+  SnapshotEntity,
+  SnapshotK, 
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+>());
   
   
-  const snapshotDetails: DetailsItem<T, K> = {
+  const snapshotDetails: DetailsItem<SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
     id: "",
     title: "",
     label: "",
@@ -76,16 +85,16 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
     status: "pending",
     description: "",
     subtitle: "",
-    phase: {} as Phase,
+    phase: {} as Phase<SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     // Add other properties as needed
     updatedAt: undefined
   }
 
   
-const snapshotListArray: DetailsItem<Data, Data>[] = Array.from(snapshotList).map(
+const snapshotListArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = Array.from(snapshotList).map(
   (value: unknown) => {
-    const snapshot = value as Snapshot<Data, Data> | null;
-    const snapshotDetails: DetailsItem<Data, Data> = {
+    const snapshot = value as Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null;
+    const snapshotDetails: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
       id: "",
       subtitle: "",
       label: "",

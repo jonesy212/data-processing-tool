@@ -1,15 +1,18 @@
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
+import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { createMetadata } from '@/app/config/metadata/createMetadata';
+import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
 import { useDataContext } from "@/app/context/DataContext";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { Taggable } from '@/app/models/CommonData';
 import { Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
+import { Taggable } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "@/app/routing/SearchCriteria";
+import { Payload } from '@/app/server/database/Payload';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
@@ -17,42 +20,38 @@ import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { Tag } from '@/app/typings/entities/TagEntity';
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { sharedMetadata } from "@/config/metadata/MetadataStateManager";
-import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
-import { Payload } from '@/app/server/database/Payload';
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 
+import { SchemaField } from "@/app/config/metadata/SchemaField";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 import {
-  SnapshotAttachment,
-  SnapshotEntity,
-  SnapshotEntityData,
-  SnapshotEntityWithCriteria,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields,
-  SnapshotK,
-  SnapshotMeta
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotEntityData,
+    SnapshotEntityWithCriteria,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
 } from "@/app/typings/entities/SnapshotEntity";
 import { Version } from "@/app/versions/Version";
-import { SchemaField } from "@/app/config/metadata/SchemaField";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { VersionData } from '@/app/versions/VersionData';
 import { ExcludedFields } from '@/routing/Fields';
 import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
-import { VersionData } from '@/versions/VersionData';
 import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-
 
 export type SortDirection = "asc" | "desc";
 
@@ -61,18 +60,6 @@ export interface SortSpec<T = string> {
   direction?: SortDirection; // default "asc" if not specified
   priority?: number;     // optional for multi-field sorts (lower = higher priority)
   nulls?: "first" | "last"; // control null/undefined ordering
-}
-
-// Define BaseData interface
-interface TagsRecord<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> {
-  [tagName: string]: Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Make this a plain interface that mirrors the shape you actually need
@@ -97,7 +84,7 @@ interface SnapshotWithCriteriaContract<
   analysisType?: AnalysisTypeEnum;
   events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  tags?: string[] | TagsRecord<T> | undefined;
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStoreArray?: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -134,7 +121,7 @@ type SnapshotWithCriteria<
   analysisType?: AnalysisTypeEnum;
   events?: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;  // Update as needed based on your schema
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];  // Update as needed based on your schema
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[] | undefined;   // Update as needed based on your schema
+  tags?: TagsRecord<T>| string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStores?: Map<number, SnapshotStoreReference<T, K, Meta>>; // not a Map
@@ -162,7 +149,7 @@ export class SnapshotStoreWithCriteria<
     callback: (data: T) => void,
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     endpointCategory: string,
-    initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category?: Category,
   ) {
     // Create a converted callback that performs the type guard
@@ -247,7 +234,7 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
     baseConfig: {} as BaseConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     sharedMetadata: sharedMetadata,
     sharedBaseData: {},
-    taggable: {} as Taggable<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+    taggable: {} as Taggable<SnapshotEntity>,
     metadataEntries: {} as MetadataEntriesType<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   }),
 
@@ -962,7 +949,7 @@ const exampleSnapshotStore: SnapshotStore<
 };
 
 export { data };
-export type { SearchCriteriaBase, SnapshotWithCriteria, SnapshotWithCriteriaConfig, SnapshotWithCriteriaContract, TagsRecord };
+export type { SearchCriteriaBase, SnapshotWithCriteria, SnapshotWithCriteriaConfig, SnapshotWithCriteriaContract };
 
 // Add example data to the store
 

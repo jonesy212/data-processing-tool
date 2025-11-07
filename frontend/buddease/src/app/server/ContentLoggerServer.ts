@@ -1,9 +1,9 @@
 // ContentLoggerServer.ts
-import fs from 'fs';
 import { Logger } from '@/BaseLogger'; // Assuming Logger is defined elsewhere
+import fs from 'fs';
 
 export class ContentLoggerServer extends Logger {
-  static logContentCreation(title: string, contentId: string, userId: string) {
+  static logContentCreated(title: string, contentId: string, userId: string) {
     super.logWithOptions("Content", `${title} created (Content ID: ${contentId}, User ID: ${userId})`, userId);
   }
 

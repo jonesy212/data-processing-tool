@@ -8,6 +8,9 @@ import { NotificationType, useNotification } from "@/app/context/NotificationCon
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { AxiosError } from 'axios';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;

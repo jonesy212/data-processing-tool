@@ -4,7 +4,7 @@ import Sidebar from "@/app/components/libraries/toolbar/Sidebar";
 import DataFilterForm from "@/app/components/models/data/DataFilterForm";
 import NotificationComponent from "@/app/components/notifications/NotificationComponent";
 import SearchBar from "@/app/components/routing/SearchBar";
-import RootLayout from "@/app/RootLayout";
+ 
 import { User } from "@/app/users/User";
 import React, { useState } from "react";
 import RealTimeChart from "./RealTimeChart"; // Import a real-time chart component
@@ -47,7 +47,6 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
   };
 
   return (
-    <RootLayout>
       <div>
         <Sidebar>
           <UserProfileComponent userProfile={user} />
@@ -65,7 +64,6 @@ const RealTimeDashboardPage: React.FC<RealTimeDashboardPageProps> = ({
           <NotificationComponent notifications={[]} />
         </div>
       </div>
-    </RootLayout>
   );
 };
 

@@ -15,7 +15,8 @@ import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { Phase } from "@/app/models/phases/Phase";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
-import { Task, TaskData } from "@/app/models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
+import { TaskEntity } from "@/app/typings/entities/TaskEntity";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
@@ -137,7 +138,7 @@ const TaskManagerComponent = <
       status: "todo",
       priority: PriorityTypeEnum.High,
       done: false,
-      data: {} as TaskData,
+      data: {} as TaskEntity,
       source: "user",
       some: () => false,
       then: () => {},

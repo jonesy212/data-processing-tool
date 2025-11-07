@@ -1,4 +1,4 @@
-import { MiddlewareFunction, MiddlewareContext } from '@/types';
+import { MiddlewareFunction, MiddlewareContext } from '@/app/middleware/types'
 import { snapshotValidators } from '@/app/utils/snapshotValidators';
 
 export const validationMiddleware: MiddlewareFunction = async (context, next) => {

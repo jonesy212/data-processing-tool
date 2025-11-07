@@ -9,6 +9,7 @@ import CalendarEventFollowUpActionSuggestion from '@/app/calendar/CalendarEventF
 import ChatMessage from '@/app/components/communications/chat/ChatMessage';
 import { AttendancePrediction } from '@/app/components/calendar/AttendancePrediction';
 import CalendarEventAgendaItem from '@/app/components/calendar/CalendarEventAgendaItem';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CustomFile from '@/app/documents/File';
 import EventCategory from '@/app/components/event/EventCategory';
@@ -206,8 +207,6 @@ export interface CalendarManagerState<
     event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     analyze: () => void
   };
-
-  
 }
 
 

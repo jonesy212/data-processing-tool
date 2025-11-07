@@ -18,8 +18,11 @@ import {
 } from "@/context/NotificationContext";
 import { makeObservable } from "mobx";
 import { AuthStore } from "./AuthStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PresentationEventAssignment } from "./UserPresentationsStore";
-
+import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 const RESPONSES_STORAGE_KEY = "responses";
 
 interface ReassignData {
@@ -42,17 +45,24 @@ interface ReassignEventResponse extends ExtendedCalendarEvent, EventData {
   reassignData: ReassignData[]; // Additional reassignment data
 }
 
-interface AssignEventStore {
+interface AssignEventStore<
+  T extends BaseDataEntity = MeetingEntity, 
+  K extends T = MeetingK, 
+  Meta extends DefaultMeta<T, K> = MeetingMeta, 
+  AttachmentType extends Attachment = MeetingAttachment,
+  ExcludedFields extends keyof T = MeetingExcludedFields,
+  IncludedFields extends keyof T = MeetingIncludedFields
+> {
   assignedUsers: Record<string, string[]>; // Use eventId as key and array of user IDs as value
   updateEventStatus: (eventId: string, status: string) => void;
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
   reassignUser: Record<string, ReassignEventResponse[]>;
-  assignEvent: (eventId: string, userId: User) => void;
+  assignEvent: (eventId: string, userId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (
-    message: Message,
+    message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>,
     type: NotificationType
   ) => void;
   getAuthStore: () => AuthStore;
@@ -119,7 +129,7 @@ const useAssignEventStore = (): AssignEventStore => {
 
 
 
-  const assignEvent = (eventId: string, userId: User) => {
+  const assignEvent = (eventId: string, userId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>) => {
     const event = baseStore.events[eventId];
     if (event && Array.isArray(event)) {
       event.forEach((e) => {
@@ -170,7 +180,7 @@ const useAssignEventStore = (): AssignEventStore => {
   };
 
   const setDynamicNotificationMessage = (
-    message: Message,
+    message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>,
     type: NotificationType
   ) => {
     useNotification().showMessageWithType(message, type);

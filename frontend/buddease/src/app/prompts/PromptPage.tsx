@@ -1,7 +1,7 @@
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import React, { useState } from "react";
 import { Data } from '@/app/models/data/Data';
-import RootLayout from "@/app/RootLayout";
+ 
 
 interface PromptOption {
   value: string;
@@ -14,6 +14,7 @@ interface Prompt {
   type: "text" | "multipleChoice";
   options?: PromptOption[];
 }
+
 interface PromptPageProps extends Partial<Data> {
   id?: any;
   title: string;
@@ -56,7 +57,6 @@ const PromptPage: React.FC<PromptPageProps> = ({
   };
 
   return (
-    <RootLayout>
       <div>
         <h2>Prompts</h2>
 
@@ -95,7 +95,6 @@ const PromptPage: React.FC<PromptPageProps> = ({
           <button type="submit">Submit</button>
         </form>
       </div>
-    </RootLayout>
   );
 };
 

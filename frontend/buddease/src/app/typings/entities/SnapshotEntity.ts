@@ -70,7 +70,7 @@ type SnapshotEntityData = SnapshotData<
   SnapshotBaseParams['AttachmentType'],
   SnapshotBaseParams['ExcludedFields'],
   SnapshotBaseParams['IncludedFields']
->;
+> | null; 
 
 type SnapshotEntityStore = SnapshotStore<
   SnapshotBaseParams['T'],
@@ -137,12 +137,31 @@ type SnapshotEntityParams = SnapshotConfigParams<
   SnapshotBaseParams['IncludedFields']
 >;
 
+
+// Create comprehensive helper types
+type SnapshotFullType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+  Snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  SnapshotStoreProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+};
+
+// Default snapshot types using your entity pattern
+type DefaultSnapshotTypes = SnapshotFullType<
+  SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
+>;
+
+
 // --- Field filter utility ---
 type SnapshotEntityApplyFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,
   IncludedFields extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
 > = Pick<Omit<T, Excluded>, IncludedFields>;
+
 
 // --- SnapshotEntity data interface ---
 interface SnapshotEntityDataInterface<
@@ -231,7 +250,9 @@ const createDefaultSnapshotData = (
 
 export type {
   SnapshotAttachment, SnapshotBaseParams, SnapshotEntity, SnapshotEntityApplyFieldFilters, SnapshotEntityData, SnapshotEntityDataInterface, SnapshotEntityParams, SnapshotEntityRealtimeDataItem, SnapshotEntitySnapshotsArray, SnapshotEntityStore, SnapshotEntityStoreConfig, SnapshotEntitySubscriberCollection, SnapshotEntityType, SnapshotEntityWithCriteria, SnapshotExcludedFields,
-  SnapshotIncludedFields, SnapshotK, SnapshotMeta, SnapshotStructuredMetadata, SnapshotUnifiedMetadata
+  SnapshotIncludedFields, SnapshotK, SnapshotMeta, SnapshotStructuredMetadata, SnapshotUnifiedMetadata, 
+  SnapshotFullType,
+DefaultSnapshotTypes
 };
 
     export {

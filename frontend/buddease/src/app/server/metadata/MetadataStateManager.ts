@@ -6,16 +6,16 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
-import { Taggable } from '@/app/models/CommonData';
 import { SharedRelationshipData } from '@/app/models/data/Data';
+import { Taggable } from '@/app/models/tracker/Tag';
 import { Permission } from "@/app/permissions/Permission";
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
@@ -24,11 +24,7 @@ const { latestVersion = createLatestVersion(), ...rest } = (data as Record<strin
 interface CoreMetadata<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>{
+> extends SharedIdentifiers<T, K>{
   schema: Record<string, SchemaField>;
 }
 
@@ -71,7 +67,6 @@ function createMetaState<
   category: string,
   timestamp: string | number | Date | undefined,
   createdBy: string,
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[],
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mappedSnapshot: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -81,6 +76,7 @@ function createMetaState<
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>,
   permissions: Permission[],
   baseUrl: string,
+  tags?: string[] | TagsRecord<T>,
   customFields?: Record<string, any>,
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   childIds?: K[],
@@ -137,7 +133,7 @@ function createMetaState<
     timestamp: new Date(),
     sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     sharedBaseData: unifiedMetadata.sharedBaseData ?? ({} as SharedRelationshipData<K>),
-    taggable: unifiedMetadata.taggable ?? ({} as Taggable<T, K>),
+    taggable: unifiedMetadata.taggable ?? ({} as Taggable<T>),
     metadataEntries: unifiedMetadata.metadataEntries ?? ({} as MetadataEntriesType<T, K>),
     keywords: unifiedMetadata.keywords ?? [],
     isActive,
@@ -210,7 +206,7 @@ export const createMeta = <
     sharedBaseData,
     keywords: [],
     timestamp: new Date(),
-    taggable: {} as Taggable<T, K>,
+    taggable: {} as Taggable<T>,
     versionData: {} as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     ...meta,
   };

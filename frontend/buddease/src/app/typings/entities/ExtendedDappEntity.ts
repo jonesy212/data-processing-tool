@@ -1,0 +1,58 @@
+// ExtendedDappEntity.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DAppAdapterConfig } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig'
+import { ipfsConfig } from '@/app/config/ipfsConfig';
+import { PoolConfig } from 'pg';
+// Core ExtendedDapp base types using the 6-parameter pattern
+type ExtendedDappEntity = BaseDataEntity & {
+  ipfsConfig: typeof ipfsConfig;
+  ethereumRpcUrl: string;
+  dappProps?: any;
+  dbConfig: PoolConfig;
+  systemApiResponse: any; 
+  userApiResponse: any;
+  // ... other ExtendedDappProps properties
+};
+
+type ExtendedDappK = ExtendedDappEntity;
+type ExtendedDappMeta = DefaultMeta<ExtendedDappEntity, ExtendedDappK>;
+type ExtendedDappAttachment = Attachment;
+type ExtendedDappExcludedFields = DefaultExcludedFields<ExtendedDappEntity>;
+type ExtendedDappIncludedFields = keyof ExtendedDappEntity;
+
+// Parameter container for consistent referencing (matches ConfigBaseParams pattern)
+type ExtendedDappBaseParams = {
+  T: ExtendedDappEntity;
+  K: ExtendedDappK;
+  Meta: ExtendedDappMeta;
+  AttachmentType: ExtendedDappAttachment;
+  ExcludedFields: ExtendedDappExcludedFields;
+  IncludedFields: ExtendedDappIncludedFields;
+};
+
+// If you need to maintain backward compatibility with ExtendedDappProps name
+type ExtendedDappProps = ExtendedDappEntity;
+
+
+interface ExtendedDAppAdapterConfig extends DAppAdapterConfig<
+  ExtendedDappEntity,  // T
+  ExtendedDappK,       // K
+  ExtendedDappMeta,    // Meta
+  ExtendedDappAttachment,  // AttachmentType
+  ExtendedDappExcludedFields,  // ExcludedFields
+  ExtendedDappIncludedFields   // IncludedFields
+> {
+  ipfsConfig: typeof ipfsConfig;
+  ethereumRpcUrl: string;
+}
+export type {
+  ExtendedDappEntity,
+  ExtendedDappK,
+  ExtendedDappMeta,
+  ExtendedDappAttachment,
+  ExtendedDappExcludedFields,
+  ExtendedDappIncludedFields,
+  ExtendedDappBaseParams,
+  ExtendedDappProps
+};

@@ -12,6 +12,9 @@ import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Logger } from "./activityLogger";
 import { ProjectConversionResult, ProjectConverter } from "./projectConverter";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // -------------------- Project Data --------------------
 

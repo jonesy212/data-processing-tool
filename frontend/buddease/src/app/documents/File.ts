@@ -1,6 +1,5 @@
 // File.ts
-import { K, T } from "@/app/models/data/dataStoreMethods";
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { AllTypes } from "@/app/typings/PropTypes";
 
 // File interface representing a file
@@ -19,7 +18,7 @@ interface CustomFile<
   uploader: string;                     // The username or ID of the user who uploaded the file
   uploadDate: Date;                     // The date and time when the file was uploaded
   description?: string;                 // Optional description of the file
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;                       // Optional tags associated with the file
+  tags?: string[] | TagsRecord<T> | undefined;                       // Optional tags associated with the file
   downloadCount: number;                // The number of times the file has been downloaded
   visibility: AllTypes
     accessControl?: {                   // Access control settings for the file

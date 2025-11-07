@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Switch } from 'antd'; // Assuming the use of Ant Design for UI components
-import RootLayout from '@/app/RootLayout';
 import featureStore from '@/app/components/state/featureStateManagement';
 
 const FeatureTogglePage: React.FC = () => {
@@ -24,8 +23,6 @@ const FeatureTogglePage: React.FC = () => {
 
 
   return (
-    <RootLayout>
-
     <div>
       <h2>Feature Toggle</h2>
       <div>
@@ -33,7 +30,6 @@ const FeatureTogglePage: React.FC = () => {
         <Switch checked={featureEnabled} onChange={handleFeatureToggle} />
       </div>
     </div>
-    </RootLayout>
   );
 };
 

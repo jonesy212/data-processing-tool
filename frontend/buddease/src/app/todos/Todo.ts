@@ -18,7 +18,7 @@ import { Progress } from '@/app/models/tracker/ProgressBar';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection'
 import { SnapshotItem } from '@/app/snapshots/SnapshotList'
@@ -106,7 +106,7 @@ export interface Todo<
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
+  tags?: string[] | TagsRecord<T> | undefined; 
   parentTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   ideas?: Idea[] 
   videoUrl?: string
@@ -264,7 +264,7 @@ class TodoImpl<
   previouslyAssignedTo: string = "";
 
   ideas: Idea[] = [];
-  tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {}
+  tags: TagsRecord<T> = {}
   phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   then: (callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void = () => { };
   analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
@@ -479,7 +479,7 @@ class TodoImpl<
       snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStoreConfigSearch: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      snapshotStoreConfigSearch: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category?: Category
     ): void {
       throw new Error("Function not implemented.");
@@ -699,7 +699,7 @@ class TodoImpl<
       dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-      store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+      store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
       ): void | null {
       throw new Error("Function not implemented.");
@@ -742,7 +742,7 @@ class TodoImpl<
       callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null, 
       snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined, 
       category?: string | Category,
-       categoryProperties?: CategoryProperties;
+       categoryProperties?: CategoryProperties
     ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
       
   // Example logic to modify existing snapshots

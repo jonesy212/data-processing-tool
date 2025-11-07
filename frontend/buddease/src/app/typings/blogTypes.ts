@@ -2,6 +2,9 @@
 import { Content } from '@/app/models/content/AddContent';
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface BlogData<
   T extends BaseDataEntity,

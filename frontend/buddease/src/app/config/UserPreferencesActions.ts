@@ -1,6 +1,9 @@
 // generators/UserPreferencesActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { Audio } from "openai/resources/index.mjs";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Communication Preferences
 export const UserCommunicationPreferencesActions = {
@@ -512,6 +515,8 @@ export const AppDevelopmentActions: AppDevelopmentActionsType<any> = {
   updatePhaseStatus: createAction<"pending" | "inProgress" | "completed">("updatePhaseStatus"),
   updatePhaseName: createAction<string>("updatePhaseName"),
 };
+
+
  UserProfilePreferencesActions.setContactPreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setAddressPreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setSocialMediaPreferences>;

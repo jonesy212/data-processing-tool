@@ -6,13 +6,16 @@ import { logData } from '@/app/services/NotificationService';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes'
+
 import { useMeta } from '@/app/config/useMeta';
-import { NotificationData } from '@/NofiticationsSlice';
+import { NotificationData } from '@/app/hooks/useNotificationSystem'
 import { title } from 'process';
 import React, { createContext, useState } from 'react';
-
+import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields
+} from '@/app/typings/entities/NotificationEntity'
 export const notificationStore = notificationStoreInstance
-export const notificationData: NotificationData<T, K, Meta<T, K>>[] = [];
+export const notificationData: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields>[] = [];
 
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
@@ -34,16 +37,20 @@ interface NotificationProviderProps {
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = <
-  T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T
+  T extends BaseDataEntity = NotificationEntity,
+  K extends T = NotificationK,
+  Meta extends DefaultMeta<T, K> = NotificationMeta,
+  AttachmentType extends Attachment = NotificationAttachment,
+  ExcludedFields extends keyof T = NotificationExcludedFields,
+  IncludedFields extends keyof T = NotificationIncludedFields
 >({
   children
 }: { children: React.ReactNode }) => {
   const area = 'notificationProvider'
-  const [notifications, setNotifications] = useState <NotificationData<T, K, Meta<T,K>>[]>([]);
+  const [notifications, setNotifications] = useState <NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields>[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
 
-  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)?? {
+  const currentMeta: StructuredMetadata<NotificationEntity, NotificationK, NotificationMeta> = useMeta<T, K>(area)?? {
     metadataEntries: {}, // Provide default or fallback values
     keywords: [],
     version: '1.0.0',

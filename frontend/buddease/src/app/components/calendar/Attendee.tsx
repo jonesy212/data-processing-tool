@@ -1,18 +1,24 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { CalendarManagerState } from "@/app/components/calendar/CalendarSlice";
-import { Team } from "@/app/components/models/teams/Team";
-import { VideoData } from "@/app/components/video/Video";
-import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
+import { Team } from '@/app/components/teams/Team'
+import { VideoData } from '@/app/typings/videoTypes/Video';
+import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { K, T } from '@/components/models/data/dataStoreMethods';
-import { projectMetadata, transformProjectToUnifiedMetadata } from "@/app/config/StructuredMetadata";
-import { useState } from "react";
-import useAttendancePrediction from "./AttendancePrediction";
-
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import { projectMetadata } from '@/app/config/StructuredMetadata';
+import {  transformProjectToUnifiedMetadata } from '@/app/config/MetaDataOptions'
+import { useState } from 'react';
+import useAttendancePrediction from './AttendancePrediction';
+import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
+import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
+import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity'
 
 interface Attendee {
   id: string;
@@ -96,9 +102,16 @@ interface ExtendedAttendeeAvailability extends AttendeeAvailabilityAnalysis {
   suggestedTimeOffRequestsRequestedDates: Date[];
 }
 
-const useAttendeeAvailabilityAnalysis = (
-  event: CalendarEvent
-): ExtendedAttendeeAvailability & { event: CalendarEvent | null; analyze: () => void } => {
+const useAttendeeAvailabilityAnalysis = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>(
+  event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): ExtendedAttendeeAvailability & { event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; analyze: () => void } => {
   const [analysis, setAnalysis] = useState<ExtendedAttendeeAvailability>({
     eventId: event.id,
     confidenceScore: 0,
@@ -164,23 +177,16 @@ const useAttendeeAvailabilityAnalysis = (
   };
 };
 
-export { useAttendeeAvailabilityAnalysis };
-export type {
-  Attendee,
-  AttendeeAvailability, AttendeeAvailabilityPrediction,
-  AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
-  ExtendedAttendeeAvailability
-};
-
-const event: CalendarEvent = {
+const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> = {
   id: "1",
   title: "New Event",
   date: new Date(),
   startDate: new Date(),
   endDate: new Date(),
-  metadata: transformProjectToUnifiedMetadata(projectMetadata), // Transform ProjectMetadata to StructuredMetadata
+  timestamp: new Date(),
+  metadata: transformProjectToUnifiedMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>(projectMetadata), // Transform ProjectMetadata to StructuredMetadata
   rsvpStatus: "notResponded",
-  host: {} as Member,
+  host: {} as Member<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>,
   color: "",
   isImportant: false,
   teamMemberId: "0",
@@ -195,7 +201,7 @@ const event: CalendarEvent = {
   participants: [],
   analysisType: {} as AnalysisTypeEnum,
   analysisResults: [],
-  videoData: {} as VideoData<Data<T>, K>,
+  videoData: {} as VideoData<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>,
   content: "Event content",
   topics: [],
   highlights: [],
@@ -203,7 +209,8 @@ const event: CalendarEvent = {
   options: getDefaultDocumentOptions(),
   attendees: [],
   location: "Event location",
-  getData: () => Promise.resolve({}) as Promise<Snapshot<BaseData, BaseData<any, any, any>>>,
+  getData: () => Promise.resolve({}) as Promise<Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>>,
+
 };
 
 const calendarManagerState: CalendarManagerState = {
@@ -281,6 +288,12 @@ const calendarManagerState: CalendarManagerState = {
   },};
 
 export default calendarManagerState;
-export { event };
-export type { Attendee, AttendeeAvailabilityAnalysis };
 
+export { event,  };
+
+export type {
+  Attendee, AttendeeAvailabilityAnalysis,
+  AttendeeAvailability, AttendeeAvailabilityPrediction,
+  AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
+  ExtendedAttendeeAvailability
+};

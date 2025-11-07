@@ -23,7 +23,6 @@ import {
 } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { SnapshotContainer } from '@/app/snapshots';
@@ -33,6 +32,7 @@ import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { SubscriptionLevel, subscriptionLevels } from '@/app/subscriptions/SubscriptionLevel';
@@ -135,7 +135,7 @@ interface SnapshotConfig<
   snapshotCriteria?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   criteria: CriteriaType;
   priority?: string;
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   storeConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -188,7 +188,7 @@ function createSnapshotConfig<
   version?: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   additionalData?: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Define types as needed
-  initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Define types as needed
+  initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Define types as needed
 
   onError?: (error: Error) => void,
   taskIdToAssign?: string,

@@ -31,7 +31,8 @@ interface Course <
 }
 
 
-type AdaptedPhaseData = PhaseData & BaseData<any, any>;
+type AdaptedPhaseData = PhaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+& BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 // Class generator to create course structure
@@ -52,7 +53,7 @@ class CourseBuilder {
     }
   
   addPhase<
-    T extends PhaseData<BaseData<any, any, StructuredMetadata<any, any>>>,
+    T extends PhaseData<BaseData<any, any, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     K extends T = T,
     Meta extends PhaseMeta = PhaseMeta
   >(
@@ -78,7 +79,7 @@ class CourseBuilder {
 
 
     // Dynamically set the FetchOptions using properties from the `area` object
-    const options: FetchOptions = {
+    const options: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       elementId: area.id, // Use `area.id` as the `elementId`
       listenForResize: true, // Set to true to listen for resize
       onChange: (dimensions) => {

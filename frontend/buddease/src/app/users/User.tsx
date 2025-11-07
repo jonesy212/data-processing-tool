@@ -1,25 +1,26 @@
 // User.tsx
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
-import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { Data } from '@/app/models/data/Data';
-import { SecuritySettings } from "@/app/settings/SecuritySettings";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
-import { UserProfileDetails } from '@/app/typings/userTypes';
 import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata
+    fetchUserAreaDimensions
 } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { UserPreferences } from "@/app/config/UserPreferences";
 import { UserSettings } from "@/app/config/UserSettings";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { Data } from '@/app/models/data/Data';
+import { SecuritySettings } from "@/app/settings/SecuritySettings";
+import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { UserProfileDetails } from '@/app/typings/userTypes';
 
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
@@ -32,7 +33,6 @@ import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, Cale
 import { Project } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
@@ -46,13 +46,12 @@ import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
-  CustomTransaction,
-  SmartContractInteraction,
+    CustomTransaction,
+    SmartContractInteraction,
 } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SharedVersionData } from "@/app/versions/VersionData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import React from "react";
 
 import { UserRole } from "@/app/models/UserRole";
@@ -75,7 +74,7 @@ export interface BaseUser<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // Use T and K, not BaseDataEntity
+    SharedIdentifiers<T, K>,  // Use T and K, not BaseDataEntity
     SharedTimestamps,
     SharedStatusFlags {
   // Base properties that all users share
@@ -132,7 +131,7 @@ export interface User<
   username: string;
   email: string;
   tier: string;
-  role?: UserRole;
+  role?: string | UserRole;
   
   // Account Status
   isAuthorized: boolean;
@@ -313,7 +312,7 @@ export interface UserData<
   
   // Relationships & Content
   socialAccounts?: SocialAccount[];
-  teams?: string[] | Team[];
+  teams?: string[] | Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   teamMembers?: TeamMember[];
   projects?: string[] | Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tasks?: any[] | Task<T, K, Meta>[];
@@ -410,7 +409,7 @@ export interface DocumentNode {
 }
 
 // Example usage:
-const userData: UserData = {
+const userData: UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
   id: 1,
   storeId: 0,
   username: "username",
@@ -486,7 +485,7 @@ const handleDocumentEncryption = (document: DocumentTree) => {
 };
 
 // using common details we generate details for components by mapping through the objects.
-const UserDetails: React.FC<{ user: User }> = ({ user }) => {
+const UserDetails: React.FC<{ user: User<serEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }> = ({ user }) => {
   const { id, analysisResults, snapshots, label, ...rest } = user;
   // Assuming you have an array that might contain undefined
   const potentialTags: (string | undefined)[] = ['tag1', undefined, 'tag2', 'tag3', undefined];

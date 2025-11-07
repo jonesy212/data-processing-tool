@@ -4,8 +4,9 @@ import { WritableDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
 
 // Import your AppTask / TaskCollection types (6-param)
-import { AppTask, TaskCollection } from "@/app/tasks/TaskEntity";
+import { AppTask, TaskCollection } from "@/app/typings/entities/TaskEntity";
 import { FilteredEventsState } from "@/app/state/stores/FilterStore";
+import { UserManagerState } from "@/app/state/redux/slices//UserSlice";
 
 /** Task payloads */
 type NewTaskPayload = Partial<AppTask> & { title: string };
@@ -17,7 +18,51 @@ interface TaskManagerState {
 }
 
 export interface RootState {
-  taskManager: TaskManagerState;
+  // User & UI
+  user: UserManagerState
+  // Video & UI Management
+  videoState: VideoState;
+  toolbarManager: ToolbarState;
+  selectedToolBar: AlignmentOptions | null;
+  uiManager: UIState;
+
+  // Project Management
+  projectManager: ProjectState;
+  taskManager: TaskState;
+  trackerManager: TrackerManagerState;
+  userManager: UserManagerState;
+  teamManager: TrackerManagerState;
+  projectOwner: ProjectOwnerState;
+
+  // Data Management
+  dataManager: DataSliceState;
+  dataAnalysisManager: DataAnalysisState;
+  calendarManager: CalendarManagerState;
+  todoManager: TodoManagerState;
+  documentManager: DocumentSliceState<DocumentEntity, DocumentK, DocumentMeta>;
+
+  // API & Networking
+  apiManager: ApiManagerState;
+  realtimeManager: RealtimeDataState;
+
+  // Event & Collaboration
+  eventManager: EventState;
+  collaborationManager: CollaborationState<UserProfile<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, ProjectData>;
+
+  // Entity & Notification
+  entityManager: EntityState<any, EntityId>;
+  notificationManager: NotificationState;
+
+  // Settings & Utilities
+  settingsManager: SettingsState;
+  videoManager: VideoState;
+  randomWalkManager: RandomWalkState;
+  pagingManager: PagingState;
+  blogManager: BlogState;
+  drawingManager: DrawingState<DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields>;
+  versionManager: VersionState;
+
+  // Existing properties
   filterManager: FilteredEventsState;
 }
 
@@ -33,7 +78,7 @@ export const updateTaskAction = createAction<UpdateTaskPayload>("taskManager/upd
 export const reorderTaskAction = createAction<ReorderPayload>("taskManager/reorderTaskAction");
 export const clearTasks = createAction("taskManager/clearTasks");
 
-const taskManagerSlice = createSlice({
+const rootSlice = createSlice({
   name: "taskManager",
   initialState,
   reducers: {
@@ -63,6 +108,10 @@ const taskManagerSlice = createSlice({
         then: (cb: (t: AppTask) => void) => { cb(newTask); return newTask as any; },
         previouslyAssignedTo: action.payload.previouslyAssignedTo ?? [],
         done: action.payload.done ?? false,
+
+
+
+         assigneeId, data, progress, getData,
         // Add any other AppTask fields your TaskEntity defines...
       } as AppTask;
       state.tasks.unshift(newTask);
@@ -94,16 +143,16 @@ const taskManagerSlice = createSlice({
     });
     builder.addCase(addTaskAction, (state, action) => {
       // reuse local add
-      taskManagerSlice.caseReducers.addTaskLocal(state, action as any);
+      rootSlice.caseReducers.addTaskLocal(state, action as any);
     });
     builder.addCase(deleteTaskAction, (state, action) => {
-      taskManagerSlice.caseReducers.deleteTaskLocal(state, action as any);
+      rootSlice.caseReducers.deleteTaskLocal(state, action as any);
     });
     builder.addCase(updateTaskAction, (state, action) => {
-      taskManagerSlice.caseReducers.updateTaskLocal(state, action as any);
+      rootSlice.caseReducers.updateTaskLocal(state, action as any);
     });
     builder.addCase(reorderTaskAction, (state, action) => {
-      taskManagerSlice.caseReducers.reorderTaskLocal(state, action as any);
+      rootSlice.caseReducers.reorderTaskLocal(state, action as any);
     });
     builder.addCase(clearTasks, (state) => {
       state.tasks = [];
@@ -118,6 +167,6 @@ export const {
   updateTaskLocal,
   reorderTaskLocal,
   clearTasksLocal,
-} = taskManagerSlice.actions;
+} = rootSlice.actions;
 
-export default taskManagerSlice.reducer;
+export default rootSlice.reducer;

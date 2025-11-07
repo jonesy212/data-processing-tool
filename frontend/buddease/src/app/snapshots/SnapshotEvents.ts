@@ -9,7 +9,7 @@ import { BaseSnapshotEventHandlers, SnapshotEvents } from '@/app/typings/snapsho
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { EventRecord } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';

@@ -1,36 +1,34 @@
 // RootStores.ts
-import { UndoRedoStore } from '@/app/state/stores/UndoRedoStore'
-import { SettingsStore } from '@/app/state/stores/SettingsStore'
-import { NotificationStore } from '@/app/state/stores/NotificationStore'
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { EventStore } from '@/app/events/EventStore';
 import useUIStore from '@/app/libraries/ui/useUIStore';
 import { RealTimeDataStore } from '@/app/models/realtime/RealTimeDataStore';
-import { DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
+import { CalendarActionPayload, CalendarActionType } from '@/app/server/database/CalendarActionPayload';
 import { AppStore } from '@/app/state/stores/AppStore';
 import { AuthorizationStore, useAuthorizationStore } from '@/app/state/stores/AuthorizationStore';
+import { AuthStore, useAuthStore } from '@/app/state/stores/AuthStore';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
+import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
 import { CollaborationStore, useCollaborationStore } from '@/app/state/stores/CollaborationStore';
+import { DataStore, useDataStore } from '@/app/state/stores/DataStore';
 import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStore';
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
-import NotificationStore from '@/app/state/stores/NotificationStore';
+import { NotificationStore } from '@/app/state/stores/NotificationStore';
 import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
-import { SettingManagerStore } from '@/app/state/stores/SettingsStore';
+import { SettingManagerStore, SettingsStore } from '@/app/state/stores/SettingsStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from '@/app/state/stores/TodoStore';
 import { ToolbarStore, useToolbarStore } from '@/app/state/stores/ToolbarStore';
 import useTrackerStore, { TrackerStore } from '@/app/state/stores/TrackerStore';
 import UIStore from '@/app/state/stores/UIStore';
+import { UndoRedoStore } from '@/app/state/stores/UndoRedoStore';
 import { UserStore, userManagerStore } from '@/app/state/stores/UserStore';
 import useVideoStore, { VideoStore } from '@/app/state/stores/VideoStore';
-import { CalendarActionPayload, CalendarActionType } from '@/app/server/database/CalendarActionPayload';
-import { AuthStore, useAuthStore } from '@/app/state/stores/AuthStore';
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
- import { Attachment } from '@/app/documents/attachment/Attachment';
- import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
  
 export interface Dispatchable {
   dispatch(action: any): void;

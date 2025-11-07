@@ -15,6 +15,7 @@ export interface IDatabaseService {
 export enum DatabaseType {
   POSTGRES = 'postgres',
   MYSQL = 'mysql',
+  FLUENCE = 'fluence',
   // MONGODB = 'mongodb'
   // etc...
 }

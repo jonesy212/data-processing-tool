@@ -1,26 +1,25 @@
-import DocumentPermissions from "@/app/documents/DocumentPermissions";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from '@/app/models/data/Data';
-import { K, T } from "@/app/models/data/dataStoreMethods";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
+import DocumentPermissions from "@/app/documents/DocumentPermissions";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Data } from '@/app/models/data/Data';
+import { TagsRecord } from '@/app/models/tracker/Tag';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { backendStructure } from '@/app/server/database/BackendStructure';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/VersionEntity';
+import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, default as VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
-import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from '@/app/typings/entities/DataEntity'
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/VersionEntity'
 
 // Default reusable data
 const defaultData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields> = {
@@ -39,10 +38,10 @@ const createVersionInfo = (
 
   const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-  const currentMeta: StructuredMetadata<<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = useMeta<T, K>(area)
+  const currentMeta: StructuredMetadata<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = useMeta<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(area)
   
     // If the versionData is a string, construct a default versionInfo object
-  const defaultVersionInfo: Version<any, any> = {
+  const defaultVersionInfo: Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
     id: 0,
 
     major: 0,
@@ -78,11 +77,11 @@ const createVersionInfo = (
       currentMeta: currentMeta,
       metadataEntries: {},
       timestamp: new Date(),
-      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+      latestVersion: createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(),
       schema: {}
     },
     versions: null,
-    versionHistory: {} as VersionHistory, // Default empty history
+    versionHistory: {} as VersionHistory<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>, // Default empty history
     userId: 'system',
     documentId: '',
     parentId: null,
@@ -115,7 +114,7 @@ const createVersionInfo = (
     isArchived: false,
     archivedBy: '',
     archivedAt: null,
-    tags: {} as TagsRecord, // Default empty tags
+    tags: {} as TagsRecord<VersionEntity>, // Default empty tags
     categories: [],
     permissions: {} as DocumentPermissions, // Default permissions
     collaborators: [], // Default collaborators
@@ -178,22 +177,29 @@ const createVersionInfo = (
   return new VersionImpl(defaultVersionInfo); // Return with defaults if only version string is provided
 };
 
-// Update handleSnapshot function
-export const handleSnapshot = (
+// Much cleaner function signature
+export const handleSnapshot = <
+  T extends BaseDataEntity = SnapshotEntity,
+  K extends T = SnapshotK,
+  Meta extends DefaultMeta<T, K> = SnapshotMeta,
+  AttachmentType extends Attachment = SnapshotAttachment,
+  ExcludedFields extends keyof T = SnapshotExcludedFields,
+  IncludedFields extends keyof T = SnapshotIncludedFields
+>(
   id: string,
   snapshotId: string,
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotData: SnapshotData<T, >,
+  snapshot: DefaultSnapshotTypes['Snapshot'],
+  snapshotData: DefaultSnapshotTypes['SnapshotData'],
   category?: Category,
-  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-  snapshots: SnapshotsArray<any, any>,
+  callback: (snapshot: DefaultSnapshotTypes['Snapshot']) => void,
+  snapshots: DefaultSnapshotTypes['SnapshotsArray'],
   type: string,
   event: Event,
-  storeProps: SnapshotStoreProps<T, K>,
-  snapshotContainer?: SnapshotContainer<T, K>,
-  snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
-): Promise<Snapshot<Data, BaseData> | null> => {
-
+  storeProps: DefaultSnapshotTypes['SnapshotStoreProps'],
+  snapshotContainer?: DefaultSnapshotTypes['SnapshotContainer'],
+  snapshotStoreConfig?: DefaultSnapshotTypes['SnapshotStoreConfig']
+): Promise<DefaultSnapshotTypes['Snapshot'] | null> => {
+  // Implementation remains the same but much more maintainable
   const {
     storeId,
     name,
@@ -213,7 +219,7 @@ export const handleSnapshot = (
       callback(snapshot);
     }
 
-    let snapshotStore: SnapshotStore<Data, BaseData>;
+    let snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
 
     if (snapshotContainer) {
       // Convert the SnapshotContainer to SnapshotStore using the conversion function
@@ -223,7 +229,7 @@ export const handleSnapshot = (
       const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
 
       // Create a new SnapshotStore with provided configuration
-      snapshotStore = new SnapshotStore<Data, BaseData>({
+      snapshotStore = new SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>({
         storeId,
         name,
         version,
@@ -238,11 +244,11 @@ export const handleSnapshot = (
       });
     } else {
       // Fallback to a default or empty instance
-      snapshotStore = {} as SnapshotStore<Data, BaseData>;
+      snapshotStore = {} as SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
     }
 
     // Create an object that conforms to the Snapshot interface
-    const processedSnapshot: Snapshot<Data, BaseData> = {
+    const processedSnapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
       id,
       category: category ?? undefined,
       timestamp: new Date(),
@@ -253,7 +259,7 @@ export const handleSnapshot = (
       initialConfig: {}, // Populate based on your actual logic
       removeSubscriber: () => {}, // Provide an appropriate method if needed
       onInitialize: (callback: () => void) => {}, 
-      onError: "", 
+      onError: (error: Error) => {}, 
       taskIdToAssign: "", 
       schema: "", 
     };

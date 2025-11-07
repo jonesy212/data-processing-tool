@@ -1,7 +1,8 @@
 import { useDynamicComponents } from "@/app/DynamicComponentsContext";
 import DynamicNamingConventions from "@/app/DynamicNamingConventions";
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
-import SecureFieldManager from '@/app/server/security/SecureFieldManager';
+import { AppConfig } from "@/app/config/AppConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useFeatureContext } from "@/app/context/FeatureContext";
 import YourComponent, { YourComponentProps } from "@/app/hooks/YourComponent";
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
@@ -11,13 +12,15 @@ import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
-import { K, T } from "@/app/models/data/dataStoreMethods";
+import SecureFieldManager from '@/app/server/security/SecureFieldManager';
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { User } from "@/app/users/User";
-import { AppConfig } from "@/app/config/AppConfig";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+import ApiConfig from '@/app/api/ApiConfig';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
-import { ApiConfig } from "@/app/services/ConfigurationService";
+
 import NotificationManager from '@/app/features/support/NotificationManager';
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";

@@ -5,7 +5,7 @@ import { User } from '@/app/users/User';
 export const UserRoleActions = {
   
   assignUserRole: createAction<{ userId: number, roleId: number }>("assignUserRole"),
-  assignUserRoleSuccess: createAction<{ user: User }>("assignUserRoleSuccess"),
+  assignUserRoleSuccess: createAction<{ user: User<any, any, any, any, any, any> }>("assignUserRoleSuccess"),
   assignUserRoleFailure: createAction<{ userId: number, role: number, error: string }>("assignUserRoleFailure"),
   
   fetchUserRolesRequest: createAction("fetchUserRolesRequest"),
@@ -27,7 +27,7 @@ export const UserRoleActions = {
   
   // New batch actions
   updateUserRoles: createAction<{userId: number, role: string}>("updateUserRole"),
-  updateUserRolesSuccess: createAction<{ users: User[] }>("updateUserRolesSuccess"),
+  updateUserRolesSuccess: createAction<{ users: User<any, any, any, any, any, any>[] }>("updateUserRolesSuccess"),
   updateUserRolesFailure: createAction<{ error: string }>("updateUserRoleFailure"),
   
   batchCreateUserRolesRequest: createAction<any[]>("batchCreateUserRolesRequest"),

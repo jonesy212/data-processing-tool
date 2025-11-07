@@ -3,18 +3,21 @@ import {
   useNotification,
 } from "@/app/context/NotificationContext";
 //UserStore.ts
-import { getTasksByUserId } from "@/app/api/TasksApi";
-import { AssignBaseStore, useAssignBaseStore } from "@/app/AssignBaseStore";
+import getTasksByUserIdAPI from "@/app/api/TasksApi";
+import { AssignBaseStore, useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
 import CalendarEventTimingOptimization, {
   ExtendedCalendarEvent,
 } from "@/app/calendar/CalendarEventTimingOptimization";
-import { sanitizeData } from "@/app/components/crypto/SanitizationFunctions";
+import { sanitizeData } from "@/app/models/crypto/SanitizationFunctions";
 import { BaseCustomEvent } from "@/app/events/BaseCustomEvent";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
-import { Task, tasksDataSource } from "@/app/models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
+import { tasksDataSource } from "@/app/models/tasks/TaskDataSource";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useAuth } from "@/context/AuthContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
@@ -56,18 +59,26 @@ const eventSubset = { ...useAssignEventStore() } as EventStoreSubset;
 // Define the necessary types and interfaces
 type UserStoreSubset = Pick<AssignBaseStore, "snapshotStore" | "events">;
 
-export interface UserStore
-  extends AssignEventStore,
+export interface UserStore<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  extends AssignEventStore,
     AssignBaseStore,
     UserStoreSubset {
   // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
   // Add additional properties specific to UserStore if needed
-  users: Record<string, User[]>;
-  currentUser: User | null;
+  users: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  currentUser: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   authStore: ReturnType<typeof useAuth>;
-  // setAssignedTaskStore: (task: Task, user: User) => void;
-  updateUserState: (newUsers: Record<string, User[]>) => void;
-  assignTask: (task: Task, user: User) => void;
+  // setAssignedTaskStore: (task: Task, user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  updateUserState: (newUsers: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
+  assignTask: (
+    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   assignFileToTeam: Record<string, string[]>; // Add this property
   assignContactToTeam: Record<string, string[]>; // Add this property
   assignEventToTeam: Record<string, string[]>; // Add this property
@@ -78,8 +89,8 @@ export interface UserStore
   >;
   // Other properties and methods...
   reassignUser: Record<string, ReassignEventResponse[]>;
-  batchFetchUserSnapshotsSuccess: (userId: Record<string, User[]>) => void;
-  batchFetchUserSnapshotsRequest: (userId: Record<string, User[]>) => void;
+  batchFetchUserSnapshotsSuccess: (userId: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
+  batchFetchUserSnapshotsRequest: (userId: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   batchFetchUndoRedoSnapshotsRequest: (userId: string) => void;
   fetchUsersByTaskId: (userId: string) => Promise<string>;
    setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
@@ -88,7 +99,7 @@ export interface UserStore
 const userManagerStore = (): UserStore => {
   const { notify } = useNotification();
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
-  const [users, setUsers] = useState<Record<string, User[]>>({
+  const [users, setUsers] = useState<Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>({
     // Initialize with the required structure
   });
 
@@ -98,13 +109,15 @@ const userManagerStore = (): UserStore => {
   } = useAuth();
 
   // Sanitize input before updating user state
-  const updateUserState = (newUsers: Record<string, User[]>) => {
+  const updateUserState = (newUsers: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
     // Sanitize the data before updating
     const sanitizedUsers = sanitizeData(JSON.stringify(newUsers)); // Sanitize the data and convert it back to JSON
     setUsers(JSON.parse(sanitizedUsers)); // Convert the sanitized data back to its original format and set the state
   };
 
-  const assignTask = (task: Task, user: User) => {
+  const assignTask = (
+    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Assign task to user
     eventSubset.assignEvent(task.eventId, user); // Changed user._id to user
 
@@ -127,11 +140,11 @@ const userManagerStore = (): UserStore => {
   };
 
   // Function to fetch a task by its ID
-  const getUserById = (taskId: string): Promise<Task | null> => {
-    return new Promise<Task | null>(async (resolve, reject) => {
+  const getUserById = (taskId: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
+    return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(async (resolve, reject) => {
       try {
         setTimeout(() => {
-          const task: Task | undefined = tasksDataSource[taskId];
+          const task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = tasksDataSource[taskId];
 
           if (task) {
             resolve(task);
@@ -160,13 +173,13 @@ const userManagerStore = (): UserStore => {
   };
 
   // Define type guards for User and Task
-  function isUser(data: any): data is User {
+  function isUser(data: any): data is User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return (
       data && typeof data === "object" && "id" in data && "username" in data
     );
   }
 
-  function isTask(data: any): data is Task {
+  function isTask(data: any): data is Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return (
       data && typeof data === "object" && "taskId" in data && "taskName" in data
     );
@@ -188,8 +201,8 @@ const userManagerStore = (): UserStore => {
       if (result) {
         // Check and handle as User type
         if (isUser(result)) {
-          const user = result as User;
-          const tasks: Task[] = await getTasksByUserId(Number(userId));
+          const user = result as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+          const tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = await getTasksByUserId(Number(userId));
 
           // Update state or perform other operations specific to User
           setUsers((prevUsers) => ({
@@ -303,11 +316,13 @@ const userManagerStore = (): UserStore => {
         suggestedStartTime: extendedEvent.startTime,
         suggestedEndTime: extendedEvent.endTime,
         suggestedDuration: extendedEvent.duration,
-        suggestedDay: null,
-        suggestedWeeks: null,
-        suggestedMonths: null,
-        suggestedSeasons: null,
+        suggestedDay: extendedEvent.suggestedDay || null,        // Fallback to null
+        suggestedWeeks: extendedEvent.suggestedWeeks || null,    // Fallback to null
+        suggestedMonths: extendedEvent.suggestedMonths || null,  // Fallback to null
+        suggestedSeasons: extendedEvent.suggestedSeasons || null, // Fallback to null
         assignedTo: extendedEvent.assignedTo,
+        events: extendedEvent.events,
+        optimizeTiming: extendedEvent.optimizeTiming
         // Map other properties as necessary
       };
     }
@@ -315,12 +330,13 @@ const userManagerStore = (): UserStore => {
     reassignUsersToEvents([user], convertedNewUser, eventOrTodo);
   };
   const { reassignUsersToEvents } = eventSubset;
+
   const userStore = makeAutoObservable({
-    // User-related properties and methods
+    // User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>-related properties and methods
     users,
     currentUser,
 
-    authStore: useAssignEventStore().authStore,
+    authStore: useAuth(),
     updateUserState,
     assignTask,
     assignUser,

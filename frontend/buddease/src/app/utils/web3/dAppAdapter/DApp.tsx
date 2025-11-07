@@ -2,6 +2,7 @@
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
 import LoadAquaState from "@/app/dashboards/LoadAquaState";
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -17,20 +18,21 @@ import { BaseData, CommonRelationship, SharedRelationshipData } from '@/app/mode
 import { DocumentSize } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
 import FluencePlugin from "@/app/pluginSystem/plugins/fluencePlugin";
+import { authToken } from "@/app/server/auth/authToken";
+import Connection from "@/app/server/database/Connection";
+import isValidAuthToken from "@/app/server/security/AuthValidation";
 import { DatabaseType } from '@/app/typings/database';
 import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { UserData } from "@/app/users/User";
 import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import YourClass from "@/app/utils/YourClass";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { authToken } from "@/app/server/auth/authToken";
-import Connection from "@/app/server/database/Connection";
-import isValidAuthToken from "@/app/server/security/AuthValidation";
 import React, { FC } from "react";
 import winston from "winston";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
-import { manageDocuments } from "./functionality/DocumentManagement";
+import { manageDocuments } from "@/app/documents/DocumentManagement";
+import { ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields } from '@/app/typngs/entities/ExtendedDappEntity'
+
 
 export type CustomDocumentOptionProps<
   T extends BaseDataEntity = AppEntity,
@@ -42,27 +44,13 @@ export type CustomDocumentOptionProps<
 > = DocumentOptions & DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 interface CustomApp<
-  T extends BaseData<
-    AppEntity,
-    AppEntity,
-    DefaultMeta<AppEntity, AppEntity>,
-    Attachment,
-    DefaultExcludedFields<AppEntity>,
-    DefaultIncludedFields<AppEntity>
-  > = BaseData<
-    AppEntity,
-    AppEntity,
-    DefaultMeta<AppEntity, AppEntity>,
-    Attachment,
-    DefaultExcludedFields<AppEntity>,
-    DefaultIncludedFields<AppEntity>
-  >,
+ T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = DefaultIncludedFields<T>
-> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends CommonRelationship<T, K>, SharedIdentifiers<T, K> {
     id: string;
     name: string;    
     username: string;
@@ -77,6 +65,15 @@ interface CustomApp<
 
 const { handleError } = useErrorHandling()
 
+type CustomDAppAdapterConfig<
+  T extends BaseDataEntity,
+  K extends T,
+  Meta extends DefaultMeta<T, K>,
+  AttachmentType extends Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T =  DefaultIncludedFields<T>
+> = DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
 
 class CustomDAppAdapter<
   T extends BaseDataEntity = BaseDataEntity,
@@ -88,13 +85,13 @@ class CustomDAppAdapter<
   DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > extends YourClass {
   private adapter: FC<DAppAdapterProps>;
-  private config: DAppAdapterConfig<DAppPropsType>;
+  private config: DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   private database = new FluenceConnection();
   private databaseConnections: Map<DatabaseType, any>;
   private _appData?: CustomApp;
   private _apiKey?: string;
 
-  constructor(config: DAppAdapterConfig<DAppPropsType>) {
+  constructor(config: CustomDAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     super();
     this.config = config;
     this.databaseConnections = new Map();
@@ -156,9 +153,9 @@ class CustomDAppAdapter<
   private initDatabaseConnections(): void {
     // Initialize connections to different databases
     this.databaseConnections = new Map<DatabaseType, any>();
-    this.databaseConnections.set('fluence', new FluenceConnection());
-    this.databaseConnections.set('postgres', new Connection(this.config.postgresConfig!)); // Example, adjust as needed
-    // Add other database connections as required
+    this.databaseConnections.set(DatabaseType.FLUENCE, new FluenceConnection());
+    this.databaseConnections.set(DatabaseType.POSTGRES, new Connection(this.config.postgresConfig!));
+  // Add other database connections as required
   }  
 
   private getDatabaseConnection(databaseType: DatabaseType): any {
@@ -169,30 +166,40 @@ class CustomDAppAdapter<
     throw new Error(`Database type '${databaseType}' not supported.`);
   }
 
-  saveAppDataToDatabase(appData: CustomApp, databaseType: DatabaseType = 'fluence'): CustomDAppAdapter<T> {
+  saveAppDataToDatabase(appData: CustomApp, databaseType: DatabaseType = DatabaseType.FLUENCE): CustomDAppAdapter<T> {
     console.log(`Saving app data to ${databaseType} database:`, appData);
 
     try {
-      const database = this.getDatabaseConnection(databaseType); // Retrieve database connection
+      const database = this.getDatabaseConnection(databaseType);
 
-      // Example: Insert or update app data in the database using the selected connection
-      if (databaseType === 'fluence') {
-        database.connect(); // Ensure connection is established
-        database.sendData(appData); //sending data to Fluence (replace with actual logic)
-        database.disconnect(); // Disconnect after data is sent (optional)
-      } else {
-        // Assuming `database` implements similar connect, query, and end methods like `FluenceConnection` and `Connection`
-        database.connect();
-        database.query('INSERT INTO apps VALUES ($1)', [appData]);
-        database.close();
+      switch (databaseType) {
+        case DatabaseType.FLUENCE:
+          database.connect();
+          database.sendData(appData);
+          database.disconnect();
+          break;
+        
+        case DatabaseType.POSTGRES:
+          database.connect();
+          database.query('INSERT INTO apps VALUES ($1)', [appData]);
+          database.close();
+          break;
+        
+        case DatabaseType.MYSQL:
+          database.connect();
+          database.query('INSERT INTO apps VALUES (?)', [appData]);
+          database.close();
+          break;
+        
+        default:
+          throw new Error(`Unsupported database type: ${databaseType}`);
       }
 
       console.log("App data saved successfully");
-
-      return this; // Return `this` for method chaining
+      return this;
     } catch (error) {
       console.error(`Error saving app data to ${databaseType} database:`, error);
-      throw error; // Optionally handle or propagate the error
+      throw error;
     }
   }
 
@@ -230,7 +237,6 @@ class CustomDAppAdapter<
         );
       }
   
-     
       // Validate authentication token
       const authToken = appData.authToken;
       if (!isValidAuthToken(authToken)) {
@@ -509,14 +515,7 @@ class CustomDAppAdapter<
   }
 
 
-  manageDocuments<
-    T extends BaseDataEntity = BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T,
-  >(newDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
+  manageDocuments(newDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     // Implement your logic here for document management
     console.log("Document management functionality enabled");
 
@@ -699,8 +698,16 @@ if (yourClassInstance.customizeTheme) {
 } else {
   console.error('customizeTheme method not found on yourClassInstance');
 }
+
 // Example usage
-const dappConfig: DAppAdapterConfig<DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+const dappConfig: DAppAdapterConfig<  
+  ExtendedDappEntity,        // T
+  ExtendedDappK,             // K
+  ExtendedDappMeta,          // Meta
+  ExtendedDappAttachment,    // AttachmentType
+  ExtendedDappExcludedFields,// ExcludedFields
+  ExtendedDappIncludedFields // IncludedFields
+> = {
   appName: "Project Management App",
   appVersion: "1.0",
   dappProps: {
@@ -731,7 +738,7 @@ const dappConfig: DAppAdapterConfig<DappProps<T, K, Meta, AttachmentType, Exclud
       gasPrice: 1000000000,
       contractAddress: "0x...",
     },
-    aquaConfig: {} as DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["aquaConfig"],
+    aquaConfig: {} as DappProps<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>["aquaConfig"],
     realtimeCommunicationConfig: {
       audio: true,
       video: true,
@@ -790,9 +797,10 @@ const dappConfig: DAppAdapterConfig<DappProps<T, K, Meta, AttachmentType, Exclud
   },
 };
 
-export { CustomDAppAdapter };
+export { CustomDAppAdapter, CustomDAppAdapterConfig };
 export type { CustomApp };
-const customDapp = new CustomDAppAdapter<DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(dappConfig);
+  
+const customDapp = new CustomDAppAdapter<DappProps<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>>(dappConfig);
 
 // Enable realtime collaboration and chat functionality
 customDapp.enableRealtimeCollaboration().enableChatFunctionality();

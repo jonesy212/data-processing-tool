@@ -1,4 +1,7 @@
 // ApiDatabase.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { NotificationPosition } from "@/app/models/data/StatusType";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
   NotificationTypeEnum,
   useNotification,
@@ -12,31 +15,48 @@ const userApiNotificationMessages = {
   FETCH_USERS_SUCCESS: "Users fetched successfully",
   FETCH_USERS_ERROR: "Failed to fetch users",
   FETCH_USER_ERROR: "Failed to fetch user",
-  FETCH_USER_SUCCESS: "User fetched successfully"
+  FETCH_USER_SUCCESS: "User fetched successfully",
+  CREATE_USER_SUCCESS: "User created successfully",
+  CREATE_USER_ERROR: "Failed to create user"
 };
 
 type UserApiNotificationKeys = keyof typeof userApiNotificationMessages;
+
+// Helper functions for notifications
+const notifySuccess = (id: string, message: string, position: NotificationPosition = NotificationPosition.TopRight) => {
+  useNotification().notify({
+    id,
+    message,
+    type: NotificationTypeEnum.SUCCESS,
+    timestamp: new Date(),
+    position
+  });
+};
+
+const notifyError = (id: string, message: string, position: NotificationPosition = NotificationPosition.TopRight) => {
+  useNotification().notify({
+    id,
+    message,
+    type: NotificationTypeEnum.ERROR,
+    timestamp: new Date(),
+    position
+  });
+};
 
 // Function to handle API errors and notify
 const handleUserApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: UserApiNotificationKeys
+  errorMessageId: UserApiNotificationKeys,
+  position: NotificationPosition = NotificationPosition.TopRight
 ) => {
   handleApiError(error, errorMessage);
   
   if (errorMessageId && userApiNotificationMessages.hasOwnProperty(errorMessageId)) {
     const errorMessageText = userApiNotificationMessages[errorMessageId];
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      null,
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    notifyError(errorMessageId, errorMessageText, position);
   }
 };
-
 
 // Fetch user IDs from the database
 // For INTERNAL database access (your own PostgreSQL)
@@ -46,14 +66,9 @@ const fetchUserIdsFromDatabase = async (taskId: string): Promise<string[]> => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    // Notify success
-    useNotification().notify(
-      "FETCH_USERS_SUCCESS",
-      userApiNotificationMessages.FETCH_USERS_SUCCESS,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    const data = await response.json();
+    
+    notifySuccess("FETCH_USERS_SUCCESS", userApiNotificationMessages.FETCH_USERS_SUCCESS);
     
     return data.userIds || [];
   } catch (error) {
@@ -67,8 +82,14 @@ const fetchUserIdsFromDatabase = async (taskId: string): Promise<string[]> => {
   }
 };
 
-
-const fetchUserFromDatabase = async (userId: string): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
+const fetchUserFromDatabase = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(userId: string): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   try {
     const response = await fetch(`/api/users/${userId}`);
     
@@ -82,14 +103,7 @@ const fetchUserFromDatabase = async (userId: string): Promise<User<T, K, Meta, A
     
     const user = await response.json();
     
-    // Notify success
-    useNotification().notify(
-      "FETCH_USER_SUCCESS",
-      userApiNotificationMessages.FETCH_USER_SUCCESS,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notifySuccess("FETCH_USER_SUCCESS", userApiNotificationMessages.FETCH_USER_SUCCESS);
     
     return user as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   } catch (error) {
@@ -102,8 +116,6 @@ const fetchUserFromDatabase = async (userId: string): Promise<User<T, K, Meta, A
     return null;
   }
 };
-
-
 
 // Add more database operations as needed
 const createUserInDatabase = async <
@@ -127,13 +139,17 @@ const createUserInDatabase = async <
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    return await response.json();
+    const newUser = await response.json();
+    
+    notifySuccess("CREATE_USER_SUCCESS", userApiNotificationMessages.CREATE_USER_SUCCESS);
+    
+    return newUser;
   } catch (error) {
     console.error("Error creating user:", error);
     handleUserApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to create user",
-      "FETCH_USER_ERROR"
+      "CREATE_USER_ERROR"
     );
     throw error;
   }
@@ -141,5 +157,13 @@ const createUserInDatabase = async <
 
 // Exporting the function to use in other parts of the application
 export {
-  createUserInDatabase, fetchUserFromDatabase, fetchUserIdsFromDatabase
+  createUserInDatabase,
+  fetchUserFromDatabase,
+  fetchUserIdsFromDatabase,
+  notifySuccess,
+  notifyError,
+  handleUserApiErrorAndNotify
 };
+
+// Export types for use elsewhere
+export type { UserApiNotificationKeys };

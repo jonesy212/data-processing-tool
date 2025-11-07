@@ -1,6 +1,7 @@
 // SnapshotMethods.ts
 
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -8,10 +9,11 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
+import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import {
@@ -20,29 +22,27 @@ import {
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData, SnapshotHierarchyMethods } from '@/app/snapshots/SnapshotData';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-import { Tag } from '@/app/models/tracker/Tag';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Version } from '@/app/versions/Version';
 import { IHydrateResult } from "mobx-persist";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // 1. COMPARISON METHODS
 interface SnapshotComparisonMethods<
@@ -206,7 +206,7 @@ interface SnapshotFilterMethods<
 
   filterSnapshotsByStatus: (status: StatusType) => Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   filterSnapshotsByCategory: (category: Category) => Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  filterSnapshotsByTag: (tag: Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  filterSnapshotsByTag: (tag: Tag<T>) => Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
   getSnapshotItems: (
@@ -495,7 +495,7 @@ interface SnapshotTransformationMethods<
   // ADD new function property (for data processing)
   processSnapshotData?: (
     id: string | number | null,
-    data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

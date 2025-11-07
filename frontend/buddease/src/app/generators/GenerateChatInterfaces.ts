@@ -17,18 +17,18 @@ interface Message<
 > extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
-  sender?: Sender;
+  sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   senderId: string | undefined;
   channel: ChatRoom | undefined
   channelId: string | undefined;
   content: string;
   additionalData?: string;
-  tags: string[] | Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  tags: string[] | Tag<T>[];
   userId?: number
   timestamp?: Date | string;
   text: string;
   isUserMessage?: boolean
-  receiver: User | undefined;
+  receiver: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   isOnline: boolean;
   lastSeen: string | Date;
   description?: string;
@@ -41,11 +41,11 @@ interface Message<
   website: string,
   location: string,
   coverImageUrl: string,
-  following: User[],
-  followers: User[],
+  following: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  followers: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   chatRooms: ChatRoom[],
-  blockedUsers: User[],
-  blockedBy: User[],
+  blockedUsers: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  blockedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
 }
 
 

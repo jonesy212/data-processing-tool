@@ -1,10 +1,10 @@
 // ExchangeData.ts
-import { ExchangeDataTypeEnum } from "@/app/models/crypto/exchangeIntegration";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields } from "@/app/config/BaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { SharedTimestamps } from "@/app/models/CommonData";
+import { ExchangeDataTypeEnum } from "@/app/models/crypto/exchangeIntegration";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields } from "@/app/config/BaseConfig";
 
 export interface ExchangeData<
   T extends BaseDataEntity = BaseDataRoot,
@@ -13,7 +13,7 @@ export interface ExchangeData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedTimestamps, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedTimestamps, SharedIdentifiers<T, K> {
   id: string;
   name: string;
   pair: string;

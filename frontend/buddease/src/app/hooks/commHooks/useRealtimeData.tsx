@@ -2,11 +2,10 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
@@ -26,7 +25,7 @@ type RealtimeUpdateCallback<
   events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ) => void;
 
 const useRealtimeData = <
@@ -70,7 +69,7 @@ const useRealtimeData = <
         events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-        data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+        data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
       ) => {
         if (!data || !snapshotStore || !dataItems) {
           console.error("Received data, snapshotStore, or dataItems is null");
@@ -109,4 +108,4 @@ const useRealtimeData = <
 
 
 export default useRealtimeData;
-export type {  RealtimeUpdateCallback }
+export type { RealtimeUpdateCallback };

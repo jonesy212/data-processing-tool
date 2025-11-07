@@ -1,11 +1,19 @@
 // MarkdownDocument.ts
+import { CommonDocumentPropertiesAndMethods } from "./CommonDocumentPropertiesAndMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
-export interface MarkdownDocument {
-    // Markdown document properties and methods...
-    id: string;
-    title: string;
-    content: string;
-    htmlContent: string;
-    // Example method to convert Markdown to HTML
-    convertToHTML(markdown: string): void;
-  }
+export interface MarkdownDocument<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonDocumentPropertiesAndMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  id: string;
+  title: string;
+  content: string;
+  htmlContent: string;
+  convertToHTML(markdown: string): void
+}

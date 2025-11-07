@@ -1,21 +1,17 @@
 // dataStoreMethods.ts
+import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { BaseMetaEntity,
-MetaEntity,
-MetaK,
-MetaMeta,
-MetaAttachment,
-MetaExcludedFields,
-MetaIncludedFields} from '@/app/typings/entities/MetaEntity'
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { addToSnapshotList, isBaseData, isSnapshot } from '@/app/utils/snapshotUtils';
-import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -29,9 +25,6 @@ import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { Version } from "@/app/versions/Version";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { BaseData, Data } from "./Data";
 
 // Assuming T is defined in your context
@@ -1669,7 +1662,7 @@ const dataStoreMethods = <
     defaultSubscribeToSnapshots: (
       snapshotId: string,
       callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T> | null,
-      snapshot: Snapshot<T> | null
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
     ) => {
       // Ensure 'snapshots' is the correct variable passed to callback
       const snapshots = snapshot ? [snapshot] : []; // Example logic to handle snapshot
@@ -1880,7 +1873,7 @@ const dataStoreMethods = <
       snapshot: Snapshot<T, K, DefaultMeta<T, K>>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
+      data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
       snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotsObject: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<SnapshotContainer<T, any> | undefined> => {

@@ -3,9 +3,18 @@ import { Member } from '@/app/models/members/Member';
 import { Project } from '@/app/models/projects/Project';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { createContext, useContext, useState } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Define the type for calendar data
-type SimpleCalendarEvent = {
+type SimpleCalendarEvent<    
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
   id: string;
   title: string;
   date: Date;
@@ -38,23 +47,37 @@ type SimpleCalendarEvent = {
 };
 
 // Define the type for the context props
-type CalendarContextProps = {
-  calendarData: SimpleCalendarEvent[]; // Use the defined type for calendar data
+type CalendarContextProps<    
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
+  calendarData: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Use the defined type for calendar data
   updateCalendarData: (
     newData:
-      | SimpleCalendarEvent[]
-      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+      | SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+      | ((prevState: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[])
   ) => void;
   children: React.ReactNode;
 };
 
 // Define the context type
-type CalendarContextType = {
-  calendarData: SimpleCalendarEvent[];
+type CalendarContextType<    
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
+  calendarData: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   updateCalendarData: (
     newData:
-      | SimpleCalendarEvent[]
-      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+      | SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+      | ((prevState: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[])
   ) => void;
 };
 
@@ -84,8 +107,8 @@ export const CalendarProvider: React.FC<CalendarContextProps> = ({
   // Function to update calendar data
   const updateCalendarData = (
     newData:
-      | SimpleCalendarEvent[]
-      | ((prevState: SimpleCalendarEvent[]) => SimpleCalendarEvent[])
+      | SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+      | ((prevState: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[])
   ) => {
     setCalendarData(newData);
   };

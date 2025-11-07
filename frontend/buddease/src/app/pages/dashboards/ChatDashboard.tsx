@@ -1,8 +1,8 @@
 // ChatDashboard.tsx
-import { TeamMember } from '@/app/components/models/teams/Contributor';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
+import { TeamMember } from '@/app/models/teams/Contributor';
 import { Team } from '@/app/models/teams/Team';
 import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';

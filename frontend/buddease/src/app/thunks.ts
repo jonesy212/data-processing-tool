@@ -1,14 +1,14 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { useDataStore } from '@/app/state/stores/DataStore';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // --- Enhanced delegate helper with SimulatedDataSource support ---
 async function getDelegate<
@@ -234,6 +234,26 @@ async function getDelegateWithRetry<
   }
 }
 
+
+// --- Enhanced API helper using your existing SnapshotApi ---
+async function saveSnapshotToAPI<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
+  try {
+    // Use your existing SnapshotApi instance
+    const { snapshotApi } = await import('@/app/api/SnapshotApi');
+    await snapshotApi.create(snapshot);
+  } catch (error) {
+    console.error('Failed to save snapshot to API:', error);
+    throw error;
+  }
+}
+
 // ✅ Generic thunk to fetch data stores with SimulatedDataSource support
 export const fetchDataStores = createAsyncThunk(
   "snapshot/fetchDataStores",
@@ -250,31 +270,11 @@ export const fetchDataStores = createAsyncThunk(
       simulatedDataSource?: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshotStoreConfigs?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     }
-  ): Promise<
-    SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-  > => {
+  ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
     return await getDelegate(context);
   }
 );
 
-// --- Enhanced API helper using your existing SnapshotApi ---
-async function saveSnapshotToAPI<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
-  try {
-    // Use your existing SnapshotApi instance
-    const { snapshotApi } = await import('.//SnapshotApi');
-    await snapshotApi.create(snapshot);
-  } catch (error) {
-    console.error('Failed to save snapshot to API:', error);
-    throw error;
-  }
-}
 
 /**
  * ✅ Enhanced async thunk for creating and adding a snapshot with SimulatedDataSource support
@@ -508,7 +508,7 @@ export const executeSnapshotOperation = createAsyncThunk(
           case 'fetch':
             if (!snapshotId) throw new Error('Snapshot ID required for fetch operation');
             // Use your existing SnapshotApi for fetch operations
-            const { snapshotApi } = await import('./SnapshotApi');
+            const { snapshotApi } = await import('@/app/api/SnapshotApi');
             return await snapshotApi.fetchById(snapshotId, 0); // storeId would need to be provided
             
           default:
@@ -517,7 +517,7 @@ export const executeSnapshotOperation = createAsyncThunk(
       }
 
       // Fall back to actual API operations
-      const { snapshotApi } = await import('./SnapshotApi');
+      const { snapshotApi } = await import('@/app/api/SnapshotApi');
       
       switch (operation) {
         case 'create':

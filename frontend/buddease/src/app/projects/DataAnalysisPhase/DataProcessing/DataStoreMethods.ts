@@ -1,4 +1,6 @@
 //  DataStoreMethods.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -11,9 +13,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { DataStore } from "./DataStore";
+import { DataStore } from "../../../state/stores/DataStore";
 
 interface DataStoreWithSnapshotMethods<
   T extends BaseDataEntity,

@@ -1,5 +1,5 @@
 import {
-    BaseDataEntity
+  BaseDataEntity
 } from "@/app/a_analysis/frontend/buddease/src/app/configs/BaseConfig";
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
@@ -43,7 +43,7 @@ const RealTimeDataCollection: React.FC<{}> = () => {
     events: Record<string, AnyCalendarEvent[]>,
     snapshotStore: SnapshotStore<AnyRealtime, AnyRealtime>,
     dataItems: AnyRealtimeItem[],
-    data?: InitializedData<T>  // optional InitializedData<...> if your type includes it
+    data?: Data<T>  // optional InitializedData<...> if your type includes it
   ): Promise<void> => {
     try {
       // Convert RealtimeData (or RealtimeDataItem -> label/value) into UI items
