@@ -1,8 +1,8 @@
 // RouteGuard.tsx
-import React from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
 import { fuzzyMatchEntities } from '@/app/routing/FuzzyMatch';
+import { useAuth } from '@/state/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 interface RouteGuardProps {
   children: React.ReactNode;

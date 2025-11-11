@@ -1,13 +1,12 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { useAuth } from '@/context/AuthContext';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
+import { useAuth } from '@/state/context/AuthContext';
 import { useMemo, useState } from "react";
-import { StructuredMetadata } from "./StructuredMetadata";
 
 function useMetadata<
   T extends BaseDataEntity,

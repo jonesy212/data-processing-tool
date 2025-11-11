@@ -1,14 +1,11 @@
 import { Entity } from '@/app/routing/FuzzyMatch';
 // FuzzyMatch.ts
-import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/documents/RelatedProps";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
-import { AppMetadata } from '@/app/typings/metadataTypes'
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 
-import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
-import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import fuzzysort from "fuzzysort";
 
 // Function to perform fuzzy matching with spaCy processing

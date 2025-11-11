@@ -32,9 +32,9 @@ interface BaseEntityProperties {
 interface SharedIdentifiers<  
   T extends BaseDataEntity,
   K extends T = T
-> extends BaseEntityProperties {
+> extends RootCategories<T, K>,
+  BaseEntityProperties {
   snapshotId?: string | number | null;
-  categoryProperties?: CategoryPropertyBundle<T, K>;
 }
 
 interface SharedSnapshotProperties<

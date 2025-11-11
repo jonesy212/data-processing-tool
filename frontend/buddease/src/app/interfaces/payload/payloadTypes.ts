@@ -8,7 +8,7 @@ import {
   DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { BaseData } from "@/app/models/data/Data";
-import { NotificationType } from "@/context/NotificationContext";
+import { NotificationType } from "@/state/context/NotificationContext";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";

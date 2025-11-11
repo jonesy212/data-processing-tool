@@ -1,13 +1,13 @@
 // DefaultCalendarEventViewingDetails.tsx
 import { handleApiError } from '@/app/api/ApiLogs';
 import ProjectService from "@/app/api/ProjectService";
-import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
-import {
-  useNotification
-} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { ButtonGenerator } from '@/app/generators/GenerateButtons';
 import { Project } from '@/app/models/projects/Project'; // Import ProjectDetails component
+import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
+import {
+    useNotification
+} from '@/app/state/context/NotificationContext';
 import { handleAddComponent, handleRemoveComponent, handleUpdateComponent } from '@/libraries/ui/components/Component';
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

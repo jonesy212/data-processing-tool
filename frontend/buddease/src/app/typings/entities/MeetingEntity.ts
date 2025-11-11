@@ -5,7 +5,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Todo } from '@/app/todos/Todo';
 
 // Define the actual MeetingEntity interface
-interface MeetingEntity extends BaseDataEntity, BaseEntity {
+interface MeetingEntity extends BaseEntity {
   
   title: string;
   description: string;

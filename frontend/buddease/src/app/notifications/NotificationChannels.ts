@@ -89,24 +89,22 @@ interface BasicNotificationChannels {
 }
 
 
-
 interface NotificationChannels {
-  email: EmailSettings;
-  push: PushNotificationSettings;
-  sms: SmsSettings;
-  inApp: InAppSettings;
-  webhook: WebhookSettings;
+  // Basic channel settings (can be boolean or full settings)
+  email: boolean | EmailSettings;
+  push: boolean | PushNotificationSettings;
+  sms: boolean | SmsSettings;
+  inApp: boolean | InAppSettings;
+  webhook: boolean | WebhookSettings;
   
-  // Advanced configurations (all optional)
+  // Advanced configurations (separate channels)
   advanced?: {
-    chat?: { enabled: boolean } & ChatSettings; // Combine boolean + settings
+    chat?: { enabled: boolean } & ChatSettings;
     calendar?: { enabled: boolean } & CalendarIntegrationSettings;
     audioCall?: { enabled: boolean } & VoiceSettings;
     videoCall?: { enabled: boolean } & VideoSettings;
     screenShare?: { enabled: boolean } & ScreenShareSettings;
-    email?: EmailSettings;
-    push?: PushNotificationSettings;
-    sms?: SmsSettings;
+    // Note: Don't duplicate email, push, sms here unless they're different from top-level
   };
 
   // Global settings

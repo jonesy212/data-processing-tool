@@ -1,4 +1,6 @@
 // StorePropEntity.ts
+import { Data } from '@/app/models/data/Data';
+import { SnapshotStore } from '@/app/snapshots/Snapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -89,3 +91,10 @@ const storeProps: SnapshotStoreProps<
     console.log("Initialized StorePropSnapshotStore:", snapshotStore);
   },
 };
+
+
+
+export type { StorePropMeta,
+StorePropAttachment,
+StorePropExcludedFields,
+StorePropIncludedFields}

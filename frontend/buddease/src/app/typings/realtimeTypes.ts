@@ -1,6 +1,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { Data } from '@/app/models/data/Data';
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -19,7 +20,7 @@ interface BaseRealtimeData<
   name: string;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   type: string | AllTypes; // Remove null to align with BaseData's expectation
-  date: Date; // Standardize to Date
+  date: string | Date; 
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
@@ -59,5 +60,24 @@ interface RealtimeDataItem<
   timestamp: Date;
   data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
+
+
+interface RealtimeDataProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends RealtimeDataItem <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  userId: string;
+  dispatch: (action: any) => void;
+  value: string;
+}
+
+
+export type { RealtimeDataProps };
+
+
 
 export type { RealtimeData, RealtimeDataItem };

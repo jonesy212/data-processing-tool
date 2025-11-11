@@ -1,8 +1,8 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
-import { endpoints } from '@/app/api/endpointConfigurations';
 
 // Define the base URL for user roles API
 const API_BASE_URL = endpoints.userRoles.list;

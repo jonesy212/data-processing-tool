@@ -7,7 +7,7 @@ import { CacheConfig } from "@/app/config/CacheConfig";
 type EndpointCategory = keyof EndpointConfigurations;
 type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
 
-export interface ApiConfigInterface {
+export interface ApiConfig {
   [x: string]: any;
   name: any;
   baseURL: string;
@@ -22,7 +22,7 @@ export interface ApiConfigInterface {
 }
 
 
-class ApiConfigService implements ApiConfigInterface {
+class ApiConfigService implements ApiConfig {
   [x: string]: any;
   name: any;
   baseURL: string;
@@ -38,7 +38,7 @@ class ApiConfigService implements ApiConfigInterface {
   constructor(
     private configurations: EndpointConfigurations,
     private endpoints: Endpoints,
-    options?: Partial<ApiConfigInterface>
+    options?: Partial<ApiConfig>
   ) {
     // Initialize interface properties
     this.name = options?.name || 'defaultApiConfig';

@@ -1,17 +1,14 @@
-import React from "react";
-import { observer } from "mobx-react";
-import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { AxiosError } from 'axios';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { apiNotificationMessages } from "@/app/api/ApiData";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { LogData } from "@/app/models/LogData";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { createNotifier } from "@/app/hooks/useNotifier";
-import { useNotification } from '@/app/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { AxiosError } from 'axios';
+import { observer } from "mobx-react";
+import React from "react";
 
 type NotificationMessages = typeof NOTIFICATION_MESSAGES;
 

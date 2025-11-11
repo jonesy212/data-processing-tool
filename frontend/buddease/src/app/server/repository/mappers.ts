@@ -1,10 +1,15 @@
 // /app/server/repository/mappers.ts
 
+import { fileURLToPath } from 'url';
 import fs from 'fs';
 import path from 'path';
 import { CacheData } from '@/app/models/CacheData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DefaultExcludedFields } from '@/app/config/BaseConfig';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // AUTO-IMPORTS START
 // (auto-generated, do not edit)
@@ -156,8 +161,8 @@ function findFileRecursively(dir: string, fileName: string): string | null {
   return null;
 }
 
-
-export function toDatabase(user: UserCacheData) {
+// User-specific database functions (keep these if you need them)
+export function toDatabaseUser(user: UserCacheData) {
   return {
     _id: user.id,
     name: user.name,
@@ -166,7 +171,7 @@ export function toDatabase(user: UserCacheData) {
   };
 }
 
-export function fromDatabase(dbObj: any): UserCacheData {
+export function fromDatabaseUser(dbObj: any): UserCacheData {
   return {
     id: dbObj._id,
     name: dbObj.name,

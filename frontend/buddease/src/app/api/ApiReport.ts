@@ -12,7 +12,7 @@ import {
     BaseReport, FinancialReport, ReportOptions,
     ResearchReport,
     TechnicalReport
-} from '@/components/documents/documentation/report/Report';
+} from '@/app/documents/Report';
 import { FinancialMetrics, processFinancialMetrics } from '@/components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/components/metrics/TechnicalSpecifications';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

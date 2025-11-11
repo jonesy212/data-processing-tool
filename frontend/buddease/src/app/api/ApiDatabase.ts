@@ -1,14 +1,16 @@
 // ApiDatabase.ts
+import { handleApiError } from "@/app/api/ApiLogs";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationPosition } from "@/app/models/data/StatusType";
+import {  } from '@/app/state/context/NotificationContext'
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationPosition } from "@/app/models/data/StatusType";
 import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/context/NotificationContext";
+    NotificationTypeEnum,
+    useNotification,
+    NotificationDataPayload
+} from "@/app/state/context/NotificationContext";
 import { User } from "@/app/users/User";
 import { AxiosError } from "axios";
-import { handleApiError } from "@/app/api/ApiLogs";
 
 // Define API notification messages for user fetch operations
 const userApiNotificationMessages = {
@@ -23,25 +25,39 @@ const userApiNotificationMessages = {
 type UserApiNotificationKeys = keyof typeof userApiNotificationMessages;
 
 // Helper functions for notifications
-const notifySuccess = (id: string, message: string, position: NotificationPosition = NotificationPosition.TopRight) => {
+const notifySuccess = (
+  id: string,
+  message: string,
+  data: NotificationDataPayload = {},
+  position: NotificationPosition = NotificationPosition.TopRight
+) => {
   useNotification().notify({
     id,
     message,
     type: NotificationTypeEnum.SUCCESS,
     timestamp: new Date(),
-    position
+    position,
+    data, // ✅ now includes structured data
   });
 };
 
-const notifyError = (id: string, message: string, position: NotificationPosition = NotificationPosition.TopRight) => {
+
+const notifyError = (
+  id: string,
+  message: string,
+  data: NotificationDataPayload = {},
+  position: NotificationPosition = NotificationPosition.TopRight
+) => {
   useNotification().notify({
     id,
     message,
     type: NotificationTypeEnum.ERROR,
     timestamp: new Date(),
-    position
+    position,
+    data, // ✅ structured data
   });
 };
+
 
 // Function to handle API errors and notify
 const handleUserApiErrorAndNotify = (
@@ -51,12 +67,17 @@ const handleUserApiErrorAndNotify = (
   position: NotificationPosition = NotificationPosition.TopRight
 ) => {
   handleApiError(error, errorMessage);
-  
+
   if (errorMessageId && userApiNotificationMessages.hasOwnProperty(errorMessageId)) {
     const errorMessageText = userApiNotificationMessages[errorMessageId];
-    notifyError(errorMessageId, errorMessageText, position);
+    
+    notifyError(errorMessageId, errorMessageText, {
+      originalError: errorMessage,
+      extra: { errorObject: error }
+    }, position);
   }
 };
+
 
 // Fetch user IDs from the database
 // For INTERNAL database access (your own PostgreSQL)
@@ -157,13 +178,10 @@ const createUserInDatabase = async <
 
 // Exporting the function to use in other parts of the application
 export {
-  createUserInDatabase,
-  fetchUserFromDatabase,
-  fetchUserIdsFromDatabase,
-  notifySuccess,
-  notifyError,
-  handleUserApiErrorAndNotify
+    createUserInDatabase,
+    fetchUserFromDatabase,
+    fetchUserIdsFromDatabase, handleUserApiErrorAndNotify, notifyError, notifySuccess
 };
 
 // Export types for use elsewhere
-export type { UserApiNotificationKeys };
+    export type { UserApiNotificationKeys };

@@ -1,6 +1,6 @@
 // // useSnapshotHandler.ts
 // import { useState } from 'react';
-// import { CustomSnapshotData } from '@/LocalStorageSnapshotStore';
+// import { CustomSnapshotData } from '@/app/snapshots/LocalStorageSnapshotStore';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 // import { BaseData } from '@/app/models/data/Data';

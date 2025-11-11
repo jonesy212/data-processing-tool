@@ -17,7 +17,7 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import { ApiProject } from "@/app/api/ApiProject";
 import Milestone from "@/app/typings/milestoneTypes";
-import { CommonData } from "@/app/components/models/details/CommonDetails";
+import { CommonData } from "@/app/components/models/CommonData";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
@@ -32,8 +32,19 @@ import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { YourSettingsResponseType } from '@/app/typings/typings/typeguards/isYourSettingsResponseType';
 
 const dispatch = useDispatch();
+
+
+type ProjType = Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type TaskType = Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type UserType = User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type PhaseType = IdeationPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type MilestoneType = Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type ProductType = Product<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type InsightType = Insight<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
 
 export interface ProjectManagerStore<
   T extends BaseDataEntity = BaseDataEntity,
@@ -91,10 +102,28 @@ export interface ProjectManagerStore<
 const useProjectManagerStore = (): ProjectManagerStore => {
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
+    // Actual state initialization
+  const [settings, setSettings] = useState<YourSettingsResponseType | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const fetchSettings = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+        const response = await axiosInstance.get("/settings");
+        // ... actual API call logic
+        setSettings(parsedData[0]);
+    } catch (error: any) {
+        setError(error.message);
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  
   // --- Projects ---
   const fetchProjects = async () => {
     setLoading(true);
@@ -190,7 +219,7 @@ const useProjectManagerStore = (): ProjectManagerStore => {
   };
 
   // --- Tasks ---
-  const assignTaskToProjectInAPI = async (projectId: string, task: Task) => {
+  const assignTaskToProjectInAPI = async (projectId: string, task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
       await ApiProject.assignTaskToProjectInAPI(projectId, task);
       const proj = projects.find(p => p.id === projectId);
@@ -203,26 +232,29 @@ const useProjectManagerStore = (): ProjectManagerStore => {
     }
   };
 
-  const assignTaskToIdeationPhaseAPI = async (projectId: string, task: Task, phaseId: string) => {
-    try {
-      await ApiProject.assignTaskToIdeationPhaseAPI(projectId, task, phaseId);
-      const proj = projects.find(p => p.id === projectId);
-      if (proj) {
-        const phase = proj.ideationPhases.find(ph => ph.id === phaseId);
-        if (phase) {
-          phase.tasks.push(task);
-          setProjects([...projects]);
-        }
+const assignTaskToIdeationPhaseAPI = async (
+  projectId: string, 
+  task: TaskType, 
+  phaseId: string
+) => {
+  try {
+    await ApiProject.assignTaskToIdeationPhaseAPI(projectId, task, phaseId);
+    const proj = projects.find((p: ProjType) => p.id === projectId);
+    if (proj) {
+      const phase = proj.ideationPhases.find((ph: PhaseType) => ph.id === phaseId);
+      if (phase) {
+        phase.tasks.push(task);
+        setProjects([...projects]);
       }
-    } catch (err) {
-      setError((err as Error).message);
     }
-  };
-
+  } catch (err) {
+    setError((err as Error).message);
+  }
+};
   const assignTaskToCurrentUser = async (
     projectId: string,
-    task: Task,
-    assignedTo: User
+    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    assignedTo: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => {
     try {
       await ApiProject.assignTaskToCurrentUserAPI(projectId, task, assignedTo);
@@ -240,15 +272,20 @@ const useProjectManagerStore = (): ProjectManagerStore => {
   };
 
   // --- Product Actions ---
-  const analyzeData = (state: StateType, action: PayloadAction<{ projectId: string; productId: string; insights: any[] }>) => {
+  const analyzeData = (
+    state: StateType, 
+    action: PayloadAction<{ projectId: string; productId: string; insights: any[] }>
+  ) => {
     const { projectId, productId, insights } = action.payload;
-    const proj = state.projects.find(p => p.id === projectId);
+    const proj = state.projects.find((p: ProjType) => p.id === projectId);
+    
     if (proj) {
-      const product = proj.products.find(p => p.id === productId);
+      const product = proj.products.find((p: ProductType) => p.id === productId);
+      
       if (product) {
         product.insights = [...product.insights, ...insights];
-        product.insights = Array.from(new Set(product.insights.map(i => i.id)))
-          .map(id => product.insights.find(i => i.id === id)!);
+        product.insights = Array.from(new Set(product.insights.map((i: InsightType) => i.id)))
+          .map(id => product.insights.find((i: InsightType) => i.id === id)!);
       }
     }
     return state;
@@ -258,7 +295,7 @@ const useProjectManagerStore = (): ProjectManagerStore => {
     const { projectId, productId, product } = action.payload;
     const proj = state.projects.find(p => p.id === projectId);
     if (proj) {
-      const prodIndex = proj.products.findIndex(p => p.id === productId);
+      const prodIndex = proj.products.findIndex((p: ProjType) => p.id === productId);
       if (prodIndex !== -1) {
         product.status = "launched";
         proj.products[prodIndex] = product;
@@ -266,13 +303,21 @@ const useProjectManagerStore = (): ProjectManagerStore => {
     }
   };
 
-  // --- Progress calculation ---
-  const calculateProgress = (projectId: string) => {
+    // --- Progress calculation ---
+  const calculateProgress = (projectId: string): number => {
     const proj = projects.find(p => p.id === projectId);
     if (!proj) return 0;
-    const totalTasks = proj.tasks.length + proj.milestones.reduce((acc, m) => acc + m.tasks.length, 0);
-    const completedTasks = proj.tasks.filter(t => t.completed).length +
-      proj.milestones.reduce((acc, m) => acc + m.tasks.filter(t => t.completed).length, 0);
+    
+    const totalTasks = proj.tasks.length + 
+      proj.milestones.reduce((acc: number, m: Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+        acc + m.tasks.length, 0);
+    
+    const completedTasks = proj.tasks.filter((t: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+      t.isCompleted).length +
+      proj.milestones.reduce((acc: number, m: Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+        acc + m.tasks.filter((t: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+          t.completed).length, 0);
+    
     return totalTasks ? (completedTasks / totalTasks) * 100 : 0;
   };
 
@@ -284,6 +329,9 @@ const useProjectManagerStore = (): ProjectManagerStore => {
     currentProject,
     loading,
     error,
+    settings,       // Now reactive
+    isLoading,      // Now reactive  
+    makeAutoObservable,  // Bound methods
     fetchProjects,
     fetchProject,
     addProject,

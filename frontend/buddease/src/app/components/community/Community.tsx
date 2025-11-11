@@ -8,7 +8,7 @@ import CommunityProjectsPage from '@/app/pages/community/CommunityProjectsPage';
 import { Product } from '@/app/products/Product';
 import ProjectManagementApp from '@/app/projects/projectManagement/ProjectManagementApp';
 import ProjectManagementSimulation from '@/app/projects/projectManagement/ProjectManagementSimulation';
-import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/app/utils/web3/dAppAdapter/IPFS';
+import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/utils/web3/dAppAdapter/IPFS';
 import React from 'react';
 
 
@@ -96,17 +96,13 @@ const CommunityPulse: React.FC = () => {
       {/* Display Project Management Simulation */}
       <ProjectManagementSimulation />
 
-      
-
-       {/* Render CommunityProjectsPage */}
-       <CommunityProjectsPage community={communityData} />
+      {/* Render CommunityProjectsPage */}
+      <CommunityProjectsPage community={communityData} />
      
       {/* Connect to CommunityPulse DApp and utilize its functionality */}
       <button onClick={() => extendedDApp.enableRealtimeCollaboration().enableChatFunctionality()}>
         Enable Real-time Collaboration and Chat
       </button>
-
-      
 
       {/* Store a file on IPFS and Ethereum using CommunityPulse DApp */}
       <button onClick={() => {
@@ -123,8 +119,4 @@ const CommunityPulse: React.FC = () => {
   );
 };
 
-
-
-
 export default CommunityPulse;
-

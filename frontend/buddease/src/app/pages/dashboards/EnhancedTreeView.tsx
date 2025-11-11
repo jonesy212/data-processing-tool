@@ -1,9 +1,9 @@
 // EnhancedTreeView.tsx
-import React, { useState, useEffect, useMemo } from "react";
-import { FileTreeService, FileTreeNode } from "./FileTreeService";
-import { useSearch } from "@/app/context/SearchContext";
-import useSearchPagination from "@/app/hooks/commHooks/useSearchPagination";
 import DummyCard from "@/app/cards/DummyCard";
+import useSearchPagination from "@/app/hooks/commHooks/useSearchPagination";
+import { useSearch } from "@/app/state/context/SearchContext";
+import React, { useEffect, useMemo, useState } from "react";
+import { FileTreeNode, FileTreeService } from "./FileTreeService";
 
 interface EnhancedTreeViewProps {
   onFileSelect?: (file: FileTreeNode) => void;

@@ -1,13 +1,10 @@
 // ProjectCreationForm.tsx
-import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { useNotification } from '@/app/context/NotificationContext';
 import { useAuth } from '@/app/components/auth/AuthContext';
-import { ProjectType, ClientProjectEntity, SimpleClientProject } from '@/projects/Project';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { ClientProjectEntity, ProjectType } from '@/projects/Project';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 interface ProjectCreationFormProps {
   onSubmit?: (project: ClientProjectEntity) => void;

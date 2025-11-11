@@ -11,7 +11,7 @@ import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 import { sha256 } from 'js-sha256';
       
 import getAppPath from "@/app/config/appStructure/appPath";
@@ -27,18 +27,18 @@ import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
-import { Member } from "@/app/models/member/Member";
-import { Taggable } from '@/app/models/tracker/Tag';
+import { Member } from "@/app/models/members/Member";
+import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { backendStructure } from '@/app/server/database/BackendStructure';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { data, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
+import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { EventManager } from "@/app/state/stores/DataStore";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { User } from "@/app/users/User";
-import { fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
+import { fluenceApiKey } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import { BumpVersionOptions } from "./BumpVersionOptions";
 import { VersionData, VersionHistory } from "./VersionData";
 
@@ -97,6 +97,7 @@ interface Version<
   userId: string;
   isActive: boolean;
   isPublished: boolean;
+  updatedAt: Date
   isLatest: boolean;
   publishedAt?: Date | null;
   releaseDate?: string | Date;
@@ -127,7 +128,7 @@ interface Version<
   workspaceMembers: any[];
 
   // Data + structure
-  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: string| number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   structureData: string;
@@ -182,7 +183,7 @@ function createDefaultMeta<
   IncludedFields extends keyof T = keyof T
 >(): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
-const { latestVersion = createLatestVersion(), ...rest } = data;
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
   
   return {
     author: "",
@@ -231,11 +232,13 @@ function createVersion<
   const now = new Date();
 
   // Helper function defined outside the version object
-  const generateChecksum = (version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string => {
+  const generateChecksum = <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+    version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): string => {
     const content = `${version.major}.${version.minor}.${version.patch}.${version.appVersion}`;
-    return crypto.createHash('md5').update(content).digest('hex').substring(0, 16);
+    return sha256(content).substring(0, 16); // ✅ Use SHA-256 and trim to 16 chars if desired
   };
-  
+
   // Default structure
   const defaultVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: 1,
@@ -356,10 +359,11 @@ function createVersion<
       return newVersion
     },
     // Helper method for checksum generation (simplified)
-    generateChecksum: function(version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
-      // In a real implementation, you'd use a proper hash function
+    generateChecksum: function<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+      version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): string {
       const content = `${version.major}.${version.minor}.${version.patch}.${version.appVersion}`;
-      return crypto.createHash('md5').update(content).digest('hex').substring(0, 16);
+      return sha256(content).substring(0, 16); // ✅ consistent and portable
     },
     metadata: {
       area: area,
@@ -642,7 +646,8 @@ class VersionImpl<
  * @param versionInfo - Object containing version details.
  * @returns A new instance of VersionImpl.
  */
-  static createVersion<
+
+static createVersion<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -1131,7 +1136,7 @@ class VersionImpl<
     releaseDate: string | Date | undefined;
     archivedBy: string,
     archivedAt: Date | null,
-    tags: TagsRecord,
+    tags: TagsRecord<T>,
     categories: Category[],
     permissions: DocumentPermissions,
     collaborators: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -1750,8 +1755,8 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
 const version = createVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>();
 
 const versionData: VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
-id: "0",
-name: "",
+  id: "0",
+  name: "",
   url: "",
   versionNumber: "",
   documentId: "",

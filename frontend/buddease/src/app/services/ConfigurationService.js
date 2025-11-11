@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var NotificationContext_1 = require("@/app/context/NotificationContext");
+var NotificationContext_1 = require('@/app/state/context/NotificationContext');
 var systemConfigs_1 = require("../api/systemConfigs");
 var userConfigs_1 = require("../api/userConfigs");
 var Project_1 = require("@/app/components/projects/Project");

@@ -1,7 +1,7 @@
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
-import YourComponentUI from "@/app/interfaces/UserIdeaComponentUI";
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import useDynamicPromptPhaseHook from "@/app/hooks/phaseHooks/DynamicPromptPhaseHook";
+import YourComponentUI from "@/app/interfaces/UserIdeaComponentUI";
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { useEffect, useSession, useState } from "react";
 
 const UserFormComponent = ({ onSubmit }) => {

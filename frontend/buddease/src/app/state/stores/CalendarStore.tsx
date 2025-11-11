@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { CalendarEvent } from "./CalendarEvent";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 
 export interface CalendarStore {
   events: Record<string, CalendarEvent>;

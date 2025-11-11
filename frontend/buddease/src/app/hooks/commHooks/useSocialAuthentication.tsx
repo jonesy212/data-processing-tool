@@ -1,6 +1,6 @@
 import axiosInstance from '@/app/api/csrfToken';
+import { useNotification } from '@/state/context/NotificationContext';
 import { useState } from 'react';
-import { useNotification } from '@/context/NotificationContext';
 
 const useSocialAuthentication = () => {
   const [socialAuthProviders, setSocialAuthProviders] = useState<string[]>([]);

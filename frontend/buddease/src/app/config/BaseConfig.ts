@@ -7,12 +7,12 @@ import { BaseMetaInfo } from '@/app/config/metadata/BaseMetaInfo';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { BaseMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
+import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { TagsRecord, Taggable } from '@/app/models/tracker/Tag'
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import {
@@ -24,27 +24,34 @@ import {
     ConfigMeta
 } from "@/app/typings/entities/ConfigEntity";
 import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
-import { useSnapshot } from '@/context/SnapshotContext';
+import { AppMetadata } from '@/app/typings/metadataTypes';
+import { useSnapshot } from '@/state/context/SnapshotContext';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
-import { AppMetadata } from '@/app/typings/metadataTypes'
+
+type BaseDataEntity = BaseDataRoot;
 
 interface BaseDataRoot {
   [key: string]: any;
   snapshotId?: string | number | null;
-  categoryIds?: string[];
-  
-  // Full category objects (when populated)
+}
+
+interface RootCategories<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T
+> {
+   categoryIds?: string[];
+    // Full category objects (when populated)
   categories?: CategoryProperties[]; 
-  categoryProperties?: CategoryPropertyBundle; 
+  categoryProperties?: CategoryPropertyBundle<T, K>;
 }
 
 interface CoreRecordProperties {
   description?: string;
   source?: string;
 }
+
 interface BaseEntity<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -75,7 +82,6 @@ interface Entity<
 
 
 
-type BaseDataEntity = BaseDataRoot;
 
 type DefaultMeta<
   T extends BaseDataEntity,
@@ -124,12 +130,14 @@ interface BaseConfig<
     initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     schema?: Record<string, SchemaField>
     description?: string
     category?: Category,
     timestamp: string | number | Date | undefined;
     createdBy?: string | undefined;
-    tags?: TagsRecord<T> | string[]
+    tags?: TagsRecord<T> | string[];
+
     mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
@@ -223,6 +231,6 @@ export { baseConfig, mappedSnapshot };
 
     export type {
         BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
-        DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, SharedConfig
+        DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, SharedConfig, RootCategories
     };
 

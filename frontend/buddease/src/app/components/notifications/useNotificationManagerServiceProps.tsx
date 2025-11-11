@@ -1,5 +1,5 @@
-import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
-import useNotificationManagerService from "./NotificationService";
+import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
+import useNotificationManagerService from "@/app/service/NotificationService";
 
 // useNotificationManagerServiceProps.tsx
 export interface NotificationManagerServiceProps {
@@ -15,7 +15,7 @@ export interface NotificationManagerServiceProps {
       notify: (message: string) => {
         const id = Math.random().toString(36).substring(2);
         const date = new Date();
-        const type: NotificationType = NotificationTypeEnum.PushNotification; // or any other type
+        const type: NotificationType = NotificationTypeEnum.PUSH_NOTIFICATION; // or any other type
         notify(id, message, {}, date, type);
       },
       clearNotifications,

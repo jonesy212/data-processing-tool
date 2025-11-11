@@ -1,4 +1,5 @@
 // TradingStrategy.ts
+
 export interface MarketData {
   timestamp: Date;
   price: number;

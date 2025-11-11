@@ -10,7 +10,7 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore } from '@/app/state/stores/DataStore';
 import SnapshotStore from "@/app/snapshotstore";
-import { SnapshotUnion, SnapshotsArray } from '@/LocalStorageSnapshotStore';
+import { SnapshotUnion, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 
 

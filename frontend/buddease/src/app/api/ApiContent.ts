@@ -1,15 +1,16 @@
+import { NotificationPosition } from '@/app/models/data/StatusType';
 // ApiContent.ts
-
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
-import { YourResponseType } from '@/app/typings/responseTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationService } from '@/app/state/stores/NotificationService';
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError } from 'axios';
 import { ContentState } from 'draft-js';
 
@@ -49,24 +50,29 @@ const contentNotificationMessages: ContentNotificationMessages = {
 
 
 // Function to handle API errors and notify
+// Updated function to handle API errors and notify
 const handleContentApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof ContentNotificationMessages // Use keyof to enforce valid keys
+  errorMessageId: keyof ContentNotificationMessages, // Use keyof to enforce valid keys
+  position: NotificationPosition = NotificationPosition.TopRight
 ) => {
   handleApiError(error, errorMessage);
-  
+
   if (errorMessageId) {
-    const errorMessageText = contentNotificationMessages[errorMessageId]; // Access directly
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      null,
-      new Date(),
-      "ApiClientError" as NotificationType
-    );
+    const errorMessageText = contentNotificationMessages[errorMessageId];
+
+    useNotification().notify({
+      id: String(errorMessageId),
+      message: errorMessageText,
+      data: { originalError: errorMessage, errorObject: error },
+      timestamp: new Date(),
+      type: "ApiClientError" as NotificationType,
+      position,
+    });
   }
 };
+
 
 
 // Function to fetch contentId from API based on contentState
@@ -88,41 +94,40 @@ const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string
     throw error; // Propagate the error to the caller
   }
 };
+
 // Fetch content data
-const fetchContent = (): Promise<YourResponseType<any>> => {
-  // Initialize the useErrorHandling hook
+const fetchContent = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType<any>>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
-      const fetchContentEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-      axiosInstance.get<YourResponseType<any>>(fetchContentEndpoint, {
-        headers: headersConfig,
-      })
+      const fetchContentEndpoint = `${API_BASE_URL}/fetch`;
+
+      axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+        fetchContentEndpoint,
+        { headers: headersConfig }
+      )
       .then(response => {
-        // Resolve with the response data
         resolve(response.data);
       })
       .catch(error => {
-        // Handle any errors that occur during the fetch
         console.error("Error fetching content:", error);
-
-        // Call the handleError function to handle and log the error
         const errorMessage = "Failed to fetch content";
         handleError(errorMessage, { componentStack: error.stack });
-
-        // Reject with the error
         reject(error);
       });
-    } catch (error: any) {
-      // Handle synchronous errors
-      console.error("Error fetching content:", error);
 
-      // Call the handleError function to handle and log the error
+    } catch (error: any) {
+      console.error("Error fetching content:", error);
       const errorMessage = "Failed to fetch content";
       handleError(errorMessage, { componentStack: error.stack });
-
-      // Reject with the error
       reject(error);
     }
   });
@@ -166,13 +171,12 @@ const createContent = async (newContentData: any): Promise<void> => {
       headers: headersConfig,
     });
     // Notify success message
-    useNotification().notify(
-      "CreateContentSuccessId",
-      contentNotificationMessages.CREATE_CONTENT_SUCCESS,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    NotificationService.notify({
+      id: "CreateContentSuccessId",
+      message: contentNotificationMessages.CREATE_CONTENT_SUCCESS,
+      type: NotificationTypeEnum.SUCCESS,
+      timestamp: new Date(),
+    });
   } catch (error: any) {
     console.error("Error creating content:", error);
     handleContentApiErrorAndNotify(

@@ -1,8 +1,8 @@
 // ExtendedDappEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DAppAdapterConfig } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig'
 import { ipfsConfig } from '@/app/config/ipfsConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { DAppAdapterConfig } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { PoolConfig } from 'pg';
 // Core ExtendedDapp base types using the 6-parameter pattern
 type ExtendedDappEntity = BaseDataEntity & {
@@ -47,12 +47,7 @@ interface ExtendedDAppAdapterConfig extends DAppAdapterConfig<
   ethereumRpcUrl: string;
 }
 export type {
-  ExtendedDappEntity,
-  ExtendedDappK,
-  ExtendedDappMeta,
-  ExtendedDappAttachment,
-  ExtendedDappExcludedFields,
-  ExtendedDappIncludedFields,
-  ExtendedDappBaseParams,
-  ExtendedDappProps
+  ExtendedDappAttachment, ExtendedDappBaseParams, ExtendedDappEntity, ExtendedDappExcludedFields,
+  ExtendedDappIncludedFields, ExtendedDappK,
+  ExtendedDappMeta, ExtendedDappProps
 };

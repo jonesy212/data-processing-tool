@@ -1,3 +1,5 @@
+import { DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { ClientSubscriber } from './../../subscriptions/ClientSubscriber';
 import { getAppSubscriberIdAPI } from '@/app/api/subscriberApi';
 import updateUI, { updateUIWithSearchResults } from "@/app/documents/editing/updateUI";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -95,7 +97,7 @@ const createSubscriber = async (): Promise<{ subscriber: any; tempSubscriber: an
   
   // Use client-side API wrapper
   const tempSubscriber = createClientSubscriber("tempSubscriber", name);
-  const subscriberId = await getAppSubscriberId(tempSubscriber);
+  const subscriberId = await getAppSubscriberIdAPI(tempSubscriber);
   
   const subscriber = createClientSubscriber("1", name);
   

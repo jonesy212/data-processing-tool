@@ -5,14 +5,14 @@ import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { useTeamContext } from "@/app/components/context/TeamContext";
 import { Team } from "@/app/components/teams/Team";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import {
-  markTaskAsComplete,
-  markTodoAsComplete,
+    NotificationTypeEnum,
+    useNotification,
+} from '@/app/state/context/NotificationContext';
+import {
+    markTaskAsComplete,
+    markTodoAsComplete,
 } from "@/app/state/redux/slices/ApiSlice";
 import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 import { AxiosError } from "axios";

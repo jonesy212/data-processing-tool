@@ -4,11 +4,12 @@ import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
 
 // Define the Theme interface
-enum ThemeEnum{
+enum ThemeEnum {
   LIGHT = "light",
   DARK = "dark",
   AUTO = 'auto'
 }
+
 interface Theme extends BrandingSettings {
   primaryColor: string;
   secondaryColor: string;
@@ -24,7 +25,7 @@ interface Theme extends BrandingSettings {
   brandIcon: string;
   brandName: string;
   borderWidth: string;
-  borderRadius: string;
+  borderRadius: { small: string; medium: string; large: string; };
   boxShadow: string;
   children?: React.ReactNode;
   language?: string;
@@ -32,10 +33,11 @@ interface Theme extends BrandingSettings {
   isDarkMode?: boolean;
   infoColor?: string;
   notificationState?: React.Dispatch<SetStateAction<NotificationData[]>>;
-  setThemeState?: React.Dispatch<SetStateAction<ThemeState>>
+  setThemeState?: React.Dispatch<SetStateAction<ThemeState>>;
   updateTheme?: (newTheme: Partial<Theme>) => void;
   // Add more theme properties as needed
 }
+
 // Define the ThemeContext
 const ThemeContext = React.createContext<Theme | null>(null);
 
@@ -51,4 +53,3 @@ export const ThemeProvider: React.FC<{ theme: Theme; children: any }> = ({
 
 export { ThemeContext, ThemeEnum };
 export type { Theme };
-

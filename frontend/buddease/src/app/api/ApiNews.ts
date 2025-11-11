@@ -1,9 +1,7 @@
 // ApiNews.ts
+import { handleApiErrorAndNotify } from '@/app/api/ApiData';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { handleApiErrorAndNotify } from '@/app/api/ApiData';
-import { useNotification } from '@/app/context/NotificationContext';
-import { NotificationType } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
 
 const  newsApiBaseURL = endpoints; // Ensure you have this defined in your ApiEndpoints

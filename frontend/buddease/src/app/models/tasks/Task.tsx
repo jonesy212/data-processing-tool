@@ -2,7 +2,7 @@
 // Task.ts
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedDetails } from '@/app/components/models/data/Details';
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import  { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -143,6 +143,7 @@ const createTask = <
     userId: undefined,
     query: undefined,
     getData: async () => Promise.resolve(defaultTask),
+    schema: {},
     selectedTask: {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     ...taskData, // Merge provided data
   };

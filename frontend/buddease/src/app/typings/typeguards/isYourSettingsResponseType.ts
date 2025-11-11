@@ -1,3 +1,4 @@
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { ParsedData } from "@/app/crypto/dataIntegration";
 import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -34,7 +35,14 @@ function isYourSettingsResponseType<
 }
 
 
-function convertToYourSettingsResponseType(
+function convertToYourSettingsResponseType<
+  T extends BaseDataEntity = AppEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
     data: ParsedData<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {

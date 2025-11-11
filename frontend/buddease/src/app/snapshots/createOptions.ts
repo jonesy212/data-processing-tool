@@ -26,7 +26,7 @@ import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/Snapsh
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotStoreProps } from "@/app/snapshots/useSnapshotStore";
 import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { addToSnapshotList } from "@/app/utils/snapshotUtils";
+import { addToSnapshotList } from "@/utils/snapshotUtils";
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";

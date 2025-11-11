@@ -10,6 +10,7 @@ export interface JobRole extends UserRole {
 enum UserRoleEnum {
   Administrator = 'Administrator',
   Developer = 'Developer',
+  Contributor = 'Contributor',
   TeamLeader = 'TeamLeader',
   Coordinator = 'Coordinator',
   PaidPosition = 'PaidPosition',

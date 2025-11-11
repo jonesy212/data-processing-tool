@@ -1,3 +1,4 @@
+import { Project } from '@/app/models/projects/Project';
 import { Member } from '@/app/models/members/Member';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -20,6 +21,8 @@ interface Contributor<
   IncludedFields extends keyof T = keyof T
 > extends Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   contributions: Contribution[]; // detailed breakdown per project
+  projects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  memberName: string
   joinedAt?: Date;
   active?: boolean;
 }

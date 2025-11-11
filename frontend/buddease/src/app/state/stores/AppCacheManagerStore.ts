@@ -1,7 +1,7 @@
 // AppCacheManagerStore.ts
 import { ExtendedData } from "@/app/utils/AppCacheManager";
-import AppCacheManagerExtended from "@/app/utils/cache/AppCacheManagerExtended";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/state/context/NotificationContext";
+import AppCacheManagerExtended from "@/utils/cache/AppCacheManagerExtended";
 import { makeAutoObservable } from "mobx";
 
 

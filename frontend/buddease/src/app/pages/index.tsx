@@ -1,14 +1,14 @@
 // pages/index.tsx
 import useMessagingSystem from "@/app/components/communications/chat/useMessagingSystem";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
+import generateDynamicContent from '@/app/documents/DynamicContentGenerator';
 import { UserRole } from "@/app/models/UserRole";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import PaymentForm from "@/app/payment/PaymentForm";
-import { rootStores } from "@/app/state/stores/RootStores";
-import { User } from "@/app/users/User";
-import generateDynamicContent from '@/app/documents/DynamicContentGenerator';
-import { useAuth } from "@/context/AuthContext";
 import { authToken } from "@/app/server/auth/authToken";
+import { rootStores } from "@/app/state/stores/RootStores";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { User } from "@/app/users/User";
+import { useAuth } from "@/state/context/AuthContext";
 import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

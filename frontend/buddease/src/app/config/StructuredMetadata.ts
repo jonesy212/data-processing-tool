@@ -36,11 +36,7 @@ if (typeof window === 'undefined') {
 // Full 4-argument version (recommended)
 interface SpecificMetadata<
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > {
   tags?: string[] | TagsRecord<T> | undefined;
   categories?: CategoryProperties<T, K>[];
@@ -49,7 +45,7 @@ interface SpecificMetadata<
 }
 
 // Usage example
-const metadata: SpecificMetadata<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
+const metadata: SpecificMetadata<UserEntity, UserK> = {
   tags: {
     important: { name: "important", color: "red" },
     archived: { name: "archived", color: "gray" }
@@ -57,14 +53,7 @@ const metadata: SpecificMetadata<UserEntity, UserK, UserMeta, UserAttachment, Us
   priority: 1
 };
 
-type TagsType<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
-> = TagsRecord<T> | string[] | undefined;
+type TagsType<T extends BaseDataEntity> = TagsRecord<T> | string[] | undefined;
 
 type MetaBase = {
   id?: string;                 // identifier
@@ -99,7 +88,7 @@ type MetadataEntriesType<
     copyright: string;
     license: string;
     links: string[];
-    tags?: TagsType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    tags?: TagsType<T>;
   };
 };
 

@@ -1,10 +1,10 @@
 // FileEntity.ts
-import { CommonData } from '@/components/models/CommonDetails';
-import { FileMetadata } from '@/app/typings/file/FileManager';
+import { CommonData } from '@/app/components/models/CommonData';
+import FileMetadata from '@/app/components/models/file/FileManager';
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
-import { File } from '@/app/typings/file/fileTypes';
+import { AppFile } from '@/app/typings/file/fileTypes';
 
 export interface FileEntity extends BaseDataEntity {
   // Core file properties (align with your existing File interface)
@@ -57,6 +57,6 @@ export type FileExcludedFields = 'content' | 'encryptionKey' | 'previousVersions
 export type FileIncludedFields = keyof AppFileEntity;
 
 // Create specific type aliases
-export type AppFile = File<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
+export type MainAppFile = AppFile<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 export type AppFileCommonData = CommonData<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 

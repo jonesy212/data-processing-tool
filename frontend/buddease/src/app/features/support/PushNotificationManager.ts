@@ -1,4 +1,4 @@
-import { useNotification } from "@/context/NotificationContext";
+import { useNotification } from "@/state/context/NotificationContext";
 
 const { notify } = useNotification()
 

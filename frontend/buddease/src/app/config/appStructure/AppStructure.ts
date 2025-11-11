@@ -1,4 +1,5 @@
 import * as apiFile from '@/api/ApiFiles';
+import { Versions } from '@/app/versions/Version'
 import SecurityAPI from '@/app/api/SecurityAPI';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
@@ -211,7 +212,7 @@ export default class AppStructure<
           structure[file] = this.createAppStructureItem(
             {
               id: file,
-              userId: { userId: "user-frontend-id" | null, error: string | null },
+              userId: "user-frontend-id",
               name: file,
               type: "directory",
               path: filePath,
@@ -235,8 +236,7 @@ export default class AppStructure<
             structure[file] = this.createAppStructureItem(
               {
                 id: file,
-                userId: userId ?? 'unknown-user',
-                userId: { userId: "user-frontend-id" | null, error: string | null },
+                userId: 'unknown-user',
                 name: file,
                 type: fileType,
                 path: filePath,
@@ -277,7 +277,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: { userId: "user-frontend-id" | null, error: string | null },
+          userId: "user-frontend-id",
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,
@@ -316,7 +316,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: { userId: "user-frontend-id" | null, error: string | null },    
+          userId: "user-frontend-id",    
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,

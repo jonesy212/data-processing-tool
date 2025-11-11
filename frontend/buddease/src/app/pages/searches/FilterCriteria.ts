@@ -1,20 +1,21 @@
 
-import { NotificationTypeEnum } from "@/context/NotificationContext";
 import extractCriteria from '@/app/api/SnapshotApi';
-import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
 
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { useMetadata } from '@/app/config/useMetadata';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import { MessageType } from "@/app/generators/MessaageType";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
@@ -23,35 +24,33 @@ import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from "@/app/personas/ScenarioBuilder";
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { Snapshot, SnapshotWithCriteria } from '@/app/snapshots';
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import {
-  DocumentTypeEnum
+    DocumentTypeEnum
 } from "@/app/typings/documents";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { useMetadata } from '@/app/config/useMetadata';
 import { FetchOptions, fetchUserAreaDimensions } from '@/layouts/fetchUserAreaDimensions';
 import { Filter } from "@/pages/searches/Filter";
-import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { Pagination } from '@refinedev/core';
 
 

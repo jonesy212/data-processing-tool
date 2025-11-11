@@ -1,8 +1,14 @@
+import { fileURLToPath } from 'url';
 import fs from 'fs';
 import path from 'path';
-import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree'; // adjust path if needed
+import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
 
-const mappersFile = path.resolve(__dirname, '../src/app/server/repository/mappers.ts');
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Fix the mappersFile path for ES modules
+const mappersFile = path.resolve(__dirname, '../server/repository/mappers.ts');
 
 interface RelevantFile {
   file: string;
@@ -16,7 +22,7 @@ async function updateMappersFromTree() {
   // Collect only interfaces and key classes for mappers
   const relevantFiles: RelevantFile[] = Array.from(analyzer.interfaceRegistry.values())
     .filter(item => ['CacheData', 'Attachment', 'DefaultExcludedFields'].includes(item.name))
-    .map(item => ({ file: item.file, name: item.name })); // cast to RelevantFile
+    .map(item => ({ file: item.file, name: item.name }));
 
   // Build import statements
   const importStatements = relevantFiles

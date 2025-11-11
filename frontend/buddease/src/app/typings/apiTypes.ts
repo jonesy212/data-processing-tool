@@ -33,6 +33,7 @@ export interface ApiPagination {
   page: number;
   pageSize: number;
   total: number;
+  totalItems: number
   totalPages: number;
   hasNext: boolean;
   hasPrevious: boolean;

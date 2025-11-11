@@ -2,8 +2,8 @@
 import { handleApiError } from "@/app/api/ApiLogs";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 import { SharedConfig } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 // Import any other necessary dependencies
 
 export interface Config extends SharedConfig {

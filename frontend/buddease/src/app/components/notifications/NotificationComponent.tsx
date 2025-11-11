@@ -1,8 +1,8 @@
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
-import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import '@/NotificationComponent.css'; // Assuming styles are defined here
+import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { randomBytes } from "ethers";
 import React from "react";
 import useNotificationManagerService from "./NotificationService";

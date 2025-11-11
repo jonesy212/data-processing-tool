@@ -1,12 +1,12 @@
 // RegistrationPhaseComponent.tsx
 
 // app/features/registration/components/RegistrationPhaseComponent.tsx
-import React, { useState } from 'react';
-import { useNotification } from '@/app/context/NotificationContext';
-import { useAuth } from '@/app/context/AuthContext';
-import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { GenericStepContainer } from '@/app/components/shared/steps/GenericStepContainer';
 import { useStepNavigation } from '@/app/hooks/useStepNavigation';
+import { useAuth } from '@/app/state/context/AuthContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { PhaseDefault } from '@/app/typings/phaseTypes';
+import React, { useState } from 'react';
 
 interface RegistrationPhaseComponentProps {
   onSuccess: (userData?: any) => void;

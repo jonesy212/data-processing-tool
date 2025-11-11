@@ -1,6 +1,5 @@
 import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
-import { RealtimeData } from "./RealtimeData";
-;
+import { RealtimeData } from "@/app/typings/realtimeTypes";
 
 
 // Use these defaults for the generic

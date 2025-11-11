@@ -1,12 +1,12 @@
 import { makeAutoObservable, reaction } from "mobx";
 import { v4 as uuid } from "uuid";
 import { Project } from "@/app/models/projects/Project";
-import Task from "@/app/components/models/tasks/Task";
-import Milestone from "@/app/components/calendar/CalendarSlice";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Milestone } from "@/app/typiings/milestoneTypes";
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
-
-
+import { Progress } from "@/app/models/tracker/ProgressBar";
+import NotificationStore from "@/app/state/stores/NotificationStore"; // the advanced one
+import { } from '@/app/state/stores/SettingsStore'
 
 /**
  * Coordinator store for Projects
@@ -19,7 +19,7 @@ import { Progress } from "@/app/components/models/tracker/ProgressBar";
  */
 
 export class ProjectStore {
-  projects: Project[] = [];
+  projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   progress: Progress = {
     id: "default",
     value: 0,
@@ -30,11 +30,11 @@ export class ProjectStore {
     name: '',
     color: '',
     description: '',
-    min: '',
-    done: '',
+    min: 0,
+    done: false,
   };
   loading: boolean = false;
-
+  settingsStore: SettingsStore;
   taskStore: TaskStore;
   milestoneStore: MilestoneStore;
   notificationStore: NotificationStore;
@@ -42,11 +42,52 @@ export class ProjectStore {
   constructor(
     taskStore?: TaskStore,
     milestoneStore?: MilestoneStore,
-    notificationStore?: NotificationStore
+    notificationStore?: NotificationStore,
+    settingsStore: SettingsStore
   ) {
     this.taskStore = taskStore || new TaskStore();
     this.milestoneStore = milestoneStore || new MilestoneStore();
-    this.notificationStore = notificationStore || new NotificationStore();
+    this.settingsStore = settingsStore; 
+    this.notificationStore = notificationStore || new NotificationStore({
+      email: { enabled: true },  
+      push: { enabled: true },   
+      sms: false,                // SMS disabled
+      inApp: { 
+        enabled: true,
+        sound: true,
+        popupAlerts: true,
+        persistent: false,
+        autoMarkAsRead: true
+      },
+      webhook: false,
+      advanced: {
+        chat: { 
+          enabled: true,
+          platforms: ['slack', 'teams']
+        },
+        videoCall: { 
+          enabled: false,
+          maxDuration: 3600,
+          quality: 'hd'
+        },
+        screenShare: { 
+          enabled: false,
+          annotations: true
+        }
+      },
+      deliveryStrategy: "all",
+      retryPolicy: { 
+        maxRetries: 3, 
+        retryInterval: 5000 
+      },
+      quietHours: { 
+        enabled: false, 
+        startTime: "22:00", 
+        endTime: "07:00", 
+        timeZone: "UTC", 
+        days: [] 
+      },
+    } as NotificationChannels); // Type assertion to ensure it matches the interface
 
     makeAutoObservable(this);
 
@@ -57,18 +98,51 @@ export class ProjectStore {
     );
   }
 
+  private createProject(projectData: Omit<Project, "id">): Project {
+  const collaborationMode = this.settingsStore.settings?.collaborationMode || "real-time";
+  const visibility = this.settingsStore.settings?.projectVisibility || "private";
+  
+  return {
+    id: uuid(),
+    name: projectData.name,
+    description: projectData.description,
+    members: projectData.members || [],
+    tasks: projectData.tasks || [],
+    status: projectData.status || 'active',
+    createdAt: projectData.createdAt || new Date(),
+    updatedAt: projectData.updatedAt || new Date(),
+    owner: projectData.owner || 'current-user',
+    team: projectData.team || [],
+    milestones: projectData.milestones || [],
+    tags: projectData.tags || [],
+    settings: projectData.settings || {},
+    visibility: visibility,
+    collaborationMode: collaborationMode,
+    progress: projectData.progress || 0,
+    startDate: projectData.startDate,
+    endDate: projectData.endDate,
+    budget: projectData.budget,
+    priority: projectData.priority || 'medium',
+    // Add any other properties from your Project interface
+  };
+}
+
+
   // -------------------
   // Project Methods
   // -------------------
-  addProject(project: Omit<Project, "id">) {
-    const newProject = { ...project, id: uuid() };
+  addProject(projectData: Omit<Project, "id">) {
+    const newProject = this.createProject(projectData);
     this.projects.push(newProject);
 
     this.notificationStore.addNotification({
       id: uuid(),
-      message: `Project created: ${project.name}`,
+      message: `Project created: ${projectData.name}`,
+      type: 'success',
+      timestamp: new Date(),
+      read: false
     });
-
+    
     return newProject;
   }
 
@@ -94,7 +168,7 @@ export class ProjectStore {
  * Sub-store for managing tasks
  */
 export class TaskStore {
-  tasks: Record<string, Task> = {};
+  tasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
   constructor() {
     makeAutoObservable(this);
@@ -104,7 +178,7 @@ export class TaskStore {
     });
   }
 
-  addTask(task: Task) {
+  addTask(task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.tasks[task.id] = task;
   }
 
@@ -112,7 +186,7 @@ export class TaskStore {
     delete this.tasks[taskId];
   }
 
-  updateTask(task: Task) {
+  updateTask(task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.tasks[task.id] = task;
   }
 }
@@ -143,21 +217,21 @@ export class MilestoneStore {
 /**
  * Sub-store for managing notifications
  */
-export class NotificationStore {
-  notifications: Record<string, NotificationData> = {};
+// export class NotificationStore {
+//   notifications: Record<string, NotificationData> = {};
 
-  constructor() {
-    makeAutoObservable(this);
-  }
+//   constructor() {
+//     makeAutoObservable(this);
+//   }
 
-  addNotification(notification: NotificationData) {
-    this.notifications[notification.id] = notification;
-  }
+//   addNotification(notification: NotificationData) {
+//     this.notifications[notification.id] = notification;
+//   }
 
-  removeNotification(id: string) {
-    delete this.notifications[id];
-  }
-}
+//   removeNotification(id: string) {
+//     delete this.notifications[id];
+//   }
+// }
 
 // -------------------
 // RootStores Integration

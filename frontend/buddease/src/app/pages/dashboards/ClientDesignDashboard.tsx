@@ -2,7 +2,6 @@ import connectToChatWebSocket from '@/app/components/communications/WebSocket';
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
-import { NotificationType } from '@/app/context/NotificationContext';
 import NotificationManager from "@/app/features/support/NotificationManager";
 import { ModalGenerator } from "@/app/generators/GenerateModal";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -11,10 +10,11 @@ import useModalFunctions from '@/app/pages/dashboards/ModalFunctions';
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import PersonaBuilderDashboard from "@/app/personas/recruiter_dashboard/PersonaBuilderDashboard";
 import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { TodoList } from '@/app/todos/lists/TodoList';
 import Clipboard from "@/app/ts/clipboard";
-import DynamicComponentWrapper from "@/app/utils/DynamicComponentWrapper";
 import { DesignDashboardBaseProps } from '@/pages/dashboards/DesignDashboard';
+import DynamicComponentWrapper from "@/utils/DynamicComponentWrapper";
 import { useEffect, useState } from 'react';
 
 

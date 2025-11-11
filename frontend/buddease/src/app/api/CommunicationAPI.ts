@@ -1,7 +1,7 @@
 // CommunicationAPI.ts
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import { useNotification } from '@/app/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from 'axios';
 
 

@@ -135,7 +135,7 @@ export interface DataStoreMethods <
   getData: (
     id: number,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & K, StructuredMetadata<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & K>>
+    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined>;
   removeData: (id: number) => void;
 

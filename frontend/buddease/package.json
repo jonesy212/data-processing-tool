@@ -17,8 +17,49 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "react-scripts build && npx serve -s build",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "analyze:duplicates": "tsx src/app/scripts/analyzeDuplicates.ts",
+    "analyze:dependencies": "tsx src/app/scripts/analyzeDependencies.ts",
+    "analyze:all": "pnpm analyze:duplicates && pnpm analyze:dependencies",
+   
+    "type-check": "tsc --noEmit",
+    "lint:types": "tsc --noEmit --skipLibCheck",
+
+    "generate:tree": "tsx src/app/scripts/generateTree.ts",
+    "generate:tree:text": "tsx src/app/scripts/generateTree.ts text",
+    "generate:tree:markdown": "tsx src/app/scripts/generateTree.ts markdown",
+    "generate:tree:json": "tsx src/app/scripts/generateTree.ts json",
+    "generate:roadmaps": "tsx src/app/scripts/generateRoadmaps.ts",
+    "generate:roadmaps:custom": "tsx src/app/scripts/generateRoadmaps.ts",
+    "generate:analysis": "tsx src/app/scripts/generateTree.ts \"project analysis\" --output ./analysis",
+    "dev:with-analysis": "pnpm generate:tree:json && pnpm dev",
+    "build:with-analysis": "pnpm analyze:all && pnpm build",
+    "snapshots:generate": "tsx src/app/scripts/generateSnapshots.ts",
+    "snapshots:clean": "tsx src/app/scripts/cleanSnapshots.ts",
+    "data:reset": "tsx src/app/scripts/resetDevelopmentData.ts",
+    "test:types": "pnpm type-check && pnpm analyze:all",
+    "validate:build": "pnpm test:types && pnpm build",
+
+    "generate:corrections": "tsx src/app/generators/corrections/CorrectionGenerator.ts",
+    "generate:corrections:critical": "tsx src/app/generators/corrections/CorrectionGenerator.ts --critical",
+    "generate:corrections:snapshots": "tsx src/app/generators/corrections/CorrectionGenerator.ts --snapshots",
+    "generate:corrections:quick": "tsx src/app/generators/corrections/CorrectionGenerator.ts --quick",
+    "generate:corrections:docs": "tsx src/app/generators/corrections/CorrectionGenerator.ts --output ./docs/corrections",
+    
+    "dev:with-corrections": "pnpm generate:corrections && pnpm dev",
+    "dev:with-critical-fixes": "pnpm generate:corrections:critical && pnpm dev",
+    "dev:with-snapshot-fixes": "pnpm generate:corrections:snapshots && pnpm dev",
+    
+    "quick:fixes": "pnpm generate:corrections:quick && echo '✅ Check ./corrections/quick-fixes.md for easy wins (zsh commands)'",
+    
+    "track:progress": "echo 'Check ./error-tracking/progress-report.md'",
+    "track:history": "echo 'Check ./error-tracking/error-history.json'",
+    "dev:with-tracking": "pnpm generate:corrections && pnpm track:progress && pnpm dev",
+    
+    "pre-push": "pnpm analyze:all && pnpm type-check",
+    "pre-commit": "pnpm lint && pnpm type-check"
   },
+
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@emoji-mart/data": "^1.2.1",
@@ -185,6 +226,7 @@
     "react-native-typescript-transformer": "^1.2.13",
     "snowpack": "^3.8.8",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }

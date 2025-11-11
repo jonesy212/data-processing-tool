@@ -1,12 +1,12 @@
 //ApiDetails.ts
 
-import detailsApiService from '@/app/api/service/DetailsApiService';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import detailsApiService from '@/app/api/service/DetailsService';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { useDetailsContext } from '@/app/models/data/DetailsContext';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {

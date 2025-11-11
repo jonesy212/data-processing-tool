@@ -1,7 +1,7 @@
 // snapshotOperations.ts
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
-import { snapshotApi } from '@/app/api/snapshotApi';
+import { snapshotApi } from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';

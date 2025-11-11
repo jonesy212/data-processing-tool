@@ -1,14 +1,14 @@
 // api/ApiDetails.ts
 import { handleApiError } from '@/app/api/ApiLogs';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import { AxiosError } from 'axios';
 import axiosInstance from '@/app/api/csrfToken';
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { BaseData, Data } from '@/app/models/data/Data';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { AxiosError } from 'axios';
 
 const API_BASE_URL = "/api/details";
 

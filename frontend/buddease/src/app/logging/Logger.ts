@@ -10,7 +10,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/app/context/NotificationContext";
+} from "@/app/state/context/NotificationContext";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { BaseData } from '@/app/models/data/Data';
 import { LogData } from "@/app/models/LogData";

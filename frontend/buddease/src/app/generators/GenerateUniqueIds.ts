@@ -1,18 +1,18 @@
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { useMetadata } from '@/app/config/useMetadata';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { DataDetails } from '@/app/models/data/Data';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { useMetadata } from '@/app/config/useMetadata';
-import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from '@/app/typings/entities/DataEntity'
 
-import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import { useMeta } from "@/app/config/useMeta";
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 
 const area = fetchUserAreaDimensions().toString()
 

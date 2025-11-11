@@ -1,18 +1,17 @@
 // LazyLoadScriptConfig.ts
-import { SystemConfigs } from '@/app/api/systemConfigs';
-import { UserConfigs } from '@/app/api/userConfigs';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { DocumentBuilderConfig } from '@/app/config/DocumentBuilderConfig';
-import ShoppingCenterConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
-import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
-import { ApiConfig } from '@/app/services/ConfigurationServices';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import MainConfig from '@/app/config/MainConfig';
-import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { traverseFrontendDirectory } from '@/app/api/traverse/route';
+import { UserConfigs } from '@/app/api/userConfigs';
 import { BackendConfig, backendConfig } from '@/app/config/BackendConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from '@/app/config/DocumentBuilderConfig';
 import { FrontendConfig, frontendConfig } from '@/app/config/FrontendConfig';
+import MainConfig from '@/app/config/MainConfig';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ApiConfig } from '@/app/services/ConfigurationServices';
+import ShoppingCenterConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
 interface LazyLoadScriptConfig {
   configureScript(): unknown;

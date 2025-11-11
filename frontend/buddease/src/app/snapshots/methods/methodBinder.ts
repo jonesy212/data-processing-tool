@@ -25,3 +25,8 @@ export function bindAllMethods<Target extends object, Source extends object>(
     }
   });
 }
+
+export const MethodBinder = {
+  bindMethods,
+  bindAllMethods
+};

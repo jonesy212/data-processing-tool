@@ -3,16 +3,16 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/context/NotificationContext";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { YourResponseType } from '@/app/typings/responseTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { AxiosError } from "axios";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import {
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
+} from '@/app/state/context/NotificationContext';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { AxiosError } from "axios";
 
 
 

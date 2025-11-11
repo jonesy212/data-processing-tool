@@ -1,13 +1,13 @@
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/app/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig, snapshotStoreConfigs } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields} from '@/app/config/BaseConfig';
-import { decompress } from "@/app/utils/compression"; // hypothetical decompression utility
+import { decompress } from "@/utils/compression"; // hypothetical decompression utility
 
 
 const processSnapshotConfigs = async <
@@ -174,7 +174,6 @@ const initializeSnapshotStoreConfig = async <
 };
 
   
-import { decompress } from "@/utils/compression";
 
 const processAllSnapshotConfigs = async <
   T extends BaseDataEntity = BaseDataRoot,
@@ -221,7 +220,6 @@ processAllSnapshotConfigs();
   
 
 
-import { decompress } from "@/utils/compression";
 
 const processAllSnapshotConfigsParallel = async <
   T extends BaseDataEntity = BaseDataRoot,

@@ -1,9 +1,9 @@
  
 import { ToolbarActions } from "@/app/actions/ToolbarActions";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import { MobXRootState } from "@/app/state/stores/RootStores";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

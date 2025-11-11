@@ -1,11 +1,11 @@
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
-import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { isSnapshot } from '@/utils/snapshotUtils';
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */

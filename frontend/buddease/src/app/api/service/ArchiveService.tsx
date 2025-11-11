@@ -1,9 +1,9 @@
-import { NotificationType } from '@/app/context/NotificationContext';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { notify } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import StorageService from '@/app/utils/storage/StoragService';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { NotificationType } from '@/app/state/context/NotificationContext';
+import { notify } from '@/utils/snapshotUtils';
+import StorageService from '@/utils/storage/StoragService';
 
 // Archive types
 export interface ArchiveMetadata {
@@ -75,7 +75,7 @@ class ArchiveService {
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
   >(
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     options?: {
       tags?: string[];
       description?: string;
@@ -141,25 +141,25 @@ class ArchiveService {
       return archivedSnapshot.metadata;
 
     } catch (error: unknown) {
-    // ✅ Fix 3: Properly handle `unknown` error
-    console.error('Failed to archive snapshot:', error);
-    if (error instanceof Error) {
-      throw new Error(`Archive failed: ${error.message}`);
-    } else {
-      throw new Error('Archive failed: Unknown error occurred');
+    
+      console.error('Failed to archive snapshot:', error);
+      if (error instanceof Error) {
+        throw new Error(`Archive failed: ${error.message}`);
+      } else {
+        throw new Error('Archive failed: Unknown error occurred');
       }
     }
   }
 
-private validateSnapshotForArchiving<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T 
->(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  private validateSnapshotForArchiving<
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): boolean {
     // Check if snapshot is already archived
     if (snapshot.metadata?.isArchived) {
@@ -181,23 +181,23 @@ private validateSnapshotForArchiving<
     return true;
   }
 
-private async processSnapshotData<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T 
->(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
-  options?: { compression?: boolean }
-): Promise<{
-  data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;  
-  checksum: string;
-  size: number;
-  originalSize: number;
-  compressionRatio: number;
-}> {
+  private async processSnapshotData<
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    options?: { compression?: boolean }
+  ): Promise<{
+    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    checksum: string;
+    size: number;
+    originalSize: number;
+    compressionRatio: number;
+  }> {
     const shouldCompress = options?.compression ?? this.config.compressionEnabled;
     const snapshotString = JSON.stringify(snapshot);
     const originalSize = new Blob([snapshotString]).size;

@@ -1,10 +1,10 @@
 // ApiTradingInfo.ts - News and information trading APIs
-import axiosInstance from '@/app/api/csrfToken';
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { AxiosError } from 'axios';
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { AxiosError } from 'axios';
 
 // Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;
@@ -523,6 +523,5 @@ export const fetchVolatilityIndexAPI = async (asset?: string): Promise<any> => {
 };
 
 export {
-  tradingInfoNotificationMessages,
-  handleTradingInfoApiErrorAndNotify
+    handleTradingInfoApiErrorAndNotify, tradingInfoNotificationMessages
 };

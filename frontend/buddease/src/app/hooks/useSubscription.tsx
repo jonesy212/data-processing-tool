@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { fetchPortfolioUpdatesLastUpdated } from "@/app/utils/trading/TradingUtils";
+import { fetchPortfolioUpdatesLastUpdated } from "@/utils/trading/TradingUtils";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 

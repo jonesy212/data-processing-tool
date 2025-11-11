@@ -58,7 +58,7 @@ import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
 
@@ -84,7 +84,7 @@ import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 // Utils
 import { isSnapshotFunction } from '@/app/snapshots/SnapshotMap';
-import { addToSnapshotList, isSnapshot } from "@/app/utils/snapshotUtils";
+import { addToSnapshotList, isSnapshot } from "@/utils/snapshotUtils";
 
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
 

@@ -3,7 +3,7 @@
 // UIPhase.ts
 import { fetchData } from "@/app/api/ApiData";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
-import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import UserService from '@/app/api/ApiUser';

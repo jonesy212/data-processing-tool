@@ -1,31 +1,33 @@
 // ApiDocument.ts
+import { Tag } from 'sanitize-html';
+import Subtask from '@/app/model/tasks/Subtask'
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { NotificationType, useNotification } from '@/app/context/NotificationContext';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Presentation } from "@/app/documents/editing/Presentation";
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AppDocument } from '@/app/typings/entities/DocumentEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
 import { current } from "immer";
 
 
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { ClientInformation, CustomMediaSession } from '@/app/client/ClientInformation';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { Content } from '@/app/models/content/AddContent';
 import FileData from '@/app/models/data/FileData';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Document } from '@/app/state/stores/DocumentStore';
-import { ClientInformation, CustomMediaSession } from '@/app/client/ClientInformation';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
@@ -277,33 +279,89 @@ export const createDocumentThunks = <
     }
   );
 
-  const fetchDocumentById = createAsyncThunk<
+// ✅ createDocumentThunks.ts
+
+export const createDocumentThunks = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => {
+
+  // ✅ Update document name
+  const updateDocumentName = createAsyncThunk<
     DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    number
+    { documentId: number; newName: string }
   >(
-    "documents/fetchDocumentById",
-    async (documentId, { dispatch }) => {
+    "documents/updateDocumentName",
+    async ({ documentId, newName }) => { // removed unused dispatch
       try {
-        const response = await axiosInstance.get<
+        const response = await axiosInstance.put<
           DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-        >(`${API_BASE_URL}/documents/${documentId}`, {
-          headers: headersConfig,
+        >(
+          `${API_BASE_URL}/documents/${documentId}/name`,
+          { name: newName },
+          { headers: headersConfig }
+        );
+
+        // ✅ Updated notification call
+        useNotification().notify({
+          id: `update-doc-${documentId}`,
+          message: apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
+          data: { documentId, newName },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.SUCCESS,
+          position: NotificationPosition.TopRight,
         });
+
         return response.data;
       } catch (error) {
-        console.error("Error fetching document:", error);
-        handleDocumentApiErrorAndNotify(error, "FETCH_DOCUMENT_ERROR");
+        console.error("Error updating document name:", error);
+        handleDocumentApiErrorAndNotify(
+          error as AxiosError<unknown>,
+          "Failed to update document name",
+          "UPDATE_DOCUMENT_NAME_ERROR"
+        );
         throw error;
       }
     }
   );
 
-  return {
-    updateDocumentName,
-    fetchDocumentById,
-  };
-};
+  // ✅ Fetch document by ID
+  const fetchDocumentById = createAsyncThunk<
+    DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    number
+  >(
+    "documents/fetchDocumentById",
+      async (documentId) => { // removed unused dispatch
+        try {
+          const response = await axiosInstance.get<
+            DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          >(`${API_BASE_URL}/documents/${documentId}`, {
+            headers: headersConfig,
+          });
 
+          return response.data;
+        } catch (error) {
+          console.error("Error fetching document:", error);
+          handleDocumentApiErrorAndNotify(
+            error as AxiosError<unknown>,
+            "Failed to fetch document",
+            "FETCH_DOCUMENT_ERROR"
+          );
+          throw error;
+        }
+      }
+    );
+
+    return {
+      updateDocumentName,
+      fetchDocumentById,
+    };
+  };
+}
 
 // Function to convert documentData to WritableDraft<DocumentObject>
 const createDraftDocument = <
@@ -382,7 +440,7 @@ const createDraftDocument = <
         ...subtask,
         assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
         tags: subtask.tags
-          ? Object.values(subtask.tags).map((tag: Tag) => ({ ...tag }))
+          ? Object.values(subtask.tags).map((tag: Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({ ...tag }))
           : [],
       })) || undefined,
     } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -2401,32 +2459,32 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 
 export {
-  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-  documentLifecycleManagement, documentRedaction,
-  documentTemplates, documentVersionComparison,
-  downloadDocument, encryptDocument, exportDocumentReport,
-  exportToExternalSystem, fakeApiCall,
-  fetchAllDocumentsAPI, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
-  fetchXmlDocumentByIdAPI, filterDocuments,
-  filterDocumentsAPI, generateDocument,
-  generateDocumentReport, getDocument, getDocumentUrl,
-  getDocumentVersions, grantDocumentAccess,
-  importFromExternalSource, initiateDocumentWorkflow,
-  intelligentDocumentSearch, listDocuments,
-  loadPresentationFromDatabase, lockDocument,
-  manageDocumentPermissions, mentionUserInDocument,
-  mergeDocuments, moveDocument,
-  provideFeedbackOnDocument, rejectDocument,
-  removeDocument, requestFeedbackOnDocument,
-  requestReviewOfDocument, resolveFeedbackOnDocument,
-  restoreDocument, retrieveBackup, revertToDocumentVersion,
-  revokeDocumentAccess, scheduleReportGeneration,
-  searchDocumentAPI, searchDocuments, shareDocument,
-  smartTagging, splitDocument, synchronizeWithCloudStorage,
-  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-  unlockDocument, updateDocument, updateDocumentAPI,
-  updateDocumentNameAPI, updateSnapshotDetails,
-  uploadDocument, validateDocument,
-  viewDocumentHistory
+    addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+    documentLifecycleManagement, documentRedaction,
+    documentTemplates, documentVersionComparison,
+    downloadDocument, encryptDocument, exportDocumentReport,
+    exportToExternalSystem, fakeApiCall,
+    fetchAllDocumentsAPI, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
+    fetchXmlDocumentByIdAPI, filterDocuments,
+    filterDocumentsAPI, generateDocument,
+    generateDocumentReport, getDocument, getDocumentUrl,
+    getDocumentVersions, grantDocumentAccess,
+    importFromExternalSource, initiateDocumentWorkflow,
+    intelligentDocumentSearch, listDocuments,
+    loadPresentationFromDatabase, lockDocument,
+    manageDocumentPermissions, mentionUserInDocument,
+    mergeDocuments, moveDocument,
+    provideFeedbackOnDocument, rejectDocument,
+    removeDocument, requestFeedbackOnDocument,
+    requestReviewOfDocument, resolveFeedbackOnDocument,
+    restoreDocument, retrieveBackup, revertToDocumentVersion,
+    revokeDocumentAccess, scheduleReportGeneration,
+    searchDocumentAPI, searchDocuments, shareDocument,
+    smartTagging, splitDocument, synchronizeWithCloudStorage,
+    tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+    unlockDocument, updateDocument, updateDocumentAPI,
+    updateDocumentNameAPI, updateSnapshotDetails,
+    uploadDocument, validateDocument,
+    viewDocumentHistory
 };
 

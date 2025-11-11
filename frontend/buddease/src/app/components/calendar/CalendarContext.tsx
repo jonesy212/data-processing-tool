@@ -82,7 +82,7 @@ type CalendarContextType<
 };
 
 // Create the context
-const CalendarContext = createContext<CalendarContextType | undefined>(
+const CalendarContext = createContext<CalendarContextType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(
   undefined
 );
 
@@ -98,11 +98,11 @@ export const useCalendarContext = () => {
 };
 
 // Provider component for managing calendar data
-export const CalendarProvider: React.FC<CalendarContextProps> = ({
+export const CalendarProvider: React.FC<CalendarContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = ({
   children,
 }) => {
   // State to store calendar data
-  const [calendarData, setCalendarData] = useState<SimpleCalendarEvent[]>([]);
+  const [calendarData, setCalendarData] = useState<SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([]);
 
   // Function to update calendar data
   const updateCalendarData = (
@@ -114,7 +114,7 @@ export const CalendarProvider: React.FC<CalendarContextProps> = ({
   };
 
   // Context value to provide to consumers
-  const contextValue: CalendarContextType = {
+  const contextValue: CalendarContextType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     calendarData,
     updateCalendarData,
   };

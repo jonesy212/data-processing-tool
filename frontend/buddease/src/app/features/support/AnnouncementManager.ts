@@ -1,4 +1,4 @@
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 
 class AnnouncementManager {
   static sendAnnouncement(message: string, sender: string): void {

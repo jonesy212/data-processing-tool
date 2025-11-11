@@ -1,9 +1,9 @@
-import { useStepContext } from "@/app/context/StepContext";
-import React, { useState } from "react";
-import { TradeData } from "@/app/trading/TradeData";
 import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
-import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
+import { useStepContext } from "@/app/state/context/StepContext";
+import { TradeData } from "@/app/trading/TradeData";
 import TradingPreferencesStep from "@/app/TradingPreferencesStep";
+import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
+import React, { useState } from "react";
 import TradingBasicInfoStep from "./TradingBasicInfoStep";
 import TradingSummaryStep from "./TradingSummaryStep";
 
@@ -138,3 +138,4 @@ const steps: StepProps[] = [
 export default steps;
 export { tradeDetails };
 export type { StepProps };
+

@@ -1,7 +1,7 @@
 import DatabaseClient from "@/api/DatabaseClient";
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
@@ -9,7 +9,7 @@ import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 import { AxiosError, AxiosResponse } from "axios";
 
 

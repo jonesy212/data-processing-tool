@@ -1,5 +1,5 @@
 import { createSubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 
 const projectCategory = "Project Management"; // Example category
 

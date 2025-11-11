@@ -1,15 +1,15 @@
 // systemConfigs.ts
-import LazyLoadScriptConfig from "@/app/config/LazyLoadScriptConfig";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
+import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
 import { BackendConfig } from "@/app/config/BackendConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { FrontendConfig } from "@/app/config/FrontendConfig";
+import LazyLoadScriptConfig from "@/app/config/LazyLoadScriptConfig";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
-import BackendStructure from "@/app/server/database/BackendStructure";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import BackendStructure from "@/app/server/database/BackendStructure";
 import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 
 
 export interface SystemConfigs <

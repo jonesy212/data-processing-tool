@@ -1,8 +1,8 @@
 // ConfigureTenantComponent.tsx
-import React, { useState, useEffect } from 'react';
-import { useTenantStore, Tenant } from '@/app/users/TenantStore';
-import { useNotification } from '@/app/context/NotificationContext';
 import { useAuth } from '@/app/components/auth/AuthContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { Tenant, useTenantStore } from '@/app/users/TenantStore';
+import React, { useEffect, useState } from 'react';
 
 interface ConfigureTenantComponentProps {
   onTenantConfigured?: (tenant: Tenant) => void;

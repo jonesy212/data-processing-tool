@@ -20,7 +20,7 @@ class SecurityAudit<
    * Sanitize the provided metadata.
    */
   sanitizeMetadata(
-    metadata: Partial<Meta>,
+    metadata: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     userRole: string,
     isAdmin: boolean
   ): Partial<Meta> {

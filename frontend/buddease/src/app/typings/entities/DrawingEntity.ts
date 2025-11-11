@@ -195,7 +195,7 @@ interface BaseTemplateEntity<
 // Then extend this for DrawingTemplate
 export interface DrawingTemplate<
   T extends DrawingEntity = DrawingEntity,
-  K extends T = DrawingK,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DrawingMeta,
   AttachmentType extends Attachment = DrawingAttachment,
   ExcludedFields extends keyof T = DrawingExcludedFields,

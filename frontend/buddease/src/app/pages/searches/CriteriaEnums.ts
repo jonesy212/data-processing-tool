@@ -52,8 +52,11 @@ enum CryptoAssetTypeEnum {
     STABLECOIN = "Stablecoin",             // Cryptocurrencies pegged to stable assets like fiat currencies
     NFT = "Non-Fungible Token",            // Unique digital assets representing ownership of a specific item
     DEFI = "Decentralized Finance Asset",  // Assets related to DeFi platforms
+    SOLANA = 'solana',
+    CARDANO = 'cardano',
+    POLKADOT = 'polkadot',
+    ETHEREUM = 'ethereum',
 }
-
 
 
 
@@ -64,6 +67,11 @@ enum InvestmentStrategyEnum {
     DOLLAR_COST_AVERAGING = "DCA",       // Regularly investing a fixed amount regardless of price
     VALUE_INVESTING = "Value Investing", // Investing in undervalued assets for long-term gains
     DIVIDEND_INVESTING = "Dividend Investing", // Investing in assets that pay regular dividends
+    LONG_TERM_HOLD = 'long_term_hold',
+    ARBITRAGE = 'Arbitrage',
+    STAKING = 'Staking',
+    YIELD_FARMING = 'Yield_farming',
+    DCA = 'Dollar_cost_averaging'
 }
 
 
@@ -74,8 +82,9 @@ enum MarketTrendEnum {
     BEARISH = "Bearish",           // A market condition where prices are falling
     SIDEWAYS = "Sideways",         // A market condition where prices are stable without significant movement
     VOLATILE = "Volatile",         // A market characterized by rapid price fluctuations
+    ACCUMULATION = 'Accumulation',
+    DISTRIBUTION = 'Distribution'
 }
-
 
 
 enum PerformanceStatusEnum {
@@ -83,6 +92,11 @@ enum PerformanceStatusEnum {
     ON_TRACK = "On Track",                  // Asset performance is in line with expectations
     OUTPERFORMING = "Out Performing",        // Asset performance is exceeding expectations
     STAGNANT = "Stagnant",                  // Asset performance is flat without significant change
+    GAINING = 'gaining',
+    LOSING = 'losing',
+    STABLE = 'stable',
+    UNDERPERFORMING = 'underperforming'
+
 }
 
 
@@ -140,9 +154,11 @@ enum TechnologyEnum {
 
 
 export {
+    CommunicationTypeEnum,
     CollaborationPhaseEnum,
-    CollaborationToolEnum, CommunicationTypeEnum,
-    PhaseDurationEnum, MilestoneStatusEnum,
+    CollaborationToolEnum,
+    PhaseDurationEnum,
+    MilestoneStatusEnum,
     CryptoAssetTypeEnum,
     InvestmentStrategyEnum,
     MarketTrendEnum,

@@ -7,15 +7,14 @@ import { Data } from '@/app/models/data/Data';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { U, WrappedU } from '@/app/snapshots/isCompatibleTempData';
-import { bindAllMethods } from '@/app/snapshots/methods/methodBinder';
+import { MethodBinder, bindAllMethods } from '@/app/snapshots/methods/methodBinder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStoreReference';
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { VersionHistory } from '@/app/versions/VersionData';
 
-import getSnapshotStoreConfig, * as snapshotApi from '@/app/api/SnapshotApi';
-import { getConfigPromise } from '@/app/config/getConfigPromise';
+import getSnapshotStoreConfig from '@/app/api/SnapshotApi';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -25,33 +24,33 @@ import { SnapshotMethodsImplementation } from '@/app/snapshots/methods/snapshotM
 import { ValidationMethods } from '@/app/snapshots/methods/validationMethods';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { NotificationType, NotificationTypeEnum } from '@/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/state/context/NotificationContext';
 
 import { Video } from '@/app/typings/videoTypes/Video';
 
 import getConfig from 'next/config';
 
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
-import { SearchCriteria } from '@/app/components/routing/SearchCriteria';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { CombinedEvents, SnapshotManager, SnapshotStoreOptions } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
 import { dataStoreMethods } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from '@/app/models/data/StatusType';
 import { DebugInfo, TempData } from '@/app/models/data/TempData';
+import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import {
-    SnapshotUnion,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotsObject
+  SnapshotUnion,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotsObject
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { ConfigMethods, applyStoreConfig } from '@/app/snapshots/methods/configMethods';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
@@ -62,15 +61,15 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/app/typings/YourSpecificSnapshotType';
-import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/app/utils/snapshotUtils';
 import { Version } from '@/app/versions/Version';
+import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/utils/snapshotUtils';
 
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { createSnapshotStores } from '@/app/snapshots/newStoreUtils';
 import { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { createSnapshotStore, delegate, notifySubscribers, subscribeToSnapshot, subscribeToSnapshots } from '@/app/snapshots/snapshotHandlers';
+import { delegate, notifySubscribers, subscribeToSnapshot, subscribeToSnapshots } from '@/app/snapshots/snapshotHandlers';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { SnapshotOperations, getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
@@ -104,7 +103,7 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { notify } from '@/app/utils/snapshotUtils';
+import { notify } from '@/utils/snapshotUtils';
 import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from './methods/advancedTransform';
 
 interface UnsubscribeEvent extends UnsubscribeDetails {
@@ -403,7 +402,18 @@ class SnapshotStore<
     );
   };
 
-  notify!: <U, K>(id: string, message: string, content: Content<U, K>, data: any, date: Date, type: NotificationType) => void;
+  public getNotifyFailure(message: string): void {
+    this.privateNotifyFailure(message);
+  }
+
+  notify!: (
+    id: string, 
+    message: string, 
+    content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    data: any, 
+    date: Date, 
+    type: NotificationType
+  ) => void;
 
   // getSubscribers!: <
   //   U extends BaseDataEntity,
@@ -884,9 +894,14 @@ async processBatch(
   private delegate: Array<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
 
   private securityService: SecurityService;
+  private syncInProgress: boolean = false;
   
-  
-
+  // private sync-related properties
+  private syncQueue: Array<() => Promise<void>> = [];
+  private lastSyncTime: number = 0;
+  private syncRetryCount: number = 0;
+  private readonly MAX_SYNC_RETRIES: number = 3;
+  private syncIntervalId: NodeJS.Timeout | null = null;
 
   getStore!: typeof LifecycleMethods.getStore;
   getStores!: typeof LifecycleMethods.getStores;
@@ -933,10 +948,20 @@ async processBatch(
     }
   }
 
-snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
+
+  // Method to update config
+  async updateConfig(newConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
+    this.config = Promise.resolve(newConfig);
+  }
+
+  // Method to get current config (non-promise version for convenience)
+  async getCurrentConfig(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
+    return await this.config;
+  }
 
 // Renamed method to avoid conflict
-processSnapshotData? = async (
+processSnapshotData = async (
   id: string | number | null,
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -975,40 +1000,56 @@ processSnapshotData? = async (
 
     if (payload?.returnType === 'snapshotData') {
       // Return as SnapshotData type if needed
+      // Get the current config for use in the return object
+      const currentConfig = await this.config;
+        
       return {
-        getSnapshot: async () => newData,
-        validate: () => true,
-        transform: (snap: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => snap,
-        id: "",
-        storeId: 0,
-        category: "",
-        serialize: () => "",
-        
-        get: (key: string) => { },
-        set: (key: string, value: any) => { },
-        processEvent: (data: any, type: string, event: Event) => { },
-        shared: "",
-        
-        operations: {} as SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        base: {} as  BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        sharedMetadata: "",
+        getSnapshot: async () => {
+            if (newData.id) {
+              const snapshot = await this.getSnapshot(newData.id.toString());
+              return snapshot || newData;
+            }
+          return newData;
+        },
+        validate: () => this.validateSnapshot(newData.id?.toString() || '', newData),
+        transform: (snap) => this.transformSnapshotMethod(snap),
+        id: newData.id?.toString() || "",
+        storeId: this.storeId,
+        category: this.category?.toString() || "",
+        serialize: () => JSON.stringify(newData),
+        get: (key: string) => {
+          return (newData as any)[key]; // Simple property access
+        },
+        set: (key: string, value: any) => {
+          (newData as any)[key] = value; // Simple property set
+        },
+        processEvent: (eventData: any, type: string, event: Event) => {
+          this.processAction({
+            type: 'EVENT_PROCESS',
+            payload: { eventData, type, event }
+          });
+        },
+        config: Promise.resolve(currentConfig),
+        shared: this.topic || "",
+        operations: this.getSnapshotOperations(), // Use existing method
+        base: this.getBaseEntity(), // Use existing method
+        sharedMetadata: JSON.stringify(this.metadata || {}),
 
         // For RETRIEVING data (simple lookup)
-        getSnapshotData: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
-          // Implementation for retrieving snapshot data
-          return undefined; // Replace with actual implementation
+        getSnapshotData: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+          return this.getSnapshotData(params);
         },
         
-        deleteSnapshot: (id: string) => {},
-        core: {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        security: {} as SnapshotSecurity, 
-        storage: "",
-       
-        isExpired: () => false,
-        data: "",
-        snapshotStore: {} as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        deleteSnapshot: (id: string) => {
+          this.removeSnapshot(id); // Use existing method
+        },
+        core: this.getCoreSnapshot(), // Use existing method
+        security: this.getSecurity(), // Use existing method
+        storage: this.getStorageType(), // Use existing method
+        isExpired: () => this.isExpired(), // Use existing method
+        data: JSON.stringify(newData.data || {}),
+        snapshotStore: this,
         timestamp: new Date(),
-       
       } as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     }
 
@@ -1020,6 +1061,14 @@ processSnapshotData? = async (
     return undefined;
   }
 }
+    // Additional method to handle task assignment if taskIdToAssign is provided
+  async assignTaskIfNeeded(): Promise<void> {
+    if (this.taskIdToAssign) {
+      // Implement task assignment logic here
+      console.log(`Assigning task: ${this.taskIdToAssign}`);
+      // Your task assignment implementation
+    }
+  }
   // Optional: Add a helper property if you need direct access to the data
   private _snapshotDataCache?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
@@ -1031,7 +1080,23 @@ processSnapshotData? = async (
   setSnapshotData(params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     this._snapshotDataCache.set(params.id, params.data);
   }
+
   // mappingMethods assignment
+  mapSnapshot!: (
+    id: number,
+    storeId: string | number,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotId: string,
+    criteria: CriteriaType,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    type: string,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    mapFn: (item: T) => T,
+    isAsync?: boolean
+  ) => Promise<string | undefined> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  
   mapSnapshots!: (
     storeIds: number[],
     snapshotId: string,
@@ -1122,19 +1187,23 @@ processSnapshotData? = async (
   ) => SnapshotStoreConfigWithCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string | null;
 
 
-  unsubscribe!: (callback: Function) => void;
+  unsubscribe!: (snapshotId: string, 
+    unsubscribeDetails: UnsubscribeDetails,
+    callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+    ctx?: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
+  ) => void;
 
   subscribeToSnapshots!: (
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
     unsubscribe?: UnsubscribeDetails  
   ) => SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | [] 
 
@@ -1145,14 +1214,14 @@ processSnapshotData? = async (
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, K> | undefined
+    snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, K> | undefined,
+    category?: Category
   ) => void;
   
   // Subscription methods
@@ -1174,7 +1243,8 @@ processSnapshotData? = async (
     id: 'global_listener',
     timestamp: new Date(),
     data: {} as T,
-    metadata: {} as Meta
+    metadata: {} as Meta,
+    deleted, initialState, isCore, initialConfig, 
   } as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Use your existing subscribe method and wrap it to return unsubscribe function
@@ -2008,8 +2078,24 @@ handleActions(action: any): void {
     
     this.initializeOptions();
 
+    // 1. Core Configuration Methods (should be first)
+    bindAllMethods(
+      this,
+      ConfigMethods,
+      [
+        'addStoreConfig',
+        'handleSnapshotConfig',
+        'getSnapshotConfig',
+        'setCategory',
+        'transformDelegate',
+        'applyStoreConfig',
+        'setConfig',
+        'initializeDefaultConfigs',
+        'ensureDelegate'
+      ] as const
+    );
 
-    // ✅ Bind Util Methods
+    // 2. Core Utility Methods
     bindAllMethods(
       this,
       UtilMethods,
@@ -2027,11 +2113,44 @@ handleActions(action: any): void {
         'getAllItems',
         'getSnapshotEntries',
         'getAllSnapshotEntries',
-         
+        'generateId'
       ] as const
     );
 
-     // ✅ Bind CommonDataStoreMethods
+    // 3. Validation Methods
+    bindAllMethods(
+      this,
+      ValidationMethods,
+      [
+        'validateSnapshot',
+        'compareSnapshotState'
+      ] as const
+    );
+
+    // 4. Data Management Methods
+    bindAllMethods(
+      this,
+      DataMethods,
+      [
+        'addDataSnapshot',
+        'getData',
+        'removeData',
+        'updateData',
+        'updateDataTitle',
+        'updateDataDescription',
+        'updateDataStatus',
+        'addDataSuccess',
+        'addDataStatus',
+        'setData',
+        'addDataPartial',
+        'getAllKeys',
+        'getAllValues',
+        'getAllItems',
+        'getSnapshotEntries'
+      ] as const
+    );
+
+    // 5. Common Data Store Methods
     bindAllMethods(
       this,
       CommonDataStoreMethods,
@@ -2044,35 +2163,181 @@ handleActions(action: any): void {
       ] as const
     );
 
-    // ✅ Bind Data Methods
+    // 6. Core Snapshot Operations
     bindAllMethods(
       this,
-      DataMethods,
+      SnapshotMethodsImplementation,
       [
-        // List all DataMethods properties here
+        'snapshot',
+        'addSnapshot', 
+        'removeSnapshot',
+        'updateSnapshot',
+        'takeSnapshot',
+        'restoreSnapshot',
+        'getSnapshotContainer',
+        'setSnapshotContainer',
+        'removeSnapshotContainer',
+        'getAllSnapshotContainers',
+        'findSnapshotContainers'
       ] as const
     );
 
-    // ✅ Bind Snapshot Methods
+    // 7. Snapshot Store Methods
     bindAllMethods(
-      this,
-      SnapshotMethods,
-      [
-        // List all SnapshotMethods properties here
-      ] as const
-    );
-
-
-     bindAllMethods(
       this,
       SnapshotStoreMethods,
       [
+        'addStore',
+        'getStore', 
         'createSnapshot'
       ] as const
     );
 
-    // BINDED METHODS
-        // ✅ Use utility function for cleaner binding
+    // 8. Version Management
+    bindAllMethods(
+      this,
+      VersionMethods,
+      [
+        'getBackendVersion',
+        'getFrontendVersion',
+        'getDataVersions',
+        'updateDataVersions'
+      ] as const
+    );
+
+    // 9. Data Operations
+    bindAllMethods(
+      this,
+      TransformMethods,
+      [
+        'processSnapshotData',
+        'reduceSnapshots',
+        'reduceSnapshotItems',
+        'flatMap',
+        'transformSnapshotConfig',
+        'mapSnapshots'
+      ] as const
+    );
+
+    bindAllMethods(
+      this,
+      FetchMethods,
+      [
+        'fetchStoreData',
+        'fetchData',
+        'getDataStore',
+        'getDataStoreMap',
+        'getDataStoreMethods',
+        'getDelegate',
+        'getSnapshot',
+        'getSnapshotById',
+        'getSnapshotByCriteria',
+        'getSnapshotSuccess',
+        'getSnapshotConfigItems',
+        'getSnapshotItemsSuccess',
+        'getSnapshotItemSuccess',
+        'getSnapshotKeys',
+        'getSnapshotIdSuccess',
+        'getSnapshotValuesSuccess',
+        'getSnapshotWithCriteria',
+        'getSnapshotData'
+      ] as const
+    );
+
+    bindAllMethods(
+      this,
+      BatchMethods,
+      [
+        'mergeSnapshots',
+        'setSnapshots',
+        'batchTakeSnapshot',
+        'batchFetchSnapshots',
+        'batchTakeSnapshotsRequest',
+        'batchUpdateSnapshots',
+        'batchUpdateSnapshotsRequest'
+      ] as const
+    );
+
+    // 10. Filter and Search Methods
+    bindAllMethods(
+      this,
+      FilterMethods,
+      [
+        'getSnapshots',
+        'findSnapshot',
+        'filterSnapshotsByStatus',
+        'filterSnapshotsByCategory',
+        'filterSnapshotsByTag',
+        'getSnapshotItems',
+        'getSnapshotListByCriteria',
+        'getSnapshotCategory'
+      ] as const
+    );
+
+    // 11. Lifecycle and State Management
+    bindAllMethods(this, LifecycleMethods, [
+      'set',
+      'setStore',
+      'onSnapshot',
+      'updateState',
+      'getCurrentState',
+      'getStates',
+      'hasSnapshots',
+      'equals',
+      'initializeWithData',
+      'addToSnapshotList',
+      'getSnapshotsBySubscriber',
+      'emit',
+      'removeChild',
+      'getChildren',
+      'hasChildren',
+      'isDescendantOf',
+      'getInitialState',
+      'getConfigOption',
+      'getTimestamp',
+      'getData',
+      'getStore',
+      'getStores',
+      'findSnapshots',
+      'addStore',
+      'removeStore',
+      'onSnapshot',
+      'createSnapshots',
+      'initializeStores',
+      'initializeOptions',
+      'setConfig',
+      'initializeDefaultConfigs',
+      'ensureDelegate',
+      'defaultSubscribeToSnapshots',
+      'notify',
+      'getSubscribers',
+      'addDataStatus',
+      'updateDataTitle',
+      'updateDataDescription',
+      'updateDataStatus',
+      'initSnapshot',
+      'createSnapshots',
+      'takeSnapshot',
+      'removeSnapshot',
+      'addSnapshotItem',
+      'addNestedStore',
+      'clearSnapshots',
+      'addSnapshot',
+      'createInitSnapshot',
+      'validateSnapshot',
+      'setSnapshot',
+      'clearSnapshot',
+      'takeLatestSnapshot',
+      'updateSnapshot',
+      'handleSnapshotFailure',
+      'updateSnapshotFailure',  
+      'getSnapshotId',
+      'deleteSnapshot',
+      'removeStore'
+      ]
+    );
+
+    //  ✅ Subscription and Notification
     bindAllMethods(
       this,
       SubscriptionMethods,
@@ -2092,73 +2357,161 @@ handleActions(action: any): void {
         'subscribeSimple',
         'defaultSubscribeToSnapshots'
       ] as const
-    )
+    );
 
-     // ✅ Bind Map Methods
+    bindAllMethods(
+      this,
+      NotificationMethods,
+      [
+        'notify',
+        'notifySubscribers'
+      ] as const
+    );
+
+    // 13. Success and Failure Handlers
+    bindAllMethods(
+      this,
+      SuccessMethods,
+      [
+        'addDataSuccess',
+        'batchFetchSnapshotsSuccess',
+        'batchUpdateSnapshotsSuccess',
+        'updateSnapshotSuccess',
+        'createSnapshotSuccess',
+        'addSnapshotSuccess',
+        'takeSnapshotSuccess',
+        'takeSnapshotsSuccess',
+        'handleSnapshotSuccess',
+        'configureSnapshotStore',
+        'fetchSnapshotSuccess',
+        'setSnapshotSuccess'
+      ] as const
+    );
+
+    bindAllMethods(
+      this,
+      FailureMethods,
+      [
+        'batchFetchSnapshotsFailure',
+        'batchUpdateSnapshotsFailure',
+        'updateSnapshotsFailure',
+        'setSnapshotFailure',
+        'fetchSnapshotFailure',
+        'addSnapshotFailure',
+        'createSnapshotFailure',
+        'handleSnapshotFailure',
+        'updateSnapshotFailure'
+      ] as const
+    );
+
+    // 14. Action and Event Methods
+    bindAllMethods(
+      this,
+      ActionMethods,
+      [
+        'executeSnapshotAction',
+        'handleActions'
+      ] as const
+    );
+
+    // 15. Mapping Methods
     bindAllMethods(
       this,
       MapMethods,
       [
         'mapSnapshots',
-        'mapSnapshotWithDetails'
+        'mapSnapshotWithDetails',
+        'mapSnapshot'
       ] as const
     );
 
-        // ✅ Bind Version Methods (ADD THIS)
+
+    bindAllMethods(this, SuccessFailureMethods, [
+      'createSnapshotSuccess', 
+      'createSnapshotFailure', 
+      'clearSnapshotSuccess', 
+      'clearSnapshotFailure', 
+      'takeSnapshotSuccess', 
+      'takeSnapshotsSuccess', 
+      'setSnapshotSuccess', 
+      'setSnapshotFailure', 
+      'updateSnapshotsSuccess', 
+      'updateSnapshotsFailure', 
+      'fetchSnapshotSuccess',
+      'fetchSnapshotFailure'
+    ]);
+
+    // 16. Final integration methods
     bindAllMethods(
       this,
-      VersionMethods,
+      MethodBinder,
       [
-        'getBackendVersion',
-        'getFrontendVersion',
-        'getDataVersions',
-        'updateDataVersions'
+        'bindMethods',
+        'bindAllMethods'
       ] as const
-    )
-    // ✅ Bind Lifecycle Methods
+    );
+
+
+
+    // ✅ Bind Data Processing Methods
     bindAllMethods(
       this,
-      LifecycleMethods,
+      DataProcessingImplementation,
       [
-        'set',
-        'setStore',
-        'onSnapshot',
-        'updateState',
-        'getCurrentState',
-        'getStates',
-        'hasSnapshots',
-        'equals',
-        'initializeWithData',
-        'addToSnapshotList',
-        'getSnapshotsBySubscriber',
-        'emit',
-        'removeChild',
-        'getChildren',
-        'hasChildren',
-        'isDescendantOf',
-        'getInitialState',
-        'getConfigOption',
-        'getTimestamp',
-        'getData',
-        'getStore',
-        'getStores',
-        'findSnapshots',
-        'addStore',
-        'removeStore',
-        'onSnapshot',
-        'createSnapshots',
-        'initializeStores',
-        'initializeOptions',
-        'setConfig',
-        'initializeDefaultConfigs',
-        'ensureDelegate',
-        'defaultSubscribeToSnapshots',
-        'notify',
-        'getSubscribers'
+        'mapSnapshot',
+        'mapSnapshots',
+        'getSnapshotsByTopic',
+        'getSnapshotsByCategory',
+        'getSnapshotsByPriority',
+        'getSnapshotsByKey',
+        'getSnapshotsByTopicSuccess',
+        'getSnapshotsByCategorySuccess',
+        'getSpnapshotsByKeySuccess',
+        'getSnapshotsByPrioritySuccess'
       ] as const
-    )
+    );
+
+    // ✅ Bind Action Methods (Expanded)
+    bindAllMethods(
+      this,
+      ActionMethods,
+      [
+        // Base Actions
+        'executeSnapshotAction',
+        'handleActions',
+        'handleCreateAction',
+        'handleUpdateAction',
+        'handleDeleteAction',
+        'handleRestoreAction',
+        'handleValidateAction',
+        'handleTransformAction',
+        
+        // Project Management
+        'startNewPhase',
+        'completeCurrentPhase',
+        'initiateVideoCall',
+        'createIdea',
+        'createTask',
+        'scheduleProductLaunch',
+        
+        // Crypto Integration
+        'executeTrade',
+        'addCryptoToPortfolio',
+        'analyzeMarketTrends',
+        'setPriceAlert',
+        
+        // Data Analysis
+        'analyzeProjectData',
+        'generateProgressReport',
+        
+        // Communication
+        'sendMessage',
+        'createGroupChat',
+        'shareFile'
+      ] as const
+    );
+
   }
-  
   
   public dataStore: InitializedDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = undefined;
   public initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -2255,6 +2608,7 @@ handleActions(action: any): void {
     this.getSnapshotEntries = UtilMethods.getSnapshotEntries.bind(this);
     this.getAllSnapshotEntries = UtilMethods.getAllSnapshotEntries.bind(this);
   }
+
   private version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string | number;
   private schema: string | Record<string, SchemaField>;
   private dataStores: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -2268,7 +2622,6 @@ handleActions(action: any): void {
   private storeProps: Partial<SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
   private endpointCategory: string = "";
 
-
   // Idle timeout properties
   private idleTimeoutId: NodeJS.Timeout | null = null;
   private idleTimeoutDuration: number = 300000; // 5 minutes default
@@ -2278,7 +2631,6 @@ handleActions(action: any): void {
   private activityCallbacks: Array<() => void> = [];
   private configMethods: ConfigMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-  
    /**
    * Stores unsubscribe events for analytics, auditing, and debugging
    */
@@ -2411,6 +2763,32 @@ handleActions(action: any): void {
   protected subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   protected eventIds: string[] = [];
 
+  protected autoSyncData(): void {
+    console.log('Auto-syncing data...');
+    
+    if (this.syncInProgress) {
+      console.log('Sync already in progress, queuing request');
+      this.queueSyncOperation();
+      return;
+    }
+
+    this.performAutoSync().catch(error => {
+      console.error('Auto-sync failed:', error);
+      this.handleSyncFailure(error);
+    });
+  }
+  protected dataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
+  
+  protected config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
+  
+  // Protected methods for internal/mixin access
+  protected getConfigInternal(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
+    return this.config;
+  }
+  
+  protected setConfigInternal(config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>): void {
+    this.config = config;
+  }
   // ✅ Event methods (implement the interface)
   public on = (
     event: string | number,
@@ -2448,17 +2826,27 @@ handleActions(action: any): void {
       }
     }
   };
-  protected dataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
-  
-  protected config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
-  
-  // Protected methods for internal/mixin access
-  protected getConfigInternal(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
-    return this.config;
+
+  // Public sync methods following the same pattern as notifySuccess/notifyFailure
+  public startAutoSync(intervalMs: number = 300000): void {
+    this.privateStartAutoSync(intervalMs);
   }
-  
-  protected setConfigInternal(config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>): void {
-    this.config = config;
+
+  public stopAutoSync(): void {
+    this.privateStopAutoSync();
+  }
+
+  public manualSync(): Promise<void> {
+    return this.privateManualSync();
+  }
+
+  public getSyncStatus(): {
+    inProgress: boolean;
+    lastSync: number;
+    queuedOperations: number;
+    retryCount: number;
+  } {
+    return this.privateGetSyncStatus();
   }
 
  
@@ -2510,6 +2898,345 @@ handleActions(action: any): void {
         }
       }
     });
+  }
+
+  // Private helper methods with proper typing
+  private validateSyncPreconditions(): boolean {
+    return (
+      this.isActive !== false &&
+      !this.isDeleted &&
+      !this.isBeingDeleted &&
+      this.mounted === true &&
+      this.config?.autoSync !== false
+    );
+  }
+
+
+  private collectChangesSinceLastSync(): Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    const changes: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
+    const sinceTime = this.lastSyncTime;
+    
+    // Check snapshots for changes
+    if (this.snapshots && Array.isArray(this.snapshots)) {
+      for (const snapshot of this.snapshots) {
+        if (this.isSnapshotChanged(snapshot, sinceTime)) {
+          changes.push(snapshot);
+        }
+      }
+    }
+    
+    // Check data items if available
+    if (this.dataItems && Array.isArray(this.dataItems)) {
+      for (const dataItem of this.dataItems) {
+        if (this.isDataItemChanged(dataItem, sinceTime)) {
+          // Convert data item to snapshot format if needed
+          const snapshot = this.convertDataItemToSnapshot(dataItem);
+          if (snapshot) {
+            changes.push(snapshot);
+          }
+        }
+      }
+    }
+    
+    return changes;
+  }
+
+  private isSnapshotChanged(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    sinceTime: number
+  ): boolean {
+    const snapshotTime = new Date(snapshot.timestamp || 0).getTime();
+    return snapshotTime > sinceTime && 
+          snapshot.isDeleted !== true && 
+          snapshot.isBeingDeleted !== true;
+  }
+
+  private isDataItemChanged(
+    dataItem: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    sinceTime: number
+  ): boolean {
+    const itemTime = new Date(dataItem.timestamp || 0).getTime();
+    return itemTime > sinceTime;
+  }
+
+  private convertDataItemToSnapshot(
+    dataItem: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    try {
+      return {
+        id: dataItem.id || this.generateId('sync', 'data-item', NotificationTypeEnum.INFO),
+        data: dataItem.data as T,
+        timestamp: dataItem.timestamp || new Date(),
+        category: this.category,
+        metadata: dataItem.metadata as Meta,
+        // Add other required snapshot properties
+        unsubscribe: () => {},
+        fetchSnapshot: async () => { return {} as any; },
+        handleSnapshot: async () => { return {} as any; },
+        events: undefined,
+        meta: {}
+      };
+    } catch (error) {
+      console.warn('Failed to convert data item to snapshot:', error);
+      return null;
+    }
+  }
+
+  private async executeSyncOperation(
+    changes: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): Promise<void> {
+    // Implement your actual sync logic here
+    // This could be:
+    // - API calls to backend
+    // - Database operations
+    // - File system writes
+    // - Cache updates
+    
+    console.log(`Executing sync for ${changes.length} changes`);
+    
+    // Example sync implementation
+    for (const change of changes) {
+      await this.syncSingleChange(change);
+    }
+    
+    // Update local state after successful sync
+    await this.updateLocalStateAfterSync(changes);
+  }
+
+  private async syncSingleChange(
+    change: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void> {
+    // Implement single change sync logic
+    // This is where you'd make your API calls or database operations
+    
+    // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    // Update change metadata to mark as synced
+    if (change.metadata) {
+      change.metadata.lastSynced = new Date();
+      change.metadata.syncVersion = (change.metadata.syncVersion || 0) + 1;
+    }
+  }
+
+  private async updateLocalStateAfterSync(
+    changes: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): Promise<void> {
+    // Update any local state that needs to reflect the sync
+    this.lastSyncTime = Date.now();
+    
+    // Update snapshots with sync metadata
+    changes.forEach(change => {
+      const existingSnapshot = this.snapshots.find(s => s.id === change.id);
+      if (existingSnapshot && existingSnapshot.metadata) {
+        existingSnapshot.metadata.lastSynced = new Date();
+      }
+    });
+  }
+
+  private async handleSyncFailure(error: Error): Promise<void> {
+    console.error('Sync operation failed:', error);
+    
+    this.syncRetryCount++;
+    
+    if (this.syncRetryCount <= this.MAX_SYNC_RETRIES) {
+      console.log(`Retrying sync in 5 seconds (attempt ${this.syncRetryCount}/${this.MAX_SYNC_RETRIES})`);
+      
+      // Schedule retry
+      setTimeout(() => {
+        this.autoSyncData();
+      }, 5000);
+    } else {
+      console.error('Max sync retries exceeded. Giving up.');
+      this.notifySyncFailure(error);
+    }
+  }
+
+  private queueSyncOperation(): void {
+    this.syncQueue.push(async () => {
+      await this.performAutoSync();
+    });
+  }
+
+  private async processSyncQueue(): Promise<void> {
+    if (this.syncQueue.length > 0 && !this.syncInProgress) {
+      const nextOperation = this.syncQueue.shift();
+      if (nextOperation) {
+        await nextOperation();
+      }
+    }
+  }
+
+
+  // Private implementations
+  private privateStartAutoSync(intervalMs: number): void {
+    if (this.syncIntervalId) {
+      this.privateStopAutoSync();
+    }
+    
+    this.syncIntervalId = setInterval(() => {
+      this.autoSyncData();
+    }, intervalMs);
+    
+    console.log(`Auto-sync started with ${intervalMs}ms interval`);
+  }
+
+  private privateStopAutoSync(): void {
+    if (this.syncIntervalId) {
+      clearInterval(this.syncIntervalId);
+      this.syncIntervalId = null;
+      console.log('Auto-sync stopped');
+    }
+  }
+
+  private async privateManualSync(): Promise<void> {
+    return this.performAutoSync();
+  }
+
+  private privateGetSyncStatus(): {
+    inProgress: boolean;
+    lastSync: number;
+    queuedOperations: number;
+    retryCount: number;
+  } {
+    return {
+      inProgress: this.syncInProgress,
+      lastSync: this.lastSyncTime,
+      queuedOperations: this.syncQueue.length,
+      retryCount: this.syncRetryCount
+    };
+  }
+
+  // Sync notification methods
+  private notifySyncSuccess(
+    changes: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): void {
+    this.emit('syncSuccess', {
+      timestamp: new Date(),
+      changesCount: changes.length,
+      changes: changes.map(change => ({
+        id: change.id,
+        type: change.type,
+        timestamp: change.timestamp
+      }))
+    });
+    
+    // Also use the existing notify system
+    this.privateNotifySuccess(`Sync completed successfully. ${changes.length} changes synced.`);
+  }
+
+  private notifySyncFailure(error: Error): void {
+    this.emit('syncFailure', {
+      timestamp: new Date(),
+      error: error.message,
+      retryCount: this.syncRetryCount
+    });
+    
+    this.privateNotifyFailure(`Sync failed: ${error.message}`);
+  }
+
+  // Add these methods to handle the WrappedU and U type conversions
+  private convertToWrappedU<U extends BaseDataEntity>(
+    data: U
+  ): WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    // Implementation for converting U to WrappedU with all 6 parameters
+    return {
+      ...data,
+      // Add any wrapping logic needed
+      _wrapped: true,
+      originalData: data,
+      metadata: this.metadata as unknown as Meta,
+      attachments: [] as AttachmentType[],
+      // Ensure all required properties are present
+    } as WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  }
+
+  private convertFromWrappedU<U extends BaseDataEntity>(
+    wrapped: WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): U {
+    // Extract the original data from wrapped format
+    return wrapped.originalData || (wrapped as unknown as U);
+  }
+
+  // Utility method to handle type conversions during sync
+  private ensureProperTypesDuringSync<U extends BaseDataEntity>(
+    data: U | WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    let processedData: T;
+    
+    // Check if data needs to be converted from WrappedU
+    if (this.isWrappedU(data)) {
+      processedData = this.convertFromWrappedU(data as WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) as unknown as T;
+    } else {
+      processedData = data as unknown as T;
+    }
+    
+    // Create or return a snapshot with proper typing
+    return {
+      id: this.generateId('sync', 'converted', NotificationTypeEnum.INFO),
+      data: processedData,
+      timestamp: new Date(),
+      category: this.category,
+      // Add other required properties
+      unsubscribe: () => {},
+      fetchSnapshot: async () => { return {} as any; },
+      handleSnapshot: async () => { return {} as any; },
+      events: undefined,
+      meta: {}
+    };
+  }
+
+  private isWrappedU<U extends BaseDataEntity>(
+    data: any
+  ): data is WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return data && data._wrapped === true;
+  }
+
+  // Private implementation with proper 6 generic parameters
+  private async performAutoSync(): Promise<void> {
+    if (this.syncInProgress) {
+      return;
+    }
+
+    this.syncInProgress = true;
+    
+    try {
+      console.log('Starting auto-sync process...');
+      
+      // 1. Validate current state before sync
+      if (!this.validateSyncPreconditions()) {
+        throw new Error('Sync preconditions not met');
+      }
+
+      // 2. Collect changed data
+      const changes = this.collectChangesSinceLastSync();
+      
+      if (changes.length === 0) {
+        console.log('No changes to sync');
+        return;
+      }
+
+      // 3. Perform the actual sync
+      await this.executeSyncOperation(changes);
+      
+      // 4. Update sync state
+      this.lastSyncTime = Date.now();
+      this.syncRetryCount = 0;
+      
+      // 5. Notify subscribers
+      this.notifySyncSuccess(changes);
+      
+      console.log(`Auto-sync completed successfully. Synced ${changes.length} items`);
+      
+    } catch (error) {
+      await this.handleSyncFailure(error as Error);
+      throw error;
+    } finally {
+      this.syncInProgress = false;
+      
+      // Process any queued sync operations
+      await this.processSyncQueue();
+    }
   }
 
 
@@ -3073,10 +3800,13 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
 
 
 
-  public safeCastSnapshotStore< T extends BaseDataEntity, 
+  public safeCastSnapshotStore<
+    T extends BaseDataEntity,
     K extends T = T,
-   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -3441,39 +4171,6 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     // Metadata update logic
   }
 
-
-
-
-  /**
-   * Initialize default configs with proper typing
-   */
-  private initializeDefaultConfigs(): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    return [
-      {
-        id: "default",
-        autoSave: true,
-        syncInterval: 300000,
-        snapshotLimit: 100,
-        additionalSetting: "default-setting",
-        find: this.find.bind(this),
-        storeId: this.storeId,
-        operation: this.operation,
-        data: this.data ? this.data : undefined,
-        createdAt: this.createdAt,
-        initialState: this.initialState,
-        timestamp: this.timestamp,
-        snapshotId: this.snapshotId,
-        dataStoreMethods: this.dataStoreMethods || null,
-        category: this.category,
-        criteria: this.criteria,
-        content: this.content,
-        config: this.config,
-        snapshotCategory: this.snapshotCategory,
-        subscriberId: this.subscriberId,
-        // Ensure all properties maintain the correct generic structure
-      } as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ];
-  }
   // Method to initialize default configurations
   private initializeDefaultConfigs(): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return [
@@ -3506,8 +4203,6 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     ];
   }
 
- 
-
   private handleDelegate<T extends (...args: any[]) => any, R = ReturnType<T>>(
     method: (delegate: any) => T,
     ...args: Parameters<T>
@@ -3525,6 +4220,30 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
       console.error("Delegate is undefined or empty");
       return undefined;
     }
+  }
+
+  // ADD PUBLIC VERSION (simpler string-based API)
+  public executeDelegateMethod<R = any>(
+    methodName: string,
+    ...args: any[]
+  ): R | undefined {
+    if (this.delegate && this.delegate.length > 0) {
+      for (const delegate of this.delegate) {
+        const method = delegate[methodName];
+        if (method && typeof method === "function") {
+          try {
+            return method.apply(delegate, args);
+          } catch (error) {
+            console.error(`Error executing delegate method '${methodName}':`, error);
+            return undefined;
+          }
+        }
+      }
+      console.warn(`Method '${methodName}' not found on any delegate`);
+    } else {
+      console.warn("Delegate is undefined or empty");
+    }
+    return undefined;
   }
 
   private notifySuccess(message: string): void {
@@ -3602,9 +4321,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     snapshotStoreData?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     category?: string | Category,
      categoryProperties?: CategoryProperties,
-    snapshotDataConfig?: SnapshotStoreConfig<
-      SnapshotWithCriteriaAsBase<any, BaseData>,
-      K
+    snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
     >[]
   ): Promise<void> {
     try {
@@ -3641,48 +4358,193 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
 
 
   // Example of transforming mappedSnapshotData
-  private transformMappedSnapshotData<U extends Data<U>,   T extends BaseDataEntity>(
-    mappedSnapshotData: Map<string, Snapshot<Data, T>>
-  ): Map<string, Snapshot<WrappedU, WrappedU, Meta, ExcludedFields>> {
-    const transformedData = new Map<string, Snapshot<WrappedU, WrappedU, Meta, ExcludedFields>>();
+  private transformMappedSnapshotData<U extends BaseDataEntity>(
+    mappedSnapshotData: Map<string, Snapshot<Data<U>, U>>
+  ): Map<string, Snapshot<WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    const transformedData = new Map<
+      string, 
+      Snapshot<WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    >();
+    
     mappedSnapshotData.forEach((value, key) => {
-      transformedData.set(key, this.transformSnapshot<U, T>(value));
+      transformedData.set(key, this.transformSnapshot<U>(value));
     });
     return transformedData;
   }
 
-  // Updated transformSnapshotStore function
-  private transformSnapshotStore<U extends Data<U>, T extends BaseDataEntity>(
-    snapshotStore: SnapshotStore<Data<U>, T>
-  ): SnapshotStore<WrappedU, WrappedU, Meta, ExcludedFields> {
-    const transformedSnapshotData = {
-      
-      ...snapshotStore,
-      category: snapshotStore.category || 'default-transform-snapshotStore',
-      // Apply transformations or assign default values as needed for each property
-      initializeWithData: snapshotStore.initializeWithData || (() => { /* default */ }),
-      hasSnapshots: snapshotStore.hasSnapshots || (() => { /* default */ }),
-      snapshotStores: snapshotStore.#snapshotStores || [],
+  // Updated transformSnapshotStore with all 6 parameters
+// Corrected transformSnapshotStore function
+  private transformSnapshotStore<U extends BaseDataEntity>(
+    snapshotStore: SnapshotStore<Data<U>, U, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStore<WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  
+    // Separate config and data transformations
+    const transformedConfig: SnapshotStoreConfig<
+      WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      Meta,
+      AttachmentType,
+      ExcludedFields,
+      IncludedFields
+    > = {
+      id: snapshotStore.id || this.generateId('transform', 'store-config', NotificationTypeEnum.INFO),
+      storeId: snapshotStore.storeId,
       name: snapshotStore.name || "Default Name",
       version: snapshotStore.version || 1,
       schema: snapshotStore.schema || "default-schema",
-      dataStores: snapshotStore.dataStores || [],
-      snapshotItems: snapshotStore.snapshotItems || [],
-      nestedStores: snapshotStore.nestedStores || [],
-      snapshotIds: snapshotStore.snapshotIds || [],
-      dataStoreMethods: snapshotStore.dataStoreMethods || {},
-      getConfig: snapshotStore.getConfig || (() => { /* default */ }),
-      setConfig: snapshotStore.setConfig || ((config) => { /* default */ }),
-      delegate: snapshotStore.delegate || null,
-      notifySuccess: snapshotStore.notifySuccess || (() => { /* default */ }),
-      notifyFailure: snapshotStore.notifyFailure || (() => { /* default */ })
+      category: snapshotStore.category || 'default-transform-snapshotStore',
+      autoSave: snapshotStore.config?.autoSave ?? true,
+      syncInterval: snapshotStore.config?.syncInterval ?? 300000,
+      snapshotLimit: snapshotStore.config?.snapshotLimit ?? 100,
+      // Add other config properties as needed
+      operation: snapshotStore.operation,
+      data: this.convertToWrappedU(snapshotStore.data as U),
+      createdAt: snapshotStore.createdAt,
+      initialState: snapshotStore.initialState ? this.transformInitialState(snapshotStore.initialState) : null,
+      timestamp: snapshotStore.timestamp,
+      snapshotId: snapshotStore.snapshotId,
+      snapshotStore: this as any, // Current store as the snapshot store
+      dataStoreMethods: snapshotStore.dataStoreMethods,
+      criteria: snapshotStore.criteria,
+      content: snapshotStore.content,
+      config: snapshotStore.config,
+      snapshotCategory: snapshotStore.snapshotCategory,
+      snapshotSubscriberId: snapshotStore.snapshotSubscriberId,
     };
 
-    // Now use createSnapshotStore to initialize a new snapshot store based on the transformed data
-    return createSnapshotStore<WrappedU, WrappedU, Meta, ExcludedFields>(
-      transformedSnapshotData as SnapshotStoreConfig<WrappedU, WrappedU, Meta, ExcludedFields>,  // Pass as config
-      transformedSnapshotData as SnapshotData<U, U, StructuredMetadata<WrappedU, WrappedU, Meta, ExcludedFields>>          // Pass as data
-    );
+    const transformedData: SnapshotData<
+      WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      Meta,
+      AttachmentType,
+      ExcludedFields,
+      IncludedFields
+    > = {
+      // Core data methods - using existing methods from snapshotStore
+      getSnapshot: async () => {
+        const currentState = await snapshotStore.getCurrentState();
+        return currentState ? this.transformSnapshot<U>(currentState) : null;
+      },
+    
+      validate: () => {
+        return snapshotStore.validate(); // Use the source store's validate method
+      },
+    
+      transform: (snap) => {
+        return this.transformSnapshot<U>(snap as any);
+      },
+    
+      id: snapshotStore.id || "",
+      storeId: snapshotStore.storeId,
+      category: snapshotStore.category?.toString() || "",
+    
+      serialize: () => {
+        return JSON.stringify({
+          id: snapshotStore.id,
+          storeId: snapshotStore.storeId,
+          data: snapshotStore.data,
+          metadata: snapshotStore.metadata
+        });
+      },
+    
+      get: (key: string) => {
+        // Use the source store's data access methods
+        return (snapshotStore as any)[key];
+      },
+    
+      set: (key: string, value: any) => {
+        // Use the source store's data modification methods
+        (snapshotStore as any)[key] = value;
+      },
+    
+      processEvent: (data: any, type: string, event: Event) => {
+        // Use the source store's event processing
+        snapshotStore.processAction({
+          type: 'PROCESS_EVENT',
+          payload: { data, type, event }
+        });
+      },
+    
+      shared: snapshotStore.topic || "",
+    
+      operations: {
+        // Use the source store's operation methods
+        add: snapshotStore.addSnapshot.bind(snapshotStore),
+        update: snapshotStore.updateSnapshot.bind(snapshotStore),
+        remove: snapshotStore.removeSnapshot.bind(snapshotStore),
+        get: snapshotStore.getSnapshot.bind(snapshotStore),
+        // Add other operations as needed
+      } as SnapshotOperations<
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        Meta,
+        AttachmentType,
+        ExcludedFields,
+        IncludedFields
+      >,
+    
+      base: {
+        id: snapshotStore.id,
+        createdAt: snapshotStore.createdAt,
+        updatedAt: snapshotStore.updatedAt,
+        // Add other base properties from the source store
+      } as BaseEntity<
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        Meta,
+        AttachmentType,
+        ExcludedFields,
+        IncludedFields
+      >,
+    
+      sharedMetadata: JSON.stringify(snapshotStore.metadata || {}),
+    
+      getSnapshotData: (params) => {
+        // Use the source store's getSnapshotData method
+        const originalResult = snapshotStore.getSnapshotData(params as any);
+      
+        if (!originalResult) {
+          return undefined;
+        }
+      
+        // Transform the result to match the WrappedU type if needed
+        return this.transformSnapshotData<U>(originalResult);
+      },
+    
+      deleteSnapshot: (id: string) => {
+        snapshotStore.removeSnapshot(id); // Use source store's remove method
+      },
+    
+      core: {
+        id: snapshotStore.id,
+        data: snapshotStore.data ? this.convertToWrappedU(snapshotStore.data as U) : undefined,
+        timestamp: snapshotStore.timestamp,
+        // Add other core properties from source store
+      } as CoreSnapshot<
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        WrappedU<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        Meta,
+        AttachmentType,
+        ExcludedFields,
+        IncludedFields
+      >,
+    
+      security: {
+        isEncrypted: snapshotStore.isEncrypted,
+        ownerId: snapshotStore.ownerId,
+        // Add other security properties from source store
+      } as SnapshotSecurity,
+    
+      storage: snapshotStore.config?.storageType || "memory",
+    
+      isExpired: () => {
+        return snapshotStore.isExpired(); // Use source store's expiration check
+      },
+    
+      data: JSON.stringify(snapshotStore.data || {}),
+      snapshotStore: snapshotStore as any, // Reference to the source store
+      timestamp: new Date(),
+    };
   }
 
   private getFirstDelegate() {
@@ -3697,7 +4559,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   }
   
   // Transform initialState from T to U
-  private transformInitialState<U extends Data<U>,   T extends BaseDataEntity>(
+  private transformInitialState<U extends Data<U>, T extends BaseDataEntity>(
     initialState: InitializedState<U, T>
   ): InitializedState<WrappedU, WrappedU, Meta, ExcludedFields> | null {
     if (isSnapshotStore(initialState)) {
@@ -3854,6 +4716,35 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   
   public lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
+  // ADD PUBLIC VERSIONS (for external/method binding use)
+  public notifyPublicSuccess(message: string): void {
+    try {
+      this.emit('notification', { type: 'success', message, timestamp: new Date() });
+      console.log(`Success: ${message}`);
+    } catch (error) {
+      console.error('Error in notifyPublicSuccess:', error);
+    }
+  }
+
+  public notifyPublicFailure(message: string): void {
+    try {
+      this.emit('notification', { type: 'error', message, timestamp: new Date() });
+      console.error(`Error: ${message}`);
+    } catch (error) {
+      console.error('Error in notifyPublicFailure:', error);
+    }
+  }
+
+  // ALTERNATIVE: Unified public notify method
+  public notifyPublic(type: 'success' | 'error' | 'warning' | 'info', message: string): void {
+    try {
+      this.emit('notification', { type, message, timestamp: new Date() });
+      console.log(`${type.toUpperCase()}: ${message}`);
+    } catch (error) {
+      console.error('Error in notifyPublic:', error);
+    }
+  }
+
   // State management
   state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   states: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
@@ -4973,336 +5864,20 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
 
 
 
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-  //______________REMOVE FRROM HERE______________
-
-    
-
-  createInitSnapshot(
-    id: string,
-    initialData: T,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: symbol | string | Category | undefined
-  ): Promise<SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (!snapshotData) {
-          return reject(new Error("snapshotData is null or undefined"));
-        }
-
-        let data: Data;
-        if ("data" in snapshotData && snapshotData.data) {
-          data = snapshotData.data;
-        } else if (snapshotData.data && "data" in snapshotData.data) {
-          data = snapshotData.data.data;
-        } else {
-          return reject(new Error("snapshotData does not have a valid 'data' property"));
-        }
-
-        id =
-          typeof data.id === "string"
-            ? data.id
-            : String(
-                UniqueIDGenerator.generateID(
-                  "SNAP",
-                  "defaultID",
-                  NotificationTypeEnum.GeneratedID
-                )
-              );
-
-        const snapshot: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-          id,
-          data,
-          timestamp: snapshotData.timestamp || new Date(),
-          category: this.category,
-          topic: this.topic,
-          initializedState: {},
-          criteria: {}, // Example placeholder for search criteria
-          unsubscribe: function () {
-            throw new Error("Function not implemented.");
-          },
-          fetchSnapshot: async () => {
-            throw new Error("Function not implemented.");
-          },
-          handleSnapshot: async () => {
-            throw new Error("Function not implemented.");
-          },
-          events: undefined,
-          meta: {},
-        };
-
-        const storeId = snapshotApi.getSnapshotStoreId(String(this.snapshotId));
-        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId);
-
-        this.snapshots.push(snapshot);
-
-        if (this.delegate && this.delegate.length > 0) {
-          for (const delegateConfig of this.delegate) {
-            if (
-              delegateConfig &&
-              typeof delegateConfig.createSnapshotSuccess === "function"
-            ) {
-              await delegateConfig.createSnapshotSuccess(
-                id,
-                snapshotManager,
-                snapshot,
-                initialData
-              );
-              return resolve(snapshot); // Correctly resolve the promise with the snapshot
-            }
-          }
-          return reject(new Error("No valid delegate found for createSnapshotFailure"));
-        } else {
-          return reject(new Error("Delegate is undefined or empty"));
-        }
-      } catch (error) {
-        reject(error); // Handle unexpected errors
-      }
-    });
-  }
-
-  createSnapshotSuccess(
-    snapshotId: string,
-    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: { error: Error }
-  ): void {
-    if (snapshot.id !== undefined) {
-      notify(
-        String(snapshot.id) // Ensure snapshot.id is treated as a string
-        // `Snapshot ${snapshot.id} created successfully.`,
-        // "",
-        // new Date(),
-        // NotificationTypeEnum.SUCCESS,
-        // NotificationPosition.TopRight
-      );
-    } else {
-      console.error("Snapshot id is undefined.");
-      // Optionally handle the case where snapshot.id is undefined
-    }
-  }
-
-  clearSnapshotSuccess: (context: {
-    useSimulatedDataSource: boolean;
-    simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  }) => void = (context) => {
-    try {
-      const configs = await getConfigPromise(); // Await the promise
-      configs.forEach((config) => {
-        if (config.clearSnapshotSuccess) {
-          config.clearSnapshotSuccess(context);
-        }
-      });
-    } catch (error) {
-      console.error("Error clearing snapshot:", error);
-    }
-    this.notifySuccess("Snapshot cleared successfully.");
-  };
-
-  clearSnapshotFailure: (context: {
-    useSimulatedDataSource: boolean;
-    simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  }) => void = (context) => {
-    this.getDelegate(context).clearSnapshotFailure();
-    this.notifyFailure("Error clearing snapshot.");
-  };
-
-  createSnapshotFailure(
-    snapshotId: string,
-    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: { error: Error }
-  ): void {
-    notify(
-      "createSnapshotFailure",
-      `Error creating snapshot: ${payload.error.message}`,
-      "",
-      new Date(),
-      NotificationTypeEnum.ERROR,
-      NotificationPosition.TopRight
-    );
-  }
-
-  setSnapshotSuccess(
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): void {
-    this.handleDelegate(
-      (delegate) => delegate.setSnapshotSuccess.bind(delegate),
-      snapshotData,
-      subscribers
-    );
-  }
-
-  setSnapshotFailure(error: Error): void {
-    this.handleDelegate(
-      (delegate) => delegate.setSnapshotFailure.bind(delegate),
-      error
-    );
-  }
-
-  async createSnapshotFailure(
-    snapshotId: string,
-    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: { error: Error }
-  ): Promise<void> {
-    notify(
-      "createSnapshotFailure",
-      `Error creating snapshot: ${payload.error.message}`,
-      "",
-      new Date(),
-      NotificationTypeEnum.ERROR,
-      NotificationPosition.TopRight
-    );
-
-    await this.handleDelegate(
-      (delegate) => delegate.createSnapshotFailure.bind(delegate),
-      snapshotId,
-      snapshotManager,
-      snapshot,
-      payload
-    );
-
-    return Promise.reject(payload.error);
-  }
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
+  //______________ REMOVE FRROM HERE______________
 
   updateSnapshots(): void {
     this.handleDelegate((delegate) => delegate.updateSnapshots.bind(delegate));
   }
 
-  /**
- * Deletes a snapshot from the store with proper type safety
- * 
- * @template T - Base data type
- * @template K - Extended data type (defaults to T)
- * @template Meta - Metadata type
- * @template ExcludedFields - Fields to exclude
- * @param {string} snapshotId - ID of snapshot to delete
- * @param {boolean} [permanent=false] - Whether to permanently delete
- * @returns {Promise<boolean>} - True if deletion was successful
- */
-  deleteSnapshot(
-    snapshotId: string,
-    permanent: boolean = false
-  ): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      try {
-        // Validate input
-        if (!snapshotId) {
-          throw new Error('Snapshot ID is required');
-        }
-
-        // Find the snapshot in storage
-        const snapshot = this.snapshots.get(snapshotId);
-        if (!snapshot) {
-          resolve(false); // Not found = considered successful
-          return;
-        }
-
-        // Handle deletion based on type
-        if (permanent) {
-          // Permanent deletion
-          this.snapshots.delete(snapshotId);
-          this.deletedSnapshots.delete(snapshotId); // Remove from deleted set
-          
-          // Notify subscribers
-          this.notifySubscribers({
-            type: 'delete',
-            snapshotId,
-            permanent: true
-          });
-
-          resolve(true);
-        } else {
-          // Soft deletion
-          snapshot.deleted = true;
-          snapshot.updatedAt = new Date();
-          this.deletedSnapshots.add(snapshotId);
-
-          // Mark versions as deleted
-          if (snapshot.versions) {
-            snapshot.versions.forEach(version => {
-              version.deleted = true;
-            });
-          }
-
-          // Notify subscribers
-          this.notifySubscribers({
-            type: 'delete',
-            snapshotId,
-            permanent: false
-          });
-
-          resolve(true);
-        }
-      } catch (error) {
-        console.error(`Error deleting snapshot ${snapshotId}:`, error);
-        reject(error);
-      }
-    });
-  }
-
-  
-
-  updateSnapshotsSuccess(
-    snapshotData: (
-      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-      snapshot: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ) => void
-  ): void {
-    this.handleDelegate(
-      (delegate) => delegate.updateSnapshotsSuccess.bind(delegate),
-      snapshotData
-    );
-  }
-
-  updateSnapshotsFailure(error: Payload): void {
-    this.handleDelegate(
-      (delegate) => delegate.updateSnapshotsFailure.bind(delegate),
-      error
-    );
-  }
-
-  initSnapshot(
-    snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-    snapshotId: string,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    callback: (snapshotStore: SnapshotStore<any, any>) => void
-  ): void {
-    this.handleDelegate(
-      (delegate) => delegate.initSnapshot.bind(delegate),
-      snapshot,
-      snapshotId,
-      snapshotData,
-      category,
-      snapshotConfig,
-      callback
-    );
-  }
-
-  takeSnapshotSuccess(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
-    this.handleDelegate(
-      (delegate) => delegate.takeSnapshotSuccess.bind(delegate),
-      snapshot
-    );
-  }
-
-  takeSnapshotsSuccess(snapshots: T[]): void {
-    this.handleDelegate(
-      (delegate) => delegate.takeSnapshotsSuccess.bind(delegate),
-      snapshots
-    );
-  }
 
   configureSnapshotStore(
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -5554,14 +6129,15 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
   async mapSnapshotsAO(
     storeIds: number[],
     snapshotId: string,
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
+    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: T
+    data: T,
+    category?: Category
   ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     try {
       const snapshotMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
@@ -5698,41 +6274,6 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
     }
   }
 
-  fetchSnapshotSuccess(
-    snapshotId: string,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: FetchSnapshotPayload<K> | undefined,
-
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: T,
-    snapshotData: (
-      snapshotManager: SnapshotManager<SnapshotUnion<BaseData, Meta>, T>,
-      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-      snapshot: Snapshot<SnapshotUnion<BaseData, Meta>, T>
-    ) => void
-  ): void {
-    const delegate = this.ensureDelegate();
-    delegate.fetchSnapshotSuccess(
-      snapshotId,
-      snapshotStore,
-      payload,
-      snapshot,
-      data,
-      snapshotData
-    );
-  }
-
-  fetchSnapshotFailure(
-    snapshotId: string,
-    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    date: Date | undefined,
-    payload: { error: Error }
-  ): void {
-    const delegate = this.ensureDelegate();
-    delegate.fetchSnapshotFailure(payload);
-  }
-
   getSnapshots(category: string, data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     const delegate = this.ensureDelegate();
     const convertedData: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = convertToSnapshotArray(data);
@@ -5810,40 +6351,58 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
   }
 }
 
-// 1. Core utility methods first
-Object.assign(SnapshotStore.prototype, UtilMethods);
-
-// 2. Data management methods
-Object.assign(SnapshotStore.prototype, DataMethods);
-
-// 3. Configuration methods (setup before other operations)
+// 1. Core Configuration and Setup First
 Object.assign(SnapshotStore.prototype, ConfigMethods);
 
-// 4. Validation methods (needed for many operations)
+// 2. Core Utility Methods 
+Object.assign(SnapshotStore.prototype, UtilMethods);
+
+// 3. Validation Methods (needed early for data integrity)
 Object.assign(SnapshotStore.prototype, ValidationMethods);
 
-// 5. Core snapshot operations
+// 4. Data Management Foundations
+Object.assign(SnapshotStore.prototype, DataMethods);
+
+// 5. Core Snapshot Operations  
 Object.assign(SnapshotStore.prototype, SnapshotMethods);
 Object.assign(SnapshotStore.prototype, SnapshotMethodsImplementation);
 
-// 6. Version management
-Object.assign(SnapshotStore.prototype, VersionMethods);
-
-// 7. Data operations
+// 6. Data Operations and Transformations
 Object.assign(SnapshotStore.prototype, TransformMethods);
+Object.assign(SnapshotStore.prototype, AdvancedTransformMethods);
+Object.assign(SnapshotStore.prototype, MappingMethods);
+
+// 7. Data Retrieval and Processing
 Object.assign(SnapshotStore.prototype, FetchMethods);
 Object.assign(SnapshotStore.prototype, BatchMethods);
 
-// 8. Lifecycle and state management
+// 8. Version Management
+Object.assign(SnapshotStore.prototype, VersionMethods);
+
+// 9. Lifecycle and State Management
 Object.assign(SnapshotStore.prototype, LifecycleMethods);
+Object.assign(SnapshotStore.prototype, ContainerMethods);
 Object.assign(SnapshotStore.prototype, StoreManagementMethods);
 
-// 9. Subscription and notification (often depend on other methods)
+// 10. Success/Failure Handlers (NEW)
+Object.assign(SnapshotStore.prototype, SuccessFailureMethods);
+
+// 11. Data Processing Methods
+Object.assign(SnapshotStore.prototype, DataProcessingImplementation);
+
+// 12. Subscription and Notification (depend on most other methods)
 Object.assign(SnapshotStore.prototype, SubscriptionMethods);
-Object.assign(SnapshotStore.prototype, SnapshotStoreMethods);
 Object.assign(SnapshotStore.prototype, NotificationMethods);
 
+// 13. Action and Event Methods (NEW)
+Object.assign(SnapshotStore.prototype, ActionMethods);
 
+// 14. Utility Functions (NEW)
+Object.assign(SnapshotStore.prototype, UtilityMethods);
+
+// 15. Final Integration Methods
+Object.assign(SnapshotStore.prototype, MethodBinder);
+Object.assign(SnapshotStore.prototype, CommonDataStoreMethods);
 
 // Usage Examples #info #todo
 // typescript

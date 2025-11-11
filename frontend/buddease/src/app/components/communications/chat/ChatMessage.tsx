@@ -3,37 +3,37 @@ import { ChatMessageActions } from '@/app/actions/ChatMessageActions';
 import { ChatApi } from '@/app/api/ChatApi';
 import ChatCard from '@/app/cards/ChatCard';
 import { FileUploadModalProps } from '@/app/cards/modal/FileUploadModal';
+import { AquaChat } from '@/app/components/communications/AquaChat';
+import connectToChatWebSocket, { retryConfig } from '@/app/components/communications/WebSocket';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';
 import useFiles from '@/app/hooks/useFiles';
+import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
 import { UserRole } from '@/app/models/UserRole';
 import UserRoles from '@/app/models/UserRoles';
 import GeolocationService from '@/app/services/GeolocationService';
 import { refreshUI } from '@/app/snapshots/refreshUI';
-import { openChatSettingsPanel } from '@/app/utils/ChatSettingsPanelUtils';
-import { initializeGeolocationService } from '@/app/utils/GeolocationServiceUtils';
-import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
-import FluenceConnection from '@/app/utils/web3/fluenceProtocoIntegration/FluenceConnection'
-import connectToChatWebSocket, { retryConfig } from '@/app/components/communications/WebSocket';
-import { useAuth } from '@/context/AuthContext';
+import { openChatSettingsPanel } from '@/utils/ChatSettingsPanelUtils';
+import { initializeGeolocationService } from '@/utils/GeolocationServiceUtils';
+import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import { useAuth } from '@/state/context/AuthContext';
 import axios, { AxiosResponse } from 'axios';
 import { EditorState } from 'draft-js';
 import React, { useEffect, useState } from 'react';
-import { AquaChat } from '@/app/components/communications/AquaChat';
-import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
 import {
-  SidebarController,
-  SpeechToTextEngine,
-  createRichTextEditor,
-  getUnreadMessageCount,
-  initializeSpeechToText,
-  leaveChatRoom,
-  openChatSettingsModal,
-  openChatSidebar,
-  openEmojiPicker,
-  openFileUploadModal,
-  sendChatMessage,
+    SidebarController,
+    SpeechToTextEngine,
+    createRichTextEditor,
+    getUnreadMessageCount,
+    initializeSpeechToText,
+    leaveChatRoom,
+    openChatSettingsModal,
+    openChatSidebar,
+    openEmojiPicker,
+    openFileUploadModal,
+    sendChatMessage,
 } from "./chatUtils";
 import clearChatAnalyticsData from "./features/clearChatAnalyticsData";
 import clearChatImageCache from "./features/clearChatImageCache";

@@ -1,6 +1,6 @@
 // promptGenerator.ts
 
-import { getAppContext } from "@/context/AppContextHelper";
+import { getAppContext } from "@/state/context/AppContextHelper";
 
 export const generatePrompt = (userIdea: any): string | null => {
   if (!userIdea) {

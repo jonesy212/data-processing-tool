@@ -1,8 +1,6 @@
 // components/AppProviders.tsx
 'use client';
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { NotificationProvider } from '@/app/features/support/NotificationProvider';
-import { AuthProvider } from '@/context/AuthContext';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 
 // In your AuthProvider component file
 interface AuthProviderProps {

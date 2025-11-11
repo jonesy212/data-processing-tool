@@ -1,11 +1,14 @@
 // SnapshotHandling.ts
-import { CategoryProperties } from '@/app/components/pages/personas/ScenarioBuilder';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Data } from '@/app/models/data/Data';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from '@/LocalStorageSnapshotStore';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -16,61 +19,63 @@ interface SnapshotHandling<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> {
-    mapSnapshots(
-        storeIds: number[],
-        snapshotId: string,
-        category?: Category,
-        categoryProperties: CategoryProperties | undefined,
-        snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        timestamp: string | number | Date | undefined,
-        type: string,
-        event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        id: number,
-        snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        data: Data,
-        callback: (
-          storeIds: number[],
-          snapshotId: string,
-          category?: Category,          categoryProperties: CategoryProperties | undefined,
-          snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          timestamp: string | number | Date | undefined,
-          type: string,
-          event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          id: number,
-          snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          data: T,
-          index: number
-        ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-      ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>    
+  IncludedFields extends keyof T = keyof T
+> {
+  mapSnapshots(
+    storeIds: number[],
+    snapshotId: string,
+    categoryProperties: CategoryProperties | undefined,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    timestamp: string | number | Date | undefined,
+    type: string,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    id: number,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    data: Data,
+    callback: (
+      storeIds: number[],
+      snapshotId: string,
+      categoryProperties: CategoryProperties | undefined,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      id: number,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      data: T,
+      index: number,
+      category?: Category,
+    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
+  ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>    
 
-      createSnapshotStore: (
-        id: string,
-        storeId: number,
-        snapshotId: string,
-        snapshotStoreData: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-        category?: Category,
-        categoryProperties: CategoryProperties | undefined,
-        callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-        snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-      ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
+  createSnapshotStore: (
+    id: string,
+    storeId: number,
+    snapshotId: string,
+    snapshotStoreData: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    categoryProperties: CategoryProperties | undefined,
+    callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    category?: Category
+  ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
     
-      updateSnapshotStore: (
-        id: string,
-        snapshotId: number,
-        snapshotStoreData: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        category?:  Category,
-        callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-        snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-      ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
-    
+  updateSnapshotStore: (
+    id: string,
+    snapshotId: number,
+    snapshotStoreData: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?:  Category,
+    callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
 
   initSnapshot: (
     snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Ensure snapshotData matches SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    category?: Category,    snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Use K instead of T for snapshotConfig
-    callback: (snapshotStore: SnapshotStore<any, any>) => void
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    callback: (snapshotStore: SnapshotStore<any, any>) => void,
+    category?: Category
   ) => void;
 
   deleteSnapshot: (id: string) => void;

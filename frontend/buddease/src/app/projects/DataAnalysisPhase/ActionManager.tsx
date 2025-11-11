@@ -2,7 +2,7 @@
 
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Task } from "@/app/models/tasks/Task";
-import { useNotification } from "@/context/NotificationContext";
+import { useNotification } from "@/state/context/NotificationContext";
 
 class ActionManager {
     private notify: (message: string, type: string, timestamp: Date, context: string) => void; // Define the notify method

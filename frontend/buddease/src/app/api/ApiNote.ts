@@ -1,32 +1,27 @@
 // ApiNotes.ts
-import { handleApiError } from '@/app/api/ApiLogs';
-import axiosInstance from '@/app/api/csrfToken';
 import internalApiService from '@/app/api/ApiClient'; // ✅ ADD THIS
-import { NotificationOptions } from '@/app/context/NotificationContext'
-import { NotificationPosition } from '@/app/models/data/StatusType';
+import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification
-} from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { NoteData } from '@/app/documents/NoteData';
-import { BaseData } from '@/app/models/data/Data';
 import FolderData from '@/app/models/data/FolderData';
 import { Tag } from '@/app/models/tracker/Tag';
 import { Encryption } from '@/app/server/security/Encryption';
 import {
-  NoteAttachment,
-  NoteEntity,
-  NoteExcludedFields,
-  NoteIncludedFields,
-  NoteK,
-  NoteMeta
+    NotificationTypeEnum,
+    useNotification
+} from '@/app/state/context/NotificationContext';
+import {
+    NoteAttachment,
+    NoteEntity,
+    NoteExcludedFields,
+    NoteIncludedFields,
+    NoteK,
+    NoteMeta
 } from '@/app/typings/entities/NoteEntity';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import AccessHistory from '@/app/versions/AccessHistory';
@@ -1170,5 +1165,6 @@ export const createNoteFromTemplateAPI = async (templateId: number, noteData: an
   }
 };
 
-export type { Note, SearchNotesResponse };
 export { apiNotificationMessages };
+export type { Note, SearchNotesResponse };
+

@@ -12,7 +12,7 @@ import {
   StorePropMeta
 } from '@/app/typings/entities/StorePropEntity';
 import { useDataStore } from '@/app/state/stores/DataStore';
-import { internalCache } from '@/app/utils/cache/InternalCache';
+import { internalCache } from '@/utils/cache/InternalCache';
 
 
 export interface BaseDataEntity {

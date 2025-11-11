@@ -1,7 +1,7 @@
 // login.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createPostgresAuthService } from '@/server/AuthServerService';
+import { createPostgresAuthService } from '@/app/server/AuthServerService';
 
 const authService = createPostgresAuthService();
 

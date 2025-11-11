@@ -1,5 +1,5 @@
 // WelcomePage.tsx
-import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
+import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import React from "react";
 
 const WelcomePage: React.FC = () => {

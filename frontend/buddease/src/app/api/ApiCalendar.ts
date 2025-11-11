@@ -1,19 +1,19 @@
 // ApiCalendar.ts
+import internalApiService from '@/app/api/ApiClient';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import {
-  SimpleCalendarEvent,
-  useCalendarContext,
+    SimpleCalendarEvent,
+    useCalendarContext,
 } from "@/app/components/calendar/CalendarContext";
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes'
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosResponse } from "axios";
-import internalApiService from '@/app/api/ApiClient';
 
 const API_BASE_URL = endpoints.calendar
 

@@ -7,7 +7,7 @@ import { BaseCustomEvent } from "@/app/events/BaseCustomEvent";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { NotificationType } from "@/context/NotificationContext";
+import { NotificationType } from "@/state/context/NotificationContext";
 import { useAssignEventStore } from "./AssignEventStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';

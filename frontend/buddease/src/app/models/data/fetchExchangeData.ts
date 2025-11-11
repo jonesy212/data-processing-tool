@@ -1,7 +1,7 @@
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { DexLogger, ExchangeLogger } from "@/app/libraries/logging/Logger";
-import { processDEXData } from "@/app/utils/processDEXDataUtils";
+import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
+import { processDEXData } from "@/utils/processDEXDataUtils";
 
 
 // Usage in fetchDEXData function

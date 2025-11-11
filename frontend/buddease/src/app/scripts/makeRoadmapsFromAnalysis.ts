@@ -1,3 +1,4 @@
+import { RoadmapAudience } from '@/app/typings/roadmap';
 // makeRoadmapsFromAnalysis.ts
 // scripts/makeRoadmapsFromAnalysis.ts
 import fs from 'fs';

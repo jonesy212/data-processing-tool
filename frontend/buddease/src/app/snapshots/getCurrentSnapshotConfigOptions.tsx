@@ -12,7 +12,7 @@ import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigIn
 import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/app/utils/versionUtils";
+import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/utils/versionUtils";
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import SnapshotStore from "./SnapshotStore";

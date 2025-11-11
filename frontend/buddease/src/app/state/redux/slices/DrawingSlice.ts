@@ -15,7 +15,7 @@ import { DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExclude
 import {
   createMilestone
 } from "./TrackerSlice";
-// Define interface for drawing state
+
 import * as drawingApi from "@/app/api/ApiDrawing";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { saveAs } from "@/app/documents/editing/autosave";

@@ -1,5 +1,4 @@
 // EventStore.ts
-import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -13,6 +12,7 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { EventRecord, InitializedState } from "@/app/state/stores/DataStore";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';

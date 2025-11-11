@@ -6,14 +6,14 @@ import { LogData } from "@/app/models/LogData";
 import {
     NotificationType,
     useNotification
-} from "@/app/context/NotificationContext";
+} from "@/app/state/context/NotificationContext";
 import AnnouncementManager from "@/app/features/support/AnnouncementManager";
 import PushNotificationManager from "@/app/features/support/PushNotificationManager";
 import { selectNotifications } from "@/app/state/redux/slices/NofiticationsSlice";
 import { NotificationData } from '@/app/hooks/useNotificationSystem'
 import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
-
+import { LogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields } from '@/app/typings/entities/LogEntity'
 const dispatch = useDispatch();
 
 interface NotificationContainer<

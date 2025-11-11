@@ -1,8 +1,8 @@
 // SubscriptionActions.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
-import { LiveEvent } from "@refinedev/core";
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
@@ -10,11 +10,11 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { category } from '@/app/utils/snapshotUtils';
-import { LogActivityParams, TriggerIncentivesParams } from '@/app/utils/web3/applicationUtils';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { category } from '@/utils/snapshotUtils';
+import { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
+import { LiveEvent } from "@refinedev/core";
 
 
 interface SubscriptionPayload<

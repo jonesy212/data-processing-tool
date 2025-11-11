@@ -9,16 +9,37 @@ type AppTree = {
 
 // Define the main generateInitialAppTree function
 const generateInitialAppTree = async (): Promise<AppTree | null> => {
-  const userStatus = isUserLoggedIn(); // Call without any arguments
+  try {
+    const userStatus = await isUserLoggedIn();
 
-  if (userStatus.isLoggedIn) {
-    const currentUser = userStatus.dashboardConfig.user;
-    const userData = await getUsersData(currentUser.id);
-    const appTree = generateAppTree(userData,yourDocuments);
-    console.log(appTree);
-    return appTree;
-  } else {
-    // Handle the case when the user is not logged in
+    if (userStatus.isLoggedIn) {
+
+      if (!userStatus.dashboardConfig?.user) {
+        console.warn('No user data found in dashboard config');
+        return null;
+      }
+
+      const currentUser = userStatus.dashboardConfig.user;
+      const userData = await getUsersData(currentUser.id);
+      
+      
+      if (!userData) {
+        console.warn('No user data retrieved');
+        return null;
+      }
+
+      
+      const documentTree = convertToDocumentTree(userData);
+      const appTree = generateAppTree(documentTree);
+      
+      console.log(appTree);
+      return appTree;
+    } else {
+      // Handle the case when the user is not logged in
+      return null;
+    }
+  } catch (error) {
+    console.error('Error generating app tree:', error);
     return null;
   }
 };

@@ -14,7 +14,7 @@ import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
 import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
+import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";

@@ -27,19 +27,20 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { SnapshotContext } from '@/app/context/SnapshotContext';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SnapshotContent } from '@/app/snapshots/SnapshotContent';
 import { convertBaseDataToK } from '@/app/snapshots/convertSnapshot';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
+import { SnapshotContext } from '@/app/state/context/SnapshotContext';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { generateSnapshotId, isSnapshot } from '@/app/utils/snapshotUtils';
+import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { Subscription } from 'react-redux';
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-class YourSpecificSnapshotType <
+
+class YourSpecificSnapshotType<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -177,9 +178,7 @@ class YourSpecificSnapshotType <
   ): string {
     // Placeholder implementation
     return `${prefix}-${name}-${type}`;
-  }
-
-  
+  } 
 }
 
 

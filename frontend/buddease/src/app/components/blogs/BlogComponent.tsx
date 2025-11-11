@@ -1,22 +1,20 @@
 import * as subscriberApi from '@/api/subscriberApi';
-import { BlogData } from '@/app/components/lists/BlogList';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData, Data } from '@/app/models/data/Data';
-import { Meta } from '@/app/models/data/dataStoreMethods';
+import { Data } from '@/app/models/data/Data';
 import Tracker from '@/app/models/tracker/Tracker';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber, SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { snapshotId } from '@/app/utils/snapshotUtils';
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/app/utils/web3/applicationUtils';
-import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { NotificationType, useNotification } from '@/context/NotificationContext';
+import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typings/entities/BlogEntity';
+import { NotificationType, useNotification } from '@/state/context/NotificationContext';
+import { snapshotId } from '@/utils/snapshotUtils';
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/utils/web3/applicationUtils';
 import React, { useEffect, useState } from 'react';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields } from '@/app/typings/entities/BlogEntity'
 
 type BlogContentType<
   T extends BaseDataEntity,

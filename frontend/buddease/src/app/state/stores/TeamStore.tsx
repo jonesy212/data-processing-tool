@@ -5,7 +5,6 @@ import teamManagementService from "@/app/api/TeamManagementApi";
 import { useAssignBaseStore } from "@/app/AssignBaseStore";
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
@@ -18,13 +17,14 @@ import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOpe
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import SnapshotStoreConfigComponent from "@/app/snapshots/SnapshotStoreConfigComponent";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { VideoData } from "@/app/video/Video";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import {
-  AssignTeamMemberStore,
-  useAssignTeamMemberStore,
+    AssignTeamMemberStore,
+    useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 

@@ -1,9 +1,9 @@
 // DataService.ts
 import internalApiService from '@/app/api/ApiClient';
 import { NotificationPosition } from '@/app/models/StatusType'
-import { NotificationContextProps, NotificationTypeEnum } from '@/context/NotificationContext';
+import { NotificationContextProps, NotificationTypeEnum } from '@/state/context/NotificationContext';
 import { action, observable, runInAction } from 'mobx';
-import { useAuth } from '@/app/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import DATA_NOTIFICATIONS from '@/app/features/support/DataNotifications';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { Attachment } from "@/app/documents/attachment/Attachment";

@@ -1,16 +1,16 @@
 // ServerConfigurationService.ts
 // app/server/ServerConfigurationService.ts
-import fs from 'fs';
-import path from 'path';
 import { SystemConfigs, createSystemConfigs } from "@/app/api/systemConfigs";
 import { UserConfigs } from "@/app/api/userConfigs";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
-import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import { BackendConfig, backendConfig } from "@/app/config/BackendConfig";
+import { backendConfig } from "@/app/config/BackendConfig";
 import { frontendConfig } from "@/app/config/FrontendConfig";
-import dataVersions from '@/app/configs/DataVersionsConfig'
 import { userPreferences } from "@/app/config/UserPreferences";
-import userSettings from '@/app/config/UserSettings'
+import userSettings from '@/app/config/UserSettings';
+import dataVersions from '@/app/configs/DataVersionsConfig';
+import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
+import fs from 'fs';
+import path from 'path';
 
 // Define shared base config types that both frontend and backend can use
 export interface BaseServerConfig {

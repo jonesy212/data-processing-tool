@@ -1,5 +1,5 @@
 // PhaseEntity.ts
-
+import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields } from '@app/typings/entities/NotificationEntity'
 import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
@@ -12,7 +12,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseEntity  } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, BaseDataRoot,DefaultIncludedFields, DefaultMeta, BaseEntity  } from '@/app/config/BaseConfig';
 import { PhaseStructuredMetadata } from '@/app/typings/phaseTypes'
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
@@ -147,6 +147,35 @@ type AppPhase = Phase<
   PhaseBaseParams['IncludedFields']
 >;
 
+
+
+
+
+// Base default types for Phase
+type PhaseWithGenerics<
+  T extends BaseDataEntity = AppPhaseEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = PhaseMeta,
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+> = Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+// Specialized variants for common use cases
+type DefaultPhase = PhaseWithGenerics; // Uses all default Phase types
+type CustomEntityPhase<T extends BaseDataEntity> = PhaseWithGenerics<T>; // Custom entity only
+type CustomMetaPhase<M extends DefaultMeta<AppPhaseEntity, PhaseK>> = PhaseWithGenerics<AppPhaseEntity, PhaseK, M>; // Custom meta only
+
+// For your NotificationProvider pattern matching
+type NotificationPhase = PhaseWithGenerics<
+  NotificationEntity,
+  NotificationK,
+  NotificationMeta,
+  NotificationAttachment,
+  NotificationExcludedFields,
+  NotificationIncludedFields
+>;
+
 export type {
 
   // App Phase type
@@ -167,7 +196,7 @@ export type {
   PhaseNotificationSettings, 
   PhaseSettings ,
   // Metadata tmypes
-  PhaseUnifiedMetadata, PhaseWithDetails, PublicPhaseProfile,
+  PhaseWithDetails, PublicPhaseProfile,
 
 };
 

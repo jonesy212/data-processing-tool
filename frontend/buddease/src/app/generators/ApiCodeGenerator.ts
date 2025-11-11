@@ -1,9 +1,36 @@
+// ApiCodeGenerator.ts
 import ApiCodeOptions from "./ApiCodeOptions";
 
-// ApiCodeGenerator.ts
 interface ApiMethod {
   name: string;
-  parameters: (string | Function)[]; // Allow functions as parameters
+  parameters: string[]; // Remove Function - keep as strings for readability
+  returnType: string;
+  type: 'api' | 'service' | 'function';
+  isAsync: boolean; // ✅ Add this to track async status
+}
+
+interface ApiInfo {
+  file: string;
+  methods: ApiMethod[];
+  exports: string[];
+}
+
+
+interface ComponentInfo {
+  file: string;
+  propsType?: string;
+  exports: string[];
+  name: string;
+  hasProps?: boolean;
+}
+
+interface InterfaceInfo {
+  file: string;
+  name: string;
+  type: string;
+  properties?: any[];
+  definition?: string;
+  exports?: string[]; 
 }
 
 
@@ -102,28 +129,51 @@ const generateServiceMethod = (method: ApiMethod): string => {
 
   return functionSignature;
 };
-
 // Example usage
 const apiCodeOptions: ApiCodeOptions = {
   baseUrl: "https://your-api-base-url",
   methods: [
-    { name: "createTeam", parameters: ["teamData: any"] },
-    { name: "deleteTeam", parameters: ["teamId: string"] },
-    { name: "fetchTeamMemberData", parameters: [] },
+    { 
+      name: "createTeam", 
+      parameters: ["teamData: any"],
+      returnType: "Promise<Team>",
+      type: "api" as const,
+      isAsync: true // ✅ Added isAsync
+    },
+    { 
+      name: "deleteTeam", 
+      parameters: ["teamId: string"],
+      returnType: "Promise<void>",
+      type: "api" as const,
+      isAsync: true 
+    },
+    { 
+      name: "fetchTeamMemberData", 
+      parameters: [],
+      returnType: "Promise<TeamMember[]>",
+      type: "api" as const,
+      isAsync: true 
+    },
+    { 
+      name: "validateTeamName", 
+      parameters: ["name: string"],
+      returnType: "boolean",
+      type: "api" as const,
+      isAsync: false 
+    },
   ],
   endpoints: {
-    teams: '/teams', // Example endpoint path for teams
-    users: '/users', // Example endpoint path for users
-    apiConfig: '/api-config', // Example endpoint path for apiConfig
-    projects: '/projects', // Example endpoint path for projects
-    tasks: '/tasks', // Example endpoint path for tasks
-    todos: '/todos', // Example endpoint path for todos
-
-
+    teams: '/teams',
+    users: '/users',
+    apiConfig: '/api-config',
+    projects: '/projects',
+    tasks: '/tasks',
+    todos: '/todos',
   },
 };
 
 export default ApiMethod;
+export type { ApiInfo, ComponentInfo, InterfaceInfo }
 
 export const generatedApiCode = generateApiCode(apiCodeOptions);
 console.log(generatedApiCode); // Output generated TypeScript API code

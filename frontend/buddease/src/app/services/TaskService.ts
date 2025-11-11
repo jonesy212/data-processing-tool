@@ -1,16 +1,16 @@
 import { apiService } from "@/app/api/ApiDetails";
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import Logger from "@/app/libraries/logging/Logger";
 import { Task } from "@/app/models/tasks/Task";
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/app/typings/entities/TaskEntity';
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
-import { TaskMeta, TaskEntity, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
 
 const API_BASE_URL = endpoints.tasks;
 

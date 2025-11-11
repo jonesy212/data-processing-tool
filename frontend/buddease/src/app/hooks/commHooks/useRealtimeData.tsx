@@ -9,6 +9,7 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
+import { Data } from '@/app/models/data/Data';
 
 export const ENDPOINT = endpoints.backend
 

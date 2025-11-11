@@ -1,8 +1,9 @@
-import { NotificationType } from '@/app/context/NotificationContext';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { archiveSnapshot } from '@/ArchiveService';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { validateSnapshot } from '@/app/snapshots/snapshotOperations';
 import {
     handleDataUpdateSnapshot,
@@ -11,9 +12,8 @@ import {
     handleUserActionSnapshot,
     processSnapshotData,
     updateSnapshotMetrics
-} from '@/app/utils/snapshotUtils';
-import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { useNotification } from '@/context/NotificationContext';
+} from '@/utils/snapshotUtils';
+import { useNotification } from '@/state/context/NotificationContext';
 
 const { notify } = useNotification()
 

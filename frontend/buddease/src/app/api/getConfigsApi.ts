@@ -1,9 +1,9 @@
 import axiosInstance from '@/app/api/csrfToken';
+import { ipfsConfig } from '@/app/config/ipfsConfig';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentSize } from '@/app/models/data/StatusType';
 import { configServiceInstance } from '@/app/services/ConfigurationService';
-import { fluenceApiKey } from '@/app/utils/web3/dAppAdapter/DAppAdapterConfig';
-import { ipfsConfig } from '@/app/config/ipfsConfig';
+import { fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { ExtendedDappProps } from '@/utils/web3/dAppAdapter/IPFS';
 import { PoolConfig } from 'mysql';
 

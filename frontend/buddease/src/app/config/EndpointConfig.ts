@@ -111,7 +111,7 @@ export interface EndpointConfigurations {
   apiConfig: ApiConfigEndpoints;
   apiWebBase: ApiWebBaseEndpoints;
   analytics: AnalyticsEndpoints; 
-  categories: CategoryEndpoints,
+  categoriesEndpoints: CategoryEndpoints,
   comments: CommentsEndpoints;
   content: ContentEndpoints;
   data: DataEndpoints;

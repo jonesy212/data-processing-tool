@@ -1,12 +1,22 @@
 // chatUtils.ts
 import { CollaborationActions } from '@/app/actions/CollaborationActions';
+import {
+    AudioOptions,
+    ChatSettingsModal,
+    NotificationPreferences,
+    VideoOptions,
+} from '@/app/cards/modal/ChatSettingsModal';
 import { openNotificationPreferencesModal } from '@/app/cards/modal/openNotificationPreferencesModal';
+import openAudioOptionsMenu from '@/app/components/communications/chat/features/openAudioOptionsMenu';
+import { getUserPreferences } from '@/app/config/UserPreferences';
+import RichTextEditor from '@/app/documents/RichTextEditor';
 import { saveToLocalStorage } from '@/app/hooks/useLocalStorage';
 import { useSecureDocumentId } from '@/app/hooks/useSecureDocumentId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import configureCollaborationPreferences from '@/app/pages/community/configureCollaborationPreferences';
+import { DocumentEditingPermissions } from '@/app/permissions/Permission';
 import { isValidNotificationPreferences } from '@/app/server/security/validationRulesCode';
 import { PrivacySettings } from '@/app/settings/PrivacySettings';
 import { configureSecuritySettings } from '@/app/settings/configureSecuritySettings';
@@ -14,20 +24,10 @@ import { saveSecuritySettings } from '@/app/settings/saveSecuritySettings';
 import { DocumentActions } from '@/app/tokens/DocumentActions';
 import { openPrivacySettingsMenu } from '@/app/utils/video/openPrivacySettingsMenu';
 import { openVideoOptionsMenu } from '@/app/utils/video/openVideoOptionsMenu';
-import { getUserPreferences } from '@/app/config/UserPreferences';
 import {
     NotificationContextProps,
     NotificationType,
-} from '@/context/NotificationContext';
-import RichTextEditor from '@/app/documents/RichTextEditor';
-import { DocumentEditingPermissions } from '@/app/permissions/Permission';
-import {
-    AudioOptions,
-    ChatSettingsModal,
-    NotificationPreferences,
-    VideoOptions,
-} from '@/app/cards/modal/ChatSettingsModal';
-import openAudioOptionsMenu from '@/app/components/communications/chat/features/openAudioOptionsMenu'
+} from '@/state/context/NotificationContext';
 
 type SidebarController = {
   close: () => void;

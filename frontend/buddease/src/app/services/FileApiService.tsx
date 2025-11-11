@@ -2,9 +2,9 @@ import internalApiService, { ClientNotificationMessages, clientNotificationMessa
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { NotificationType } from '@/app/context/NotificationContext';
 import { FileType } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { sendNotification } from "@/app/users/UserSlice";
 import { VersionData } from "@/app/versions/VersionData";
 import { AxiosError, AxiosResponse } from "axios";

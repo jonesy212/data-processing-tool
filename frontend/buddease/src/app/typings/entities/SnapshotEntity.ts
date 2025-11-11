@@ -180,6 +180,8 @@ interface SnapshotEntityDataInterface<
   createdBy?: string;
   createdAt?: Date;
   updatedAt?: Date;
+    isDirty?: boolean;
+  lastAccessed?: number
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   [key: string]: any;
 }

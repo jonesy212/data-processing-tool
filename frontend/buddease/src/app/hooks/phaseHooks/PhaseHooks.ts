@@ -11,28 +11,34 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { Progress } from "@/app/models/tracker/ProgressBar";
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
+import configData from "@/config/endpoints/configData";
+import { useAuth } from "@/state/context/AuthContext";
 import {
   ExtendedDAppAdapter,
   ExtendedDappProps
-} from "@/app/utils/web3/dAppAdapter/IPFS";
-import configData from "@/config/endpoints/configData";
-import { useAuth } from "@/context/AuthContext";
+} from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
 
-
-
-const phaseHooks: { [key: string]: CustomPhaseHooks<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
-let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
+const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
+let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
 
 
- export interface PhaseHookConfig {
+ export interface PhaseHookConfig<
+  T extends BaseDataEntity = PhaseEntity, 
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = PhaseMeta, 
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+> {
    name: string;
    progressCallbacks?: (progress: Progress) => void;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   canTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
   handleTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
-   duration: string | undefined;
+  duration: string | undefined;
   isActive?: boolean;
   initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;
   resetIdleTimeout?: () => Promise<void>;
@@ -43,9 +49,9 @@ let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   startIdleTimeout: (
     timeoutDuration: number,
     onTimeout: () => void | undefined
-   ) => void | undefined;
+  ) => void | undefined;
    
-   cleanup?: (() => void) | undefined;
+  cleanup?: (() => void) | undefined;
   startAnimation?: () => void;
   stopAnimation?: () => void;
   animateIn?: () => void;
@@ -81,48 +87,70 @@ export interface TestPhaseHookConfig {
 export const idleTimeoutDuration = 10000; 
 
 // Define additional methods for managing test phases
-const useTestPhaseHooks = (): TestPhaseHooks => {
-  // Implement methods for managing test phases
+const useTestPhaseHooks = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>(): TestPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+
+  // Keep idleTimeoutId typed safely for browser/Node
+  let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   const createTestPhaseHook = (
     config: TestPhaseHookConfig
-  ): CustomPhaseHooks => {
-    // Implement logic to create test phase hooks based on the provided configuration
+  ): CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
-    // Example: Create custom phase hooks for the test environment
-    const customHooks: CustomPhaseHooks = {
+    const customHooks: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       condition: config.condition,
-      // Define custom phase hooks here
+
       onStart: () => {
-        //todo
-        // Logic to execute when the test phase starts
         console.log("Test phase started");
       },
       onEnd: () => {
-        // Logic to execute when the test phase ends
         console.log("Test phase ended");
       },
+
       canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true,
-      handleTransitionTo: function (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+      handleTransitionTo: async (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         throw new Error("Function not implemented.");
       },
-      resetIdleTimeout: function (): Promise<void> {
-        throw new Error("Function not implemented.");
+
+      resetIdleTimeout: async () => {
+        if (idleTimeoutId) {
+          clearTimeout(idleTimeoutId);
+          idleTimeoutId = null;
+        }
       },
+
       isActive: false,
       progress: {} as Progress,
+
+      // Optional lifecycle hooks
+      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
+        if (idleTimeoutId) clearTimeout(idleTimeoutId);
+        idleTimeoutId = setTimeout(() => {
+          onTimeout();
+        }, timeoutDuration);
+      },
+      clearIdleTimeout: () => {
+        if (idleTimeoutId) clearTimeout(idleTimeoutId);
+        idleTimeoutId = null;
+      },
     };
 
-    // Return the custom phase hooks
     return customHooks;
   };
 
   return {
-    createTestPhaseHook(config: TestPhaseHookConfig): CustomPhaseHooks {
+    createTestPhaseHook(config: TestPhaseHookConfig) {
       return createTestPhaseHook(config);
     },
   };
 };
+
 const { resetAuthState } = useAuth();
 
 export const createPhaseHook =
@@ -249,7 +277,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
       animateIn: () => {},
       toggleActivation: () => {},
       cleanup: undefined,
-    } as unknown as PhaseHookConfig) as unknown as CustomPhaseHooks;
+    } as unknown as PhaseHookConfig) as unknown as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 });
 
 

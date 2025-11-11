@@ -6,7 +6,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import useDocumentStore from "@/app/state/stores/DocumentStore";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 
 const useDocumentManagement = () => {
   const { handleError } = useErrorHandling();

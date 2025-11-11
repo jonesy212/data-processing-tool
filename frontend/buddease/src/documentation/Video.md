@@ -3,7 +3,7 @@
 This document explains the structure, purpose, and relationships between core entities and functions used in the video management logic.
 It defines how raw video data flows from the backend or UI into the application store, gets transformed into enriched state, and is accessed or updated.
 
-🧩 Core Concepts
+# 🧩 Core Concepts
 Concept	Type	Purpose	Example Use
 Video	Base entity	Represents a simple, raw video object retrieved from an API or created via UI.	Data from API, form submission, etc.
 VideoData<T>	Rich entity	Extends Video with metadata, timestamps, computed fields, and tracking information.	Used for rendering, caching, and state management.
@@ -11,7 +11,8 @@ convertToVideoData	Transformer Function	Converts a raw Video into a rich VideoDa
 videos (state)	Record<string, VideoData[]>	Centralized collection of enriched video entries, keyed by ID or category.	Provides fast access and grouping in UI.
 getVideoData	Accessor Function	Retrieves a single VideoData entry from store memory.	Used when editing or playing a video.
 getVideosData	Remote Accessor Function	Fetches videos from a remote source and converts them via convertToVideoData.	Used for syncing or refreshing from backend.
-🧠 Concept Flow
+
+# 🧠 Concept Flow
 graph TD
   A[API Response / User Input (Video)] --> B[convertToVideoData()]
   B --> C[VideoData<T>]

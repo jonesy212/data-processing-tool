@@ -60,7 +60,7 @@ exports.useDetailsListStore = void 0;
 // DetailsListStore.ts
 var mobx_1 = require("mobx");
 var SnapshotStore_1 = require("@/app/snapshots/SnapshotStore");
-var NotificationContext_1 = require("@/context/NotificationContext");
+var NotificationContext_1 = require("@/state/context/NotificationContext");
 var NotificationMessages_1 = require("@/app/support/NotificationMessages");
 var StatusType_1 = require("@/app/models/data/StatusType");
 var notify = (0, NotificationContext_1.useNotification)().notify;

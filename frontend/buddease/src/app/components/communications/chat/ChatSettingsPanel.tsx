@@ -1,12 +1,11 @@
 // ChatSettingsPanel.tsx
 import React from "react";
 
-import userSettings from '@/app/config/UserSettings';
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/app/context/AuthContext';
+import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { UserData } from '@/app/users/User';
-import { subscribeToRealtimeUpdates } from '@/app/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
-import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel'
+import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
+import { useEffect, useState } from 'react';
 // Define the ChatSettingsPanel component
 const ChatSettingsPanel: React.FC = () => {
   // State to track whether the panel is open or closed

@@ -1,5 +1,4 @@
 // DocumentBuilder.tsx
-import VersionImpl from "@/app/versions/Version";
 import {
   createContentStateFromText,
   fetchContentIdFromAPI
@@ -7,7 +6,8 @@ import {
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DocumentPhase } from '@/app/models/phases/DocumentPhase'
+import { DocumentPhase } from '@/app/models/phases/DocumentPhase';
+import VersionImpl from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
 import axiosInstance from '@/app/api/csrfToken';
@@ -53,7 +53,6 @@ import { BaseData, Data, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
-import { K, Meta, T, } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import PromptViewer from "@/app/prompts/PromptViewer";
@@ -71,7 +70,7 @@ import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import Clipboard from "@/app/ts/clipboard";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { getMetadataFromPlainText } from "@/app/utils/metadataUtils";
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import AccessHistory, {
   convertAccessRecordToHistory,
 } from "@/app/versions/AccessHistory";
@@ -79,6 +78,7 @@ import AppVersionImpl from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { getMetadataFromPlainText } from "@/utils/metadataUtils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
@@ -92,7 +92,6 @@ import "draft-js/dist/Draft.css";
 import { versions } from "process";
 import React, { useState } from "react";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields } from '@/app/typings/entities/DocumentEntity'
   
 
 const API_BASE_URL = endpoints.apiBaseUrl;
@@ -218,13 +217,13 @@ export interface CustomProjectPhaseType {
 
 const initialOptions: DocumentOptions = {
   previousMeta: {
-    metadataEntries: [],
+    metadataEntries: {},
     keywords: [],
     version: 'document-options-version',
     isActive: true,
   },
-  currentMeta: undefined,
   uniqueIdentifier: "",
+  currentMeta: {} as StructuredMetadata<BaseDataRoot, BaseDataRoot, DefaultMeta<T, K>, Attachment, never, keyof BaseDataRoot>,
   documentType: typeof DocumentTypeEnum,
   documentSize: DocumentSize.A4,
   limit: 0,
@@ -580,8 +579,8 @@ const extractMetadata = async <
 };
 
 // Initial state or default values for metadata
- const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions(selectedmetadata);
- const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions(selectedmetadata);
+ const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
+ const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
 
 
 
@@ -678,6 +677,7 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
     appName: "Buddease",
     releaseDate: new Date().toISOString(),
     releaseNotes: [],
+    versionNotes, toData,
     creator: {
       id: 0,
       name: "Test User",
@@ -699,6 +699,8 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
     metadata: {
       author: "Test User",
       timestamp: new Date(),
+      area: 'document-builder-props-version',
+      metadataEntries: []
     },
     versions: {
       frontend: frontendStructure, 

@@ -3,7 +3,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import useUserProfile from '@/app/hooks/useUserProfile';
 import UserRoles from '@/app/models/UserRoles';
 import { User, UserData } from '@/app/users/User';
-import MyPromise from '@/app/utils/MyPromise';
+import MyPromise from '@/utils/MyPromise';
 import CommonDetails from '@/components/models/details/CommonDetails';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 

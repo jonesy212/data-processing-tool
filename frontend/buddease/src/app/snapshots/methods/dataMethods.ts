@@ -2,10 +2,11 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { isSnapshot } from '@/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -25,7 +26,7 @@ export function addDataSnapshot<
 
   // Add a check to handle NaN cases if needed
   if (typeof idAsNumber === "number" && !isNaN(idAsNumber)) {
-    this.dataStoreMethods?.addDataStatus(idAsNumber, StatusType.Pending);
+    this.dataStoreMethods?.addDataStatus(idAsNumber, StatusType.Pending, updateSnapshot);
   } else {
     console.error("Invalid ID: Not a number");
   }
@@ -270,7 +271,7 @@ export function getAllKeys<
   storeId: number,
   snapshotId: string,
   categoryProperties: CategoryProperties | undefined,
-  snapshot: Snapshot<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T> | null,
+  snapshot: Snapshot<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, T> | null,
   timestamp: string | number | Date | undefined,
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -390,3 +391,22 @@ export function getSnapshotEntries<
     return undefined;
   }
 }
+
+
+export const DataMethods = {
+  addDataSnapshot,
+  getData,
+  removeData,
+  updateData,
+  updateDataTitle,
+  updateDataDescription,
+  updateDataStatus,
+  addDataSuccess,
+  addDataStatus,
+  setData,
+  addDataPartial,
+  getAllKeys,
+  getAllValues,
+  getAllItems,
+  getSnapshotEntries
+};

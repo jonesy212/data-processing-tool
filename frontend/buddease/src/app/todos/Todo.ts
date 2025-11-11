@@ -1,16 +1,16 @@
+import { ScheduledData } from '@/app/calendar/ScheduledData';
+import { Collaborator } from '@/app/collaborators/Collaborator';
 import { DayOfWeekProps } from '@/app/components/calendar/DayOfWeek';
 import { Month } from '@/app/components/calendar/Month';
-import { Collaborator } from '@/app/collaborators/Collaborator';
-import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Task } from '@/app/components/models/tasks/Task';
-import { NotificationType } from '@/app/context/NotificationContext';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import ChecklistItem, { ChecklistItemProps } from '@/app/models/ChecklistItem';
 import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
-import ChecklistItem, { ChecklistItemProps } from '@/app/models/ChecklistItem';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
 import { Phase } from '@/app/models/phases/Phase';
@@ -18,37 +18,35 @@ import { Progress } from '@/app/models/tracker/ProgressBar';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { DataStore } from '@/app/state/stores/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection'
-import { SnapshotItem } from '@/app/snapshots/SnapshotList'
-import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation'
+import { CreateSnapshotsPayload, Payload } from '@/app/server/database/Payload';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { LocalStorageSnapshotStore, Result, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes'
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import  initialState from '@/app/snapshots/SnapshotStore';
-import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import { default as initialState, default as SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from '@/app/users/Ideas';
 import { User } from '@/app/users/User';
-import { VideoData } from '@/app/typings/videoTypes/Video';
-import { CreateSnapshotsPayload, Payload } from '@/app/server/database/Payload';
 import operation from 'antd/es/transfer/operation';
 import { config } from 'process';
 import { FC } from 'react';
 import { options } from 'sanitize-html';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export type UserAssignee = Pick<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
@@ -817,7 +815,6 @@ class TodoImpl<
     ) : SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error("Function not implemented.");
     },
-
   };
 
   updateOrder(newOrder: number): void {

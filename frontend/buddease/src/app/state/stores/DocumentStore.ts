@@ -32,7 +32,7 @@ import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { AccessHistory } from '@/app/versions/AccessHistory';
 import { Version } from '@/app/versions/Version';
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";

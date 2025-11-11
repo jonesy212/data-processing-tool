@@ -1,10 +1,8 @@
 // TradeLogger.ts
-import Logger from '@/app/libraries/logging/Logger'
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { TradeAction } from '@/app/models/cypto/Exchange'
-import { CryptoPortfolio } from '@/app/api/service/PortfolioService';
+import Logger from '@/app/libraries/logging/Logger';
+import { TradeAction } from '@/app/models/cypto/Exchange';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { payload } from '@/app/utils/Payload'; // Adjust path as needed
 
 const { notify } = useNotification() || { notify: () => {} };

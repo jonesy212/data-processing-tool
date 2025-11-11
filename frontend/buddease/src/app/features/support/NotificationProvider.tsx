@@ -1,19 +1,26 @@
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
+import React, { createContext, useState } from 'react';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { logData } from '@/app/services/NotificationService';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes'
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useMeta } from '@/app/config/useMeta';
-import { NotificationData } from '@/app/hooks/useNotificationSystem'
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import {
+    NotificationAttachment,
+    NotificationEntity,
+    NotificationExcludedFields, NotificationIncludedFields,
+    NotificationK, NotificationMeta
+} from '@/app/typings/entities/NotificationEntity';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
 import { title } from 'process';
-import React, { createContext, useState } from 'react';
-import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields
-} from '@/app/typings/entities/NotificationEntity'
+
 export const notificationStore = notificationStoreInstance
 export const notificationData: NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields>[] = [];
 
@@ -38,7 +45,7 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = <
   T extends BaseDataEntity = NotificationEntity,
-  K extends T = NotificationK,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = NotificationMeta,
   AttachmentType extends Attachment = NotificationAttachment,
   ExcludedFields extends keyof T = NotificationExcludedFields,
@@ -47,10 +54,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   children
 }: { children: React.ReactNode }) => {
   const area = 'notificationProvider'
-  const [notifications, setNotifications] = useState <NotificationData<NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields>[]>([]);
+  const [notifications, setNotifications] = useState <NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
 
-  const currentMeta: StructuredMetadata<NotificationEntity, NotificationK, NotificationMeta> = useMeta<T, K>(area)?? {
+  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)?? {
     metadataEntries: {}, // Provide default or fallback values
     keywords: [],
     version: '1.0.0',
@@ -65,7 +72,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   };
 
   // Define a metadata object
-  const currentMetadata: UnifiedMetadata<MyBaseData, MyExtendedData, MyMeta> = {
+  const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     author: "John Doe",
     timestamp: new Date(),
     revisionNotes: "Initial draft",
@@ -82,14 +89,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     overrides: {},
     relatedKeys: [],
     metadataEntries: [],
-    videoMetadata: {},
-    mediaMetadata: {},
-    projectMetadata: {},
-    taskMetadata: {},
-    meetingMetadata: {},
-    customMediaSession: {},
+    videoMetadata: {} as VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    mediaMetadata: {} as MediaMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    projectMetadata: {} as ProjectMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    taskMetadata: {} as TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    meetingMetadata: {} as MeetingMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    customMediaSession: {} as CustomMediaSession<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     phaseMetadata: {},
-    structuredMetadata: {},
+    structuredMetadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 
   const sendNotification = (
@@ -121,7 +128,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
       participants: [],
       teamMemberId: "",
       title: "", 
-      meta: {} as BaseData<any, any, StructuredMetadata<any, any>>, 
+      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       childIds: [],
       relatedData: [], 
       currentMetadata: {
@@ -136,7 +143,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     });
   };
 
-  const addNotification = (notification: NotificationData<T, K, Meta<T, K>>) => {
+  const addNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     notificationStore.addNotification(notification);
   };
 
@@ -144,7 +151,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     <NotificationContext.Provider
       value={{
         sendNotification,
-        addNotification: (notification: NotificationData<T, K, Meta<T, K>>) => {
+        addNotification: (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
           notificationStore.addNotification(notification);
           },
         notify: (
@@ -184,14 +191,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
         },
 
         notifications: notificationData,
-        showMessage: (message: Message) => {
+        showMessage: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
           sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },
-        setNotifications: (notifications: NotificationData<T, K, Meta<T, K>>[]) => {
+        setNotifications: (notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
           setNotifications(notifications);
         },
-        showMessageWithType: (message: Message, type: NotificationType) => {
+        showMessageWithType: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: NotificationType) => {
           sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },

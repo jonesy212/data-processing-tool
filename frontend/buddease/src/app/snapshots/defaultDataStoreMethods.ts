@@ -36,9 +36,9 @@ import {
   SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { getCommunityEngagement, getMarketUpdates } from "@/app/utils/trading/TradingUtils";
-import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/app/utils/web3/applicationUtils";
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";
+import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/utils/web3/applicationUtils";
 import { CustomSnapshotData, data, SnapshotItem } from '.';
 import SnapshotStore from "./SnapshotStore";
 

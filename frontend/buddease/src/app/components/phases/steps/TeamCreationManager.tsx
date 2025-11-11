@@ -1,13 +1,13 @@
 // TeamCreationManager.tsx
-import axiosInstance from '@/app/api/csrfToken'
+import axiosInstance from '@/app/api/csrfToken';
 import React, { useState } from "react";
 
-import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import * as TeamAPI from "@/app/api/ApiTeam";
+import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
 import TeamBasicInfoStep from "./TeamBasicInfoStep";
 import TeamMembersStep from "./TeamMembersStep";
 import TeamPreferencesStep from "./TeamPreferencesStep";

@@ -1,4 +1,5 @@
 // responseTypes.ts
+import { Data } from '@/app/models/data/Data';
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { SearchNotesResponse } from "@/app/api/ApiNote";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -97,7 +98,8 @@ interface YourSettingsResponseType<
   calendarEventTypes: CalendarEventType[];
   todoTypes: TodoType[];
   taskTypes: TaskType[];
-  snapshotStoreTypes: SnapshotStoreType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  snapshotStoreTypes: SnapshotStoreType<T>[];
+
 }
 
 
@@ -111,7 +113,7 @@ type UserDataResponseType<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 
-> = User &
+> = User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 

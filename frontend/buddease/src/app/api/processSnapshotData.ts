@@ -4,7 +4,7 @@ import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { SecurityReport, SecurityScanResult } from '@/app/typings/securityMeasureTypes';
-import { SnapshotStorage } from "@/app/utils/storage/SnapshotStorage";
+import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -17,8 +17,8 @@ import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
-import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { DataWithPriority } from "@/app/utils/versionUtils";
+import { isSnapshot } from '@/utils/snapshotUtils';
+import { DataWithPriority } from "@/utils/versionUtils";
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,

@@ -1,7 +1,9 @@
 // MyAppWrapper.tsx
+import { } from '@/app/typings/phaseTypes'
 import { AppProps } from "next/app";
-import { NextRouter, Router, useRouter } from "next/router";
-import CaptionManagementPageComponent from "@/app/components/CaptionManagementComponent";
+import { NextRouter={}, Router, useRouter } from "next/router";
+import { EnhancedThemeProvider } from '@/app/libraries/ui/theme/EnhancedThemeProvider';
+import CaptionManagementPageComponent from "@/app/features/videos/CaptionManagementComponent";
 import {
   PhaseHookConfig,
   createPhaseHook,
@@ -13,9 +15,9 @@ import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
  import { AsyncHook } from "async_hooks";
 import { brandingSettings } from '@/app/libraries/theme/BrandingService';
-import { ContentItem } from "@/app/components/cards/DummyCardLoader";
+import { ContentItem } from "@/app/cards/DummyCardLoader";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
-import { Phase } from "@/app/components/phases/Phase";
+import { Phase } from "@/app/models/phases/Phase";
 import { useThemeCustomization } from "@/app/hooks/useThemeCustomization";
 import React from "react";
 
@@ -47,6 +49,37 @@ type ExtendedAppProps = AppProps & {
   utilities: any;
   brandingSettings: BrandingSettings;
 };
+
+
+
+// Create initial theme from branding settings
+const createInitialTheme = (brandingSettings: BrandingSettings): Theme => ({
+  // Map branding settings to theme properties
+  primaryColor: brandingSettings.themeColor || '#3498db',
+  secondaryColor: brandingSettings.secondaryThemeColor || '#2ecc71',
+  fontSize: brandingSettings.fontSize || '1rem',
+  fontFamily: brandingSettings.fontFamily || "'Inter', 'Arial', sans-serif",
+  headerColor: brandingSettings.colors?.header || '#f0f0f0',
+  footerColor: brandingSettings.colors?.footer || '#f0f0f0',
+  bodyColor: brandingSettings.colors?.background || '#ffffff',
+  borderColor: brandingSettings.colors?.border || '#ddd',
+  borderStyle: 'solid',
+  padding: brandingSettings.spacingMedium || '1rem',
+  margin: brandingSettings.spacingMedium || '1rem',
+  brandIcon: brandingSettings.logoUrl || '',
+  brandName: 'Budde',
+  borderWidth: '1px',
+  borderRadius: { 
+    small: brandingSettings.borderRadiusSmall || '0.25rem', 
+    medium: brandingSettings.borderRadiusMedium || '0.5rem', 
+    large: brandingSettings.borderRadiusLarge || '0.75rem' 
+  },
+  boxShadow: brandingSettings.boxShadow || '0 2px 8px rgba(0, 0, 0, 0.1)',
+  
+  // Spread all branding settings to maintain compatibility
+  ...brandingSettings
+});
+
 
 
 function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
@@ -124,6 +157,8 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
     createPhaseHooks(phaseNames);
 
   // Update BrandingSettings with actual values or retrieve them from a source
+
+  // Update BrandingSettings with actual values or retrieve them from a source
   const brandingSettings: BrandingSettings = {
     // Populate with actual branding settings values
     logoUrl: "https://example.com/logo.png",
@@ -133,15 +168,18 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
     // Accessing textColor through the colors object
     colors: {
       // General Colors
-      primary: "#...",
-      accent: "#...",
+      primary: "#3366cc",
+      accent: "#ff9900",
       success: "#28a745",
       error: "#dc3545",
       warning: "#ffc107",
       info: "#17a2b8",
       textColor: "#000000",
       linkColor: "#007bff",
-      // Other color properties
+      header: "#f0f0f0",
+      footer: "#f0f0f0",
+      background: "#ffffff",
+      border: "#ddd",
     },
     textColor: "#000000",
 
@@ -179,43 +217,84 @@ function MyAppWrapper({ Component, pageProps, router }: ExtendedAppProps) {
       laptop: "992px", // Laptop breakpoint
       desktop: "1200px", // Desktop breakpoint
     },
-    accentColor: "",
-    successColor: "",
-    errorColor: "",
-    warningColor: "",
-    infoColor: "",
-    darkModeBackground: "",
-    darkModeText: "",
-    fontPrimary: "",
-    fontSecondary: "",
-    fontHeading: "",
-    fontSizeSmall: "",
-    fontSizeMedium: "",
-    fontSizeLarge: "",
-    lineHeightNormal: "",
-    lineHeightMedium: "",
-    lineHeightLarge: "",
+    accentColor: "#ff9900",
+    successColor: "#28a745",
+    errorColor: "#dc3545",
+    warningColor: "#ffc107",
+    infoColor: "#17a2b8",
+    darkModeBackground: "#1a1a1a",
+    darkModeText: "#ffffff",
+    fontPrimary: "Arial, sans-serif",
+    fontSecondary: "Helvetica, sans-serif",
+    fontHeading: "Helvetica, sans-serif",
+    fontSizeSmall: "14px",
+    fontSizeMedium: "16px",
+    fontSizeLarge: "18px",
+    lineHeightNormal: "1.5",
+    lineHeightMedium: "1.7",
+    lineHeightLarge: "2",
   };
+
+    // Create initial theme from branding settings
+  const initialTheme = createInitialTheme(brandingSettings);
+
+
+
+// This component MUST be inside EnhancedThemeProvider to use useTheme()
+const ThemeApplication = (props: any) => {
+  const { theme, tokens, updateTheme, switchTheme } = useTheme();
+  
+  React.useEffect(() => {
+    // Apply CSS variables to root
+    const root = document.documentElement;
+    Object.entries(tokens.colors).forEach(([key, value]) => {
+      root.style.setProperty(`--color-${key}`, value as string);
+    });
+    // Apply other tokens as needed...
+  }, [tokens]);
+
+  return (
+    <div style={{
+      backgroundColor: tokens.colors.background,
+      color: tokens.colors.text,
+      fontFamily: tokens.typography.fontFamily,
+      minHeight: '100vh',
+      transition: 'all 0.3s ease'
+    }}>
+      <MyApp
+        {...props}
+        theme={theme}
+        tokens={tokens}
+        onThemeUpdate={updateTheme}
+        onThemeSwitch={switchTheme}
+      />
+    </div>
+  );
+};
 
   return (
     <>
-      <MyApp
-        Component={Component}
-        pageProps={pageProps}
-        router={router as ExtendedRouter & Router}
-        brandingSettings={brandingSettings} // Pass branding settings to MyApp
-        hooks={hooks}
-        utilities={{ generateUtilityFunctions: () => {} }}
-        phases={{} as Phase[]}
-        contentItem={{} as ContentItem}
-        setThemeState={setThemeState} // Pass setThemeState here
-      />
-      <EnhancedCaptionManagementPage />
-      {/* Include the CaptionManagementPageComponent */}
-      <CaptionManagementPageComponent />
+      <EnhancedThemeProvider 
+        userRole="admin"
+        initialTheme={initialTheme}
+      >
+        <ThemeApplication 
+          Component={Component}
+          pageProps={pageProps}
+          router={router}
+          brandingSettings={brandingSettings}
+          hooks={hooks}
+          utilities={utilities}
+          setThemeState={setThemeState}
+        />
+        {/* These will NOT have theme styling applied */}
+        <EnhancedCaptionManagementPage />
+        <CaptionManagementPageComponent />
+      </EnhancedThemeProvider>
     </>
   );
 }
+
 
 export default MyAppWrapper;
 export type { ExtendedRouter };

@@ -1,5 +1,5 @@
-import { COLLISION_ADJUSTMENT, COLLISION_THRESHOLD } from "@/app/utils/constants";
-import { Position, positionUtils } from "@/app/utils/positionUtils";
+import { COLLISION_ADJUSTMENT, COLLISION_THRESHOLD } from "@/utils/constants";
+import { Position, positionUtils } from "@/utils/positionUtils";
 
 const avoidCollisions = (positions: Position[]) => {
     const adjustedPositions = [positions[0]];

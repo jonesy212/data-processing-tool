@@ -9,7 +9,7 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";

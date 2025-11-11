@@ -3,10 +3,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 
 import { TaskActions } from '@/app/actions/TaskActions';
 import addSnapshot from '@/app/api/SnapshotApi';
-import {
-  NotificationType, NotificationTypeEnum,
-  useNotification
-} from "@/app/context/NotificationContext";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { saveAs } from '@/app/documents/editing/autosave';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
@@ -23,6 +20,10 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import {
+    NotificationType, NotificationTypeEnum,
+    useNotification
+} from '@/app/state/context/NotificationContext';
 import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
 import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
@@ -30,7 +31,6 @@ import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";

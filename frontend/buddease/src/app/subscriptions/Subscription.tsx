@@ -10,7 +10,7 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
+import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

@@ -6,7 +6,7 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { snapshotStoreInstance } from '@/app/snapshots/SnapshotStore';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
-import { useSnapshot } from "@/context/SnapshotContext";
+import { useSnapshot } from "@/state/context/SnapshotContext";
 import { useCallback } from 'react';
 
 // Snapshot notification types

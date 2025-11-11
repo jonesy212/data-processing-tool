@@ -7,6 +7,7 @@ import {
   getFrontendVersion
 } from "@/app/api/ApiData";
 import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/app/api/SnapshotApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CreateSnapshotStoresPayload } from "@/app/database/Payload";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useSubscription from "@/app/hooks/useSubscription";
@@ -15,9 +16,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { notify } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import * as SubscriptionMethods from '@/methods/subscriptionMethods';
+import { notify } from "@/utils/snapshotUtils";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { flatMap } from "./defaultSnapshotBuilder";
 import { defaultSubscribeToSnapshot } from "./defaultSnapshotSubscribeFunctions";

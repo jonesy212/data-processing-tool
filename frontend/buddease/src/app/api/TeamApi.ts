@@ -1,11 +1,11 @@
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
-import { handleApiError } from '@/app/api/ApiLogs';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.teams;

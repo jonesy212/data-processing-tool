@@ -1,3 +1,27 @@
+import { VersionState } from '@/app/state/redux/slices/VersionSlice';
+import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
+import { BlogState } from '@/app/state/redux/slices/BlogSlice';
+import { PagingState } from './../../../pages/Paging';
+import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
+import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
+import { NotificationState } from './NotificationSlice';
+import { EntityId } from '@/app/state/redux/slices/RootSlice';
+import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
+import { EventState } from '@/app/state/redux/slices/EventSlice';
+import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
+import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
+import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
+import { TodoManagerState } from './../../../todos/Todo';
+import { CalendarManagerState } from '@/app/components/calendar/CalendarSlice';
+import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
+import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
+import { TrackerManagerState } from './TrackerSlice';
+import { TaskState } from '@/app/state/redux/slices/TaskSlice';
+import { ProjectState } from '@/app/state/redux/slices/ProjectSlice';
+import { UIState } from '@/app/state/stores/UISlice';
+import { AlignmentOptions } from './toolbarSlice';
+import { VideoState } from '@/app/state/redux/slices/VideoSlice';
+import { ToolbarState } from '@/app/state/stores/ToolbarStore';
 // src/app/state/slices/RootSlice.ts
 import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
@@ -16,10 +40,16 @@ type ReorderPayload = { from: number; to: number };
 interface TaskManagerState {
   tasks: TaskCollection;
 }
-
-export interface RootState {
+export interface RootState<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   // User & UI
-  user: UserManagerState
+  user: UserManagerState;
   // Video & UI Management
   videoState: VideoState;
   toolbarManager: ToolbarState;
@@ -47,7 +77,10 @@ export interface RootState {
 
   // Event & Collaboration
   eventManager: EventState;
-  collaborationManager: CollaborationState<UserProfile<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, ProjectData>;
+  collaborationManager: CollaborationState<
+    UserProfile<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
+    ProjectData
+  >;
 
   // Entity & Notification
   entityManager: EntityState<any, EntityId>;
@@ -59,12 +92,27 @@ export interface RootState {
   randomWalkManager: RandomWalkState;
   pagingManager: PagingState;
   blogManager: BlogState;
-  drawingManager: DrawingState<DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields>;
+  drawingManager: DrawingState<
+    DrawingEntity,
+    DrawingK,
+    DrawingMeta,
+    DrawingAttachment,
+    DrawingExcludedFields,
+    DrawingIncludedFields
+  >;
   versionManager: VersionState;
 
   // Existing properties
-  filterManager: FilteredEventsState;
+  filterManager: FilteredEventsState<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >;
 }
+
 
 const initialState: TaskManagerState = {
   tasks: [],
@@ -112,6 +160,7 @@ const rootSlice = createSlice({
 
 
          assigneeId, data, progress, getData,
+         source, date, major, minor,
         // Add any other AppTask fields your TaskEntity defines...
       } as AppTask;
       state.tasks.unshift(newTask);

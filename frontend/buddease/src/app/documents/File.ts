@@ -1,16 +1,12 @@
 // File.ts
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { AllTypes } from "@/app/typings/PropTypes";
+import { AppFile } from '@/app/typings/file/fileTypes'
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 
 // File interface representing a file
-interface CustomFile<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-  > extends File{
+interface CustomFile<T extends BaseDataEntity> extends AppFile {
   readonly name: string;                // The name of the file
   readonly size: number;                // The size of the file in bytes
   readonly type: string;                // The MIME type of the file
@@ -25,8 +21,7 @@ interface CustomFile<
     visibility: AllTypes
     allowedUsers?: string[];            // List of usernames or IDs allowed to access the file
     allowedGroups?: string[];           // List of group names or IDs allowed to access the file
-        permissions?: {
-                                        // Permissions for different actions on the file
+    permissions?: {                     // Permissions for different actions on the file
       read: boolean;                    // Whether users can read/view the file
       write: boolean;                   // Whether users can modify/update the file
       delete: boolean;                  // Whether users can delete the file

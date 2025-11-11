@@ -28,7 +28,7 @@ import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
 import { Tag } from '@/app/models/tracker/Tag';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { NotificationType } from '@/context/NotificationContext';
+import { NotificationType } from '@/state/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Payload } from '@/app/server/database/Payload';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -567,7 +567,7 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category?: Category,      categoryProperties: CategoryProperties | undefined,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -576,7 +576,8 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
       snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>,
       data: V,
       index: number,
-      versionedData: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | undefined // Pass versioned data to callback
+      versionedData: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | undefined, // Pass versioned data to callback
+      category?: Category,
     ) => Promise<U> | U
   ): Promise<U[]> {
     const results: (U | Promise<U>)[] = storeIds.map(async (_, index) => {

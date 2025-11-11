@@ -11,7 +11,7 @@ interface ChatSettings {
   collaborationPreference1: string | undefined;
   collaborationPreference2: string | undefined;
   platforms: ('slack' | 'teams' | 'discord' | 'whatsapp')[];
-  messageFormat: 'text' | 'rich' | 'interactive';
+  messageFormat: 'text' | 'rich' | 'interactive' | 'markdown';
   mentionUsers: boolean;
   channelId?: string;
   close?: () => void;

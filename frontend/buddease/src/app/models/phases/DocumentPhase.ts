@@ -1,3 +1,5 @@
+import { ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
+import { TagsRecord } from '@/app/snapshots';
 // DocumentPhase.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/app/config/BaseConfig';

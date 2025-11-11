@@ -1,4 +1,6 @@
 // mappingMethods.ts
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import {
   SnapshotsArray,
   SnapshotsObject
@@ -17,7 +19,123 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 // mapSnapshots
 // ------------------------
 export const MapMethods = {
+  
+  mapSnapshot: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    id: number,
+    storeId: string | number,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotId: string,
+    criteria: CriteriaType,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    type: string,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    mapFn: (item: T) => T,
+    isAsync: boolean = false
+  ): Promise<string | undefined> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    try {
+      // Validate required parameters
+      if (!snapshot || !snapshotStore || !mapFn) {
+        console.warn("Snapshot, snapshotStore, and mapFn are required");
+        return isAsync ? Promise.resolve(undefined) : null;
+      }
 
+      const mappingOperation = () => {
+        // Apply mapping function to snapshot data
+        const mappedData = mapFn(snapshot.data);
+        
+        // Create mapped snapshot
+        const mappedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          ...snapshot,
+          data: mappedData,
+          lastModified: new Date(),
+          mappingMetadata: {
+            originalId: snapshot.id,
+            mappedAt: new Date(),
+            criteria,
+            storeId: storeId.toString()
+          }
+        };
+
+        // Execute callback with mapped snapshot
+        if (callback) {
+          try {
+            callback(mappedSnapshot);
+          } catch (callbackError) {
+            console.warn("Callback execution failed in mapSnapshot:", callbackError);
+          }
+        }
+
+        // Update snapshot store if needed
+        if (snapshotStore && typeof snapshotStore.updateSnapshot === 'function') {
+          try {
+            snapshotStore.updateSnapshot(snapshotId, mappedSnapshot);
+          } catch (updateError) {
+            console.warn("Failed to update snapshot in store:", updateError);
+          }
+        }
+
+        // Handle snapshot container
+        if (snapshotContainer && typeof snapshotContainer.addSnapshot === 'function') {
+          try {
+            snapshotContainer.addSnapshot(mappedSnapshot);
+          } catch (containerError) {
+            console.warn("Failed to add snapshot to container:", containerError);
+          }
+        }
+
+        // Trigger event if provided
+        if (event && typeof event.trigger === 'function') {
+          try {
+            event.trigger('snapshot_mapped', {
+              id,
+              storeId,
+              snapshotId,
+              snapshot: mappedSnapshot,
+              criteria,
+              type,
+              timestamp: new Date()
+            });
+          } catch (eventError) {
+            console.warn('Failed to trigger snapshot mapped event:', eventError);
+          }
+        }
+
+        return mappedSnapshot;
+      };
+
+      // Handle async vs sync execution
+      if (isAsync) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const result = mappingOperation();
+            resolve(result?.id || undefined);
+          }, 0);
+        });
+      } else {
+        const result = mappingOperation();
+        return result;
+      }
+
+    } catch (error) {
+      console.error("Error in mapSnapshot:", error);
+      
+      if (isAsync) {
+        return Promise.resolve(undefined);
+      } else {
+        return null;
+      }
+    }
+  }
    mapSnapshots: async function <
     T extends BaseDataEntity,
     K extends T = T,

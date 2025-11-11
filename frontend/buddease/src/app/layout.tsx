@@ -13,7 +13,7 @@ import { EventManager } from "@/app/state/stores/DataStore";
 import { AppEntity, AppSnapshot } from '@/app/typings/entities/AppEntity';
 import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import React from "react";
-import { useSnapshot } from "./context/SnapshotContext";
+import { useSnapshot } from "@/app/state/context/SnapshotContext";
 import { version } from "./versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
 import RootLayout from './RootLayout';

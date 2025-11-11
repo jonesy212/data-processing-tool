@@ -1,5 +1,5 @@
-import { useAuth } from '@/app/context/AuthContext';
 import ProjectTimelineDashboard from '@/app/projects/projectManagement/ProjectTimelineDashboard';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { User } from '@/app/users/User';
 import React from 'react';
 import { Link } from 'react-router-dom';

@@ -1,6 +1,6 @@
 // app/features/video/hooks/useVideoPlayer.ts
-import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { useCallback, useRef, useState } from 'react';
 
 interface VideoPlayerState {

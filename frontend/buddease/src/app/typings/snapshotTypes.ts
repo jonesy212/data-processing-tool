@@ -1,17 +1,15 @@
 // snapshotTypes.ts
-import { EventData } from '@/app/utils/ethereumUtils'
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { ExtractContextArgs } from '@/app/snapshots/SnapshotEvents'
-import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotEventBase, BaseEventCallbacks, SharedProperties, RecordManagement, EventManagement, SnapshotEventHandlers } from "@/app/snapshots/SnapshotEvents";
+import { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { EventData } from '@/utils/ethereumUtils';
 
 // Simplified generic structure to match your function signature
 export interface SnapshotEvent<

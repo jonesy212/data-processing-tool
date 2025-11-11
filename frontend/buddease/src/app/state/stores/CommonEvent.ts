@@ -24,7 +24,7 @@ import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { VideoData } from '@/app/typings/videoTypes';
 import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
-import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { isSnapshot } from '@/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { useMetadata } from '@/app/config/useMetadata';
 

@@ -1,287 +1,440 @@
 // SettingsStore.ts
-import axiosInstance from '@/app/api/csrfToken';
-import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/context/NotificationContext';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { makeAutoObservable, reaction } from "mobx";
+import { v4 as uuid } from "uuid";
+import { Settings, SettingManagerStore } from './SettingsStore';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
-import { NotificationData } from '@/app/hooks/useNotificationSystem'
-import { YourResponseType, YourSettingsResponseType } from '@/app/typings/typings/typeguards/isYourSettingsResponseType'
-import { UserManagerState } from '@/app/state/redux/slices/UserSlice'
-import { makeAutoObservable } from 'mobx';
-import { useState } from 'react';
+import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
+import NotificationStore from '@/app/state/stores/NotificationStore';
+import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
+import { YourSettingsResponseType } from '@/app/typings/typings/typeguards/isYourSettingsResponseType';
 
-// Define the interface for different types of settings
-export interface Settings extends YourResponseType {
-    id?: string;
-    filter: (key: keyof Settings | "communicationMode" | "defaultFileType" | "theme" | "notifications" | "language" | "collaborationMode" | "dataSync" | "defaultCurrency" | "apiAccessLevel" | "projectVisibility") => void;
-    appName: string;
-    communicationMode?: string;
-    defaultFileType?: string;
-    theme?: ThemeEnum
-    isNotificationsEnabled?: boolean; // Notification setting
-    notifications?: NotificationData[]; // Notification setting
-    language?: LanguageEnum | CodingLanguageEnum; // Language preference
-    collaborationMode?: "real-time" | "asynchronous"; // Collaboration mode setting
-    dataSync?: "automatic" | "manual"; // Data sync settings
-    defaultCurrency?: string; // Default currency for transactions
-    apiAccessLevel?: "read-only" | "read-write"; // API access level
-    projectVisibility?: "public" | "private"; // Project visibility setting
-    // Add any additional properties or methods as needed
-  
-}
+/**
+ * Main SettingsStore for managing application settings
+ * Handles orchestration and overall settings management
+ */
+export class SettingsStore {
+  settings: Settings | null = null;
+  isLoading: boolean = false;
+  error: string | null = null;
 
-// Define the store interface
-export interface SettingManagerStore {
-    // Define methods for handling different types of settings
-    fetchSettings: () => void;
-    updateSettings: (settings: YourSettingsResponseType) => Promise<void>;
-    deleteSettings: (settingsId: string) => void;
-    reset: () => void;
-    setUserData: (userData: UserManagerState) => void;
-    // Add more methods for other setting types as needed
-}
+  notificationStore: NotificationStore;
 
-
-// Define the setting manager store
-const useSettingManagerStore = (): SettingManagerStore => {
-    const { error, handleError, clearError, parseDataWithErrorHandling } =
-        useErrorHandling();
-
-    const [settings, setSettings] = useState<YourSettingsResponseType | null>(null); // Store settings state
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { notify } = useNotification();
-
-    // Function to reset the settings state
-    const reset = () => {
-        setSettings(null); // Reset settings state to null
-        setIsLoading(false); // Reset loading state if necessary
-        clearError(); // Clear any errors if you're using error handling
-    };
-
-    const fetchSettings = async () => {
-        setIsLoading(true);
-        clearError(); // Clear any existing errors
-        try {
-            // Fetch settings from the server using Axios
-            const response = await axiosInstance.get("/settings");
-            const data = response.data;
-
-            // Use parseDataWithErrorHandling to parse the fetched data
-            const parsedData = parseDataWithErrorHandling(data, /* threshold value */ 0); // Adjust the threshold as needed
-
-            // Set the parsed settings to the state
-            // Ensure parsedData is of the expected type
-            if (parsedData && parsedData.length > 0) {
-                setSettings(parsedData[0]); // Assuming you want to set the first item
-            } else {
-                setSettings(null); // Handle the case when there is no valid parsed data
-
-                handleError("Invalid settings response");
-            }
-        } catch (error: any) {
-            handleError("fetching settings", error);
-        } finally {
-            setIsLoading(false);
-        }
-
-    };
-    
-    const updateSettings = async (updatedSettings: YourSettingsResponseType) => {
-        try {
-            // Update settings on the server using Axios
-            await axiosInstance.put("/settings", updatedSettings);
-
-            // Update the settings state with the updated settings
-            setSettings(updatedSettings);
-            notify(
-                "updateSettingsSuccess",
-                "Settings updated successfully",
-                "Settings updated",
-                new Date(),
-                NotificationTypeEnum.OPERATION_SUCCESS
-            );
-        } catch (error: any) {
-            handleError("updating settings", error);
-        }
-    };
-    const deleteSettings = async (settingsId: string) => {
-        try {
-            // Delete settings on the server using Axios
-            await axiosInstance.delete(`/settings/${settingsId}`);
-            // Check if the deleted setting matches the current settings state
-            if (settings && settings.id === settingsId) {
-                // If the deleted setting matches, set the settings state to null
-                setSettings(null);
-            }
-        } catch (error: any) {
-            handleError("deleting settings", error);
-        }
-    }
-    const setUserData = (userData: UserManagerState): void => {
-        setSettings((prevSettings) => {
-            // Handle case where prevSettings is null
-            if (!prevSettings) {
-                return {
-                    ...userData,
-                    id: "default-id",
-                    pageNumber: 0,
-                    filter: (key: keyof Settings | "communicationMode" | "defaultFileType") => {
-                        // Implement the filter logic here
-                    },
-                    appName: "Buddease",
-                    data: {
-                        id, projectName, description, teamMembers,
-                        exchange, communication, collaborationOptions, metadata,
-                        exchangeData, averagePrice,
-                        calendarEvents: [],
-                        todos: [],
-                        tasks: [],
-                        snapshotStores: [],
-                        currentPhase: "",
-                        comment: "",
-                    },
-                    calendarEvents: [],
-                    todos: [],
-                    tasks: [],
-                    snapshotStores: [],
-                    currentPhase: "",
-                    comment: "",
-                    browserCheckStore: {
-                        browserKey, dispatch, init, testDispatch
-                    },
-                    trackerStore: {
-                        trackers, addTracker, getTracker, getTrackers,
-                        removeTracker, dispatch
-                    },
-                    todoStore: {
-                        dispatch, todos, todoList, toggleTodo,
-                        addTodo, loading, error, addTodos,
-                        removeTodo, assignTodoToUser, updateTodoTitle, fetchTodosSuccess, 
-                        fetchTodosFailure, openTodoSettingsPage, getTodoId, getTeamId,
-                        fetchTodosRequest, completeAllTodosSuccess, completeAllTodos, completeAllTodosFailure,
-                        NOTIFICATION_MESSAGE, NOTIFICATION_MESSAGES, setDynamicNotificationMessage, subscribeToSnapshot, batchFetchTodoSnapshotsRequest
-                    },
-                    taskManagerStore: {
-                        tasks, taskTitle, taskDescription, taskStatus,
-                        assignedTaskStore, updateTaskTitle, updateTaskDescription, updateTaskStatus,
-                        updateTaskDueDate, updateTaskPriority, filterTasksByStatus, getTaskCountByStatus,
-                        clearAllTasks, archiveCompletedTasks, updateTaskAssignee, getTasksByAssignee,
-                        getTaskById, sortByDueDate, exportTasksToCSV, dispatch, addTaskSuccess, addTask,
-                        addTasks, assignTaskToUser, removeTask, removeTasks, fetchTasksByTaskId, fetchTasksSuccess,
-                        fetchTasksFailure, fetchTasksRequest, completeAllTasksSuccess, completeAllTasks,
-                        completeAllTasksFailure, NOTIFICATION_MESSAGE, NOTIFICATION_MESSAGES, setDynamicNotificationMessage,
-                        takeTaskSnapshot, markTaskAsComplete, updateTaskPositionSuccess, batchFetchTaskSnapshotsRequest, 
-                        batchFetchTaskSnapshotsSuccess, batchFetchUserSnapshotsRequest
-                    },
-                    iconStore: {
-                        dispatch
-                    },
-                    calendarStore: {
-                        openScheduleEventModal, openCalendarSettingsPage, getData, updateDocumentReleaseStatus,
-                        getState, action, events, eventTitle, 
-                        eventDescription, eventStatus, assignedEventStore, snapshotStore,
-                        NOTIFICATION_MESSAGE, NOTIFICATION_MESSAGES, updateEventTitle, updateEventDescription,
-                        updateEventStatus, updateEventDate, addEvent, addEvents,
-                        removeEvent, removeEvents, reassignEvent, addEventSuccess, 
-                        fetchEventsSuccess, fetchEventsFailure, fetchEventsRequest, completeAllEventsSuccess,
-                        completeAllEvents, completeAllEventsFailure, setDynamicNotificationMessage, handleRealtimeUpdate, getSnapshotDataKey
-                    },
-                    endpoints: {},
-                    highlights: [],
-                    results: [],
-                    totalCount: 0,
-                    searchData: {
-                        results, totalCount
-                    },
-                    // Add other missing properties here with appropriate default values
-                };
-            }
-    
-            // Update logic based on key
-            const updatedSettings = { ...prevSettings };
-            const filter = (key: keyof Settings | "communicationMode" | "defaultFileType" | "theme" | "notifications" | "language" | "collaborationMode" | "dataSync" | "defaultCurrency" | "apiAccessLevel" | "projectVisibility") => {
-                if (key === "communicationMode" && prevSettings.communicationMode) {
-                    updatedSettings.audioUrl.communicationMode = "newMode";
-                }
-    
-                if (key === "defaultFileType" && prevSettings.defaultFileType) {
-                    updatedSettings.defaultFileType = "newFileType";
-                }
-    
-                if (key === "theme" && prevSettings.theme) {
-                    updatedSettings.theme = prevSettings.theme === ThemeEnum.LIGHT ? ThemeEnum.DARK : ThemeEnum.LIGHT;
-                }
-    
-                if (key === "notifications" && prevSettings.notifications !== undefined) {
-                    updatedSettings.notifications = prevSettings.notifications.map(notification => ({
-                        ...notification,
-                        enabled: !notification.enabled
-                    }));
-                }
-    
-                if (key === "language" && prevSettings.language) {
-                    updatedSettings.language = prevSettings.language === LanguageEnum.English ? LanguageEnum.Spanish : LanguageEnum.English;
-                }
-    
-                if (key === "collaborationMode" && prevSettings.collaborationMode) {
-                    updatedSettings.collaborationMode = prevSettings.collaborationMode === "real-time" ? "asynchronous" : "real-time";
-                }
-    
-                if (key === "dataSync" && prevSettings.dataSync) {
-                    updatedSettings.dataSync = prevSettings.dataSync === "automatic" ? "manual" : "automatic";
-                }
-    
-                if (key === "defaultCurrency" && prevSettings.defaultCurrency) {
-                    updatedSettings.defaultCurrency = "USD";
-                }
-    
-                if (key === "apiAccessLevel" && prevSettings.apiAccessLevel) {
-                    updatedSettings.apiAccessLevel = prevSettings.apiAccessLevel === "read-only" ? "read-write" : "read-only";
-                }
-    
-                if (key === "projectVisibility" && prevSettings.projectVisibility) {
-                    updatedSettings.projectVisibility = prevSettings.projectVisibility === "public" ? "private" : "public";
-                }
-            };
-    
-            return {
-                ...updatedSettings,
-                userData,
-                filter,
-                // calendarEvents: prevSettings.appName.calendarEvents || [],
-                // todos: prevSettings.todos || [],
-                // tasks: prevSettings.tasks || [],
-                // snapshotStores: prevSettings.snapshotStores || [],
-                // Add other missing properties here, using prevSettings values or default values
-            } as YourSettingsResponseType;
-        });
-    
-    
-
-        notify(
-            "setUserData",
-            "User data updated successfully.",
-            {},
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-        );
-    };
-
-
-    const store: SettingManagerStore = makeAutoObservable({
-        settings,
-        reset,
-        setUserData,
-        isLoading,
-        fetchSettings,
-        updateSettings,
-        deleteSettings,
+  constructor(notificationStore?: NotificationStore) {
+    this.notificationStore = notificationStore || new NotificationStore({
+      channels: {
+        email: { enabled: true },
+        push: { enabled: true },
+        inApp: { enabled: true },
+        advanced: {
+          chat: { enabled: true },
+          videoCall: { enabled: false },
+          screenShare: { enabled: false },
+        },
+        deliveryStrategy: "all",
+        retryPolicy: { maxRetries: 3, retryInterval: 5000 },
+        quietHours: { enabled: false, startTime: "22:00", endTime: "07:00", timeZone: "UTC", days: [] },
+      }
     });
 
-    return store;
-};
+    makeAutoObservable(this);
 
-export default useSettingManagerStore;
+    // Reaction: log settings changes
+    reaction(
+      () => this.settings,
+      (settings) => console.log('Settings updated:', settings)
+    );
+
+    // Reaction: log loading state changes
+    reaction(
+      () => this.isLoading,
+      (loading) => console.log('Settings loading:', loading)
+    );
+  }
+
+  // -------------------
+  // Core Settings Methods
+  // -------------------
+  
+  setSettings(settings: Settings | null) {
+    this.settings = settings;
+  }
+
+  setLoading(loading: boolean) {
+    this.isLoading = loading;
+  }
+
+  setError(error: string | null) {
+    this.error = error;
+  }
+
+  reset() {
+    this.settings = null;
+    this.isLoading = false;
+    this.error = null;
+    
+    this.notificationStore.addNotification({
+      id: uuid(),
+      message: "Settings reset successfully",
+      type: "success",
+      timestamp: new Date(),
+      read: false
+    });
+  }
+
+  // -------------------
+  // Fetch Settings
+  // -------------------
+  async fetchSettings() {
+    this.setLoading(true);
+    this.setError(null);
+    
+    try {
+      // Simulate API call - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock response - replace with actual API response
+      const mockSettings: Settings = {
+        id: uuid(),
+        appName: "Buddease",
+        communicationMode: "real-time",
+        defaultFileType: "json",
+        theme: ThemeEnum.LIGHT,
+        isNotificationsEnabled: true,
+        notifications: [],
+        language: LanguageEnum.English,
+        collaborationMode: "real-time",
+        dataSync: "automatic",
+        defaultCurrency: "USD",
+        apiAccessLevel: "read-write",
+        projectVisibility: "public",
+        filter: (key) => this.handleFilter(key),
+        // Add other required properties from YourSettingsResponseType
+        pageNumber: 0,
+        data: {
+          id: '',
+          projectName: '',
+          description: '',
+          teamMembers: '',
+          exchange: '',
+          communication: '',
+          collaborationOptions: '',
+          metadata: '',
+          exchangeData: '',
+          averagePrice: '',
+          calendarEvents: [],
+          todos: [],
+          tasks: [],
+          snapshotStores: [],
+          currentPhase: "",
+          comment: "",
+        },
+        calendarEvents: [],
+        todos: [],
+        tasks: [],
+        snapshotStores: [],
+        currentPhase: "",
+        comment: "",
+        browserCheckStore: {
+          browserKey: '', dispatch: '', init: '', testDispatch: ''
+        },
+        trackerStore: {
+          trackers: '', addTracker: '', getTracker: '', getTrackers: '',
+          removeTracker: '', dispatch: '',
+        },
+        todoStore: {
+          dispatch: '', todos: '', todoList: '', toggleTodo: '',
+          addTodo: '', loading: '', error: '', addTodos: '',
+          removeTodo: '', assignTodoToUser: '', updateTodoTitle: '', fetchTodosSuccess: '',
+          fetchTodosFailure: '', openTodoSettingsPage: '', getTodoId: '', getTeamId: '',
+          fetchTodosRequest: '', completeAllTodosSuccess: '', completeAllTodos: '', completeAllTodosFailure: '',
+          NOTIFICATION_MESSAGE: '', setDynamicNotificationMessage: '', subscribeToSnapshot: '', batchFetchTodoSnapshotsRequest: ''
+        },
+        taskManagerStore: {
+          tasks: '', taskTitle: '', taskDescription: '', taskStatus: '',
+          assignedTaskStore: '', updateTaskTitle: '', updateTaskDescription: '', updateTaskStatus: '',
+          updateTaskDueDate: '', updateTaskPriority: '', filterTasksByStatus: '', getTaskCountByStatus: '',
+          clearAllTasks: '', archiveCompletedTasks: '', updateTaskAssignee: '', getTasksByAssignee: '',
+          getTaskById: '', sortByDueDate: '', exportTasksToCSV: '', dispatch: '', addTaskSuccess: '', addTask: '',
+          addTasks: '', assignTaskToUser: '', removeTask: '', removeTasks: '', fetchTasksByTaskId: '', fetchTasksSuccess: '',
+          fetchTasksFailure: '', fetchTasksRequest: '', completeAllTasksSuccess: '', completeAllTasks: '',
+          completeAllTasksFailure: '', NOTIFICATION_MESSAGE: '', setDynamicNotificationMessage: '',
+          takeTaskSnapshot: '', markTaskAsComplete: '', updateTaskPositionSuccess: '', batchFetchTaskSnapshotsRequest: '', 
+          batchFetchTaskSnapshotsSuccess: '', batchFetchUserSnapshotsRequest: '',
+        },
+        iconStore: { dispatch: '' },
+        calendarStore: {
+          openScheduleEventModal: '', openCalendarSettingsPage: '', getData: '', updateDocumentReleaseStatus: '',
+          getState: '', action: '', events: '', eventTitle: '', 
+          eventDescription: '', eventStatus: '', assignedEventStore: '', snapshotStore: '',
+          NOTIFICATION_MESSAGE: '', NOTIFICATION_MESSAGES: '', updateEventTitle: '', updateEventDescription: '',
+          updateEventStatus: '', updateEventDate: '', addEvent: '', addEvents: '',
+          removeEvent: '', removeEvents: '', reassignEvent: '', addEventSuccess: '', 
+          fetchEventsSuccess: '', fetchEventsFailure: '', fetchEventsRequest: '', completeAllEventsSuccess: '',
+          completeAllEvents: '', completeAllEventsFailure: '', setDynamicNotificationMessage: '', handleRealtimeUpdate: '', getSnapshotDataKey: '',
+        },
+        endpoints: {},
+        highlights: [],
+        results: [],
+        totalCount: 0,
+        searchData: { results: '', totalCount: '' },
+      };
+      
+      this.setSettings(mockSettings);
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: "Settings fetched successfully",
+        type: "success",
+        timestamp: new Date(),
+        read: false
+      });
+      
+    } catch (error: any) {
+      this.setError(error.message);
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: `Failed to fetch settings: ${error.message}`,
+        type: "error",
+        timestamp: new Date(),
+        read: false
+      });
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  // -------------------
+  // Update Settings
+  // -------------------
+  async updateSettings(updatedSettings: YourSettingsResponseType) {
+    this.setLoading(true);
+    
+    try {
+      // Simulate API call - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      this.setSettings(updatedSettings as Settings);
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: "Settings updated successfully",
+        type: "success",
+        timestamp: new Date(),
+        read: false
+      });
+      
+    } catch (error: any) {
+      this.setError(error.message);
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: `Failed to update settings: ${error.message}`,
+        type: "error",
+        timestamp: new Date(),
+        read: false
+      });
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  // -------------------
+  // Delete Settings
+  // -------------------
+  async deleteSettings(settingsId: string) {
+    this.setLoading(true);
+    
+    try {
+      // Simulate API call - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      if (this.settings && this.settings.id === settingsId) {
+        this.setSettings(null);
+      }
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: "Settings deleted successfully",
+        type: "success",
+        timestamp: new Date(),
+        read: false
+      });
+      
+    } catch (error: any) {
+      this.setError(error.message);
+      
+      this.notificationStore.addNotification({
+        id: uuid(),
+        message: `Failed to delete settings: ${error.message}`,
+        type: "error",
+        timestamp: new Date(),
+        read: false
+      });
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  // -------------------
+  // User Data Management
+  // -------------------
+  setUserData(userData: UserManagerState) {
+    if (!this.settings) {
+      // Create default settings if none exist
+      const defaultSettings: Settings = {
+        id: uuid(),
+        appName: "Buddease",
+        communicationMode: "real-time",
+        defaultFileType: "json",
+        theme: ThemeEnum.LIGHT,
+        isNotificationsEnabled: true,
+        notifications: [],
+        language: LanguageEnum.English,
+        collaborationMode: "real-time",
+        dataSync: "automatic",
+        defaultCurrency: "USD",
+        apiAccessLevel: "read-write",
+        projectVisibility: "public",
+        filter: (key) => this.handleFilter(key),
+        pageNumber: 0,
+        data: {
+          id: '',
+          projectName: '',
+          description: '',
+          teamMembers: '',
+          exchange: '',
+          communication: '',
+          collaborationOptions: '',
+          metadata: '',
+          exchangeData: '',
+          averagePrice: '',
+          calendarEvents: [],
+          todos: [],
+          tasks: [],
+          snapshotStores: [],
+          currentPhase: "",
+          comment: "",
+        },
+        calendarEvents: [],
+        todos: [],
+        tasks: [],
+        snapshotStores: [],
+        currentPhase: "",
+        comment: "",
+        browserCheckStore: {
+          browserKey: '', dispatch: '', init: '', testDispatch: ''
+        },
+        trackerStore: {
+          trackers: '', addTracker: '', getTracker: '', getTrackers: '',
+          removeTracker: '', dispatch: '',
+        },
+        todoStore: {
+          dispatch: '', todos: '', todoList: '', toggleTodo: '',
+          addTodo: '', loading: '', error: '', addTodos: '',
+          removeTodo: '', assignTodoToUser: '', updateTodoTitle: '', fetchTodosSuccess: '',
+          fetchTodosFailure: '', openTodoSettingsPage: '', getTodoId: '', getTeamId: '',
+          fetchTodosRequest: '', completeAllTodosSuccess: '', completeAllTodos: '', completeAllTodosFailure: '',
+          NOTIFICATION_MESSAGE: '', setDynamicNotificationMessage: '', subscribeToSnapshot: '', batchFetchTodoSnapshotsRequest: ''
+        },
+        taskManagerStore: {
+          tasks: '', taskTitle: '', taskDescription: '', taskStatus: '',
+          assignedTaskStore: '', updateTaskTitle: '', updateTaskDescription: '', updateTaskStatus: '',
+          updateTaskDueDate: '', updateTaskPriority: '', filterTasksByStatus: '', getTaskCountByStatus: '',
+          clearAllTasks: '', archiveCompletedTasks: '', updateTaskAssignee: '', getTasksByAssignee: '',
+          getTaskById: '', sortByDueDate: '', exportTasksToCSV: '', dispatch: '', addTaskSuccess: '', addTask: '',
+          addTasks: '', assignTaskToUser: '', removeTask: '', removeTasks: '', fetchTasksByTaskId: '', fetchTasksSuccess: '',
+          fetchTasksFailure: '', fetchTasksRequest: '', completeAllTasksSuccess: '', completeAllTasks: '',
+          completeAllTasksFailure: '', NOTIFICATION_MESSAGE: '', setDynamicNotificationMessage: '',
+          takeTaskSnapshot: '', markTaskAsComplete: '', updateTaskPositionSuccess: '', batchFetchTaskSnapshotsRequest: '', 
+          batchFetchTaskSnapshotsSuccess: '', batchFetchUserSnapshotsRequest: '',
+        },
+        iconStore: { dispatch: '' },
+        calendarStore: {
+          openScheduleEventModal: '', openCalendarSettingsPage: '', getData: '', updateDocumentReleaseStatus: '',
+          getState: '', action: '', events: '', eventTitle: '', 
+          eventDescription: '', eventStatus: '', assignedEventStore: '', snapshotStore: '',
+          NOTIFICATION_MESSAGE: '', NOTIFICATION_MESSAGES: '', updateEventTitle: '', updateEventDescription: '',
+          updateEventStatus: '', updateEventDate: '', addEvent: '', addEvents: '',
+          removeEvent: '', removeEvents: '', reassignEvent: '', addEventSuccess: '', 
+          fetchEventsSuccess: '', fetchEventsFailure: '', fetchEventsRequest: '', completeAllEventsSuccess: '',
+          completeAllEvents: '', completeAllEventsFailure: '', setDynamicNotificationMessage: '', handleRealtimeUpdate: '', getSnapshotDataKey: '',
+        },
+        endpoints: {},
+        highlights: [],
+        results: [],
+        totalCount: 0,
+        searchData: { results: '', totalCount: '' },
+      };
+      
+      this.setSettings(defaultSettings);
+    }
+
+    // Update settings with user data
+    const updatedSettings = {
+      ...this.settings!,
+      ...userData
+    };
+
+    this.setSettings(updatedSettings);
+    
+    this.notificationStore.addNotification({
+      id: uuid(),
+      message: "User data updated successfully",
+      type: "success",
+      timestamp: new Date(),
+      read: false
+    });
+  }
+
+  // -------------------
+  // Filter Handler
+  // -------------------
+  private handleFilter(key: keyof Settings | "communicationMode" | "defaultFileType" | "theme" | "notifications" | "language" | "collaborationMode" | "dataSync" | "defaultCurrency" | "apiAccessLevel" | "projectVisibility") {
+    if (!this.settings) return;
+
+    const updatedSettings = { ...this.settings };
+
+    switch (key) {
+      case "communicationMode":
+        updatedSettings.communicationMode = updatedSettings.communicationMode === "real-time" ? "asynchronous" : "real-time";
+        break;
+      case "defaultFileType":
+        updatedSettings.defaultFileType = updatedSettings.defaultFileType === "json" ? "csv" : "json";
+        break;
+      case "theme":
+        updatedSettings.theme = updatedSettings.theme === ThemeEnum.LIGHT ? ThemeEnum.DARK : ThemeEnum.LIGHT;
+        break;
+      case "notifications":
+        updatedSettings.isNotificationsEnabled = !updatedSettings.isNotificationsEnabled;
+        break;
+      case "language":
+        updatedSettings.language = updatedSettings.language === LanguageEnum.English ? LanguageEnum.Spanish : LanguageEnum.English;
+        break;
+      case "collaborationMode":
+        updatedSettings.collaborationMode = updatedSettings.collaborationMode === "real-time" ? "asynchronous" : "real-time";
+        break;
+      case "dataSync":
+        updatedSettings.dataSync = updatedSettings.dataSync === "automatic" ? "manual" : "automatic";
+        break;
+      case "defaultCurrency":
+        updatedSettings.defaultCurrency = updatedSettings.defaultCurrency === "USD" ? "EUR" : "USD";
+        break;
+      case "apiAccessLevel":
+        updatedSettings.apiAccessLevel = updatedSettings.apiAccessLevel === "read-only" ? "read-write" : "read-only";
+        break;
+      case "projectVisibility":
+        updatedSettings.projectVisibility = updatedSettings.projectVisibility === "public" ? "private" : "public";
+        break;
+    }
+
+    this.setSettings(updatedSettings);
+  }
+}
+
+// -------------------
+// RootStores Integration
+// -------------------
+export const notificationStore = new NotificationStore();
+export const settingsStore = new SettingsStore(notificationStore);

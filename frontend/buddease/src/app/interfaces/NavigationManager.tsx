@@ -1,6 +1,6 @@
 // NavigationManager.tsx
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 import { useState } from 'react';
 ;
 

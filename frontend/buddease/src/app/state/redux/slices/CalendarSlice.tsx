@@ -1,65 +1,17 @@
 import { CalendarActions } from '@/app/actions/CalendarEventActions';
+import { ChatActions } from '@/app/actions/ChatActions';
 import { NotificationActions } from '@/app/actions/NotificationActions';
 import calendarApiService from '@/app/api/ApiCalendar';
 import { fetchEventData } from '@/app/api/ApiEvent';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import CalendarEventEffectivenessEvaluation from '@/app/calendar/CalendarEventEffectivenessEvaluation';
-import CalendarEventFeedbackAnalysis from '@/app/calendar/CalendarEventFeedbackAnalysis';
-import CalendarEventFollowUpActionSuggestion from '@/app/calendar/CalendarEventFollowUpActionSuggestion';
-import ChatMessage from '@/app/components/communications/chat/ChatMessage';
-import { AttendancePrediction } from '@/app/components/calendar/AttendancePrediction';
-import CalendarEventAgendaItem from '@/app/components/calendar/CalendarEventAgendaItem';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import CustomFile from '@/app/documents/File';
-import EventCategory from '@/app/components/event/EventCategory';
-import EventSentiment from '@/app/components/event/EventSentiment';
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { Message } from '@/app/generators/GenerateChatInterfaces';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import useFileUpload from '@/app/hooks/commHooks/useFileUpload';
-import { TeamCollaborationAnalysis } from '@/app/interfaces/options/CollaborationOptions';
-import { Theme } from '@/app/libraries/ui/theme/Theme';
-import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
-import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/app/models/data/EventPriorityClassification';
-import {
-  CalendarStatus,
-  PriorityStatus,
-  ProjectPhaseTypeEnum,
-  StatusType,
-} from '@/app/models/data/StatusType';
-import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
-import { LogData } from '@/app/models/LogData';
-import { Task } from '@/app/models/tasks/Task';
-import { Member } from '@/app/models/teams/TeamMembers';
-import { Tag } from '@/app/models/tracker/Tag';
-import { ChatActions } from '@/app/actions/ChatActions';
-import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';
-import ErrorHandler from '@/app/shared/ErrorHandler';
-import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import {
-  dispatchNotification,
-  NotificationData,
-  SendStatus,
-} from '@/app/state/redux/slices/NofiticationsSlice';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
-import { CalendarMilestone } from '@/app/typings/milestoneTypes';
-import { User } from '@/app/users/User';
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from '@/context/NotificationContext';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { produce } from 'immer';
-import React, { ChangeEvent } from 'react';
-import { useDispatch } from 'react-redux';
-import socketIOClient, { io } from 'socket.io-client';
-import { event, ExtendedAttendeeAvailability, useAttendeeAvailabilityAnalysis } from '@/app/components/calendar/Attendee';
 import CalendarEventCategory from '@/app/calendar/CalendarEventCategory';
 import CalendarEventConflictDetectionResult from '@/app/calendar/CalendarEventConflictDetectionResult';
 import CalendarEventContentGeneration from '@/app/calendar/CalendarEventContentGeneration';
+import CalendarEventEffectivenessEvaluation from '@/app/calendar/CalendarEventEffectivenessEvaluation';
 import CalendarEventEngagementMetrics from '@/app/calendar/CalendarEventEngagementMetrics';
+import CalendarEventFeedbackAnalysis from '@/app/calendar/CalendarEventFeedbackAnalysis';
+import CalendarEventFollowUpActionSuggestion from '@/app/calendar/CalendarEventFollowUpActionSuggestion';
 import CalendarEventImpactPrediction from '@/app/calendar/CalendarEventImpactPrediction';
 import CalendarEventImprovement from '@/app/calendar/CalendarEventImprovement';
 import { CalendarEventInvitationPersonalization } from '@/app/calendar/CalendarEventInvitationPersonalization';
@@ -71,12 +23,60 @@ import CalendarEventROIAnalysis from '@/app/calendar/CalendarEventROIAnalysis';
 import CalendarEventSuccessPrediction from '@/app/calendar/CalendarEventSuccessPrediction';
 import CalendarEventTimingOptimization from '@/app/calendar/CalendarEventTimingOptimization';
 import CalendarEventTrendDetectionResult from '@/app/calendar/CalendarEventTrendDetectionResult';
+import ExternalCalendarOverlay from '@/app/calendar/ExternalCalendarOverlay';
+import { AttendancePrediction } from '@/app/components/calendar/AttendancePrediction';
+import { event, ExtendedAttendeeAvailability, useAttendeeAvailabilityAnalysis } from '@/app/components/calendar/Attendee';
+import CalendarEventAgendaItem from '@/app/components/calendar/CalendarEventAgendaItem';
 import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps } from '@/app/components/calendar/CalendarEventViewingDetails';
 import { CalendarViewProps } from '@/app/components/calendar/CalendarView';
 import DefaultCalendarEventViewingDetails from '@/app/components/calendar/DefaultCalendarEventViewingDetails';
 import EventDetailsComponent from '@/app/components/calendar/EventDetailsComponent';
-import ExternalCalendarOverlay from '@/app/calendar/ExternalCalendarOverlay';
-import { Milestone } from '@/app/typings/mlestoneTypes'
+import ChatMessage from '@/app/components/communications/chat/ChatMessage';
+import EventCategory from '@/app/components/event/EventCategory';
+import EventSentiment from '@/app/components/event/EventSentiment';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import CustomFile from '@/app/documents/File';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import useFileUpload from '@/app/hooks/commHooks/useFileUpload';
+import { TeamCollaborationAnalysis } from '@/app/interfaces/options/CollaborationOptions';
+import { Theme } from '@/app/libraries/ui/theme/Theme';
+import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
+import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/app/models/data/EventPriorityClassification';
+import {
+    CalendarStatus,
+    PriorityStatus,
+    ProjectPhaseTypeEnum,
+    StatusType,
+} from '@/app/models/data/StatusType';
+import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
+import { LogData } from '@/app/models/LogData';
+import { Task } from '@/app/models/tasks/Task';
+import { Member } from '@/app/models/teams/TeamMembers';
+import { Tag } from '@/app/models/tracker/Tag';
+import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';
+import ErrorHandler from '@/app/shared/ErrorHandler';
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import {
+    dispatchNotification,
+    NotificationData,
+    SendStatus,
+} from '@/app/state/redux/slices/NofiticationsSlice';
+import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
+import { CalendarMilestone } from '@/app/typings/milestoneTypes';
+import { Milestone } from '@/app/typings/mlestoneTypes';
+import { User } from '@/app/users/User';
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from '@/state/context/NotificationContext';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { produce } from 'immer';
+import React, { ChangeEvent } from 'react';
+import { useDispatch } from 'react-redux';
+import socketIOClient, { io } from 'socket.io-client';
 
 // Define the type for ScheduleOptimizationResults
 interface ScheduleOptimizationResults {

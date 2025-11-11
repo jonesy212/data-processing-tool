@@ -1,27 +1,14 @@
 // CategoryApi.ts
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { handleApiError } from '@/app/api/ApiLogs';
-import axiosInstance from '@/app/api/csrfToken';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import internalApiService from './ApiClient'; // Import the internal service
-import { AxiosResponse,  } from 'axios';
+import { endpoints } from "@/app/api/endpointConfigurations";
+import { handleApiError } from "@/app/api/ApiLogs";
+import internalApiService from "./ApiClient";
+import { CategoryProperties, CategoryPropertyBundle } from "@/app/pages/personas/ScenarioBuilder";
+import { AxiosError, AxiosResponse } from "axios";
+import { NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
 
-const API_BASE_URL = endpoints.categories; // Adjust based on your API endpoint configuration
-
-interface CategoryApiResponse {
-  id: string;
-  category: CategoryProperties;
-  // Add more properties as needed
-}
-
-
-interface CategoryApiResponse {
-  id: string;
-  category: CategoryProperties;
-  // Add more properties as needed
-}
-
-// Define category-specific notification messages
+// ---------------------------
+// Notification Messages
+// ---------------------------
 interface CategoryNotificationMessages {
   FETCH_CATEGORY_SUCCESS: string;
   FETCH_CATEGORY_ERROR: string;
@@ -33,7 +20,12 @@ interface CategoryNotificationMessages {
   DELETE_CATEGORY_ERROR: string;
   LIST_CATEGORIES_SUCCESS: string;
   LIST_CATEGORIES_ERROR: string;
-  // Add more as needed
+  FETCH_SUBCATEGORIES_SUCCESS: string;
+  FETCH_SUBCATEGORIES_ERROR: string;
+  SEARCH_CATEGORIES_SUCCESS: string;
+  SEARCH_CATEGORIES_ERROR: string;
+  FETCH_CATEGORY_PROPERTIES_SUCCESS: string;
+  FETCH_CATEGORY_PROPERTIES_ERROR: string;
 }
 
 const categoryNotificationMessages: CategoryNotificationMessages = {
@@ -47,140 +39,192 @@ const categoryNotificationMessages: CategoryNotificationMessages = {
   DELETE_CATEGORY_ERROR: "Failed to delete category",
   LIST_CATEGORIES_SUCCESS: "Categories listed successfully",
   LIST_CATEGORIES_ERROR: "Failed to list categories",
+  FETCH_SUBCATEGORIES_SUCCESS: "Subcategories fetched successfully",
+  FETCH_SUBCATEGORIES_ERROR: "Failed to fetch subcategories",
+  SEARCH_CATEGORIES_SUCCESS: "Categories search successful",
+  SEARCH_CATEGORIES_ERROR: "Failed to search categories",
+  FETCH_CATEGORY_PROPERTIES_SUCCESS: "Category properties fetched successfully",
+  FETCH_CATEGORY_PROPERTIES_ERROR: "Failed to fetch category properties",
 };
 
-class CategoryApiService {
-  constructor(private apiService: typeof internalApiService) {}
+// ---------------------------
+// API Response Types
+// ---------------------------
+interface CategoryApiResponse {
+  id: string;
+  category: CategoryProperties;
+}
 
-  async fetchCategoryByName(categoryName: string): Promise<CategoryProperties | undefined> {
+interface CategoryPropertiesResponse {
+  categoryProperties: CategoryPropertyBundle<any, any>; // generic bundle
+}
+
+// ---------------------------
+// Notification Helpers
+// ---------------------------
+const handleCategoryApiErrorAndNotify = (
+  error: AxiosError<unknown>,
+  errorMessageId: keyof CategoryNotificationMessages
+) => {
+  const message = categoryNotificationMessages[errorMessageId];
+  handleApiError(error, message);
+
+  useNotification().notify({
+    id: `category-${String(errorMessageId)}`,
+    message,
+    data: { error },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.ERROR,
+  });
+};
+
+// ---------------------------
+// Category API Service
+// ---------------------------
+class CategoryApiService {
+  private readonly baseUrl = endpoints.categories.path;
+  private notify = useNotification().notify;
+
+  private async requestHandler<T>(
+    request: () => Promise<AxiosResponse<T>>,
+    successMessageId: keyof CategoryNotificationMessages,
+    errorMessageId: keyof CategoryNotificationMessages,
+    data: any = null
+  ): Promise<AxiosResponse<T>> {
     try {
-      const response: AxiosResponse<CategoryApiResponse> = await this.apiService.get(
-        `${API_BASE_URL.path}/${categoryName}`,
-        undefined, // config
-        "FETCH_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages, // successMessageId - type cast needed
-        "FETCH_CATEGORY_ERROR" as keyof CategoryNotificationMessages    // errorMessageId - type cast needed
-      );
-      return response.data.category;
+      const response = await request();
+      this.notify({
+        id: `category-${String(successMessageId)}`,
+        message: categoryNotificationMessages[successMessageId],
+        data,
+        timestamp: new Date(),
+        type: NotificationTypeEnum.SUCCESS,
+      });
+      return response;
     } catch (error) {
-      console.error(`Failed to fetch category '${categoryName}':`, error);
+      handleCategoryApiErrorAndNotify(error as AxiosError<unknown>, errorMessageId);
       throw error;
     }
+  }
+
+  // ---------------------------
+  // Existing CRUD Methods
+  // ---------------------------
+  async fetchCategoryByName(categoryName: string): Promise<CategoryProperties | undefined> {
+    const response = await this.requestHandler(
+      () => internalApiService.get<CategoryApiResponse>(`${this.baseUrl}/${categoryName}`),
+      "FETCH_CATEGORY_SUCCESS",
+      "FETCH_CATEGORY_ERROR",
+      { categoryName }
+    );
+    return response.data.category;
   }
 
   async createCategory(categoryData: CategoryProperties): Promise<CategoryProperties> {
-    try {
-      const response: AxiosResponse<CategoryApiResponse> = await this.apiService.post(
-        `${API_BASE_URL.path}`,
-        categoryData,
-        undefined, // config
-        "CREATE_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages,
-        "CREATE_CATEGORY_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.category;
-    } catch (error) {
-      console.error('Failed to create category:', error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.post<CategoryApiResponse>(`${this.baseUrl}`, categoryData),
+      "CREATE_CATEGORY_SUCCESS",
+      "CREATE_CATEGORY_ERROR",
+      categoryData
+    );
+    return response.data.category;
   }
 
   async updateCategory(categoryId: string, categoryData: Partial<CategoryProperties>): Promise<CategoryProperties> {
-    try {
-      const response: AxiosResponse<CategoryApiResponse> = await this.apiService.put(
-        `${API_BASE_URL.path}/${categoryId}`,
-        categoryData,
-        undefined, // config
-        "UPDATE_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages,
-        "UPDATE_CATEGORY_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.category;
-    } catch (error) {
-      console.error(`Failed to update category '${categoryId}':`, error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.put<CategoryApiResponse>(`${this.baseUrl}/${categoryId}`, categoryData),
+      "UPDATE_CATEGORY_SUCCESS",
+      "UPDATE_CATEGORY_ERROR",
+      { categoryId, categoryData }
+    );
+    return response.data.category;
   }
 
   async deleteCategory(categoryId: string): Promise<void> {
-    try {
-      await this.apiService.delete(
-        `${API_BASE_URL.path}/${categoryId}`,
-        undefined, // config
-        "DELETE_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages,
-        "DELETE_CATEGORY_ERROR" as keyof CategoryNotificationMessages
-      );
-    } catch (error) {
-      console.error(`Failed to delete category '${categoryId}':`, error);
-      throw error;
-    }
+    await this.requestHandler(
+      () => internalApiService.delete(`${this.baseUrl}/${categoryId}`),
+      "DELETE_CATEGORY_SUCCESS",
+      "DELETE_CATEGORY_ERROR",
+      { categoryId }
+    );
   }
 
   async listCategories(): Promise<CategoryProperties[]> {
-    try {
-      const response: AxiosResponse<{ categories: CategoryProperties[] }> = await this.apiService.get(
-        `${API_BASE_URL.path}`,
-        undefined, // config
-        "LIST_CATEGORIES_SUCCESS" as keyof CategoryNotificationMessages,
-        "LIST_CATEGORIES_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.categories;
-    } catch (error) {
-      console.error('Failed to list categories:', error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.get<{ categories: CategoryProperties[] }>(`${this.baseUrl}`),
+      "LIST_CATEGORIES_SUCCESS",
+      "LIST_CATEGORIES_ERROR"
+    );
+    return response.data.categories;
   }
 
   async getCategoryDetails(categoryId: string): Promise<CategoryProperties> {
-    try {
-      const response: AxiosResponse<CategoryApiResponse> = await this.apiService.get(
-        `${API_BASE_URL.path}/${categoryId}`,
-        undefined, // config
-        "FETCH_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages,
-        "FETCH_CATEGORY_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.category;
-    } catch (error) {
-      console.error(`Failed to get category details for '${categoryId}':`, error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.get<CategoryApiResponse>(`${this.baseUrl}/${categoryId}`),
+      "FETCH_CATEGORY_SUCCESS",
+      "FETCH_CATEGORY_ERROR",
+      { categoryId }
+    );
+    return response.data.category;
   }
 
-  // Additional category operations using the new endpoints
   async getSubcategories(categoryId: string): Promise<CategoryProperties[]> {
-    try {
-      const response: AxiosResponse<{ subcategories: CategoryProperties[] }> = await this.apiService.get(
-        `${API_BASE_URL.path}/${categoryId}/subcategories`,
-        undefined, // config
-        "FETCH_CATEGORY_SUCCESS" as keyof CategoryNotificationMessages,
-        "FETCH_CATEGORY_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.subcategories;
-    } catch (error) {
-      console.error(`Failed to get subcategories for '${categoryId}':`, error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.get<{ subcategories: CategoryProperties[] }>(`${this.baseUrl}/${categoryId}/subcategories`),
+      "FETCH_SUBCATEGORIES_SUCCESS",
+      "FETCH_SUBCATEGORIES_ERROR",
+      { categoryId }
+    );
+    return response.data.subcategories;
   }
 
   async searchCategories(query: string): Promise<CategoryProperties[]> {
-    try {
-      const response: AxiosResponse<{ categories: CategoryProperties[] }> = await this.apiService.get(
-        `${API_BASE_URL.path}/search?query=${encodeURIComponent(query)}`,
-        undefined, // config
-        "LIST_CATEGORIES_SUCCESS" as keyof CategoryNotificationMessages,
-        "LIST_CATEGORIES_ERROR" as keyof CategoryNotificationMessages
-      );
-      return response.data.categories;
-    } catch (error) {
-      console.error(`Failed to search categories with query '${query}':`, error);
-      throw error;
-    }
+    const response = await this.requestHandler(
+      () => internalApiService.get<{ categories: CategoryProperties[] }>(
+        `${this.baseUrl}/search?query=${encodeURIComponent(query)}`
+      ),
+      "SEARCH_CATEGORIES_SUCCESS",
+      "SEARCH_CATEGORIES_ERROR",
+      { query }
+    );
+    return response.data.categories;
+  }
+
+  // ---------------------------
+  // NEW: Fetch Category Properties
+  // ---------------------------
+  async getCategoryProperties(categoryId: string): Promise<CategoryPropertyBundle<any, any> | undefined> {
+    const response = await this.requestHandler(
+      () => internalApiService.get<CategoryPropertiesResponse>(`${this.baseUrl}/${categoryId}/properties`),
+      "FETCH_CATEGORY_PROPERTIES_SUCCESS",
+      "FETCH_CATEGORY_PROPERTIES_ERROR",
+      { categoryId }
+    );
+    return response.data.categoryProperties;
+  }
+
+  // ---------------------------
+  // NEW: Update Category Properties
+  // ---------------------------
+  async updateCategoryProperties(
+    categoryId: string,
+    categoryProperties: Partial<CategoryPropertyBundle<any, any>>
+  ): Promise<CategoryPropertyBundle<any, any>> {
+    const response = await this.requestHandler(
+      () => internalApiService.put<CategoryPropertiesResponse>(
+        `${this.baseUrl}/${categoryId}/properties`,
+        categoryProperties
+      ),
+      "FETCH_CATEGORY_PROPERTIES_SUCCESS",
+      "FETCH_CATEGORY_PROPERTIES_ERROR",
+      { categoryId, categoryProperties }
+    );
+    return response.data.categoryProperties;
   }
 }
 
-// Create and export singleton instance
-export const categoryApiService = new CategoryApiService(internalApiService);
-
-// Legacy export for backward compatibility
-export const fetchCategoryByName = (categoryName: string): Promise<CategoryProperties | undefined> => {
-  return categoryApiService.fetchCategoryByName(categoryName);
-};
-
+// ---------------------------
+// Singleton Export
+// ---------------------------
+export const categoryApiService = new CategoryApiService();
 export default categoryApiService;

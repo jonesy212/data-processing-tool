@@ -7,7 +7,7 @@ import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { addToSnapshotList, isBaseData, isSnapshot } from '@/app/utils/snapshotUtils';
+import { addToSnapshotList, isBaseData, isSnapshot } from '@/utils/snapshotUtils';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
@@ -20,7 +20,6 @@ import { convertToArray } from '@/app/snapshots/createSnapshotStoreOptions';
 import { SnapshotContainer } from "@/app/snapshots/SnapshotContainer";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig, UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";

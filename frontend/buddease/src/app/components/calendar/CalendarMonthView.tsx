@@ -10,12 +10,12 @@ import { Task } from "@/app/models/tasks/Task";
 import { updateTask } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {
-  dropTask,
-  resizeTask,
-  updateTaskPositionAsync,
+    dropTask,
+    resizeTask,
+    updateTaskPositionAsync,
 } from "@/app/state/redux/slices/TaskSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";

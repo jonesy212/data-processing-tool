@@ -2,6 +2,7 @@
 import userService, { userId } from "@/app/api/ApiUser";
 import processSnapshotList from "@/app/generators/processSnapshotList";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
+import { Data } from "@/app/models/data/Data";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import snapshotStore from "@/app/snapshots/SnapshotStore";
 import {
@@ -12,18 +13,17 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Data } from "@/app/models/data/Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
 // import DataFrameComponent from '@/DataFrameComponent';
-import { authToken } from "@/app/server/auth/authToken";
-import { Phase } from '@/app/models/phases/Phase';
 import ListGenerator from "@/app/generators/ListGenerator";
 import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
+import { Phase } from '@/app/models/phases/Phase';
+import { authToken } from "@/app/server/auth/authToken";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotList from "@/app/snapshots/SnapshotList";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { shuffleArray } from "@/app/utils/shuffleArray";
-import { SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
+import { shuffleArray } from "@/utils/shuffleArray";
 
 interface DataFilterFormProps {
   onSubmit: (

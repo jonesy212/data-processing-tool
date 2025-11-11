@@ -1,6 +1,6 @@
 //useSecureUserId.ts
 import UserRoles from '@/app/models/UserRoles';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/state/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

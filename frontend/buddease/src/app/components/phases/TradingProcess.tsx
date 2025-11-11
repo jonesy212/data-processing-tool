@@ -1,7 +1,8 @@
 // TradingProcess.tsx
-import axiosInstance from '@/app/api/csrfToken'
+import axiosInstance from '@/app/api/csrfToken';
 import React, { useState } from "react";
 
+import * as TradingAPI from "@/api/ApiTrading";
 import { useStepContext } from "@/app/context/StepContext";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
@@ -10,18 +11,17 @@ import ProfessionalTraderContentManagement from "@/app/pages/personas/Profession
 import ProfessionalTraderDashboard from "@/app/pages/personas/ProfessionalTraderDashboard";
 import ProfessionalTraderProfile from "@/app/pages/personas/ProfessionalTraderProfile";
 import VerificationPage from "@/app/pages/profile/VerificationPage";
+import TradingAssetsStep from "@/app/phases/steps/trading/TradingAssetsStep";
+import TradingBasicInfoStep from "@/app/phases/steps/trading/TradingBasicInfoStep";
+import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
+import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/context/NotificationContext";
-import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
-import * as TradingAPI from "@/api/ApiTrading";
+} from "@/state/context/NotificationContext";
 import TradingPreferencesStep from "./TradingPreferencesStep";
 import { TradingPhase } from "./crypto/CryptoTradingPhase";
 import TraderTypesSelection from "./crypto/TraderTypesSelection";
-import TradingAssetsStep from "@/app/phases/steps/trading/TradingAssetsStep";
-import TradingBasicInfoStep from "@/app/phases/steps/trading/TradingBasicInfoStep";
-import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 
 const TradingProcess: React.FC = () => {
   const { notify } = useNotification();

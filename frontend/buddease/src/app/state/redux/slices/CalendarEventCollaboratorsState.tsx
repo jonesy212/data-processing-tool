@@ -1,8 +1,8 @@
 import { CollaborationActions } from "@/app/actions/CollaborationActions";
 import CalendarEventCollaborator from "@/app/components/calendar/CalendarEventCollaborator";
-import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
+import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
 import SortCriteria from "@/app/settings/SortCriteria";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";

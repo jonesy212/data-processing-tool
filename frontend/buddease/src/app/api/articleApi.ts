@@ -5,15 +5,14 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { addLog } from "@/app/state/redux/slices/LogSlice";
 import { useArticleStore } from "@/app/state/stores/ArticleStore";
 import { User } from "@/app/users/User";
-import { useNotification } from "@/context/NotificationContext";
+import { useNotification } from "@/state/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ArticleEntity, ArticleK, ArticleMeta, ArticleAttachment, ArticleIncludedFields, ArticleExcludedFields } from '@/app/typings/entities/ArticleEntity'
+import { ArticleAttachment, ArticleEntity, ArticleExcludedFields, ArticleIncludedFields, ArticleK, ArticleMeta } from '@/app/typings/entities/ArticleEntity';
 import internalApiService, { clientNotificationMessages } from './ApiClient';
-import  ClientApiService from '@/app/api/ApiClient'
 
 const API_BASE_URL = endpoints.apiConfig;
 

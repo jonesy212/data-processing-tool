@@ -1,4 +1,7 @@
 // RootStores.ts
+import { useProjectManagerStore } from '@/app/state/stores/ProjectStore';
+import { globalCallbackRegistry } from './../../libraries/eventSystem/callbackRegistry';
+import { EventStore } from '@/app/events/EventStore';
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -17,6 +20,7 @@ import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStor
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
 import { NotificationStore } from '@/app/state/stores/NotificationStore';
 import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
+
 import { SettingManagerStore, SettingsStore } from '@/app/state/stores/SettingsStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
@@ -62,12 +66,13 @@ export interface MobXRootState<
   teamStore: TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   projectOwner: ProjectManagerStore;
   dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  dataAnalysisStore: DataAnalysisStore;
+  dataAnalysisStore: DataAnalysisManagerStore;
   todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentStore: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   apiStore: ApiManagerStore;
   realtimeStore: RealtimeManagerStore;
-  eventStore: EventManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  settingsStore: SettingsStore;
+  eventStore: EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   collaborationStore: CollaborationStore;
   entityStore: EntityManagerStore;
   notificationStore: NotificationStore;
@@ -77,7 +82,7 @@ export interface MobXRootState<
   pagingStore: PagingManagerStore;
   blogStore: BlogManagerStore;
   drawingStore: DrawingManagerStore;
-  versionStore: VersionManagerStore;
+  versionStore: VersionStore;
 }
 
 export class RootStores<
@@ -88,43 +93,59 @@ export class RootStores<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  browserCheckStore: BrowserCheckStore;
-  appStore: AppStore;
-  toolbarStore: ToolbarStore;
-  uiStore: UIStore;
-  authStore: AuthStore;
-  iconStore: IconStore;
-  authorizationStore: AuthorizationStore;
-  projectStore: ProjectManagerStore;
-  taskStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  trackerStore: TrackerStore;
-  userStore: UserStore;
-  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  calendarStore: CalendarManagerStore;
-  undoRedoStore: UndoRedoStore;
-  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  teamStore: TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  projectOwner: ProjectManagerStore;
-  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  dataAnalysisStore: DataAnalysisManagerStore;
-  documentStore: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  apiStore: ApiManagerStore;
-  realtimeStore: RealTimeDataStore;
-  eventStore: EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  collaborationStore: CollaborationStore;
-  entityStore: EntityStore;
-  notificationStore: NotificationStore;
-  settingsStore: SettingManagerStore;
-  videoStore: VideoStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  randomWalkStore: RandomWalkStore;
-  pagingStore: PagingManagerStore;
-  blogStore: BlogManagerStore;
-  drawingStore: DrawingManagerStore;
-  versionStore: VersionStore;
+
+  private callbackRegistry: CallbackRegistry;
+
+  // Use definite assignment assertion
+  browserCheckStore!: BrowserCheckStore;
+  appStore!: AppStore;
+  toolbarStore!: ToolbarStore;
+  uiStore!: UIStore;
+  authStore!: AuthStore;
+  iconStore!: IconStore;
+  authorizationStore!: AuthorizationStore;
+  projectStore!: ProjectManagerStore;
+  taskStore!: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  trackerStore!: TrackerStore;
+  userStore!: UserStore;
+  settingsStore!: SettingsStore;
+  taskManagerStore!: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  calendarStore!: CalendarManagerStore;
+  undoRedoStore!: UndoRedoStore;
+  todoStore!: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  teamStore!: TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  projectOwner!: ProjectManagerStore;
+  dataStore!: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataAnalysisStore!: DataAnalysisManagerStore;
+  documentStore!: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  apiStore!: ApiManagerStore;
+  realtimeStore!: RealtimeManagerStore;
+  eventStore!: EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  collaborationStore!: CollaborationStore;
+  entityStore!: EntityStore;
+  notificationStore!: NotificationStore;
+  settingsStore!: SettingManagerStore;
+  videoStore!: VideoStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  randomWalkStore!: RandomWalkStore;
+  pagingStore!: PagingManagerStore;
+  blogStore!: BlogManagerStore;
+  drawingStore!: DrawingManagerStore;
+  versionStore!: VersionStore;
 
   constructor(props: any) {
+    // Initialize callback registry first
+    this.callbackRegistry = globalCallbackRegistry;
+   
+    this.projectStore = new ProjectStore(
+      this.taskStore,
+      this.milestoneStore,
+      this.notificationStore,
+      this.settingsStore  // Inject settings
+    );
+
+    // Keep your current variable names
     this.appManager = useAppStore(props);
-    this.browserCheckStore = useCheckBrowser()
+    this.browserCheckStore = useCheckBrowser();
     this.toolbarManager = useToolbarStore();
     this.uiManager = useUIStore();
     this.authManager = useAuthStore();
@@ -141,7 +162,6 @@ export class RootStores<
     this.calendarManager = useCalendarManagerStore();
     this.todoManager = useTodoManagerStore(props);
     this.documentManager = useDocumentStore();
-    
     this.apiManager = useApiManagerStore();
     this.realtimeManager = useRealtimeManagerStore(props);
     this.eventManager = useEventManagerStore(props);
@@ -159,10 +179,15 @@ export class RootStores<
     makeAutoObservable(this);
   }
 
+  async initialize() {
+    await this.settingsStore.fetchSettings(); // Load settings first
+    await this.projectStore.fetchProjects(); // Then load projects with settings
+  }
+
   @action
   public dispatch(action: any) {
+    console.log(`RootStore dispatching: ${action.type}`, action);
     // Implement dispatch logic here
-    // For example:
     this.browserCheckStore.dispatch(action);
     this.trackerStore.dispatch(action);
     this.todoStore.dispatch(action);
@@ -170,13 +195,16 @@ export class RootStores<
     this.calendarStore.dispatch(action);
     this.iconStore.dispatch(action);
     this.authStore.dispatch(action);
-    
+        
+    this.callbackRegistry.executeCallbacks(action.type, action)
+      .catch(error => {
+        console.error(`Error in global callbacks for action ${action.type}:`, error);
+    });
   }
 
   @action
   public callback(action: any) {
     // Implement callback logic here
-    // For example:
     this.browserCheckStore.callback(action);
     this.trackerStore.callback(action);
     this.todoStore.callback(action);
@@ -185,6 +213,22 @@ export class RootStores<
     this.iconStore.callback(action);
     this.authStore.callback(action);
   }
+
+   // Method to register global callbacks
+  public registerGlobalCallback<T>(
+    eventType: string,
+    handler: EventHandler<T>,
+    options?: any
+  ): string {
+    return this.callbackRegistry.register(eventType, handler, options);
+  }
+
+  public dispose() {
+    this.iconStore.dispose();
+    this.authStore.dispose();
+    // ... dispose other stores
+  }
+
 
   @action
   public setDocumentReleaseStatus(id: number, eventId: number, status: string, isReleased: boolean) {

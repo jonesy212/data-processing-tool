@@ -1,28 +1,28 @@
 // Import necessary types and interfaces
-import {
-    default as CalendarEventTimingOptimization,
-    default as ExtendedCalendarEvent,
-} from "@/app/calendar/CalendarEventTimingOptimization";
-import { User } from "@/app/users/User";
 import { fetchEventData } from "@/app/api/ApiEvent";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { fetchUsersByTaskAPI } from "@/app/api/TasksApi";
-import { ExtendedTodo, useAssignBaseStore } from "@/app/state/stores/AssignwBaseStore";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { EventData } from "@/app/utils/ethereumUtils";
-import { isDataRecentEnough } from "@/app/utils/isDataRecentEnough";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "@/context/NotificationContext";
+  default as CalendarEventTimingOptimization,
+  default as ExtendedCalendarEvent,
+} from "@/app/calendar/CalendarEventTimingOptimization";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { ExtendedTodo, useAssignBaseStore } from "@/app/state/stores/AssignwBaseStore";
+import { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/app/typings/entities/MessageEntity';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { User } from "@/app/users/User";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/state/context/NotificationContext";
+import { EventData } from "@/utils/ethereumUtils";
+import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { makeObservable } from "mobx";
 import { AuthStore } from "./AuthStore";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PresentationEventAssignment } from "./UserPresentationsStore";
-import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 const RESPONSES_STORAGE_KEY = "responses";
 
 interface ReassignData {
@@ -381,9 +381,9 @@ const useAssignEventStore = (): AssignEventStore => {
 
 export { useAssignEventStore };
 export type {
-    AssignEventStore,
-    EventData,
-    ExtendedTodo,
-    ReassignEventResponse
+  AssignEventStore,
+  EventData,
+  ExtendedTodo,
+  ReassignEventResponse
 };
 

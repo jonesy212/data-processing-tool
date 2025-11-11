@@ -5,10 +5,10 @@ import { createDataStore } from '@/app/state/stores/DataStore';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createBaseDataEntity } from '@/app/config/createBaseDataEntity';
-import { SnapshotContextType } from '@/app/context/SnapshotContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { createSnapshotStoreMap } from '@/app/snapshots/createSnapshotStoreMap';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotContextType } from '@/app/state/context/SnapshotContext';
 
 export function getConfigPromise<
   T extends BaseData<any>, 

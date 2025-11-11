@@ -1,16 +1,14 @@
 // TodoApi.ts
 "use client";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import axiosInstance from '@/app/api/csrfToken';
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { AxiosError } from 'axios';
-import { Todo } from '@/app/todos/Todo';
 import { endpoints } from '@/app/api/endpointConfigurations';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { Todo } from '@/app/todos/Todo';
+import { AxiosError } from 'axios';
 
 // Define the API base URL for todos
 const API_BASE_URL = endpoints.todos.list

@@ -1,29 +1,27 @@
 //Tracker.ts
 
 import { HighlightColor } from "@/app/components/styling/Palette";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { detectMetadataChanges } from "@/app/config/metadata/detectMetadataChanges";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataRoot } from '@/app/config/BaseConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Phase } from '@/app/models/phases/Phase';
+import { TrackerProps } from '@/app/models/tracker/Tracker';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
-  fetchUsersSuccess,
-  updateBio,
-  updateFullName,
-  updateProfilePicture,
-  updateQuota,
+    fetchUsersSuccess,
+    updateBio,
+    updateFullName,
+    updateProfilePicture,
+    updateQuota,
 } from "@/app/state/redux/slices/UserSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
-import { detectMetadataChanges } from "@/app/config/metadata/detectMetadataChanges";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 import path from "path";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields} from '@/app/typings/entities/UserEntity'
-import { TrackerProps } from '@/app/models/tracker/Tracker'
 
 export interface SharedFormattingOptions {
   borderColor?: string;

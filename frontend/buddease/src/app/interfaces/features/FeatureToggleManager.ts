@@ -1,8 +1,8 @@
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import { makeAutoObservable } from "mobx";
-import focusManagerInstance from "@/app/models/accessibility/FocusManager";
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import focusManagerInstance from "@/app/models/accessibility/FocusManager";
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { makeAutoObservable } from "mobx";
 
 const { notify } = useNotification();
 export interface FeatureToggle {

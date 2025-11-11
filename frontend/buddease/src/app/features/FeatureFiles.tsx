@@ -1,24 +1,24 @@
 // app/features/prompts/FeatureFiles.tsx
-import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { FeaturePrompt } from '@/app/typings/promptTypes';
 import {
-  FolderOutlined,
-  LinkOutlined,
-  LockOutlined,
-  SearchOutlined,
-  TeamOutlined,
-  UploadOutlined
+    FolderOutlined,
+    LinkOutlined,
+    LockOutlined,
+    SearchOutlined,
+    TeamOutlined,
+    UploadOutlined
 } from '@ant-design/icons';
 import {
-  Button,
-  Card,
-  Input,
-  List,
-  Modal,
-  Select,
-  Space,
-  Tag,
-  Upload
+    Button,
+    Card,
+    Input,
+    List,
+    Modal,
+    Select,
+    Space,
+    Tag,
+    Upload
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';

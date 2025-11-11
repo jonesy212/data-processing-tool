@@ -1,9 +1,8 @@
 // useSecureStoreId
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { sanitizeData } from "@/app/security/SanitizationFunctions";
-import { useNavigate } from "react-router-dom";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
+import { useAuth } from "@/state/context/AuthContext";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 export const useSecureStoreId = () => {
   const [storeId, setStoreId] = useState<number | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);

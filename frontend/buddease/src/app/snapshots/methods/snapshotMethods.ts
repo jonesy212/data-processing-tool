@@ -3,7 +3,7 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { isSnapshot } from '@/utils/snapshotUtils';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Attachment } from "@/app/documents/attachment/Attachment";

@@ -1,11 +1,9 @@
-import axios, { AxiosError } from 'axios';
-import { Phase } from '@/app/models/phases/Phase';
-import { useNotification } from '@/context/NotificationContext';
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
-import { NotificationType } from "@/context/NotificationContext";
+import { NotificationType, useNotification } from '@/state/context/NotificationContext';
+import axios, { AxiosError } from 'axios';
 
 // Base URL for your API
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;

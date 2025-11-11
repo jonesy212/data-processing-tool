@@ -2,7 +2,7 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { SnapshotContainerEntity } from '@/app/typings/entities/SnapshotContainerEntity';
 import { SnapshotAttachment, SnapshotEntity, SnapshotEntityData, SnapshotEntityStore, SnapshotEntityStoreConfig, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
-import { SnapshotStorage } from '@/app/utils/storage/SnapshotStorage';
+import { SnapshotStorage } from '@/utils/storage/SnapshotStorage';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -33,7 +33,7 @@ import { EventManager } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { NotificationType } from '@/context/NotificationContext';
+import { NotificationType } from '@/state/context/NotificationContext';
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
@@ -52,6 +52,7 @@ import { Sender } from '@/app/components/communications/CommunicationPage';
 import {
   BaseDataEntity,
   BaseDataRoot,
+  BaseEntity,
   DefaultExcludedFields,
   DefaultMeta,
 } from '@/app/config/BaseConfig';
@@ -62,7 +63,6 @@ import { BaseData } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { PhaseData } from '@/app/models/phases/Phase';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import {
   createCompleteSnapshot,
@@ -79,12 +79,12 @@ import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { isSnapshotData } from '@/app/utils/snapshotUtils';
+import { isSnapshotData } from '@/utils/snapshotUtils';
 import {
   getCommunityEngagement,
   getMarketUpdates,
   getTradeExecutions,
-} from '@/app/utils/trading/TradingUtils';
+} from '@/utils/trading/TradingUtils';
 import {
   logActivity,
   notifyEventSystem,
@@ -92,7 +92,7 @@ import {
   triggerIncentives,
   unsubscribe,
   updateProjectState,
-} from '@/app/utils/web3/applicationUtils';
+} from '@/utils/web3/applicationUtils';
 
 
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';

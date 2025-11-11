@@ -1,8 +1,8 @@
 // SnapshotMethods.ts
 
+import { Data } from '@/app/models/data/Data';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationType } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -17,8 +17,8 @@ import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/se
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import {
-  Result,
-  Snapshots, SnapshotsArray, SnapshotUnion
+    Result,
+    Snapshots, SnapshotsArray, SnapshotUnion
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
@@ -29,10 +29,11 @@ import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -252,10 +253,7 @@ interface SnapshotLifecycleMethods<
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshotStore: SnapshotStore<any, any>) => void,
     snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStoreConfigSearch: SnapshotStoreConfig<
-    SnapshotWithCriteria<BaseDataEntity, K>,
-    SnapshotWithCriteria<BaseDataEntity, K>
-    >,
+    snapshotStoreConfigSearch: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category?: Category,
   ) => void;
 
@@ -380,7 +378,7 @@ interface SnapshotNotificationMethods<
     message: string,
     subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    data: Partial<SnapshotStoreConfig<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
+    data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
@@ -887,6 +885,17 @@ interface SnapshotSuccessMethods<
   ) => void;
 
   configureSnapshotStore: (
+    snapshotStore: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    snapshotId: string,
+    data: Map<string, Snapshot<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>>,
+    events: Record<string, CalendarEvent<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>[]>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    newData: Snapshot<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    payload: ConfigureSnapshotStorePayload<BaseDataEntity>,
+    store: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    callback: (
+      snapshotStore: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>
+    ) => void
     payload: ConfigureSnapshotStorePayload<
       T,
       K,

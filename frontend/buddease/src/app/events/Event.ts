@@ -1,8 +1,8 @@
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { triggerEvent, unsubscribe } from "@/app/utils/web3/applicationUtils";
-import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity'
+import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
+import { triggerEvent, unsubscribe } from "@/utils/web3/applicationUtils";
 
 interface CalendarSnapshotEvents {
     [eventId: string]: ExtendedCalendarEvent[];

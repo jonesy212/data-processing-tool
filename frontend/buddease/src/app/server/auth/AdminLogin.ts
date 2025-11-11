@@ -1,7 +1,7 @@
 // AdminLogin.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { serverAuthService } from '@/server/AuthService';
+import { serverAuthService } from '@/app/server/AuthService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

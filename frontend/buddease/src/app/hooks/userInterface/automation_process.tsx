@@ -6,9 +6,9 @@ import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { notify } from '@/app/utils/snapshotUtils';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import RandomWalkSuggestions from '@/RandomWalkSuggestions';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { notify } from '@/utils/snapshotUtils';
 import ReactDOM, { useEffect } from 'react';
 
 

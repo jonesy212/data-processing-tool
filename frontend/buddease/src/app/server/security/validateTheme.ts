@@ -1,6 +1,6 @@
 // validateTheme.ts
-import { isValidDID } from '@/app/utils/web3/didUtils'
 import { Theme } from '@/app/app/libraries/ui/theme/Theme';
+import { isValidDID } from '@/utils/web3/didUtils';
 
 const isValidColor = (color: string): boolean => {
   // Example implementation for color validation

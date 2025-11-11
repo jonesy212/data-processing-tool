@@ -1,18 +1,18 @@
 // VersionGenerator.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
 import getAppPath from "@/app/config/appStructure/appPath";
-import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { TaskLogger } from "@/app/libraries/logging/Logger";
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";

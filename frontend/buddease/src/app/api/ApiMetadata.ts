@@ -12,7 +12,7 @@ import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { VersionData } from '@/app/versions/VersionData';
-import { NotificationType } from "@/context/NotificationContext";
+import { NotificationType } from "@/state/context/NotificationContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_BASE_URL = endpoints.metadata;

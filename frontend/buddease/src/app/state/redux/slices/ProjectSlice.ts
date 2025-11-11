@@ -1,34 +1,32 @@
-import Milestone, {
-  ProductMilestone,
-} from "@/app/state/redux/slices/CalendarSlice";
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
-import { ProjectManagerEntity,
-  ProjectManagerK,
-  ProjectManagerMeta,
-  ProjectManagerAttachment, 
-  ProjectManagerIncludedFields,
-  ProjectManagerExcludedFields } from '@/app/typings/entities/ProjectManagerEntity'
-  import { 
-    MeetingEntity,
-    MeetingEntityK,
-    MeetingEntityMeta,
-    MeetingEntityAttachment, 
-    MeetingEntityIncludedFields,
-    MeetingEntityExcludedFields
-  } from '@/app/typings/entities/MeetingEntity'
-
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { StatusType } from "@/app/models/data/StatusType";
+import { Member } from "@/app/models/members/Member";
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/components/teams/Team";
 import { Contributor } from "@/app/models/teams/Contributor";
-import { Member } from "@/app/models/members/Member";
 import { JobRole } from '@/app/models/UserRoles';
 import { Product } from "@/app/products/Product";
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import Milestone, {
+  ProductMilestone,
+} from "@/app/state/redux/slices/CalendarSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
+import {
+  MeetingEntity
+} from '@/app/typings/entities/MeetingEntity';
+import {
+  ProjectManagerAttachment,
+  ProjectManagerEntity,
+  ProjectManagerExcludedFields,
+  ProjectManagerIncludedFields,
+  ProjectManagerK,
+  ProjectManagerMeta
+} from '@/app/typings/entities/ProjectManagerEntity';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
 import { useDispatch } from "react-redux";
@@ -36,7 +34,7 @@ import { useDispatch } from "react-redux";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
-import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
+import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 
 interface ProjectState<
   T extends BaseDataEntity = BaseDataRoot,
@@ -75,7 +73,14 @@ const initialState: ProjectState = {
   projectFeedback: null,
 };
 
-interface YourStateType {
+interface YourStateType<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  {
   projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
@@ -88,7 +93,14 @@ export interface ProjectMetrics {
 }
 
 
-function createUpdatedProject(
+function createUpdatedProject<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> (
   payload: WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): WritableDraft<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   return {
@@ -349,7 +361,8 @@ export const useProjectManagerSlice = createSlice({
       );
 
       if (projectIndex !== -1) {
-        const draftProject = state.projects[projectIndex];  // This will be a WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
+        const draftProject = state.projects[projectIndex];  // This will be a 
+        WritableDraft<Project<ProjectManagerEntity, ProjectManagerK, 
         ProjectManagerMeta, ProjectManagerAttachment,  
         ProjectManagerIncludedFields, ProjectManagerExcludedFields>>
 

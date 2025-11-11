@@ -9,7 +9,7 @@ import DynamicTypography, {
     HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
 import FrontendStructure from "@/configs/appStructure/FrontendStructureComponent";
-import { NotificationType } from "@/app/context/NotificationContext";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import DataPreview, {
     DataPreviewProps,
 } from "@/app/users/DataPreview";

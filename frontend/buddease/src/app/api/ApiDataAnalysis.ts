@@ -1,14 +1,10 @@
+import { NotificationPosition } from '@/app/models/data/StatusType';
 // ApiDataAnalysis.ts
-import {DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
 import { handleApiError } from '@/app/api/ApiLogs';
-import axiosInstance from "@/app/api/csrfToken";
+import internalApiService from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification
-} from "@/app/context/NotificationContext";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
@@ -19,10 +15,15 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import {
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification
+} from '@/app/state/context/NotificationContext';
 import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { isSnapshot } from "@/utils/snapshotUtils";
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 
@@ -67,7 +68,6 @@ const dataAnalysisNotificationMessages: DataAnalysisNotificationMessages = {
   FETCH_ANALYSIS_RESULTS_ERROR: NOTIFICATION_MESSAGES.DataAnalysis.FETCH_ANALYSIS_RESULTS_ERROR,
   // Add more properties as needed
 };
-
 // Function to handle API errors and notify for data analysis
 export const handleDataAnalysisApiErrorAndNotify = (
   error: AxiosError<unknown>,
@@ -75,21 +75,21 @@ export const handleDataAnalysisApiErrorAndNotify = (
   errorMessageId: keyof DataAnalysisNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
+
   if (errorMessageId) {
     const errorMessageText = dataAnalysisNotificationMessages[errorMessageId];
-    useNotification().notify(
-      errorMessageId, // id: string
-      errorMessageText, // content: string
-      null, // notificationMessage: NotificationMessages | null
-      new Date(), // date: Date
-      NotificationTypeEnum.API_ERROR, // type: NotificationTypeEnum
-      "DATA_ANALYSIS_API_CLIENT_ERROR" as NotificationType,
-      undefined, // options (optional)
-      undefined // userName (optional)
-    );
+
+    useNotification().notify({
+      id: `data-analysis-${String(errorMessageId)}`, // unique string id
+      message: errorMessageText,                     // content
+      data: { originalError: errorMessage },        // structured data payload
+      timestamp: new Date(),                         // when it occurred
+      type: NotificationTypeEnum.API_ERROR,         // notification type
+      position: NotificationPosition.TopRight       // optional: can customize
+      // You can add `persistent` or `action` if needed
+    });
   }
 };
-
 
 
 export function fetchDataAnalysis<
@@ -114,7 +114,8 @@ export function fetchDataAnalysis<
       fetchDataAnalysisEndpoint, 
       config
     )
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
       const result = convertResponseToSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(response.data);
       
       // Explicit type narrowing
@@ -227,8 +228,8 @@ export const fetchAnalysisResults = <
 
           // Data Transformation
           mapDataStore: snapshotStore?.mapDataStore,
-          transformInitialState: snapshotStore.transformInitialState,
-          transformSnapshot: snapshotStore.transformSnapshot,
+          transformInitialState: snapshotStore.getTransformedInitialState,
+          transformSnapshot: snapshotStore.getTransformedSnapshot,
           transformMappedSnapshotData: snapshotStore.transformMappedSnapshotData,
           transformSnapshotStore: snapshotStore.transformSnapshotStore,
           transformSnapshotMethod: snapshotStore.transformSnapshotMethod,

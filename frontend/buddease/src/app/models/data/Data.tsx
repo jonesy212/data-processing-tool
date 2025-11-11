@@ -4,24 +4,24 @@ import { Collaborator } from "@/app/collaborators/Collaborator";
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { Team } from "@/app/components/teams/Team";
 import {
-    BaseDataEntity,
-    BaseDataRoot,
-    DefaultExcludedFields,
-    DefaultIncludedFields,
-    DefaultMeta
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultIncludedFields,
+  DefaultMeta
 } from '@/app/config/BaseConfig';
 import {
-    fetchUserAreaDimensions,
-    UnifiedMetadata,
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
 } from "@/app/config/MetaDataOptions";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import userSettings from "@/app/config/UserSettings";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-    SharedIdentifiers,
-    SharedStatusFlags,
-    SharedTimestamps,
+  SharedIdentifiers,
+  SharedStatusFlags,
+  SharedTimestamps,
 } from "@/app/documents/RelatedProps";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -43,19 +43,16 @@ import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysi
 import { taskService } from "@/app/services/TaskService";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-    Snapshots,
-    SnapshotsArray,
+  Snapshots,
+  SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
-    SnapshotStoreReference,
+  SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import {
-    SnapshotWithCriteria,
-    TagsRecord,
-} from "@/app/snapshots/SnapshotWithCriteria";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";
@@ -75,17 +72,17 @@ import { AllTypes } from "@/app/typings/PropTypes";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { cleanEmptyStrings } from "@/app/utils/web3/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VersionData } from "@/app/versions/VersionData";
+import { cleanEmptyStrings } from "@/utils/web3/cleanEmptyStrings";
 import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
 import FileData from "./FileData";
 import {
-    PriorityTypeEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriptionTypeEnum,
+  PriorityTypeEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriptionTypeEnum,
 } from "./StatusType";
 
 interface SharedRelationshipData<K> {
@@ -101,6 +98,18 @@ interface SharedPhaseData {
   phase: Phase<any, any> | null;
   priority: PriorityTypeEnum;
 }
+
+type SharedConfigType<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = 
+  | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
+  | null;
 
 type DataWithOmittedFields<
   T extends BaseDataEntity,
@@ -228,7 +237,7 @@ interface BaseData<
   videoThumbnail?: string;
   videoDuration?: number;
   collaborationOptions?: CollaborationOptions[];
-  videoData?: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  videoData?: VideoData<T, K>;
   additionalData?: any;
   ideas?: Idea[];
   members?: number[] | string[] | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -375,7 +384,6 @@ const DataDetailsComponent = <
         analysisResults: safeGetAnalysisResults(data),
         completed: safeGetBoolean(data, 'completed'),
         label: safeGet(data, 'label', { text: "", color: "" }),
-        
         currentMetadata: safeGetCurrentMetadata(data),
         date: safeGet(data, 'date'),
         createdBy: safeGetString(data, 'createdBy'),
@@ -383,25 +391,25 @@ const DataDetailsComponent = <
         latestVersion: safeGetLatestVersion(data),
         status: safeGet(data, 'status') as StatusType | undefined,
       }}
-      // details={{
-      //   _id: safeGetString(data, '_id'),
-      //   id: safeGetString(data, 'id'),
-      //   title: safeGetString(data, 'title'),
-      //   createdBy: safeGetString(data, 'createdBy'),
-      //   description: safeGetString(data, 'description'),
-      //   phase: safeGet(data, 'phase'),
-      //   date: safeGet(data, 'date'),
-      //   isActive: safeGetBoolean(data, 'isActive'),
-      //   tags: safeGet(data, 'tags') ? getTagNames(safeGet(data, 'tags')) : [],
-      //   status: safeGet(data, 'status'),
-      //   type: safeGet(data, 'type', "DefaultType"),
-      //   analysisType: safeGet(data, 'analysisType'),
-      //   analysisResults: safeGetAnalysisResults(data),
-      //   updatedAt: safeGetDate(data, 'updatedAt') || new Date(),
-      //   currentMetadata: safeGetCurrentMetadata(data),
-      //   currentMeta: safeGet(data, 'currentMeta'),
-      //   latestVersion: safeGetLatestVersion(data),
-      // }}
+      details={{
+        _id: safeGetString(data, '_id'),
+        id: safeGetString(data, 'id'),
+        title: safeGetString(data, 'title'),
+        createdBy: safeGetString(data, 'createdBy'),
+        description: safeGetString(data, 'description'),
+        phase: safeGet(data, 'phase'),
+        date: safeGet(data, 'date'),
+        isActive: safeGetBoolean(data, 'isActive'),
+        tags: safeGet(data, 'tags') ? getTagNames(safeGet(data, 'tags')) : [],
+        status: safeGet(data, 'status'),
+        type: safeGet(data, 'type', "DefaultType"),
+        analysisType: safeGet(data, 'analysisType'),
+        analysisResults: safeGetAnalysisResults(data),
+        updatedAt: safeGetDate(data, 'updatedAt') || new Date(),
+        currentMetadata: safeGetCurrentMetadata(data),
+        currentMeta: safeGet(data, 'currentMeta'),
+        latestVersion: safeGetLatestVersion(data),
+      }}
     />
   );
 };
@@ -1738,15 +1746,15 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
 };
 
 export type {
-    BaseData,
-    ChildRelationship,
-    CommonRelationship,
-    Data,
-    DataDetails,
-    DataDetailsComponent,
-    DataDetailsProps, DataWithOmittedFields,
-    SharedRelationshipData,
-    TodoSubtasks
+  BaseData,
+  ChildRelationship,
+  CommonRelationship,
+  Data,
+  DataDetails,
+  DataDetailsComponent,
+  DataDetailsProps, DataWithOmittedFields,
+  SharedRelationshipData,
+  TodoSubtasks
 };
 
 // Clean the coreData to replace empty strings with null

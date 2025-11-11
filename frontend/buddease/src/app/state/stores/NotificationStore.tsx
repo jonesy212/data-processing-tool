@@ -1,28 +1,30 @@
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { NotificationPosition } from '@/app/models/data/StatusType';
-import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
 import { apiNotificationMessages } from "@/app/api/ApiData";
-import { LogData } from '@/app/models/LogData';
-import { NotificationChannels, BasicNotificationChannels } from '@/app/notifications/NotificationChannels'
-import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper'
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { NotificationPosition } from '@/app/models/data/StatusType';
+import { LogData } from '@/app/models/LogData';
+import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper';
+import { BasicNotificationChannels, NotificationChannels } from '@/app/notifications/NotificationChannels';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
 
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 
-import NotificationData from '@/app/state/redux/slices/NofiticationsSlice';
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
-import { action, makeObservable, observable } from 'mobx';
+import NotificationData from '@/app/state/redux/slices/NofiticationsSlice';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import {
+    NotificationAttachment,
+    NotificationEntity,
+    NotificationExcludedFields, NotificationIncludedFields,
+    NotificationK, NotificationMeta
+} from '@/app/typings/entities/NotificationEntity';
+import { action, observable } from 'mobx';
 import { createContext } from 'react';
-import { NotificationChannelHelperImpl } from '@/app/notifications/NotificationChannelHelperImpl'
-import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields
-} from '@/app/typings/entities/NotificationEntity'
 
 // Define the type for notification messages
 interface NotificationMessages {
@@ -526,8 +528,6 @@ class NotificationStore {
 // Create an instance of the NotificationStore
 const notificationStoreInstance = new NotificationStore(NOTIFICATION_MESSAGES);
 
-// Create a context for accessing the notification store
-const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
-export { NotificationContext, notificationStoreInstance };
+export { notificationStoreInstance };
 export default NotificationStore;

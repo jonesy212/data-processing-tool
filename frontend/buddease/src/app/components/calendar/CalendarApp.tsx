@@ -56,8 +56,8 @@ import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
 import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 import { User } from "@/app/users/User";
-import { addToSnapshotList, castToSnapshot, isSnapshotContainer } from '@/app/utils/snapshotUtils';
-import { processSnapshotData } from '@/app/utils/versionUtils';
+import { addToSnapshotList, castToSnapshot, isSnapshotContainer } from '@/utils/snapshotUtils';
+import { processSnapshotData } from '@/utils/versionUtils';
 import { useEffect, useState } from "react";
 
 
@@ -534,9 +534,9 @@ function CalendarApp<
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: K,
         index: number,
-        category?: Category,        
-      ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-      category?: Category,      
+        category?: Category,
+      ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      category?: Category,
     ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       // Initialize an array to store results from callback executions
       const result: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
@@ -582,7 +582,7 @@ function CalendarApp<
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: any,
-      category?: Category,      
+      category?: Category,
     ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
@@ -668,11 +668,12 @@ function CalendarApp<
       throw new Error("Function not implemented.");
     },
     getSnapshotVersions: function (
-      category?: Category,      timestamp: any,
+      timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: T
+      data: T,
+      category?: Category
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
       throw new Error("Function not implemented.");
     },

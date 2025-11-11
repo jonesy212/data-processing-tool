@@ -1,25 +1,24 @@
 //Tracker.ts
 import { HighlightColor } from "@/app/components/styling/Palette";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { detectMetadataChanges } from "@/app/config/metadata/detectMetadataChanges";
-import { useAuth } from "@/context/AuthContext";
-import path from "path";
-import { Phase } from '@/app/models/phases/Phase';
-import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
-import { Payment } from "@/app/subscriptions/SubscriptionPlan";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { User } from "@/app/users/User";
-import {
-  fetchUsersSuccess,
-  updateBio,
-  updateFullName,
-  updateProfilePicture,
-  updateQuota,
-} from "@/app/state/redux/slices/UserSlice";
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields} from '@/app/typings/entities/UserEntity'
+import { Phase } from '@/app/models/phases/Phase';
+import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
+import {
+    fetchUsersSuccess,
+    updateBio,
+    updateFullName,
+    updateProfilePicture,
+    updateQuota,
+} from "@/app/state/redux/slices/UserSlice";
+import { Payment } from "@/app/subscriptions/SubscriptionPlan";
+import { User } from "@/app/users/User";
+import { useAuth } from "@/state/context/AuthContext";
+import path from "path";
 
 export interface SharedFormattingOptions {
   borderColor?: string;

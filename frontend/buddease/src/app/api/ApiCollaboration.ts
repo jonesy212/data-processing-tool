@@ -3,8 +3,8 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { CollaborationLogger } from '@/app/libraries/logging/Logger';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 
 

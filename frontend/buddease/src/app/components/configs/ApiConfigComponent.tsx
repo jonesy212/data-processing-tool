@@ -1,61 +1,54 @@
 // ApiConfigComponent.tsx
 
+import { Button, Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Form, Input, Button } from "antd";
 
-import axiosInstance from '@/app/api/csrfToken';
 import ApiConfig from "@/app/api/ApiConfig";
+import axiosInstance from '@/app/api/csrfToken';
 import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
 
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
 import TaskTrackingComponent from "@/app/components/models/tracker/TaskTrackingComponent";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 
+import getAppPath from "@/app/config/appStructure/appPath";
 import { UserData } from "@/app/users/User";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import getAppPath from "@/app/config/appStructure/appPath";
 
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useFilePath from "@/app/hooks/useFilePath";
 
 import CreateComponentForm from "@/app/libraries/ui/components/CreateComponentForm";
 import DeleteComponent from "@/app/libraries/ui/components/DeleteComponent";
 import UpdateComponent from "@/app/libraries/ui/components/UpdateComponent";
 
-import MainConfig from "@/app/config/MainConfig";
-import { frontendConfig } from "@/app/config/FrontendConfig";
-import { backendConfig } from "@/configs/BackendConfig";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
-import BackendStructure from '@/app/server/database/BackendStructure';
+import { frontendConfig } from "@/app/config/FrontendConfig";
+import MainConfig from "@/app/config/MainConfig";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
+import BackendStructure from '@/app/server/database/BackendStructure';
+import { backendConfig } from "@/configs/BackendConfig";
 
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
-import { NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 
 import { userPreferences, UserPreferences } from "@/app/config/UserPreferences";
-import UserSettings from "@/app/config/UserSettings";
 
 import {
-  TrackerProps,
-  AppFileEntity,
-  FileK,
-  FileMeta,
-  FileAttachment,
-  FileExcludedFields,
-  FileIncludedFields,
-  TrackerEntity,
-  TrackerK,
-  TrackerMeta,
-  TrackerAttachment,
-  TrackerExcludedFields,
-  TrackerIncludedFields
+    TrackerAttachment,
+    TrackerEntity,
+    TrackerExcludedFields,
+    TrackerIncludedFields,
+    TrackerK,
+    TrackerMeta,
+    TrackerProps
 } from "@/app/typings/entities/*";
 
 // ✅ Plugin & Callback Registry imports
-import { PluginManager } from "@/app/plugins/PluginManager";
 import { CallbackRegistry } from "@/app/events/CallbackRegistry";
+import { PluginManager } from "@/app/plugins/PluginManager";
 
 
 // ===============================================

@@ -3,7 +3,6 @@ import DynamicNamingConventions from "@/app/DynamicNamingConventions";
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
 import { AppConfig } from "@/app/config/AppConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { useFeatureContext } from "@/app/context/FeatureContext";
 import YourComponent, { YourComponentProps } from "@/app/hooks/YourComponent";
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
@@ -14,6 +13,7 @@ import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
 import useNotificationManagerService from "@/app/services/NotificationService";
+import { useFeatureContext } from "@/app/state/context/FeatureContext";
 import { User } from "@/app/users/User";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';

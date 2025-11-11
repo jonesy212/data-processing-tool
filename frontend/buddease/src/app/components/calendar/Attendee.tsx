@@ -19,6 +19,7 @@ import useAttendancePrediction from './AttendancePrediction';
 import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
 import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
 import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity'
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 interface Attendee {
   id: string;
@@ -210,7 +211,7 @@ const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtta
   attendees: [],
   location: "Event location",
   getData: () => Promise.resolve({}) as Promise<Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>>,
-
+  meta: {} as StructuredMetadata<alendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>
 };
 
 const calendarManagerState: CalendarManagerState = {

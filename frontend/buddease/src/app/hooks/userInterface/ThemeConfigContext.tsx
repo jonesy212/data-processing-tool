@@ -1,10 +1,10 @@
 // ThemeConfigContext.tsx
-import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
-import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
-import YourClass from "@/app/utils/YourClass";
-import React, { createContext, useContext, useState } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
+import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
+import YourClass from "@/utils/YourClass";
+import React, { createContext, useContext, useState } from "react";
 
 interface ThemeConfigProps {
   fontSize: string;

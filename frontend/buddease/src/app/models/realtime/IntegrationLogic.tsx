@@ -5,8 +5,8 @@ import { YearInfo } from "@/app/components/calendar/CalendarYear";
 import { Month, MonthInfo } from "@/app/components/calendar/Month";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { NotificationContextProps } from "@/app/context/NotificationContext";
 import { BaseData } from '@/app/models/data/Data';
+import { NotificationContextProps } from '@/app/state/context/NotificationContext';
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 
 interface Dependency {

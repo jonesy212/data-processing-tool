@@ -4,27 +4,27 @@ import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
-import { useDataContext } from "@/app/context/DataContext";
-import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SearchCriteria } from "@/app/routing/SearchCriteria";
+import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
 import { Payload } from '@/app/server/database/Payload';
+import { sharedMetadata } from '@/app/server/metadata/MetadataStateManager';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { useDataContext } from "@/app/state/context/DataContext";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { sharedMetadata } from "@/config/metadata/MetadataStateManager";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 
@@ -37,14 +37,14 @@ import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 import {
-    SnapshotAttachment,
-    SnapshotEntity,
-    SnapshotEntityData,
-    SnapshotEntityWithCriteria,
-    SnapshotExcludedFields,
-    SnapshotIncludedFields,
-    SnapshotK,
-    SnapshotMeta
+  SnapshotAttachment,
+  SnapshotEntity,
+  SnapshotEntityData,
+  SnapshotEntityWithCriteria,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
+  SnapshotK,
+  SnapshotMeta
 } from "@/app/typings/entities/SnapshotEntity";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from '@/app/versions/VersionData';

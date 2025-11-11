@@ -198,7 +198,7 @@ function processVideoMetadata<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  meta: SpecificMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void {
   if (meta.tags) {
     if (Array.isArray(meta.tags)) {

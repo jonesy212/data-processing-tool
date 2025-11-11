@@ -1,51 +1,51 @@
 // SnapshotStoreProps.ts
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/documents/RelatedProps';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from "@/app/config/metadata/SchemaField";
+import { displayToast } from '@/app/models/display/ShowToast';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { createDataStore, DataStore, InitializedState } from '@/app/state/stores/DataStore';
+import { Payload } from "@/app/server/database/Payload";
 import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
 import {
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { InitializedData, SnapshotStoreOptions, InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
+import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { BaseSnapshotProps } from '@/app/snapshots/createBaseSnapshot';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { fetchSnapshotsForCategory } from '@/app/snapshots/fetchSnapshotsForCategory';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
+import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { createDataStore, DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { StorePropAttachment, StorePropEntity, StorePropExcludedFields, StorePropIncludedFields, StorePropK, StorePropMeta } from '@/app/typings/entities/StorePropEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { addToSnapshotList, isSnapshot } from '@/app/utils/snapshotUtils';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { BaseSnapshotProps } from '@/app/snapshots/createBaseSnapshot';
-import { displayToast } from '@/app/models/display/ShowToast';
-import { Payload } from "@/app/server/database/Payload";
-import { SchemaField } from "@/app/config/metadata/SchemaField";
-import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
+import { addToSnapshotList, isSnapshot } from '@/utils/snapshotUtils';
 import { version } from "react";
-import { StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields } from '@/app/typings/entities/StorePropEntity'
 // Base interface for all snapshot store properties
 
 interface BaseSnapshotStoreProps<

@@ -1,15 +1,15 @@
 // defineConfig.ts
 
-import react from '@vitejs/plugin-react';
-import path from 'path';
-import { defineConfig, UserConfigExport } from 'vite';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { payload, Subscriber } from "@/app/subscribers/Subscriber";
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
-import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/utils/web3/applicationUtils";
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { defineConfig, UserConfigExport } from 'vite';
 
 // Function to get the project ID from an environment variable or use a default value
 function getProjectId() {

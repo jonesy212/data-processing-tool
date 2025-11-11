@@ -40,21 +40,21 @@ import { AppStructuredMetadata } from '@/app/typings/entities/AppMetadataEntity'
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { isSnapshot } from '@/app/utils/snapshotUtils';
-import {
-  getCommunityEngagement,
-  getMarketUpdates,
-  getTradeExecutions,
-} from "@/app/utils/trading/TradingUtils";
-import {
-  triggerIncentives
-} from "@/app/utils/web3/applicationUtils";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
 import {
   NotificationType,
   NotificationTypeEnum,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
+import { isSnapshot } from '@/utils/snapshotUtils';
+import {
+  getCommunityEngagement,
+  getMarketUpdates,
+  getTradeExecutions,
+} from "@/utils/trading/TradingUtils";
+import {
+  triggerIncentives
+} from "@/utils/web3/applicationUtils";
 import { useParams } from "next/navigation";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
@@ -71,7 +71,7 @@ import {
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { internalCache } from '@/app/utils/cache/InternalCache';
+import { internalCache } from '@/utils/cache/InternalCache';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
@@ -708,7 +708,7 @@ const updateSubscribersAndSnapshots = async <
               snapshot: (
                 id: string | number | undefined,
                 snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                category?: Category,                categoryProperties: CategoryProperties | undefined,
+                categoryProperties: CategoryProperties | undefined,
                 callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
                 dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -718,6 +718,7 @@ const updateSubscribersAndSnapshots = async <
                 storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                category?: Category,
                 snapshotId?: string | null,
                 snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

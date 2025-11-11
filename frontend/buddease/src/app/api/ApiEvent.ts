@@ -1,10 +1,11 @@
+import { NotificationTypeEnum } from '@/state/context/NotificationContext';
 // EventApi.ts
 import headersConfig from '@/api/headers/HeadersConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { addLog } from '@/app/state/redux/slices/LogSlice';
 import { ReassignEventResponse } from '@/app/state/stores/AssignEventStore';
 import { AxiosError } from 'axios';

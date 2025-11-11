@@ -1,39 +1,37 @@
 // PropTypes.tsx
 import {
-  NotificationType
-} from "@/app/context/NotificationContext";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes'
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
+    BaseDataEntity,
+    BaseDataRoot,
+    DefaultExcludedFields,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
 import TextType from "@/app/documents/TextType";
+import { Attachment, FileType } from "@/app/documents/attachment/Attachment";
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { MessageType } from "@/app/generators/MessaageType";
 import { DataType } from "@/app/models/CommonData";
 import { LogData } from "@/app/models/LogData";
 import {
-  CalendarStatus,
-  ChatType,
-  CustomNotificationType,
-  MessageNotificationStatusType,
-  PriorityTypeEnum,
-  StatusType,
-  TeamStatus
+    CalendarStatus,
+    ChatType,
+    CustomNotificationType,
+    MessageNotificationStatusType,
+    PriorityTypeEnum,
+    StatusType,
+    TeamStatus
 } from "@/app/models/data/StatusType";
-import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import React from "react";
-import { FileType } from '@/app/documents/attachment/Attachment'
 import {
-  ProgressBarAnimationType,
-  ProgressBarProps,
-  ProgressPhase,
+    ProgressBarAnimationType,
+    ProgressBarProps,
+    ProgressPhase,
 } from "@/app/models/tracker/ProgressBar";
+import {
+    NotificationType
+} from '@/app/state/context/NotificationContext';
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import React from "react";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
 type NotificationCategory = "general" | "urgent" | "important";
@@ -166,11 +164,11 @@ const progressBarProps: ProgressBarProps = {
 
 export { chatCardProps, notificationProps, progressBarProps };
 export type {
-  AllTypes,
-  BaseProps,
-  ChatCardProps,
-  NotificationProps,
-  ProgressProps,
-  TextType
+    AllTypes,
+    BaseProps,
+    ChatCardProps,
+    NotificationProps,
+    ProgressProps,
+    TextType
 };
 

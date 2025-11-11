@@ -1,16 +1,16 @@
 // DetailsListStore.ts
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/context/NotificationContext";
+import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
-import { Team } from "@/app/components/teams/Team";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import {
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
+} from '@/app/state/context/NotificationContext';
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 
@@ -19,22 +19,22 @@ import { DocumentStatus } from "@/app/components/documents/types";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DataDetails } from '@/app/models/data/Data';
 import {
-  DataStatus,
-  MeetingStatus,
-  PriorityTypeEnum,
-  ProductStatus,
-  StatusType,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
-  SecurityStatus
+    DataStatus,
+    MeetingStatus,
+    PriorityTypeEnum,
+    ProductStatus,
+    SecurityStatus,
+    StatusType,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus
 } from "@/app/models/data/StatusType";
+import { Member } from "@/app/models/members/Member";
 import { Project } from "@/app/models/projects/Project";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
-import { Member } from "@/app/models/members/Member";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-import { data, SnapshotConfig, SnapshotDataType, TagsRecord } from "@/app/snapshots";
+import { data, SnapshotConfig, SnapshotDataType } from "@/app/snapshots";
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 
 import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
@@ -42,7 +42,6 @@ import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
-import { AllTypes } from "@/app/typings/PropTypes";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
 
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

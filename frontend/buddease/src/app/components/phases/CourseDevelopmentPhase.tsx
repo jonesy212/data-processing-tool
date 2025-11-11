@@ -1,7 +1,7 @@
 // CourseDevelopmentPhase.tsx
 import { useNotification } from '@/app/context/NotificationContext';
-import { useAuth } from '@/context/AuthContext';
 import generateTimeBasedCode from '@/models/realtime/TimeBasedCodeGenerator';
+import { useAuth } from '@/state/context/AuthContext';
 import React, { useState } from 'react';
 
 // Import sub-phase components as needed

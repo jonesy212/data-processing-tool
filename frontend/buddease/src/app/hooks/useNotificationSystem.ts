@@ -1,23 +1,21 @@
 // useNotificationSystem.ts
 
-import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { NotificationType } from '@/app/context/NotificationContext';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 
-import { Style }  from '@/app/documents/DocumentOptions'
-import { LogData } from "@/app/models/LogData";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { Style } from '@/app/documents/DocumentOptions';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { Data } from '@/app/models/data/Data';
 import { displayToast, showErrorMessage, showToast } from '@/app/models/display/ShowToast';
+import { LogData } from "@/app/models/LogData";
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
-import { NotificationOptions } from '@/context/NotificationContext';
+import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { NotificationOptions } from '@/state/context/NotificationContext';
 import { useCallback, useMemo, useRef } from 'react';
-import { Data } from '@/app/models/data/Data'
-import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice'
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 export interface NotificationData<
   T extends BaseDataEntity = BaseDataEntity,

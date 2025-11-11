@@ -4,12 +4,10 @@ import internalApiService from "@/app/api/ApiClient";
 import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
-import { Version } from '@/app/versions/Version';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { notificationStore } from '@/app/features/support/NotificationProvider';
+import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { addLog } from '@/app/state/redux/slices/LogSlice';
 import { useDataStore } from '@/app/state/stores/DataStore';
 import { YourResponseType } from '@/app/typings/responseTypes';
@@ -384,7 +382,5 @@ export default dataApiService;
 
 // Legacy exports for backward compatibility
 export {
-  dataApiService,
-  apiNotificationMessages,
-  handleDataApiErrorAndNotify
+    apiNotificationMessages, dataApiService, handleDataApiErrorAndNotify
 };

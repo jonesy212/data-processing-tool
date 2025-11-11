@@ -1,11 +1,11 @@
 // ApiAnalysisService.tsx
-import { NotificationType } from "@/app/context/NotificationContext";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { AxiosError, AxiosResponse } from "axios";
 
+import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { handleApiError } from "@/app/api/ApiLogs";
 
 
 const ANALYSIS_API_URL = endpoints.analysis;

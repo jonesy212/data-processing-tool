@@ -1,5 +1,4 @@
 // SnapshotSubscriberManagement.ts
-import { NotificationType } from '@/app/context/NotificationContext';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition } from "@/app/models/data/StatusType";
@@ -7,6 +6,7 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { EventManagement } from '@/app/snapshots/SnapshotEvents';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';

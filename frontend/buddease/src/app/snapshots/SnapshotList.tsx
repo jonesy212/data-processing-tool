@@ -3,9 +3,9 @@ import { Label } from "@/app/branding/BrandingSettings";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { ChatRoom } from "@/app/communications/ChatRoom";
 import { Sender } from "@/app/communications/CommunicationPage";
-import { NotificationType } from '@/app/context/NotificationContext';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -17,7 +17,7 @@ import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { User } from "@/app/users/User";
-import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
+import { createMessage, MessageProps } from "@/utils/web3/createMessage";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 

@@ -1,20 +1,19 @@
 // configData.ts
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
-import Logger from "@/app/libraries/logging/Logger";
-import { AppVersion } from "@/app/versions/AppVersion";
-import { Version } from "@/app/versions/Version";
-import { database } from "@/app/generators/GenerateDatabase";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import ApiConfig from "@/app/components/configs/ApiConfigComponent";
-import dataVersions from "@/app/configs/DataVersionsConfig";
 import LazyLoadScriptConfig from '@/app/config/LazyLoadScriptConfig';
 import { userPreferences } from "@/app/config/UserPreferences";
 import userSettings from "@/app/config/UserSettings";
-import BackendStructure from "@/app/server/database/BackendStructure";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
+import dataVersions from "@/app/configs/DataVersionsConfig";
+import { database } from "@/app/generators/GenerateDatabase";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import Logger from "@/app/libraries/logging/Logger";
+import BackendStructure from "@/app/server/database/BackendStructure";
+import { AppVersion } from "@/app/versions/AppVersion";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import appDetailsConfig from '@/config/endpoints/appDetailsConfig';
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 
 
 

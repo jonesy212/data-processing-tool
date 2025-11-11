@@ -2,7 +2,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 
 const API_BASE_URL = endpoints.generators.generateTransferToken
 const { notify } = useNotification();

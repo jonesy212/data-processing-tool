@@ -1,21 +1,25 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Snapshot, SnapshotConfig } from '@/app/snapshots/Snapshot';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
-import { internalCache } from '@/app/utils/cache/InternalCache';
+import { internalCache } from '@/utils/cache/InternalCache';
 import { deepEqual } from 'assert';
+import { Subscription } from 'react-redux';
 
 export const createBasicSnapshot = <
   T extends BaseDataEntity,

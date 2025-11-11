@@ -3,21 +3,21 @@ import { SnapshotActions } from "@/app/actions/SnapshotActions";
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
 import addSnapshot from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
-import { useNotification } from '@/app/context/NotificationContext';
 import useSubscription from "@/app/hooks/useSubscription";
 import { SnapshotLogger } from "@/app/libraries/logging/Logger";
 import { BaseData } from "@/app/models/data/Data";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import {
-  addToSnapshotList,
-  category,
-} from "@/app/utils/snapshotUtils";
+    addToSnapshotList,
+    category,
+} from "@/utils/snapshotUtils";
 import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
-} from "@/app/utils/web3/applicationUtils";
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
+} from "@/utils/web3/applicationUtils";
 
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -100,11 +100,11 @@ const payload: Partial<
 };
 
 export type {
-  CreateSnapshotsPayload,
-  CreateSnapshotStoresPayload,
-  ExtendedBaseDataPayload,
-  Payload,
-  UpdateSnapshotPayload
+    CreateSnapshotsPayload,
+    CreateSnapshotStoresPayload,
+    ExtendedBaseDataPayload,
+    Payload,
+    UpdateSnapshotPayload
 };
 
   export { payload };

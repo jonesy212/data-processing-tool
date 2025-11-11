@@ -1,9 +1,9 @@
 import { ExtendedUser, User } from '@/app/components/users/User';
 import userSettings from '@/app/config/UserSettings';
-import { NotificationType } from "@/app/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import { ActivityStatus } from '@/app/pages/profile/Profile';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { DataSharingPreferences } from '@/settings/PrivacySettings';
 import UserRoles from '@/UserRoles';
 

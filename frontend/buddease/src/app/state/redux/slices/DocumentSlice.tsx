@@ -2,30 +2,6 @@
 import { fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ClientInformation } from '@/app/client/ClientInformation';
 import { DocumentStatus } from "@/app/components/documents/types";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/context/NotificationContext";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import DocumentPermissions from "@/app/documents/DocumentPermissions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import DocumentBuilder, {
-  DocumentData, WritableTodoSubtasks
-} from "@/app/documents/editing/DocumentBuilder";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import useDataExport from "@/app/hooks/dataHooks/useDataExport";
-import { DocumentSize } from "@/app/models/data/StatusType";
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import { performSearch } from "@/app/pages/searches/SearchComponent";
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { Document } from "@/app/state/stores/DocumentStore";
-import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
-import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
-import { Version, version } from "@/app/versions/Version";
-import { VersionData } from "@/app/versions/VersionData";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -33,8 +9,32 @@ import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
 import { AppThunk } from "@/app/configs/appThunk";
+import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import DocumentPermissions from "@/app/documents/DocumentPermissions";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import DocumentBuilder, {
+    DocumentData, WritableTodoSubtasks
+} from "@/app/documents/editing/DocumentBuilder";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import useDataExport from "@/app/hooks/dataHooks/useDataExport";
+import { DocumentSize } from "@/app/models/data/StatusType";
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { performSearch } from "@/app/pages/searches/SearchComponent";
 import { backend, backendStructure } from '@/app/server/database/BackendStructure';
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from '@/app/state/context/NotificationContext';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { Document } from "@/app/state/stores/DocumentStore";
+import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
+import { Version, version } from "@/app/versions/Version";
+import { VersionData } from "@/app/versions/VersionData";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { data } from '@tensorflow/tfjs';
 

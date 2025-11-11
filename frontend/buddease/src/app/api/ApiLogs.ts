@@ -1,11 +1,11 @@
 //Apilogs.ts
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import {
     NotificationTypeEnum,
     useNotification
-} from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+} from '@/app/state/context/NotificationContext';
 import { addLog } from "@/app/state/redux/slices/LogSlice";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";

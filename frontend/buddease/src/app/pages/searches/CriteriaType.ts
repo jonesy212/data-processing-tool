@@ -1,19 +1,19 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { FileTypeEnum } from "@/app/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
-import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import { MessageType } from "@/app/generators/MessaageType";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from '@/app/models/data/StatusType';
+import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { NotificationType } from "@/context/NotificationContext";
+import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
+import { NotificationType } from "@/state/context/NotificationContext";
 
 export type PriorityValue = string | PriorityTypeEnum | null | undefined;
 // -------------------
@@ -110,4 +110,4 @@ function hasCriteriaProperties(snapshot: any): snapshot is FilterState {
   }
   
   export { hasCriteriaProperties };
-export type { ValidPriority }
+export type { ValidPriority };

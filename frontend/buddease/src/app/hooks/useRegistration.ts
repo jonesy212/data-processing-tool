@@ -1,7 +1,7 @@
 // useRegistration.ts
 // app/features/registration/hooks/useRegistration.ts
+import { useNotification } from '@/app/state/contexts/NotificationContext';
 import { useState } from 'react';
-import { useNotification } from '@/app/contexts/NotificationContext';
 
 export const useRegistration = () => {
   const [isLoading, setIsLoading] = useState(false);

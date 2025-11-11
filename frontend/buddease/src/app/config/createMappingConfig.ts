@@ -1,5 +1,11 @@
+import { CommonData } from '@/app/models/CommonData';
+import { ParsedData } from '@/app/dataIntegration/parseData';
 // createMappingConfig.ts
+import { DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { SupportedData } from '@/app/models/CommonData';
 import { MappingConfig } from "@/app/config/MappingConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const createMappingConfig = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,

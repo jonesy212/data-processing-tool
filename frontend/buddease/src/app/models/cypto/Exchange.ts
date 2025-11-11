@@ -1,3 +1,4 @@
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 // Exchange.ts
 
 import { Attachment } from "@/app/documents/attachment/Attachment";

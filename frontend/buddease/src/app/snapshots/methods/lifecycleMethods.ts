@@ -3,7 +3,7 @@
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from '@/app/models/content/AddContent';
-import { NotificationType } from "@/app/context/NotificationContext";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { T } from '@/app/models/data/dataStoreMethods';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
@@ -18,17 +18,201 @@ import type {
   SnapshotStoreProps,
   SnapshotUnion,
   Subscriber,
-  Subscription,
 } from "@/app/types";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { isSnapshot } from '@/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { convertToSnapshotUnion } from "@/app/snapshots/ConvertSnapshotUnion";
 import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
 
 export const LifecycleMethods = {
+
+
+
+    initSnapshot(
+      snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+      snapshotId: string,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      category?: Category,    categoryProperties: CategoryProperties | undefined,
+      snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      callback: (snapshotStore: SnapshotStore<any, any>) => void
+    ): void {
+      this.handleDelegate(
+        (delegate) => delegate.initSnapshot.bind(delegate),
+        snapshot,
+        snapshotId,
+        snapshotData,
+        category,
+        snapshotConfig,
+        callback
+      );
+    },
+  
+
+/**
+ * Deletes a snapshot from the store with proper type safety
+ * 
+ * @template T - Base data type
+ * @template K - Extended data type (defaults to T)
+ * @template Meta - Metadata type
+ * @template ExcludedFields - Fields to exclude
+ * @param {string} snapshotId - ID of snapshot to delete
+ * @param {boolean} [permanent=false] - Whether to permanently delete
+ * @returns {Promise<boolean>} - True if deletion was successful
+ */
+  deleteSnapshot(
+    snapshotId: string,
+    permanent: boolean = false
+  ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Validate input
+        if (!snapshotId) {
+          throw new Error('Snapshot ID is required');
+        }
+
+        // Find the snapshot in storage
+        const snapshot = this.snapshots.get(snapshotId);
+        if (!snapshot) {
+          resolve(false); // Not found = considered successful
+          return;
+        }
+
+        // Handle deletion based on type
+        if (permanent) {
+          // Permanent deletion
+          this.snapshots.delete(snapshotId);
+          this.deletedSnapshots.delete(snapshotId); // Remove from deleted set
+          
+          // Notify subscribers
+          this.notifySubscribers({
+            type: 'delete',
+            snapshotId,
+            permanent: true
+          });
+
+          resolve(true);
+        } else {
+          // Soft deletion
+          snapshot.deleted = true;
+          snapshot.updatedAt = new Date();
+          this.deletedSnapshots.add(snapshotId);
+
+          // Mark versions as deleted
+          if (snapshot.versions) {
+            snapshot.versions.forEach(version => {
+              version.deleted = true;
+            });
+          }
+
+          // Notify subscribers
+          this.notifySubscribers({
+            type: 'delete',
+            snapshotId,
+            permanent: false
+          });
+
+          resolve(true);
+        }
+      } catch (error) {
+        console.error(`Error deleting snapshot ${snapshotId}:`, error);
+        reject(error);
+      }
+    });
+  }
+
+
+
+
+  createInitSnapshot(
+    id: string,
+    initialData: T,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category: symbol | string | Category | undefined
+  ): Promise<SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (!snapshotData) {
+          return reject(new Error("snapshotData is null or undefined"));
+        }
+
+        let data: Data;
+        if ("data" in snapshotData && snapshotData.data) {
+          data = snapshotData.data;
+        } else if (snapshotData.data && "data" in snapshotData.data) {
+          data = snapshotData.data.data;
+        } else {
+          return reject(new Error("snapshotData does not have a valid 'data' property"));
+        }
+
+        id =
+          typeof data.id === "string"
+            ? data.id
+            : String(
+                UniqueIDGenerator.generateID(
+                  "SNAP",
+                  "defaultID",
+                  NotificationTypeEnum.GeneratedID
+                )
+              );
+
+        const snapshot: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          id,
+          data,
+          timestamp: snapshotData.timestamp || new Date(),
+          category: this.category,
+          topic: this.topic,
+          initializedState: {},
+          criteria: {}, // Example placeholder for search criteria
+          unsubscribe: function () {
+            throw new Error("Function not implemented.");
+          },
+          fetchSnapshot: async () => {
+            throw new Error("Function not implemented.");
+          },
+          handleSnapshot: async () => {
+            throw new Error("Function not implemented.");
+          },
+          events: undefined,
+          meta: {},
+        };
+
+        const storeId = snapshotApi.getSnapshotStoreId(String(this.snapshotId));
+        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId);
+
+        this.snapshots.push(snapshot);
+
+        if (this.delegate && this.delegate.length > 0) {
+          for (const delegateConfig of this.delegate) {
+            if (
+              delegateConfig &&
+              typeof delegateConfig.createSnapshotSuccess === "function"
+            ) {
+              await delegateConfig.createSnapshotSuccess(
+                id,
+                snapshotManager,
+                snapshot,
+                initialData
+              );
+              return resolve(snapshot); // Correctly resolve the promise with the snapshot
+            }
+          }
+          return reject(new Error("No valid delegate found for createSnapshotFailure"));
+        } else {
+          return reject(new Error("Delegate is undefined or empty"));
+        }
+      } catch (error) {
+        reject(error); // Handle unexpected errors
+      }
+    });
+  },
+
+
+
+
+
 
   // New lifecycle-specific props/methods
   set: function <

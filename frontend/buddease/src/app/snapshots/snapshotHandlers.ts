@@ -27,7 +27,7 @@ import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import {
   NotificationTypeEnum,
   useNotification
-} from "@/app/context/NotificationContext";
+} from "@/app/state/context/NotificationContext";
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
@@ -42,7 +42,7 @@ import useSnapshotSlice from '@/app/state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
-import { addToSnapshotList, generateSnapshotId } from "@/app/utils/snapshotUtils";
+import { addToSnapshotList, generateSnapshotId } from "@/utils/snapshotUtils";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
@@ -50,7 +50,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { T } from '@/app/models/data/dataStoreMethods';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { snapshotCache } from '@/app/utils/cache/InternalCache';
+import { snapshotCache } from '@/utils/cache/InternalCache';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Payload } from '@/app/server/database/Payload';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";

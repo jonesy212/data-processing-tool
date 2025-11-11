@@ -46,7 +46,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const { showNotification } = useWebNotifications();

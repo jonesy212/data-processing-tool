@@ -4,21 +4,21 @@ import {
 } from "@/app/branding/BrandingSettings";
 import Calendar from "@/app/components/calendar/Calendar";
 import { month } from "@/app/components/calendar/CalendarMonth";
-import Milestone, {
-  CalendarManagerState,
-} from "@/app/state/redux/slices/CalendarSlice";
 import year from "@/app/components/calendar/CalendarYear";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-import { ContentPost } from "@/app/typings/contentTypes";
-import { AttendancePredictionResult } from '@/app/models/data/CalendarEventAttendancePrediction'
 import { Task } from "@/app/components/models/tasks/Task";
+import { AttendancePredictionResult } from '@/app/models/data/CalendarEventAttendancePrediction';
 import { BaseData } from '@/app/models/data/Data';
 import { IntegrateComponentsProps } from '@/app/models/realtime/IntegrationLogic';
 import TaskManagementManager from "@/app/projects/TaskManagementPhase";
+import Milestone, {
+  CalendarManagerState,
+} from "@/app/state/redux/slices/CalendarSlice";
 import { selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
-import ControlPanel from "@/app/utils/ControlPanel";
+import { ContentPost } from "@/app/typings/contentTypes";
+import ControlPanel from "@/utils/ControlPanel";
 import React, { useEffect, useState } from "react";
 
 // Define a function to integrate existing components into the real-time visualization and control panel

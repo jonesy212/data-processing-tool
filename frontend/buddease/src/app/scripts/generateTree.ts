@@ -1,10 +1,25 @@
-// generateTree.js - Complete Enhanced Version (ESM)
+// generateTree.ts - Complete Enhanced Version (ESM)
 
+import { AnalysisReport } from '@/app/documents/Report';
+import ApiMethod from '@/app/generators/ApiCodeGenerator';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // === PROJECT TREE ANALYZER CLASS ===
 export class ProjectTreeAnalyzer {
+  private analysisCache: ProjectStructure | null = null;
+  rootPath: string;
+  fileCache: Map<string, string>;
+  interfaceRegistry: Map<string, any>;
+  componentRegistry: Map<string, any>;
+  apiRegistry: Map<string, any>;
+
   constructor(rootPath = '.') {
     this.rootPath = rootPath;
     this.fileCache = new Map();
@@ -13,18 +28,40 @@ export class ProjectTreeAnalyzer {
     this.apiRegistry = new Map();
   }
 
-  async analyzeProjectTree() {
+  async analyzeProjectTree(): Promise<ProjectStructure> {
+    // If already analyzed, return cached result
+    if (this.analysisCache) {
+      console.log('🔍 Returning cached project analysis...');
+      return this.analysisCache;
+    }
+    
     console.log('🔍 Analyzing project structure...');
     await this.traverseDirectory(this.rootPath);
-    return {
+    
+    const result = {
       interfaces: Array.from(this.interfaceRegistry.entries()),
       components: Array.from(this.componentRegistry.entries()),
       apis: Array.from(this.apiRegistry.entries()),
       totalFiles: this.fileCache.size,
     };
+    
+    this.analysisCache = result;
+    return result;
   }
 
-  async traverseDirectory(dirPath, depth = 0) {
+  // Optional: method to clear cache if needed
+  clearCache() {
+    this.analysisCache = null;
+  }
+
+  getProjectStructure(): ProjectStructure {
+    if (!this.analysisCache) {
+      throw new Error('Project structure not analyzed yet. Call analyzeProjectTree() first.');
+    }
+    return this.analysisCache;
+  }
+
+  async traverseDirectory(dirPath: string, depth = 0): Promise<void> {
     try {
       const items = fs.readdirSync(dirPath);
       for (const item of items) {
@@ -40,11 +77,15 @@ export class ProjectTreeAnalyzer {
         }
       }
     } catch (error) {
-      console.warn(`⚠️ Could not read directory: ${dirPath}`, error.message);
+      if (error instanceof Error) {
+        console.warn(`⚠️ Could not read directory: ${dirPath}`, error.message);
+      } else {
+        console.warn(`⚠️ Could not read directory: ${dirPath}`, String(error));
+      }
     }
   }
 
-  async analyzeFile(filePath) {
+  async analyzeFile(filePath: string) {
     const ext = path.extname(filePath).toLowerCase();
     if (!['.ts', '.tsx', '.js', '.jsx', '.json'].includes(ext)) return;
 
@@ -57,11 +98,13 @@ export class ProjectTreeAnalyzer {
       if (filePath.includes('api') || filePath.includes('services')) this.extractApis(filePath, content);
 
     } catch (error) {
-      console.warn(`⚠️ Could not read file: ${filePath}`, error.message);
+      if (error instanceof Error) {
+        console.warn(`⚠️ Could not read file: ${filePath}`, error.message);
+      }
     }
   }
 
-  extractInterfaces(filePath, content) {
+  extractInterfaces(filePath: string, content: string) {
     const interfaceRegex = /(?:interface|type)\s+(\w+)\s*(?:extends\s+[^{]+)?\s*{([^}]+)}/g;
     const typeAliasRegex = /type\s+(\w+)\s*=\s*([^;]+);/g;
     let match;
@@ -78,7 +121,7 @@ export class ProjectTreeAnalyzer {
     }
   }
 
-  extractComponents(filePath, content) {
+  extractComponents(filePath: string, content: string) {
     const componentRegex = /(?:const|function)\s+(\w+)\s*(?:<[^>]*>)?\s*[=:]\s*(?:React\.)?(?:FC|FunctionComponent|Component)<([^>]+)>/g;
     const propsRegex = /interface\s+(\w+Props)\s*{([^}]+)}/g;
     let match;
@@ -95,26 +138,112 @@ export class ProjectTreeAnalyzer {
     }
   }
 
-  extractApis(filePath, content) {
-    const apiMethodRegex = /(?:async\s+)?(\w+)\s*\(\s*([^)]*)\s*\)\s*:\s*Promise<([^>]+)>/g;
-    const classMethodRegex = /(?:public|private|protected)?\s*(?:async\s+)?(\w+)\s*\(\s*([^)]*)\s*\)\s*:\s*([^{]+){/g;
-    let match;
-    const methods = [];
+  extractApis(filePath: string, content: string): void {
+    // Focus on meaningful API patterns and exclude internal/compiler names
+    const exportedFunctionRegex = /export\s+(?:async\s+)?(?:function\s+)([a-zA-Z_$][\w$]*)(?:\s*<\s*[^>]*\s*>)?\s*\(\s*([^)]*)\s*\)\s*(?::\s*([^{=>]+))?/g;
+    const exportedConstRegex = /export\s+const\s+([a-zA-Z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\(\s*([^)]*)\s*\)|(\w+))\s*(?::\s*([^{=>]+))?\s*=>/g;
+    const classMethodRegex = /(?:public|private|protected|readonly)?\s*(?:async\s+)?(\w+)\s*(?:\<\s*[^>]*\s*\>)?\s*\(\s*([^)]*)\s*\)\s*(?::\s*([^{]+))?\s*{/g;
+    
+    // Extended exclusion list for internal/compiler names and common JS methods
+    const excludedNames = new Set([
+      // Compiler/internal names
+      '__awaiter', '__generator', '__exportStar', '__createBinding', '__values', 
+      '__read', '__spread', '__spreadArrays', '__spreadArray', '__await', 
+      '__asyncGenerator', '__asyncDelegator', '__asyncValues', '__makeTemplateObject',
+      '__importStar', '__importDefault', '__classPrivateFieldGet', '__classPrivateFieldSet',
+      '__classPrivateFieldIn',
+      
+      // JavaScript built-in methods
+      'constructor', 'toString', 'valueOf', 'toLocaleString', 'hasOwnProperty',
+      'isPrototypeOf', 'propertyIsEnumerable', 
+      
+      // Common utility/helper names that aren't APIs
+      'adopt', 'fulfilled', 'rejected', 'step', 'verb', 'resolve', 'reject',
+      'then', 'catch', 'finally', 'Promise', 'setTimeout', 'setInterval',
+      
+      // Array methods
+      'map', 'filter', 'forEach', 'reduce', 'find', 'some', 'every', 'includes',
+      'indexOf', 'slice', 'splice', 'push', 'pop', 'shift', 'unshift',
+      
+      // Object methods
+      'keys', 'values', 'entries', 'assign', 'create', 'defineProperty',
+      
+      // Control flow
+      'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default', 'try',
+      'throw', 'return', 'break', 'continue', 'debugger'
+    ]);
 
-    while ((match = apiMethodRegex.exec(content)) !== null) {
+    let match;
+    const methods: ApiMethod[] = [];
+
+    // Helper to check if a method name is meaningful
+    const isMeaningfulMethod = (name: string): boolean => {
+      if (!name || excludedNames.has(name)) return false;
+      
+      // Exclude very short names (likely internal)
+      if (name.length < 3) return false;
+      
+      // Exclude names starting with underscore (typically private/internal)
+      if (name.startsWith('_')) return false;
+      
+      // Include names that suggest API actions
+      const apiPatterns = [/^get|set|fetch|create|update|delete|remove|add|find|search|list|handle/i];
+      return apiPatterns.some(pattern => pattern.test(name));
+    };
+
+    // Exported functions
+    while ((match = exportedFunctionRegex.exec(content)) !== null) {
       const [, methodName, params, returnType] = match;
-      methods.push({ name: methodName, params: params.trim(), returnType: returnType.trim(), type: 'api' });
+      if (isMeaningfulMethod(methodName)) {
+        methods.push({
+          name: methodName,
+          parameters: params ? [params.trim()] : [],
+          returnType: returnType?.trim() || 'any',
+          type: 'api',
+          isAsync: match[0].includes('async')
+        });
+      }
     }
 
+    // Exported const functions (arrow functions)
+    while ((match = exportedConstRegex.exec(content)) !== null) {
+      const [, methodName, arrowParams, singleParam, returnType] = match;
+      if (isMeaningfulMethod(methodName)) {
+        const params = arrowParams || singleParam || '';
+        methods.push({
+          name: methodName,
+          parameters: params ? [params.trim()] : [],
+          returnType: returnType?.trim() || 'any',
+          type: 'api',
+          isAsync: match[0].includes('async')
+        });
+      }
+    }
+
+    // Class methods - be more selective
     while ((match = classMethodRegex.exec(content)) !== null) {
       const [, methodName, params, returnType] = match;
-      methods.push({ name: methodName, params: params.trim(), returnType: returnType.trim(), type: 'service' });
+      if (isMeaningfulMethod(methodName)) {
+        methods.push({
+          name: methodName,
+          parameters: params ? [params.trim()] : [],
+          returnType: returnType?.trim() || 'any',
+          type: 'service',
+          isAsync: match[0].includes('async')
+        });
+      }
     }
 
-    if (methods.length > 0) this.apiRegistry.set(filePath, { file: filePath, methods, exports: this.extractExports(content) });
+    if (methods.length > 0) {
+      this.apiRegistry.set(filePath, {
+        file: filePath,
+        methods,
+        exports: this.extractExports(content)
+      });
+    }
   }
 
-  extractProperties(body) {
+  extractProperties(body: string) {
     const propRegex = /(\w+)(\?)?\s*:\s*([^;\n]+)/g;
     const properties = [];
     let match;
@@ -127,7 +256,7 @@ export class ProjectTreeAnalyzer {
     return properties;
   }
 
-  extractExports(content) {
+  extractExports(content: string) {
     const exportRegex = /export\s+(?:const|function|class|interface|type)\s+(\w+)/g;
     const exports = [];
     let match;
@@ -135,7 +264,7 @@ export class ProjectTreeAnalyzer {
     return exports;
   }
 
-  findRelevantFiles(userPrompt) {
+  findRelevantFiles(userPrompt: string) {
     const keywords = this.extractKeywords(userPrompt);
     const relevantFiles = new Map();
 
@@ -155,13 +284,13 @@ export class ProjectTreeAnalyzer {
       .slice(0, 10);
   }
 
-  extractKeywords(prompt) {
+  extractKeywords(prompt: string) {
     const techKeywords = ['component', 'interface', 'props', 'state', 'hook', 'api', 'service', 'model', 'type', 'enum', 'function', 'class'];
     const words = prompt.toLowerCase().split(/\s+/).filter(w => w.length > 3).concat(techKeywords);
     return [...new Set(words)];
   }
 
-  calculateRelevance(content, keywords) {
+  calculateRelevance(content: string, keywords: string[]) {
     const contentLower = content.toLowerCase();
     let score = 0;
     keywords.forEach(keyword => {
@@ -171,7 +300,7 @@ export class ProjectTreeAnalyzer {
     return score;
   }
 
-  async generateReport(userPrompt) {
+  async generateReport(userPrompt: string) {
     const analysis = await this.analyzeProjectTree(); // ✅ await here
     const relevantFiles = this.findRelevantFiles(userPrompt);
     return {
@@ -185,8 +314,7 @@ export class ProjectTreeAnalyzer {
     };
   }
 
-
-  suggestComponents(userPrompt) {
+  suggestComponents(userPrompt: string) {
     const suggestions = [];
     const keywords = this.extractKeywords(userPrompt);
     for (const [name, component] of this.componentRegistry) {
@@ -195,7 +323,7 @@ export class ProjectTreeAnalyzer {
     return suggestions;
   }
 
-  suggestInterfaces(userPrompt) {
+  suggestInterfaces(userPrompt: string) {
     const suggestions = [];
     const keywords = this.extractKeywords(userPrompt);
     for (const [name, interfaceInfo] of this.interfaceRegistry) {
@@ -204,52 +332,105 @@ export class ProjectTreeAnalyzer {
     return suggestions;
   }
 
-  suggestApis(userPrompt) {
+  suggestApis(userPrompt: string) {
     const suggestions = [];
     const keywords = this.extractKeywords(userPrompt);
+  
     for (const [filePath, apiInfo] of this.apiRegistry) {
-      const relevantMethods = apiInfo.methods.filter(method => keywords.some(k =>
-        method.name.toLowerCase().includes(k.toLowerCase()) ||
-        method.returnType.toLowerCase().includes(k.toLowerCase())
-      ));
-      if (relevantMethods.length > 0) suggestions.push({ file: filePath, methods: relevantMethods, exports: apiInfo.exports });
+      const relevantMethods = apiInfo.methods.filter((method: ApiMethod) =>
+        keywords.some(k =>
+          method.name.toLowerCase().includes(k.toLowerCase()) ||
+          method.returnType.toLowerCase().includes(k.toLowerCase()) ||
+          method.type.toLowerCase().includes(k.toLowerCase())
+        )
+      );
+    
+      // ✅ Added the missing logic to push to suggestions
+      if (relevantMethods.length > 0) {
+        suggestions.push({
+          file: filePath,
+          methods: relevantMethods,
+          exports: apiInfo.exports
+        });
+      }
     }
+  
     return suggestions;
   }
 }
 
 // === ORIGINAL TREE GENERATION ===
-async function generateProjectTree(dirPath = '.', prefix = '', depth = 0, maxDepth = 5) {
+async function generateProjectTree(
+  dirPath: string = '.', 
+  prefix: string = '', 
+  depth: number = 0, 
+  maxDepth: number = 5
+): Promise<string> {
   if (depth > maxDepth) return '';
-  const items = fs.readdirSync(dirPath).filter(item => !item.startsWith('.') && item !== 'node_modules' && item !== 'dist');
-  let tree = '';
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    const fullPath = path.join(dirPath, item);
-    const stat = fs.statSync(fullPath);
-    const connector = i === items.length - 1 ? '└── ' : '├── ';
-    const newPrefix = prefix + (i === items.length - 1 ? '    ' : '│   ');
-    tree += prefix + connector + item + '\n';
-    if (stat.isDirectory()) tree += await generateProjectTree(fullPath, newPrefix, depth + 1, maxDepth);
+  
+  try {
+    const items = fs.readdirSync(dirPath)
+      .filter(item => !item.startsWith('.') && item !== 'node_modules' && item !== 'dist')
+      .sort((a, b) => {
+        // Directories first, then files
+        const aPath = path.join(dirPath, a);
+        const bPath = path.join(dirPath, b);
+        const aIsDir = fs.statSync(aPath).isDirectory();
+        const bIsDir = fs.statSync(bPath).isDirectory();
+        
+        if (aIsDir && !bIsDir) return -1;
+        if (!aIsDir && bIsDir) return 1;
+        return a.localeCompare(b);
+      });
+
+    if (items.length === 0) return '';
+
+    let tree = '';
+    
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const fullPath = path.join(dirPath, item);
+      const stat = fs.statSync(fullPath);
+      
+      const isLast = i === items.length - 1;
+      const connector = isLast ? '└── ' : '├── ';
+      const currentPrefix = prefix + connector;
+      
+      tree += currentPrefix + item + '\n';
+      
+      if (stat.isDirectory()) {
+        const nextPrefix = prefix + (isLast ? '    ' : '│   ');
+        const subtree = await generateProjectTree(fullPath, nextPrefix, depth + 1, maxDepth);
+        tree += subtree;
+      }
+    }
+    
+    return tree;
+  } catch (error) {
+    console.warn(`⚠️ Could not read directory: ${dirPath}`, error);
+    return '';
   }
-  return tree;
 }
 
-function generateTextTree(tree) {
+function generateTextTree(tree: string): string {
   return `Project Tree\nGenerated: ${new Date().toISOString()}\n\n${tree}`;
 }
 
-function generateMarkdownTree(tree) {
+function generateMarkdownTree(tree: string): string {
   return `# Project Tree\n\n**Generated**: ${new Date().toISOString()}\n\n\`\`\`\n${tree}\n\`\`\``;
 }
 
 // --- mappers.ts config ---
-const mappersFile = path.resolve(__dirname, '../src/app/server/repository/mappers.ts');
+const mappersFile = path.resolve(__dirname, '../../server/repository/mappers.ts');
 
 async function updateMappers(relevantNames: string[]) {
-  const analyzer = new ProjectTreeAnalyzer(path.resolve(__dirname, '../src'));
+  const analyzer = new ProjectTreeAnalyzer(path.resolve(__dirname, '../../src'));
+  
   await analyzer.analyzeProjectTree();
-
+  
+  const projectStructure = analyzer.getProjectStructure();
+  
+  
   const relevantFiles = Array.from(analyzer.interfaceRegistry.values())
     .filter(item => relevantNames.includes(item.name));
 
@@ -300,7 +481,6 @@ async function generateAnalysisReportWithMappers(args: string[]) {
   }
 }
 
-
 // === MAIN FUNCTION ===
 export async function main() {
   const args = process.argv.slice(2);
@@ -315,7 +495,7 @@ export async function main() {
 }
 
 // === TREE OUTPUT ===
-async function generateTreeOutput(args) {
+async function generateTreeOutput(args: string[]) {
   const outputType = args[0] || 'text';
   const outputIndex = args.indexOf('--output');
   const outputPath = outputIndex !== -1 ? args[outputIndex + 1] : null;
@@ -347,7 +527,7 @@ async function generateTreeOutput(args) {
 }
 
 // === ANALYSIS OUTPUT ===
-async function generateAnalysisReport(args) {
+async function generateAnalysisReport(args: string[]) {
   const userPrompt = args[0];
   const outputIndex = args.indexOf('--output');
   const outputPath = outputIndex !== -1 ? args[outputIndex + 1] : null;
@@ -366,7 +546,7 @@ async function generateAnalysisReport(args) {
 }
 
 // === DISPLAY FUNCTIONS ===
-function displayReport(report) {
+function displayReport(report: AnalysisReport) {
   console.log('='.repeat(80));
   console.log('📊 PROJECT ANALYSIS REPORT');
   console.log('='.repeat(80));
@@ -377,7 +557,7 @@ function displayReport(report) {
   if (report.relevantFiles.length > 0) {
     console.log('🎯 RELEVANT FILES:');
     console.log('-'.repeat(40));
-    report.relevantFiles.forEach(([filePath, info], index) => {
+    report.relevantFiles.forEach(([filePath, info]: [string, any], index: number) => {
       console.log(`${index + 1}. ${filePath}`);
       console.log(`   Relevance Score: ${info.relevanceScore}`);
       console.log(`   Matched Keywords: ${info.matchedKeywords.join(', ')}`);
@@ -388,7 +568,7 @@ function displayReport(report) {
   if (report.suggestedComponents.length > 0) {
     console.log('⚛️  SUGGESTED COMPONENTS:');
     console.log('-'.repeat(40));
-    report.suggestedComponents.forEach((component, index) => {
+    report.suggestedComponents.forEach((component: any, index: number) => {
       console.log(`${index + 1}. ${component.name}`);
       console.log(`   File: ${component.file}`);
       console.log(`   Props Type: ${component.propsType}`);
@@ -400,12 +580,12 @@ function displayReport(report) {
   if (report.suggestedInterfaces.length > 0) {
     console.log('📐 SUGGESTED INTERFACES:');
     console.log('-'.repeat(40));
-    report.suggestedInterfaces.forEach((interfaceInfo, index) => {
+    report.suggestedInterfaces.forEach((interfaceInfo: any, index: number) => {
       console.log(`${index + 1}. ${interfaceInfo.name} (${interfaceInfo.type})`);
       console.log(`   File: ${interfaceInfo.file}`);
       if (interfaceInfo.properties) {
         console.log('   Properties:');
-        interfaceInfo.properties.forEach(prop => {
+        interfaceInfo.properties.forEach((prop: any) => {
           console.log(`     - ${prop.name}${prop.optional ? '?' : ''}: ${prop.type}`);
         });
       }
@@ -416,11 +596,11 @@ function displayReport(report) {
   if (report.suggestedApis.length > 0) {
     console.log('🔌 SUGGESTED APIs/SERVICES:');
     console.log('-'.repeat(40));
-    report.suggestedApis.forEach((api, index) => {
+    report.suggestedApis.forEach((api, index: number) => {
       console.log(`${index + 1}. ${api.file}`);
       console.log('   Methods:');
-      api.methods.forEach(method => {
-        console.log(`     - ${method.name}(${method.params}): ${method.returnType}`);
+      api.methods.forEach((method: ApiMethod) => { 
+        console.log(`     - ${method.name}(${method.parameters.join(', ')}): ${method.returnType}`);
       });
       console.log('');
     });
@@ -431,27 +611,36 @@ function displayReport(report) {
   suggestPotentialIntegrations(report);
 }
 
-function suggestPotentialIntegrations(report) {
+function suggestPotentialIntegrations(report: AnalysisReport) {
   const { userPrompt, projectStructure } = report;
   const integrations = [];
 
+  // Only filter when the user prompt matches
   if (userPrompt?.toLowerCase().includes('crypto') || userPrompt?.toLowerCase().includes('nft')) {
-    const cryptoFiles = Array.from(projectStructure.apis).filter(([file]) => file.toLowerCase().includes('crypto'));
+    const cryptoFiles = projectStructure.apis.filter((item: [string, any]) => 
+      item[0].toLowerCase().includes('crypto')
+    );
     if (cryptoFiles.length > 0) integrations.push('💰 Crypto/NFT Integration: Available crypto services detected');
   }
 
   if (userPrompt?.toLowerCase().includes('real-time') || userPrompt?.toLowerCase().includes('live')) {
-    const realtimeFiles = Array.from(projectStructure.apis).filter(([file]) => file.toLowerCase().includes('realtime'));
+    const realtimeFiles = projectStructure.apis.filter((item: [string, any]) => 
+      item[0].toLowerCase().includes('realtime')
+    );
     if (realtimeFiles.length > 0) integrations.push('⚡ Real-time Features: WebSocket and real-time APIs available');
   }
 
   if (userPrompt?.toLowerCase().includes('collaboration') || userPrompt?.toLowerCase().includes('team')) {
-    const collaborationFiles = Array.from(projectStructure.components).filter(([name]) => name.toLowerCase().includes('collaboration'));
+    const collaborationFiles = projectStructure.components.filter((item: [string, any]) => 
+      item[0].toLowerCase().includes('collaboration')
+    );
     if (collaborationFiles.length > 0) integrations.push('👥 Collaboration Tools: Team and collaboration components available');
   }
 
   if (userPrompt?.toLowerCase().includes('ai') || userPrompt?.toLowerCase().includes('machine learning')) {
-    const aiFiles = Array.from(projectStructure.apis).filter(([file]) => file.toLowerCase().includes('ai') || file.toLowerCase().includes('intelligence'));
+    const aiFiles = projectStructure.apis.filter((item: [string, any]) => 
+      item[0].toLowerCase().includes('ai') || item[0].toLowerCase().includes('intelligence')
+    );
     if (aiFiles.length > 0) integrations.push('🤖 AI/ML Capabilities: Intelligence and automation services available');
   }
 
@@ -467,63 +656,112 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   main().catch(console.error);
 }
 
+export { mappersFile };
 
-// #NOTE
+
+// === COMMANDS SECTION ===
+
+// #NOTE - TypeScript Commands (.ts file) - USING TSX
 // | **Output Type**   | **Command**                                              | **File Generated**    |
 // | ----------------- | -------------------------------------------------------- | --------------------- |
-// | 🧱 Text (default) | `node generateTree.js text`                               | `project-tree.txt`    |
-// | 📘 Markdown       | `node generateTree.js markdown`                           | `project-tree.md`     |
-// | 🧮 JSON           | `node generateTree.js json`                               | `project-tree.json`   |
-// | ✨ Custom Path     | `node generateTree.js text --output ./docs/my-tree.txt`    | `./docs/my-tree.txt`  |
-// | ✨ Custom Path     | `node generateTree.js markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
-// | ✨ Custom Path     | `node generateTree.js json --output ./docs/my-tree.json`   | `./docs/my-tree.json` |
+// | 🧱 Text (default) | `tsx src/app/scripts/generateTree.ts text`              | `project-tree.txt`    |
+// | 📘 Markdown       | `tsx src/app/scripts/generateTree.ts markdown`          | `project-tree.md`     |
+// | 🧮 JSON           | `tsx src/app/scripts/generateTree.ts json`              | `project-tree.json`   |
+// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
+// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
+// | ✨ Custom Path     | `tsx src/app/scripts/generateTree.ts json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
 
-
-// # 🔍 ANALYSIS MODE - New!
+// # 🔍 ANALYSIS MODE - TypeScript
 // # Basic analysis (console output only)
-// node generateTree.js "task management system with real-time collaboration"
+// tsx src/app/scripts/generateTree.ts "task management system with real-time collaboration"
 
 // # Analysis with file output
-// node generateTree.js "crypto trading dashboard" --output ./analysis/crypto-analysis.json
+// tsx src/app/scripts/generateTree.ts "crypto trading dashboard" --output ./analysis/crypto-analysis.json
 
 // # Analysis with custom path
-// node generateTree.js "content management system" --output ./docs/feature-analysis.json
+// tsx src/app/scripts/generateTree.ts "content management system" --output ./docs/feature-analysis.json
 
-// # 🎯 EXISTING TREE GENERATION - Unchanged!
-// node generateTree.js text
-// node generateTree.js markdown --output ./docs/structure.md
-// node generateTree.js json --output ./docs/tree.json
+// # 🎯 ROADMAP GENERATION - TypeScript (NEW!)
+// | **Command**                                              | **Files Generated**                                       |
+// | -------------------------------------------------------- | --------------------------------------------------------- |
+// | `tsx src/app/scripts/generateRoadmaps.ts "project name"` | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
+// | `tsx src/app/scripts/generateRoadmaps.ts "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
+// | `tsx src/app/scripts/generateRoadmaps.ts "task app"`     | Complete project roadmap with package recommendations     |
 
+// # 🎯 EXISTING TREE GENERATION - TypeScript!
+// tsx src/app/scripts/generateTree.ts text
+// tsx src/app/scripts/generateTree.ts markdown --output ./docs/structure.md
+// tsx src/app/scripts/generateTree.ts json --output ./docs/tree.json
+
+// # 🏗 BUILD & RUN COMMANDS (After compilation)
+// | **Output Type**   | **Command**                                              | **File Generated**    |
+// | ----------------- | -------------------------------------------------------- | --------------------- |
+// | 🧱 Text (default) | `node dist/app/scripts/generateTree.js text`            | `project-tree.txt`    |
+// | 📘 Markdown       | `node dist/app/scripts/generateTree.js markdown`        | `project-tree.md`     |
+// | 🧮 JSON           | `node dist/app/scripts/generateTree.js json`            | `project-tree.json`   |
+// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js text --output ./docs/my-tree.txt`  | `./docs/my-tree.txt`  |
+// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js markdown --output ./docs/my-tree.md` | `./docs/my-tree.md`   |
+// | ✨ Custom Path     | `node dist/app/scripts/generateTree.js json --output ./docs/my-tree.json` | `./docs/my-tree.json` |
+
+// # 🔍 ANALYSIS MODE - Compiled JavaScript
+// # Basic analysis (console output only)
+// node dist/app/scripts/generateTree.js "task management system with real-time collaboration"
+
+// # Analysis with file output
+// node dist/app/scripts/generateTree.js "crypto trading dashboard" --output ./analysis/crypto-analysis.json
+
+// # 🗺️ ROADMAP GENERATION - Compiled JavaScript (NEW!)
+// | **Command**                                                   | **Files Generated**                                       |
+// | ------------------------------------------------------------- | --------------------------------------------------------- |
+// | `node dist/app/scripts/generateRoadmaps.js "project name"`    | `dev-roadmap.md`, `nontech-roadmap.md`, `frontend-packages.md`, `backend-packages.md` |
+// | `node dist/app/scripts/generateRoadmaps.js "crypto dashboard" --output ./docs` | All 4 files in `./docs/` directory |
+// | `node dist/app/scripts/generateRoadmaps.js "ecommerce app"`   | Complete roadmap with package setup guides                |
+
+// # PNPM SCRIPTS (What you actually use)
+// | **Script**        | **Command**                    | **Purpose**           |
+// | ----------------- | ------------------------------ | --------------------- |
+// | generate:tree     | `pnpm run generate:tree`       | Default tree gen      |
+// | generate:tree:text| `pnpm run generate:tree:text`  | Text format           |
+// | generate:tree:md  | `pnpm run generate:tree:markdown` | Markdown format     |
+// | generate:tree:json| `pnpm run generate:tree:json`  | JSON format           |
+// | generate:analysis | `pnpm run generate:analysis`   | Full analysis         |
+// | generate:roadmaps | `pnpm run generate:roadmaps`   | NEW! Generate complete roadmaps with package recommendations |
+// | generate:roadmaps:custom | `pnpm run generate:roadmaps -- "project name"` | Custom project roadmaps |
+
+// # NEW ROADMAP GENERATION EXAMPLES
+// # Generate complete project planning:
+// pnpm run generate:roadmaps -- "crypto trading platform with real-time data"
+// pnpm run generate:roadmaps -- "social media app with video uploads"
+// pnpm run generate:roadmaps -- "ecommerce store with inventory management"
+
+// # Output structure:
+// 📁 roadmaps/ (or specified --output directory)
+// ├── 🧩 dev-roadmap.md          (Technical implementation plan)
+// ├── 📊 nontech-roadmap.md      (Product overview for stakeholders)
+// ├── 🎨 frontend-packages.md    (Frontend dependencies & setup guide) - NEW!
+// └── ⚙️ backend-packages.md     (Backend dependencies & setup guide) - NEW!
+  
 // #TODO – Automate Project Tree / File Changes on Git Push
 
-
 // ❌ Remaining TODO Items
-// Category	Outstanding Task	Notes
-// UX Wizard	Build interactive scenario mode	In progress (design done)
-// Exit UX	Add quit hook at startup	Implement code
-// Docs Automation	Auto update tree on Git commit	Pending
-// File Diffing	Track renamed/moved/deleted files	Pending
-// Storage	Create project_docs/ folder	Standardize output
-// Git Hook	pre-push or post-commit hook	TBD implementation
-// Mode Decision	Full tree vs change log	We need config flag
-// Format Sync	Ensure output consistency	Table + logs
-// CI/CD	Optional pipeline automation	Later stage
-// Suggested next steps (order)
+// | Category | Outstanding Task | Notes |
+// |----------|------------------|-------|
+// | UX Wizard | Build interactive scenario mode | In progress (design done) |
+// | Exit UX | Add quit hook at startup | Implement code |
+// | Docs Automation | Auto update tree on Git commit | Pending |
+// | File Diffing | Track renamed/moved/deleted files | Pending |
+// | Storage | Create project_docs/ folder | Standardize output |
+// | Git Hook | pre-push or post-commit hook | TBD implementation |
+// | Mode Decision | Full tree vs change log | We need config flag |
+// | Format Sync | Ensure output consistency | Table + logs |
+// | CI/CD | Optional pipeline automation | Later stage |
 
 // ✅ Finalize interactive CLI user flow (we just outlined)
-
 // 🛠 Implement quit handler + intro walk-through
-
 // 📁 Create /project_docs convention folder
-
 // 🔗 Add Git hook:
-
-// Minimal version = local pre-push script
-
-// Full version = CI bot commit
-
+//   Minimal version = local pre-push script
+//   Full version = CI bot commit
 // 🌲 Add incremental change detection
-
 // 🧪 QA test on real repo
-
 // 📦 Add docs & README section

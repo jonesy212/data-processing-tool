@@ -27,11 +27,11 @@ import { DataStore } from "@/app/state/stores/DataStore";
 import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { generateSnapshotId } from "@/app/utils/snapshotUtils";
-import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/app/utils/trading/TradingUtils";
-import { portfolioUpdates, triggerIncentives } from "@/app/utils/web3/applicationUtils";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { NotificationType } from "@/context/NotificationContext";
+import { NotificationType } from "@/state/context/NotificationContext";
+import { generateSnapshotId } from "@/utils/snapshotUtils";
+import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
+import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
 import { Subscription } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
@@ -41,17 +41,16 @@ import { fetchData } from "@/app/api/ApiData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
-  AppEntity,
-  AppK,
-  AppMeta,
   AppAttachment,
+  AppEntity,
   AppExcludedFields,
   AppIncludedFields,
+  AppK,
+  AppMeta,
   AppParams,
   AppSnapshot,
   AppSnapshotsArray,
   AppSnapshotStoreConfig,
-
 } from '@/app/typings/entities/AppEntity';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 

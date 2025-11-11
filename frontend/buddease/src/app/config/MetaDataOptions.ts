@@ -3,7 +3,9 @@ import { StatusType } from '@/app/models/data/StatusType';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/calendar/ScheduledData';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Task } from '@/app/components/models/tasks/Task';
-import { taskMetadata } from '@/app/components/models/tasks/TaskMetadata';
+import { Data } from '@/app/models/data/Data';
+import { taskMetadata } from '@/app/models/data/TaskMetadata';
+import { Permission } from '@/app/permissions/Permission';
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -13,7 +15,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseEntityProperties } from "@/app/documents/RelatedProps";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { ChangeLogEntry } from '@/app/libraries/logging/ChangeLogEntry';
+import { ChangeLogEntry } from '@/app/logging/ChangeLogEntry';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { PhaseMeta } from '@/app/models/phases/Phase';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
@@ -34,7 +36,7 @@ import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIn
 import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
 import { FileMetadata } from '@/app/typings/file/fileTypes';
 import { User } from '@/app/users/User';
-import { category } from '@/app/utils/snapshotUtils';
+import { category } from '@/utils/snapshotUtils';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
@@ -100,9 +102,9 @@ interface VersionMetadata<
   timestamp?: string | number | Date;
   author?: string;
   description?: string;
-    tags?: TagsRecord<T> | string[]
+  tags?: TagsRecord<T> | string[]
   commitHash?: string;
-  date: string | Date
+  date: string | Date;
   // Extended version tracking
   latestVersion?: Pick<
     VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -156,7 +158,7 @@ interface ConfigMetadata<
 > {
   baseUrl?: string;
   customFields?: Record<string, any>;
-  config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
+  config?: SharedConfigType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   encryptedConfig?: string;
 }
 
@@ -204,7 +206,7 @@ interface BaseMetaDataOptions<
 > extends
   StatusMetadata,
   StructuralMetadata<T, K>,
-  CoreMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  CoreMetadata<T, K>,
   VersionMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   ConfigMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 }
@@ -277,7 +279,10 @@ interface TaskMetadata<
   subtasks?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
 }
 
-interface MediaMetadata extends BaseMetaDataOptions<T, K> {
+interface MediaMetadata<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+> extends BaseMetaDataOptions<T, K> {
   title?: string;
   artist?: string;
   album?: string;
@@ -546,6 +551,10 @@ function transformProjectToUnifiedMetadata<
       },
     },
     version: {
+
+      structureData, 
+      getVersionNumber, calculateHash, generateChecksum,
+      
       major: 1, minor: 0, patch: 0,
       id: 0,
       isActive: false,
@@ -635,7 +644,9 @@ function transformProjectToUnifiedMetadata<
         publishedAt: null,
         source: '',
         status: '',
-        version: (version instanceof VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) ? version : new VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+        version: (version instanceof VersionImpl) 
+          ? version 
+          : new VersionImpl({
           major: 1,
           minor: 0,
           patch: 0,
@@ -670,7 +681,9 @@ function transformProjectToUnifiedMetadata<
         metadata: {
           author: '',
           timestamp: undefined,
-          revisionNotes: undefined
+          revisionNotes: undefined,
+           area: '', 
+           metadataEntries: {}
         },
         releaseDate: '',
         major: 0,
@@ -743,6 +756,8 @@ const currentMeta: StructuredMetadata<AppEntity, AppK, AppMeta, AppAttachment, A
 // console.log(area);  // Output: "1920x1080"
 
 // const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>(area)
+const transformedMetadataEntries: Record<string, any> = {};
+const metadataEntries: Record<string, MetadataEntry<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>> = {};
 
 // Example media data
 const mediaData: UnifiedMetadata<MyDataType> = {
@@ -848,15 +863,16 @@ function createVideoMetadata<
   url: string,
   options?: Partial<Omit<VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "title" | "url">>
 ): VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+ 
   return {
     bitrate: options?.bitrate ?? 3000,
     codec: options?.codec ?? "H.264",
     colorSpace: options?.colorSpace ?? "sRGB",
-    baseData: options?.baseData ?? {},
+    baseData: options?.baseData ?? {} as Omit<BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>,
     metadata: options?.metadata ?? undefined,
     audioCodec: options?.audioCodec ?? "AAC",
     audioChannels: options?.audioChannels ?? 2,
-    meta: options?.meta ?? {},
+    meta: options?.meta ?? {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     audioSampleRate: options?.audioSampleRate ?? 44100,
     chapters: options?.chapters ?? [],
     thumbnailUrl: options?.thumbnailUrl ?? "",
@@ -897,9 +913,6 @@ function createVideoMetadata<
 }
 
 
-// Create metadata entries based on project metadata
-const transformedMetadataEntries: Record<string, any> = {};
-const metadataEntries: Record<string, MetadataEntry<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>> = {};
 
 for (const key in metadataEntries) {
   transformedMetadataEntries[key] = {
@@ -922,10 +935,10 @@ function createMediaMetadata(
     keywords: string[];
     version: string;
     isActive: boolean;
-    metadataEntries: Record<string, MetadataEntry<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>>;
-    config: Promise<SnapshotStoreConfig<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> | null>;
-  }
-): UnifiedMetadata<BaseMetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>["mediaMetadata"] {
+    metadataEntries: Record<string, MetadataEntry<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>>;
+    config: Promise<SnapshotStoreConfig<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> | null>;
+  } 
+): UnifiedMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>["mediaMetadata"] {
   const {
     id,
     createdBy,
@@ -994,7 +1007,11 @@ const dynamicMediaMetadata = createMediaMetadata(
 const task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = {
 
   progress: {
-    id, name, color, description,
+    id: '',
+    name: '',
+    color: '',
+    description: '',
+  
   },
   participants: [],
   uploadedAt: new Date(),
@@ -1015,7 +1032,6 @@ const task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields
   customFields: {},
 
   timestamp: new Date(),
-  initialState: {} as InitializedState<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
   category: "",
   meta: {} as StructuredMetadata<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
 

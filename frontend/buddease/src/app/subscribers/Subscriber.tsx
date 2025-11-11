@@ -1,7 +1,6 @@
 import { SubscriptionActions } from "@/app/actions/SubscriptionActions";
 import apiNotificationsService from "@/app/api/NotificationsService";
 import addSnapshot, * as snapshotApi from "@/app/api/SnapshotApi";
-import { SecurityStatus } from "@/app/models/data/StatusType";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -28,8 +27,11 @@ import {
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
-import { TriggerIncentivesParams } from "@/app/utils/web3/applicationUtils";
+import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "@/app/snapshots/SnapshotStorePublicMethods";
@@ -60,28 +62,25 @@ import {
   YourSpecificSnapshotType,
   convertMapToSnapshot
 } from "@/app/typings/YourSpecificSnapshotType";
+import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import {
+  SnapshotAttachment,
+  SnapshotEntity,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
+  SnapshotK,
+  SnapshotMeta
+} from '@/app/typings/entities/SnapshotEntity';
+import { SubscriberAttachment, SubscriberEntity, SubscriberExcludedFields, SubscriberIncludedFields, SubscriberK, SubscriberMeta } from '@/app/typings/entities/SubscriberEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseDatabaseService } from "@/config/DatabaseService";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
   NotificationType,
   NotificationTypeEnum,
-} from "@/context/NotificationContext";
-import { Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+} from "@/state/context/NotificationContext";
+import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
 import { config } from "process";
-import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
 import { AllStatus } from "../state/stores/DetailsListStore";
-import {
-  SnapshotEntity,
-  SnapshotK,
-  SnapshotMeta,
-  SnapshotAttachment,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields
-} from '@/app/typings/entities/SnapshotEntity';
-import { SubscriberEntity, SubscriberK, SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields } from '@/app/typings/entities/SubscriberEntity';
 
 type SnapshotStoreDelegate<
   T extends BaseDataEntity,

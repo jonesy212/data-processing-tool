@@ -1,4 +1,4 @@
-import { Attachment } from "@/app/features/support/SupportTicketComponent";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { ApiPagination } from '@/app/typings/apiTypes';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

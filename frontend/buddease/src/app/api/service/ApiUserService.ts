@@ -1,11 +1,9 @@
-import { CalendarActions } from '@/app/actions/CalendarEventActions';
 import { UserActions } from "@/app/actions/UserActions";
 import internalApiService from '@/app/api/ApiClient';
-import { getEndpointUrl, getConfiguredEndpoint } from '@/app/api/endpointConfigurations';
-import { fetchEventsRequest } from '@/app/calendar/CalendarEvent';
+import { getEndpointUrl } from '@/app/api/endpointConfigurations';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 import { observable, runInAction } from 'mobx';
 
 const handleSuccess = <T>(action: (payload: T) => void) => async (

@@ -1,3 +1,4 @@
+import { defaultasarchiveFile } from '@/app/api/ApiFiles';
 // Subtask.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
@@ -21,3 +22,5 @@ interface Subtask<
   tags?: Record<string, Tag<T>>; // Use your Tag type
   [key: string]: any; // Flexible for additional subtask properties
 }
+
+export default Subtask

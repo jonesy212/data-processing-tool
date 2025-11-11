@@ -1,35 +1,33 @@
 // snapshots/SnapshotActions.ts
-import { NotificationType } from '@/app/context/NotificationContext';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { Task } from "@/app/models/tasks/Task";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AppEntity } from "@/app/typings/entities/AppEntity";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshotsArray, TaskSnapshotWithCriteria, TaskSnapshotStore } from '@/app/typings/entities/TaskEntity';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskSnapshotsArray, TaskSnapshotStore, TaskSnapshotWithCriteria } from '@/app/typings/entities/TaskEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from "@/context/NotificationContext";
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "../snapshots/SnapshotConfig";
-import { SnapshotData } from "../snapshots/SnapshotData";
-import { SnapshotItem } from "../snapshots/SnapshotList";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
 const dispatch = useDispatch()
 

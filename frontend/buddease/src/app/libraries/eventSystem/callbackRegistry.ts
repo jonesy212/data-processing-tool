@@ -1,5 +1,5 @@
-import { EventHandler, EventFilter } from '@/types/eventTypes';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import { EventHandler, EventFilter } from '@/app/typings/eventHandlers/eventTypes';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 export interface RegisteredCallback<T = any> {
   id: string;
@@ -137,4 +137,29 @@ export class CallbackRegistry {
     }
     return this.callbackById.size;
   }
+
+  getCallbacksByStore(storeName: string): RegisteredCallback<any>[] {
+    const allCallbacks: RegisteredCallback<any>[] = [];
+    for (const callbacks of this.callbacks.values()) {
+      allCallbacks.push(...callbacks.filter(cb => cb.store === storeName));
+    }
+    return allCallbacks;
+  }
+
+  unregisterByStore(storeName: string): void {
+    for (const [eventType, callbacks] of this.callbacks.entries()) {
+      const filteredCallbacks = callbacks.filter(cb => cb.store !== storeName);
+      this.callbacks.set(eventType, filteredCallbacks);
+      
+      // Also remove from callbackById
+      callbacks
+        .filter(cb => cb.store === storeName)
+        .forEach(cb => this.callbackById.delete(cb.id));
+    }
+  }
 }
+
+
+
+// Create a global instance
+export const globalCallbackRegistry = new CallbackRegistry();

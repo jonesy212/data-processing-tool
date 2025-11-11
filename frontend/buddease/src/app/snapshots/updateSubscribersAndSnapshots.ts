@@ -9,7 +9,7 @@
 // import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 // import { BaseData } from '@/app/models/data/Data';
 // import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-// import { NotificationTypeEnum, NotificationType } from "@/context/NotificationContext";
+// import { NotificationTypeEnum, NotificationType } from "@/state/context/NotificationContext";
 // import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/app/utils/trading/TradingUtils";
 // import { userId } from "@/app/users/ApiUser";
 // import { triggerIncentives } from "@/app/utils/web3/applicationUtils";

@@ -4,7 +4,6 @@ interface AppFile {
   fileMetadata: FileMetadata;
 }
 
-
 interface FileMetadata {
   fileName: string;
   fileSize: number;

@@ -2,18 +2,16 @@
 import { VideoActions } from "@/app/actions/VideoActions";
 import internalApiService from '@/app/api/ApiClient';
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { VideoData } from "@/app/typings/videoTypes/Video";
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { VideoMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
+import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import useVideoStore from "@/app/state/stores/VideoStore";
-import { Video } from '@/app/typings/videoTypes/Video'
-import { VideoMetadata } from "@/app/config/StructuredMetadata";
+import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
+import { Video, VideoData } from "@/app/typings/videoTypes/Video";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const API_BASE_URL = endpoints.videos.list;
 

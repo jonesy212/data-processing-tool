@@ -12,7 +12,7 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { category } from "@/app/utils/snapshotUtils";
+import { category } from "@/utils/snapshotUtils";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";

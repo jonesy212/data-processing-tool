@@ -13,9 +13,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
-  BaseDataEntity
+    BaseDataEntity
 } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
   
 
 

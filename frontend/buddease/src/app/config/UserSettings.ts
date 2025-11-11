@@ -3,7 +3,6 @@ import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Team } from "@/app/components/teams/Team";
-import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -27,6 +26,7 @@ import { PrivacySettings, selectedSettings } from "@/app/settings/PrivacySetting
 import { TaskEntity } from '@/app/snapshots/SnapshotActoins';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { resetState } from "@/app/state/redux/slices/AppSlice";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";

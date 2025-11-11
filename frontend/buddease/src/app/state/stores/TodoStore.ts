@@ -1,7 +1,7 @@
 // TodoManagerStore.ts
-import { NotificationType } from "@/app/context/NotificationContext";
+import { NotificationType } from "@/app/state/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { generateSnapshotId } from '@/app/utils/snapshotUtils';
+import { generateSnapshotId } from '@/utils/snapshotUtils';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
@@ -17,7 +17,7 @@ import { todoService } from "@/app/todos/TodoService";
 import {
   NotificationTypeEnum,
   useNotification,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
 import { AllStatus } from '@/DetailsListStore';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";

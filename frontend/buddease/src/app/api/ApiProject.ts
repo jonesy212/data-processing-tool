@@ -1,6 +1,6 @@
 // ApiProject.ts
 import { handleApiError } from '@/app/api/ApiLogs';
-import axiosInstance from "@/app/api/csrfToken";
+import internalApiService from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
@@ -26,7 +26,7 @@ const API_BASE_URL = endpoints.projectOwner.base;
 export const ApiProject = observable({
   getProjectByIdAPI: async (projectId: string) => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
+      const response = await internalApiService.get(`${API_BASE_URL}/${projectId}`);
       return response.data;
     } catch (error) {
       handleApiError(
@@ -41,7 +41,7 @@ export const ApiProject = observable({
 
   fetchProjectByIdsAPI: async (projectIds: string[]) => {
     try {
-      const response = await axiosInstance.post(`${API_BASE_URL}/fetch`, {
+      const response = await internalApiService.post(`${API_BASE_URL}/fetch`, {
         projectIds,
       });
       return response.data;
@@ -58,7 +58,7 @@ export const ApiProject = observable({
 
   fetchProjectOwnerAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/owner/${projectId}`
       );
       return response.data;
@@ -70,7 +70,7 @@ export const ApiProject = observable({
 
   fetchProjectDetailsAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL}/${projectId}`);
+      const response = await internalApiService.get(`${API_BASE_URL}/${projectId}`);
       return response.data;
     } catch (error) {
       handleApiError(
@@ -83,7 +83,7 @@ export const ApiProject = observable({
 
   addProjectAPI: async (projectData: Project): Promise<any> => {
     try {
-      const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
+      const response = await internalApiService.post(`${API_BASE_URL}`, projectData);
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to add project");
@@ -96,7 +96,7 @@ export const ApiProject = observable({
     taskId: string
   ): Promise<any> => {
     try {
-      const response = await axiosInstance.post(
+      const response = await internalApiService.post(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}`
       );
       return response.data;
@@ -120,16 +120,37 @@ export const ApiProject = observable({
     ProjectIncludedFields>>
   ): Promise<any> => {
     try {
-      const response = await axiosInstance.put(
+      const response = await internalApiService.put(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}/assignee`,
         { assignedTo } // Update the request body to include assignedTo
-      );i
+      );
       return response.data;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to assign task to current user"
       );
+      throw error;
+    }
+  },
+
+  updateProjectAPI: async (
+    projectId: string,
+    updatedProjectData: Partial<Project<ProjectEntity,
+    ProjectK,
+    ProjectMeta,
+    ProjectAttachment,
+    ProjectExcludedFields,
+    ProjectIncludedFields>>
+  ): Promise<any> => {
+    try {
+      const response = await internalApiService.put(
+        `${API_BASE_URL}/${projectId}`,
+        updatedProjectData
+      );
+      return response.data;
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, "Failed to update project");
       throw error;
     }
   },
@@ -144,7 +165,7 @@ export const ApiProject = observable({
     ProjectIncludedFields>>
   ): Promise<any> => {
     try {
-      const response = await axiosInstance.put(
+      const response = await internalApiService.put(
         `${API_BASE_URL}/${projectId}`,
         updatedProjectData
       );
@@ -157,7 +178,7 @@ export const ApiProject = observable({
 
   createProjectAPI: async (projectData: Project): Promise<any> => {
     try {
-      const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
+      const response = await internalApiService.post(`${API_BASE_URL}`, projectData);
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to create project");
@@ -170,7 +191,7 @@ export const ApiProject = observable({
     updatedProjectData: Partial<Project>
   ): Promise<any> => {
     try {
-      const response = await axiosInstance.put(
+      const response = await internalApiService.put(
         `${API_BASE_URL}/${projectId}`,
         updatedProjectData
       );
@@ -186,7 +207,7 @@ export const ApiProject = observable({
 
   deleteProjectAPI: async (projectId: string): Promise<void> => {
     try {
-      await axiosInstance.delete(`${API_BASE_URL}/${projectId}`);
+      await internalApiService.delete(`${API_BASE_URL}/${projectId}`);
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete project");
       throw error;
@@ -198,7 +219,7 @@ export const ApiProject = observable({
     memberId: string
   ): Promise<void> => {
     try {
-      await axiosInstance.post(`${API_BASE_URL}/${projectId}/members`, {
+      await internalApiService.post(`${API_BASE_URL}/${projectId}/members`, {
         memberId,
       });
     } catch (error) {
@@ -215,7 +236,7 @@ export const ApiProject = observable({
     memberId: string
   ): Promise<void> => {
     try {
-      await axiosInstance.delete(
+      await internalApiService.delete(
         `${API_BASE_URL}/${projectId}/members/${memberId}`
       );
     } catch (error) {
@@ -233,7 +254,7 @@ export const ApiProject = observable({
     memberId: string
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}/assign`,
         { memberId }
       );
@@ -259,7 +280,7 @@ export const ApiProject = observable({
     updatedTaskData: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}`,
         updatedTaskData
       );
@@ -271,7 +292,7 @@ export const ApiProject = observable({
 
   deleteTaskAPI: async (projectId: string, taskId: string): Promise<void> => {
     try {
-      await axiosInstance.delete(
+      await internalApiService.delete(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}`
       );
     } catch (error) {
@@ -285,7 +306,7 @@ export const ApiProject = observable({
     meetingData: MeetingData
   ): Promise<void> => {
     try {
-      await axiosInstance.post(
+      await internalApiService.post(
         `${API_BASE_URL}/${projectId}/meetings`,
         meetingData
       );
@@ -309,7 +330,7 @@ export const ApiProject = observable({
     ProjectIncludedFields>>
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${API_BASE_URL}/${projectId}/meetings/${meetingId}`,
         updatedMeetingData
       );
@@ -327,7 +348,7 @@ export const ApiProject = observable({
     meetingId: string
   ): Promise<void> => {
     try {
-      await axiosInstance.delete(
+      await internalApiService.delete(
         `${API_BASE_URL}/${projectId}/meetings/${meetingId}`
       );
     } catch (error) {
@@ -341,7 +362,7 @@ export const ApiProject = observable({
 
   fetchProjectsAPI: async (): Promise<any> => {
     try {
-      const response = await axiosInstance.get(`${API_BASE_URL}`);
+      const response = await internalApiService.get(`${API_BASE_URL}`);
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to fetch projects");
@@ -351,7 +372,7 @@ export const ApiProject = observable({
 
   fetchProjectMembersAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/members`
       );
       return response.data;
@@ -366,7 +387,7 @@ export const ApiProject = observable({
 
   fetchProjectTasksAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/tasks`
       );
       return response.data;
@@ -381,7 +402,7 @@ export const ApiProject = observable({
 
   fetchProjectMeetingsAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/meetings`
       );
       return response.data;
@@ -396,7 +417,7 @@ export const ApiProject = observable({
 
   fetchProjectCommentsAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/comments`
       );
       return response.data;
@@ -419,7 +440,7 @@ export const ApiProject = observable({
     ProjectIncludedFields>
   ): Promise<void> => {
     try {
-      await axiosInstance.post(`${API_BASE_URL}/${projectId}/files`, fileData);
+      await internalApiService.post(`${API_BASE_URL}/${projectId}/files`, fileData);
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
@@ -431,7 +452,7 @@ export const ApiProject = observable({
 
   fetchProjectFilesAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/files`
       );
       return response.data;
@@ -450,7 +471,7 @@ export const ApiProject = observable({
     phaseId: any
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${API_BASE_URL}/${projectId}/tasks/${taskId}/phase`,
         { phaseId }
       );
@@ -464,7 +485,7 @@ export const ApiProject = observable({
 
   generateProjectReportAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/report`
       );
       return response.data;
@@ -479,7 +500,7 @@ export const ApiProject = observable({
 
   fetchProjectAnalyticsAPI: async (projectId: string): Promise<any> => {
     try {
-      const response = await axiosInstance.get(
+      const response = await internalApiService.get(
         `${API_BASE_URL}/${projectId}/analytics`
       );
       return response.data;
@@ -497,7 +518,7 @@ export const ApiProject = observable({
     notificationSettings: NotificationSettings
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
+      await internalApiService.put(
         `${API_BASE_URL}/${projectId}/notifications`,
         notificationSettings
       );
@@ -513,7 +534,7 @@ export const ApiProject = observable({
   // Example function for non-project owner to submit task
   submitTaskAPI: async (projectId: string, taskData: any): Promise<any> => {
     try {
-      const response = await axiosInstance.post(
+      const response = await internalApiService.post(
         `${API_BASE_URL}/${projectId}/tasks`,
         taskData
       );
@@ -531,7 +552,7 @@ export const ApiProject = observable({
     status: string
   ): Promise<void> => {
     try {
-      await axiosInstance.put(`${API_BASE_URL}/${projectId}/tasks/${taskId}`, {
+      await internalApiService.put(`${API_BASE_URL}/${projectId}/tasks/${taskId}`, {
         status,
       });
     } catch (error) {

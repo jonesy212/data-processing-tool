@@ -28,17 +28,17 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from "@/app/models/content/AddContent";
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { getSnapshotItems } from "@/app/snapshots/snapshotOperations";
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { findCorrectSnapshotStore, isSnapshot } from "@/app/utils/snapshotUtils";
+import { findCorrectSnapshotStore, isSnapshot } from "@/utils/snapshotUtils";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Tag } from "sanitize-html";
 

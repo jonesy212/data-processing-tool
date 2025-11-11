@@ -1,18 +1,17 @@
 // ApiClient.ts
 //  External API calls (HTTP/REST APIs, external services)
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import  axiosInstance from '@/app/api/csrfToken';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import HeadersConfig from "@/app/api/headers/HeadersConfig";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { useNotification } from '@/app/context/NotificationContext';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationType } from "@/context/NotificationContext";
 import { VersionData } from '@/app/versions/VersionData';
+import { NotificationType, useNotification  } from "@/state/context/NotificationContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 
@@ -300,7 +299,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     errorMessageId?: keyof TMessages
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => internalApiService.post<T>(url, data, config),
+      () => axiosInstance.post<T>(url, data, config),
       "POST request failed",
       successMessageId || "GENERIC_POST_ERROR" as keyof TMessages,
       errorMessageId || "GENERIC_POST_ERROR" as keyof TMessages
@@ -316,7 +315,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     errorMessageId?: keyof TMessages
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => internalApiService.put<T>(url, data, config),
+      () => axiosInstance.put<T>(url, data, config),
       "PUT request failed",
       successMessageId || "GENERIC_PUT_ERROR" as keyof TMessages,
       errorMessageId || "GENERIC_PUT_ERROR" as keyof TMessages
@@ -330,7 +329,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     errorMessageId?: keyof TMessages
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => internalApiService.delete<T>(url, config),
+      () => axiosInstance.delete<T>(url, config),
       "DELETE request failed",
       successMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages,
       errorMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages
@@ -355,7 +354,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     
   async fetchClientDetails(clientId: number): Promise<any> {
     return await this.requestHandler(
-      () => internalApiService.get(
+      () => axiosInstance.get(
         `${API_BASE_URL}/clients/${clientId}`,
         { headers: headersConfig }
       ),
@@ -371,7 +370,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     updatedDetails: any
   ): Promise<any> {
     return await this.requestHandler(
-      () => internalApiService.put(
+      () => axiosInstance.put(
         `${API_BASE_URL}/clients/${clientId}`,
         updatedDetails,
         { headers: headersConfig }
@@ -385,7 +384,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async connectWithTenant(tenantId: number): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`${API_BASE_URL}/connect/${tenantId}`),
+      () => axiosInstance.post(`${API_BASE_URL}/connect/${tenantId}`),
       "Failed to connect with tenant",
       "CONNECT_WITH_TENANT_SUCCESS" as keyof TMessages,
       "CONNECT_WITH_TENANT_ERROR" as keyof TMessages,
@@ -398,7 +397,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     message: string
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`${API_BASE_URL}/message/${tenantId}`, { message }),
+      () => axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }),
       "Failed to send message to tenant",
       "SEND_MESSAGE_TO_TENANT_SUCCESS" as keyof TMessages,
       "SEND_MESSAGE_TO_TENANT_ERROR" as keyof TMessages,
@@ -408,7 +407,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async listConnectedTenants(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get(`${API_BASE_URL}/connected-tenants`),
+      () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`),
       "Failed to list connected tenants",
       "LIST_CONNECTED_TENANTS_SUCCESS" as keyof TMessages,
       "LIST_CONNECTED_TENANTS_ERROR" as keyof TMessages
@@ -417,7 +416,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async listClientCMessages(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get("/api/client/messages"),
+      () => axiosInstance.get("/api/client/messages"),
       "Failed to list messages",
       "LIST_MESSAGES_SUCCESS" as keyof TMessages,
       "LIST_MESSAGES_ERROR" as keyof TMessages
@@ -426,7 +425,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async createClientTask(taskData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post("/api/client/tasks/create", taskData),
+      () => axiosInstance.post("/api/client/tasks/create", taskData),
       "Failed to create task",
       "CREATE_TASK_SUCCESS" as keyof TMessages,
       "CREATE_TASK_ERROR" as keyof TMessages
@@ -435,7 +434,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async removeCalendarEvent(eventId: number): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.delete(`/api/client/calendar/${eventId}`),
+      () => axiosInstance.delete(`/api/client/calendar/${eventId}`),
       "Failed to remove calendar event",
       "REMOVE_CALENDAR_EVENT_SUCCESS" as keyof TMessages,
       "REMOVE_CALENDAR_EVENT_ERROR" as keyof TMessages
@@ -444,7 +443,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async listClientTasks(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get("/api/client/tasks"),
+      () => axiosInstance.get("/api/client/tasks"),
       "Failed to list tasks",
       "LIST_TASKS_SUCCESS" as keyof TMessages,
       "LIST_TASKS_ERROR" as keyof TMessages
@@ -453,7 +452,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async submitProjectProposal(proposalData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post("/api/client/projects/submit-proposal", proposalData),
+      () => axiosInstance.post("/api/client/projects/submit-proposal", proposalData),
       "Failed to submit project proposal",
       "SUBMIT_PROJECT_PROPOSAL_SUCCESS" as keyof TMessages,
       "SUBMIT_PROJECT_PROPOSAL_ERROR" as keyof TMessages
@@ -464,7 +463,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     challengeData: any
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post("/api/client/community/challenges/participate", challengeData),
+      () => axiosInstance.post("/api/client/community/challenges/participate", challengeData),
       "Failed to participate in community challenges",
       "PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS" as keyof TMessages,
       "PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR" as keyof TMessages
@@ -473,7 +472,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async listClientRewards(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get("/api/client/rewards"),
+      () => axiosInstance.get("/api/client/rewards"),
       "Failed to list rewards",
       "LIST_REWARDS_SUCCESS" as keyof TMessages,
       "LIST_REWARDS_ERROR" as keyof TMessages
@@ -482,7 +481,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async listFiles(dir: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get(`/api/files/${dir}`),
+      () => axiosInstance.get(`/api/files/${dir}`),
       "Failed to list files",
       "LIST_FILES_SUCCESS" as keyof TMessages,
       "LIST_FILES_ERROR" as keyof TMessages
@@ -491,7 +490,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
 
   async getFileContent(filePath: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get(`/api/files/${filePath}`),
+      () => axiosInstance.get(`/api/files/${filePath}`),
       "Failed to get file content",
       "GET_FILE_CONTENT_SUCCESS" as keyof TMessages,
       "GET_FILE_CONTENT_ERROR" as keyof TMessages
@@ -507,7 +506,7 @@ async updateCalendarEvent<
   IncludedFields extends keyof T = keyof T,
 >(eventId: number, updatedEvent: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<AxiosResponse> {
   return await this.requestHandler(
-    () => internalApiService.put(`/api/calendar/events/${eventId}`, updatedEvent),
+    () => axiosInstance.put(`/api/calendar/events/${eventId}`, updatedEvent),
     "Failed to update calendar event",
     "UPDATE_CALENDAR_EVENT_SUCCESS" as keyof TMessages,
     "UPDATE_CALENDAR_EVENT_ERROR" as keyof TMessages,
@@ -517,7 +516,7 @@ async updateCalendarEvent<
 
   async startCollaborativeEdit(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/${fileId}/collaborative-edit`),
+      () => axiosInstance.post(`/api/files/${fileId}/collaborative-edit`),
       "Failed to start collaborative edit",
       "START_COLLABORATIVE_EDIT_SUCCESS" as keyof TMessages,
       "START_COLLABORATIVE_EDIT_ERROR" as keyof TMessages
@@ -536,7 +535,7 @@ async updateCalendarEvent<
     versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/${fileId}/versions`, versionData),
+      () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
       "Failed to create file version",
       "CREATE_FILE_VERSION_SUCCESS" as keyof TMessages,
       "CREATE_FILE_VERSION_ERROR" as keyof TMessages,
@@ -549,7 +548,7 @@ async updateCalendarEvent<
     updateData: any
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/${fileId}/updates`, updateData),
+      () => axiosInstance.post(`/api/files/${fileId}/updates`, updateData),
       "Failed to receive file update",
       "RECEIVE_FILE_UPDATE_SUCCESS" as keyof TMessages,
       "RECEIVE_FILE_UPDATE_ERROR" as keyof TMessages,
@@ -559,7 +558,7 @@ async updateCalendarEvent<
 
   async fetchFileVersions(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.get(`/api/files/${fileId}/versions`),
+      () => axiosInstance.get(`/api/files/${fileId}/versions`),
       "Failed to fetch file versions",
       "FETCH_FILE_VERSIONS_SUCCESS" as keyof TMessages,
       "FETCH_FILE_VERSIONS_ERROR" as keyof TMessages,
@@ -569,7 +568,7 @@ async updateCalendarEvent<
 
   async shareFile(fileId: string, shareData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/${fileId}/share`, shareData),
+      () => axiosInstance.post(`/api/files/${fileId}/share`, shareData),
       "Failed to share file",
       "SHARE_FILE_SUCCESS" as keyof TMessages,
       "SHARE_FILE_ERROR" as keyof TMessages,
@@ -582,7 +581,7 @@ async updateCalendarEvent<
     accessData: any
   ): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/${fileId}/access`, accessData),
+      () => axiosInstance.post(`/api/files/${fileId}/access`, accessData),
       "Failed to request access to file",
       "REQUEST_ACCESS_TO_FILE_SUCCESS" as keyof TMessages,
       "REQUEST_ACCESS_TO_FILE_ERROR" as keyof TMessages,
@@ -592,7 +591,7 @@ async updateCalendarEvent<
 
   async exportFile(fileId: string): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => internalApiService.get(`/api/files/${fileId}/export`),
+      () => axiosInstance.get(`/api/files/${fileId}/export`),
       "Failed to export file",
       "EXPORT_FILE_SUCCESS" as keyof TMessages,
       "EXPORT_FILE_ERROR" as keyof TMessages,
@@ -602,7 +601,7 @@ async updateCalendarEvent<
 
   async archiveFile(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => internalApiService.delete(`/api/files/${fileId}`),
+      () => axiosInstance.delete(`/api/files/${fileId}`),
       "Failed to archive file",
       "ARCHIVE_FILE_SUCCESS" as keyof TMessages,
       "ARCHIVE_FILE_ERROR" as keyof TMessages,
@@ -612,7 +611,7 @@ async updateCalendarEvent<
 
   async determineFileType(fileId: string): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => internalApiService.get(`/api/files/${fileId}/type`),
+      () => axiosInstance.get(`/api/files/${fileId}/type`),
       "Failed to determine file type",
       "DETERMINE_FILE_TYPE_SUCCESS" as keyof TMessages,
       "DETERMINE_FILE_TYPE_ERROR" as keyof TMessages,
@@ -622,7 +621,7 @@ async updateCalendarEvent<
 
   async importFile(fileData: typeof FileImportData): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => internalApiService.post(`/api/files/import`, fileData),
+      () => axiosInstance.post(`/api/files/import`, fileData),
       "Failed to import file",
       "IMPORT_FILE_SUCCESS" as keyof TMessages,
       "IMPORT_FILE_ERROR" as keyof TMessages,

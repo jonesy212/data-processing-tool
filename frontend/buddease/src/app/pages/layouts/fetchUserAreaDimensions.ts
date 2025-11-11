@@ -1,10 +1,10 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UILogger } from '@/app/libraries/logging/Logger';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationType } from "@/context/NotificationContext";
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from '@/app/typings/entities/AppEntity'
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { NotificationType } from "@/state/context/NotificationContext";
 
 interface AreaDimensions {
   width: number;
@@ -201,7 +201,7 @@ const initializeArea = async (): Promise<Area> => {
 
   const chatThreadId = generateChatThreadId();
   const generatorType = getGeneratorType();
-  const dimensions = fetchUserAreaDimensions(); // ✅ Fix: Declare dimensions before usage
+  const dimensions = fetchUserAreaDimensions(); 
 
   const area: Area = {
     prefix: 'USER',
@@ -235,5 +235,5 @@ const initializeArea = async (): Promise<Area> => {
 
 initializeArea();
 
-export type { Area, FetchOptions, AreaDimensions };
+export type { Area, AreaDimensions, FetchOptions };
 

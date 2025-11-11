@@ -1,13 +1,13 @@
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { addLog } from "@/app/state/redux/slices/LogSlice";
 import { User } from "@/app/users/User";
-import { useNotification } from "@/context/NotificationContext";
+import { useNotification } from "@/state/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.apiConfig

@@ -1,23 +1,23 @@
 // OnboardingPhase.tsx
 import axiosInstance from '@/app/api/csrfToken';
-import CommonDetails, {
-    SupportedData,
-} from "@/app/models/CommonData";
 import DetailsProps from "@/app/components/models/data/Details";
 import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
 import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import CommonDetails, {
+    SupportedData,
+} from "@/app/models/CommonData";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import UserQuestionnaire from "@/app/personas/UserQuestionnaire";
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from '@/app/state/context/NotificationContext';
 import { UserData } from "@/app/users/User";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/state/context/AuthContext";
 import React, { useState } from "react";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import RegistrationPhase from "./RegistrationPhase";

@@ -1,10 +1,10 @@
-import DesignDashboard from "@/app/pages/dashboards/DesignDashboard";
-import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
-import DynamicComponentWrapper from "@/app/utils/DynamicComponentWrapper";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
+import DesignDashboard from "@/app/pages/dashboards/DesignDashboard";
 import BackendStructure from '@/app/server/database/BackendStructure';
+import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import DynamicComponentWrapper from "@/utils/DynamicComponentWrapper";
 import React, { useState } from "react";
 import { ResponsiveDesign } from "./ResponsiveDesign"; // Import the ResponsiveDesign component
 

@@ -1,16 +1,14 @@
 // ContentIDGenerator.ts
-import { NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
-import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
-import { Data, DataDetails } from '@/app/models/data/Data';
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultMeta,
+    BaseDataEntity,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { Data, DataDetails } from '@/app/models/data/Data';
+import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
 
 export class ContentIDGenerator<
   T extends BaseDataEntity = BaseDataEntity,

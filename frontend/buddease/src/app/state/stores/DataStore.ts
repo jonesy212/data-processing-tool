@@ -7,12 +7,9 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
-import { SearchCriteria } from '@/app/components/routing/SearchCriteria';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { DataContext } from '@/app/context/DataContext';
-import { NotificationType } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import storeProps from '@/app/hooks/YourComponent';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -25,6 +22,7 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
+import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods } from '@/app/projects/DataAnalysis/DataStoreMethods';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethods, SnapshotStoreProps } from '@/app/snapshots';
@@ -36,7 +34,7 @@ import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotCon
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseSnapshotProps } from "@/app/snapshots/createBaseSnapshot";
@@ -47,6 +45,8 @@ import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToS
 import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';
 import { getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import transformDataToSnapshot from '@/app/snapshots/transformDataToSnapshot';
+import { DataContext } from '@/app/state/context/DataContext';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { store } from '@/app/state/stores/useAppDispatch';
 import { Subscriber } from '@/app/subscribers/Subscriber';
@@ -57,9 +57,9 @@ import { convertMapToSnapshot, convertSnapshotStoreToSnapshot, isSnapshotStore }
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { isSnapshot, isSnapshotOfType } from "@/app/utils/snapshotUtils";
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
 import { createVersionInfo } from '@/app/versions/createVersionInfo';
+import { isSnapshot, isSnapshotOfType } from "@/utils/snapshotUtils";
 import { AxiosResponse } from "axios";
 import { IHydrateResult } from 'mobx-persist';
 import { useContext } from 'react';
@@ -187,7 +187,8 @@ export interface DataStore<
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
     category?: Category,    
   ) => Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
@@ -195,7 +196,7 @@ export interface DataStore<
   mapSnapshot: (
     id: number,
     storeId: string | number,
-    snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     criteria: CriteriaType,

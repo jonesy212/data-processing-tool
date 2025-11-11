@@ -47,10 +47,8 @@ const createDynamicHook = ({
   startIdleTimeout,
   initialStartIdleTimeout,
 }: DynamicHookParams<RootState>): AsyncHook<RootState> => {
+
   let isActive = initialIsActive !== undefined ? initialIsActive : false;
-
-
-
 
   // Define the disposeResource function
   const disposeResource = () => {
@@ -107,9 +105,9 @@ const createDynamicHook = ({
           console.log("Timeout executed");
         }, 10000);
 
-        const initialData: RealtimeDataItem[] = [];
+        const initialData: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
-        const { fetchData } = useRealtimeData(initialData, updateCallback);
+        const { fetchData } = useRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(initialData, updateCallback);
 
         const intervalId = setInterval(() => {
           fetchData("userId", (action) => {}).catch(console.error);

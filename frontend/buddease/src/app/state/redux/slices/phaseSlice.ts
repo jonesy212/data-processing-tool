@@ -1,3 +1,5 @@
+import { WritableDraft } from './../ReducerGenerator';
+import { PhaseHookConfig } from '@/app/hooks/phaseHooks/PhaseHooks';
 // phases/usePhaseSlice.ts
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
@@ -28,7 +30,7 @@ export const usePhaseManagerSlice = createSlice({
     addPhase: (state, action: PayloadAction<{ 
       phaseName: string; 
       phaseHooks: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-      phaseData?: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+      phaseData?: WritableDraft<Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>>;
     }>) => {
       const { phaseName, phaseHooks, phaseData } = action.payload;
       const phaseKey = phaseName.replace(/\s/g, "") + "PhaseHook";

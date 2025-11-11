@@ -1,23 +1,24 @@
 // NotificationSlice.tsx
-import { NotificationTypeEnum } from '@/app/context/NotificationContext';
-import { DocumentOptions } from '@/app/documents/DocumentOptions';
-import { PayloadAction } from "@reduxjs/toolkit";
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { Dispatch } from '@reduxjs/toolkit';
-import { NotificationEntity,
-NotificationK,
-  NotificationMeta,
-  NotificationAttachment,
-  NotificationExcludedFields,
-NotificationIncludedFields,
-NotificationSnapshotData,
-NotificationSnapshotStore,
-NotificationSnapshotWithCriteria,
-NotificationUnifiedMetadata} from '@/app/typings/entities/NotificationEntity'
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import {
+    NotificationAttachment,
+    NotificationEntity,
+    NotificationExcludedFields,
+    NotificationIncludedFields,
+    NotificationK,
+    NotificationMeta,
+    NotificationSnapshotData,
+    NotificationSnapshotStore,
+    NotificationSnapshotWithCriteria,
+    NotificationUnifiedMetadata
+} from '@/app/typings/entities/NotificationEntity';
+import { Dispatch, PayloadAction } from "@reduxjs/toolkit";
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";

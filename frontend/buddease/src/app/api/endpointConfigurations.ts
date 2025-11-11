@@ -83,7 +83,7 @@ import { logsConfig } from '@/app/config/endpoints/logsConfig';
 import { realtimeConfig } from '@/app/config/endpoints/realtimeConfig';
 import { batchConfig } from '@/app/config/endpoints/batchConfig';
 import { analyticsConfig } from '@/app/config/endpoints/analyticsConfig';
-import { createMergedEndpoints } from '@/app/utils/endpointMerger';
+import { createMergedEndpoints } from '@/utils/endpointMerger';
 import ApiConfig from './ApiConfig';
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 

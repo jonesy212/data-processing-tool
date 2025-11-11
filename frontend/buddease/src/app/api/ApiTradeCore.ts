@@ -4,11 +4,11 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { AxiosError } from 'axios';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

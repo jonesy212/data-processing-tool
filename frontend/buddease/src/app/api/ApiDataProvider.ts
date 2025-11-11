@@ -1,13 +1,13 @@
 // ApiDataProvider.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import { AxiosError } from "axios";
-import { handleApiError } from '@/app/api/ApiLogs';
 
 const API_BASE_URL = endpoints.dataProviders;
 

@@ -1,23 +1,12 @@
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
-import { SnapshotDataType } from "@/app/snapshots";
+// app/state/snapshots/persistSnapshot.ts
 
-import { DatabaseConfig } from "@/app/DatabaseConfig";
+import { runInAction, toJS } from 'mobx';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/BaseConfig';
+import { SnapshotDataType } from '@/app/snapshots';
+
+import { DatabaseConfig } from '@/app/config/DatabaseConfig';
 
 
-
-
-
-// app/state/snapshots/snapshotUtils.ts
-import { runInAction, toJS } from "mobx";
-
-/**
- * Snapshot data shape expected for hydration and persistence.
- */
-export interface SnapshotData {
-  timestamp: number;
-  state: Record<string, any>;
-  version?: string;
-}
 
 /**
  * Generic interface for any store or object supporting MobX-like state hydration.
@@ -31,7 +20,7 @@ export interface HydratableStore {
 /**
  * Retrieve snapshot data from localStorage (or any persistence layer).
  */
-const readSnapshotFromStorage = async (key: string): Promise<SnapshotData | null> => {
+export const readSnapshotFromStorage = async (key: string): Promise<SnapshotData | null> => {
   if (typeof window === "undefined") return null;
 
   try {

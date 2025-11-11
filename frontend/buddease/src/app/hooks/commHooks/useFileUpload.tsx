@@ -1,6 +1,6 @@
 // useFileUpload.tsx
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import CustomFile from "@/app/components/documents/File";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -10,7 +10,7 @@ import useErrorHandling from "@/app/useErrorHandling";
 import {
     NotificationType,
     useNotification,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
 import dotProp from "dot-prop";
 import { ChangeEvent, useState } from "react";
 const { notify } = useNotification();

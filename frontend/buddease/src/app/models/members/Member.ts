@@ -59,17 +59,18 @@ const memberData: MemberData<
 	bio: "Experienced software developer with 5+ years in web development",
 	userType: "premium_user",
 	bannerUrl: "https://example.com/default-banner.jpg",
-	hasQuota: true,
+	hasQuota: false,
 	profilePicture: "https://example.com/avatars/member1.jpg",
 	storeId: 12345,
 	memberName: "member_name",
 
 	isAuthorized: true,
-	uploadQuota: 0,
 
-	hasQuota: false,
 	activityStatus: "online",
-	activityLog: [],
+	activityLog: {
+		activity: [], 
+		action: []
+	},
 
 	persona: {
 		type: PersonaTypeEnum.Influencer,
@@ -136,14 +137,14 @@ const memberData: MemberData<
 
 	roles: [
 		{
-			roleType: "member",
+			roleType: UserRoleEnum.Member,
 			responsibilities: ["basic platform access"],
 			permissions: ["read", "comment"],
 			positions: [{ title: "Member", level: 1 }],
 			includes: ["basic_features"]
 		},
 		{
-			roleType: "contributor",
+			roleType: UserRoleEnum.Contributor,
 			responsibilities: ["content creation", "community contributions"],
 			permissions: ["read", "write", "upload"],
 			positions: [{ title: "Contributor", level: 2 }],
@@ -164,6 +165,7 @@ const memberData: MemberData<
 			persona: null,
 			friends: [],
 			blockedUsers: [],
+			data: 
 			// Add other required User properties
 		} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
 		{

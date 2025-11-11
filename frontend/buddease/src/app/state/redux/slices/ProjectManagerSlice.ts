@@ -1,13 +1,13 @@
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Task } from "@/app/components/models/tasks/Task";
-import { ProjectManagementEntity, ProjectManagementK, ProjectManagementMeta, ProjectManagementAttachment, ProjectManagementExcludedFields, ProjectManagementIncludedFields } from '@/app/typings/entities/ProjectManagementEntity';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { useNotification } from '@/app/context/NotificationContext';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Project } from '@/app/models/projects/Project';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { ProjectManagementAttachment, ProjectManagementEntity, ProjectManagementExcludedFields, ProjectManagementIncludedFields, ProjectManagementK, ProjectManagementMeta } from '@/app/typings/entities/ProjectManagementEntity';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectState } from "./ProjectSlice";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

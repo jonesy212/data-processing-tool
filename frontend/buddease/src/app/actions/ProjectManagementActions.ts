@@ -5,15 +5,7 @@ import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { createAction } from "@reduxjs/toolkit";
 
 
-export const ProjectManagementActions = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T,
-  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
->() => ({
+export const ProjectManagementActions = {
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),
   removeTenantFromProject: createAction<{ projectId: number, tenantId: number }>("removeTenantFromProject"),
@@ -126,5 +118,23 @@ export const ProjectManagementActions = <
   assessChangeImpact: createAction<{ projectId: number, changeDetails: any }>("assessChangeImpact"),
   communicateChangePlan: createAction<{ projectId: number, changeDetails: any }>("communicateChangePlan"),
 
-  
-});
+  startNewPhase: createAction<{ phaseName: string; phaseData: any }>("startNewPhase"),
+  completeCurrentPhase: createAction<{ projectId: string }>("completeCurrentPhase"),
+  transitionToNextPhase: createAction<{ projectId: string }>("transitionToNextPhase"),
+
+  initiateAudioCall: createAction<{ participants: string[] }>("initiateAudioCall"),
+  initiateVideoCall: createAction<{ participants: string[] }>("initiateVideoCall"),
+  createCollaborationSession: createAction<{ sessionConfig: any }>("createCollaborationSession"),
+  shareScreen: createAction<{ sessionId: string }>("shareScreen"),
+
+  createIdea: createAction<{ ideaData: any }>("createIdea"),
+  voteOnIdea: createAction<{ ideaId: string; vote: 'up' | 'down' }>("voteOnIdea"),
+  commentOnIdea: createAction<{ ideaId: string; comment: string }>("commentOnIdea"),
+
+  createTask: createAction<{ taskData: any }>("createTask"),
+  assignTask: createAction<{ taskId: string; assigneeId: string }>("assignTask"),
+  updateTaskStatus: createAction<{ taskId: string; status: string }>("updateTaskStatus"),
+
+  scheduleProductLaunch: createAction<{ launchData: any }>("scheduleProductLaunch"),
+  createLaunchChecklist: createAction<{ checklistItems: string[] }>("createLaunchChecklist")
+};

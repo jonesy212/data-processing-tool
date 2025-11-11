@@ -1,21 +1,20 @@
 // CalendarEvent.tsx
 
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-  getDefaultDocumentOptions,
+    getDefaultDocumentOptions,
 } from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import createSubscriber from '@/app/models/cypto/exchangeIntegration';
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-  PriorityTypeEnum,
-  StatusType,
+    PriorityTypeEnum,
+    StatusType,
 } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/members/Member";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
@@ -24,20 +23,21 @@ import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { getSnapshotDelegate } from '@/app/snapshots/getSnapshotDelegate';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import {
-  NotificationTypeEnum,
-  useNotification
-} from "@/context/NotificationContext";
+    NotificationTypeEnum,
+    useNotification
+} from "@/state/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import {
-  AssignEventStore,
-  ReassignEventResponse,
-  useAssignEventStore,
+    AssignEventStore,
+    ReassignEventResponse,
+    useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
@@ -46,34 +46,34 @@ import { useStore } from "./StoreProvider";
 
 import { EventActions } from "@/app/actions/EventActions";
 import {
-  SnapshotOperation,
-  SnapshotOperationType,
+    SnapshotOperation,
+    SnapshotOperationType,
 } from "@/app/actions/SnapshotActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { combinedEvents } from "@/app/events/Event";
 import {
-  createSnapshotStore,
-  SnapshotStoreOptions,
-  useSnapshotManager,
+    createSnapshotStore,
+    SnapshotStoreOptions,
+    useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import {
-  AddEventPayload,
-  CalendarActionPayload,
-  CalendarActionType,
-  RemoveEventPayload,
-  SetEventStatusPayload,
-  UpdateEventPayload,
+    AddEventPayload,
+    CalendarActionPayload,
+    CalendarActionType,
+    RemoveEventPayload,
+    SetEventStatusPayload,
+    UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
 import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
 import { useDispatch } from "react-redux";
 
 import {
-  defaultCalendarEventManager
+    defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 import {
-  defaultScheduleCoordinator
+    defaultScheduleCoordinator
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";

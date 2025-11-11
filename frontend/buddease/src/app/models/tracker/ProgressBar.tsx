@@ -1,10 +1,4 @@
-  import { AnimationLogger } from "@/app/libraries/logging/Logger";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
-import { UIActions } from "@/app/actions/UIActions";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { NotificationType } from "@/context/NotificationContext";
+  import React from "react";
 
 export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 

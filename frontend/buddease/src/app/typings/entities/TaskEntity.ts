@@ -1,7 +1,7 @@
 // TaskEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
-import { BaseTaskEntity, Task} from '@/app/models/tasks/Task';
+import { TaskDataEntity, Task } from '@/app/models/tasks/Task';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';

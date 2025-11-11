@@ -1,7 +1,7 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
 import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';

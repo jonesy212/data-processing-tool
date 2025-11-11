@@ -1,12 +1,11 @@
 // Integration.ts
 
-import Visualization from '@/app/hooks/userInterface/Visualization';
-import DataProcessingComponent from '@/app/components/models/data/DataProcessingComponent';
-import { DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
-import { dataset } from "@/app/components/todos/tasks/DataSetModel";
-import { validateReport } from "@/app/utils/reportUtils";
 import { addReport, fetchReports, removeReport } from "@/app/api/ApiReport";
-import React from 'react';
+import DataProcessingComponent from '@/app/components/models/data/DataProcessingComponent';
+import { dataset } from "@/app/components/todos/tasks/DataSetModel";
+import Visualization from '@/app/hooks/userInterface/Visualization';
+import { DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
+import { validateReport } from "@/utils/reportUtils";
 
 // Import necessary functions and components
 

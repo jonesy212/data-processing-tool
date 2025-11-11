@@ -12,7 +12,7 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
+import { SnapshotDataResponse } from "@/utils/retrieveSnapshotData";
 
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

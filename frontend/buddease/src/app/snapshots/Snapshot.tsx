@@ -36,8 +36,8 @@ import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractIntera
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from "@/app/typings/entities/DataEntity";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { User } from "@/app/users/User";
-import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
-import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
+import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
+import { updateFileMetadata } from "@/utils/web3/fileUtils";
 import { id, Signature } from "ethers";
 import { refreshUI, refreshUIForFile } from "./refreshUI";
 import { SnapshotConfigProps } from "./SnapshotConfigProps";

@@ -21,7 +21,6 @@ import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -43,6 +42,7 @@ import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { SnapshotStoreConfig } from "@/app/snapshots/";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
+import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
@@ -485,7 +485,7 @@ const handleDocumentEncryption = (document: DocumentTree) => {
 };
 
 // using common details we generate details for components by mapping through the objects.
-const UserDetails: React.FC<{ user: User<serEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }> = ({ user }) => {
+const UserDetails: React.FC<{ user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }> = ({ user }) => {
   const { id, analysisResults, snapshots, label, ...rest } = user;
   // Assuming you have an array that might contain undefined
   const potentialTags: (string | undefined)[] = ['tag1', undefined, 'tag2', 'tag3', undefined];

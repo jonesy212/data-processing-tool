@@ -1,12 +1,12 @@
 import { endpoints } from "@/app/api/endpointConfigurations";
 import FileData from "@/app/components/models/data/FileData";
-import { useNotification } from '@/app/context/NotificationContext';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-import { ConfigurationService } from "@/app/services/ConfigurationService";
-import { getBackendStructureFilePath, STORE_KEYS } from "@/app/utils/cache/CacheManager";
-import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
-import { currentAppName } from "@/app/versions/AppVersion";
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
+import { ConfigurationService } from "@/app/services/ConfigurationService";
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { getBackendStructureFilePath, STORE_KEYS } from "@/utils/cache/CacheManager";
+import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
+import { currentAppName } from "@/app/versions/AppVersion";
 import { AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 

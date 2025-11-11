@@ -10,10 +10,10 @@ import {
     FrontendConfig,
     frontendConfig,
 } from '@/app/config/FrontendConfig';
-import { useNotification } from '@/app/context/NotificationContext';
 import { Project, isProjectInSpecialPhase } from '@/app/models/projects/Project';
 import StoreConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
-import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
 import { getConfigsData } from '@/api/getConfigsApi';
 import LazyLoadScriptConfigImpl from '@/app/components/configs/LazyLoadScriptConfig';
@@ -46,7 +46,8 @@ interface BaseMetadataConfig<
   IncludedFields extends keyof T = keyof T
 > {
   enableSnapshot?: boolean;
-  eventRecords?: EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | []
+  eventRecords?: EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | [];
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 }
 
 export interface RetryConfig {
@@ -100,7 +101,7 @@ interface ConfigurationOptions<
 // Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
 export const DATA_PATH = getConfigsData()
 
-const notify = useNotification
+const notify = useNotification()
 
 const configureScript = () => {
   console.log("Script configured");

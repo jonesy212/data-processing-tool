@@ -1,5 +1,6 @@
 // ApiCrypto.ts
 
+import internalApiService from '@/app/api/ApiClient'; // Import the internal service
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
@@ -7,9 +8,8 @@ import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
-} from "@/context/NotificationContext";
+} from "@/state/context/NotificationContext";
 import { AxiosError } from "axios";
-import internalApiService from '@/app/api/ApiClient'; // Import the internal service
 
 const API_BASE_URL = endpoints.crypto;
 
@@ -600,4 +600,4 @@ export const fetchExchangeListings = async (): Promise<any> => {
 };
 // Define and implement other CRUD operations for crypto entities similarly
 
-export { cryptoNotificationMessages }
+export { cryptoNotificationMessages };

@@ -1,7 +1,8 @@
 //generate.ts
 import { ServerFileSystem } from '@/app/server/serverFileSystem';
 import { NextApiRequest, NextApiResponse } from 'next';
-
+import { NextRequest, NextResponse } from 'next/server';
+import { ServerDocumentGenerator } from '@/app/server/ServerDocumentGenerator'
 
 export async function POST(request: NextRequest) {
   const { documentType, data, template } = await request.json();

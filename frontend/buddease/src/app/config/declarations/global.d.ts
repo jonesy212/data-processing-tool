@@ -9,7 +9,125 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Presentation } from '@/app/components/documents/Presentation';
 
 
-declare module '*.css';
+// CSS Modules
+declare module '*.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '*.module.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+// Support for your specific CSS file paths
+declare module '@/app/css/*.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '*.stylesheet.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+
+// Your specific CSS files
+declare module '@/app/css/stylesheet.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/base-styles.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/desktop-styles.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/tablet-styles.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/tv-styles.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/chat.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '@/app/css/search.styles.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+// Component-specific CSS
+declare module '*.FormBuilder.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '*.BackendConfigComponent.css' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '*.FormElementStyles' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+// SCSS/SASS (common in Next.js projects)
+declare module '*.scss' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+declare module '*.sass' {
+  const content: { [className: string]: string };
+  export default content;
+}
+
+// Other asset types
+declare module '*.png' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.jpg' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.jpeg' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.gif' {
+  const content: string;
+  export default content;
+}
+
+declare module '*.svg' {
+  const content: string;
+  export default content;
+  export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
+}
+
+declare module '*.json' {
+  const content: any;
+  export default content;
+}
+
+
 
 interface MyPropertiesOptions extends DocumentOptions {
   sections: any; // Add all required properties

@@ -1,128 +1,46 @@
 // useSnapshotStore.ts
-import { useDebouncedCallback } from '@/app/hooks/useDebouncedCallback'
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import {
-    ConfigureSnapshotStorePayload,
-    SnapshotConfig,
-} from "@/app/snapshots/SnapshotConfig";
-import { useCallback } from 'react';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from '@/app/snapshots/snapshotUtils';
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
-import { LiveEvent } from "@refinedev/core";
-import { isEqual } from "lodash";
-import { IHydrateResult } from "mobx-persist";
-import { FC, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import { CryptoActions } from "@/app/actions/CryptoActions";
-import { ProjectManagementActions } from "@/app/actions/ProjectManagementActions";
-import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import { TaskActions } from "@/app/actions/TaskActions";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { useDebouncedCallback } from '@/app/hooks/useDebouncedCallback';
 import {
-    SnapshotManager,
-    SnapshotStoreOptions,
+  SnapshotStoreOptions
 } from "@/app/hooks/useSnapshotManager";
-import useSubscription from "@/app/hooks/useSubscription";
-import { SnapshotLogger } from "@/app/libraries/logging/Logger";
-import { Content } from "@/app/models/content/AddContent";
-import { BaseData, Data, DataEntity } from '@/app/models/data/Data';
-import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
+import { useCallback, useEffect, useState } from 'react';
 
+import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import {
-    ActivityActionEnum,
-    ActivityTypeEnum,
-    NotificationPosition,
-    PriorityTypeEnum,
-    ProjectStateEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum
 } from "@/app/models/data/StatusType";
-import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger'
 import {
-    displayToast,
-    showErrorMessage,
-    showToast,
-} from "@/app/models/display/ShowToast";
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { Member } from "@/app/models/members/Member";
-import {
-    DataStoreMethods,
-    DataStoreWithSnapshotMethods,
+  DataStoreWithSnapshotMethods
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import {
-    DataStore,
-    EventRecord
-} from "@/app/state/stores/DataStore";
-import { Project, ProjectData, ProjectType } from "@/app/models/projects/Project";
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
 
-import {
-    NotificationContextType,
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/context/NotificationContext";
-import {
-    addNotification,
-    NotificationData,
-} from "@/app/state/redux/slices/NofiticationsSlice";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import UserRoles from '@/app/models/UserRoles';
-import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
-} from "@/app/utils/web3/applicationUtils";
 import { useSecureUserId } from '@/app/hooks/useSecureStoreId';
-import {
-    CoreSnapshot,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion,
-} from '@/app/snapshots/LocalStorageSnapshotStore'
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import {
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
+} from "@/utils/web3/applicationUtils";
 
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { AttachmentType } from '@/app/documents/NoteData';
-import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { convertSubscriptionPayloadToSubscriber } from '@/convertSubscriptionPayloadToSubscriber';
-import { createSnapshot } from "./defaultSnapshotBuilder";
-import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { sortByTimestamp } from "./handleSnapshotOperation";
-import { SnapshotActions } from "../actions/SnapshotActions";
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
-import { delegate } from "./snapshotHandlers";
-import SnapshotStore, { U } from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
-import { useSnapshotOperations } from '@/operations/useSnapshotOperations';
-import { useSnapshotSubscriptions } from '@/app/subscriptions/useSnapshotSubscriptions';
-import { useSnapshotNotifications } from '@/app/hooks/useSnapshotNotifications';
-import { snapshotValidators } from '@/utils/snapshotValidators';
-import { useEventSystem } from '@/app/hooks/useEventSystem';
 import { useEmergencyShutdown } from '@/app//dataIntegration/errorRecovery';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { useEventSystem } from '@/app/hooks/useEventSystem';
+import { useSnapshotNotifications } from '@/app/hooks/useSnapshotNotifications';
+import { useSnapshotSubscriptions } from '@/app/subscriptions/useSnapshotSubscriptions';
+import { useSnapshotOperations } from '@/operations/useSnapshotOperations';
+import { CustomSnapshotData } from "./SnapshotData";
+import { delegate } from "./snapshotHandlers";
+import SnapshotStore from "./SnapshotStore";
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 

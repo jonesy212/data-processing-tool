@@ -1,8 +1,7 @@
 // generateNewApiConfig.ts
 import { CacheConfig, RetryConfig } from "@/app/services/ConfigurationService";
-import { ApiConfigInterface } from "@/app/services/ApiConfig";
 import dataLoader from "@/configs/database/dataLoader";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import UniqueIDGenerator from "./GenerateUniqueIds";
 
 

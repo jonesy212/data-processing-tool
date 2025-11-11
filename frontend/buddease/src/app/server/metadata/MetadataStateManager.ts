@@ -12,11 +12,12 @@ import { Permission } from "@/app/permissions/Permission";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
+import { TagsRecord } from '@/app/models/tracker/Tag'
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
@@ -195,7 +196,8 @@ export const createMeta = <
       history: [], 
       timestamp: new Date(),
       versions: [], 
-      currentVersionIndex: 0
+      currentVersionIndex: 0,
+       structureData, getVersionNumber, calculateHash, generateChecksum,
     },
     isActive: false,
     config: {},

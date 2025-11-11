@@ -1,12 +1,12 @@
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { determineCategory } from "@/app/libraries/categories/determineCategory";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { Payload } from "@/app/server/database/Payload";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
-import { Payload } from "@/app/server/database/Payload";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/utils/web3/applicationUtils";
 import { CustomSnapshotData } from "./SnapshotData";
 
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
