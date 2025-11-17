@@ -1,9 +1,21 @@
 import * as path from "path";
 
-import path from "path";
-import { AppVersion } from "./AppVersion"; // adjust import path
-
-type AppVersionOrString = string | AppVersion;
+import { AppVersion } from "@/app/versions/AppVersion"; // adjust import path
+import {   AppEntity, 
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields
+} from '@/app/typings/entities/AppEntity'
+  
+type AppVersionOrString = string | AppVersion<AppEntity, 
+  AppK,
+  AppMeta,
+  AppAttachment,
+  AppExcludedFields,
+  AppIncludedFields
+>;
 
 const getAppPath = (versionNumber: string, appVersion: AppVersionOrString) => {
   const appPath = path.resolve(__filename, "../..");

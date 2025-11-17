@@ -1,8 +1,9 @@
 // BaseConfig.ts
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { AllTypes } from '@/app/typings/PropTypes';
-
+import { DebugEntry, TempDataStorage } from '@/app/snapshots/methods/debugMethods'
 import { BaseMetaInfo } from '@/app/config/metadata/BaseMetaInfo';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { BaseMetadata } from '@/app/config/MetaDataOptions';
@@ -43,7 +44,7 @@ interface RootCategories<
 > {
    categoryIds?: string[];
     // Full category objects (when populated)
-  categories?: CategoryProperties[]; 
+  categories?: Category[]; 
   categoryProperties?: CategoryPropertyBundle<T, K>;
 }
 
@@ -59,8 +60,9 @@ interface BaseEntity<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K>,
-          SharedTimestamps, CoreRecordProperties
+  > extends SharedIdentifiers<T, K>,
+  SharedTimestamps, CoreRecordProperties,
+  AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 {
   appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   filePathOrUrl?: string;
@@ -103,6 +105,8 @@ interface SharedConfig {
   id?: string | number; // Unique identifier
   maxConnections?: number; // Optional: Maximum connections
   authToken?: string; // Optional: Authentication token
+  debugInfo?: DebugEntry[];
+  tempData?: TempDataStorage<any>;
   // Add other shared properties as needed
 }
 
@@ -130,7 +134,7 @@ interface BaseConfig<
     initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     schema?: Record<string, SchemaField>
     description?: string
     category?: Category,
@@ -222,6 +226,7 @@ const baseConfig: BaseConfig<
   initialState: undefined,
   // mappedSnapshot: mappedSnapshot,
   meta: {} as StructuredMetadata<ConfigEntity, ConfigK, ConfigMeta, ConfigAttachment, ConfigExcludedFields, ConfigIncludedFields>,
+  metadata: {} as UnifiedMetadata<ConfigEntity, ConfigK, ConfigMeta, ConfigAttachment, ConfigExcludedFields, ConfigIncludedFields>,
   events: {
      eventRecords: {},
   },

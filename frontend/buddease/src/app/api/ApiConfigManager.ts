@@ -1,7 +1,7 @@
 // ApiConfigManager.ts
 import ApiConfig from './ApiConfig';
 import { Endpoints } from './ApiEndpoints';
-import { EndpointConfig, EndpointConfigurations } from '@/app/api/endpointConfigurations';
+import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
 
 class ApiConfigManager extends ApiConfig {
   constructor(configurations: EndpointConfigurations, endpoints: Endpoints) {

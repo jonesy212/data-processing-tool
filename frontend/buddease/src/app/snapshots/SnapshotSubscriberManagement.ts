@@ -29,7 +29,7 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
-import { UnsubscribeDetails } from '@/app/typings/evenHandlers/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
 
 
 interface SnapshotContext<

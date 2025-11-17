@@ -6,7 +6,8 @@ export interface Step {
   id: string;
   title: string;
   component: React.ComponentType<StepComponentProps>;
-  status: 'pending' | 'active' | 'completed';
+  status?: 'pending' | 'active' | 'completed';
+  props?: Record<string, any>; 
 }
 
 export interface StepComponentProps {
@@ -24,7 +25,7 @@ export const useStepNavigation = (initialSteps: Step[]) => {
   const [steps, setSteps] = useState<Step[]>(
     initialSteps.map((step, index) => ({
       ...step,
-      status: index === 0 ? 'active' : 'pending'
+      status: step.status || (index === 0 ? 'active' : 'pending') 
     }))
   );
 

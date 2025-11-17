@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "maxMethodLength": 50,
+    "maxFileLength": 300,
+    "maxNestingDepth": 4,
+    "allowMagicNumbers": ["0", "1", "2", "10", "100", "1000"],
+    "excludePatterns": [
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "platform/**"
+    ],
+    "sourceDirs": ["src", "app", "components", "utils", "lib"]
+  }
+}

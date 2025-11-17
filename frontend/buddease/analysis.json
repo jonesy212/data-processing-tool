@@ -5786,7 +5786,7 @@
       [
         "TaskHistoryEntry",
         {
-          "file": "src/app/interfaces/history/TaskHistoryEntry.tsx",
+        "file": "src/app/interfaces/history/TaskHistoryEntry.tsx",
           "name": "TaskHistoryEntry",
           "properties": [
             {

@@ -1,7 +1,8 @@
 // lifecycles.tsx
-
-// Lifecycle.ts
+import { getLastActivityTimeForPhase } from '@app/hooks/phases/PhaseActivity'
+import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntiity';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
+import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/hooks/phases/lifecycle'
 import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { CustomPhaseHooks, Phase } from "@/app/models/phases/Phase";
@@ -9,7 +10,6 @@ import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   BaseDataEntity,
-  BaseDataRoot,
   DefaultExcludedFields,
   DefaultMeta,
 } from "@/app/config/BaseConfig";
@@ -58,7 +58,14 @@ export interface LifecycleConfig<
   onTransitionError?: (error: Error) => void;
 }
 
-export interface LifecycleTransition {
+export interface LifecycleTransition<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   from: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   to: PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   timestamp: Date;
@@ -89,15 +96,31 @@ const generatePhase = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(name: string, subPhases: string[]): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+>(
+  name: string, 
+  subPhases: string[],
+  id: string,
+  description: string,
+  projectId: string
+): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  const currentDate = new Date();
+  
   return {
+    // Required properties from PhaseOptions
+    id,
     name,
-    startDate: new Date(),
-    endDate: new Date(),
+    description,
+    projectId,
+    date: currentDate,
+    
+    // Your existing properties
+    startDate: currentDate,
+    endDate: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000), // Default: 7 days from start
     subPhases,
     component: IdeaLifecyclePhase,
     duration: 0,
-    lessons: {} as Lesson[],
+    lessons: [] as Lesson[], // Fixed: should be an array, not empty object
+    
     hooks: {
       canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return !!enhancedPhaseHook.canTransitionTo(
@@ -114,31 +137,28 @@ const generatePhase = <
       resetIdleTimeout: async () => {},
       isActive: false,
       progress: {
-        id: '',
+        id: `${id}-progress`,
+        name: '', 
+        color: '', 
+        description: '',
         value: 0,
-        label: '',
+        label: `${name} Progress`,
         current: 0,
-        max: 0,
-        percentage: 0
+        max: 100,
+        percentage: 0,
+        min: 0, 
+        done: false,
       },
       condition: async (idleTimeoutDuration: number): Promise<boolean> => {
-        // Fetch the last activity time for the current phase
-        const lastActivityTime = getLastActivityTimeForPhase(name); // Replace with actual implementation
+        const lastActivityTime = getLastActivityTimeForPhase(name);
         const currentTime = new Date().getTime();
-
-        // Check if the current time exceeds the last activity time plus the idle timeout duration
         const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
         return isIdle;
-      }    } as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      }
+    } as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 };
 
-// Placeholder for actual implementation to fetch the last activity time
-const getLastActivityTimeForPhase = (phaseName: string): number => {
-  // Replace this with actual logic to get the last activity time for the phase
-  // For example, you might store this in your application's state or database
-  return new Date().getTime() - 3600000; // Example: 1 hour ago
-};
 
 
 // Common Functions
@@ -151,6 +171,10 @@ const generateGenericPhase = <
   IncludedFields extends keyof T = keyof T
 >(name: string, subPhases: string[]): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
+    id, 
+    description, 
+    projectId, 
+    date,
     name,
     startDate: new Date(),
     endDate: new Date(),
@@ -179,7 +203,13 @@ const generateGenericPhase = <
         label: '',
         current: 0,
         max: 0,
-        percentage: 0
+        percentage: 0,
+                label: `${name} Progress`,
+        current: 0,
+        max: 100,
+        percentage: 0,
+        min: 0, 
+        done: false,
       },
       condition: async (idleTimeoutDuration: number): Promise<boolean> => {
         // Fetch the last activity time for the current phase
@@ -203,6 +233,10 @@ const lifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachm
 
 const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   { 
+    id: '',
+    description: '', 
+    projectId: '', 
+    date: new Date(),
     name: "Idea Lifecycle",
     startDate: new Date(),
     endDate: new Date(),

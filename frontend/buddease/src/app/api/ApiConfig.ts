@@ -37,7 +37,7 @@ class ApiConfigService implements ApiConfig {
 
   constructor(
     private configurations: EndpointConfigurations,
-    private endpoints: Endpoints,
+    protected endpoints: Endpoints,
     options?: Partial<ApiConfig>
   ) {
     // Initialize interface properties

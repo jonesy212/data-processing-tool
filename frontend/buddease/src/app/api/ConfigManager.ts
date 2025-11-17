@@ -1,8 +1,8 @@
 // ConfigManager.ts
-import { handleApiError } from "@/app/api/ApiLogs";
-import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
+import { handleApiError } from '@/app/api/ApiLogs';
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import { SharedConfig } from '@/app/config/BaseConfig';
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 // Import any other necessary dependencies
 
@@ -10,11 +10,12 @@ export interface Config extends SharedConfig {
   apiUrl: string;
   apiKey: string;
   maxConnections: number;
+  
   // Add other configuration properties as needed
 }
 
 const defaultConfig: Config = {
-  apiUrl: "",
+  apiUrl: '',
   apiKey: "",
   maxConnections: 0,
   apiEndpoint: "",
@@ -25,6 +26,31 @@ const defaultNotificationContext = {
   notify: () => {
     console.warn("Notification context is not available.");
   },
+};
+
+
+export interface ConfigNotificationMessages {
+  CONFIG_UPDATE_SUCCESS: string;
+  CONFIG_UPDATE_ERROR: string;
+  CONFIG_ROLLBACK_SUCCESS: string;
+  CONFIG_ROLLBACK_ERROR: string;
+  CONFIG_RETRIEVAL_ERROR: string;
+  CONFIG_SANITIZATION_ERROR: string;
+  CONFIG_VALIDATION_ERROR: string;
+  CONFIG_LOAD_ERROR: string;
+  CONFIG_SAVE_ERROR: string;
+}
+
+export const configNotificationMessages: ConfigNotificationMessages = {
+  CONFIG_UPDATE_SUCCESS: "Configuration updated successfully",
+  CONFIG_UPDATE_ERROR: "Failed to update configuration",
+  CONFIG_ROLLBACK_SUCCESS: "Configuration rolled back to default",
+  CONFIG_ROLLBACK_ERROR: "Failed to rollback configuration",
+  CONFIG_RETRIEVAL_ERROR: "Failed to retrieve configuration",
+  CONFIG_SANITIZATION_ERROR: "Configuration sanitization failed",
+  CONFIG_VALIDATION_ERROR: "Configuration validation failed",
+  CONFIG_LOAD_ERROR: "Failed to load configuration",
+  CONFIG_SAVE_ERROR: "Failed to save configuration",
 };
 
 
@@ -51,28 +77,33 @@ class ConfigManager {
 
     this.currentConfig = { ...this.currentConfig, ...sanitizedConfig };
     // Notify about config update
-    this.notificationContext.notify(
-      "configId",
-      "Config Updated",
-      "API configuration updated successfully.",
-      new Date,
-      NOTIFICATION_MESSAGES.Config.CONFIG_UPDATED,
-      NotificationTypeEnum.CONFIGURATION
-    );
+      this.notificationContext.notify({
+        id: "configId",
+        message: "API configuration updated successfully.",
+        type: NotificationTypeEnum.CONFIGURATION,
+        timestamp: new Date(),
+        // Add any other required properties based on your NotificationOptions interface
+        data: {
+          entityType: "Config",
+          extra: { config: sanitizedConfig }
+        }
+      });
   }
 
   rollbackConfig(): void {
     this.currentConfig = { ...defaultConfig };
     // Notify about config rollback
-    this.notificationContext.notify(
-      "config rollback",
-      "Config Rolled Back",
-      "API configuration rolled back to default.",
-      new Date,
-      NOTIFICATION_MESSAGES.Config.CONFIG_ROLLEDBACK,
-      NotificationTypeEnum.INFO
-   
-    );
+    
+    this.notificationContext.notify({
+      id: "configRollback",
+      message: "API configuration rolled back to default.",
+      type: NotificationTypeEnum.INFO,
+      timestamp: new Date(),
+      data: {
+        entityType: "Config",
+        extra: { rolledBackTo: "default" }
+      }
+    });
   }
 
   // Method to validate configuration data

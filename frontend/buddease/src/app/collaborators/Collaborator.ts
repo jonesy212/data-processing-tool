@@ -1,5 +1,5 @@
 // Collaborator.ts
-import { User } from "@/app/users/User";
+import { Member } from "@/app/members/Member";
 
 
 export interface Collaborator extends Member {
@@ -21,6 +21,7 @@ interface Contributor extends Member {
   contributions: Contribution[]; // detailed breakdown per project
   joinedAt?: Date;
   active?: boolean;
+  
 }
 
 export type { Contributor }

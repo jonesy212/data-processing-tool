@@ -1,7 +1,5 @@
 // RootStores.ts
-import { useProjectManagerStore } from '@/app/state/stores/ProjectStore';
 import { globalCallbackRegistry } from './../../libraries/eventSystem/callbackRegistry';
-import { EventStore } from '@/app/events/EventStore';
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -18,10 +16,11 @@ import { CollaborationStore, useCollaborationStore } from '@/app/state/stores/Co
 import { DataStore, useDataStore } from '@/app/state/stores/DataStore';
 import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStore';
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
-import { NotificationStore } from '@/app/state/stores/NotificationStore';
+import NotificationStore from '@/app/state/stores/NotificationStore';
 import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
 
-import { SettingManagerStore, SettingsStore } from '@/app/state/stores/SettingsStore';
+import {  SettingsStore } from '@/app/state/stores/SettingsStore';
+import { SettingManagerStore } from '@/app/state/hybrid/SettingManagerStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from '@/app/state/stores/TodoStore';
@@ -71,7 +70,6 @@ export interface MobXRootState<
   documentStore: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   apiStore: ApiManagerStore;
   realtimeStore: RealtimeManagerStore;
-  settingsStore: SettingsStore;
   eventStore: EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   collaborationStore: CollaborationStore;
   entityStore: EntityManagerStore;

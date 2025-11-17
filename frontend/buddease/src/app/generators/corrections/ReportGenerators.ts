@@ -135,13 +135,12 @@ export class ReportGenerators {
         if (typeName && report.typeHierarchies && report.typeHierarchies.has(typeName)) {
             const hierarchy = report.typeHierarchies.get(typeName);
             lines.push(`**Hierarchy Position:** ${hierarchy?.root.type} at depth ${hierarchy?.depth}`);
-            
-            if (hierarchy?.children.length > 0) {
+                        
+          const children = hierarchy?.children ?? [];
+          if (children.length > 0) {
             lines.push('**Affected Children:**');
-            hierarchy.children.forEach(child => {
-                lines.push(`- ${child.root.name}`);
-            });
-            }
+            children.forEach(child => lines.push(`- ${child.root.name}`));
+          }
         }
         
         lines.push('');
@@ -417,6 +416,45 @@ export class ReportGenerators {
     lines.push(`**Generated:** ${report.timestamp}`);
     lines.push('');
 
+    // Add type relationships analysis from your code
+    if (report.types && Array.isArray(report.types)) {
+      lines.push('## Type Dependencies');
+      lines.push('');
+      
+      const relationships = report.types
+        .filter(type => type && type.name && type.dependencies) // Null checks
+        .map(type => ({
+          name: type.name,
+          dependencies: (type.dependencies || []).filter((dep: any) => 
+            dep && typeof dep === 'string' && dep.includes('.') // Safe .includes()
+          ),
+          dependents: report.types
+            .filter(otherType => 
+              otherType && 
+              otherType.dependencies && 
+              Array.isArray(otherType.dependencies) &&
+              otherType.dependencies.includes(type.name)
+            )
+            .map(otherType => otherType.name)
+        }));
+
+      if (relationships.length > 0) {
+        relationships.forEach(rel => {
+          lines.push(`### ${rel.name}`);
+          if (rel.dependencies.length > 0) {
+            lines.push('**Depends on:**');
+            rel.dependencies.forEach(dep => lines.push(`- ${dep}`));
+          }
+          if (rel.dependents.length > 0) {
+            lines.push('**Used by:**');
+            rel.dependents.forEach(dep => lines.push(`- ${dep}`));
+          }
+          lines.push('');
+        });
+      }
+    }
+
+    // Your existing type hierarchies section
     if (report.typeHierarchies && report.typeHierarchies.size > 0) {
       lines.push('## Type Hierarchies');
       lines.push('');
@@ -428,15 +466,15 @@ export class ReportGenerators {
         lines.push(`**Depth:** ${hierarchy.depth}`);
         lines.push('');
 
-        if (hierarchy.children.length > 0) {
+        if (hierarchy.children && hierarchy.children.length > 0) {
           lines.push('**Inheritance Tree:**');
           this.printTypeHierarchy(hierarchy, lines, 1);
         } else {
           lines.push('*No children found*');
         }
 
-        // Show properties and methods
-        if (hierarchy.root.properties.length > 0) {
+        // Show properties and methods with null checks
+        if (hierarchy.root.properties && hierarchy.root.properties.length > 0) {
           lines.push('');
           lines.push('**Properties:**');
           hierarchy.root.properties.forEach(prop => {
@@ -444,7 +482,7 @@ export class ReportGenerators {
           });
         }
 
-        if (hierarchy.root.methods.length > 0) {
+        if (hierarchy.root.methods && hierarchy.root.methods.length > 0) {
           lines.push('');
           lines.push('**Methods:**');
           hierarchy.root.methods.forEach(method => {
@@ -458,7 +496,7 @@ export class ReportGenerators {
       });
     }
 
-    // Show circular dependencies
+    // Show circular dependencies with null checks
     if (report.circularDependencies && report.circularDependencies.length > 0) {
       lines.push('## ⚠️ Circular Dependencies');
       lines.push('');
@@ -471,12 +509,16 @@ export class ReportGenerators {
       lines.push('');
     }
 
-    // Show type usage patterns
-    const typeUsageIssues = report.corrections.filter(c => 
-      c.category === 'compilation' && 
-      c.message.includes('cannot find') &&
-      c.severity === 'critical'
-    );
+    // Show type usage patterns with null checks
+    const typeUsageIssues = report.corrections && Array.isArray(report.corrections) 
+      ? report.corrections.filter(c => 
+          c && 
+          c.category === 'compilation' && 
+          c.message && 
+          c.message.includes('cannot find') &&
+          c.severity === 'critical'
+        )
+      : [];
 
     if (typeUsageIssues.length > 0) {
       lines.push('## 🔍 Type Usage Issues');
@@ -495,20 +537,51 @@ export class ReportGenerators {
       });
     }
 
+    // Add summary section
+    lines.push('## 📊 Summary');
+    lines.push('');
+    
+    const totalTypes = report.types ? report.types.length : 0;
+    const totalHierarchies = report.typeHierarchies ? report.typeHierarchies.size : 0;
+    const totalCircular = report.circularDependencies ? report.circularDependencies.length : 0;
+    const totalIssues = typeUsageIssues.length;
+    
+    lines.push(`- **Total Types Analyzed:** ${totalTypes}`);
+    lines.push(`- **Type Hierarchies Found:** ${totalHierarchies}`);
+    lines.push(`- **Circular Dependencies:** ${totalCircular}`);
+    lines.push(`- **Critical Type Issues:** ${totalIssues}`);
+    
+    if (totalCircular > 0) {
+      lines.push('');
+      lines.push('> ⚠️ **Warning:** Circular dependencies detected. Consider refactoring to break these cycles.');
+    }
+    
+    if (totalIssues === 0 && totalCircular === 0) {
+      lines.push('');
+      lines.push('> ✅ **Excellent!** No critical type issues or circular dependencies found.');
+    }
+
     return lines.join('\n');
   }
 
   private static printTypeHierarchy(hierarchy: TypeHierarchy, lines: string[], depth: number): void {
+    // Add null checks at the start
+    if (!hierarchy || !hierarchy.children || !Array.isArray(hierarchy.children)) return;
+    
     const indent = '  '.repeat(depth);
     const bullet = depth === 1 ? '└──' : '├──';
 
     hierarchy.children.forEach((child, index) => {
+      // Add null checks for child and child.root
+      if (!child || !child.root) return;
+      
       const isLast = index === hierarchy.children.length - 1;
       const connector = isLast ? '└──' : '├──';
       
       lines.push(`${indent}${connector} ${child.root.name} (${child.root.type})`);
       
-      if (child.children.length > 0) {
+      // Add null check for child.children before accessing length
+      if (child.children && Array.isArray(child.children) && child.children.length > 0) {
         const newIndent = indent + (isLast ? '    ' : '│   ');
         this.printTypeHierarchy(child, lines, depth + 1);
       }

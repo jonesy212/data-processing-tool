@@ -1,5 +1,5 @@
 // ModalFunctions.ts
-import { useState } from "react";
+import { useState, React } from "react";
 
 interface ModalFunctions {
   isModalOpen: boolean;
@@ -12,7 +12,7 @@ interface ModalFunctions {
   setSuccessMessage: (message: string | null) => void; 
   setErrorMessage: (message: string | null) => void; 
   setIsModalOpen: (isOpen: boolean) => void;
-  setModalContent: (content: JSX.Element) => void;
+  setModalContent: (content: React.JSX.Element) => void;
 }
 
 

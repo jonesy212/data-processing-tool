@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
-import { ChatSettingsPanel } from "@/app/components/communications/chat/ChatSettingsPanel";
+import ChatSettingsPanel from "@/app/components/communications/chat/ChatSettingsPanel";
 import RichTextEditor from "@/app/documents/RichTextEditor";
 import {
   ToolbarOptionsComponent,

@@ -1,5 +1,5 @@
 import { AppEntity } from '@/app/typings/entities/AppEntity';
-import { ParsedData } from "@/app/crypto/dataIntegration";
+import { ParsedData } from "@/app/dataIntegration";
 import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -46,9 +46,9 @@ function convertToYourSettingsResponseType<
     data: ParsedData<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {
+      // Populate other properties as necessary...
         id: data.id,
         appName: data.appName,
-        // Populate other properties as necessary...
         calendarEvents: data.calendarEvents,
         todos: data.todos,
         tasks: data.tasks,

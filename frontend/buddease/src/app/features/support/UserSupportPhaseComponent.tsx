@@ -15,18 +15,19 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
   initialPhase,
   onPhaseChange
 }) => {
-  // Define steps for each phase
+  // Define steps for each phase with proper Step interface structure
   const phaseSteps = {
     [UserSupportPhase.USER_PHASE_PLANNING]: [
       {
         id: 'support-needs',
         title: 'Support Needs Assessment',
         component: BasicInfoStep,
+        status: 'pending' as const, // Add status
         props: {
           fields: [
-            { label: 'Support Type', name: 'supportType', type: 'select', options: ['Technical', 'Billing', 'Account', 'Other'], required: true },
-            { label: 'Urgency Level', name: 'urgency', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'], required: true },
-            { label: 'Description', name: 'description', type: 'textarea', required: true }
+            { label: 'Support Type', name: 'supportType', type: 'select' as const, options: ['Technical', 'Billing', 'Account', 'Other'], required: true },
+            { label: 'Urgency Level', name: 'urgency', type: 'select' as const, options: ['Low', 'Medium', 'High', 'Critical'], required: true },
+            { label: 'Description', name: 'description', type: 'textarea' as const, required: true }
           ]
         }
       },
@@ -34,6 +35,7 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
         id: 'resource-planning',
         title: 'Resource Planning',
         component: GenericStepContainer,
+        status: 'pending' as const, // Add status
         props: {
           children: <div>Plan resources and assign support team members</div>
         }
@@ -44,10 +46,11 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
         id: 'action-plan',
         title: 'Action Plan',
         component: BasicInfoStep,
+        status: 'pending' as const, // Add status
         props: {
           fields: [
-            { label: 'Action Steps', name: 'actions', type: 'textarea', required: true },
-            { label: 'Timeline', name: 'timeline', type: 'text', required: true }
+            { label: 'Action Steps', name: 'actions', type: 'textarea' as const, required: true },
+            { label: 'Timeline', name: 'timeline', type: 'text' as const, required: true }
           ]
         }
       }
@@ -57,6 +60,7 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
         id: 'progress-tracking',
         title: 'Progress Tracking',
         component: GenericStepContainer,
+        status: 'pending' as const, // Add status
         props: {
           children: <div>Monitor support progress and user satisfaction</div>
         }
@@ -67,11 +71,12 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
         id: 'feedback',
         title: 'Feedback & Closure',
         component: BasicInfoStep,
+        status: 'pending' as const, // Add status
         props: {
           fields: [
-            { label: 'Resolution Summary', name: 'resolution', type: 'textarea', required: true },
-            { label: 'User Feedback', name: 'feedback', type: 'textarea' },
-            { label: 'Satisfaction Rating', name: 'rating', type: 'select', options: ['1', '2', '3', '4', '5'] }
+            { label: 'Resolution Summary', name: 'resolution', type: 'textarea' as const, required: true },
+            { label: 'User Feedback', name: 'feedback', type: 'textarea' as const },
+            { label: 'Satisfaction Rating', name: 'rating', type: 'select' as const, options: ['1', '2', '3', '4', '5'] }
           ]
         }
       }
@@ -94,6 +99,9 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
     }
   };
 
+  // Get the current step's props safely
+  const currentStepProps = steps[currentStep]?.props || {};
+
   return (
     <div className="user-support-phase">
       <div className="phase-header">
@@ -111,7 +119,7 @@ const UserSupportPhaseComponent: React.FC<UserSupportPhaseProps> = ({
           currentStep={currentStep}
           totalSteps={steps.length}
           stepData={{}}
-          {...steps[currentStep]?.props}
+          {...currentStepProps} // Now this will work
         />
       )}
     </div>

@@ -10,6 +10,7 @@ export interface DatabaseConfig {
   password: string;
   port: number;
   authToken?: string;
+  batchSize?: number
 }
 
 export const getDatabaseConfig = (): DatabaseConfig => ({

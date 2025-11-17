@@ -4,11 +4,13 @@ import { DynamicHookParams } from "./DynamicHookParams";
 import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
+// Platform-agnostic timeout type
+type TimeoutHandle = ReturnType<typeof setTimeout>;
+
 const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType => {
-  let timeoutId: NodeJS.Timeout | null = null; // Initialize with null instead of undefined
+  let timeoutId: TimeoutHandle | null = null;
 
   const onTimeout = () => {
-    // Call clearUserData on timeout
     clearUserData();
   };
 
@@ -20,17 +22,13 @@ const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType =
   };
 
   const resetIdleTimeout = async (): Promise<void> => {
-    // Clear the existing idle timeout (if any)
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
-
-    // Start a new idle timeout
     startIdleTimeout(IDLE_TIMEOUT_DURATION, onTimeout);
   };
 
   const idleTimeoutCleanup = () => {
-    // Clear the timeout when the component unmounts or the hook is no longer used
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
     }
@@ -40,7 +38,6 @@ const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType =
   };
 
   const idleTimeoutConditionAsync = async () => {
-    // Perform asynchronous operations to determine if the idle timeout condition is met
     return true;
   };
 
@@ -48,7 +45,7 @@ const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType =
     idleTimeoutId,
     startIdleTimeout,
   }: {
-    idleTimeoutId: NodeJS.Timeout | null;
+    idleTimeoutId: TimeoutHandle | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }): Promise<() => void> => {
     showModalOrNotification(
@@ -75,7 +72,6 @@ const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType =
 
   const useIdleTimeoutHook = createDynamicHook(idleTimeoutParams);
 
-  // Return the necessary properties/methods from the dynamic hook
   return {
     intervalId: undefined,
     isActive: useIdleTimeoutHook.isActive,

@@ -1,0 +1,113 @@
+/* Access Control Styles */
+.access-denied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.access-denied-content {
+  max-width: 400px;
+}
+
+.access-denied .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.access-denied h3 {
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.feature-info, .role-info {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Viewer Styles */
+.file-structure-viewer,
+.frontend-structure-viewer {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.access-badge {
+  padding: 0.25rem 0.5rem;
+  background: #6c757d;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.sensitive-badge {
+  padding: 0.2rem 0.4rem;
+  background: #dc3545;
+  color: white;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+
+.file-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.file-path {
+  color: #6c757d;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.file-description {
+  color: #495057;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.file-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}

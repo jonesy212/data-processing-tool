@@ -1,13 +1,68 @@
 // commonDataStoreMethods
-// CommonDataStoreMethodsImpl.ts
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { Subscriber } from '@/app/snapshots/Subscriber';
-import { FilterCriteria, SearchCriteria, MixedCriteria } from '@/app/snapshots/Criteria';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { FilterCriteria } from '@/app/pages/searches/CriteriaType';
+import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
+import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 
+
+
+// Helper functions (can be in same file or imported)
+const matchesCriteria = <T extends BaseDataEntity>(
+  data: T,
+  criteria: FilterCriteria | SearchCriteria | MixedCriteria
+): boolean => {
+  if ('filters' in criteria) {
+    // Handle FilterCriteria
+    return criteria.filters.every(filter => {
+      const value = (data as any)[filter.field];
+      return evaluateFilter(value, filter.operator, filter.value);
+    });
+  } else if ('query' in criteria) {
+    // Handle SearchCriteria
+    const query = criteria.query.toLowerCase();
+    return Object.values(data).some(value => 
+      String(value).toLowerCase().includes(query)
+    );
+  } else {
+    // Handle MixedCriteria or default case
+    return true;
+  }
+};
+
+const evaluateFilter = (value: any, operator: string, filterValue: any): boolean => {
+  switch (operator) {
+    case 'equals':
+      return value === filterValue;
+    case 'contains':
+      return String(value).includes(String(filterValue));
+    case 'greaterThan':
+      return value > filterValue;
+    case 'lessThan':
+      return value < filterValue;
+    default:
+      return true;
+  }
+};
+
+const removeDuplicates = <T extends BaseDataEntity>(items: T[]): T[] => {
+  const seen = new Set();
+  return items.filter(item => {
+    const identifier = item.id || JSON.stringify(item);
+    if (seen.has(identifier)) {
+      return false;
+    }
+    seen.add(identifier);
+    return true;
+  });
+};
+
+// Main export
 export const CommonDataStoreMethods = {
   // Implement getSnapshotByKey
   getSnapshotByKey<
@@ -144,7 +199,7 @@ export const CommonDataStoreMethods = {
     if (this.snapshots && this.snapshots.length > 0) {
       results = this.snapshots
         .map(snapshot => snapshot.data)
-        .filter(data => this.matchesCriteria(data, criteria));
+        .filter(data => matchesCriteria(data, criteria));
     }
     
     // Search through data stores if available
@@ -155,7 +210,7 @@ export const CommonDataStoreMethods = {
       }
     }
     
-    return this.removeDuplicates(results);
+    return removeDuplicates(results);
   },
 
   // Implement addData
@@ -192,57 +247,5 @@ export const CommonDataStoreMethods = {
     
     // Notify subscribers
     this.notifySubscribers('dataAdded', newSnapshot);
-  },
-
-  // Helper method for criteria matching
-  private matchesCriteria<T extends BaseDataEntity>(
-    data: T,
-    criteria: FilterCriteria | SearchCriteria | MixedCriteria
-  ): boolean {
-    if ('filters' in criteria) {
-      // Handle FilterCriteria
-      return criteria.filters.every(filter => {
-        const value = (data as any)[filter.field];
-        return this.evaluateFilter(value, filter.operator, filter.value);
-      });
-    } else if ('query' in criteria) {
-      // Handle SearchCriteria
-      const query = criteria.query.toLowerCase();
-      return Object.values(data).some(value => 
-        String(value).toLowerCase().includes(query)
-      );
-    } else {
-      // Handle MixedCriteria or default case
-      return true;
-    }
-  },
-
-  // Helper method for filter evaluation
-  private evaluateFilter(value: any, operator: string, filterValue: any): boolean {
-    switch (operator) {
-      case 'equals':
-        return value === filterValue;
-      case 'contains':
-        return String(value).includes(String(filterValue));
-      case 'greaterThan':
-        return value > filterValue;
-      case 'lessThan':
-        return value < filterValue;
-      default:
-        return true;
-    }
-  },
-
-  // Helper method to remove duplicates
-  private removeDuplicates<T extends BaseDataEntity>(items: T[]): T[] {
-    const seen = new Set();
-    return items.filter(item => {
-      const identifier = item.id || JSON.stringify(item);
-      if (seen.has(identifier)) {
-        return false;
-      }
-      seen.add(identifier);
-      return true;
-    });
   }
 };

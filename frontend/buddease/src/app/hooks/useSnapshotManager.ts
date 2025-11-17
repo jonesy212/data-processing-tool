@@ -23,7 +23,7 @@ import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { ExtractContextArgs } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshotStoreMap';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";

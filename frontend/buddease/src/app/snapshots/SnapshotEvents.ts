@@ -22,7 +22,7 @@ interface BaseEventCallbacks<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  onInitialize?: () => void;
+  onInitialize?: (callback: () => void) => void;
 
   on?: (
     event: string,

@@ -5,7 +5,7 @@ interface BrowserCheckProps {
   browsers: string[];
 }
 
-const BroswerCheck: React.FC<BrowswerCheckProps> = ({ browsers }) => {
+const BroswerCheck: React.FC<BrowserCheckProps> = ({ browsers }) => {
   return (
     <div>
       <h2>Browser Check Store</h2>

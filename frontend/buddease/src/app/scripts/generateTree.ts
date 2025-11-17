@@ -42,6 +42,7 @@ export class ProjectTreeAnalyzer {
       interfaces: Array.from(this.interfaceRegistry.entries()),
       components: Array.from(this.componentRegistry.entries()),
       apis: Array.from(this.apiRegistry.entries()),
+      files: [],
       totalFiles: this.fileCache.size,
     };
     
@@ -495,6 +496,7 @@ export async function main() {
 }
 
 // === TREE OUTPUT ===
+// === TREE OUTPUT ===
 async function generateTreeOutput(args: string[]) {
   const outputType = args[0] || 'text';
   const outputIndex = args.indexOf('--output');
@@ -510,7 +512,22 @@ async function generateTreeOutput(args: string[]) {
       extension = 'md';
       break;
     case 'json':
-      content = JSON.stringify({ generated: new Date().toISOString(), tree }, null, 2);
+      // Create a structured JSON object instead of a string with newlines
+      const treeLines = tree.split('\n').filter(line => line.trim());
+      const structuredTree = {
+        generated: new Date().toISOString(),
+        tree: {
+          raw: tree, // The original tree string
+          lines: treeLines, // Array of individual lines
+          formatted: treeLines.map(line => ({
+            level: (line.match(/│|└──|├──/g) || []).length,
+            content: line.trim(),
+            isDirectory: line.includes('└──') || line.includes('├──') ? 
+              line.includes('.') ? false : true : false
+          }))
+        }
+      };
+      content = JSON.stringify(structuredTree, null, 2);
       extension = 'json';
       break;
     default:

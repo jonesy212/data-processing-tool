@@ -1,13 +1,13 @@
 import { SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
-import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
+import { BaseEvent, CustomEventType, SystemEvent } from '@/app/events/BaseEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseCustomEvent, CustomEventExtension } from '@/app/events/BaseCustomEvent';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import handleSnapshotEvent from '@/app/snapshots/FetchableDataStore';
+import { handleSnapshotEvent } from '@/app/snapshots/FetchableDataStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { EventManager } from '@/app/state/stores/DataStore';

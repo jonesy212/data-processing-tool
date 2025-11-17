@@ -2,6 +2,8 @@
 import { } from '@/app/typings/phaseTypes'
 import { AppProps } from "next/app";
 import { NextRouter={}, Router, useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { EnhancedThemeProvider } from '@/app/libraries/ui/theme/EnhancedThemeProvider';
 import CaptionManagementPageComponent from "@/app/features/videos/CaptionManagementComponent";
 import {

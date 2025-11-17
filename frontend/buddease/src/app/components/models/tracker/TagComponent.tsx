@@ -2,7 +2,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { TagEntity } from '@/app/typings/entities/TagEntity';
-
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
 import { SpecificMetadata } from '@/app/config/StructuredMetadata';
 import { Tag, TagOptions } from '@/app/models/tracker/Tag';
 import { AllTypes } from '@/app/typings/PropTypes';
@@ -12,14 +12,11 @@ import React from 'react';
 interface TagProps<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > { 
   tagOptions: TagOptions<T>,
   excludedFields?: ExcludedFields,
-  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  meta: Meta
 }
 
 // Functional Component TagComponent
@@ -104,6 +101,12 @@ const tagOptions2: TagOptions<TagEntity> = {
   timestamp: 0,
   nulltype: {} as AllTypes
 };
+
+
+const meta: StructuredMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> = {
+  
+}
+
 const tag1: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions1} />;
 const tag2: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions2} />;
 
@@ -112,14 +115,7 @@ tag1.props.children;
 tag2.props.children;
 
 // Sorting function for TagOptions
-const localeCompare = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
+const localeCompare = <T extends BaseDataEntity>(
   a: TagOptions<T>,
   b: TagOptions<T>
 ): number => {
@@ -128,14 +124,7 @@ const localeCompare = <
   return nameA.localeCompare(nameB);
 };
 
-const sortTags = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(tags: TagOptions<T>[]) => {
+const sortTags = <T extends BaseDataEntity>(tags: TagOptions<T>[]) => {
   tags.sort(localeCompare);
   return tags;
 };
@@ -193,12 +182,9 @@ function processTags<
 function processVideoMetadata<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
-  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  meta: Meta
 ): void {
   if (meta.tags) {
     if (Array.isArray(meta.tags)) {

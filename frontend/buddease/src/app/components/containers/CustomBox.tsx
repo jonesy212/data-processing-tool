@@ -3,7 +3,7 @@ import ResizablePanels, {
 } from "@/app/hooks/userInterface/ResizablePanels";
 import {
   ButtonGenerator,
-  buttonGeneratorProps,
+  useButtonGeneratorProps, // Import the hook
 } from "@/app/generators/GenerateButtons";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
@@ -20,7 +20,6 @@ import DynamicComponent from "@/app/styling/DynamicComponents";
 import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
 import DynamicTypography from "@/app/styling/DynamicTypography";
 
-
 interface CustomBoxProps extends ResizablePanelsProps {
   children: ReactNode[];
   selectedFile?: File | null;
@@ -29,26 +28,26 @@ interface CustomBoxProps extends ResizablePanelsProps {
   mt: number;
 }
 
-
 const CustomBox: React.FC<CustomBoxProps> = ({
   children,
   selectedFile,
   handleFileSelect,
   handleFileUpload,
 }) => {
-  const panelSizes = () => [300, 300]; // Change sizes to panelSizes
-  const router = useRouter(); // Get the router object using useRouter hook
+  const panelSizes = () => [300, 300];
+  const router = useRouter();
   const formID = useRef<HTMLFormElement>(null);
+  
   // Define state to hold the number of panels
   const { numPanels, handleNumPanelsChange, panelContents } = usePanelContents();
-
-  // Usage in JSX
-  <input type="number" value={numPanels} onChange={handleNumPanelsChange} />;
+  
+  // Use the new hook to get button props
+  const { buttonProps, currentPhase, lifecycleManager } = useButtonGeneratorProps();
 
   const onResize = (newSizes: number[]) => {
     console.log("New sizes:", newSizes);
   };
- 
+
   return (
     <ResizablePanels
       sizes={panelSizes()}
@@ -87,7 +86,6 @@ const CustomBox: React.FC<CustomBoxProps> = ({
 
             <div style={{ marginTop: "16px" }}>
               {selectedFile && <p>Selected File: {selectedFile.name}</p>}
-              {/* Update the Button component here */}
               <ReusableButton
                 variant="contained"
                 label="Upload File"
@@ -96,7 +94,7 @@ const CustomBox: React.FC<CustomBoxProps> = ({
                 disabled={!selectedFile}
                 style={{ marginLeft: "16px" }}
                 router={router as ExtendedRouter & Router}
-                brandingSettings={brandingSettings} // Pass brandingSettings prop
+                brandingSettings={brandingSettings}
               >
                 Upload File
               </ReusableButton>
@@ -116,14 +114,12 @@ const CustomBox: React.FC<CustomBoxProps> = ({
           title="Dynamic Card"
           content="Dynamic Card Content"
         />
-        {/* Generated buttons from ButtonGenerator */}
-        <ButtonGenerator {...buttonGeneratorProps} />
+        <ButtonGenerator {...buttonProps} />
       </div>
       <div>{children}</div>
-      // Usage in JSX
       <CustomSlider
         min={1}
-        max={10} // Adjust the maximum value as needed
+        max={10}
         value={numPanels}
         onChange={handleNumPanelsChange}
       />

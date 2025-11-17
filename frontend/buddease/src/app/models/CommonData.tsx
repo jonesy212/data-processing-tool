@@ -15,7 +15,7 @@ import { NotificationType } from '@/app/state/context/NotificationContext';
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { RealtimeDataComponent } from "@/app/hooks/commHooks/realtime/RealtimeData";
+import { RealtimeDataComponent } from '@/app/components/models/realtime/RealtimeDataComponent'
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
@@ -131,8 +131,8 @@ interface CommonData<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  UserOwned<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  UserOwned<T, K>,
   Taggable<T>,
   Identifiable,
   Describable,

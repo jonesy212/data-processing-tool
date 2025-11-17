@@ -1,5 +1,9 @@
+// src/app/state/slices/RootSlice.ts
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BlogState } from '@/app/state/redux/slices/BlogSlice';
 import { PagingState } from './../../../pages/Paging';
 import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
@@ -22,7 +26,6 @@ import { UIState } from '@/app/state/stores/UISlice';
 import { AlignmentOptions } from './toolbarSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { ToolbarState } from '@/app/state/stores/ToolbarStore';
-// src/app/state/slices/RootSlice.ts
 import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
 import { v4 as uuidv4 } from "uuid";
@@ -31,6 +34,7 @@ import { v4 as uuidv4 } from "uuid";
 import { AppTask, TaskCollection } from "@/app/typings/entities/TaskEntity";
 import { FilteredEventsState } from "@/app/state/stores/FilterStore";
 import { UserManagerState } from "@/app/state/redux/slices//UserSlice";
+import { DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields } from '@/app/typings/entities/DrawingEntity'
 
 /** Task payloads */
 type NewTaskPayload = Partial<AppTask> & { title: string };
@@ -161,6 +165,7 @@ const rootSlice = createSlice({
 
          assigneeId, data, progress, getData,
          source, date, major, minor,
+         participants, uploadedAt, phase, phaseName,
         // Add any other AppTask fields your TaskEntity defines...
       } as AppTask;
       state.tasks.unshift(newTask);

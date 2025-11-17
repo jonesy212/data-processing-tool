@@ -5,6 +5,7 @@ import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { UserData } from '@/app/users/User';
 import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
+
 import { useEffect, useState } from 'react';
 // Define the ChatSettingsPanel component
 const ChatSettingsPanel: React.FC = () => {

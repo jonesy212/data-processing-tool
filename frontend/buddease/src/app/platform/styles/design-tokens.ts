@@ -1,4 +1,4 @@
-import { Theme } from './Theme';
+import { Theme } from '@/app/libraries/ui/theme/Theme'
 
 // Design tokens that users can customize
 export interface DesignTokens {

@@ -1,10 +1,11 @@
 // analyzers/ReactWebAnalyzer.ts
-import { BaseAnalyzer } from './BaseAnalyzer';
+import { BuildAnalyzer } from '@/app/generators/corrections/analyzers/BuildAnalyzer';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-export class ReactWebAnalyzer extends BaseAnalyzer {
+export class ReactWebAnalyzer extends BuildAnalyzer {
     private reactWebErrors = {
         // React Web-specific errors
         'Hook called conditionally': {
@@ -542,14 +543,6 @@ export class ReactWebAnalyzer extends BaseAnalyzer {
             return false;
         }
     }
-
-    private extractLineContaining(content: string, searchText: string): string {
-        const lines = content.split('\n');
-        const line = lines.find(l => l.includes(searchText));
-        return line || 'Not found';
-    }
-    
-    
     
     private async analyzeReactErrorPatterns(): Promise<Correction[]> {
         const corrections: Correction[] = [];
@@ -575,20 +568,36 @@ export class ReactWebAnalyzer extends BaseAnalyzer {
 
     private async scanReactSourceFiles(dir: string): Promise<Correction[]> {
         const corrections: Correction[] = [];
-  
+
         try {
             const files = await fs.promises.readdir(dir, { recursive: true });
-    
+
             for (const file of files) {
-                if (this.isReactSourceFile(file)) {
-                    const filePath = path.join(dir, file);
-                    try {
-                        const content = await fs.promises.readFile(filePath, 'utf8');
-                        const fileErrors = this.analyzeReactSourceFile(content, filePath);
-                        corrections.push(...fileErrors);
-                    } catch (error) {
-                        console.warn(`Could not read file ${filePath}:`, error);
+                if (!this.isReactSourceFile(file)) continue;
+
+                const filePath = path.join(dir, file);
+
+                /* ----  NEW: skip folders that look like source files  ---- */
+                const stat = await fs.promises.stat(filePath).catch(() => null);
+                if (!stat || stat.isDirectory()) {
+                    if (stat?.isDirectory()) {
+                        console.log(
+                            chalk.yellow(
+                                `⚠️  Skipped directory that looks like a source file: ${path.relative(process.cwd(), filePath)} ` +
+                                `(rename or remove the folder to suppress this message)`
+                            )
+                        );
                     }
+                    continue;
+                }
+
+                /* ----  normal file processing  ---- */
+                try {
+                    const content = await fs.promises.readFile(filePath, 'utf8');
+                    const fileErrors = this.analyzeReactSourceFile(content, filePath);
+                    corrections.push(...fileErrors);
+                } catch (readError) {
+                    console.warn(`Could not read file ${filePath}:`, readError);
                 }
             }
         } catch (error) {

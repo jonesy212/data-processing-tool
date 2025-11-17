@@ -17,8 +17,8 @@ import { internalCache } from '@/utils/cache/InternalCache';
 
 export interface BaseDataEntity {
   id?: string | number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   tempData?: { 
     tempResults: any[];
     cacheTime: Date;

@@ -1,5 +1,6 @@
+import { FileMetadata } from '@/app/typings/file/FileManager';
 // FileEntity.ts
-import { CommonData } from '@/app/components/models/CommonData';
+import { CommonData } from '@/app/models/CommonData';
 import FileMetadata from '@/app/components/models/file/FileManager';
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -57,6 +58,6 @@ export type FileExcludedFields = 'content' | 'encryptionKey' | 'previousVersions
 export type FileIncludedFields = keyof AppFileEntity;
 
 // Create specific type aliases
-export type MainAppFile = AppFile<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
+export type MainAppFile = AppFile
 export type AppFileCommonData = CommonData<AppFileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields>;
 

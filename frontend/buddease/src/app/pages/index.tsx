@@ -32,9 +32,37 @@ const Index: React.FC<{}> = () => {
   const router = useRouter();
   const { state: authState, dispatch: authDispatch } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [syncScript] = useState(() => 
+    new ApiSynchronizationScript(
+      'https://your-api.com',
+      authToken,
+      'UserEntity'
+    )
+  );
 
   // Simulate redirection to the dashboard after registration
   useEffect(() => {
+     // Initialize synchronization
+    const initializeSync = async () => {
+      try {
+        await syncScript.syncAllData();
+        console.log('Initial sync completed');
+      } catch (error) {
+        console.error('Initial sync failed:', error);
+      }
+    };
+
+    initializeSync();
+
+      // Set up periodic synchronization (every 5 minutes)
+    const syncInterval = setInterval(() => {
+        syncScript.syncAllData().catch(console.error);
+      }, 5 * 60 * 1000);
+
+      return () => clearInterval(syncInterval);
+    }, [syncScript]);
+
+
     hydrate(rootStores.constructor.name);
 
     const authenticateUser = async () => {

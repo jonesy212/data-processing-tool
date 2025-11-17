@@ -1,54 +1,187 @@
-import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
-import { getUserData, getUsersData } from "@/app/api/UsersApi";
-import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
+// AppTreeService.ts - Enhanced Version
+import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
+import DirectoryExplorer from './DirectoryExplorer';
+import { FileTreeService, FileTreeNode } from './FileTreeService';
+import appTreeApiService from './appTreeApi';
 
-class AppTreeService {
-  // Function to fetch user IDs from the database
-  static async getUserIds(): Promise<string[]> {
-    try {
-      const taskId = useTaskManagerStore().taskId
-      // Fetch user IDs from the database
-      const userIds = await fetchUserIdsFromDatabase(String(taskId));
-      return userIds;
-    } catch (error) {
-      console.error("Error fetching user IDs:", error);
-      return []; // Return an empty array or handle as needed
-    }
+export class AppTreeService {
+  private projectAnalyzer: ProjectTreeAnalyzer;
+  private directoryExplorer: DirectoryExplorer;
+  private fileTreeService: FileTreeService;
+
+  constructor(rootPath: string = process.cwd()) {
+    this.projectAnalyzer = new ProjectTreeAnalyzer(rootPath);
+    this.fileTreeService = new FileTreeService();
+    // Initialize with current directory structure
+    const initialTree = this.fileTreeService.generateFileTree(rootPath);
+    this.directoryExplorer = new DirectoryExplorer(JSON.stringify(initialTree));
   }
 
-  // Fetch single user data
-  static async getTree() {
-    try {
-      const userIds = await this.getUserIds(); // Get user IDs
-      if (userIds.length === 0) {
-        throw new Error("No user IDs found.");
-      }
-
-      // Fetch data for the first user ID as an example
-      const usersData = await getUserData(userIds[0]);
-      return usersData;
-    } catch (error) {
-      console.error("Error fetching app tree:", error);
-      return null;
+  // Comprehensive project analysis
+  async analyzeProject(userQuery?: string): Promise<any> {
+    const analysis = await this.projectAnalyzer.analyzeProjectTree();
+    const treeStructure = this.fileTreeService.generateFileTree(process.cwd());
+    
+    let contextResponse = '';
+    if (userQuery) {
+      contextResponse = this.directoryExplorer.exploreDirectory(userQuery);
     }
+
+    // Get app tree data from API service
+    const appTreeData = await appTreeApiService.getTree();
+
+    return {
+      projectAnalysis: analysis,
+      fileTree: treeStructure,
+      contextResponse,
+      appTreeData,
+      timestamp: new Date().toISOString()
+    };
   }
 
-  // Fetch data for multiple users
-  static async getTrees() {
-    try {
-      const userIds = await this.getUserIds(); // Get user IDs
-      if (userIds.length === 0) {
-        throw new Error("No user IDs found.");
-      }
+  // Search across multiple data sources
+  async comprehensiveSearch(query: string): Promise<{
+    fileResults: FileTreeNode[];
+    analysisResults: any[];
+    apiResults: any[];
+  }> {
+    const fileTree = this.fileTreeService.generateFileTree(process.cwd());
+    
+    // Search in file names and content
+    const fileResults = this.fileTreeService.searchFiles(fileTree, query, true);
+    
+    // Search in project analysis
+    const analysis = await this.projectAnalyzer.analyzeProjectTree();
+    const analysisResults = this.searchInAnalysis(analysis, query);
+    
+    // Search in app tree data
+    const appTreeData = await appTreeApiService.getTree();
+    const apiResults = this.searchInAppTree(appTreeData, query);
 
-      // Fetch data for all user IDs
-      const usersData = await getUsersData(userIds);
-      return usersData;
+    return {
+      fileResults,
+      analysisResults,
+      apiResults
+    };
+  }
+
+  private searchInAnalysis(analysis: any, query: string): any[] {
+    const results = [];
+    const searchTerm = query.toLowerCase();
+
+    // Search in interfaces
+    analysis.interfaces.forEach(([name, interfaceInfo]: [string, any]) => {
+      if (name.toLowerCase().includes(searchTerm) || 
+          interfaceInfo.file.toLowerCase().includes(searchTerm)) {
+        results.push({ type: 'interface', data: interfaceInfo });
+      }
+    });
+
+    // Search in components
+    analysis.components.forEach(([name, component]: [string, any]) => {
+      if (name.toLowerCase().includes(searchTerm) || 
+          component.file.toLowerCase().includes(searchTerm)) {
+        results.push({ type: 'component', data: component });
+      }
+    });
+
+    // Search in APIs
+    analysis.apis.forEach(([filePath, apiInfo]: [string, any]) => {
+      if (filePath.toLowerCase().includes(searchTerm) || 
+          apiInfo.methods.some((method: any) => 
+            method.name.toLowerCase().includes(searchTerm))) {
+        results.push({ type: 'api', data: apiInfo });
+      }
+    });
+
+    return results;
+  }
+
+  private searchInAppTree(appTreeData: any, query: string): any[] {
+    const results = [];
+    const searchTerm = query.toLowerCase();
+
+    // Recursive search function
+    const searchRecursive = (obj: any, path: string = '') => {
+      if (typeof obj === 'object' && obj !== null) {
+        Object.entries(obj).forEach(([key, value]) => {
+          const currentPath = path ? `${path}.${key}` : key;
+          
+          if (key.toLowerCase().includes(searchTerm)) {
+            results.push({ path: currentPath, value });
+          }
+          
+          if (typeof value === 'object' && value !== null) {
+            searchRecursive(value, currentPath);
+          } else if (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) {
+            results.push({ path: currentPath, value });
+          }
+        });
+      }
+    };
+
+    searchRecursive(appTreeData);
+    return results;
+  }
+
+  // Generate reports combining all data sources
+  async generateComprehensiveReport(userPrompt: string): Promise<any> {
+    const analysisReport = await this.projectAnalyzer.generateReport(userPrompt);
+    const comprehensiveAnalysis = await this.analyzeProject(userPrompt);
+    const searchResults = await this.comprehensiveSearch(userPrompt);
+
+    return {
+      ...analysisReport,
+      comprehensiveAnalysis,
+      searchResults,
+      recommendations: this.generateRecommendations(analysisReport, searchResults)
+    };
+  }
+
+  private generateRecommendations(analysisReport: any, searchResults: any): string[] {
+    const recommendations: string[] = [];
+
+    // Component recommendations
+    if (analysisReport.suggestedComponents.length > 0) {
+      recommendations.push(`Found ${analysisReport.suggestedComponents.length} relevant components for your project`);
+    }
+
+    // API recommendations
+    if (analysisReport.suggestedApis.length > 0) {
+      recommendations.push(`Found ${analysisReport.suggestedApis.length} API services that match your requirements`);
+    }
+
+    // File structure recommendations
+    if (searchResults.fileResults.length > 0) {
+      recommendations.push(`Found ${searchResults.fileResults.length} files matching your search criteria`);
+    }
+
+    // Performance recommendations based on analysis
+    if (analysisReport.projectStructure.totalFiles > 100) {
+      recommendations.push('Consider implementing code splitting for better performance');
+    }
+
+    return recommendations;
+  }
+
+  // Refresh all data sources
+  async refreshAllData(): Promise<void> {
+    try {
+      // Refresh app tree from API
+      await appTreeApiService.refreshAppTreeFromApi();
+      
+      // Clear analyzer cache
+      this.projectAnalyzer.clearCache();
+      
+      // Regenerate file tree
+      this.fileTreeService.generateFileTree(process.cwd());
+      
+      console.log('✅ All data sources refreshed successfully');
     } catch (error) {
-      console.error("Error fetching app trees:", error);
-      return null;
+      console.error('❌ Error refreshing data sources:', error);
+      throw error;
     }
   }
 }
 
-export default AppTreeService;
+export default new AppTreeService();

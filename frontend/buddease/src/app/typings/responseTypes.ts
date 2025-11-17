@@ -99,7 +99,8 @@ interface YourSettingsResponseType<
   todoTypes: TodoType[];
   taskTypes: TaskType[];
   snapshotStoreTypes: SnapshotStoreType<T>[];
-
+  appName: string;
+  activePhase?: string;
 }
 
 

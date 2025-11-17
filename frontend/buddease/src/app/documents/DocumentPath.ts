@@ -26,17 +26,17 @@ interface DocumentPath<
   _id: string;
   title: string;
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  documents: DocumentPath<T, K, Meta>[];
+  documents: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   permissions?: AppStructurePermissions;
   folders: string[];
   folderPath: string;
-  previousContent?: Content<T, K, Meta>;
-  currentContent?: Content<T, K, Meta>;
+  previousContent?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  currentContent?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousMeta?: Meta;
   currentMeta?: Meta;
   accessHistory: AccessHistory[];
   documentPhase?: string;
-  version?: Version<T, K, Meta>;
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   visibility: string;
   documentSize: { size: number };
@@ -45,7 +45,7 @@ interface DocumentPath<
   createdByRenamed: string;
   createdDate: string;
   documentType: string;
-  documentData?: any;
+  documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   document?: any;
   
   // CouchDB/Elasticsearch fields

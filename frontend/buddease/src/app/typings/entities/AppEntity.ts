@@ -12,7 +12,17 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Core App type definitions
-type AppEntity = BaseDataEntity;
+interface AppEntity extends BaseDataEntity {
+  // Common app-level properties
+  appId: string;
+  appName: string;
+  version: string;
+  environment: 'development' | 'staging' | 'production';
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'active' | 'inactive' | 'maintenance';
+}
+
 type AppK = AppEntity;
 type AppMeta = DefaultMeta<AppEntity, AppK>;
 type AppAttachment = Attachment;

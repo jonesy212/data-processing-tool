@@ -11,11 +11,24 @@ export interface IDatabaseService {
   createDatabase(config: DatabaseConfig): Promise<void>;
 }
 
-// In your database types file, ensure it's defined like this:
 export enum DatabaseType {
   POSTGRES = 'postgres',
   MYSQL = 'mysql',
   FLUENCE = 'fluence',
-  // MONGODB = 'mongodb'
-  // etc...
 }
+
+interface StructuredBackend {
+  structureHash: string | undefined;
+  getStructureHash(): Promise<string | undefined>;
+  setStructureHash(hash: string): Promise<void>;
+}
+
+interface Schema {
+  [key: string]: any;
+}
+
+interface DatabaseSchema extends Schema {}
+interface ServiceSchema extends Schema {}
+interface StructureSchema extends Schema {}
+
+export type { Schema, DatabaseSchema, ServiceSchema, StructureSchema, StructuredBackend }

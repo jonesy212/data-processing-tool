@@ -4,7 +4,7 @@ import { createHeaders } from "@/app/api/ApiClient";
 import internalApiService from '@/app/api/ApiClient'; // Use internalApiService instead
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { UserActions } from "@/app/actions/UserActions";
-import Logger from "@/app/libraries/logging/Logger";
+import Logger from "@/app/logging/Logger";
 import { UserRole } from "@/app/models/UserRole";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";

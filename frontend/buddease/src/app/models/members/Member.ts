@@ -68,7 +68,7 @@ const memberData: MemberData<
 
 	activityStatus: "online",
 	activityLog: {
-		activity: [], 
+		activity: {}, 
 		action: []
 	},
 
@@ -112,6 +112,12 @@ const memberData: MemberData<
 						persona: null,
 						friends: [],
 						blockedUsers: [],
+						data: {} as Data<MemberEntity,
+										MemberK,
+										MemberMeta,
+										MemberAttachment,
+										MemberExcludedFields,
+										MemberIncludedFields>
 						// Add other required User properties
 					} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>
 				}
@@ -165,7 +171,7 @@ const memberData: MemberData<
 			persona: null,
 			friends: [],
 			blockedUsers: [],
-			data: 
+			data: {} as UserData<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>
 			// Add other required User properties
 		} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
 		{
@@ -181,6 +187,7 @@ const memberData: MemberData<
 			persona: null,
 			friends: [],
 			blockedUsers: [],
+			data: {} as UserData<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>
 			// Add other required User properties
 		} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
 	],
@@ -246,6 +253,8 @@ const memberData: MemberData<
 		{
 			id: "activity-001",
 			type: "login",
+			activity: {}, 
+			action: [],
 			timestamp: new Date("2024-01-20T10:00:00"),
 			details: "User logged in successfully"
 		}
@@ -329,7 +338,7 @@ const memberData: MemberData<
 	joinDate: new Date("2023-01-15"),
 	lastActive: new Date("2024-01-20T14:30:00"),
 	status: "active",
-	projects: {},
+	projects: [],
 	permissions: ["read", "write", "comment"]
 };
 

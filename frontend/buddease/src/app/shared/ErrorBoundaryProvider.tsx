@@ -2,7 +2,7 @@ import React, { createContext, ReactNode } from 'react';
 
 // Define a specific type for the error handler
 interface ErrorHandlerType {
-  logError: (error: Error) => void;
+  logError: (error: Error, errorInfo: ErrorInfo) => Promise<void>
   // Add other methods as necessary
 }
 

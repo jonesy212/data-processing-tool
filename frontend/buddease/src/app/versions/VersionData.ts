@@ -768,5 +768,5 @@ function calculateChecksum(content: string): string {
 }
 
 export { createDefaultVersionData, versionHistory };
-export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, SharedVersioning, VersionData, VersionHistory };
+export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, SharedVersioning, VersionData, VersionHistory, SharedContent };
 

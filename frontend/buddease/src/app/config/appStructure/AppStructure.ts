@@ -12,7 +12,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
 
-const userId = useSecureUserId()
+const { userId } = useSecureUserId()
 
 type UnifiedVersionMap<
   T extends BaseDataEntity,

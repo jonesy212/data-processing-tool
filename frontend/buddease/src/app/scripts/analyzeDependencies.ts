@@ -25,6 +25,7 @@ class TypeScriptDependencyAnalyzer {
         console.warn(`⚠️ Could not read file: ${file}`);
       }
     }
+    
 
     const circularDependencies = this.findCircularDependencies(extendsMap);
     const inheritanceChains = this.findLongInheritanceChains(extendsMap);
@@ -35,6 +36,41 @@ class TypeScriptDependencyAnalyzer {
       circularDependencies,
       inheritanceChains
     };
+  }
+
+  private getTypeScriptFiles(dir: string): string[] {
+    const files: string[] = [];
+
+    const readDirectory = (currentDir: string) => {
+      try {
+        const items = fs.readdirSync(currentDir);
+        
+        for (const item of items) {
+          const fullPath = path.join(currentDir, item);
+          const stat = fs.statSync(fullPath);
+
+          if (stat.isDirectory()) {
+            // Skip node_modules and other common directories to avoid
+            if (!['node_modules', 'dist', 'build', '.git'].includes(item)) {
+              readDirectory(fullPath);
+            }
+          } else if (stat.isFile() && this.isTypeScriptFile(item)) {
+            files.push(fullPath);
+          }
+        }
+      } catch (error) {
+        console.warn(`⚠️ Could not read directory: ${currentDir}`);
+      }
+    };
+
+    readDirectory(dir);
+    return files;
+  }
+
+  private isTypeScriptFile(filename: string): boolean {
+    const tsExtensions = ['.ts', '.tsx'];
+    const ext = path.extname(filename).toLowerCase();
+    return tsExtensions.includes(ext);
   }
 
   private analyzeDependenciesInFile(

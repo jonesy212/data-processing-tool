@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { sanitizeInput } from '@/app/components/security/SanitizationFunctions';
+import { sanitizeInput } from '@/app/models/crypto/SanitizationFunctions';
 
 interface DynamicInputFieldsProps {
   fields: { label: string; type: string }[];

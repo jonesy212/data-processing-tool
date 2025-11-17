@@ -11,17 +11,31 @@ import { ReportGenerators } from './ReportGenerators';
 import { SnapshotAnalyzer } from './SnapshotAnalyzer';
 import { StructureValidator } from './StructureValidator';
 import { TypeRelationshipMapper } from './TypeRelationshipMapper';
+import { BuildErrorHandler } from '@/utils/BuildErrorHandler'
 
 interface Correction {
     id: string;
-    type: 'error' | 'warning' | 'suggestion';
+    type: 'error' | 'warning' | 'suggestion' | 'info' | 'sensitive_data' | 'missing_sanitization' | 'role_violation' | 'insecure_pattern' | 'types' | 'react' | 'sensitive_data';
     severity: 'critical' | 'high' | 'medium' | 'low';
     file: string;
     line?: number;
+    title?: string;
     message: string;
     code: string;
     fix: string;
-    category: 'compilation' | 'runtime' | 'security' | 'performance' | 'structure';
+    codeSnippet?: string;
+    suggestion?: string; 
+    priority?: number;   
+    timestamp?: string;  
+    category: 'compilation' | 'runtime' | 'security' 
+    | 'performance' | 'structure' | 'maintainability' 
+    | 'compatibility' | 'readability' | 'dependencies' 
+    | 'native-modules' | 'ios' | 'configuration' 
+    | 'quality' | 'ui' | 'development' | 'deployment' 
+    | 'linting' | 'import'| 'nextjs'| 'bundler'
+    | 'formatting' | 'styling' | 'testing' | 'authentication'
+    | 'database' | 'api'| 'mobile'| 'web3' | 'filesystem' 
+    | 'general' | 'network' | 'platform' | 'types';
 }
 
 interface CorrectionReport {
@@ -52,6 +66,150 @@ export class CorrectionGenerator {
     private snapshotAnalyzer: SnapshotAnalyzer;
     private errorTracker: ErrorTracker;
 
+    /* ------------------------------------------------------------------ */
+    /*  Human Review Guide – zero-touch instructions                      */
+    /* ------------------------------------------------------------------ */
+    private async generateReviewGuide(
+    outputDir: string,
+    focusArea?: string
+    ): Promise<void> {
+    const report = await this.generateCorrections(focusArea);
+
+    // 1.  Build a step-by-step markdown checklist
+    const steps: string[] = [];
+    let stepNum = 1;
+
+    const addStep = (title: string, body: string) => {
+        steps.push(`## Step ${stepNum++}: ${title}`);
+        steps.push('');
+        steps.push(body);
+        steps.push('');
+        steps.push('---');
+        steps.push('');
+    };
+
+    /* -------------------------------------------------------------- */
+    /*  A.  Critical errors first                                     */
+    /* -------------------------------------------------------------- */
+    const critical = report.corrections.filter(c => c.severity === 'critical');
+    if (critical.length) {
+        addStep(
+        '🚨 Fix Critical Blockers',
+        `These **must** be resolved before anything else works.\n\n` +
+            critical.map(c => {
+            const rel = path.relative(process.cwd(), c.file);
+            return (
+                `- **File**: \`${rel}\`  \n` +
+                `  **Line**: ${c.line ?? '?'}  \n` +
+                `  **Problem**: ${c.message}  \n` +
+                `  **Suggested fix**:\n` +
+                `  \`\`\`typescript\n${c.fix}\n\`\`\``
+            );
+            }).join('\n\n')
+        );
+    }
+
+    /* -------------------------------------------------------------- */
+    /*  B.  Quick wins (< 5 min each)                                */
+    /* -------------------------------------------------------------- */
+    const quick = report.corrections.filter(
+        c => c.severity === 'low' || (c.category === 'structure' && c.severity === 'medium')
+    );
+    if (quick.length) {
+        addStep(
+        '⚡ Quick Wins – Copy/Paste Fixes',
+        `Each item below should take < 5 min.\n\n` +
+            quick.map(c => {
+            const rel = path.relative(process.cwd(), c.file);
+            return (
+                `- **File**: \`${rel}\`  \n` +
+                `  **Replace** (around line ${c.line ?? '?'}):\n` +
+                `  \`\`\`typescript\n${c.code}\n\`\`\`\n` +
+                `  **With**:\n` +
+                `  \`\`\`typescript\n${c.fix}\n\`\`\``
+            );
+            }).join('\n\n')
+        );
+    }
+
+    /* -------------------------------------------------------------- */
+    /*  C.  Security audit                                            */
+    /* -------------------------------------------------------------- */
+    if (report.securityIssues.length) {
+        addStep(
+        '🔒 Security Review',
+        report.securityIssues.map(c => {
+            const rel = path.relative(process.cwd(), c.file);
+            return (
+            `- **File**: \`${rel}\`  \n` +
+            `  **Issue**: ${c.message}  \n` +
+            `  **Remediation**:\n` +
+            `  \`\`\`typescript\n${c.fix}\n\`\`\``
+            );
+        }).join('\n\n')
+        );
+    }
+
+    /* -------------------------------------------------------------- */
+    /*  D.  Snapshot-only walk-through (if --snapshots)               */
+    /* -------------------------------------------------------------- */
+    if (focusArea === 'snapshots' && report.snapshotIssues?.length) {
+        addStep(
+        '📸 Snapshot Folder Fixes',
+        `Folder: \`/src/app/snapshots\`\n\n` +
+            report.snapshotIssues.map(c => {
+            const rel = path.relative(process.cwd(), c.file);
+            return (
+                `- **File**: \`${rel}\`  \n` +
+                `  **Line**: ${c.line ?? '?'}  \n` +
+                `  **Problem**: ${c.message}  \n` +
+                `  **Fix**:\n` +
+                `  \`\`\`typescript\n${c.fix}\n\`\`\``
+            );
+            }).join('\n\n')
+        );
+    }
+
+    /* -------------------------------------------------------------- */
+    /*  E.  Git-style diff for entire files (optional section)        */
+    /* -------------------------------------------------------------- */
+    addStep(
+        '📋 Full-File Patches (Optional)',
+        `If you prefer to see entire file rewrites, run:\n` +
+        `\`\`\`bash\n` +
+        `pnpm tsx scripts/printFilePatches.ts ${outputDir}\n` +
+        `\`\`\`\n` +
+        `This prints **git diff** blocks you can apply with \`git apply\` **after** you review them.`
+    );
+
+    /* -------------------------------------------------------------- */
+    /*  F.  Finish checklist                                          */
+    /* -------------------------------------------------------------- */
+    addStep(
+        '✅ Ready to Apply?',
+        `1. Open this guide in VS Code:\n` +
+        `   \`\`\`bash\n` +
+        `   code ${path.join(outputDir, 'REVIEW.md')}\n` +
+        `   \`\`\`\n` +
+        `2. Put your source files side-by-side (Ctrl+\\\\)\n` +
+        `3. Work through the steps above – copy/paste only what you trust\n` +
+        `4. When happy, run the normal command (without \`--review\`) to auto-apply anything you skipped`
+    );
+
+    // 2.  Write the guide
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    const reviewFile = path.join(outputDir, 'REVIEW.md');
+    fs.writeFileSync(reviewFile, steps.join('\n'), 'utf8');
+
+    // 3.  Open in VS Code so you can start immediately
+    const { exec } = await import('child_process');
+    exec(`code "${reviewFile}"`);
+
+    // 4.  Console summary
+    this.printConsoleSummary(report);
+    console.log(`\n📖  Review guide opened in VS Code → ${reviewFile}`);
+    console.log('Nothing on disk has changed yet. Copy/paste at your own pace.');
+    }
     constructor() {
         this.analyzer = new ProjectTreeAnalyzer();
         this.errorAnalyzer = new ErrorAnalyzer();
@@ -62,6 +220,8 @@ export class CorrectionGenerator {
         this.snapshotAnalyzer = new SnapshotAnalyzer();
         this.errorTracker = new ErrorTracker();
     }
+
+
 
     async generateCorrections(focusArea?: string): Promise<CorrectionReport> {
         console.log('🔧 Analyzing project for corrections...');
@@ -326,13 +486,40 @@ export class CorrectionGenerator {
         }
     }
 
+
+    async analyzeBuildErrors(): Promise<void> {
+        console.log('🚨 Starting comprehensive build error analysis...');
+        
+        // Analyze build errors
+        const buildSuccess = await BuildErrorHandler.analyzeAndFixBuild();
+        
+        if (!buildSuccess) {
+        console.log('\n🎯 Focus on fixing critical build errors first');
+        console.log('   Then run: pnpm analyze:build-errors');
+        }
+        
+        // Analyze TypeScript errors
+        await BuildErrorHandler.handleTypeCheck();
+        
+        console.log('\n📋 Next steps:');
+        console.log('   1. Check the generated error reports');
+        console.log('   2. Fix critical errors first');
+        console.log('   3. Run analysis again to verify fixes');
+    }
+
     // CLI entry point
     async runFromCLI(args: string[] = []): Promise<void> {
         const outputIndex = args.indexOf('--output');
         const outputDir = outputIndex !== -1 ? args[outputIndex + 1] : './corrections';
+        const reviewMode = args.includes('--review');
 
         let focusArea: string | undefined;
 
+        if (args.includes('--analyze-errors') || args.includes('--build-errors')) {
+            await this.analyzeBuildErrors();
+            return;
+        }
+        
         // Check for focus flags
         if (args.includes('--snapshots') || args.includes('--snapshot')) {
             focusArea = 'snapshots';
@@ -341,7 +528,11 @@ export class CorrectionGenerator {
         }
 
         try {
+            if (reviewMode) {
+            await this.generateReviewGuide(outputDir, focusArea);
+            } else {
             await this.generateCorrectionFiles(outputDir, focusArea);
+            }            
             console.log('\n🎉 Correction analysis complete!');
             console.log('Next steps:');
             console.log('1. Review critical errors first');
@@ -400,10 +591,9 @@ export class CorrectionGenerator {
 }
 
 // CLI execution
-if (require.main === module) {
-    const args = process.argv.slice(2);
-    const generator = new CorrectionGenerator();
-    generator.runFromCLI(args).catch(console.error);
+if (process.argv[1] && process.argv[1].includes('CorrectionGenerator.ts')) {
+  const args = process.argv.slice(2);
+  const generator = new CorrectionGenerator();
+  generator.runFromCLI(args).catch(console.error);
 }
-
 export type { Correction, CorrectionReport };

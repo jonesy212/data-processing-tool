@@ -135,6 +135,49 @@ type SnapshotStoreProps<
     snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     delegate?: InitializedDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+    isArchived?: boolean;
+    
+    // Store-specific properties
+    storeType?: 'local' | 'remote' | 'hybrid';
+    persistence?: 'memory' | 'localStorage' | 'indexedDB' | 'api';
+    autoSave?: boolean;
+    maxSnapshots?: number;
+    retentionPolicy?: 'keep-all' | 'keep-latest' | 'time-based';
+    
+    // Enhanced metadata
+    metadata?: StorePropStructuredMetadata;
+    config?: {
+      versioning?: boolean;
+      compression?: boolean;
+      encryption?: boolean;
+      backupEnabled?: boolean;
+    };
+    
+    // Event handlers
+    onSnapshotCreated?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    onSnapshotUpdated?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    onSnapshotDeleted?: (snapshotId: string) => void;
+    onStoreInitialized?: (store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    
+    // Performance and optimization
+    cacheStrategy?: 'none' | 'lru' | 'lfu' | 'time-based';
+    cacheSize?: number;
+    preloadSnapshots?: boolean;
+    
+    // Security and access control
+    permissions?: {
+      canRead?: boolean;
+      canWrite?: boolean;
+      canDelete?: boolean;
+      canExport?: boolean;
+    };
+    encryptionKey?: string;
+    
+    // Integration hooks
+    beforeSave?: (data: T) => Promise<T> | T;
+    afterLoad?: (data: T) => Promise<T> | T;
+    validationRules?: Array<(data: T) => boolean | string>;
   };
 
 // Utility type to extract all properties for easy destructuring

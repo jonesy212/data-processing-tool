@@ -1,3 +1,4 @@
+// StructuredMetadata.ts
 import { Contributor } from '@/app/collaborators/Collaborator';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -27,7 +28,8 @@ import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from '@/app/versions/VersionData';
 import * as path from 'path';
 import { useState } from 'react';
-// StructuredMetadata.ts
+
+
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
@@ -39,7 +41,8 @@ interface SpecificMetadata<
   K extends T = T
 > {
   tags?: string[] | TagsRecord<T> | undefined;
-  categories?: CategoryProperties<T, K>[];
+  categories?: Category[];
+  categoryProperties?: CategoryProperties<T, K>[];
   priority?: number;
   customFields?: Record<string, any>;
 }
@@ -47,8 +50,19 @@ interface SpecificMetadata<
 // Usage example
 const metadata: SpecificMetadata<UserEntity, UserK> = {
   tags: {
-    important: { name: "important", color: "red" },
-    archived: { name: "archived", color: "gray" }
+    important: { 
+      name: "important", 
+      color: "red", 
+      relatedTags: [], 
+      description: '', 
+      enabled: true, 
+      nulltype: '' , timestamp: new Date()
+
+     },
+    archived: { 
+      name: "archived", 
+      color: "gray",
+     }
   },
   priority: 1
 };
@@ -67,11 +81,7 @@ type MetaBase = {
 
 type MetadataEntriesType<
   T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > = {
   [fileOrFolderId: string]: {
     originalPath: string;
@@ -148,7 +158,7 @@ interface VideoMetadata<
   uploadDate: Date;
   uploader: string;
   tags?: TagsRecord<T> | string[] | undefined;
-  categories: string[];
+  categories: Category[];
   language: LanguageEnum;
   location: string;
   bitrate: number;

@@ -1,4 +1,7 @@
-import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
+import LazyLoadScriptConfigImpl from "@/app/config/LazyLoadScriptConfig";
+
+// Platform-agnostic timeout type
+type TimeoutHandle = ReturnType<typeof setTimeout>;
 
 /**
  * Debounces a function to limit the rate at which it is called.
@@ -14,7 +17,7 @@ export function debounce<T extends (...args: any[]) => any>(
   options?: { immediate?: boolean; leading?: boolean; trailing?: boolean },
   scriptConfig?: LazyLoadScriptConfigImpl
 ): T & { cancel: () => void } & { timeout?: number } {
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: TimeoutHandle | null = null;
   let lastArgs: Parameters<T> | null = null;
 
   const execute = (args: Parameters<T>) => {
@@ -43,9 +46,8 @@ export function debounce<T extends (...args: any[]) => any>(
       onScriptError?: (error: ErrorEvent) => void;
       thirdPartyLibrary?: string;
       thirdPartyAPIKey?: string;
-      apiConfig?: any; // Replace 'any' with the actual type of apiConfig if known
+      apiConfig?: any;
       namingConventions?: string[];
-      
   };
 
   const cancel = () => {
@@ -55,7 +57,6 @@ export function debounce<T extends (...args: any[]) => any>(
   };
 
   debounced.cancel = cancel;
-
 
   // Apply script configurations if provided
   if (scriptConfig) {

@@ -14,7 +14,7 @@ class ExtendedBackendStructure<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BackendStructure {
+> extends BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Re-declare private field from parent class
   #structureHash: string | undefined;
 
@@ -72,6 +72,31 @@ class ExtendedBackendStructure<
     super.setDatabaseSchema(schema);
     console.log('Schema set with extended validation');
   }
+
+  // Add protected property accessors
+  protected getStructureInternal(): any {
+    return (this as any).structure;
+  }
+
+  protected setStructureInternal(structure: any): void {
+    (this as any).structure = structure;
+  }
+
+  protected getDatabaseSchemaInternal(): any {
+    return (this as any).databaseSchema;
+  }
+
+  protected setDatabaseSchemaInternal(schema: any): void {
+    (this as any).databaseSchema = schema;
+  }
+
+  protected getServicesInternal(): any {
+    return (this as any).services;
+  }
+
+  protected setServicesInternal(services: any): void {
+    (this as any).services = services;
+  }
 }
 
 // Create and initialize a proper ExtendedBackendStructure instance
@@ -94,28 +119,39 @@ async function initializeBackendStructure<
     responsiveDesignStore.backendStructure?.minor || 0,
     responsiveDesignStore.backendStructure?.patch || 0,
     {
-      customProperty: responsiveDesignStore.backendStructure?.customProperty || '',
-      additionalConfig: responsiveDesignStore.backendStructure?.additionalConfig || {}
+      customProperty: (responsiveDesignStore.backendStructure as any)?.customProperty || '',
+      additionalConfig: (responsiveDesignStore.backendStructure as any)?.additionalConfig || {}
     }
   );
 
-  // Initialize its internal state safely
+  // Initialize its internal state safely using protected methods
   try {
     if (responsiveDesignStore.backendStructure) {
-      await instance.setStructureHash(await responsiveDesignStore.backendStructure.getStructureHash());
-      instance.structure = await responsiveDesignStore.backendStructure.getStructure() || {};
-      instance.databaseSchema = responsiveDesignStore.backendStructure.getDatabaseSchema() || {};
-      instance.services = responsiveDesignStore.backendStructure.getServices() || {};
+      const structureHash = await responsiveDesignStore.backendStructure.getStructureHash();
+      if (structureHash) {
+        await instance.setStructureHash(structureHash);
+      }
+      
+      // Use protected methods to access parent properties
+      instance.setStructureInternal(
+        await responsiveDesignStore.backendStructure.getStructure() || {}
+      );
+      instance.setDatabaseSchemaInternal(
+        responsiveDesignStore.backendStructure.getDatabaseSchema() || {}
+      );
+      instance.setServicesInternal(
+        responsiveDesignStore.backendStructure.getServices() || {}
+      );
     } else {
-      instance.structure = {};
-      instance.databaseSchema = {};
-      instance.services = {};
+      instance.setStructureInternal({});
+      instance.setDatabaseSchemaInternal({});
+      instance.setServicesInternal({});
     }
   } catch (error) {
     console.error("Initialization failed:", error);
-    instance.structure = {};
-    instance.databaseSchema = {};
-    instance.services = {};
+    instance.setStructureInternal({});
+    instance.setDatabaseSchemaInternal({});
+    instance.setServicesInternal({});
   }
 
   return instance;
@@ -128,9 +164,5 @@ const backendStructure = await initializeBackendStructure();
   const structure = await backendStructure.getStructure();
   console.log('Backend structure:', structure);
 })();
-
-
-
-
 
 export default ExtendedBackendStructure;

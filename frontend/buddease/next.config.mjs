@@ -1,37 +1,41 @@
 /** @type {import('next').NextConfig} */
+
 import { rollup } from 'rollup';
-import rollupConfig from './rollup.config.mjs'; // Import the Rollup configuration
+import rollupConfig from './rollup.config.mjs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const nextConfig = {
-  // Add your Next.js configuration options here
-  reactStrictMode: true, // Enable React strict mode for better development practices
+  // Enable React strict mode
+  reactStrictMode: true,
   
-  // Empty turbopack config for development
-  turbopack: {},
+  // Fix turbopack configuration
+  turbopack: {
+      root: __dirname, 
+  },
   
-  // Keep webpack for production builds
-  webpack: (config, { isServer, dev }) => {
+  // Fix webpack configuration - remove the duplicate webpack function
+  webpack: (config, { isServer, dev, buildId }) => {
+    // Apply your custom webpack config for production
     if (isServer || !dev) {
-      // Apply your custom webpack config for production
-      const customConfig = require('./webpack.config.js')('production');
-      return { ...config, ...customConfig };
+      try {
+        const customConfig = require('./webpack.config.js')('production');
+        Object.assign(config, customConfig);
+      } catch (error) {
+        console.warn('Custom webpack config not found, using default');
+      }
     }
-    return config;
-  },
-  experimental: {
-    // Enable experimental features if needed
-  },
-
-  webpack(config, { isServer }) {
-    // Customize webpack configuration as needed
+    
+    // Add resolve.modules to allow imports from specified paths
+    config.resolve.modules.push(process.cwd());
+    
+    // Server-side specific configuration
     if (isServer) {
-      // Server-side webpack configuration
-
-      // Add resolve.modules to allow imports from specified paths
-      config.resolve.modules.push(process.cwd());
-
       // Bundle Rollup configuration with the server-side bundle
-      // Update to use config.plugins.push()
       config.plugins.push({
         apply: (compiler) => {
           compiler.hooks.afterEmit.tap('Bundle Rollup', async () => {
@@ -63,25 +67,28 @@ const nextConfig = {
       config.node = {
         fs: 'empty'
       };
-    } else {
-      // Client-side webpack configuration
     }
+    
     return config;
   },
+  
+  
+  // Redirects
   async redirects() {
-    // Define custom redirects for specific routes
     return [
       { source: '/old-route', destination: '/new-route', permanent: true },
     ];
   },
+  
+  // Rewrites
   async rewrites() {
-    // Define custom rewrites for specific routes
     return [
       { source: '/api/old-endpoint', destination: '/api/new-endpoint' },
     ];
   },
+  
+  // Headers
   async headers() {
-    // Define custom headers for specific routes
     return [
       {
         source: '/api/:path*',

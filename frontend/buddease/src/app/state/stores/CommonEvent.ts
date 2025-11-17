@@ -10,7 +10,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from '@/app/models/data/StatusType';
-import { Member } from '@/app/models/teams/TeamMembers';
+import { Member } from '@/app/models/members/Member';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';

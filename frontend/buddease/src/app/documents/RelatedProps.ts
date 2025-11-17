@@ -1,15 +1,13 @@
-import { CategoryPropertyBundle } from '@app/libraries/categories/generateCategoryProperties';
 // RelatedProps.ts
+import { RootCategories } from '@/app/config/BaseConfig'
 import { Label } from '@/app/branding/BrandingSettings';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel, } from '@/app/permissions/PermissionEnums';
 import { ValidationStatus } from '@/app/permissions/ValidationStatus';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { ExternalReference } from '@/app/calendar/ExternalReference';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -44,8 +42,7 @@ interface SharedSnapshotProperties<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->
-  extends BaseEntityProperties {
+> extends BaseEntityProperties {
   version?:  Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousVersionId?: string | null;
   nextVersionId?: string | null;

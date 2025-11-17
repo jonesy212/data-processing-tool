@@ -83,6 +83,8 @@ interface DetailsItem<
   subtitle: string;
   author?: string;
   date?: Date;
+  startDate?: Date; // Add this with proper type
+  endDate?: Date;   // Add this with proper type
   communication?: CommunicationActionTypes;
   teammembers?: Array<TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   tracker?: string;

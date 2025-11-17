@@ -1,4 +1,4 @@
-// app/configs/BackendStructure.ts
+// app/server/database/BackendStructure.ts
 import getAppPath from "@/app/config/appStructure/appPath";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { frontend } from "@/app/config/appStructure/FrontendStructure";
@@ -8,7 +8,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { hashString } from "@/app/generators/HashUtils";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import Logger from "@/app/libraries/logging/Logger";
+import Logger from "@/app/logging/Logger";
 import { sanitizeDatabaseSchema } from '@/app/server/database/sanitizeDatabase';
 import { SecureField, SecureMetadata } from '@/app/server/security/SecureField';
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
@@ -19,25 +19,7 @@ import { VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
-
-interface StructuredBackend {
-  structureHash: string | undefined;
-  getStructureHash(): Promise<string | undefined>;
-  setStructureHash(hash: string): Promise<void>;
-  // ... other properties
-}
-
-interface Schema {
-  [key: string]: any;
-}
-interface DatabaseSchema extends Schema {
-}
-
-interface ServiceSchema extends Schema {
-}
-
-interface StructureSchema extends Schema {
-}
+import {DatabaseSchema, ServiceSchema} from '@/app/typings/database'
 
 export default class BackendStructure <
   T extends BaseDataEntity = BaseDataEntity,

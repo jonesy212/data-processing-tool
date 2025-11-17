@@ -35,7 +35,7 @@ export class ContentIDGenerator<
       uploadedAt: new Date(),
       analysisResults: []
     };
-    UniqueIDGenerator.notifyFormatted(contentID, message, content, new Date(), NotificationTypeEnum.GeneratedID);
+    UniqueIDGenerator.notifyFormatted(contentID, message, content, new Date(), NotificationTypeEnum.GENERATED_ID);
     return contentID;
   }
 }
@@ -43,7 +43,7 @@ export class ContentIDGenerator<
 // Example usage:
 const contentItem: DetailsItem<Data> = {
   _id: uuidV4(),
-  id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", NotificationTypeEnum.ContentItem),
+  id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", new Date(), NotificationTypeEnum.CONTENT_ITEM),
   title: "Sample Content",
   description: "This is a sample content item.",
   subtitle: "This is a sample content item subtitle.",

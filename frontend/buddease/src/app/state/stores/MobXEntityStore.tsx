@@ -9,7 +9,7 @@ import { DesignSystemConfig } from '@/app/libraries/ui/theme/MapProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { DocumentTypeEnum } from '@/app/server/ServerDocumentGenerator';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
 import Version from '@/app/versions/Version';
@@ -107,7 +107,7 @@ export default class MobXEntityStore {
     includeAdditionalInfo: true,
     uniqueIdentifier: UniqueIDGenerator.generateDocumentID(
       "uniqueIdentifier",
-      NotificationTypeEnum.GeneratedID
+      NotificationTypeEnum.GENERATED_ID
     ),
     includeType: { 
       enabled: false,
@@ -147,7 +147,7 @@ export default class MobXEntityStore {
       versionNumber: "1.1",
       appVersion: "",
       id: 0,
-      content: "",
+      content: {} as DocumentOptions,
       frontendStructure: {} as Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       data: [],
       hash: function(value: string): string {
@@ -248,7 +248,7 @@ export default class MobXEntityStore {
     },
   };
   generateUniqueIdentifier(generatorType: string): string {
-    const uniqueIdentifier = UniqueIDGenerator.generateID('UUID', 'UniqueIdentifier', NotificationTypeEnum.GeneratedID, undefined, generatorType);
+    const uniqueIdentifier = UniqueIDGenerator.generateID('UUID', 'UniqueIdentifier', NotificationTypeEnum.GENERATED_ID, undefined, generatorType);
     return uniqueIdentifier;
   }
 

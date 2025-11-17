@@ -7,33 +7,106 @@ import { T } from "@/app/models/data/dataStoreMethods";
 import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
 
 // Define a mapping of file categories to their corresponding snapshot entries
-const fileCategoryMapping: { [category in FileCategory]: string[] } = {
-    [FileCategory.Component]: ["tsx", "jsx"],
-    [FileCategory.Redux]: ["ts"],
-    [FileCategory.MobX]: ["ts"],
-    [FileCategory.API]: ["ts"],
-    [FileCategory.Utility]: ["ts"],
-    [FileCategory.Config]: ["ts", "json", "yaml", "yml"],
-    [FileCategory.Test]: ["ts", "tsx", "test.ts", "test.tsx"],
-    [FileCategory.Documentation]: ["md", "pdf"],
-    [FileCategory.Design]: ["xd", "fig", "sketch"],
-    [FileCategory.Multimedia]: [
-      "png", "jpg", "jpeg", "gif", "svg", "mp4", "avi", "mov", "wav", "mp3"
-    ],
-    [FileCategory.Configuration]: ["json", "yaml", "yml"],
-    [FileCategory.Analytics]: ["csv", "xls", "xlsx"],
-    [FileCategory.Localization]: ["json", "po", "pot"],
-    [FileCategory.SmartContract]: ["sol"],
-    [FileCategory.Bytecode]: ["evm"],
-    [FileCategory.EthereumPackage]: ["ethpkg"],
-    [FileCategory.JWT]: ["jwt"],
-    [FileCategory.BlockchainData]: ["blk"],
-    [FileCategory.CryptoKey]: ["key"],
-    [FileCategory.Wallet]: ["wallet"],
-    [FileCategory.Hash]: ["hash"],
-    [FileCategory.MerkleProof]: ["proof"],
-    [FileCategory.ENS]: ["ens"],
-  };
+
+// Enhanced mapping that bridges file categories and correction categories
+const fileToCorrectionCategoryMap: Record<FileCategory, CorrectionCategory> = {
+    [FileCategory.Component]: 'ui',
+    [FileCategory.Redux]: 'structure',
+    [FileCategory.MobX]: 'structure', 
+    [FileCategory.API]: 'api',
+    [FileCategory.Utility]: 'maintainability',
+    [FileCategory.Config]: 'configuration',
+    [FileCategory.Test]: 'testing',
+    [FileCategory.Documentation]: 'readability',
+    [FileCategory.Design]: 'ui',
+    [FileCategory.Multimedia]: 'filesystem',
+    [FileCategory.Configuration]: 'configuration',
+    [FileCategory.Analytics]: 'performance',
+    [FileCategory.Localization]: 'structure',
+    [FileCategory.SmartContract]: 'web3',
+    [FileCategory.Bytecode]: 'web3',
+    [FileCategory.EthereumPackage]: 'web3',
+    [FileCategory.JWT]: 'security',
+    [FileCategory.BlockchainData]: 'web3',
+    [FileCategory.CryptoKey]: 'security',
+    [FileCategory.Wallet]: 'web3',
+    [FileCategory.Hash]: 'security',
+    [FileCategory.MerkleProof]: 'web3',
+    [FileCategory.ENS]: 'web3',
+};
+
+// Enhanced function to suggest correction category based on file category
+export function suggestCorrectionCategoryFromFile(fileName: string, extension: string): CorrectionCategory {
+    const fileCategory = determineFileCategoryLogger(fileName, extension);
+    
+    if (fileCategory && fileToCorrectionCategoryMap[fileCategory]) {
+        return fileToCorrectionCategoryMap[fileCategory];
+    }
+    
+    // Fallback to CategoryMapper for files without specific mapping
+    return CategoryMapper.suggestCategory(fileName, '', '');
+}
+
+// Enhanced processing with correction category integration
+function processSnapshotsByCategoryWithCorrections<T extends BaseData<any>>(
+  snapshot: Snapshot<T, any>,
+  category: FileCategory
+): { snapshot?: Snapshot<T, any>, corrections: Correction[] } {
+  const corrections: Correction[] = [];
+  
+  if (snapshot && snapshot.data instanceof Map) {
+    const filteredEntries = getEntriesByCategory(snapshot.data, category);
+    
+    if (filteredEntries.size > 0) {
+      console.log(`Processing ${filteredEntries.size} files in category: ${category}`);
+
+      filteredEntries.forEach((value, key) => {
+        const extension = key.split('.').pop() || '';
+        
+        if (isValidFileCategory(key, extension)) {
+          const determinedCategory = determineFileCategoryLogger(key, extension);
+          const correctionCategory = suggestCorrectionCategoryFromFile(key, extension);
+          
+          // Generate corrections based on file analysis
+          const fileCorrections = analyzeFileForCorrections(key, value, correctionCategory);
+          corrections.push(...fileCorrections);
+          
+        } else {
+          corrections.push(createFileCategoryCorrection(key, extension));
+        }
+      });
+    }
+  }
+
+  return { snapshot, corrections };
+}
+
+// Analyze individual files for corrections
+function analyzeFileForCorrections(fileName: string, fileData: any, category: CorrectionCategory): Correction[] {
+  const corrections: Correction[] = [];
+  
+  // Use CategoryMapper to analyze file content
+  const suggestedCategory = CategoryMapper.suggestCategory(
+    fileName, 
+    fileData?.content || '', 
+    fileData?.metadata || ''
+  );
+  
+  // Add category-specific analysis here
+  switch (category) {
+    case 'web3':
+      corrections.push(...analyzeWeb3File(fileName, fileData));
+      break;
+    case 'security':
+      corrections.push(...analyzeSecurityFile(fileName, fileData));
+      break;
+    case 'performance':
+      corrections.push(...analyzePerformanceFile(fileName, fileData));
+      break;
+  }
+  
+  return corrections;
+}
  
 
 

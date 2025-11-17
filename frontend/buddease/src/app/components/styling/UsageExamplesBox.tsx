@@ -3,7 +3,7 @@ import React from "react";
 import RefactoringRebrandingPhase from "@/app/projects/RefactoringRebrandingPhase";
 import ColorPalette from "./ColorPalette";
 import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
-
+import { T } from '@/a'
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";
@@ -95,7 +95,7 @@ const UsageExamplesBox: React.FC<UsageExamplesBoxProps> = (
   
 
   // Usage example for Dark Mode Toggle Phase Hook
-const darkModeToggleExample: AsyncHook = {
+const darkModeToggleExample: AsyncHook<T> = {
   condition: async () => true, // Example condition
   asyncEffect: async () => { /* Example asyncEffect */ }, // Example asyncEffect
   isActive: false, // Example isActive

@@ -1,7 +1,7 @@
 // createSharedSnapshotContainer.ts
 
 import  UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { SnapshotStore } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/Snapshot';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { VersionData } from '@/app/versions/Version';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -11,7 +11,7 @@ import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SharedAuditInfo, SharedVersioning, SharedUpdateHistory } from '@/app/versions/VersionData'
 import { SharedRelationshipData, SharedPhaseData } from '@/app/models/data/Data'
-
+import {SharedContent } from '@/app/versions/Version'
 
 interface Shared<
   T extends BaseDataEntity = BaseDataRoot,

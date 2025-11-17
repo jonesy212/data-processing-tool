@@ -120,7 +120,7 @@ interface AuthAction<
 
 const AuthContext = createContext<AuthContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(undefined);
 
-const initialState: AuthState = {
+const initialState: AuthState<> = {
   id: "0",
   isAuthenticated: false,
   user: null,

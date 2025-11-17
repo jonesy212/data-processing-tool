@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import {
   ButtonGenerator,
-  buttonGeneratorProps,
+  useButtonGeneratorProps,
 } from "@/app/generators/GenerateButtons";
 import { BackendConfig } from "./BackendConfig";
 import { FrontendConfig } from "./FrontendConfig";
@@ -30,6 +30,7 @@ interface MainConfigProps<
   frontendConfig: FrontendConfig;
   backendConfig: BackendConfig;
 }
+
 const MainConfig: React.FC<MainConfigProps> = ({
   frontendStructure,
   frontendConfig,
@@ -38,11 +39,21 @@ const MainConfig: React.FC<MainConfigProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState("frontend"); // Default to frontend
 
+  // Use the new hook to get button props
+  const { buttonProps, currentPhase, lifecycleManager } = useButtonGeneratorProps<
+    BaseDataEntity, 
+    BaseDataEntity, 
+    DefaultMeta<BaseDataEntity, BaseDataEntity>, 
+    Attachment, 
+    DefaultExcludedFields<BaseDataEntity>, 
+    keyof BaseDataEntity
+  >();
+
   // Determine the type of structure (frontend or backend)
   const isBackend = true;
   const { versionNumber, appVersion } = getCurrentAppInfo();
   const projectPath = getAppPath(versionNumber, appVersion);
-   const structureType = isBackend ? "backend" : "frontend";
+  const structureType = isBackend ? "backend" : "frontend";
 
   // Instantiate the appropriate structure based on the type
   const structure = isBackend ? backendStructure : frontendStructure;
@@ -71,7 +82,6 @@ const MainConfig: React.FC<MainConfigProps> = ({
               <p>Frontend Structure: {JSON.stringify(structure)}</p>
               <p>Frontend Config: {JSON.stringify(config)}</p>
               <p>Project Path: {projectPath}</p>
-
             </>
           )}
         </TabPane>
@@ -82,7 +92,6 @@ const MainConfig: React.FC<MainConfigProps> = ({
               <p>Backend Structure: {JSON.stringify(structure)}</p>
               <p>Backend Config: {JSON.stringify(backendConfig)}</p>
               <p>Project Path: {projectPath}</p>
-
             </>
           )}
         </TabPane>
@@ -106,103 +115,110 @@ const MainConfig: React.FC<MainConfigProps> = ({
       {/* Project Management Settings */}
       <Card title="Project Management Settings">
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Phase-Based Project Management" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Task Assignment and Tracking" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Data Analysis Tools" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable File Upload and Sharing" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Task Prioritization and Sorting" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Customizable Project Templates" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Time Tracking and Reporting" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{
-            submit:
-              "Enable Integration with External Tools (e.g., GitHub, Jira)",
+            submit: "Enable Integration with External Tools (e.g., GitHub, Jira)",
           }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Project Deadline Reminders" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Team Member Availability Status" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Customizable Dashboard Widgets" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Automated Task Assignment" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Role-based Access Control" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Progress Tracking and Visualization" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Exporting Project Data to CSV/PDF" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable User Feedback and Suggestions" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Customizable Notification Preferences" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Document Version Control" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Project Milestone Management" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Integration with Calendar Services" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Multi-language Support" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{ submit: "Enable Data Encryption for Security" }}
         />
         <ButtonGenerator
-          {...buttonGeneratorProps}
+          {...buttonProps}
           label={{
             submit: "Enable Offline Mode for Working Without Internet Access",
           }}
         />
       </Card>
+
+      {/* Optional: Display lifecycle status for debugging */}
+      {process.env.NODE_ENV === 'development' && (
+        <Card title="Lifecycle Status (Debug)">
+          <p><strong>Current Phase:</strong> {lifecycleManager.getCurrentPhase()?.name || 'Not started'}</p>
+          <p><strong>Available Transitions:</strong> {lifecycleManager.getNextPossiblePhases().map(p => p.name).join(', ') || 'None'}</p>
+        </Card>
+      )}
     </div>
   );
 };

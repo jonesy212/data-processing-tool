@@ -1,12 +1,14 @@
 // app/RootLayout.tsx
 "use client";
 
-import React from "react";
-import { AppProviders } from "./components/Provider";
+import React, { useEffect } from "react";
+import { AppProviders } from "./components/AppProviders";
 import { useFullscreen } from "@/app/hooks/useFullscreen";
 import { useAppThemeInit } from "./layout/useAppThemeInit";
 import { useAnimatedRoot } from "./layout/useAnimatedRoot";
 import { useLayoutState } from "./layout/useLayoutState";
+import { useLogManagement } from "./hooks/useLogManagement";
+import { BackgroundService } from "./services/BackgroundService";
 import RootLayoutContent from "./layout/RootLayoutContent";
 
 type RootLayoutProps = { children: React.ReactNode };
@@ -19,8 +21,9 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     setFullscreenState
   } = useLayoutState();
 
-  const { isFullscreen, enter, exit } = useFullscreen(); // Removed unused 'toggle'
-  const { initializeTheme } = useAppThemeInit(); // Removed unused 'resetTheme'
+  const { handleUserDeletion, runPerformanceTest } = useLogManagement();
+  const { isFullscreen, enter, exit } = useFullscreen();
+  const { initializeTheme } = useAppThemeInit();
   const { animatedComponentRef, activateAnimation } = useAnimatedRoot();
 
   const handleFullscreenToggle = async (checked: boolean) => {
@@ -45,8 +48,17 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    // Start background services
+    const backgroundService = new BackgroundService();
+    backgroundService.startBackgroundJobs();
+
+    // Run initial performance test
+    runPerformanceTest();
+  }, [runPerformanceTest]);
+
   return (
-    <AppProviders>
+    <AppProviders onUserDeletion={handleUserDeletion}>
       <RootLayoutContent
         children={children}
         isMinimized={isMinimized}

@@ -70,6 +70,11 @@ function generateComponent(
   targetDirectory: string = process.cwd(),
   promptingContent: string = ""
 ): string {
+
+    // Validate component name
+  if (!componentName || typeof componentName !== 'string') {
+    throw new Error('Component name must be a non-empty string');
+  }
   // Check if component already exists
   const existingComponentPath = findExistingComponent(componentName, targetDirectory);
   if (existingComponentPath) {
@@ -116,16 +121,16 @@ function generateComponent(
     // Default generation
     reactCode = `import React from 'react';
 
-interface ${componentName}Props {
-  // Add component props here
-}
+    interface ${componentName}Props {
+      // Add component props here
+    }
 
-const ${componentName}: React.FC<${componentName}Props> = (props) => {
-  // Component implementation
-  return <div>${componentName} Component</div>;
-};
+    const ${componentName}: React.FC<${componentName}Props> = (props) => {
+      // Component implementation
+      return <div>${componentName} Component</div>;
+    };
 
-export default ${componentName};`;
+    export default ${componentName};`;
   }
 
   // Create component directory

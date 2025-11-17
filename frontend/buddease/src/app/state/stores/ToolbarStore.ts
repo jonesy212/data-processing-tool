@@ -220,7 +220,7 @@ export class ToolbarStore {
     // Replace with your actual implementation
     console.log(`Customizing toolbar: background=${backgroundColor}, text=${textColor}`);
     // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.customizeToolbar({ backgroundColor, textColor }));
+    dispatch(ToolbarActions.customizeToolbar({ backgroundColor, textColor }));
     // Example update to state
     // Modify state or perform other actions as needed
   };

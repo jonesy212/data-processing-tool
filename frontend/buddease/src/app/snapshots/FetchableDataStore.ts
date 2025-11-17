@@ -1,3 +1,5 @@
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 // FetchableDataStore.ts
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
@@ -28,7 +30,7 @@ const initializeData = ():  BaseDataEntity => {
 
 
 // Ensure you're checking the correct type and calling the `trigger` method
-function handleSnapshotEvent<
+export function handleSnapshotEvent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

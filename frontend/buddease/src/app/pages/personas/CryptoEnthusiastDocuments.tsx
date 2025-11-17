@@ -8,7 +8,7 @@ import React, { useState } from "react";
 
 
 const documentName = "crypto_document";
-const cryptoDocumentID = UniqueIDGenerator.generateDocumentID(documentName, NotificationTypeEnum.GeneratedID);
+const cryptoDocumentID = UniqueIDGenerator.generateDocumentID(documentName, NotificationTypeEnum.GENERATED_ID);
 
 interface CryptoEnthusiastDocumentsProps {
   // Function to allow sharing documents

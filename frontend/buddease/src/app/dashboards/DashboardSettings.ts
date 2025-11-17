@@ -97,6 +97,7 @@ const userDashboardSettings: DashboardSettings = {
   },
   showProjectSummary: true,
   showTeamSummary: false,
+  dashboardWidgets: []
 };
 
 export type {DashboardSettings}

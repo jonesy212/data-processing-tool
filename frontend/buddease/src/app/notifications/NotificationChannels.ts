@@ -1,6 +1,6 @@
 // NotificationChannels.ts
 import { CalendarIntegrationSettings, VoiceSettings, VideoSettings, ScreenShareSettings } from '@/app/components/communications/chat/CalendarIntegrationSettings'
-import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
+import ChatSettings from '@/app/components/communications/chat/ChatSettingsPanel'
 import { BaseNotificationSettings } from "@/app/features/support/NotificationSettings";
 import {
   EmailSettings,
@@ -75,8 +75,6 @@ interface QuietHours {
   };
 }
 
-
-
 interface BasicNotificationChannels {
   email: boolean;
   push: boolean;
@@ -87,7 +85,6 @@ interface BasicNotificationChannels {
   videoCall: boolean;
   screenShare: boolean;
 }
-
 
 interface NotificationChannels {
   // Basic channel settings (can be boolean or full settings)

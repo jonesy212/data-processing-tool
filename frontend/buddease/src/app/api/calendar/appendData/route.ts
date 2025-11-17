@@ -1,3 +1,4 @@
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define the event data type that matches your frontend

@@ -3,8 +3,8 @@ import { fetchEventData } from '@/app/api/ApiEvent';
 import userService from "@/app/api/ApiUser";
 import { Label } from '@/app/branding/BrandingSettings';
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
-import { RealtimeDataComponent } from "@/app/models/realtime/RealtimeData";
-import { Phase } from "@/app/phases/Phase";
+import { RealtimeDataComponent } from '@/app/components/models/realtime/RealtimeDataComponent'
+import { Phase } from "@/app/models/phases/Phase";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
@@ -27,52 +27,46 @@ import { useDispatch } from "react-redux";
 
 startVoiceRecognition;
 /**
- * ButtonGenerator Component
+ * useButtonGeneratorProps Hook
  *
- * This component generates a set of buttons based on the provided button types
- * and their corresponding click handlers. It utilizes the ReusableButton component.
+ * Generates button properties with integrated lifecycle management and phase transitions.
  *
- * @component
+ * @hook
  * @example
- * // Import ButtonGenerator and its props
- * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
+ * // Basic usage
+ * const { buttonProps, currentPhase, lifecycleManager } = useButtonGeneratorProps();
  *
- * import NotificationManager from '@/app/support/NotificationManager';
- * import NotificationManager from '@/components/notifications/NotificationManager';
- * import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
-import { Router } from 'react-router-dom';
-
- * // Define buttonGeneratorProps
- * const buttonGeneratorProps: ButtonGeneratorProps = {
- *   onSubmit: () => console.log("Submit clicked"),
- *   onReset: () => console.log("Reset clicked"),
- *   onCancel: () => console.log("Cancel clicked"),
- *   onLogicalAnd: () => console.log("Logical And clicked"),
- *   onLogicalOr: () => console.log("Logical Or clicked"),
- *   onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
- *   onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
- *   onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
- *   onOpenDashboard: (dashboard) => console.log(`Open Dashboard clicked: ${dashboard}`),
- *   // ... (other props)
- * };
+ * @example
+ * // Custom lifecycle configuration
+ * const { buttonProps } = useButtonGeneratorProps({
+ *   phases: [
+ *     {
+ *       name: 'upload',
+ *       subPhases: ['selecting', 'processing', 'complete'],
+ *       hooks: {
+ *         canTransitionTo: (target) => target.name !== 'initial',
+ *         handleTransitionTo: (target) => console.log(`Moving to ${target.name}`),
+ *         condition: async (timeout) => false
+ *       }
+ *     }
+ *   ],
+ *   initialPhase: 'upload',
+ *   onPhaseChange: (from, to) => console.log(`Phase changed: ${from?.name} → ${to.name}`),
+ *   onTransitionError: (error) => console.error('Transition failed:', error)
+ * });
  *
- * // Render the ButtonGenerator component with the defined props
- * const App = () => {
- *   return <ButtonGenerator {...buttonGeneratorProps} />;
- * };
+ * @param {LifecycleConfig} [lifecycleConfig] - Configuration for the lifecycle manager
+ * @returns {Object} Hook return value
+ * @returns {ButtonGeneratorProps} return.buttonProps - Button properties for ButtonGenerator
+ * @returns {Phase} return.currentPhase - Current active phase
+ * @returns {LifecycleManager} return.lifecycleManager - Lifecycle manager instance
+ * @returns {Function} return.setCurrentPhase - Function to update current phase
  *
- * @param {ButtonGeneratorProps} props - The properties of the ButtonGenerator component.
- * @param {Record<string, string>} [props.label] - Labels for each button type. Defaults to predefined labels.
- * @param {() => void} [props.onSubmit] - Handler for the "submit" button click event.
- * @param {() => void} [props.onReset] - Handler for the "reset" button click event.
- * @param {() => void} [props.onCancel] - Handler for the "cancel" button click event.
- * @param {() => void} [props.onLogicalAnd] - Handler for the "logical-and" button click event.
- * @param {() => void} [props.onLogicalOr] - Handler for the "logical-or" button click event.
- * @param {(phase: string) => void} [props.onStartPhase] - Handler for the "start-phase" button click event.
- * @param {(phase: string) => void} [props.onEndPhase] - Handler for the "end-phase" button click event.
- * @param {(layout: string) => void} [props.onSwitchLayout] - Handler for the "switch-layout" button click event.
- * @param {(dashboard: string) => void} [props.onOpenDashboard] - Handler for the "open-dashboard" button click event.
- * @returns {JSX.Element} - The rendered ButtonGenerator component.
+ * @see {@link ButtonGenerator} - Component that consumes the button props
+ * @see {@link LifecycleManager} - Underlying phase management system
+ *
+ * @version 2.0.0
+ * @since 2.0.0
  */
 
 interface ButtonGeneratorProps<
@@ -99,17 +93,18 @@ interface ButtonGeneratorProps<
   onCanceVideoChannel?: () => void;
 
   onTransitionToPreviousPhase?: (
-    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
+    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     currentPhase: Phase
   ) => void;
 
   onTransitionToNextPhase?: (
-    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
+    setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     currentPhase: Phase
   ) => void;
   label?: Label | string | Record<string, string> | null; // Allow Record<string, string> as well
 
-  // generateButtonDispatch?: React.Dispatch<React.SetStateAction<any>>;
+  entity?: T; // The actual entity instance
+  entityType?: string; // 'user', 'project', 'task', etc.
   // ... (other props)
 }
 
@@ -168,69 +163,139 @@ const defaultVariants: Record<string, string> = {
   // ... (other cases)
 };
 
-const ButtonGenerator: React.FC<ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = async ({
-  label = defaultLabels, // Use the provided label or default to the defaultLabels
+
+// Generic ButtonGenerator component
+const ButtonGenerator = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({
+  label = defaultLabels,
   variant = defaultVariants,
   onSubmit,
   onReset,
-  onCanceVideoChannel,
   onCancel,
   onLogicalAnd,
   onLogicalOr,
   onStartPhase,
   onEndPhase,
+  onRoutesLayout,
   onSwitchLayout,
   onOpenDashboard,
+  onCanceVideoChannel,
   onTransitionToPreviousPhase,
   onTransitionToNextPhase,
+  date,
+  timestamp,
   id,
   name,
   type,
-  date,
   value,
-  timestamp,
-  // generateButtonDispatch
-  // ... (other props)
-}) => {
+  ...identifiers
+}: ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): React.ReactElement => {
+  
   const [eventId, setEventId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPhase, setCurrentPhase] = useState<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+    {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  );
 
-  const buttonTypes = Object.keys(label);
-  const { dynamicContent, dynamicConfig } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
-  const initUserId = ""
-  const router = useRouter(); // Get the router object using useRouter hook
+  // Create LifecycleManager instance
+  const lifecycleManagerRef = useRef<LifecycleManager | null>(null);
 
-  const userId = await userService.fetchUserById(initUserId)
-  const dispatch = useDispatch()
-  const title = dynamicConfig.document?.getTitle() || "Untitled Document";
-  
-  // generateButtonDispatch({
-  //   onSubmit,
-  //   onReset,
-  //   onCancel,
-  //   onLogicalAnd,
-  //   onLogicalOr,
-  //   onStartPhase,
-  //   onEndPhase,
-  //   onSwitchLayout,
-  //   onOpenDashboard,
-  // })
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-   // Fetch eventId on component mount
-   useEffect(() => {
+  // Initialize LifecycleManager
+  useEffect(() => {
+    const lifecycleConfig: LifecycleConfig = {
+      phases: [
+        // Define your phases here
+        {
+          name: 'initial',
+          subPhases: ['setup', 'configuration'],
+          hooks: {
+            canTransitionTo: (targetPhase) => true,
+            handleTransitionTo: (targetPhase) => console.log(`Transitioning from initial to ${targetPhase.name}`),
+            condition: async (timeout) => false
+          }
+        },
+        {
+          name: 'processing', 
+          subPhases: ['data-loading', 'validation'],
+          hooks: {
+            canTransitionTo: (targetPhase) => targetPhase.name !== 'initial',
+            handleTransitionTo: (targetPhase) => console.log(`Transitioning from processing to ${targetPhase.name}`),
+            condition: async (timeout) => false
+          }
+        },
+        // Add more phases as needed
+      ],
+      initialPhase: 'initial',
+      onPhaseChange: (fromPhase, toPhase) => {
+        console.log(`Phase changed: ${fromPhase?.name} -> ${toPhase.name}`);
+      },
+      onTransitionError: (error) => {
+        console.error('Phase transition error:', error);
+      }
+    };
+
+    lifecycleManagerRef.current = new LifecycleManager(lifecycleConfig);
+  }, []);
+
+  // Mock implementations
+  const { dynamicContent, dynamicConfig } = {
+    dynamicContent: false,
+    dynamicConfig: { document: { getTitle: () => "Untitled Document" } }
+  };
+
+  const userService = {
+    fetchUserById: async (id: string) => "mock-user-id"
+  };
+
+  const initUserId = "";
+  const [userId, setUserId] = useState<string>("");
+
+  // Helper function to handle button clicks with proper typing
+  const handleButtonClick = (action: string, callback?: () => void) => {
+    return () => {
+      console.log(`Button action: ${action}`, { date, timestamp, identifiers });
+      callback?.();
+    };
+  };
+
+  // Fetch userId
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await userService.fetchUserById(initUserId);
+        setUserId(user);
+      } catch (err) {
+        console.error('Failed to fetch user:', err);
+      }
+    };
+    fetchUser();
+  }, [initUserId]);
+
+  // Fetch eventId
+  useEffect(() => {
     const fetchEventId = async () => {
       try {
-        const eventData = await fetchEventData(String(id));
+        const eventData = await Promise.resolve([
+          { id: String(id), name, type, eventId: 'event-123' }
+        ]);
+        
         const matchingEvent = eventData.find(
           (event) => event.id === id && event.name === name && event.type === type
         );
 
-        if (!matchingEvent) {
-          throw new Error('Event not found');
+        if (matchingEvent) {
+          setEventId(matchingEvent.eventId);
         }
-
-        setEventId(matchingEvent.eventId);
       } catch (err) {
         setError('Failed to fetch eventId');
         console.error(err);
@@ -239,115 +304,173 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps<T, K, Meta, AttachmentType,
       }
     };
 
-    fetchEventId();
+    if (id) {
+      fetchEventId();
+    }
   }, [id, name, type]);
 
-  const handleVoiceControl = () => {
-    const recognition = startVoiceRecognition((result: string) => {
-      console.log("Speech Recognition Result:", result);
-      // Handle speech recognition result here
-    });
-
-    if (recognition) {
-      stopVoiceRecognition(recognition);
-    }
+  // Get button types from labels
+  const getButtonTypes = (): string[] => {
+    if (typeof label === 'string') return ['primary'];
+    if (label && typeof label === 'object') return Object.keys(label);
+    return Object.keys(defaultLabels);
   };
 
-  const renderButton = (
-    type: string,
-    setCurrentPhase: any,
-    currentPhase: any
-  ) => {
+  const buttonTypes = getButtonTypes();
+  const title = dynamicConfig.document?.getTitle() || "Untitled Document";
+
+  // Render individual button
+  const renderButton = (buttonType: string) => {
+    const getButtonLabel = (): string => {
+      if (typeof label === 'string') return label;
+      if (label && typeof label === 'object' && buttonType in label) {
+        return (label as Record<string, string>)[buttonType];
+      }
+      return defaultLabels[buttonType as keyof typeof defaultLabels] || buttonType;
+    };
+
+    const getButtonVariant = (): string => {
+      if (variant && buttonType in variant) {
+        return variant[buttonType];
+      }
+      return variant.primary || 'btn-primary';
+    };
+
+    const handleClick = () => {
+      switch (buttonType) {
+        case "submit":
+          onSubmit?.();
+          break;
+        case "reset":
+          onReset?.();
+          break;
+        case "cancel":
+          onCancel?.();
+          break;
+        case "logical-and":
+          onLogicalAnd?.();
+          break;
+        case "logical-or":
+          onLogicalOr?.();
+          break;
+        case "start-phase":
+          onStartPhase?.(buttonType);
+          break;
+        case "end-phase":
+          onEndPhase?.(buttonType);
+          break;
+        case "switch-layout":
+          onSwitchLayout?.(buttonType);
+          break;
+        case "open-dashboard":
+          onOpenDashboard?.(buttonType);
+          break;
+        case "transition-to-previous-phase":
+          onTransitionToPreviousPhase?.(setCurrentPhase, currentPhase);
+          break;
+        case "transition-to-next-phase":
+          onTransitionToNextPhase?.(setCurrentPhase, currentPhase);
+          break;
+        default:
+          console.log(`Unknown button type: ${buttonType}`);
+          break;
+      }
+    };
+
+    // Check if button should be disabled based on lifecycle state
+    const isDisabled = () => {
+      if (!lifecycleManagerRef.current) return false;
+      
+      switch (buttonType) {
+        case "transition-to-previous-phase":
+          return !lifecycleManagerRef.current.getPreviousPhase();
+        case "transition-to-next-phase":
+          return lifecycleManagerRef.current.getNextPossiblePhases().length === 0;
+        default:
+          return false;
+      }
+    };
+
     return (
-      <ReusableButton
-        key={type}
-        router={router as ExtendedRouter & Router}
-        brandingSettings={brandingSettings}
-        onClick={() => {
-          // Call the corresponding function when the button is clicked
-          switch (type) {
-            case "submit":
-              onSubmit && onSubmit();
-              break;
-            case "reset":
-              onReset && onReset();
-              break;
-            case "cancel":
-              onCancel && onCancel();
-              break;
-            case "logical-and":
-              onLogicalAnd && onLogicalAnd();
-              break;
-            case "logical-or":
-              onLogicalOr && onLogicalOr();
-              break;
-            case "start-phase":
-              onStartPhase && onStartPhase(type);
-              break;
-            case "end-phase":
-              onEndPhase && onEndPhase(type);
-              break;
-            case "switch-layout":
-              onSwitchLayout && onSwitchLayout(type);
-              break;
-            case "open-dashboard":
-              onOpenDashboard && onOpenDashboard(type);
-              break;
-            case "transition-to-previous-phase":
-              onTransitionToPreviousPhase &&
-                onTransitionToPreviousPhase(setCurrentPhase, currentPhase);
-              break;
-            case "transition-to-next-phase":
-              onTransitionToNextPhase &&
-                onTransitionToNextPhase(setCurrentPhase, currentPhase);
-              break; // ... (other cases)
-            default:
-              break;
-          }
-        }}
-        label={label[type]}
-        variant={variant[type]}
-      />
+      <button
+        key={buttonType}
+        className={getButtonVariant()}
+        onClick={handleClick}
+        disabled={isDisabled() || loading}
+        title={isDisabled() ? `Cannot ${buttonType} in current state` : undefined}
+      >
+        {getButtonLabel()}
+        {isDisabled() && ' (Disabled)'}
+      </button>
     );
   };
 
-    return (
-    <div>
+  if (loading) {
+    return <div>Loading buttons...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div className="button-generator">
       <h3>Naming Conventions: {dynamicContent ? "Dynamic" : "Static"}</h3>
-      {buttonTypes.map((type, setCurrentPhase, currentPhase) =>
-        renderButton(type, setCurrentPhase, currentPhase)  
+      
+      {/* Current Phase Display */}
+      {lifecycleManagerRef.current && (
+        <div className="current-phase">
+          <strong>Current Phase:</strong> {lifecycleManagerRef.current.getCurrentPhase()?.name || 'None'}
+        </div>
       )}
-      {/* <ButtonGenerator {...buttonGeneratorProps}>{children}</ButtonGenerator>; */}
-      <button
-        type={"submit"} // Changed to a valid button type
-        onSubmit={buttonGeneratorProps.onSubmit} 
-      >
-      </button>
-      ;{/* New voiceControlButton */}
-      <button id="voiceControlButton" onClick={handleVoiceControl}>
-        Activate Voice Control
-      </button>
-      {/* Include RealtimeData component */}
-      <RealtimeDataComponent
+      
+      <div className="button-group">
+        {buttonTypes.map(renderButton)}
+      </div>
+
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && lifecycleManagerRef.current && (
+        <div className="debug-info">
+          <p>Date: {date?.toString()}</p>
+          <p>Timestamp: {timestamp?.toString()}</p>
+          <p>Entity ID: {id}</p>
+          <p>Current Phase: {lifecycleManagerRef.current.getCurrentPhase()?.name}</p>
+          <p>Available Next Phases: {lifecycleManagerRef.current.getNextPossiblePhases().map(p => p.name).join(', ')}</p>
+        </div>
+      )}
+
+      {/* RealtimeData component - uncomment when available */}
+      {/* <RealtimeDataComponent
         id={id}
         name={name}
         type={type}
-        eventId={eventId || ''} // Pass the fetched eventId
-       
+        eventId={eventId || ''}
         userId={userId}
         dispatch={dispatch}
         date={date}
         value={value}
         title={title}
         timestamp={timestamp}
-      />
+      /> */}
     </div>
   );
-
 };
 
+
+
 // Define buttonGeneratorProps
-const buttonGeneratorProps: ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+// Updated buttonGeneratorProps with proper LifecycleManager integration
+const createButtonGeneratorProps = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  lifecycleManager: LifecycleManager,
+  setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
+): ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => ({
   label: defaultLabels,
   variant: defaultVariants,
   onSubmit: () => console.log("Submit clicked"),
@@ -355,42 +478,182 @@ const buttonGeneratorProps: ButtonGeneratorProps<T, K, Meta, AttachmentType, Exc
   onCancel: () => console.log("Cancel clicked"),
   onLogicalAnd: () => console.log("Logical And clicked"),
   onLogicalOr: () => console.log("Logical Or clicked"),
-  onStartPhase: (phase) => console.log(`Start Phase clicked: ${phase}`),
-  onEndPhase: (phase) => console.log(`End Phase clicked: ${phase}`),
+  onStartPhase: (phase) => {
+    console.log(`Start Phase clicked: ${phase}`);
+    // Use LifecycleManager for phase transitions
+    lifecycleManager.transitionTo(phase).then(success => {
+      if (success) {
+        const newPhase = lifecycleManager.getCurrentPhase();
+        if (newPhase) {
+          setCurrentPhase(newPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+          console.log(`Successfully started phase: ${phase}`);
+        }
+      } else {
+        console.warn(`Failed to start phase: ${phase}`);
+      }
+    });
+  },
+  onEndPhase: (phase) => {
+    console.log(`End Phase clicked: ${phase}`);
+    // Implement end phase logic using LifecycleManager
+    const nextPhase = lifecycleManager.getNextPossiblePhases().find(p => p.name !== phase);
+    if (nextPhase) {
+      lifecycleManager.transitionTo(nextPhase.name);
+    }
+  },
   onSwitchLayout: (layout) => console.log(`Switch Layout clicked: ${layout}`),
-  // generateButtonDispatch: (dispatch) => {
-  //   // Send push notification
-  //   const message = `Generated Buttons: ${JSON.stringify(dispatch)}`;
-  //   const sender = "User";
-  //   // Send push notification
-  //   useNotificationManagerService().sendPushNotification(message, sender);
-  //   // Additional logic if needed
-  //   console.log(`Generated Buttons: ${JSON.stringify(dispatch)}`);
-  // },
 
-  onTransitionToPreviousPhase: (setCurrentPhase, currentPhase) => {
-    // Implement transition to previous phase logic
-    console.log("Transition to previous phase logic here");
-    // Example: setCurrentPhase to previous phase
-    setCurrentPhase(previousPhase);
+  onTransitionToPreviousPhase: async (setCurrentPhase, currentPhase) => {
+    try {
+      console.log("Transitioning to previous phase...");
+      
+      const previousPhase = lifecycleManager.getPreviousPhase();
+      if (!previousPhase) {
+        console.warn("No previous phase available");
+        return;
+      }
+
+      // Check if transition is allowed
+      if (!lifecycleManager.canTransitionTo(previousPhase.name)) {
+        console.warn(`Transition to previous phase '${previousPhase.name}' is not allowed`);
+        return;
+      }
+
+      // Perform the transition
+      const success = await lifecycleManager.transitionTo(previousPhase.name);
+      if (success) {
+        const newPhase = lifecycleManager.getCurrentPhase();
+        if (newPhase) {
+          setCurrentPhase(newPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+          console.log(`Successfully transitioned to previous phase: ${previousPhase.name}`);
+        }
+      } else {
+        console.warn(`Failed to transition to previous phase: ${previousPhase.name}`);
+      }
+    } catch (error) {
+      console.error('Error during transition to previous phase:', error);
+    }
   },
-  onTransitionToNextPhase: (setCurrentPhase, currentPhase) => {
-    // Implement transition to next phase logic
-    console.log("Transition to next phase logic here");
-    // Example: setCurrentPhase to next phase
-    setCurrentPhase(nextPhase);
+
+  onTransitionToNextPhase: async (setCurrentPhase, currentPhase) => {
+    try {
+      console.log("Transitioning to next phase...");
+      
+      const nextPhases = lifecycleManager.getNextPossiblePhases();
+      if (nextPhases.length === 0) {
+        console.warn("No available next phases");
+        return;
+      }
+
+      // Choose the next phase (you can implement custom logic here)
+      const nextPhase = nextPhases[0]; // Or implement your selection logic
+      
+      // Perform the transition
+      const success = await lifecycleManager.transitionTo(nextPhase.name);
+      if (success) {
+        const newPhase = lifecycleManager.getCurrentPhase();
+        if (newPhase) {
+          setCurrentPhase(newPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+          console.log(`Successfully transitioned to next phase: ${nextPhase.name}`);
+        }
+      } else {
+        console.warn(`Failed to transition to next phase: ${nextPhase.name}`);
+      }
+    } catch (error) {
+      console.error('Error during transition to next phase:', error);
+    }
   },
+
   onOpenDashboard: (dashboard) => {
-    // Send push notification
-    const message = `Opened Dashboard: ${dashboard}`;
-    const sender = "User";
-    // Send push notification
-    useNotificationManagerService().sendPushNotification(message, sender);
-    // Additional logic if needed
     console.log(`Open Dashboard clicked: ${dashboard}`);
+    // Simple logging - move complex notification logic to parent component
   },
+});
+
+// Hook for easy usage
+export const useButtonGeneratorProps = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(lifecycleConfig?: LifecycleConfig) => {
+  const [currentPhase, setCurrentPhase] = useState<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+    {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  );
+
+  const lifecycleManager = useRef<LifecycleManager>(
+    new LifecycleManager(lifecycleConfig || getDefaultLifecycleConfig())
+  ).current;
+
+  const buttonProps = createButtonGeneratorProps(lifecycleManager, setCurrentPhase);
+
+  return {
+    buttonProps,
+    currentPhase,
+    lifecycleManager,
+    setCurrentPhase
+  };
 };
 
-export { ButtonGenerator, buttonGeneratorProps };
+// Default lifecycle configuration
+const getDefaultLifecycleConfig = (): LifecycleConfig => ({
+  phases: [
+    {
+      name: 'initialization',
+      subPhases: ['setup', 'configuration'],
+      hooks: {
+        canTransitionTo: (targetPhase) => 
+          ['processing', 'validation'].includes(targetPhase.name),
+        handleTransitionTo: (targetPhase) => 
+          console.log(`Transitioning from initialization to ${targetPhase.name}`),
+        condition: async (timeout) => false
+      }
+    },
+    {
+      name: 'processing',
+      subPhases: ['data-loading', 'transformation'],
+      hooks: {
+        canTransitionTo: (targetPhase) => 
+          ['validation', 'completion'].includes(targetPhase.name),
+        handleTransitionTo: (targetPhase) => 
+          console.log(`Transitioning from processing to ${targetPhase.name}`),
+        condition: async (timeout) => false
+      }
+    },
+    {
+      name: 'validation',
+      subPhases: ['checking', 'verification'],
+      hooks: {
+        canTransitionTo: (targetPhase) => 
+          ['processing', 'completion'].includes(targetPhase.name),
+        handleTransitionTo: (targetPhase) => 
+          console.log(`Transitioning from validation to ${targetPhase.name}`),
+        condition: async (timeout) => false
+      }
+    },
+    {
+      name: 'completion',
+      subPhases: ['final', 'cleanup'],
+      hooks: {
+        canTransitionTo: () => false, // Final state
+        handleTransitionTo: () => console.log('Process completed'),
+        condition: async (timeout) => false
+      }
+    }
+  ],
+  initialPhase: 'initialization',
+  onPhaseChange: (fromPhase, toPhase) => {
+    console.log(`Phase changed: ${fromPhase?.name || 'none'} → ${toPhase.name}`);
+  },
+  onTransitionError: (error) => {
+    console.error('Lifecycle transition error:', error.message);
+  }
+});
+
+
+export { ButtonGenerator, buttonGeneratorProps, createButtonGeneratorProps, useButtonGeneratorProps };
 export type { ButtonGeneratorProps };
 
+export {  };

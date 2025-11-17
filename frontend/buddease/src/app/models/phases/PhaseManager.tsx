@@ -1,6 +1,5 @@
 import Stopwatch from "@/app/calendar/Stopwatch";
 import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
@@ -26,8 +25,8 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
 
 
   // Reusable PhaseManager component
-  const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
-    const [currentPhase, setCurrentPhase] = useState<Phase | null>(null);
+  const PhaseManager: React.FC<{ phases: Phase<AppPhaseEntity>[] }> = ({ phases }) => {
+    const [currentPhase, setCurrentPhase] = useState<Phase<AppPhaseEntity> | null>(null);
 
     const area = fetchUserAreaDimensions().toString()
     const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)

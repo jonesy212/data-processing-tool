@@ -15,9 +15,9 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { RealtimeDataItem } from '../realtimeTypes';
 import { ApplyFieldFilters } from './AppEntity';
 import { LoginCredentials } from '@/app/server/auth/AuthServerService'
-
+import { AppEntity } from '@/app/typings/entities/AppEntity'
 // Define the actual UserEntity interface
-interface UserEntity extends BaseDataEntity {
+interface UserEntity extends AppEntity {
   id: string;
   name: string;
   email: string;

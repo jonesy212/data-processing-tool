@@ -1,4 +1,5 @@
 // Define a type for chat settings
+
 interface ChatSettings {
   realTimeChatEnabled: boolean;
   notificationEmailEnabled: boolean;

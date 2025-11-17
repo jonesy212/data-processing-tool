@@ -4,7 +4,7 @@ import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { CustomEventExtension } from "@/app/events/BaseCustomEvent";
 import {
     ButtonGenerator,
-    buttonGeneratorProps,
+    useButtonGeneratorProps, // Updated import
 } from "@/app/generators/GenerateButtons";
 import { usePresetPercentages } from "@/app/generators/presetPercentages";
 import ThemeCustomization from "@/app/hooks/userInterface/ThemeCustomization";
@@ -26,11 +26,6 @@ import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";
 
-
-
-
-
-  
 interface ControlPanelProps {
   speed: number;
   onChangeSpeed: (newSpeed: number) => void;
@@ -47,6 +42,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const { sendNotification } = useNotification();
   // Inside ControlPanel component
   const notificationStore = useNotificationStore(); // ✅ call the hook
+
+  // Use the new hook to get button props
+  const { buttonProps, currentPhase, lifecycleManager } = useButtonGeneratorProps();
 
   // Check if notificationStoreContainer is not null before accessing its properties
   const notifications = notificationStore.notifications || [];
@@ -198,7 +196,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </Button>
 
       <h2>Control Panel</h2>
-      <ButtonGenerator {...buttonGeneratorProps} />
+      <ButtonGenerator {...buttonProps} />
     </div>
   );
 };

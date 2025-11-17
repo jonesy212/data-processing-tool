@@ -1,6 +1,7 @@
 import { Label } from '@/app/branding/BrandingSettings';
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Collaborator } from "@/app/collaborators/Collaborator";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { Team } from "@/app/components/teams/Team";
 import {
@@ -28,8 +29,9 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
+import { CommonDetails } from "@/app/components/models/details/CommonDetails";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
 import { Member } from "@/app/models/members/Member";
 import { Phase } from "@/app/models/phases/Phase";
@@ -185,10 +187,7 @@ type TodoSubtasks<
 type ChildRelationship<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > =
   | {
       type: "metadata";
@@ -208,7 +207,7 @@ interface BaseData<
    SharedIdentifiers<T, K> {
   sharedData?: SharedRelationshipData<K>;
   children?:
-    | ChildRelationship<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | ChildRelationship<T, K, Meta>
     | CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   size?: string | number;
@@ -456,7 +455,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
       color: "",
     },
     currentMetadata: currentMetadata,
-    currentMeta: currentMeta,
+    currenctMeta: currentMeta,
     date: "",
     id: "phase1",
     name: "Phase 1",
@@ -1760,4 +1759,5 @@ export type {
 // Clean the coreData to replace empty strings with null
 const cleanedCoreData = cleanEmptyStrings(coreData);
 
+export type { SharedPhaseData};
 export { cleanedCoreData, coreData };

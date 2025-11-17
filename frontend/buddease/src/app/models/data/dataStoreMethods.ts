@@ -31,16 +31,21 @@ type T = BaseDataEntity; // Replace with the appropriate type if necessary
 type K = T; // Use T or another type that extends BaseData
 
 
-export type UserConfigData<
+export interface UserConfigData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> = 
-  UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  
+> extends User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+{
+  // Add configuration-specific fields here
+  settings: UserSettings;
+  enabledFeatures: string[];
+  userSpecificData: T;
+}
 
 type ConvertMeta<
   U extends BaseDataEntity,

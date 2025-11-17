@@ -1,5 +1,3 @@
-<!-- ContentLoggerServer -->
-<!-- ContentLogger -->
 <!-- ContentLoggerClient -->
 # ContentLogger: Base Class for Client and Server Logging
 

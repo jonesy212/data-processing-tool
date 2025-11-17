@@ -1,11 +1,12 @@
 // configMethods.ts
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from "@/app/Snapshot";
-import { SnapshotConfig } from "@/app/SnapshotConfig";
-import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/snapshotstoreConfig";
 import { InitializedState } from "@/app/state/stores/DataStore";
-import TransformMethods from "./transformMethods";
+import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
 
 
 interface ConfigMethodsInterface<
@@ -47,8 +48,8 @@ export class ConfigMethods<
     Promise.resolve(null);
 
   constructor(initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
-    if (initialConfig) {
-      this.config = Promise.resolve(initialConfig);
+    if (initialSnapshotStoreConfig) {
+      this.config = Promise.resolve(initialSnapshotStoreConfig);
     }
   }
   public async setConfig(

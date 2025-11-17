@@ -12,7 +12,7 @@ import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ProjectStateEnum } from '@/app/models/data/StatusType';
 import { ProjectType } from '@/app/models/projects/Project';
-import { Member } from '@/app/models/teams/TeamMembers';
+import { Member } from '@/app/models/members/Member';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -235,21 +235,33 @@ interface SnapshotOperations<
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined,
     subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
   ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-
-
   preDelete?: (id: string, config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined) => Promise<void>;
   postDelete?: (id: string) => Promise<void>;
 }
 
 
-const getParentId = (
+const getParentId = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   id: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): string | null => {
   return snapshot.parentId || null;
 };
 
-const getChildIds = (
+const getChildIds = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   id: string,
   childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
@@ -301,7 +313,6 @@ const mapSnapshots = async <
     const snapshotObject = callback(
       storeIds,
       snapshotId,
-      category,
       categoryProperties,
       snapshot,
       timestamp,
@@ -310,7 +321,8 @@ const mapSnapshots = async <
       id,
       snapshotStore,
       data,
-      i
+      i,
+      category
     );
     snapshotsArray.push(snapshotObject);
   }
@@ -433,6 +445,9 @@ const handleSnapshot = <
         // convert VersionImpl -> VersionData explicitly
         const { author, user, notes, changes } = snapshotStoreConfig.version;
         versionInfo = createVersionInfo({
+           id, isLatest, isActive, isPublished, 
+
+
           author,
           user,
           notes,
@@ -498,7 +513,7 @@ const handleSnapshot = <
       // snapshotData as object
       snapshotData: {
 
-        storeId: "",
+        storeId: 0,
         validate: "",
         serialize: "",
         get: "",
@@ -797,9 +812,14 @@ const getSnapshot = <
       mockSnapshot.meta = new Map().set("meta1", {
         getDataStore: async () => ({
           id: "mock-store",
+          baseConfig: {},
+          sharedMetadata: {},
+          sharedBaseData: {},
+          taggable: {},
           data: {} as T,
           createdAt: new Date(),
           updatedAt: new Date(),
+          
         })
       });
       resolve(mockSnapshot);
@@ -913,7 +933,7 @@ const publishSnapshot = async <
 const removeSnapshot = (
   snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
 ): void => {
-  snapshot.delete(); // or whatever method removes it from its store
+  snapshot.deleted(); // or whatever method removes it from its store
 };
 
 
@@ -1021,36 +1041,6 @@ const getSnapshotItems = async <
   return { snapshots: snapshotItems };
 };
 
-const getSnapshotContainer = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
-  id: string | number,
-  snapshotFetcher: (id: string | number) => Promise<SnapshotContainer<
-    T,
-    K,
-    Meta,
-    AttachmentType,
-    ExcludedFields,
-    IncludedFields
-  >>
-): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-  return snapshotFetcher(id)
-    .then((snapshotContainer) => {
-      // Return the full, strongly-typed container exactly as provided.
-      // No partial mapping — this preserves all type details.
-      return snapshotContainer;
-    })
-    .catch((error) => {
-      console.error("Error fetching snapshot container:", error);
-      throw error;
-    });
-};
-
 
 const configureSnapshot = <
   T extends BaseDataEntity,
@@ -1108,7 +1098,7 @@ const configureSnapshot = <
 
 export {
     clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-    getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
     takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };

@@ -1,5 +1,5 @@
-import { Content } from '@/app/components/models/content/AddContent';
 // Version.ts
+import { Content } from '@/app/components/models/content/AddContent';
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import metadata from '@/app/layout';
@@ -79,7 +79,7 @@ interface Version<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
+> extends SharedContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number;
   major: number;
   minor: number;
@@ -88,7 +88,6 @@ interface Version<
   versionNumber: string | number;
   name: string;
   description: string;
-  content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentId: string | number;
   appVersion: string;
   checksum: string;
@@ -939,22 +938,42 @@ static createVersion<
     return null;
   }
   
-    private generateStructureHash(): string {
+  private generateStructureHash(): string {
     if (!this.frontendStructure) {
       return '';
     }
-    return sha256(JSON.stringify(this.frontendStructure));
+    return HashGenerator.hashStructure(this.frontendStructure);
   }
 
-  // ✅ Alternative if you need async (but js-sha256 is sync)
+
   private async generateStructureHashAsync(): Promise<string> {
     const frontendStructure = await this.frontendStructure;
     return sha256(JSON.stringify(frontendStructure));
   }
 
   // Method to get structure hash
+  private async generateStructureHash(): Promise<string> {
+    if (!this.frontendStructure) {
+      return '';
+    }
+    return HashGenerator.hashStructure(this.frontendStructure);
+  }
+
+  // Public method to get structure hash
   public async getStructureHash(): Promise<string> {
     return this.generateStructureHash();
+  }
+
+  // Sync version if needed (Node.js only)
+  private generateStructureHashSync(): string {
+    if (typeof window !== 'undefined') {
+      throw new Error('generateStructureHashSync is only available in Node.js');
+    }
+    
+    if (!this.frontendStructure) {
+      return '';
+    }
+    return HashGenerator.hashStructureSync(this.frontendStructure);
   }
 
   // Type conversion utilities
@@ -1496,11 +1515,12 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
     return this.generateSHA256Hash(JSON.stringify(structure));
   }
 
-  // Calculate the hash of the structure data
-  calculateHash(): string {
-    // Logic to calculate and return the hash
-    this.currentHash = this.hash(this.structureData);
-    return this.currentHash;
+  // Calculate hash using secure method
+  public calculateHash(): string {
+    return HashGenerator.generateCryptographicHash(
+      this.versionNumber + this.appVersion,
+      'data-integrity'
+    );
   }
 
   // Method to update the structure hash
@@ -1527,10 +1547,6 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
     // Optionally call updateStructureHash() here if needed
   }
 
-  private hash(value: string): string {
-      return sha256(value);
-  }
-  
   // For SHA-256 (more secure)
   private async generateSHA256Hash(data: string): Promise<string> {
     if (typeof window === 'undefined') {

@@ -1,12 +1,15 @@
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { InitializedState } from '@/app/state/stores/DataStore';
-
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 
 interface CustomSnapshot<
   T extends BaseDataEntity = BaseDataRoot,
@@ -71,7 +74,7 @@ interface CustomSnapshot<
     originalSnapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     originalSnapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     mergedAt: Date;
-    mergeStrategy: 'snapshot-first' | 'data-first' | 'custom';
+    mergeStrategy: 'snapshot-first' | 'data-first' | 'custom' | 'balanced';
   };
 
   // Enhanced lifecycle methods
@@ -115,6 +118,16 @@ const createCustomSnapshot = <
   const mergeStrategy = options.mergeStrategy || 'balanced';
   const preserveOriginal = options.preserveOriginal ?? true;
 
+  // Helper function to determine which set method to use
+  const getSetMethod = (
+    snapshotSet?: (data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, type: string, event: Event) => void,
+    snapshotDataSet?: (key: string, value: any) => void
+  ) => {
+    if (mergeStrategy === 'snapshot-first' && snapshotSet) return snapshotSet;
+    if (mergeStrategy === 'data-first' && snapshotDataSet) return snapshotDataSet;
+    return snapshotSet || snapshotDataSet || ((data: any, type?: string, event?: Event) => {});
+  };
+
   // Base object with resolved conflicts
   const customSnapshot: CustomSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     // === RESOLVED CORE PROPERTIES ===
@@ -127,7 +140,7 @@ const createCustomSnapshot = <
     validate: snapshotData?.validate || (() => true),
     serialize: snapshotData?.serialize || (() => JSON.stringify({})),
     get: snapshotData?.get || ((key: string) => undefined),
-    set: snapshotData?.set || ((key: string, value: any) => {}),
+    set: getSetMethod(snapshot?.set, snapshotData?.set), // Fixed: Use appropriate set method
     processEvent: snapshotData?.processEvent || ((data: any, type: string, event: Event) => {}),
     deleteSnapshot: snapshotData?.deleteSnapshot || ((id: string) => {}),
     
@@ -176,33 +189,50 @@ const createCustomSnapshot = <
     },
     
     convertToSnapshot: function(): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-      return {
-        ...this,
-        // Ensure all required Snapshot properties are present
-        dataObject: this.dataObject || {},
+      // Create a clean snapshot object without conflicting methods
+      const cleanSnapshot: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+        id: this.id,
+        storeId: this.storeId,
         deleted: this.deleted,
-        initialState: this.initialState,
         isCore: this.isCore,
+        initialState: this.initialState,
         initialConfig: this.initialConfig,
         onInitialize: this.onInitialize,
-        versionInfo: this.versionInfo as ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-      } as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+        versionInfo: this.versionInfo as ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        schema: this.schema,
+        shared: this.shared,
+        sharedMetadata: this.sharedMetadata,
+        dataObject: this.dataObject || {},
+        // Include only snapshot-compatible properties
+      };
+
+      // Add snapshot-specific set method if available
+      if (snapshot?.set) {
+        cleanSnapshot.set = snapshot.set;
+      }
+
+      return cleanSnapshot as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     },
     
     convertToSnapshotData: function(): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-      return {
-        ...this,
-        // Ensure all required SnapshotData properties are present
+      // Create a clean snapshot data object
+      const cleanSnapshotData: Partial<SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+        id: this.id,
+        storeId: this.storeId,
         validate: this.validate,
         serialize: this.serialize,
         get: this.get,
-        set: this.set,
+        set: this.set, // This is the snapshot data set method
         processEvent: this.processEvent,
         deleteSnapshot: this.deleteSnapshot,
         operations: this.operations,
         base: this.base,
-        sharedMetadata: this.sharedMetadata
-      } as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+        sharedMetadata: this.sharedMetadata,
+        initialState: this.initialState,
+        initialConfig: this.initialConfig,
+      };
+
+      return cleanSnapshotData as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     },
     
     getMergedProperties: function() {
@@ -222,7 +252,7 @@ const createCustomSnapshot = <
     },
     
     isCompatibleWithSnapshotData: function() {
-      return !!(this.id && this.storeId !== undefined && this.validate && this.serialize);
+      return !!(this.id && this.storeId !== undefined && typeof this.validate === 'function' && typeof this.serialize === 'function');
     }
   };
 

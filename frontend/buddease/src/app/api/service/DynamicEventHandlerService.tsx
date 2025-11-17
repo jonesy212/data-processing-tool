@@ -2,7 +2,9 @@
 import { CustomMouseEvent } from '@/app/services/EventService'
 import SnapshotList from "@/app/snapshots/SnapshotList";
 import { SyntheticEvent } from "react";
-
+import { Router, useRouter } from "next/router";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes'
 
 const DynamicEventHandlerService = ({
   handleSorting,

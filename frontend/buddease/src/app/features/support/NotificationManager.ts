@@ -248,5 +248,5 @@ class NotificationManager<
 }
 
 
-export default observer(NotificationManager);
+export default NotificationManager;
 export type { NotificationManagerProps, NotificationMessages };

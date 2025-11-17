@@ -1,19 +1,35 @@
 // CacheManager.ts
-import { CustomPhaseHooks } from "@/app/components/phases/Phase";
+import { CustomPhaseHooks } from "@/app/models/phases/Phase";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import getAppPath from "@/app/config/appStructure/appPath";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import { UserPreferences } from "@/app/config/UserPreferences";
 import { UserSettings } from "@/app/config/UserSettings";
 import { BaseData } from '@/app/models/data/Data';
-import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
+import { DataAnalysisDispatch } from "@/app/typings/phases/dataAnalysisTypes";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import BackendStructure from "@/configs/appStructure/BackendStructure";
 import { useNotification } from "@/state/context/NotificationContext";
+import BackendStructure from "@/app/server/database/BackendStructure";
+import fs from 'fs';
 
-const { notify } = useNotification()
+const { notify } = useNotification();
 
-interface MainConfigProps {
-  frontendStructure: FrontendStructure;
+// Define or import projectPath here
+const { versionNumber, appVersion } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
+const frontendStructure = new FrontendStructure(projectPath);
+const backendStructure = new BackendStructure(projectPath);
+
+interface MainConfigProps<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+> {
+  frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   backendConfig: BackendStructure;
 }
 
@@ -50,15 +66,14 @@ type CacheWriteOptions = {
   userSettings: UserSettings
 };
 
-
-
 // Define the interface for your cache structure
 export interface CacheStructure {
   [key: string]: any;
 }
-
-export const getBackendStructureFilePath = (key: string): string => {
-  const item = backendStructure.getStructureAsArray().find((item) => item.id === key);
+// note: the async approach is recommended since file system operations are inherently asynchronous.
+export const getBackendStructureFilePath = async (key: string): Promise<string> => {
+  const structureArray = await backendStructure.getStructureAsArray();
+  const item = structureArray.find((item: any) => item.id === key);
   if (item) {
     return item.path;
   } else {
@@ -66,11 +81,23 @@ export const getBackendStructureFilePath = (key: string): string => {
   }
 };
 
-// Read cache data
+
+export const getFrontendStructureFilePath = async (key: string): Promise<string> => {
+  const structureArray = await frontendStructure.getStructureAsArray();
+  const item = structureArray.find((item: any) => item.id === key);
+  if (item) {
+    return item.path;
+  } else {
+    throw new Error(`Frontend file path not found for key: ${key}`);
+  }
+};
+
+
+// Read cache data from backend
 export const readAndLogCache = async (key: string) => {
-  const filePath = getBackendStructureFilePath(key);
+  const filePath = await getBackendStructureFilePath(key); // Add await
   try {
-    const cacheData = await fs.readFile(filePath, "utf-8");
+    const cacheData = await fs.promises.readFile(filePath, "utf-8");
     const cache = JSON.parse(cacheData);
     console.log("Current Cache:", cache);
     return cache;
@@ -80,10 +107,49 @@ export const readAndLogCache = async (key: string) => {
   }
 };
 
-// Define or import projectPath here
-const { versionNumber, appVersion } = getCurrentAppInfo();
-const projectPath = getAppPath(versionNumber, appVersion);
-const frontendStructure = new FrontendStructure(projectPath);
-const backendStructure = new BackendStructure(projectPath);
+// Read frontend configuration data
+export const readFrontendConfig = async (key: string) => {
+  const filePath = await getFrontendStructureFilePath(key);
+  try {
+    const configData = await fs.promises.readFile(filePath, "utf-8");
+    const config = JSON.parse(configData);
+    console.log("Frontend Config:", config);
+    return config;
+  } catch (error) {
+    console.error(`Error reading frontend config from ${filePath}:`, error);
+    throw error;
+  }
+};
+
+// Write cache data with both structures
+export const writeCacheWithStructures = async (
+  key: string, 
+  data: Record<string, any>, 
+  options: {
+    useFrontendStructure?: boolean;
+    useBackendStructure?: boolean;
+  } = {}
+) => {
+ const filePath = options.useFrontendStructure 
+    ? await getFrontendStructureFilePath(key) 
+    : await getBackendStructureFilePath(key); 
+
+
+  try {
+    const cacheData = {
+      ...data,
+      lastUpdated: new Date().toISOString(),
+      frontendStructure: options.useFrontendStructure ? frontendStructure.getStructure() : undefined,
+      backendStructure: options.useBackendStructure ? backendStructure.getStructure() : undefined
+    };
+
+    await fs.promises.writeFile(filePath, JSON.stringify(cacheData, null, 2), "utf-8");
+    console.log(`Cache written successfully to: ${filePath}`);
+    return cacheData;
+  } catch (error) {
+    console.error(`Error writing cache to ${filePath}:`, error);
+    throw error;
+  }
+};
 
 export type { CacheWriteOptions };

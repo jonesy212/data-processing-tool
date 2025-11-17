@@ -1,4 +1,8 @@
 // SnapshotAnalyzer.ts
+import path from 'path';
+import fs from 'fs';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
+
 export class SnapshotAnalyzer {
   private snapshotFolderPath: string;
 
@@ -97,6 +101,65 @@ export class SnapshotAnalyzer {
           fix: `Ensure '${typeName}' is properly defined and imported`,
           category: 'structure'
         });
+      }
+    }
+
+    return corrections;
+  }
+
+  private async findSerializationIssues(): Promise<Correction[]> {
+    const corrections: Correction[] = [];
+    const files = this.getTypeScriptFiles(this.snapshotFolderPath);
+
+    for (const file of files) {
+      const content = fs.readFileSync(file, 'utf8');
+      
+      // Look for potential serialization issues
+      if (content.includes('JSON.stringify') || content.includes('JSON.parse')) {
+        corrections.push({
+          id: `serialization-${path.basename(file)}`,
+          type: 'warning',
+          severity: 'medium',
+          file: file,
+          message: 'JSON serialization detected - ensure proper error handling',
+          code: 'JSON.stringify/JSON.parse usage',
+          fix: 'Add proper error handling for JSON operations',
+          category: 'runtime'
+        });
+      }
+    }
+
+    return corrections;
+  }
+
+  private async findDataModelProblems(): Promise<Correction[]> {
+    const corrections: Correction[] = [];
+    const files = this.getTypeScriptFiles(this.snapshotFolderPath);
+
+    for (const file of files) {
+      const content = fs.readFileSync(file, 'utf8');
+      
+      // Look for large interfaces that might be problematic
+      const interfaceRegex = /interface\s+(\w+)\s*{([^}]+)}/g;
+      let match;
+
+      while ((match = interfaceRegex.exec(content)) !== null) {
+        const interfaceName = match[1];
+        const interfaceBody = match[2];
+        const propertyCount = (interfaceBody.match(/[^:]:/g) || []).length;
+        
+        if (propertyCount > 10) {
+          corrections.push({
+            id: `large-interface-${interfaceName}`,
+            type: 'suggestion',
+            severity: 'low',
+            file: file,
+            message: `Interface '${interfaceName}' has many properties (${propertyCount})`,
+            code: `interface ${interfaceName} { ... }`,
+            fix: 'Consider breaking down into smaller interfaces',
+            category: 'structure'
+          });
+        }
       }
     }
 

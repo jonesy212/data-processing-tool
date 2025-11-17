@@ -1,7 +1,7 @@
 // TaskEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
-import { TaskDataEntity, Task } from '@/app/models/tasks/Task';
+import { Task } from '@/app/models/tasks/Task';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -14,21 +14,42 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { AppMetadata } from '@/app/typings/metadataTypes'
-
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+
+export interface TaskEntity extends BaseEntity<AppMetadata> {
+  name: string;
+  status?: AllStatus;
+  priority?: PriorityTypeEnum;
+  dueDate?: Date;
+  isComplete?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+  userId?: number;
+  projectName?: string;
+}
+
+
+// 1a. Extended model (K)
+interface TaskEntityExtended extends TaskEntity {
+  ownerId: string;
+  permissions: Permission[];
+}
 
 // 2. Type definitions with 6 parameters
-type TaskEntity = BaseTaskEntity;
-type TaskK = BaseTaskEntity;
-type TaskMeta = DefaultMeta<BaseTaskEntity, TaskK>;
+type TaskEntity = TaskEntity;
+type TaskK = TaskEntityExtended;
+type TaskMeta = DefaultMeta<TaskEntity, TaskK>;
 type TaskAttachment = Attachment;
-type TaskExcludedFields = DefaultExcludedFields<BaseTaskEntity>;
-type TaskIncludedFields = keyof BaseTaskEntity;
+type TaskExcludedFields = DefaultExcludedFields<TaskEntity>;
+type TaskIncludedFields = keyof TaskEntity;
 
 
 // 3. App Metadata
 type AppTaskMetadata = AppMetadata<
-  BaseTaskEntity,
+  TaskEntity,
   TaskK,
   TaskMeta,
   TaskAttachment,
@@ -38,7 +59,7 @@ type AppTaskMetadata = AppMetadata<
 
 // 4. Structured & Unified Metadata
 type TaskStructuredMetadata = StructuredMetadata<
-  BaseTaskEntity,
+  TaskEntity,
   TaskK,
   TaskMeta,
   TaskAttachment,
@@ -47,7 +68,7 @@ type TaskStructuredMetadata = StructuredMetadata<
 >;
 
 type TaskUnifiedMetadata = UnifiedMetadata<
-  BaseTaskEntity,
+  TaskEntity,
   TaskK,
   TaskMeta,
   TaskAttachment,
@@ -58,7 +79,7 @@ type TaskUnifiedMetadata = UnifiedMetadata<
 
 // 5. Parameters container
 type TaskBaseParams = {
-  T: BaseTaskEntity;
+  T: TaskEntity;
   K: TaskK;
   Meta: TaskMeta;
   AttachmentType: TaskAttachment;

@@ -33,16 +33,23 @@ export interface Settings  {
     // Add any additional properties or methods as needed
 }
 
-// Define the store interface
-export interface SettingManagerStore {
+    // Define the store interface
+    export interface SettingManagerStore<
+        T  extends BaseDataEntity = AppEntity,        // concrete defaults
+        K  extends T = T,
+        Meta extends DefaultMeta<T,K> = DefaultMeta<T,K>,
+        AttachmentType extends Attachment = Attachment,
+        ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+        IncludedFields extends keyof T = keyof T
+    > {
     // State
-    settings: YourSettingsResponseType | null;
+    settings: YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     isLoading: boolean;
     error: string | null;
 
     // Define methods for handling different types of settings
     fetchSettings: () => void;
-    updateSettings: (settings: YourSettingsResponseType) => Promise<void>;
+    updateSettings: (settings: YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
     deleteSettings: (settingsId: string) => void;
     reset: () => void;
     setUserData: (userData: UserManagerState) => void;
@@ -50,11 +57,18 @@ export interface SettingManagerStore {
 }
 
 // Define the setting manager store
-const useSettingManagerStore = (): SettingManagerStore => {
+const useSettingManagerStore = <
+  T  extends BaseDataEntity = AppEntity,
+  K  extends T = T,
+  Meta extends DefaultMeta<T,K> = DefaultMeta<T,K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): SettingManagerStore => {
     const { error: errorHandlingError, handleError, clearError, parseDataWithErrorHandling } =
         useErrorHandling();
 
-    const [settings, setSettings] = useState<YourSettingsResponseType | null>(null);
+    const [settings, setSettings] = useState<YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const { notify } = useNotification();
@@ -94,19 +108,19 @@ const useSettingManagerStore = (): SettingManagerStore => {
         }
     };
     
-    const updateSettings = async (updatedSettings: YourSettingsResponseType) => {
+    const updateSettings = async (updatedSettings: YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         setIsLoading(true);
         setError(null);
         try {
             await axiosInstance.put("/settings", updatedSettings);
             setSettings(updatedSettings);
-            notify(
-                "updateSettingsSuccess",
-                "Settings updated successfully",
-                "Settings updated",
-                new Date(),
-                NotificationTypeEnum.OPERATION_SUCCESS
-            );
+            notify({
+                id: 'updateSettingsSuccess',
+                message: 'Settings updated successfully',
+                data: { originalError: null },   // or any NotificationDataPayload you need
+                timestamp: new Date(),
+                type: NotificationTypeEnum.OPERATION_SUCCESS
+            });
         } catch (error: any) {
             const errorMsg = "Error updating settings";
             setError(errorMsg);
@@ -327,7 +341,7 @@ const useSettingManagerStore = (): SettingManagerStore => {
                         totalCount: '',
                     
                     },
-                } as YourSettingsResponseType;
+                } as YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
             }
     
             const updatedSettings = { ...prevSettings };
@@ -380,16 +394,20 @@ const useSettingManagerStore = (): SettingManagerStore => {
                 ...updatedSettings,
                 userData,
                 filter,
-            } as YourSettingsResponseType;
+            } as YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         });
-    
-        notify(
-            "setUserData",
-            "User data updated successfully.",
-            {},
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-        );
+            
+        notify({
+            id: "setUserData",
+            message: "User data updated successfully.",
+            data: { 
+                entityType: "User",
+                userId: "current-user-id", // if available
+                // other relevant metadata
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.OPERATION_SUCCESS
+        });
     };
 
     // Create MobX store with reactive state

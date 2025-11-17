@@ -1,3 +1,8 @@
+import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
+import { headersConfig } from '@/app/api/headers/HeadersConfig';
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import createSnapshot from '@/app/api/SnapshotApi';
+import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder'
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { AxiosError } from "axios";
@@ -91,7 +96,6 @@ import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions'
 import {
     createMockSnapshot,
     getSnapshot,
-    getSnapshotContainer,
     getSnapshots,
     removeSnapshot,
     takeSnapshot,
@@ -442,8 +446,8 @@ const findSubscriberById = async <
   IncludedFields extends keyof T = keyof T
 >(
   subscriberId: string,
+  endpointCategory: string | number,
   category?: Category,
-  endpointCategory: string | number
 ): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const target: Target = constructTarget(
     endpointCategory,
@@ -605,8 +609,9 @@ const findSnapshotsBySubscriber = async <
   IncludedFields extends keyof T = keyof T
 >(
   subscriberId: string,
-  category?: Category,  endpointCategory: string | number,
-  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  endpointCategory: string | number,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  category?: Category 
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
 
 
@@ -623,22 +628,22 @@ const findSnapshotsBySubscriber = async <
 
   try {
 
-       // Construct base URL with optional query parameters
-       const baseApiUrl = 'https://yourapi.example.com/api/snapshots';
-       const url = new URL(baseApiUrl);
-       const params = new URLSearchParams();
-   
-       // Add mandatory and optional parameters
-       params.append('subscriberId', subscriberId);
-       if (category) params.append('category', String(category));
-       if (endpointCategory) params.append('endpointCategory', String(endpointCategory));
-       url.search = params.toString();
-   
-       // Prepare headers (using axios headers if configured)
-       const headers: Record<string, any> = snapshotConfig
-         ? createRequestHeaders(String(url)) // Using function from your previous code if `snapshotConfig` is provided
-         : { 'Content-Type': 'application/json' };
-   
+    // Construct base URL with optional query parameters
+    const baseApiUrl = 'https://yourapi.example.com/api/snapshots';
+    const url = new URL(baseApiUrl);
+    const params = new URLSearchParams();
+
+    // Add mandatory and optional parameters
+    params.append('subscriberId', subscriberId);
+    if (category) params.append('category', String(category));
+    if (endpointCategory) params.append('endpointCategory', String(endpointCategory));
+    url.search = params.toString();
+
+    // Prepare headers (using axios headers if configured)
+    const headers: Record<string, any> = snapshotConfig
+      ? createRequestHeaders(String(url)) // Using function from your previous code if `snapshotConfig` is provided
+      : { 'Content-Type': 'application/json' };
+
     const response = await axiosInstance.get(target.url, { headers });
     const snapshotsData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = response.data;
 
@@ -1601,6 +1606,8 @@ const getSnapshotId = <T, K>(criteria: any): Promise<number | undefined> => {
     }
   });
 };
+
+
 const snapshotContainerAPI = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -1991,27 +1998,27 @@ function createSnapshotContainer<
 
       return subscriber;
     },
-      getSubscribers: async (subscribers, snapshots) => ({ subscribers, snapshots }),
-      notifySubscribers: async (message, subscribers, callback, data) => subscribers,
-      notify: (id, message, content, data, date, type, notificationPosition) => {},
-      subscribe: (snapshotId, unsubscribe, subscriber, data, event, callback, value) => [],
-      manageSubscription: (snapshotId, callback, snapshot) => snapshot,
-      subscribeToSnapshotList: (snapshotId, callback) => {},
-      unsubscribeFromSnapshot: (snapshotId, callback) => {},
-      subscribeToSnapshotsSuccess: (callback) => '',
-      unsubscribeFromSnapshots: (callback) => {},
-      unsubscribe: (unsubscribeDetails, callback) => {},
-      subscribeToSnapshots: (snapshotStore, snapshotId, snapshotData, category, snapshotConfig, callback, snapshots, unsubscribe) => [],
-      clearSnapshot: () => {},
-      clearSnapshotSuccess: (context) => {},
-      addToSnapshotList: async (snapshots, subscribers, storeProps) => null,
-      removeSubscriber: (event, snapshotId, snapshot, snapshotStore, dataItems, criteria, category) => {},
-      addSnapshotSubscriber: (snapshotId, subscriber) => {},
-      removeSnapshotSubscriber: (snapshotId, subscriber) => {},
-      transformSubscriber: (subscriberId, sub) => sub,
-      defaultSubscribeToSnapshots: (snapshotId, callback, snapshot) => {},
-      getSnapshotsBySubscriber: async (subscriber) => [],
-      getSnapshotsBySubscriberSuccess: (snapshots) => {},
+    getSubscribers: async (subscribers, snapshots) => ({ subscribers, snapshots }),
+    notifySubscribers: async (message, subscribers, callback, data) => subscribers,
+    notify: (id, message, content, data, date, type, notificationPosition) => {},
+    subscribe: (snapshotId, unsubscribe, subscriber, data, event, callback, value) => [],
+    manageSubscription: (snapshotId, callback, snapshot) => snapshot,
+    subscribeToSnapshotList: (snapshotId, callback) => {},
+    unsubscribeFromSnapshot: (snapshotId, callback) => {},
+    subscribeToSnapshotsSuccess: (callback) => '',
+    unsubscribeFromSnapshots: (callback) => {},
+    unsubscribe: (unsubscribeDetails, callback) => {},
+    subscribeToSnapshots: (snapshotStore, snapshotId, snapshotData, category, snapshotConfig, callback, snapshots, unsubscribe) => [],
+    clearSnapshot: () => {},
+    clearSnapshotSuccess: (context) => {},
+    addToSnapshotList: async (snapshots, subscribers, storeProps) => null,
+    removeSubscriber: (event, snapshotId, snapshot, snapshotStore, dataItems, criteria, category) => {},
+    addSnapshotSubscriber: (snapshotId, subscriber) => {},
+    removeSnapshotSubscriber: (snapshotId, subscriber) => {},
+    transformSubscriber: (subscriberId, sub) => sub,
+    defaultSubscribeToSnapshots: (snapshotId, callback, snapshot) => {},
+    getSnapshotsBySubscriber: async (subscriber) => [],
+    getSnapshotsBySubscriberSuccess: (snapshots) => {},
   };
 
   if(!subscriberManagement === undefined || !subscriberManagement.subscribers === undefined){
@@ -2145,9 +2152,9 @@ function createSnapshotContainer<
       id: string | number | undefined,
       snapshotId: number,
       snapshotData: T,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      category?: Category,
     ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
       // Fetch logic to get snapshot data based on ID
       return data.mappedSnapshotData.get(id); // Replace with your data fetching logic
@@ -2903,7 +2910,7 @@ const searchSnapshotData = async <
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mappedData: Map<string, SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  operation: SnapshotOperation<T, K>
+  operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     console.log("Searching snapshot data...");

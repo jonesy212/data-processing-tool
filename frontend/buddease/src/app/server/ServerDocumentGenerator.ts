@@ -6,7 +6,7 @@ import { BaseData } from '@/app/models/data/Data';
 import PizZip from "pizzip";
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { generateFinancialReportContent } from '@/app/components/documents/documentation/report/generateFinancialReportContent';
-import { DocumentTypeEnum } from '@/typings/documentTypes';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { ServerFileSystem } from '@/app/server/serverFileSystem';
 
 export class ServerDocumentGenerator {

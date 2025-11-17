@@ -1,5 +1,5 @@
 // PhaseEntity.ts
-import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields } from '@app/typings/entities/NotificationEntity'
+import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields } from '@/app/typings/entities/NotificationEntity'
 import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
@@ -71,6 +71,7 @@ type PhaseMeta = DefaultMeta<AppPhaseEntity, PhaseK>;
 type PhaseAttachment = Attachment;
 type PhaseExcludedFields = DefaultExcludedFields<AppPhaseEntity>;
 type PhaseIncludedFields = keyof AppPhaseEntity;
+
 
 // Phase parameters container
 type PhaseBaseParams = {

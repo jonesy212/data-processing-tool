@@ -1,19 +1,28 @@
-//AppConfig
+// AppConfig.ts
+
+import { AppVersion } from '@/app/versions/AppVersion';
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { User } from "@/app/users/User";
-import { AppVersion, currentAppName } from "@/app/versions/AppVersion";
-import { Version } from "@/app/versions/Version";
-import { current } from "immer";
-import { ApiConfig, CacheConfig, RetryConfig, configServiceInstance } from "../services/ConfigurationService";
+import { currentAppName } from "@/app/versions/AppVersion";
+import { RetryConfig, configServiceInstance } from "../services/ConfigurationService";
+import { ApiConfig, CacheConfig } from '@/app/api/ApiConfig';
 import { AppStructureItem } from "./appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the API version header constant
-const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader()
-const DATA_PATH: string = configServiceInstance.getDataPath()
+const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader();
+const DATA_PATH: string = configServiceInstance.getDataPath();
 
+// Define AppConfig-specific generic parameters
+type AppConfigEntity = BaseDataEntity;
+type AppConfigK = AppConfigEntity;
+type AppConfigMeta = DefaultMeta<AppConfigEntity, AppConfigK>;
+type AppConfigAttachment = Attachment;
+type AppConfigExcludedFields = DefaultExcludedFields<AppConfigEntity>;
+type AppConfigIncludedFields = keyof AppConfigEntity;
 
 interface AppActions {
   deleteUser: (userId: string) => void;
@@ -24,203 +33,111 @@ interface AppActions {
   fetchData: () => void;
   isAuthorized: () => boolean;
   isPrivate: () => boolean;
-
-
   updateConfig: (newConfig: Partial<ApiConfig>) => void;
-  getApiKey: () => string; // Method to retrieve the API key
-
+  getApiKey: () => string;
 }
 
 // Define the AppConfig interface
 interface AppConfig {
   // General application settings
-  appName: string; // Name of the application
-  appVersion: AppVersion;// Updated to use AppVersion class
-  apiBaseUrl: string; // Base URL for API requests
-  // Add other general application settings as needed
+  appName: string;
+  appVersion: AppVersion<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields>;
+  apiBaseUrl: string;
 
-  // iOS specific settings
+  // Platform specific settings
   ios: {
-    bundleId: string; // iOS bundle identifier
-    appStoreId: string; // App Store ID for iOS
-    // Add other iOS specific settings as needed
+    bundleId: string;
+    appStoreId: string;
   };
 
-  // Android specific settings
   android: {
-    packageId: string; // Android package name
-    playStoreId: string; // Play Store ID for Android
-    // Add other Android specific settings as needed
+    packageId: string;
+    playStoreId: string;
   };
 
-  // Properties related to user authentication and authorization
+  // Authentication and authorization
   isAuthenticated: boolean;
   isAdmin: boolean;
   
-  // Properties related to user management
-  users: User[]; // Define the User interface if not already defined
-  // Properties related to notifications
-  notifications: NotificationData[]; // Define the Notification interface if not already defined
+  // User management
+  users: User<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields>[];
+  
+  // Notifications
+  notifications: NotificationData[];
 
-  // Properties related to configurations
+  // Configurations
   config: ApiConfig;
  
-  // Properties related to data management
-  data: Data[]; // Define the Data interface if not already defined
-
-  // Properties related to UI customization
-  theme: Theme; // Define the Theme interface if not already defined
- 
-  // Properties related to navigation
-  // Add any other necessary props specific to your admin dashboard application
+  // Data management
+  data: Data[];
+  
+  // UI customization
+  theme: Theme;
+  
+  // Actions
+  deleteUser: (userId: string) => void;
+  updateUserRole: (userId: string, newRole: UserRole) => void;
+  dismissNotification: (notificationId: string) => void;
+  changeTheme: (newTheme: Theme) => void;
+  navigateTo: (route: string) => void;
+  fetchData: () => void;
+  isAuthorized: () => boolean;
+  isPrivate: () => boolean;
+  updateConfig: (newConfig: Partial<ApiConfig>) => void;
+  getApiKey: () => string;
 }
+
+// Create a simplified AppVersion instance for AppConfig
+const createAppConfigVersion = (): AppVersion<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields> => {
+  return new AppVersion<AppConfigEntity, AppConfigK, AppConfigMeta, AppConfigAttachment, AppConfigExcludedFields, AppConfigIncludedFields>({
+    major: 1,
+    minor: 0,
+    patch: 0,
+    build: 0,
+    isDevBuild: true,
+    releaseDate: new Date().toISOString(),
+    releaseNotes: ["Initial release"],
+    appName: currentAppName
+  });
+};
+
+// Create a default theme that matches the Theme interface
+const createDefaultTheme = (): Theme => ({
+  logoUrl: "",
+  themeColor: "",
+  primaryColor: "",
+  secondaryColor: "",
+  fontSize: "",
+  fontFamily: "",
+  headerColor: "",
+  footerColor: "",
+  bodyColor: "",
+  borderColor: "",
+  borderStyle: "",
+  padding: "",
+  margin: "",
+  brandIcon: "",
+  brandName: "",
+  borderWidth: "",
+  borderRadius: {
+    small: '4px',
+    medium: '8px',
+    large: '12px'
+  },
+  boxShadow: "",
+});
 
 // Define the function to retrieve AppConfig
 export const getAppConfig = (): AppConfig => {
-  // Implement the logic to retrieve AppConfig here
   const config = configServiceInstance.getApiConfig();
-
   config.name = "Mock Config";
-  // For example, you can fetch it from local storage or a server
-  // For demonstration purposes, let's return a mock AppConfig object
-  currentAppName;
+
+  const appVersion = createAppConfigVersion();
+  const defaultTheme = createDefaultTheme();
+
   return {
-    appName: current(configServiceInstance.getAppName(currentAppName)),
-    appVersion: {
-      major: 1,
-      minor: 0,
-      patch: 0,
-      build: 0,
-      isDevBuild: true,
-      getVersionNumber: () => "1000000000",
-      releaseDate: "",
-      releaseNotes: [],
-      addReleaseNotes(notes: string) {
-        // Split notes by newline character and add each note separately
-        const newNotes = notes.split("\n");
-        newNotes.forEach((note) => {
-          if (note.trim().length > 0) {
-            // Check if note is not empty
-            this.releaseNotes.push(note.trim());
-          }
-        });
-      },
-      getReleaseDate() {
-        return this.releaseDate;
-      },
-
-      getReleaseNotes() {
-        return this.releaseNotes;
-      },
-
-      getVersionString() {
-        // Integrate API_VERSION_HEADER here
-        const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
-        return `${versionString} - API Version: ${API_VERSION_HEADER}`;
-      },
-
-      getVersionStringWithBuildNumber(buildNumber: number) {
-        return `${this.major}.${this.minor}.${this.patch}.${this.build}.${buildNumber}`;
-      },
-      versionNumber: "",
-      appVersion: "",
-      // New function implementations
-      updateVersionNumber(newVersionNumber: string) {
-        const versionParts = newVersionNumber.match(
-          /(\d+)\.(\d+)\.(\d+)\.(\d+)/
-        );
-        if (versionParts && versionParts.length === 5) {
-          this.major = parseInt(versionParts[1]);
-          this.minor = parseInt(versionParts[2]);
-          this.patch = parseInt(versionParts[3]);
-          this.build = parseInt(versionParts[4]);
-        }
-      },
-
-      compare(otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): number {
-        if (!(otherVersion instanceof AppVersion)) {
-          throw new Error("Invalid version type for comparison.");
-        }
-
-        if (this.major > otherVersion.major) {
-          return 1; // This version is greater
-        } else if (this.major < otherVersion.major) {
-          return -1; // Other version is greater
-        }
-
-        if (this.minor > otherVersion.minor) {
-          return 1; // This version is greater
-        } else if (this.minor < otherVersion.minor) {
-          return -1; // Other version is greater
-        }
-
-        if (this.patch > otherVersion.patch) {
-          return 1; // This version is greater
-        } else if (this.patch < otherVersion.patch) {
-          return -1; // Other version is greater
-        }
-
-        if (this.build > otherVersion.build) {
-          return 1; // This version is greater
-        } else if (this.build < otherVersion.build) {
-          return -1; // Other version is greater
-        }
-        return 0; // Versions are equal
-      },
-
-      parse(): number[] {
-        // Implementation to parse version string into array of version parts
-        return [this.major, this.minor, this.patch, this.build];
-      },
-
-      isValid(): boolean {
-        // Implementation to check if version is valid
-        return true; // Placeholder return value
-      },
-
-      // Method to generate hash from app version
-      generateHash(appVersion: string): string {
-        const crypto = require("crypto");
-        const hash = crypto.createHash("sha256"); // Using SHA-256 algorithm
-        hash.update(appVersion);
-        return hash.digest("hex"); // Return hexadecimal representation of the hash
-      },
-      appName: "",
-      getAppName: function (): string {
-        return this.appName;
-      },
-      updateAppName: function (newAppName: string): void {
-        this.appName = newAppName;
-      },
-      id: 0,
-      content: "",
-      frontendStructure: {} as Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-      data: [],
-      structure: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-      generateStructureHash(): Promise<string> {
-        // Wait for the resolution of both frontendStructure and backendStructure promises
-        return Promise.all([this.frontendStructure, this.backendStructure])
-          .then(([frontendStructure, backendStructure]) => {
-            // Merge the frontend and backend structures and generate hash
-            return this.mergeAndHashStructures(frontendStructure, backendStructure);
-          });
-      },
-      isNewer: function (otherVersion: Version): boolean {
-        throw new Error("Function not implemented.");
-      },
-      hashStructure: function (structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {
-        throw new Error("Function not implemented.");
-      },
-      getStructureHash: function (): string {
-        throw new Error("Function not implemented.");
-      },
-      getContent: function (): string {
-        throw new Error("Function not implemented.");
-      },
-      setContent: function (content: string): void {
-        throw new Error("Function not implemented.");
-      },
-    },
+    appName: currentAppName,
+    appVersion: appVersion,
     apiBaseUrl: "https://your-api-base-url.com",
     ios: {
       bundleId: "your-ios-bundle-id",
@@ -241,54 +158,32 @@ export const getAppConfig = (): AppConfig => {
     },
     dismissNotification: () => {},
     config: {
-      name: undefined,
+      name: "Mock Config",
       baseURL: "",
       timeout: 0,
       headers: {},
       retry: {} as RetryConfig,
       cache: {} as CacheConfig,
       responseType: {
-        contentType: "contentType",
-        encoding: "encode",
+        contentType: "application/json",
+        encoding: "utf-8",
       },
       withCredentials: false,
     },
     updateConfig: () => {},
     fetchData: () => {},
     data: [],
-    theme: {
-      children: undefined,
-      logoUrl: "",
-      themeColor: "",
-      primaryColor: "",
-      secondaryColor: "",
-      fontSize: "",
-      fontFamily: "",
-      headerColor: "",
-      footerColor: "",
-      bodyColor: "",
-      borderColor: "",
-      borderStyle: "",
-      padding: "",
-      margin: "",
-      brandIcon: "",
-      brandName: "",
-      borderWidth: "",
-      borderRadius: "",
-      boxShadow: "",
-    },
+    theme: defaultTheme,
     changeTheme: () => {},
     navigateTo: () => {},
-    getApiKey: () => configServiceInstance.getApiKey(), // Implementing the method
- 
-    // Add other necessary props specific to your application
+    getApiKey: () => configServiceInstance.getApiKey(),
+    isPrivate: () => false,
   };
 };
 
 // Usage example:
 const appConfig: AppConfig = getAppConfig();
-console.log(appConfig.appName); // Accessing properties of AppConfig
+console.log(appConfig.appName);
 
 export type { AppConfig };
-// Export the API version header constant
-  export { API_VERSION_HEADER, appConfig };
+export { API_VERSION_HEADER, appConfig };

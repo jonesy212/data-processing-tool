@@ -199,7 +199,9 @@ const responses: ReassignEventResponse[] = [
     timestamp: undefined,
     reassignData: [],
     assignedTo: "",
-
+    events: "",
+    getTime: "",
+    optimizeTiming: "",
     blockNumber: "",
     transactionHash: "",
     event: "",
@@ -217,7 +219,12 @@ const responses: ReassignEventResponse[] = [
     comment: "",
     timestamp: undefined,
     reassignData: [],
-    assignedTo: ""
+    assignedTo: "",
+    events: "",
+    getTime: "",
+    optimizeTiming: "",
+    blockNumber: "",
+  
   },
   // Add more objects as necessary
 ];

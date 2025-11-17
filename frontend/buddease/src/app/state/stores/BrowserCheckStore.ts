@@ -1,132 +1,272 @@
-import { makeAutoObservable } from "mobx";
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { isBrowser } from "@/utils/isBrowser"; // Import the isBrowser utility
+import { action, makeAutoObservable } from "mobx";
+import { isBrowser } from "@/utils/isBrowser";
 import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
-import { RootStores } from "./RootStores";
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+
+// Define the state interface for better TypeScript support
+interface BrowserCheckState {
+  browserKey: string | null;
+  isInitialized: boolean;
+  browserFeatures: Record<string, any>;
+  compatibility: {
+    supported: boolean;
+    warnings: string[];
+    errors: string[];
+    browser: string;
+    mobile: boolean;
+  };
+  autoDismissEnabled: boolean;
+  closableEnabled: boolean;
+  usingSimulatedData: boolean;
+  currentTheme?: any;
+}
 
 class BrowserCheckStore {
-  rootStores?: RootStores;
-  browserKey: string | null = null;
-  state: Record<string, any> = {}; // State object to hold dynamic data
+  // Simple state management like ToolbarStore
+  state: BrowserCheckState = {
+    browserKey: null,
+    isInitialized: false,
+    browserFeatures: {},
+    compatibility: {
+      supported: true,
+      warnings: [],
+      errors: [],
+      browser: 'Unknown',
+      mobile: false
+    },
+    autoDismissEnabled: false,
+    closableEnabled: false,
+    usingSimulatedData: false
+  };
+
   browserBehaviorManager: BrowserBehaviorManager;
-  private snapshotId: string;      // Private property for snapshotId
-  private subscribers: SubscriberCollection<any, any, any, any, any, any>; // Private property for subscribers (using a Set to avoid duplicates)
 
-  constructor(
-    snapshotId: string, 
-    rootStores: RootStores, 
-    dispatch: any,
-    browserConfig: BrowserBehaviorConfig,
-    subscribers: Subscriber<any, any, any, any, any, any>[] | Record<string, Subscriber<any, any, any, any, any, any>[]> = [], // Default empty array if no subscribers are passed  
-    private snapshotStore?: SnapshotStore<any, any, any, any, any, any>
+  constructor() {
+    // Default browser config - similar to ToolbarStore's default state
+    const defaultBrowserConfig: BrowserBehaviorConfig = {
+      isAutoDismiss: true,
+      isClosable: true,
+      useSimulatedDataSource: process.env.NODE_ENV === 'test',
+      browserSpecific: {
+        isMobile: false,
+        browserType: 'Unknown'
+      }
+    };
 
-  ) {
-    this.rootStores = rootStores;
-    this.snapshotStore = snapshotStore;
-    this.browserBehaviorManager = new BrowserBehaviorManager(browserConfig); // Initialize BrowserBehaviorManager
-    this.snapshotId = snapshotId;
+    this.browserBehaviorManager = new BrowserBehaviorManager(defaultBrowserConfig);
     
-    // Initialize subscribers based on the provided value (array or record)
-    if (Array.isArray(subscribers)) {
-      this.subscribers = [...subscribers]; // If it's an array, spread to create a new array
-    } else if (typeof subscribers === 'object') {
-      this.subscribers = { ...subscribers }; // If it's a record, clone it
-    } else {
-      this.subscribers = []; // Default to an empty array if neither
-    }
-
-    this.dispatch = dispatch;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      // Define actions as observable actions - JUST LIKE TOOLBARSTORE
+      init: action,
+      setState: action,
+      updateBrowserConfig: action,
+      resetBrowserState: action,
+      detectBrowserFeatures: action,
+      validateBrowserCompatibility: action,
+      applyBrowserBehavior: action,
+      saveBrowserSnapshot: action,
+    });
   }
 
+  // ============ CORE METHODS (like ToolbarStore) ============
 
   /**
    * Initializes the BrowserCheckStore with the provided key.
-   * Only runs in the browser environment.
-   * @param key - The key to initialize the store.
-   */init(key: string) {
+   */
+  init = (key: string) => {
     if (isBrowser()) {
-      if (this.browserKey === null) {
+      if (this.state.browserKey === null) {
         console.log(`Initializing BrowserCheckStore with key: ${key}`);
-        this.browserKey = key;
+        
+        this.setState({
+          browserKey: key,
+          isInitialized: true
+        });
 
-        // Example: Use the browser behavior manager
-        if (this.browserBehaviorManager.getConfig().isAutoDismiss) {
-          console.log("Auto-dismiss is enabled.");
-        }
+        // Auto-detect features on initialization
+        this.detectBrowserFeatures();
+        this.applyBrowserBehavior();
+        
+        console.log("Browser check store initialized successfully");
       } else {
-        console.error(
-          `There was an issue initializing BrowserCheckStore with key: ${key}`
-        );
-        const errorMessage = NOTIFICATION_MESSAGES.Error.DEFAULT;
-        console.error(errorMessage);
+        console.error(`BrowserCheckStore already initialized with key: ${this.state.browserKey}`);
       }
     } else {
       console.log("Not in a browser environment, skipping BrowserCheckStore initialization.");
     }
   }
 
-    /**
-   * Updates the state of the store.
-   * Merges the current state with new properties.
-   * @param newState - Partial state to merge into the existing state.
-   */
-    setState(newState: Record<string, any>) {
-      this.state = { ...this.state, ...newState };
-    }
-
   /**
-   * Dispatches actions based on their type.
-   * Handles different action types, including browser checks and theme changes.
-   * @param action - The action to be dispatched.
+   * Updates the state of the store - JUST LIKE TOOLBARSTORE
    */
-  dispatch(action: any): void {
-    switch (action.type) {
-      case 'BROWSER_CHECK_ACTION':
-        // Handle browser check action
-        console.log('Performing browser check action');
-        break;
-      case 'THEME_CHANGE':
-        console.log('Theme changed:', action.payload);
-        break;
-      // Add more cases as needed for different actions
-      default:
-        // Handle unknown action types or default behavior
-        console.warn('Unhandled action type:', action.type);
-    }
+  setState = (newState: Partial<BrowserCheckState>) => {
+    this.state = { ...this.state, ...newState };
   }
 
   /**
-   * Dispatches a test action to the store.
-   * Logs the action being dispatched.
-   * @param action - The action to dispatch.
+   * Updates the browser behavior configuration
    */
-  testDispatch(action: any) {
-    console.log('Dispatching action:', action);
-    this.dispatch(action);
+  updateBrowserConfig = (newConfig: Partial<BrowserBehaviorConfig>) => {
+    const currentConfig = this.browserBehaviorManager.getConfig();
+    const updatedConfig = { ...currentConfig, ...newConfig };
+    this.browserBehaviorManager = new BrowserBehaviorManager(updatedConfig);
+    console.log("Browser configuration updated:", updatedConfig);
+    
+    // Re-apply behaviors with new config
+    this.applyBrowserBehavior();
   }
 
   /**
- * Saves a browser-specific snapshot using the SnapshotStore.
- * @param data - The data to save.
- */
-  saveBrowserSnapshot(data: any) {
-    if (this.snapshotStore) {
-      const snapshotData = {
-        id: `browser-${this.browserKey}`,
-        data,
-        category: 'browser',
-        isMobile: this.browserBehaviorManager.isMobile(),
-        browserType: this.browserBehaviorManager.getBrowserType(),
-      };
+   * Resets the browser state to initial values - LIKE TOOLBARSTORE's resetToolbarState
+   */
+  resetBrowserState = () => {
+    console.log('Resetting browser state');
+    this.state = {
+      browserKey: null,
+      isInitialized: false,
+      browserFeatures: {},
+      compatibility: {
+        supported: true,
+        warnings: [],
+        errors: [],
+        browser: 'Unknown',
+        mobile: false
+      },
+      autoDismissEnabled: false,
+      closableEnabled: false,
+      usingSimulatedData: false
+    };
+  }
 
-      this.snapshotStore.addSnapshot(snapshotData, this.snapshotId, this.subscribers);
+  /**
+   * Detects and stores browser features and capabilities
+   */
+  detectBrowserFeatures = () => {
+    if (!isBrowser()) return;
+
+    const features = {
+      localStorage: typeof Storage !== 'undefined',
+      sessionStorage: typeof sessionStorage !== 'undefined',
+      cookies: navigator.cookieEnabled,
+      geolocation: 'geolocation' in navigator,
+      touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+      serviceWorker: 'serviceWorker' in navigator,
+      webGL: this.detectWebGL(),
+      webRTC: this.detectWebRTC(),
+    };
+
+    this.setState({ browserFeatures: features });
+    console.log('Browser features detected:', features);
+  }
+
+  /**
+   * Validates browser compatibility with application requirements
+   */
+  validateBrowserCompatibility = () => {
+    const browserType = this.browserBehaviorManager.getBrowserType();
+    const isMobile = this.browserBehaviorManager.isMobile();
+    
+    const compatibility = {
+      supported: true,
+      warnings: [] as string[],
+      errors: [] as string[],
+      browser: browserType,
+      mobile: isMobile
+    };
+
+    // Check for unsupported browsers
+    if (browserType === 'Internet Explorer') {
+      compatibility.supported = false;
+      compatibility.errors.push('Internet Explorer is not supported. Please use a modern browser.');
+    }
+
+    // Check for minimum requirements
+    if (!this.state.browserFeatures?.localStorage) {
+      compatibility.errors.push('Local storage is required for this application.');
+      compatibility.supported = false;
+    }
+
+    this.setState({ compatibility });
+    return compatibility;
+  }
+
+  /**
+   * Applies browser-specific behaviors and configurations
+   */
+  applyBrowserBehavior = () => {
+    if (!isBrowser()) return;
+
+    const behaviorMessage = this.browserBehaviorManager.getBrowserBehaviorMessage();
+    console.log(behaviorMessage);
+
+    // Apply behaviors based on configuration
+    this.setState({
+      autoDismissEnabled: this.browserBehaviorManager.isAutoDismissEnabled(),
+      closableEnabled: this.browserBehaviorManager.isClosableEnabled(),
+      usingSimulatedData: this.browserBehaviorManager.useSimulatedData()
+    });
+
+    this.browserBehaviorManager.applyBehavior();
+  }
+
+  /**
+   * Saves a browser-specific snapshot (simplified version)
+   */
+  saveBrowserSnapshot = (data?: any) => {
+    const snapshotData = {
+      id: `browser-${this.state.browserKey}`,
+      data: data || this.state,
+      category: 'browser',
+      isMobile: this.browserBehaviorManager.isMobile(),
+      browserType: this.browserBehaviorManager.getBrowserType(),
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('Browser snapshot saved:', snapshotData);
+    return snapshotData;
+  }
+
+  // ============ CONVENIENCE GETTERS ============
+
+  get isAutoDismissEnabled(): boolean {
+    return this.browserBehaviorManager.isAutoDismissEnabled();
+  }
+
+  get isClosableEnabled(): boolean {
+    return this.browserBehaviorManager.isClosableEnabled();
+  }
+
+  get isUsingSimulatedData(): boolean {
+    return this.browserBehaviorManager.useSimulatedData();
+  }
+
+  get browserBehaviorMessage(): string {
+    return this.browserBehaviorManager.getBrowserBehaviorMessage();
+  }
+
+  // ============ PRIVATE HELPER METHODS ============
+
+  private detectWebGL(): boolean {
+    try {
+      const canvas = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && 
+        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+    } catch {
+      return false;
     }
   }
-  // Add other methods or properties as needed
+
+  private detectWebRTC(): boolean {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
 }
 
+// ============ HOOK IMPLEMENTATION - EXACTLY LIKE TOOLBARSTORE ============
+
+/**
+ * Hook for using the BrowserCheckStore - EXACT PATTERN AS useToolbarStore
+ */
+export const useBrowserCheckStore = () => new BrowserCheckStore();
+
+// Export types
+export type { BrowserBehaviorConfig, BrowserCheckState };
 export default BrowserCheckStore;

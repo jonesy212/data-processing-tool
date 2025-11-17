@@ -284,14 +284,6 @@ interface SnapshotData<
     SnapshotCoreBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     Partial<SnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  storeId: number;
-  category?: Category;
-  validate(): boolean;
-  serialize(): string;
-  get(key: string): any;
-  set(key: string, value: any): void;
-  processEvent(data: any, type: string, event: Event): void;
-
   // Unique properties only
   shared: SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   operations: SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -301,18 +293,18 @@ interface SnapshotData<
   // Version and subscription
   subscription?: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionHistory?: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
+
   // Additional lifecycle
   initialSnapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
   taskIdToAssign?: string;
   schema?: Record<string, SchemaField>;
   versionInfo?: { version: number; timestamp: Date; previousVersions?: any[] };
-  
+
   // Additional data
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
- 
+
   // Delegate and status
   delegate?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   todoSnapshotId?: string;
@@ -323,13 +315,19 @@ interface SnapshotData<
       processingTimestamp?: number;
       // Add any other enrichment properties you need
     };
+  validate(): boolean;
+  serialize(): string;
+  get(key: string): any;
+  set(key: string, value: any): void;
+  processEvent(data: any, type: string, event: Event): void;
+
   // Methods (keep only unique ones)
     // For RETRIEVING data (simple lookup)
   getSnapshotData?: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
     SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
- 
+
   deleteSnapshot: (id: string) => void;
-  
+
   then?: (callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 }
 

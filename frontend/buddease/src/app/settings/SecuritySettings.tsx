@@ -1,5 +1,5 @@
 // SecuritySettings.tsx
-import { Permission } from "@/app/components/users/Permission";
+import { Permission } from "@/app/permissions/Permission";
 
 interface SecuritySettings {
   twoFactorAuthentication: boolean;

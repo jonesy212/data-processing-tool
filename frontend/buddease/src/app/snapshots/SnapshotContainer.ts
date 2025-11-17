@@ -1,3 +1,4 @@
+import { Data } from '@/app/models/data/Data';
 // SnapshotContainer.ts
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
@@ -6,17 +7,16 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category, SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
-import { K } from '@/app/models/data/dataStoreMethods';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { createCompleteSnapshot } from '@/app/snapshots/createSnnapshot';
+import { createCompleteSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Version } from "@/app/versions/Version";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { BaseEntity } from '@/app/routing/FuzzyMatch';
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotData, SnapshotRelationships } from "@/app/snapshots/SnapshotData";
 import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";

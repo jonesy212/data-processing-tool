@@ -1,21 +1,38 @@
 import { BaseData, Data } from '@/app/models/data/Data';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 
-// Define a mapped type to include all properties of Data
-export type AllProperties<T extends BaseData<any>> = {
-  [P in keyof Data<T>]: Data<T>[P];
-};
 
 // Define a new type for DetailsItem with all properties of Data, but make them optional
-type DetailsItemAll<T extends BaseData<any>> = DetailsItem<Partial<AllProperties<T>>>;
+type DetailsItemAll<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = DetailsItem<Partial<AllProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
 
-interface DetailsListItemProps<T extends BaseData<any>> {
-  item: DetailsItemAll<T>; // Use DetailsItemAll type
-  label: string
+interface DetailsListItemProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  item: DetailsItemAll<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  label: string;
   value: string;
 }
 
-const DetailsListItem = <T extends BaseData<any>>({ item, label, value }: DetailsListItemProps<T>) => {
+const DetailsListItem = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({ item, label, value }: DetailsListItemProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   return (
     <div>
       <h3>{label}</h3>

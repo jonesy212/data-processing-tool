@@ -96,8 +96,40 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   
+  
   Developer: {
     roleType: UserRoleEnum.Developer,
+    responsibilities: [
+      'Write and maintain codebase',
+      'Implement new features',
+      'Debug and resolve software issues',
+      'Collaborate with team members on project development',
+      'Participate in code reviews',
+      'Ensure application performance and responsiveness',
+    ],
+    permissions: [
+      'Access and modify code repositories',
+      'Deploy applications to staging and production environments',
+      'Access to project management tools',
+      'Request pull reviews',
+      'View and create project documentation',
+    ],
+    positions: [
+      { title: 'Junior Developer', level: 1 },
+      { title: 'Mid-level Developer', level: 2 },
+      { title: 'Senior Developer', level: 3 },
+      { title: 'Lead Developer', level: 4 },
+    ],
+    salary: 80000, // Example salary for Developer
+    includes: [
+      'Health Insurance',
+      'Paid Time Off',
+      'Remote Work Options',
+      'Professional Development Opportunities',
+    ]
+  },
+  Contributor: {
+    roleType: UserRoleEnum.Contributor,
     responsibilities: [
       'Write and maintain codebase',
       'Implement new features',

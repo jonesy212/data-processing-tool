@@ -1,34 +1,34 @@
 // SecurityAuditor.ts
 import path from 'path';
-import { useSecurityAudit } from '@/app/hooks/useSecurityAudit';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import fs from 'fs';
-import SecureFieldManager from "@/app/server/security/SecureFieldManager";
-import SecurityAPI from '@/app/api/SecurityAPI';
-import ApiMethod from '@/app/generators/ApiCodeGenerator';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 
 interface SecurityIssue extends Correction {
-  id: string;
-  type: 'sensitive_data' | 'missing_sanitization' | 'role_violation' | 'insecure_pattern';
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  file: string;
-  line?: number;
-  message: string;
-  code: string;
-  fix: string;
-  category: 'security';
+  // props come from Correction interface
 }
 
 export class SecurityAuditor {
-  private securityAudit: ReturnType<typeof useSecurityAudit>;
-  private securityAPI: typeof SecurityAPI;
+  // Remove React hooks and browser dependencies
+  private securityUtilsAvailable: boolean;
 
   constructor() {
-    this.securityAudit = useSecurityAudit();
-    this.securityAPI = SecurityAPI;
+    this.securityUtilsAvailable = this.checkSecurityUtilsAvailability();
+  }
+
+  private checkSecurityUtilsAvailability(): boolean {
+    // Check if security utilities are available in Node.js context
+    try {
+      // Try to require security utilities (Node.js style)
+      const secureFieldManagerPath = path.resolve(process.cwd(), 'src/app/server/security/SecureFieldManager.ts');
+      const securityAPIPath = path.resolve(process.cwd(), 'src/app/api/SecurityAPI.ts');
+      
+      return fs.existsSync(secureFieldManagerPath) && fs.existsSync(securityAPIPath);
+    } catch (error) {
+      return false;
+    }
   }
 
   async auditSecurity(projectStructure: ProjectStructure): Promise<SecurityIssue[]> {
@@ -80,7 +80,7 @@ export class SecurityAuditor {
             file: file,
             message: `API method '${method.name}' may handle sensitive data without proper protection`,
             code: `${method.isAsync ? 'async ' : ''}${method.name}(${method.parameters.join(', ')}): ${method.returnType}`,
-            fix: `Implement proper data sanitization using useSecurityAudit().sanitizeMetadata()`,
+            fix: `Implement proper data sanitization using security utilities`,
             category: 'security'
           });
         }
@@ -104,7 +104,7 @@ export class SecurityAuditor {
           file: component.file,
           message: `Component '${name}' may need data sanitization for user input`,
           code: `const ${name} = (props: ${component.propsType}) => { ... }`,
-          fix: `Implement input sanitization using SecureFieldManager.sanitizeMetadata()`,
+          fix: `Implement input sanitization using security utilities`,
           category: 'security'
         });
       }
@@ -120,7 +120,7 @@ export class SecurityAuditor {
         file: file,
         message: 'File may need security audit implementation',
         code: '// Missing security audit implementation',
-        fix: `Import and use useSecurityAudit() or SecurityAudit class`,
+        fix: `Implement proper security measures for sensitive operations`,
         category: 'security'
       });
     });
@@ -188,11 +188,11 @@ export class SecurityAuditor {
     );
   }
 
-  private methodHandlesSensitiveData(method: ApiMethod): boolean {
+  private methodHandlesSensitiveData(method: any): boolean {
     const sensitiveKeywords = ['password', 'secret', 'key', 'token', 'auth', 'login', 'credential'];
     return sensitiveKeywords.some(keyword => 
       method.name.toLowerCase().includes(keyword) ||
-      method.parameters.some(param => param.toLowerCase().includes(keyword)) ||
+      method.parameters.some((param: string) => param.toLowerCase().includes(keyword)) ||
       method.returnType.toLowerCase().includes(keyword)
     );
   }
@@ -279,7 +279,7 @@ export class SecurityAuditor {
     }
   }
 
-  private hasInsecureAPIPattern(method: ApiMethod): boolean {
+  private hasInsecureAPIPattern(method: any): boolean {
     const insecurePatterns = [
       /getAll/i, /getEverything/i, /fetchAll/i, 
       /deleteAll/i, /removeAll/i, /clearAll/i,
@@ -349,6 +349,5 @@ export class SecurityAuditor {
     return lines.join('\n');
   }
 }
-
 
 export type { SecurityIssue }

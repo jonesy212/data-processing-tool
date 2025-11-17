@@ -352,11 +352,11 @@ type PublicDocument = Pick<AppDocument, "id" | "title" | "content" | "author" | 
 type PrivateDocument = AppDocument; // Full document for authorized users
 type DocumentSummary = Pick<AppDocument, "id" | "title" | "author" | "lastModified" | "fileType" | "size">;
 
-const generateId = UniqueIDGenerator.generateTeamID()
+const generateId = UniqueIDGenerator.generateTeamID(name)
 
 // Helper for creating document instances
 const createDefaultDocument = (options: Partial<AppDocument> = {}): AppDocument => ({
-  id: options.id || generateId(),
+  id: options.id || generateId,
   title: options.title || '',
   content: options.content || '',
   filePath: options.filePath,

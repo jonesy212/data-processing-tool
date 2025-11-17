@@ -1,6 +1,6 @@
-import { ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
-import { TagsRecord } from '@/app/snapshots';
 // DocumentPhase.ts
+import { ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/app/config/BaseConfig';
 
@@ -11,11 +11,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFiel
 // Document Phase interface
 interface DocumentPhase<
   T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > {
   name?: string;
   originalPath?: string;

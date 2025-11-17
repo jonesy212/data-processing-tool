@@ -1,6 +1,8 @@
+import { SecuritySettings } from '@/app/settings/SecuritySettings';
 // AuthStore.ts
 import { UserRoleEnum } from '@/app/models/UserRoles';
-import { NFT } from '@/pp/models/cypto/NFT'
+import { AuthenticationProvider } from '@app/interfaces/provider/AuthenticationProvider';
+import { NFT } from '@/app/models/cypto/NFT'
 import { Permission } from "@/app/permissions/Permission";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";
@@ -21,11 +23,6 @@ interface UserNotificationPreferences {
   smsNotifications: boolean;
 }
 
-interface AuthenticationProvider {
-  name: string;
-  connected: boolean;
-}
-
 interface UserSession {
   sessionId: string;
   device: string;
@@ -34,7 +31,7 @@ interface UserSession {
 }
 
 // Check if user roles include a specific role
-const userHasRole = (user: User, role: UserRoleEnum): boolean => {
+const userHasRole = (user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, role: UserRoleEnum): boolean => {
   return user.roles.some(userRole => userRole.role === role);
 };
 
@@ -57,7 +54,7 @@ export class AuthStore {
   userSubscriptionPlan: SubscriptionPlan | null = null;
   dispatch: (action: any) => void = () => {};
 
-  private user: User | null = null;
+  private user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -123,7 +120,7 @@ export class AuthStore {
       }
 
       // Check if the user exists and is active
-      if (!user.isActive || !userHasRole(user, UserRoleEnum.Verified_User)) {
+      if (!user.isActive || !userHasRole(user, UserRoleEnum.VerifiedUser)) {
         return false; // User is not active or does not have the required role
       }
 
@@ -150,7 +147,7 @@ export class AuthStore {
   isLoggedIn(): boolean {
     return !!this.accessToken;
   }
-  getUser(): User | null {
+  getUser(): User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     return this.user;
   }
 

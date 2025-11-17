@@ -6,12 +6,66 @@ import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import performDatabaseOperation from '@/app/server/database/DatabaseOperations';
-import { database } from '@/app/generators/GenerateDatabase'; // Adjust the path as needed
+import { database } from '@/app/generators/GenerateDatabase'; 
 
 export abstract class BaseDatabaseService implements DatabaseService {
   protected pool: any;
   protected client: any;
-  protected validTables: Set<string> = new Set(['users', 'orders', 'products']);
+  
+  // Define allowed tables
+  protected validTables: Set<string> = new Set([
+    // Core User & Authentication
+    'users', 'user_profiles', 'user_sessions', 'auth_tokens',
+    
+    // Project Management
+    'projects', 'project_members', 'project_phases', 'project_documents',
+    
+    // Tasks & Workflow
+    'tasks', 'task_assignments', 'task_comments', 'task_attachments', 'workflows', 'workflow_steps',
+    
+    // Communication & Collaboration
+    'teams', 'team_members', 'channels', 'messages', 'message_attachments',
+    'audio_calls', 'video_calls', 'call_participants', 'screen_shares',
+    
+    // Meetings & Events
+    'meetings', 'meeting_attendees', 'meeting_notes', 'calendar_events', 'event_attendees',
+    
+    // File Management
+    'files', 'file_versions', 'file_shares',
+    
+    // Crypto & Financial
+    'crypto_wallets', 'crypto_transactions', 'crypto_assets', 'trading_orders',
+    'portfolio_balances', 'market_data', 'watchlists', 'watchlist_items',
+    
+    // Notifications & Activity
+    'notifications', 'notification_preferences', 'activity_logs', 'user_activities',
+    
+    // Analytics & Insights
+    'analytics_events', 'data_sources', 'reports', 'dashboard_widgets',
+    
+    // Ideation & Brainstorming
+    'ideas', 'idea_votes', 'idea_comments', 'brainstorming_sessions', 'session_participants',
+    
+    // Product Development
+    'products', 'product_versions', 'product_features', 'feature_requests', 'customer_feedback',
+    
+    // Knowledge Base
+    'knowledge_base_articles', 'article_categories', 'article_versions', 'article_comments',
+    
+    // Integrations & API
+    'integrations', 'api_keys', 'webhook_endpoints', 'webhook_events',
+    
+    // Security & Permissions
+    'roles', 'permissions', 'user_roles', 'role_permissions', 'access_logs',
+    
+    // Settings & Configuration
+    'user_settings', 'project_settings', 'team_settings', 'app_configurations',
+    
+    // Advanced Features
+    'data_visualizations', 'ai_insights', 'collaborative_documents', 'version_control',
+    'feedback_loops', 'market_research', 'regulatory_compliance', 'tax_records',
+    'staking_rewards', 'defi_integrations', 'nft_collections', 'smart_contracts'
+  ]);
 
   constructor(connectionString: string) {
     this.pool = new Pool({ connectionString });
@@ -24,14 +78,10 @@ export abstract class BaseDatabaseService implements DatabaseService {
     console.log("Database pool connected successfully");
   }
 
-  public async disconnect(): Promise<void> {
-    await this.pool.end();
-    console.log("Database pool disconnected");
-  }  
-
-  public async disconnect(): Promise<void> {
+ public async disconnect(): Promise<void> {
     if (this.client) {
       this.client.release();
+      this.client = null;
     }
     await this.pool.end();
     console.log("Database pool disconnected");
@@ -45,8 +95,7 @@ export abstract class BaseDatabaseService implements DatabaseService {
   abstract findAll(tableName?: string): Promise<any[]>;
   abstract query(sql: string, params?: any[]): Promise<any>;
 
-
-  private validTables: Set<string> = new Set(['users', 'orders', 'products']);  // Define allowed tables
+  
 
  protected validateTableName(table: string): string {
     if (!this.validTables.has(table)) {
@@ -465,18 +514,6 @@ export abstract class BaseDatabaseService implements DatabaseService {
     return await this.executeQuery(queryText, [value]);
   }
 
-
-  // Generic method to execute queries
-  protected async executeQuery(queryText: string, params: any[]): Promise<any> {
-    const client = await this.pool.connect();
-    try {
-      const res = await client.query(queryText, params);
-      return res.rows;
-    } finally {
-      client.release();
-    }
-  }
-
   // Remove the window.confirm call since this is server-side
   async confirmDisconnect(message: string): Promise<boolean> {
     return new Promise((resolve) => {
@@ -531,6 +568,6 @@ initializeDatabase().then(success => {
   }
 });
 
-export { databaseConfig, databaseQuery };
+
 export type { DatabaseConfig, DatabaseService };
 

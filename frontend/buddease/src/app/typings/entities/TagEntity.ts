@@ -1,3 +1,4 @@
+import { RoadmapAudience } from '@/app/typings/roadmap';
 import { SnapshotsArray } from '@/app/snapshots';
 // TagEntity.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";

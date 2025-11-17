@@ -1,0 +1,133 @@
+/* AppTreeExplorer.css */
+/* AppTreeExplorer.css */
+.app-tree-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f8f9fa;
+}
+
+.explorer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.view-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-controls button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-controls button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.action-controls .refresh-btn {
+  padding: 0.5rem 1rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-section {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.search-group, .report-group {
+  display: flex;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.search-input, .report-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.search-btn, .report-btn {
+  padding: 0.5rem 1rem;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.explorer-content {
+  flex: 1;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.analysis-view {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-results-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background: white;
+  border-left: 1px solid #e9ecef;
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: -2px 0 4px rgba(0,0,0,0.1);
+}
+
+.file-item, .result-item {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #007bff;
+}
+
+.recommendations-list {
+  list-style: none;
+  padding: 0;
+}
+
+.recommendations-list li {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background: #e7f3ff;
+  border-radius: 4px;
+  border-left: 3px solid #17a2b8;
+}

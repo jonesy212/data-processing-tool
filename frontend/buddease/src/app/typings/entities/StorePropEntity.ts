@@ -1,6 +1,6 @@
 // StorePropEntity.ts
 import { Data } from '@/app/models/data/Data';
-import { SnapshotStore } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/Snapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -10,14 +10,15 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 // 1️⃣ Base StorePropEntity definition
 // ------------------------------
 // --- Core entity definition ---
+
 interface StorePropEntity extends BaseDataEntity {
   id: string | number;
   name: string;
   description?: string;
   category?: string;
   tags?: string[];
-  createdAt?: number;
-  updatedAt?: number;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   isArchived?: boolean;
 }
 
@@ -85,6 +86,16 @@ const storeProps: SnapshotStoreProps<
   StorePropEntityTemplate['ExcludedFields'],
   StorePropEntityTemplate['IncludedFields']
 > = {
+  storeId: "store-prop-store-001",                    // Required
+  name: "StoreProp Snapshot Store",                   // Required
+  endpointCategory: "store-props",                    // Required
+  expirationDate: new Date(Date.now() + 86400000),    // Required - 24 hours from now
+  category: "store-props",                            // Required
+  timestamp: new Date(),                              // Required
+  criteria: {},                                       // Required
+  snapshotStoreConfig: {},                            // Required
+  schema: {},                                         // Required
+  options: {},                                        // Required
   callback: (
     snapshotStore: SnapshotStore
   ) => {
@@ -94,7 +105,11 @@ const storeProps: SnapshotStoreProps<
 
 
 
-export type { StorePropMeta,
-StorePropAttachment,
-StorePropExcludedFields,
-StorePropIncludedFields}
+export type { 
+  StorePropEntity,
+  StorePropK,
+  StorePropMeta,
+  StorePropAttachment,
+  StorePropExcludedFields,
+  StorePropIncludedFields
+}

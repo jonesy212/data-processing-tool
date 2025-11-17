@@ -1,23 +1,39 @@
-// docxGenerator.ts - Browser compatible version
+// docxGenerator.ts - Generic version
 import { User, UserData } from "@/app/users/User";
 import Docxtemplater from "docxtemplater";
-import { saveAs } from 'file-saver'; // You'll need to install file-saver
+import { saveAs } from 'file-saver';
 import JSZip from "jszip";
 
-export interface DocxGeneratorOptions {
-  templateFile: File | ArrayBuffer; // Use File or ArrayBuffer instead of path
+// Make the interface generic
+export interface DocxGeneratorOptions<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  templateFile: File | ArrayBuffer;
   fileName: string;
   data: Record<string, any>;
-  user: User;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-export class DocxGenerator {
+// Make the class generic
+export class DocxGenerator<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   private templateFile: File | ArrayBuffer;
   private fileName: string;
   private data: Record<string, any>;
-  private user: User;
+  private user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-  constructor(options: DocxGeneratorOptions) {
+  constructor(options: DocxGeneratorOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.templateFile = options.templateFile;
     this.fileName = options.fileName;
     this.data = options.data;
@@ -42,7 +58,7 @@ export class DocxGenerator {
     // Assign data to the template
     doc.setData(this.data);
 
-    const userData: UserData = this.user.data || { 
+    const userData: UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = this.user.data || { 
       id: this.user.id, 
       snapshots: [],
       username: this.user.username, 
@@ -50,7 +66,7 @@ export class DocxGenerator {
       role: this.user.role, 
       childIds: [], 
       relatedData: []
-    };
+    } as UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
     doc.setData({...this.user, data: userData});
 
@@ -76,7 +92,7 @@ export class DocxGenerator {
   }
 }
 
-// Example usage in browser:
+// Example usage with concrete types:
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = '.docx';
@@ -85,14 +101,17 @@ fileInput.onchange = async (e) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
-  const options: DocxGeneratorOptions = {
+  // Import the concrete types
+  import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from "@/app/users/User";
+
+  const options: DocxGeneratorOptions<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
     templateFile: file,
     fileName: "generated-document.docx",
     data: {
       name: "John Doe",
       date: new Date().toLocaleDateString()
     },
-    user: {} as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>// Provide actual user data
+    user: {} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>
   };
 
   const docxGenerator = new DocxGenerator(options);

@@ -1,7 +1,6 @@
 // MessageType.tsx
-import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { MessageBaseParams } from '@/app/typings/entities/MessageEntity';
-import { Message } from '@/app/models/messages/Message';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields } from '@/app/typings/entities/MessageEntity'
 
 export enum MessageType {

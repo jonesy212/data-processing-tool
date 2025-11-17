@@ -357,7 +357,7 @@ interface UnifiedMetaDataOptions<
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   overrides?: Partial<Omit<Meta, ExcludedFields>>;
   relatedKeys?: Array<keyof K>;
-  metadataEntries: Meta['metadataEntries'];
+  metadataEntries: Record<string, MetadataEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   videoMetadata?: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   mediaMetadata?: MediaMetadata;
   projectMetadata?: ProjectMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -752,7 +752,7 @@ const area = `${dimensions.width}x${dimensions.height}`;
 console.log(area);
 
 
-const currentMeta: StructuredMetadata<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> = useMeta<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedField>(area)
 // console.log(area);  // Output: "1920x1080"
 
 // const currentMeta = useMeta<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>(area)
@@ -948,6 +948,12 @@ function createMediaMetadata(
     version,
     isActive,
     config,
+
+    customFields
+    initialState
+    meta
+    permissions
+    metadata
   } = metadataOptions;
 
   return {
@@ -966,7 +972,10 @@ function createMediaMetadata(
     initialState,
     category,
     meta,
-    permissions, name, metadata, versionData,
+    permissions, 
+    name: '', 
+    metadata, 
+    versionData,
     artwork: [
       {
         src: artworkSrc,
@@ -1005,38 +1014,16 @@ const dynamicMediaMetadata = createMediaMetadata(
 
 
 const task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = {
-
-  progress: {
-    id: '',
-    name: '',
-    color: '',
-    description: '',
-  
-  },
-  participants: [],
-  uploadedAt: new Date(),
-  phase: {
-    id: "",
-    name: "",
-    description: "",
-    projectId: "",
-    date: "",
-  },
-
   id: "task123",
   title: "Sample Task",
   description: "This is a sample task.",
   _id: "",
-  config: {} as Promise<SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
-  permissions: [],
-  customFields: {},
-
+  
+  phaseName: '', 
+  isCompleted: '', 
+  label: {},
   timestamp: new Date(),
   category: "",
-  meta: {} as StructuredMetadata<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-
-
-  assignedTo: null,
   assigneeId: "user456",
   dueDate: new Date(),
   priority: undefined,
@@ -1064,13 +1051,37 @@ const task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields
   userId: undefined,
   query: "",
   getData: async () => task,
-
+  
   scheduled: {
     startDate: new Date(),
     scheduledDate: new Date(),
     createdBy: "system",
   },
-
+  progress: {
+    id: '',
+    name: '',
+    color: '',
+    description: '',
+  },
+  participants: [],
+  uploadedAt: new Date(),
+  phase: {
+    id: "",
+    name: "",
+    description: "",
+    projectId: "",
+    date: "",
+  },
+  
+  config: {} as Promise<SnapshotStoreConfig<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
+  permissions: [],
+  customFields: {},
+  
+  meta: {} as StructuredMetadata<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+  
+  
+  assignedTo: null,
+  
   // Optional properties
   details: undefined,
 };

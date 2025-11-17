@@ -1,6 +1,7 @@
 // components/AppProviders.tsx
 'use client';
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { useReducer } from 'react'
 
 // In your AuthProvider component file
 interface AuthProviderProps {

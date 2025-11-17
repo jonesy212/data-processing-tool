@@ -45,6 +45,16 @@ export function createLatestVersion<
       }
     },
   };
+  
+  function simpleHash(input: string): string {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16).padStart(16, '0');
+  }
 
   // ✅ Define default VersionImpl (runtime behavior only)
   const defaultVersionImpl: VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
@@ -109,7 +119,7 @@ export function createLatestVersion<
     },
 
     calculateHash() {
-      return this.hash(this.appVersion);
+      return this.hashStructure([this.appVersion]); 
     },
 
     updateStructureHash() {
@@ -125,6 +135,8 @@ export function createLatestVersion<
       return btoa(value).substring(0, 16);
     },
 
+
+    
    
   bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string) {
     switch (type) {
@@ -151,6 +163,8 @@ export function createLatestVersion<
 
     return this; // Add this line to return the Version object
     },
+    versionNotes: '',
+    toData: ""
   }
 
   // ✅ Define default VersionData

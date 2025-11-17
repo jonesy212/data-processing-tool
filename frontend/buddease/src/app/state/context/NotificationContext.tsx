@@ -2,11 +2,11 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NOTIFICATION_TYPES } from '@/app/features/support/NotificationTypes';
-import { NotificationChannels } from '@/app/components/settings/NotificationChannels';import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { NotificationChannels } from '@/app/notifications/NotificationChannels';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { NotificationPosition, PriorityTypeEnum } from '@/app/models/data/StatusType';
 import NotificationStore from '@/app/state/stores/NotificationStore';
-import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { NotificationAttachment, NotificationEntity, NotificationExcludedFields, NotificationIncludedFields, NotificationK, NotificationMeta } from '@/app/typings/entities/NotificationEntity';
 import { LogData } from '@/app/models/LogData'
 import { createContext, useContext } from 'react';

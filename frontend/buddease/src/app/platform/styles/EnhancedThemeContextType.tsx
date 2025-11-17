@@ -1,6 +1,6 @@
 // EnhancedThemeContextType.ts
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Theme, ThemeEnum } from './Theme';
+import { Theme, ThemeEnum } from '@/app/libraries/ui/theme/Theme'
 import { DesignTokens, themeToDesignTokens, defaultTokens } from './design-tokens';
 
 interface EnhancedThemeContextType {
@@ -160,6 +160,7 @@ export const EnhancedThemeProvider: React.FC<EnhancedThemeProviderProps> = ({
     } else {
       updateTokens({
         colors: {
+          primary, secondary, accent, error,
           background: '#ffffff',
           surface: '#f8f9fa',
           text: '#2c3e50',

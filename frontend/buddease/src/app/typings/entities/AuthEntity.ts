@@ -3,7 +3,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnum'; 
 import { AccessControlEntry } from '@/app/access-control/types'; 
-import { SecurityEvent } from '@/app/security/types'; 
+import { SecurityEvent } from '@/app/state/redux/slices/SecurityEventSlice'
 import { PublicUserInfo } from '@/app/typings/entities/UserEntity'; 
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
@@ -14,11 +14,11 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { RealtimeDataItem } from '../realtimeTypes';
 import { ApplyFieldFilters } from './AppEntity';
 import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { AuthenticationProvider, DashboardConfig } from '@/app/typings/authTypes';
+import { DashboardConfig } from '@/app/typings/authTypes';
 import { UserContactInfo, UserNotificationPreferences, UserSession } from '@/app/state/stores/AuthStore';
 import { SubscriptionPlan } from '@/app/subscriptions/SubscriptionPlan';
 import { UserPreferences } from '@/app/typings/userTypes';
-
+import { AuthenticationProvider } from '@app/interfaces/provider/AuthenticationProvider'
 
 
 // Define sensitive fields that should never be exposed

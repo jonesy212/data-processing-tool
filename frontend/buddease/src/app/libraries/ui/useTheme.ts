@@ -1,11 +1,12 @@
 // useTheme.ts
-import { useEnhancedTheme } from './EnhancedThemeProvider';
-import { themeToDesignTokens } from './design-tokens';
+import { useEnhancedTheme } from '@/app/platform/styles/EnhancedThemeContextType';
+import { themeToDesignTokens } from '@/app/platform/styles/design-tokens';
 
 // Hook for backward compatibility with your existing code
 export const useTheme = () => {
-  const enhancedTheme = useEnhancedTheme();
   
+  const enhancedTheme = useEnhancedTheme();
+
   return {
     // Your existing theme properties
     ...enhancedTheme.theme,

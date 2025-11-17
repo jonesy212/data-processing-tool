@@ -1,5 +1,5 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
-import { DatabaseService } from '@/app/config/DatabaseConfig';
+import { DatabaseService } from '@/app/config/DatabaseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Snapshot } from "@/app/snapshots/Snapshot";

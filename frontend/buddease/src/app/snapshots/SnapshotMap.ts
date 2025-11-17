@@ -157,7 +157,7 @@ function isSnapshotFunction<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  snapshot: any
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): snapshot is (
   id: string | number | undefined,
   snapshotId: string | null,

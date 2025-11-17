@@ -1,6 +1,6 @@
 // advancedTransform.ts
 
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/snapshots/Snapshot';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -64,7 +64,8 @@ export function transformSubscriberAdvanced<
   };
 }
 
-// ✅ Keep this as a standalone utility function
+
+// ✅ Complete 6-parameter version that maintains all generic parameters
 export function transformSubscriberMappedAdvanced<
   T extends BaseDataEntity,
   K extends T = T,
@@ -74,24 +75,26 @@ export function transformSubscriberMappedAdvanced<
   IncludedFields extends keyof T = keyof T,
   U extends BaseDataEntity = T,
   V extends U = U,
-  Meta2 = DefaultMeta<U, V> = DefaultMeta<T, K>,
-  ExcludedFields2 extends keyof U = DefaultExcludedFields<U>
+  Meta2 extends DefaultMeta<U, V> = DefaultMeta<U, V>,
+  AttachmentType2 extends Attachment = AttachmentType,
+  ExcludedFields2 extends keyof U = DefaultExcludedFields<U>,
+  IncludedFields2 extends keyof U = keyof U
 >(
   subscriber: (
     event: string,
     snapshotId: string,
-    snapshot: Snapshot<U, V, Meta2, ExcludedFields2>,
-    snapshotStore: SnapshotStore<U, V, Meta2, ExcludedFields2>,
+    snapshot: Snapshot<U, V, Meta2, AttachmentType2, ExcludedFields2, IncludedFields2>,
+    snapshotStore: SnapshotStore<U, V, Meta2, AttachmentType2, ExcludedFields2, IncludedFields2>,
     dataItems: any[],
     criteria: any,
     category: symbol | string | undefined
   ) => void,
   transformSnapshot: (
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => Snapshot<U, V, Meta2, ExcludedFields2>,
+  ) => Snapshot<U, V, Meta2, AttachmentType2, ExcludedFields2, IncludedFields2>,
   transformSnapshotStore: (
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => SnapshotStore<U, V, Meta2, ExcludedFields2>,
+  ) => SnapshotStore<U, V, Meta2, AttachmentType2, ExcludedFields2, IncludedFields2>,
   transformSnapshotCriteria: (criteria: any) => any
 ): (
   event: string,
@@ -103,13 +106,13 @@ export function transformSubscriberMappedAdvanced<
   category: symbol | string | undefined
 ) => void {
   return (
-    event,
-    snapshotId,
-    snapshot,
-    snapshotStore,
-    dataItems,
-    criteria,
-    category
+    event: string,
+    snapshotId: string,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataItems: any[],
+    criteria: any,
+    category: symbol | string | undefined
   ) => {
     const transformedSnapshot = transformSnapshot(snapshot);
     const transformedSnapshotStore = transformSnapshotStore(snapshotStore);
