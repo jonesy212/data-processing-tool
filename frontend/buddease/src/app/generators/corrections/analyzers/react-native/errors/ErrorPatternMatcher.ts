@@ -472,7 +472,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       if (matches && matches.length > 0) {
         const uniqueMatches = [...new Set(matches)].slice(0, 5); // Show first 5 unique matches
         
-        corrections.push(this.create(
+        corrections.push(this.createCorrection(
           patternId,
           'error',
           patternConfig.severity,
@@ -532,7 +532,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       if (errorMatch) {
         // If we have a previous error, add it to corrections
         if (currentError) {
-          corrections.push(this.create(
+          corrections.push(this.createCorrection(
             `typescript-error-${Date.now()}`,
             'error',
             'high',
@@ -559,7 +559,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     // Don't forget the last error
     if (currentError) {
-      corrections.push(this.create(
+      corrections.push(this.createCorrection(
         `typescript-error-${Date.now()}`,
         'error',
         'high',
@@ -592,7 +592,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
           
           eslintResults.forEach((file: any) => {
             file.messages.forEach((message: any) => {
-              corrections.push(this.create(
+              corrections.push(this.createCorrection(
                 `eslint-${message.ruleId || 'unknown'}`,
                 message.severity === 2 ? 'error' : 'warning',
                 message.severity === 2 ? 'high' : 'medium',
@@ -631,7 +631,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       if (eslintMatch) {
         const [, filePath, lineNum, , level, message, ruleId] = eslintMatch;
         
-        corrections.push(this.create(
+        corrections.push(this.createCorrection(
           `eslint-${ruleId}`,
           level.toLowerCase() as 'error' | 'warning',
           level === 'Error' ? 'high' : 'medium',
@@ -665,7 +665,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       if (packageJson.peerDependencies) {
         Object.keys(packageJson.peerDependencies).forEach(dep => {
           if (!packageJson.dependencies?.[dep] && !packageJson.devDependencies?.[dep]) {
-            corrections.push(this.create(
+            corrections.push(this.createCorrection(
               `missing-peer-dependency-${dep}`,
               'warning',
               'medium',
@@ -682,7 +682,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       // Check for version conflicts in resolutions
       if (packageJson.resolutions) {
         Object.entries(packageJson.resolutions).forEach(([pkg, version]) => {
-          corrections.push(this.create(
+          corrections.push(this.createCorrection(
             `resolution-conflict-${pkg}`,
             'info',
             'low',

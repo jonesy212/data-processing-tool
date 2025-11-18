@@ -5,18 +5,15 @@ import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import { DomainStructure } from '@/app/config/appStructure/DomainStructure'
 import PackageRecommendationGenerator from '@/app/generators/PackageRecommendationGenerator'
+import { PackageJson } from '@/app/scripts/generate-commands-doc'
 
 interface ProjectStructure {
   interfaces: [string, InterfaceInfo][];
   components: [string, ComponentInfo][];
   apis: [string, ApiInfo][];
   totalFiles: number;
-  files: string[]; 
-}
-
-interface PackageJson {
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
+  files: string[];
+  packageJson: PackageJson | null;
 }
 
 /**
@@ -153,48 +150,34 @@ function generateDevRoadmap(prompt: string, projectStructure: ProjectStructure):
 
   // --- FRONTEND SECTION ---
   lines.push('\n## 🎨 Frontend Development');
-  
+
   lines.push('\n### Pages & Views');
   domainStructure.frontend.pages.forEach((page, i) => {
     lines.push(`\n#### ${i + 1}. ${page.name}`);
     lines.push(`**Defined in:** ${page.file}`);
-    lines.push(`**Props Type:** ${page.propsType}`);
-    lines.push(`**Exports:** ${page.exports.join(', ')}`);
+    lines.push(`**Props Type:** ${page.propsType ?? 'Not specified'}`);
+    lines.push(`**Exports:** ${page.exports?.join(', ') ?? 'None'}`);
   });
-  
+
   lines.push('\n### UI Components');
   domainStructure.frontend.uiComponents.forEach((comp, i) => {
     lines.push(`\n#### ${i + 1}. ${comp.name}`);
     lines.push(`**Defined in:** ${comp.file}`);
-    lines.push(`**Props Type:** ${comp.propsType}`);
-    lines.push(`**Exports:** ${comp.exports.join(', ')}`);
+    lines.push(`**Props Type:** ${comp.propsType ?? 'Not specified'}`);
+    lines.push(`**Exports:** ${comp.exports?.join(', ') ?? 'None'}`);
   });
-  
-  lines.push('\n### Frontend Types & Props');
-  domainStructure.frontend.frontendTypes.forEach((type, i) => {
-    lines.push(`\n#### ${i + 1}. ${type.name} (${type.type})`);
-    lines.push(`**Defined in:** ${type.file}`);
-    if (type.properties) {
-      lines.push('**Properties:**');
-      type.properties.forEach(prop => {
-        lines.push(`- ${prop.name}${prop.optional ? '?' : ''}: ${prop.type}`);
-      });
-    } else if (type.definition) {
-      lines.push(`**Definition:** \`${type.definition}\``);
-    }
-  });
-  
+
   lines.push('\n### Custom Hooks');
   domainStructure.frontend.hooks.forEach((hook, i) => {
     lines.push(`\n#### ${i + 1}. ${hook.name}`);
     lines.push(`**Defined in:** ${hook.file}`);
-    lines.push(`**Props Type:** ${hook.propsType}`);
-    lines.push(`**Exports:** ${hook.exports.join(', ')}`);
+    lines.push(`**Props Type:** ${hook.propsType ?? 'Not specified'}`);
+    lines.push(`**Exports:** ${hook.exports?.join(', ') ?? 'None'}`);
   });
 
   // --- BACKEND SECTION ---
   lines.push('\n## 🔧 Backend Development');
-  
+
   lines.push('\n### API Endpoints');
   domainStructure.backend.apiEndpoints.forEach((api, i) => {
     lines.push(`\n#### ${i + 1}. ${api.file}`);
@@ -202,9 +185,9 @@ function generateDevRoadmap(prompt: string, projectStructure: ProjectStructure):
       const asyncIndicator = method.isAsync ? 'async ' : '';
       lines.push(`- ${asyncIndicator}${method.name}(${method.parameters.join(', ')}): ${method.returnType}`);
     });
-    lines.push(`**Exports:** ${api.exports.join(', ')}`);
+    lines.push(`**Exports:** ${api.exports?.join(', ') ?? 'None'}`);
   });
-  
+
   lines.push('\n### Services & Business Logic');
   domainStructure.backend.services.forEach((service, i) => {
     lines.push(`\n#### ${i + 1}. ${service.file}`);
@@ -212,21 +195,7 @@ function generateDevRoadmap(prompt: string, projectStructure: ProjectStructure):
       const asyncIndicator = method.isAsync ? 'async ' : '';
       lines.push(`- ${asyncIndicator}${method.name}(${method.parameters.join(', ')}): ${method.returnType}`);
     });
-    lines.push(`**Exports:** ${service.exports.join(', ')}`);
-  });
-  
-  lines.push('\n### Data Models');
-  domainStructure.backend.dataModels.forEach((model, i) => {
-    lines.push(`\n#### ${i + 1}. ${model.name} (${model.type})`);
-    lines.push(`**Defined in:** ${model.file}`);
-    if (model.properties) {
-      lines.push('**Properties:**');
-      model.properties.forEach(prop => {
-        lines.push(`- ${prop.name}${prop.optional ? '?' : ''}: ${prop.type}`);
-      });
-    } else if (model.definition) {
-      lines.push(`**Definition:** \`${model.definition}\``);
-    }
+    lines.push(`**Exports:** ${service.exports?.join(', ') ?? 'None'}`);
   });
 
   // --- SHARED SECTION ---

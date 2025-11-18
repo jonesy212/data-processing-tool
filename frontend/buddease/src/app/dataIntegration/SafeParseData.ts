@@ -1,8 +1,9 @@
 // SafeParseData.ts
 import { ParsedData } from '@/app/dataIntegration/parseData';
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { sanitizeComments } from "@/app/models/crypto/SanitizationFunctions";
-import { BaseData } from '@/app/models/data/Data';
+import { sanitizeComments } from '@/app/models/cypto/SanitizationFunctions'
+import { BaseData } from '@/app/models/data/Data'; 
+import { parseData } from '@/app/dataIntegration/parseData'
 
 // Define a specific type that extends T to include the comment property
 interface DataWithComment<T extends BaseData<any>> {

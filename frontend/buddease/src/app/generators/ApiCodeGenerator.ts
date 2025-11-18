@@ -1,36 +1,44 @@
 // ApiCodeGenerator.ts
 import ApiCodeOptions from "./ApiCodeOptions";
+// Base interface for all code entities
+interface BaseCodeEntity {
+  name: string;
+  file: string;
+  exports?: string[];
+  type: string;
+}
+
+// Normalized ApiInfo interface
+interface ApiInfo extends BaseCodeEntity {
+  methods: ApiMethod[];
+  type: 'api' | 'service' | 'function';
+}
 
 interface ApiMethod {
   name: string;
-  parameters: string[]; // Remove Function - keep as strings for readability
+  parameters: string[];
   returnType: string;
   type: 'api' | 'service' | 'function';
-  isAsync: boolean; // ✅ Add this to track async status
+  isAsync: boolean;
 }
 
-interface ApiInfo {
-  file: string;
-  methods: ApiMethod[];
-  exports: string[];
-}
-
-
-interface ComponentInfo {
-  file: string;
+// Normalized ComponentInfo interface
+interface ComponentInfo extends BaseCodeEntity {
   propsType?: string;
-  exports: string[];
-  name: string;
   hasProps?: boolean;
+  type: 'function' | 'class' | 'component';
 }
 
-interface InterfaceInfo {
-  file: string;
-  name: string;
-  type: string;
-  properties?: any[];
+// Normalized InterfaceInfo interface
+interface InterfaceInfo extends BaseCodeEntity {
+  properties?: Array<{
+    name: string;
+    type: string;
+    optional: boolean;
+  }>;
   definition?: string;
-  exports?: string[]; 
+  extends?: string[];
+  type: 'interface' | 'type' | 'enum';
 }
 
 

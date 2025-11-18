@@ -239,6 +239,22 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
     const corrections: Correction[] = [];
     
     try {
+          
+      // Check if content is empty
+      if (content.trim().length === 0) {
+        corrections.push(this.createCorrection(
+          'tsconfig-empty',
+          'error',
+          'high',
+          'TypeScript configuration file is empty',
+          configFile,
+          'File contains no content',
+          'Add valid TypeScript configuration to tsconfig.json',
+          'compilation'
+        ));
+        return corrections;
+      }
+
       const tsconfig = JSON.parse(content);
       const compilerOptions = tsconfig.compilerOptions || {};
 
@@ -297,13 +313,16 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
       }
 
     } catch (error) {
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
+
       corrections.push(this.createCorrection(
         'tsconfig-parse-error',
         'error',
         'high',
-        'Failed to parse tsconfig.json',
+        `Failed to parse tsconfig.json: ${errorMessage}`,
         configFile,
-        'Parse error',
+        `Parse error: ${errorMessage}`,
         'Fix JSON syntax errors in tsconfig.json',
         'compilation'
       ));
@@ -738,10 +757,28 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
     }
     return false;
   }
+  
+  // Add this helper method to both analyzers
+  private extractJsonErrorContext(content: string, error: Error): string {
+    if (error.message.includes('position')) {
+      // Extract position from error message like "JSON.parse: expected property name or '}' at line 1 column 2 of the JSON data"
+      const positionMatch = error.message.match(/position\s+(\d+)/) || error.message.match(/at position\s+(\d+)/);
+      if (positionMatch) {
+        const position = parseInt(positionMatch[1]);
+        const start = Math.max(0, position - 20);
+        const end = Math.min(content.length, position + 20);
+        return `Error around: ...${content.substring(start, end)}...`;
+      }
+    }
+    
+    // Fallback: show first 100 chars
+    return `Content start: ${content.substring(0, 100)}...`;
+  }
 
   protected extractLineContaining(content: string, searchText: string): string {
     const lines = content.split('\n');
     const line = lines.find(l => l.includes(searchText));
     return line || 'Not found';
   }
+
 }

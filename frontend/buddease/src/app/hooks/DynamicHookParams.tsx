@@ -7,12 +7,12 @@ export type DynamicHookParams = {
     idleTimeoutId,
     startIdleTimeout,
   }: {
-    idleTimeoutId: NodeJS.Timeout | null;
+    idleTimeoutId: number | null;
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }) => Promise<() => void>; 
   cleanup?: () => void;
   resetIdleTimeout: () => Promise<void>;
-  idleTimeoutId?: NodeJS.Timeout | null;
+  idleTimeoutId?: number | null;
   isActive?: boolean;
   intervalId?: number | undefined;
   initialStartIdleTimeout?: (timeoutDuration: number, onTimeout: () => void) => void;

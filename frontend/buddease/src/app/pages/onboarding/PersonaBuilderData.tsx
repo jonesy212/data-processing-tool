@@ -1,6 +1,6 @@
 // PersonaBuilderData.ts
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
-import { CommonDetails } from '@/app/components/models/CommonDetails';
+import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import { Task } from "@/app/components/models/tasks/Task";
 import { Team } from "@/app/components/models/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";

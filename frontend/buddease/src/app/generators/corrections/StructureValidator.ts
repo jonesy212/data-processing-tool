@@ -1,10 +1,11 @@
 // StructureValidator.ts
+import { PackageJsonAnalyzer } from './analyzers/react-native/errors/PackageJsonAnalyzer';
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import SecureFieldManager from "@/app/server/security/SecureFieldManager";
+import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator'
-import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
-import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
+import { PackageJson } from '@/app/scripts/generate-commands-doc'
 
 import fs from 'fs';
 import path from 'path';
@@ -26,12 +27,529 @@ interface ProjectStructureAnalysis {
 }
 
 
-export class StructureValidator {
+export class StructureValidator extends BaseAnalyzer {
 
-  private readonly helper = new (class extends BaseAnalyzer {
-    analyze = async () => [];   
-  })();
-  
+  async analyze(): Promise<Correction[]> {
+    // You could get the project structure from somewhere or create a default
+    const projectStructure = await this.getProjectStructure();
+    return this.validateStructure(projectStructure);
+  }
+
+  private async getProjectStructure(): Promise<ProjectStructure> {
+    console.log('📁 Scanning project structure...');
+    
+    try {
+
+      const [files, packageJsonAnalyzer] = await Promise.all([
+        this.scanProjectFiles(),
+        this.readPackageJson()
+      ]);
+
+      const [files, packageJson] = await Promise.all([
+        this.scanProjectFiles(),
+        this.readPackageJson()
+      ]);
+
+      const [interfaces, components, apis] = await Promise.all([
+        this.extractInterfaces(files),
+        this.extractComponents(files),
+        this.extractApis(files)
+      ]);
+
+
+      // Extract the actual package.json data from the analyzer
+      const packageJsonData = packageJsonAnalyzer ? 
+        this.extractPackageJsonData(packageJsonAnalyzer) : 
+        null;
+
+      // Log platform-specific insights
+      if (packageJsonData) {
+        this.logPlatformInsights(packageJsonData, components.length, interfaces.length);
+      }
+
+      return {
+        files,
+        interfaces,
+        components,
+        apis,
+        totalFiles: files.length,
+        packageJson: packageJsonData  
+      };
+    } catch (error) {
+      console.error('❌ Failed to scan project structure:', error);
+      throw new Error(`Project structure scan failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+
+
+  private extractPackageJsonData(analyzer: PackageJsonAnalyzer): PackageJson {
+    // Assuming PackageJsonAnalyzer has a method or property to get the actual package.json data
+    // This depends on your PackageJsonAnalyzer implementation
+    return {
+      name: analyzer.getName(), // or analyzer.name if it's a property
+      version: analyzer.getVersion(), // or analyzer.version
+      dependencies: analyzer.getDependencies(), // or analyzer.dependencies
+      devDependencies: analyzer.getDevDependencies(), // or analyzer.devDependencies
+      scripts: analyzer.getScripts(), // or analyzer.scripts
+      // Add other required properties with default values or from the analyzer
+      description: analyzer.getDescription?.() || '',
+      keywords: analyzer.getKeywords?.() || [],
+      // ... other properties
+    };
+  }
+
+
+  private logPlatformInsights(pkg: PackageJson, componentCount: number, interfaceCount: number): void {
+    console.log(`📊 ${pkg.name} v${pkg.version}`);
+    console.log(`🏗️  Architecture: ${componentCount} components, ${interfaceCount} interfaces`);
+    
+    // Detect platform features from dependencies
+    const features = [];
+    if (pkg.dependencies?.['socket.io']) features.push('Real-time Communication');
+    if (pkg.dependencies?.['web3'] || pkg.dependencies?.['ethers']) features.push('Crypto/Web3');
+    if (pkg.dependencies?.['react-router-dom']) features.push('SPA Routing');
+    if (pkg.workspaces) features.push('Monorepo Structure');
+    
+    if (features.length > 0) {
+      console.log(`🎯 Detected features: ${features.join(', ')}`);
+    }
+  }
+
+
+  private async scanProjectFiles(): Promise<string[]> {
+    const files: string[] = [];
+    const scanDirs = ['src', 'app', 'components', 'pages', 'utils', 'hooks', 'types'];
+    
+    const scanDirectory = async (dir: string): Promise<void> => {
+      try {
+        if (!fs.existsSync(dir)) return;
+        
+        const items = await fs.promises.readdir(dir, { withFileTypes: true });
+        
+        for (const item of items) {
+          const fullPath = path.join(dir, item.name);
+          
+          if (item.isDirectory()) {
+            // Skip node_modules and other irrelevant directories
+            if (!this.shouldSkipDirectory(item.name)) {
+              await scanDirectory(fullPath);
+            }
+          } else if (item.isFile() && this.isRelevantSourceFile(item.name)) {
+            files.push(fullPath);
+          }
+        }
+      } catch (error) {
+        console.warn(`Could not scan directory ${dir}:`, error);
+      }
+    };
+
+    // Scan specified directories
+    for (const dir of scanDirs) {
+      const fullPath = path.resolve(process.cwd(), dir);
+      await scanDirectory(fullPath);
+    }
+
+    // Also scan root directory for config files
+    const rootItems = await fs.promises.readdir(process.cwd(), { withFileTypes: true });
+    for (const item of rootItems) {
+      if (item.isFile() && this.isRelevantConfigFile(item.name)) {
+        files.push(path.resolve(process.cwd(), item.name));
+      }
+    }
+
+    console.log(`📄 Found ${files.length} relevant files`);
+    return files;
+  }
+
+  private shouldSkipDirectory(dirName: string): boolean {
+    const skipDirs = [
+      'node_modules', '.git', '.next', 'dist', 'build', 
+      'coverage', '.cache', '.vscode', '.idea'
+    ];
+    return skipDirs.includes(dirName) || dirName.startsWith('.');
+  }
+
+  private isRelevantSourceFile(filename: string): boolean {
+    const sourceExtensions = ['.ts', '.tsx', '.js', '.jsx', '.d.ts'];
+    const extension = path.extname(filename).toLowerCase();
+    
+    return sourceExtensions.includes(extension) && 
+          !filename.includes('.test.') && 
+          !filename.includes('.spec.') &&
+          !filename.includes('.stories.') &&
+          !filename.includes('.config.');
+  }
+
+  private isRelevantConfigFile(filename: string): boolean {
+    const configFiles = [
+      'package.json', 'tsconfig.json', 'next.config.js', 'vite.config.js',
+      'webpack.config.js', 'metro.config.js', 'babel.config.js'
+    ];
+    return configFiles.includes(filename);
+  }
+
+  private async extractInterfaces(files: string[]): Promise<[string, InterfaceInfo][]> {
+    const interfaces: [string, InterfaceInfo][] = [];
+    
+    for (const file of files) {
+      if (file.match(/\.(ts|tsx)$/)) {
+        try {
+          const content = await fs.promises.readFile(file, 'utf8');
+          const fileInterfaces = this.parseInterfacesFromContent(content, file);
+          interfaces.push(...fileInterfaces);
+        } catch (error) {
+          console.warn(`Could not read file for interface extraction: ${file}`, error);
+        }
+      }
+    }
+    
+    console.log(`📊 Found ${interfaces.length} interfaces`);
+    return interfaces;
+  }
+
+  private parseInterfacesFromContent(content: string, filePath: string): [string, InterfaceInfo][] {
+    const interfaces: [string, InterfaceInfo][] = [];
+    
+    // Pattern for interfaces
+    const interfacePattern = /(?:export\s+)?interface\s+(\w+)\s*(?:extends\s+([^{]+))?\s*{([^}]*)}/g;
+    
+    // Pattern for type aliases
+    const typePattern = /(?:export\s+)?type\s+(\w+)\s*=\s*([^;]+);/g;
+    
+    let match;
+    
+    // Extract interfaces
+    while ((match = interfacePattern.exec(content)) !== null) {
+      const interfaceName = match[1];
+      const extendsClause = match[2]?.trim();
+      const interfaceBody = match[3];
+      
+      interfaces.push([interfaceName, {
+        name: interfaceName,
+        file: filePath,
+        properties: this.extractProperties(interfaceBody),
+        extends: extendsClause ? this.parseExtends(extendsClause) : [],
+        type: 'interface'
+      }]);
+    }
+    
+    // Extract type aliases
+    while ((match = typePattern.exec(content)) !== null) {
+      const typeName = match[1];
+      const typeDefinition = match[2];
+      
+      interfaces.push([typeName, {
+        name: typeName,
+        file: filePath,
+        properties: this.extractTypeProperties(typeDefinition),
+        extends: [],
+        type: 'type'
+      }]);
+    }
+    
+    return interfaces;
+  }
+
+  private extractProperties(interfaceBody: string): Array<{ name: string; type: string; optional: boolean }> {
+    const properties: Array<{ name: string; type: string; optional: boolean }> = [];
+    const lines = interfaceBody.split('\n');
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
+      
+      // Match property patterns: name: type, name?: type, readonly name: type
+      const propertyPattern = /(?:readonly\s+)?(\w+)(\?)?\s*:\s*([^;,\n]+)/;
+      const match = trimmed.match(propertyPattern);
+      
+      if (match) {
+        properties.push({
+          name: match[1],
+          optional: !!match[2],
+          type: match[3].trim()
+        });
+      }
+    }
+    
+    return properties;
+  }
+
+  private extractTypeProperties(typeDefinition: string): Array<{ name: string; type: string; optional: boolean }> {
+    const properties: Array<{ name: string; type: string; optional: boolean }> = [];
+    
+    // Check if it's an object type
+    if (typeDefinition.trim().startsWith('{') && typeDefinition.trim().endsWith('}')) {
+      const body = typeDefinition.substring(1, typeDefinition.length - 1);
+      return this.extractProperties(body);
+    }
+    
+    return properties;
+  }
+
+  private parseExtends(extendsClause: string): string[] {
+    // Split by commas and ampersands for multiple extends
+    return extendsClause.split(/,\s*|\s+&\s+/).map(ext => ext.trim()).filter(Boolean);
+  }
+
+  private async extractComponents(files: string[]): Promise<[string, ComponentInfo][]> {
+    const components: [string, ComponentInfo][] = [];
+    
+    for (const file of files) {
+      if (file.match(/\.(tsx|jsx)$/)) {
+        try {
+          const content = await fs.promises.readFile(file, 'utf8');
+          const fileComponents = this.parseComponentsFromContent(content, file);
+          components.push(...fileComponents);
+        } catch (error) {
+          console.warn(`Could not read file for component extraction: ${file}`, error);
+        }
+      }
+    }
+    
+    console.log(`⚛️  Found ${components.length} components`);
+    return components;
+  }
+
+  private parseComponentsFromContent(content: string, filePath: string): [string, ComponentInfo][] {
+    const components: [string, ComponentInfo][] = [];
+    
+    // Pattern for function components (arrow and regular)
+    const functionComponentPatterns = [
+      /(?:export\s+)?const\s+(\w+)\s*:\s*React\.FC<.*?>\s*=\s*\(([^)]*)\)\s*=>/g,
+      /(?:export\s+)?const\s+(\w+)\s*=\s*(?:\(([^)]*)\)\s*=>|\(([^)]*)\):\s*JSX\.Element)/g,
+      /(?:export\s+)?function\s+(\w+)\s*\(([^)]*)\)\s*(?::\s*JSX\.Element)?\s*{/g
+    ];
+    
+    // Pattern for class components
+    const classComponentPattern = /(?:export\s+)?class\s+(\w+)\s+extends\s+React\.Component<([^,>]+)/g;
+    
+    for (const pattern of functionComponentPatterns) {
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        const componentName = match[1];
+        const propsParam = match[2] || match[3] || '';
+        
+        if (componentName && componentName[0] === componentName[0].toUpperCase()) {
+          const componentInfo: ComponentInfo = {
+            name: componentName,
+            file: filePath,
+            type: 'function',
+            hasProps: this.detectPropsUsage(content, componentName) || propsParam.length > 0,
+            propsType: this.extractPropsType(content, componentName),
+            exports: this.extractExports(content, componentName)
+          };
+          
+          components.push([componentName, componentInfo]);
+        }
+      }
+    }
+    
+    // Class components
+    let match;
+    while ((match = classComponentPattern.exec(content)) !== null) {
+      const componentName = match[1];
+      const componentInfo: ComponentInfo = {
+        name: componentName,
+        file: filePath,
+        type: 'class',
+        hasProps: content.includes('this.props'),
+        propsType: this.extractClassPropsType(content, componentName),
+        exports: this.extractExports(content, componentName)
+      };
+      
+      components.push([componentName, componentInfo]);
+    }
+    
+    return components;
+  }
+
+  private detectPropsUsage(content: string, componentName: string): boolean {
+    const propsPatterns = [
+      /props\s*[\.:]/,
+      new RegExp(`${componentName}\\.propTypes`, 'i'),
+      /interface.*Props/,
+      /type.*Props/
+    ];
+    
+    return propsPatterns.some(pattern => pattern.test(content));
+  }
+
+  private extractPropsType(content: string, componentName: string): string | undefined {
+    const patterns = [
+      new RegExp(`interface\\s+(${componentName}Props)\\s*{`),
+      new RegExp(`type\\s+(${componentName}Props)\\s*=`),
+      /React\.FC<([^>]+)>/,
+      /:\s*React\.FC<([^>]+)>/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = content.match(pattern);
+      if (match && match[1]) {
+        return match[1].trim();
+      }
+    }
+    
+    return undefined;
+  }
+
+  private extractClassPropsType(content: string, componentName: string): string | undefined {
+    const pattern = new RegExp(`class\\s+${componentName}\\s+extends\\s+React\\.Component<([^,>]+)`);
+    const match = content.match(pattern);
+    return match ? match[1].trim() : undefined;
+  }
+
+  private async extractApis(files: string[]): Promise<[string, ApiInfo][]> {
+    const apis: [string, ApiInfo][] = [];
+    
+    for (const file of files) {
+      if (file.includes('api') || file.includes('service') || file.includes('utils')) {
+        try {
+          const content = await fs.promises.readFile(file, 'utf8');
+          const fileApis = this.parseApisFromContent(content, file);
+          apis.push(...fileApis);
+        } catch (error) {
+          console.warn(`Could not read file for API extraction: ${file}`, error);
+        }
+      }
+    }
+    
+    console.log(`🔌 Found ${apis.length} API/services`);
+    return apis;
+  }
+
+  private parseApisFromContent(content: string, filePath: string): [string, ApiInfo][] {
+    const apis: [string, ApiInfo][] = [];
+    
+    // Pattern for API functions (fetch, axios, etc.)
+    const apiPatterns = [
+      /(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\)\s*(?::\s*([^{]+))?\s*{[\s\S]*?(?:fetch|axios|\.get|\.post|\.put|\.delete)/g,
+      /(?:export\s+)?const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*(?::\s*([^{]+))?\s*=>\s*{[\s\S]*?(?:fetch|axios|\.get|\.post|\.put|\.delete)/g
+    ];
+    
+    for (const pattern of apiPatterns) {
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        const apiName = match[1];
+        const parameters = match[2] || '';
+        const returnType = match[3] || 'void';
+        const isAsync = content.includes(`async ${apiName}`) || content.includes(`async function ${apiName}`) || content.includes(`const ${apiName} = async`);
+        
+        const apiInfo: ApiInfo = {
+          name: apiName,
+          file: filePath,
+          type: 'function',
+          methods: [{
+            name: apiName,
+            parameters: this.parseParameters(parameters),
+            returnType: returnType.trim(),
+            type: 'api',
+            isAsync
+          }],
+          exports: this.extractExports(content, apiName)
+        };
+        
+        apis.push([apiName, apiInfo]);
+      }
+    }
+    
+    return apis;
+  }
+
+  // Helper methods for parsing
+  private parseParameters(parameters: string): string[] {
+    if (!parameters.trim()) return [];
+    
+    return parameters.split(',')
+      .map(param => param.trim())
+      .filter(param => param.length > 0)
+      .map(param => {
+        // Extract parameter name (remove type annotations and default values)
+        const paramMatch = param.match(/^([^:=\s]+)/);
+        return paramMatch ? paramMatch[1] : param;
+      });
+  }
+
+  private extractExports(content: string, entityName: string): string[] {
+    const exports: string[] = [];
+    
+    // Check for export statements
+    const exportPatterns = [
+      new RegExp(`export\\s+(?:const|function|class|interface|type)\\s+${entityName}`, 'g'),
+      new RegExp(`export\\s*\\{[^}]*\\b${entityName}\\b[^}]*\\}`, 'g'),
+      new RegExp(`export\\s+default\\s+${entityName}`, 'g')
+    ];
+    
+    exportPatterns.forEach(pattern => {
+      if (pattern.test(content)) {
+        exports.push(entityName);
+      }
+    });
+    
+    return exports;
+  }
+
+  private detectHttpMethod(content: string, apiName: string): string {
+    const methodPatterns = {
+      get: new RegExp(`${apiName}[\\s\\S]*?\\.get\\(`),
+      post: new RegExp(`${apiName}[\\s\\S]*?\\.post\\(`),
+      put: new RegExp(`${apiName}[\\s\\S]*?\\.put\\(`),
+      delete: new RegExp(`${apiName}[\\s\\S]*?\\.delete\\(`)
+    };
+    
+    for (const [method, pattern] of Object.entries(methodPatterns)) {
+      if (pattern.test(content)) {
+        return method;
+      }
+    }
+    
+    return 'unknown';
+  }
+
+  private async readPackageJson(): Promise<PackageJsonAnalyzer> {
+    try {
+      const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        const content = await fs.promises.readFile(packageJsonPath, 'utf8');
+        const packageData = JSON.parse(content);
+        
+        // Create a new PackageJsonAnalyzer instance
+        const analyzer = new PackageJsonAnalyzer();
+        
+        // If you need to pass the package data to the analyzer, you might need to modify PackageJsonAnalyzer
+        // For example, add a method like analyzer.setPackageData(packageData)
+        
+        return analyzer;
+      }
+    } catch (error) {
+      console.warn('Could not read package.json:', error);
+    }
+    
+    // Return a new PackageJsonAnalyzer instance even if file doesn't exist
+    return new PackageJsonAnalyzer();
+  }
+
+
+  // For getting raw package.json data (like in generateCommandsDoc.ts)
+  private async getPackageJsonData(): Promise<PackageJson | null> {
+    try {
+      const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        const content = await fs.promises.readFile(packageJsonPath, 'utf8');
+        return JSON.parse(content);
+      }
+    } catch (error) {
+      console.warn('Could not read package.json:', error);
+    }
+    return null;
+  }
+
+  // For running package.json analysis
+  private async analyzePackageJson(): Promise<Correction[]> {
+    const analyzer = new PackageJsonAnalyzer();
+    return await analyzer.analyze();
+  }
+
   async validateStructure(projectStructure: ProjectStructure): Promise<Correction[]> {
     const corrections: Correction[] = [];
 
@@ -297,7 +815,7 @@ export class StructureValidator {
     const deepRelative = /^import.*['"]\.\.\/\.\.\/\.\./gm;
     if (deepRelative.test(content)) {
       corrections.push(
-        this.helper.createCorrection(
+        this.createCorrection(
           `deep-relative-import-${filePath}`,
           'warning',
           'medium',
@@ -314,7 +832,7 @@ export class StructureValidator {
     const noExt = /^import\s+.*?\s+from\s+['"]\.\/[^'"]+(?<!\.tsx?)(?<!\.jsx?)['"]/gm;
     if (noExt.test(content)) {
       corrections.push(
-        this.helper.createCorrection(
+        this.createCorrection(
           `missing-extension-${filePath}`,
           'suggestion',
           'low',
@@ -333,7 +851,7 @@ export class StructureValidator {
     imports.forEach(([line, module]) => {
       if (seen.has(module)) {
         corrections.push(
-          this.helper.createCorrection(
+          this.createCorrection(
             `duplicate-import-module-${filePath}`,
             'suggestion',
             'low',

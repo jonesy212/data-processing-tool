@@ -54,7 +54,6 @@ const dispatch = useDispatch();
 export const { userId } = useParams();
 const parsedUserId = Number(userId);
 
-// Helper function to construct URLs without dot-prop
 const constructUrl = (basePath: string, ...pathParts: (string | number)[]): string => {
   const cleanParts = pathParts.filter(part => part != null && part !== '');
   return cleanParts.length > 0 ? `${basePath}/${cleanParts.join('/')}` : basePath;

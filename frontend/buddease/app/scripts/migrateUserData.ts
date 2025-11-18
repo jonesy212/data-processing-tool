@@ -6,11 +6,11 @@ import { useButtonGeneratorProps } from '@/app/generators/GenerateButtons';
 import { Schema, DatabaseSchema as BaseDatabaseSchema } from '@/app/typings/database';
 import { IDatabaseService, DatabaseType } from '@/app/typings/database';
 import { PhaseEntity,
-PhaseEntity,
+PhaseK,
 PhaseMeta,
 PhaseAttachment,
 PhaseExcludedFields,
-PhaseIncludedFields } from '@/app/typpings/entiies/PhaseEntity'
+PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity'
 // Extend the base interfaces with migration-specific types
 export interface Database extends IDatabaseService {
   type: DatabaseType;

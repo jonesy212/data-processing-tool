@@ -889,7 +889,7 @@ export const getDefaultDocumentOptions = <
     timestamp: new Date().toISOString(),
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
-    metadataEntries: {} as MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    metadataEntries: {} as MetadataEntriesType<T, K, Meta>,
     latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     schema: {}
     },

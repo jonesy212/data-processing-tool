@@ -19,9 +19,9 @@ export interface CryptoData {
 
 // Define a generic interface for parsed data to handle various data types
 export interface ParsedData<T extends object> {
-  id: "",
- filter: "",
-//  appName: "",
+  id: string,
+  filter: string,
+//  appName: strinig,
 
   data: T; // Generic field to hold different types of data
   pageNumber: number; // Optional field to store page number from PDF

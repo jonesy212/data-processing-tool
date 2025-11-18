@@ -13,7 +13,7 @@ export class PlatformDetector extends BaseAnalyzer {
 
     // Add platform-specific analysis and suggestions
     if (platformInfo.isMultiPlatform) {
-      corrections.push(this.create(
+      corrections.push(this.createCorrection(
         'multi-platform-detected',
         'info',
         'low',
@@ -28,7 +28,7 @@ export class PlatformDetector extends BaseAnalyzer {
 
     // Platform-specific recommendations
     if (platformInfo.hasMobile) {
-      corrections.push(this.create(
+      corrections.push(this.createCorrection(
         'mobile-platform-tips',
         'suggestion',
         'low',
@@ -42,7 +42,7 @@ export class PlatformDetector extends BaseAnalyzer {
     }
 
     if (platformInfo.hasWeb) {
-      corrections.push(this.create(
+      corrections.push(this.createCorrection(
         'web-platform-tips',
         'suggestion',
         'low',

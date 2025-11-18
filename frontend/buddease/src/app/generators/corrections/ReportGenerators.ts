@@ -410,158 +410,273 @@ export class ReportGenerators {
     return lines.join('\n');
   }
 
-  static generateTypeRelationshipsReport(report: CorrectionReport): string {
+static generateTypeRelationshipsReport(report: CorrectionReport): string {
     const lines: string[] = [];
     lines.push('# 🔗 Type Relationships Report');
     lines.push(`**Generated:** ${report.timestamp}`);
     lines.push('');
 
-    // Add type relationships analysis from your code
-    if (report.types && Array.isArray(report.types)) {
-      lines.push('## Type Dependencies');
-      lines.push('');
-      
-      const relationships = report.types
-        .filter(type => type && type.name && type.dependencies) // Null checks
-        .map(type => ({
-          name: type.name,
-          dependencies: (type.dependencies || []).filter((dep: any) => 
-            dep && typeof dep === 'string' && dep.includes('.') // Safe .includes()
-          ),
-          dependents: report.types
-            .filter(otherType => 
-              otherType && 
-              otherType.dependencies && 
-              Array.isArray(otherType.dependencies) &&
-              otherType.dependencies.includes(type.name)
-            )
-            .map(otherType => otherType.name)
-        }));
-
-      if (relationships.length > 0) {
-        relationships.forEach(rel => {
-          lines.push(`### ${rel.name}`);
-          if (rel.dependencies.length > 0) {
-            lines.push('**Depends on:**');
-            rel.dependencies.forEach(dep => lines.push(`- ${dep}`));
-          }
-          if (rel.dependents.length > 0) {
-            lines.push('**Used by:**');
-            rel.dependents.forEach(dep => lines.push(`- ${dep}`));
-          }
-          lines.push('');
-        });
-      }
+    if (!report.typeHierarchies || report.typeHierarchies.size === 0) {
+        lines.push('## No Type Relationships Found');
+        lines.push('');
+        lines.push('No type hierarchy data was collected during analysis.');
+        return lines.join('\n');
     }
 
-    // Your existing type hierarchies section
-    if (report.typeHierarchies && report.typeHierarchies.size > 0) {
-      lines.push('## Type Hierarchies');
-      lines.push('');
+    const totalTypes = report.typeHierarchies.size;
+    
+    // SECTION 1: Type Dependency Graph (Key Relationships)
+    lines.push(`## 🔄 Type Dependency Graph (${totalTypes} types)`);
+    lines.push('');
+    lines.push('*Shows how types relate to each other through inheritance and implementation*');
+    lines.push('');
 
-      report.typeHierarchies.forEach((hierarchy, rootName) => {
-        lines.push(`### 🏷️ ${rootName}`);
-        lines.push(`**File:** ${hierarchy.root.file}`);
-        lines.push(`**Type:** ${hierarchy.root.type}`);
-        lines.push(`**Depth:** ${hierarchy.depth}`);
+    // Build dependency graph for analysis
+    const dependencyGraph = new Map<string, { dependencies: string[], dependents: string[] }>();
+    
+    // First pass: Build the graph
+    report.typeHierarchies.forEach((typeHierarchy, typeName) => {
+        if (!typeHierarchy || !typeHierarchy.root || !typeName) return;
+
+        const typeNode = typeHierarchy.root;
+        const dependencies: string[] = [];
+        
+        // Collect inheritance dependencies from the root node
+        if (typeNode.extends && typeNode.extends.length > 0) {
+            typeNode.extends.forEach(ext => {
+                if (ext && !dependencies.includes(ext)) dependencies.push(ext);
+            });
+        }
+        
+        // Collect implementation dependencies from the root node
+        if (typeNode.implements && typeNode.implements.length > 0) {
+            typeNode.implements.forEach(impl => {
+                if (impl && !dependencies.includes(impl)) dependencies.push(impl);
+            });
+        }
+
+        dependencyGraph.set(typeName, { dependencies, dependents: [] });
+    });
+
+    // Second pass: Build dependents (reverse dependencies)
+    dependencyGraph.forEach((data, typeName) => {
+        data.dependencies.forEach(dep => {
+            const depData = dependencyGraph.get(dep);
+            if (depData && !depData.dependents.includes(typeName)) {
+                depData.dependents.push(typeName);
+            }
+        });
+    });
+
+    // SECTION 1A: Inheritance Chains
+    const inheritanceChains = Array.from(dependencyGraph.entries())
+        .filter(([_, data]) => data.dependencies.length > 0);
+
+    if (inheritanceChains.length > 0) {
+        lines.push('### 🏗️ Inheritance Chains');
         lines.push('');
-
-        if (hierarchy.children && hierarchy.children.length > 0) {
-          lines.push('**Inheritance Tree:**');
-          this.printTypeHierarchy(hierarchy, lines, 1);
-        } else {
-          lines.push('*No children found*');
-        }
-
-        // Show properties and methods with null checks
-        if (hierarchy.root.properties && hierarchy.root.properties.length > 0) {
-          lines.push('');
-          lines.push('**Properties:**');
-          hierarchy.root.properties.forEach(prop => {
-            lines.push(`- ${prop}`);
-          });
-        }
-
-        if (hierarchy.root.methods && hierarchy.root.methods.length > 0) {
-          lines.push('');
-          lines.push('**Methods:**');
-          hierarchy.root.methods.forEach(method => {
-            lines.push(`- ${method}`);
-          });
-        }
-
-        lines.push('');
+        
+        inheritanceChains.forEach(([typeName, data]) => {
+            lines.push(`**${typeName}**`);
+            if (data.dependencies.length > 0) {
+                lines.push(`← Extends/Implements: ${data.dependencies.join(', ')}`);
+            }
+            if (data.dependents.length > 0) {
+                lines.push(`→ Extended by: ${data.dependents.join(', ')}`);
+            }
+            lines.push('');
+        });
         lines.push('---');
         lines.push('');
-      });
     }
 
-    // Show circular dependencies with null checks
-    if (report.circularDependencies && report.circularDependencies.length > 0) {
-      lines.push('## ⚠️ Circular Dependencies');
-      lines.push('');
-      lines.push('The following types have circular dependencies that may cause "Excessive stack depth" errors:');
-      lines.push('');
+    // SECTION 1B: Root Types (No dependencies)
+    const rootTypes = Array.from(dependencyGraph.entries())
+        .filter(([_, data]) => data.dependencies.length === 0);
 
-      report.circularDependencies.forEach((type, index) => {
-        lines.push(`${index + 1}. **${type}**`);
-      });
-      lines.push('');
-    }
-
-    // Show type usage patterns with null checks
-    const typeUsageIssues = report.corrections && Array.isArray(report.corrections) 
-      ? report.corrections.filter(c => 
-          c && 
-          c.category === 'compilation' && 
-          c.message && 
-          c.message.includes('cannot find') &&
-          c.severity === 'critical'
-        )
-      : [];
-
-    if (typeUsageIssues.length > 0) {
-      lines.push('## 🔍 Type Usage Issues');
-      lines.push('');
-      lines.push('Critical type resolution errors found:');
-      lines.push('');
-
-      typeUsageIssues.forEach((issue, index) => {
-        lines.push(`### ${index + 1}. ${issue.message}`);
-        lines.push(`**File:** ${issue.file}`);
-        lines.push('**Fix:**');
-        lines.push('```typescript');
-        lines.push(issue.fix);
-        lines.push('```');
+    if (rootTypes.length > 0) {
+        lines.push('### 🌱 Root Types (No Dependencies)');
         lines.push('');
-      });
+        rootTypes.forEach(([typeName, data]) => {
+            lines.push(`- **${typeName}**`);
+            if (data.dependents.length > 0) {
+                lines.push(`  *Used by ${data.dependents.length} types: ${data.dependents.join(', ')}*`);
+            }
+        });
+        lines.push('');
     }
 
-    // Add summary section
-    lines.push('## 📊 Summary');
+    // SECTION 1C: Leaf Types (No dependents)
+    const leafTypes = Array.from(dependencyGraph.entries())
+        .filter(([_, data]) => data.dependents.length === 0 && data.dependencies.length > 0);
+
+    if (leafTypes.length > 0) {
+        lines.push('### 🍃 Leaf Types (No Dependents)');
+        lines.push('');
+        leafTypes.forEach(([typeName, data]) => {
+            lines.push(`- **${typeName}**`);
+            if (data.dependencies.length > 0) {
+                lines.push(`  *Extends: ${data.dependencies.join(', ')}*`);
+            }
+        });
+        lines.push('');
+    }
+
+    // SECTION 2: Detailed Type Analysis
+    lines.push('## 📊 Detailed Type Analysis');
+    lines.push('');
+
+    report.typeHierarchies.forEach((typeHierarchy, typeName) => {
+        if (!typeHierarchy || !typeHierarchy.root || !typeName) return;
+
+        const typeNode = typeHierarchy.root;
+        const graphData = dependencyGraph.get(typeName);
+        const isRoot = graphData?.dependencies.length === 0;
+        const isLeaf = graphData?.dependents.length === 0;
+
+        lines.push(`### ${typeName}`);
+        
+        // Type metadata
+        lines.push('**Metadata:**');
+        lines.push(`- **File:** ${typeNode.file || 'Unknown'}`);
+        lines.push(`- **Type:** ${typeNode.type}`);
+        lines.push(`- **Role:** ${isRoot ? '🏛️ Root' : isLeaf ? '🍃 Leaf' : '🔄 Intermediate'}`);
+        if (graphData) {
+            lines.push(`- **Dependencies:** ${graphData.dependencies.length}`);
+            lines.push(`- **Dependents:** ${graphData.dependents.length}`);
+        }
+        lines.push('');
+
+        // Inheritance details from the root node
+        if (typeNode.extends && typeNode.extends.length > 0) {
+            lines.push('**Inheritance:**');
+            typeNode.extends.forEach(ext => {
+                if (ext) {
+                    const extData = dependencyGraph.get(ext);
+                    const dependentCount = extData?.dependents.length || 0;
+                    lines.push(`- ${ext} *(${dependentCount} dependents)*`);
+                }
+            });
+            lines.push('');
+        }
+
+        // Implementation details from the root node
+        if (typeNode.implements && typeNode.implements.length > 0) {
+            lines.push('**Implementation:**');
+            typeNode.implements.forEach(impl => {
+                if (impl) {
+                    const implData = dependencyGraph.get(impl);
+                    const dependentCount = implData?.dependents.length || 0;
+                    lines.push(`- ${impl} *(${dependentCount} implementations)*`);
+                }
+            });
+            lines.push('');
+        }
+
+        // Member analysis from the root node
+        const totalMembers = (typeNode.methods?.length || 0) + (typeNode.properties?.length || 0);
+        lines.push(`**Members (${totalMembers}):**`);
+        
+        if (typeNode.methods && typeNode.methods.length > 0) {
+            lines.push(`- **Methods:** ${typeNode.methods.length}`);
+            if (typeNode.methods.length <= 5) {
+                typeNode.methods.forEach(method => {
+                    if (method) lines.push(`  - ${method}`);
+                });
+            } else {
+                lines.push(`  - ${typeNode.methods.slice(0, 3).join(', ')}...`);
+            }
+        }
+        
+        if (typeNode.properties && typeNode.properties.length > 0) {
+            lines.push(`- **Properties:** ${typeNode.properties.length}`);
+            if (typeNode.properties.length <= 5) {
+                typeNode.properties.forEach(prop => {
+                    if (prop) lines.push(`  - ${prop}`);
+                });
+            } else {
+                lines.push(`  - ${typeNode.properties.slice(0, 3).join(', ')}...`);
+            }
+        }
+
+        lines.push('---');
+        lines.push('');
+    });
+
+    // SECTION 3: Architecture Insights
+    lines.push('## 🏛️ Architecture Insights');
+    lines.push('');
+
+    const totalDependencies = Array.from(dependencyGraph.values())
+        .reduce((sum, data) => sum + data.dependencies.length, 0);
+    const avgDependencies = totalTypes > 0 ? (totalDependencies / totalTypes).toFixed(2) : '0';
+
+    lines.push(`- **Total Type Relationships:** ${totalDependencies}`);
+    lines.push(`- **Average Dependencies per Type:** ${avgDependencies}`);
+    lines.push(`- **Most Dependent Type:** ${this.findMostDependentType(dependencyGraph)}`);
+    lines.push(`- **Most Reused Type:** ${this.findMostReusedType(dependencyGraph)}`);
+    lines.push('');
+
+    // SECTION 4: Circular Dependencies & Issues
+    if (report.circularDependencies && report.circularDependencies.length > 0) {
+        lines.push('## ⚠️ Circular Dependencies');
+        lines.push('');
+        report.circularDependencies.forEach((type, index) => {
+            if (type) lines.push(`${index + 1}. **${type}**`);
+        });
+        lines.push('');
+    }
+
+    // SECTION 5: Summary
+    lines.push('## 📈 Summary');
     lines.push('');
     
-    const totalTypes = report.types ? report.types.length : 0;
-    const totalHierarchies = report.typeHierarchies ? report.typeHierarchies.size : 0;
-    const totalCircular = report.circularDependencies ? report.circularDependencies.length : 0;
-    const totalIssues = typeUsageIssues.length;
-    
-    lines.push(`- **Total Types Analyzed:** ${totalTypes}`);
-    lines.push(`- **Type Hierarchies Found:** ${totalHierarchies}`);
-    lines.push(`- **Circular Dependencies:** ${totalCircular}`);
-    lines.push(`- **Critical Type Issues:** ${totalIssues}`);
-    
-    if (totalCircular > 0) {
-      lines.push('');
-      lines.push('> ⚠️ **Warning:** Circular dependencies detected. Consider refactoring to break these cycles.');
-    }
-    
-    if (totalIssues === 0 && totalCircular === 0) {
-      lines.push('');
-      lines.push('> ✅ **Excellent!** No critical type issues or circular dependencies found.');
-    }
+    lines.push(`- **Total Types:** ${totalTypes}`);
+    lines.push(`- **Root Types:** ${rootTypes.length}`);
+    lines.push(`- **Leaf Types:** ${leafTypes.length}`);
+    lines.push(`- **Intermediate Types:** ${totalTypes - rootTypes.length - leafTypes.length}`);
+    lines.push(`- **Total Relationships:** ${totalDependencies}`);
+    lines.push(`- **Architecture Complexity:** ${this.getComplexityLevel(totalTypes, totalDependencies)}`);
 
     return lines.join('\n');
+}
+
+
+  // Helper methods
+  private static findMostDependentType(graph: Map<string, { dependencies: string[], dependents: string[] }>): string {
+      let maxDeps = 0;
+      let mostDependent = 'None';
+      
+      graph.forEach((data, typeName) => {
+          if (data.dependencies.length > maxDeps) {
+              maxDeps = data.dependencies.length;
+              mostDependent = `${typeName} (${maxDeps} deps)`;
+          }
+      });
+      
+      return mostDependent;
+  }
+
+  private static findMostReusedType(graph: Map<string, { dependencies: string[], dependents: string[] }>): string {
+      let maxDependents = 0;
+      let mostReused = 'None';
+      
+      graph.forEach((data, typeName) => {
+          if (data.dependents.length > maxDependents) {
+              maxDependents = data.dependents.length;
+              mostReused = `${typeName} (${maxDependents} users)`;
+          }
+      });
+      
+      return mostReused;
+  }
+
+  private static getComplexityLevel(typeCount: number, relationshipCount: number): string {
+      const ratio = relationshipCount / typeCount;
+      if (ratio < 0.5) return '🟢 Simple';
+      if (ratio < 1.5) return '🟡 Moderate';
+      if (ratio < 3) return '🟠 Complex';
+      return '🔴 Highly Complex';
   }
 
   private static printTypeHierarchy(hierarchy: TypeHierarchy, lines: string[], depth: number): void {
@@ -649,4 +764,147 @@ export class ReportGenerators {
 
     return lines.join('\n');
   }
+
+      static generateMetroConfigReport(report: CorrectionReport): string {
+    const metroIssues = report.corrections.filter(correction => {
+        // Add null checks for all properties
+        const file = correction.file || '';
+        const message = correction.message || '';
+        const category = correction.category || '';
+        
+        return file.includes('metro.config') || 
+               (category === 'performance' && message.includes('Metro')) ||
+               file.includes('.metro') ||
+               message.includes('Metro');
+    });
+
+    const lines: string[] = [];
+    lines.push('# 🚇 Metro Configuration Issues');
+    lines.push(`**Generated:** ${report.timestamp}`);
+    lines.push(`**Total Metro Issues:** ${metroIssues.length}`);
+    lines.push('');
+    lines.push('> ⚠️ Metro issues can affect React Native build performance and reliability');
+    lines.push('');
+
+    if (metroIssues.length === 0) {
+        lines.push('✅ No Metro configuration issues found!');
+        lines.push('');
+        lines.push('Your Metro configuration appears to be properly set up.');
+        return lines.join('\n');
+    }
+
+    // Group by severity
+    const critical = metroIssues.filter(issue => issue.severity === 'critical');
+    const high = metroIssues.filter(issue => issue.severity === 'high');
+    const medium = metroIssues.filter(issue => issue.severity === 'medium');
+    const low = metroIssues.filter(issue => issue.severity === 'low');
+
+    if (critical.length > 0) {
+        lines.push('## 🚨 Critical Issues');
+        lines.push('');
+        critical.forEach(issue => {
+            lines.push(this.formatMetroIssue(issue));
+        });
+    }
+
+    if (high.length > 0) {
+        lines.push('## ⚠️ High Priority Issues');
+        lines.push('');
+        high.forEach(issue => {
+            lines.push(this.formatMetroIssue(issue));
+        });
+    }
+
+    if (medium.length > 0) {
+        lines.push('## 🔧 Medium Priority Issues');
+        lines.push('');
+        medium.forEach(issue => {
+            lines.push(this.formatMetroIssue(issue));
+        });
+    }
+
+    if (low.length > 0) {
+        lines.push('## 💡 Suggestions');
+        lines.push('');
+        low.forEach(issue => {
+            lines.push(this.formatMetroIssue(issue));
+        });
+    }
+
+    // Add Metro-specific recommendations
+    lines.push('');
+    lines.push('## 🛠️ Metro Configuration Tips');
+    lines.push('');
+    lines.push('### Common Metro Fixes:');
+    lines.push('- **Reset cache**: `npx react-native start --reset-cache`');
+    lines.push('- **Clear watchman**: `watchman watch-del-all`');
+    lines.push('- **Reinstall dependencies**: `rm -rf node_modules && npm install`');
+    lines.push('');
+    lines.push('### Performance Optimization:');
+    lines.push('- Configure `maxWorkers` for your CPU cores');
+    lines.push('- Set up `cacheVersion` for better caching');
+    lines.push('- Use `watchFolders` for monorepo setups');
+    lines.push('');
+    lines.push('### TypeScript Support:');
+    lines.push('- Ensure `ts` and `tsx` are in `sourceExts`');
+    lines.push('- Configure proper `assetExts` for your assets');
+
+    return lines.join('\n');
+}
+
+    private static formatMetroIssue(issue: Correction): string {
+        const lines: string[] = [];
+        
+        lines.push(`### ${this.getSeverityIcon(issue.severity)} ${issue.title || issue.message}`);
+        lines.push('');
+        lines.push(`- **File**: \`${issue.file}\``);
+        if (issue.line) {
+            lines.push(`- **Line**: ${issue.line}`);
+        }
+        lines.push(`- **Severity**: ${issue.severity}`);
+        lines.push(`- **Category**: ${issue.category}`);
+        lines.push('');
+        
+        if (issue.message) {
+            lines.push('**Description:**');
+            lines.push(`${issue.message}`);
+            lines.push('');
+        }
+
+        if (issue.code && issue.code.length > 0 && issue.code !== 'undefined') {
+            lines.push('**Current Configuration:**');
+            lines.push('```javascript');
+            lines.push(issue.code);
+            lines.push('```');
+            lines.push('');
+        }
+
+        if (issue.fix) {
+            lines.push('**Recommended Fix:**');
+            lines.push('```javascript');
+            lines.push(issue.fix);
+            lines.push('```');
+            lines.push('');
+        }
+
+        if (issue.suggestion) {
+            lines.push(`💡 **Suggestion**: ${issue.suggestion}`);
+            lines.push('');
+        }
+
+        lines.push('---');
+        lines.push('');
+
+        return lines.join('\n');
+    }
+
+    private static getSeverityIcon(severity: string): string {
+        const icons = {
+            critical: '🚨',
+            high: '⚠️',
+            medium: '🔧',
+            low: '💡'
+        };
+        return icons[severity as keyof typeof icons] || '📝';
+    }
 }

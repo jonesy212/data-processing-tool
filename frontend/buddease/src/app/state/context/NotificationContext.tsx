@@ -1,6 +1,7 @@
 // NotificationContext.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { NOTIFICATION_TYPES } from '@/app/features/support/NotificationTypes';
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
@@ -21,7 +22,7 @@ type NotificationContextType<
 > = NotificationContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & NotificationStore;
 
 // 3️⃣ Use it in your context
-const NotificationContext = createContext<NotificationStore | null>(null);
+export const NotificationContext = createContext<NotificationStore | null>(null);
 
 
 interface NotificationDataPayload<T = unknown> {

@@ -124,7 +124,7 @@ export class MetroLogAnalyzer extends ConfigFileAnalyzer {
   }
 
   protected getConfigPaths(): string[] {
-    return ['./metro.config.js', './metro.config.ts'];
+    return ['./metro.config.js'];
   }
 
   protected async analyzeConfigFile(configPath: string, configFile: string): Promise<Correction[]> {

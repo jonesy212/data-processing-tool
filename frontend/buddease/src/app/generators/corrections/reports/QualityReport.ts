@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Correction } from '@/generators/corrections/CorrectionGenerator';
+import { CorrectionType } from '@/app/typings/correctionTypes';
 
 export interface QualityMetrics {
   totalIssues: number;
@@ -12,13 +13,9 @@ export interface QualityMetrics {
     low: number;
   };
   byCategory: Record<string, number>; 
-  byType: {
-    error: number;
-    warning: number;
-    suggestion: number;
-  };
+  byType: Record<CorrectionType, number>; // Use Record instead of fixed object
   filesAffected: number;
-  estimatedFixTime: string; // e.g., "2 hours", "30 minutes"
+  estimatedFixTime: string;
 }
 
 export class QualityReport {
@@ -32,9 +29,19 @@ export class QualityReport {
 
   private calculateMetrics(issues: Correction[]): QualityMetrics {
     const bySeverity = { critical: 0, high: 0, medium: 0, low: 0 };
-    const byCategory: Record<string, number> = {}   ;
-    const byType = { error: 0, warning: 0, suggestion: 0 };
+    const byCategory: Record<string, number> = {};
+    const byType: Record<CorrectionType, number> = {} as Record<CorrectionType, number>; // Initialize as empty record
     const affectedFiles = new Set();
+
+    // Initialize all possible correction types to 0
+    const allTypes: CorrectionType[] = [
+      'error', 'warning', 'suggestion', 'types', 'info', 'react', 
+      'sensitive_data', 'missing_sanitization', 'role_violation', 'insecure_pattern'
+    ];
+    
+    allTypes.forEach(type => {
+      byType[type] = 0;
+    });
 
     issues.forEach(issue => {
       // Count by severity
@@ -43,7 +50,7 @@ export class QualityReport {
       // Count by category
       byCategory[issue.category] = (byCategory[issue.category] || 0) + 1;
       
-      // Count by type
+      // Count by type - now safe because we initialized all possible types
       byType[issue.type] = (byType[issue.type] || 0) + 1;
       
       // Track affected files
@@ -83,6 +90,11 @@ export class QualityReport {
   }
 
   async generateMarkdownReport(outputPath?: string): Promise<string> {
+    // Filter out types with 0 counts for cleaner reporting
+    const activeTypes = Object.entries(this.metrics.byType)
+      .filter(([_, count]) => count > 0)
+      .reduce((acc, [type, count]) => ({ ...acc, [type]: count }), {});
+
     const report = [
       '# Code Quality Report',
       '',
@@ -96,6 +108,11 @@ export class QualityReport {
       '### By Severity',
       ...Object.entries(this.metrics.bySeverity).map(([severity, count]) => 
         `- ${severity}: ${count}`
+      ),
+      '',
+      '### By Type',
+      ...Object.entries(activeTypes).map(([type, count]) => 
+        `- ${type}: ${count}`
       ),
       '',
       '### By Category',
@@ -127,6 +144,11 @@ export class QualityReport {
   }
 
   async generateHTMLReport(outputPath?: string): Promise<string> {
+    // Filter out types with 0 counts for cleaner reporting
+    const activeTypes = Object.entries(this.metrics.byType)
+      .filter(([_, count]) => count > 0)
+      .reduce((acc, [type, count]) => ({ ...acc, [type]: count }), {});
+
     const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -144,6 +166,7 @@ export class QualityReport {
         .issue { margin: 15px 0; padding: 10px; background: white; border-radius: 4px; }
         .code-snippet { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; }
         .quick-win { background: #d4edda; padding: 10px; margin: 5px 0; border-radius: 4px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     </style>
 </head>
 <body>
@@ -156,7 +179,7 @@ export class QualityReport {
     </div>
     
     <h2>Summary</h2>
-    ${this.generateHTMLMetrics()}
+    ${this.generateHTMLMetrics(activeTypes)}
     
     <h2>Issues by Priority</h2>
     ${this.generateHTMLPrioritySections()}
@@ -239,17 +262,23 @@ export class QualityReport {
       /wildcard import/i,
       /commented code/i
     ];
-  return quickFixPatterns.some(pattern => pattern.test(issue.title || ''));
+    return quickFixPatterns.some(pattern => pattern.test(issue.title || ''));
   }
 
   // HTML generation helper methods
-  private generateHTMLMetrics(): string {
+  private generateHTMLMetrics(activeTypes: Record<string, number>): string {
     return `
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+    <div class="metrics-grid">
         <div class="metric-card">
             <h3>By Severity</h3>
             ${Object.entries(this.metrics.bySeverity).map(([severity, count]) => 
               `<p>${severity}: <strong>${count}</strong></p>`
+            ).join('')}
+        </div>
+        <div class="metric-card">
+            <h3>By Type</h3>
+            ${Object.entries(activeTypes).map(([type, count]) => 
+              `<p>${type}: <strong>${count}</strong></p>`
             ).join('')}
         </div>
         <div class="metric-card">

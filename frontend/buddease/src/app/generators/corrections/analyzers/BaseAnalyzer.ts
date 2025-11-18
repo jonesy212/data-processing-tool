@@ -15,7 +15,8 @@ export abstract class BaseAnalyzer {
     codeSnippet: string,
     suggestion: string,
     category: CorrectionCategory,
-    line?: number
+    line?: number,
+    description?: string,
   ): Correction {
     // /* ======  DEBUG START  ====== */
     // const err = new Error(
@@ -23,8 +24,15 @@ export abstract class BaseAnalyzer {
     // );
     // console.error(err.stack);
     // /* ======  DEBUG END  ====== */
-
-    return CorrectionFactory.create({ id, type, severity, title, file, codeSnippet, suggestion, category, line });
+    
+    return CorrectionFactory.create({ id, type, severity, message: title, 
+      file, 
+      codeSnippet, 
+      suggestion, 
+      category, 
+      line, 
+      description: description || title
+     });
   }
 
 

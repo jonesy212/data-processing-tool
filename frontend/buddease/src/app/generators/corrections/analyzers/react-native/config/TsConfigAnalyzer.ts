@@ -14,11 +14,27 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
 
     try {
       const content = await fs.promises.readFile(configPath, 'utf8');
+      
+      // Check if file is empty first
+      if (content.trim().length === 0) {
+        corrections.push(this.createCorrection(
+          'tsconfig-empty',
+          'error',
+          'high',
+          'TypeScript configuration file is empty',
+          configPath,
+          'File contains no content - only whitespace or empty object',
+          'Add valid TypeScript configuration to enable proper compilation',
+          'compilation'
+        ));
+        return corrections;
+      }
+      
       const tsConfig = JSON.parse(content);
       const compilerOptions = tsConfig.compilerOptions || {};
       const isReactNative = this.isReactNativeProject();
 
-      // Check for missing compiler options
+      // Check for missing compiler options with proper descriptions
       if (!compilerOptions.target) {
         corrections.push(this.createCorrection(
           'tsconfig-missing-target',
@@ -26,8 +42,8 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'medium',
           'TypeScript target not specified',
           configPath,
-          'Missing "target" in compilerOptions',
-          'Add "target": "esnext" or specific ECMAScript version',
+          'Missing "target" in compilerOptions - ECMAScript version is undefined',
+          'Add "target": "esnext" or specific ECMAScript version like "es2020"',
           'compilation'
         ));
       }
@@ -39,13 +55,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'TypeScript lib files not specified',
           configPath,
-          'Missing "lib" in compilerOptions',
-          'Add "lib": ["esnext"] or specific libraries needed',
+          'Missing "lib" in compilerOptions - default libraries will be used',
+          'Add "lib": ["esnext", "dom"] or specific libraries needed for your environment',
           'compilation'
         ));
       }
 
-      // React Native specific checks
+      // React Native specific checks with proper descriptions
       if (isReactNative) {
         if (!compilerOptions.jsx) {
           corrections.push(this.createCorrection(
@@ -54,8 +70,8 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
             'high',
             'JSX configuration missing for React Native',
             configPath,
-            'Missing "jsx" in compilerOptions',
-            'Add "jsx": "react-native" for React Native projects',
+            'Missing "jsx" in compilerOptions - JSX files will not be processed correctly',
+            'Add "jsx": "react-native" for proper React Native JSX transformation',
             'compilation'
           ));
         }
@@ -67,14 +83,14 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
             'medium',
             'Recommended module resolution for React Native',
             configPath,
-            `moduleResolution: ${compilerOptions.moduleResolution || 'not set'}`,
-            'Set "moduleResolution": "node" for React Native',
+            `Current moduleResolution: "${compilerOptions.moduleResolution || 'not set'}" - React Native requires "node" resolution`,
+            'Set "moduleResolution": "node" for proper React Native module resolution',
             'compilation'
           ));
         }
       }
 
-      // Check for strict mode
+      // Check for strict mode with proper description
       if (!compilerOptions.strict) {
         corrections.push(this.createCorrection(
           'tsconfig-non-strict',
@@ -82,13 +98,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'TypeScript strict mode disabled',
           configPath,
-          'strict: false',
-          'Enable "strict": true for better type safety',
+          'strict: false - type checking is less comprehensive',
+          'Enable "strict": true for better type safety and error detection',
           'quality'
         ));
       }
 
-      // Check for module system
+      // Check for module system with proper description
       if (!compilerOptions.module) {
         corrections.push(this.createCorrection(
           'tsconfig-missing-module',
@@ -96,13 +112,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'medium',
           'Module system not specified',
           configPath,
-          'Missing "module" in compilerOptions',
-          'Set "module": "esnext" or "commonjs" based on your environment',
+          'Missing "module" in compilerOptions - module format is undefined',
+          'Set "module": "esnext" for modern bundlers or "commonjs" for Node.js',
           'compilation'
         ));
       }
 
-      // Check for path mappings
+      // Check for path mappings with proper description
       if (!compilerOptions.paths && configPath.includes('tsconfig.json')) {
         corrections.push(this.createCorrection(
           'tsconfig-no-path-mappings',
@@ -110,13 +126,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'No path mappings configured',
           configPath,
-          'Missing "paths" in compilerOptions',
-          'Configure path mappings for cleaner imports: "paths": { "@/*": ["./src/*"] }',
+          'Missing "paths" in compilerOptions - absolute imports not available',
+          'Configure path mappings for cleaner imports: "paths": { "@/*": ["./src/*"], "@/components/*": ["./src/components/*"] }',
           'structure'
         ));
       }
 
-      // Check for output directory
+      // Check for output directory with proper description
       if (!compilerOptions.outDir && !compilerOptions.noEmit) {
         corrections.push(this.createCorrection(
           'tsconfig-no-outdir',
@@ -124,13 +140,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'Output directory not specified',
           configPath,
-          'Missing "outDir" in compilerOptions',
-          'Set "outDir": "./dist" or your preferred output directory',
+          'Missing "outDir" in compilerOptions - compiled files location undefined',
+          'Set "outDir": "./dist" or specify your preferred output directory for compiled files',
           'structure'
         ));
       }
 
-      // Check for declaration files
+      // Check for declaration files with proper description
       if (!compilerOptions.declaration && this.isLibraryProject()) {
         corrections.push(this.createCorrection(
           'tsconfig-no-declarations',
@@ -138,13 +154,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'medium',
           'TypeScript declarations not enabled for library',
           configPath,
-          'declaration: false',
-          'Enable "declaration": true to generate .d.ts files',
+          'declaration: false - no .d.ts files will be generated',
+          'Enable "declaration": true to generate type definition files for your library',
           'compilation'
         ));
       }
 
-      // Check for source maps
+      // Check for source maps with proper description
       if (!compilerOptions.sourceMap) {
         corrections.push(this.createCorrection(
           'tsconfig-no-sourcemaps',
@@ -152,13 +168,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'Source maps disabled',
           configPath,
-          'sourceMap: false',
-          'Enable "sourceMap": true for better debugging',
+          'sourceMap: false - debugging will show compiled code instead of source',
+          'Enable "sourceMap": true for better debugging experience in browsers and IDEs',
           'development'
         ));
       }
 
-      // Check for include/exclude patterns
+      // Check for include/exclude patterns with proper descriptions
       if (!tsConfig.include && configPath.includes('tsconfig.json')) {
         corrections.push(this.createCorrection(
           'tsconfig-no-include',
@@ -166,8 +182,8 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'medium',
           'No include patterns specified',
           configPath,
-          'Missing "include" array',
-          'Add "include": ["src/**/*"] to specify which files to compile',
+          'Missing "include" array - TypeScript may not know which files to compile',
+          'Add "include": ["src/**/*", "**/*.ts", "**/*.tsx"] to specify compilation scope',
           'compilation'
         ));
       }
@@ -181,13 +197,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'low',
           'No exclude patterns specified',
           configPath,
-          'Missing "exclude" array',
-          'Add "exclude": ["node_modules", "dist"] to avoid unnecessary compilation',
+          'Missing "exclude" array - unnecessary files may be compiled',
+          'Add "exclude": ["node_modules", "dist", "build", "**/*.test.*", "**/*.spec.*"] to optimize compilation',
           'performance'
         ));
       }
 
-      // Check for extended configs
+      // Check for extended configs with proper description
       if (tsConfig.extends && !this.isValidExtendsPath(tsConfig.extends)) {
         corrections.push(this.createCorrection(
           'tsconfig-invalid-extends',
@@ -195,13 +211,13 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           'high',
           'Invalid extends path in tsconfig',
           configPath,
-          `extends: "${tsConfig.extends}"`,
-          'Fix the extends path or use a valid configuration preset',
+          `extends: "${tsConfig.extends}" - referenced configuration file not found`,
+          'Fix the extends path or ensure the referenced configuration file exists',
           'compilation'
         ));
       }
 
-      // Check for React Native specific issues
+      // Check for React Native specific issues with proper descriptions
       if (isReactNative) {
         if (compilerOptions.target === 'es5') {
           corrections.push(this.createCorrection(
@@ -210,8 +226,8 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
             'medium',
             'ES5 target may cause issues in React Native',
             configPath,
-            'target: "es5"',
-            'Use "target": "esnext" for React Native projects',
+            'target: "es5" - React Native works better with modern ECMAScript targets',
+            'Use "target": "esnext" or "es2017" for better React Native performance',
             'performance'
           ));
         }
@@ -223,22 +239,24 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
             'medium',
             'CommonJS modules may not optimize well in React Native',
             configPath,
-            'module: "commonjs"',
-            'Use "module": "esnext" for better Metro bundler performance',
+            'module: "commonjs" - Metro bundler prefers ES modules',
+            'Use "module": "esnext" for better Metro bundler performance and tree shaking',
             'performance'
           ));
         }
       }
 
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
+
       corrections.push(this.createCorrection(
         'tsconfig-parse-error',
         'error',
         'high',
-        'Failed to parse TypeScript config',
+        `Failed to parse TypeScript config: ${errorMessage}`,
         configPath,
-        `Parse error: ${error}`,
-        'Fix JSON syntax errors in tsconfig.json',
+        `JSON parse error in ${configPath}: ${errorMessage}`,
+        'Fix JSON syntax errors - check for missing commas, unclosed quotes, or trailing commas',
         'compilation'
       ));
     }

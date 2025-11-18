@@ -115,7 +115,7 @@ export const CorrectionList: React.FC = () => {
               <span className={`severity-dot ${getSeverityColor(correction.severity)}`}></span>
               <h4>{correction.title}</h4>
             </div>
-            <p className="correction-description">{correction.description}</p>
+            <p className="correction-message">{correction.message}</p>
             <div className="correction-meta">
               <span className="category-tag">{correction.category}</span>
               <span className="severity-badge">{correction.severity}</span>

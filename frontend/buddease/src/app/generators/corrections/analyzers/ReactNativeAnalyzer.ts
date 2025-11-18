@@ -84,7 +84,6 @@ export class ReactNativeAnalyzer extends BaseAnalyzer {
   private hasReactNativeConfigFiles(): boolean {
     const configFiles = [
       'metro.config.js',
-      'metro.config.ts',
       'react-native.config.js',
       'rn-cli.config.js',
       'app.json',
@@ -105,14 +104,6 @@ export class ReactNativeAnalyzer extends BaseAnalyzer {
     const configFiles = [
       { 
         file: 'metro.config.js',
-        analyzer: (configPath: string, configFile: string) =>
-          this.metroConfigAnalyzer.doAnalyze(
-            fs.readFileSync(configPath, 'utf8'),
-            configFile
-          )
-      },
-      { 
-        file: 'metro.config.ts',
         analyzer: (configPath: string, configFile: string) =>
           this.metroConfigAnalyzer.doAnalyze(
             fs.readFileSync(configPath, 'utf8'),

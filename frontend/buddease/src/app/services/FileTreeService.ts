@@ -22,18 +22,18 @@ export class FileTreeService {
   /**
    * Generate complete file tree for the project
    */
-  static generateFileTree(rootDir: string = process.cwd()): FileTreeNode[] {
+  generateFileTree(rootDir: string = process.cwd()): FileTreeNode[] { // ✅ Remove 'static'
     const tree: FileTreeNode[] = [];
     
     try {
       const items = fs.readdirSync(rootDir, { withFileTypes: true });
       
       for (const item of items) {
-        if (this.shouldIgnore(item.name)) continue;
+        if (FileTreeService.shouldIgnore(item.name)) continue; // ✅ Keep static for helper
         
         const fullPath = path.join(rootDir, item.name);
         const node: FileTreeNode = {
-          id: this.generateId(fullPath),
+          id: FileTreeService.generateId(fullPath), // ✅ Keep static for helper
           name: item.name,
           path: fullPath,
           type: item.isDirectory() ? 'directory' : 'file',
@@ -50,7 +50,7 @@ export class FileTreeService {
         // Recursively process directories
         if (item.isDirectory()) {
           try {
-            node.children = this.generateFileTree(fullPath);
+            node.children = this.generateFileTree(fullPath); // ✅ Now it's instance method
           } catch (error) {
             console.warn(`Cannot access directory: ${fullPath}`, error);
             node.children = [];
@@ -66,10 +66,11 @@ export class FileTreeService {
     return tree;
   }
 
+
   /**
    * Search files by name, extension, or content
    */
-  static searchFiles(
+  searchFiles( // ✅ Remove 'static'
     tree: FileTreeNode[], 
     query: string, 
     searchInContent: boolean = false
@@ -83,7 +84,7 @@ export class FileTreeService {
       
       let matchesContent = false;
       if (searchInContent && node.type === 'file') {
-        matchesContent = this.fileContainsText(node.path, searchTerm);
+        matchesContent = FileTreeService.fileContainsText(node.path, searchTerm); 
       }
 
       if (matchesName || matchesExtension || matchesContent) {

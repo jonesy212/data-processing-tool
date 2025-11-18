@@ -29,6 +29,7 @@ export interface DatabaseConfig {
   username: string;
   password: string;
   ssl: boolean;
+  batchSize?: number
 }
 
 export interface CodeStructureConfig {

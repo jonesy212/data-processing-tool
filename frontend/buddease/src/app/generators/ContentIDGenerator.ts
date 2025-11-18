@@ -1,4 +1,5 @@
 // ContentIDGenerator.ts
+
 import {
     BaseDataEntity,
     DefaultMeta
@@ -9,6 +10,7 @@ import { Data, DataDetails } from '@/app/models/data/Data';
 import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
+import { DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields } from '@/app/typings/entities/DataEntity'
 
 export class ContentIDGenerator<
   T extends BaseDataEntity = BaseDataEntity,
@@ -18,9 +20,22 @@ export class ContentIDGenerator<
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
 > {
-  static generateContentID(title: string, description: string, date: string | Date, type: NotificationType): string {
-    const contentID = uuidV4(); // Generate a unique UUID for the content ID
+  static generateContentID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(
+    title: string, 
+    description: string, 
+    date: string | Date, 
+    type: NotificationType
+  ): string {
+    const contentID = uuidV4();
     const message = `Generated content ID for ${title}: ${contentID}`;
+    
     const content: DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       _id: contentID,
       id: contentID,
@@ -35,13 +50,14 @@ export class ContentIDGenerator<
       uploadedAt: new Date(),
       analysisResults: []
     };
+    
     UniqueIDGenerator.notifyFormatted(contentID, message, content, new Date(), NotificationTypeEnum.GENERATED_ID);
     return contentID;
   }
 }
 
 // Example usage:
-const contentItem: DetailsItem<Data> = {
+const contentItem: DetailsItem<Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields>> = {
   _id: uuidV4(),
   id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", new Date(), NotificationTypeEnum.CONTENT_ITEM),
   title: "Sample Content",

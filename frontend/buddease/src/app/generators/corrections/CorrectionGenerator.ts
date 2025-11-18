@@ -1,5 +1,11 @@
 // CorrectionGenerator.ts
 import { CircularDependencyDetector } from '@/app/generators/corrections/CircularDependencyDetector';
+import { MetroConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/MetroConfigAnalyzer';
+import { MetroLogAnalyzer } from '@/app/generators/corrections/analyzers/react-native/errors/MetroLogAnalyzer';
+import { CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/app/typings/correctionTypes';
+import { ComprehensiveBreakdownAnalyzer, ComprehensiveBreakdown } from '@/app/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer'
+import { BreakdownReportGenerator } from '@/app/generators/corrections/BreakdownReportGenerator';
+
 import { ErrorTracker } from '@/app/generators/corrections/ErrorTracker';
 import { SecurityAuditor } from '@/app/generators/corrections/SecurityAuditor';
 import { TypeHierarchy } from '@/app/generators/corrections/TypeRelationshipMapper';
@@ -21,6 +27,7 @@ interface Correction {
     line?: number;
     title?: string;
     message: string;
+    descriptiion?: string
     code: string;
     fix: string;
     codeSnippet?: string;
@@ -35,7 +42,8 @@ interface Correction {
     | 'linting' | 'import'| 'nextjs'| 'bundler'
     | 'formatting' | 'styling' | 'testing' | 'authentication'
     | 'database' | 'api'| 'mobile'| 'web3' | 'filesystem' 
-    | 'general' | 'network' | 'platform' | 'types';
+    | 'general' | 'network' | 'platform' | 'types' | 'react' | 'react-native' | 'function'
+    | 'class';
 }
 
 interface CorrectionReport {
@@ -54,17 +62,23 @@ interface CorrectionReport {
     circularDependencies: string[];
     securityIssues: Correction[];
     snapshotIssues?: Correction[];
+    comprehensiveBreakdown?: ComprehensiveBreakdown;
+    numericalSummary?: Record<string, any>;
 }
 
 export class CorrectionGenerator {
     private analyzer: ProjectTreeAnalyzer;
     private errorAnalyzer: ErrorAnalyzer;
+    private hasInitialized = false;
     private structureValidator: StructureValidator;
     private typeMapper: TypeRelationshipMapper;
     private circularDetector: CircularDependencyDetector;
     private securityAuditor: SecurityAuditor;
     private snapshotAnalyzer: SnapshotAnalyzer;
     private errorTracker: ErrorTracker;
+    private metroConfigAnalyzer: MetroConfigAnalyzer; 
+    private metroLogAnalyzer: MetroLogAnalyzer;       
+    private breakdownAnalyzer = new ComprehensiveBreakdownAnalyzer();
 
     /* ------------------------------------------------------------------ */
     /*  Human Review Guide – zero-touch instructions                      */
@@ -219,6 +233,9 @@ export class CorrectionGenerator {
         this.securityAuditor = new SecurityAuditor();
         this.snapshotAnalyzer = new SnapshotAnalyzer();
         this.errorTracker = new ErrorTracker();
+        this.metroConfigAnalyzer = new MetroConfigAnalyzer(); // ← INITIALIZE
+        this.metroLogAnalyzer = new MetroLogAnalyzer();       // ← INITIALIZE
+
     }
 
 
@@ -237,7 +254,11 @@ export class CorrectionGenerator {
         // Convert security issues to corrections
         const rawSecurityIssues = await this.securityAuditor.auditSecurity(projectStructure);
         const securityIssues: Correction[] = rawSecurityIssues.map(issue => this.convertSecurityIssueToCorrection(issue));
+    
+        const metroConfigIssues: Correction[] = await this.metroConfigAnalyzer.analyze();
+        const metroLogIssues: Correction[] = await this.metroLogAnalyzer.analyze();
 
+        
         let snapshotIssues: Correction[] = [];
         if (focusArea === 'snapshots') {
             snapshotIssues = await this.snapshotAnalyzer.analyzeSnapshotIssues();
@@ -246,7 +267,9 @@ export class CorrectionGenerator {
         let allCorrections = [
             ...compilationErrors,
             ...structureIssues,
-            ...securityIssues
+            ...securityIssues,
+            ...metroConfigIssues, 
+            ...metroLogIssues  
         ];
 
         // If focusing on snapshots, filter to only snapshot-related issues
@@ -261,6 +284,7 @@ export class CorrectionGenerator {
         }
 
 
+        // Generate comprehensive breakdown
         const report = {
             timestamp: new Date().toISOString(),
             summary: this.generateSummary(allCorrections),
@@ -272,22 +296,30 @@ export class CorrectionGenerator {
             snapshotIssues: focusArea === 'snapshots' ? snapshotIssues : undefined
         };
 
+        // THEN generate breakdown
+        const breakdown = await this.breakdownAnalyzer.generateBreakdown(report);
+
+        const enhancedReport = {
+            ...report,
+            comprehensiveBreakdown: breakdown,
+            numericalSummary: BreakdownReportGenerator.generateNumericalSummary(breakdown)
+        };
         // Record snapshot for tracking
         await this.errorTracker.recordSnapshot(report, focusArea);
 
-        return report;
+        return enhancedReport;
     }
 
     private convertSecurityIssueToCorrection(securityIssue: any): Correction {
         // Map security issue types to correction types
-        const typeMap: Record<string, 'error' | 'warning' | 'suggestion'> = {
+        const typeMap: Record<string, CorrectionType> = {
             'sensitive_data': 'error',
             'missing_sanitization': 'error',
             'role_violation': 'error',
             'insecure_pattern': 'warning'
         };
 
-        const severityMap: Record<string, 'critical' | 'high' | 'medium' | 'low'> = {
+        const severityMap: Record<string, CorrectionSeverity> = {
             'sensitive_data': 'critical',
             'missing_sanitization': 'high',
             'role_violation': 'high',
@@ -317,7 +349,7 @@ export class CorrectionGenerator {
             message: snapshotIssue.message,
             code: snapshotIssue.code || '',
             fix: snapshotIssue.fix || 'Review and update snapshot',
-            category: 'structure' // or create a 'snapshot' category
+            category: 'structure' as CorrectionCategory// or create a 'snapshot' category
         };
     }
     private generateSummary(corrections: Correction[]) {
@@ -350,7 +382,7 @@ export class CorrectionGenerator {
 
         const files: string[] = [];
 
-        // 1. Snapshot-specific report (HIGHEST PRIORITY) - Only generate when focusing on snapshots
+        // 1. Snapshot-specific report
         if (focusArea === 'snapshots') {
             const snapshotFile = path.join(outputDir, 'snapshot-issues.md');
             fs.writeFileSync(snapshotFile, this.generateSnapshotReport(report));
@@ -362,32 +394,72 @@ export class CorrectionGenerator {
         fs.writeFileSync(criticalFile, this.generateCriticalErrorsReport(report));
         files.push(criticalFile);
 
-        // 3. Security Audit Report (NEW) - Always generate for comprehensive security analysis
+        // 3. Metro Configuration Report
+        const metroFile = path.join(outputDir, 'metro-configuration.md');
+        fs.writeFileSync(metroFile, ReportGenerators.generateMetroConfigReport(report));
+        files.push(metroFile);
+
+        // 4. Security Audit Report
         const securityFile = path.join(outputDir, 'security-audit.md');
         fs.writeFileSync(securityFile, ReportGenerators.generateSecurityReport(report));
         files.push(securityFile);
 
-        // 4. Structural Issues - Always generate
+        // 5. Structural Issues
         const structuralFile = path.join(outputDir, 'structural-issues.md');
         fs.writeFileSync(structuralFile, this.generateStructuralReport(report));
         files.push(structuralFile);
 
-        // 5. Type Relationships - Always generate
+        // 6. Type Relationships
         const typeFile = path.join(outputDir, 'type-relationships.md');
         fs.writeFileSync(typeFile, this.generateTypeRelationshipsReport(report));
         files.push(typeFile);
 
-        // 6. Quick Fixes (Easy wins) - Always generate
+        // 7. Quick Fixes
         const quickFixesFile = path.join(outputDir, 'quick-fixes.md');
         fs.writeFileSync(quickFixesFile, this.generateQuickFixesReport(report));
         files.push(quickFixesFile);
 
-        // 7. Full JSON Report - Always generate for programmatic access
+        // 8. NEW: Comprehensive Breakdown Report (if available)
+        if ('comprehensiveBreakdown' in report && report.comprehensiveBreakdown) {
+            const breakdownFile = path.join(outputDir, 'comprehensive-breakdown.md');
+            fs.writeFileSync(
+                breakdownFile, 
+                BreakdownReportGenerator.generateComprehensiveReport(
+                    report.comprehensiveBreakdown, 
+                    report
+                )
+            );
+            files.push(breakdownFile);
+
+            // NEW: Generate numerical data (JSON)
+            const numericalFile = path.join(outputDir, 'numerical-summary.json');
+            fs.writeFileSync(
+                numericalFile,
+                JSON.stringify(BreakdownReportGenerator.generateNumericalSummary(report.comprehensiveBreakdown), null, 2)
+            );
+            files.push(numericalFile);
+        }
+
+        // 9. Full JSON Report (should be last since it contains everything)
         const jsonFile = path.join(outputDir, 'full-report.json');
         fs.writeFileSync(jsonFile, JSON.stringify(report, null, 2));
         files.push(jsonFile);
 
+        // Console summary (AFTER all files are generated)
         console.log(`✅ Generated ${files.length} correction files in ${outputDir}`);
+
+        // NEW: Comprehensive breakdown summary
+        if ('comprehensiveBreakdown' in report && report.comprehensiveBreakdown) {
+            console.log('\n📊 COMPREHENSIVE BREAKDOWN:');
+            console.log('═'.repeat(50));
+            console.log(`Components: ${report.comprehensiveBreakdown.summary.affectedComponents}/${report.comprehensiveBreakdown.summary.totalComponents} affected`);
+            console.log(`Methods: ${report.comprehensiveBreakdown.summary.affectedMethods}/${report.comprehensiveBreakdown.summary.totalMethods} affected`);
+            console.log(`Interfaces: ${report.comprehensiveBreakdown.summary.affectedInterfaces}/${report.comprehensiveBreakdown.summary.totalInterfaces} affected`);
+            
+            const riskScore = BreakdownReportGenerator.generateNumericalSummary(report.comprehensiveBreakdown).riskAssessment;
+            console.log(`Overall Risk Score: ${riskScore}/100`);
+        }
+
         return files;
     }
     private generateCriticalErrorsReport(report: CorrectionReport): string {
@@ -470,6 +542,14 @@ export class CorrectionGenerator {
         console.log(`💡 Low: ${report.summary.low}`);
         console.log('');
 
+        // Count Metro-specific issues
+        const metroIssues = report.corrections.filter(c => 
+            c.file.includes('metro.config') || c.message?.includes('Metro')
+        ).length;
+        if (metroIssues > 0) {
+            console.log(`🚇 Metro Issues: ${metroIssues}`);
+        }
+
         Object.entries(report.summary.byCategory).forEach(([category, count]) => {
             console.log(`📁 ${category}: ${count}`);
         });
@@ -477,6 +557,11 @@ export class CorrectionGenerator {
         if (report.summary.critical > 0) {
             console.log('\n🚨 IMMEDIATE ACTION REQUIRED:');
             console.log('Check ./corrections/critical-errors.md for blocking issues');
+        }
+
+        if (metroIssues > 0) {
+            console.log('\n🚇 METRO CONFIGURATION:');
+            console.log('Check ./corrections/metro-configuration.md for build performance issues');
         }
 
         if (report.snapshotIssues && report.snapshotIssues.length > 0) {
@@ -509,6 +594,8 @@ export class CorrectionGenerator {
 
     // CLI entry point
     async runFromCLI(args: string[] = []): Promise<void> {
+        console.log(`🎯 Running correction analysis...`);
+
         const outputIndex = args.indexOf('--output');
         const outputDir = outputIndex !== -1 ? args[outputIndex + 1] : './corrections';
         const reviewMode = args.includes('--review');
@@ -526,6 +613,13 @@ export class CorrectionGenerator {
         } else if (args.includes('--critical')) {
             focusArea = 'critical';
         }
+
+
+        if (focusArea) {
+            console.log(`   Focus: ${focusArea}`);
+        }
+        console.log(`   Output: ${outputDir}`);
+
 
         try {
             if (reviewMode) {

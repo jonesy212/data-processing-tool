@@ -569,6 +569,7 @@ class CodeQualityScript {
       suggestion: `Replace with named constant: const ${constantName} = ${issue.number};`,
       category: 'maintainability',
       line: issue.line
+      message, code, fix
     };
   }
 
@@ -582,7 +583,8 @@ class CodeQualityScript {
       codeSnippet: `Method starts at line ${issue.startLine}`,
       suggestion: `Break down into smaller functions. Consider extracting:\n- ${issue.method}Core()\n- ${issue.method}Validation()\n- ${issue.method}Processing()`,
       category: 'maintainability',
-      line: issue.startLine
+      line: issue.startLine,
+      message, code, fix
     };
   }
 
@@ -596,7 +598,8 @@ class CodeQualityScript {
       codeSnippet: dup.lines.slice(0, 3).join('\n') + '\n...',
       suggestion: 'Extract duplicate code into a reusable function or utility',
       category: 'maintainability',
-      line: dup.startLine
+      line: dup.startLin,e
+      message, code, fix
     }));
   }
 
@@ -612,7 +615,8 @@ class CodeQualityScript {
       codeSnippet: issue.context,
       suggestion,
       category: 'readability',
-      line: issue.line
+      line: issue.line,
+      message, code, fix
     };
   }
 
@@ -628,7 +632,8 @@ class CodeQualityScript {
       codeSnippet: issue.context,
       suggestion,
       category: 'maintainability',
-      line: issue.line
+      line: issue.line,
+      message, code, fix
     };
   }
 

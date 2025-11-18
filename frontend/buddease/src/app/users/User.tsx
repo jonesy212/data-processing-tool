@@ -13,7 +13,7 @@ import { Data } from '@/app/models/data/Data';
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
 import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { AppUnifiedMetadata, AppStructuredMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { UserProfileDetails } from '@/app/typings/userTypes';
 
@@ -24,8 +24,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
-import CommonDetails from "@/app/models/CommonData";
+import ChatSettings from "@/app/hooks/userInterface/ChatSettings";
+import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import { NFT } from "@/app/models/cypto/NFT";
 import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
 import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
@@ -280,6 +280,230 @@ interface Employment {
   position: string;
   startDate: Date;
   endDate?: Date;
+}
+
+// Social Account Interface
+export interface SocialAccount {
+  id: string;
+  provider: 'google' | 'facebook' | 'twitter' | 'github' | 'linkedin' | 'apple' | 'microsoft';
+  providerId: string;
+  email?: string;
+  displayName?: string;
+  profileUrl?: string;
+  avatarUrl?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenExpiry?: Date;
+  scopes?: string[];
+  isConnected: boolean;
+  lastSynced?: Date;
+  metadata?: Record<string, any>;
+  
+  // Timestamps
+  connectedAt: Date;
+  updatedAt?: Date;
+}
+
+// User Notification Interface
+export interface UserNotification {
+  id: string;
+  type: 'system' | 'team' | 'project' | 'task' | 'security' | 'billing' | 'achievement' | 'reminder';
+  title: string;
+  message: string;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  
+  // Content & Actions
+  data?: Record<string, any>;
+  actions?: NotificationAction[];
+  deepLink?: string;
+  category?: string;
+  
+  // Status
+  isRead: boolean;
+  isArchived: boolean;
+  isActionable: boolean;
+  
+  // Metadata
+  source?: {
+    type: 'user' | 'system' | 'team' | 'project';
+    id?: string;
+    name?: string;
+  };
+  
+  // Expiration & Scheduling
+  expiresAt?: Date;
+  scheduledFor?: Date;
+  
+  // Timestamps
+  createdAt: Date;
+  readAt?: Date;
+  archivedAt?: Date;
+}
+
+// Notification Actions
+export interface NotificationAction {
+  id: string;
+  label: string;
+  type: 'button' | 'link' | 'dismiss' | 'custom';
+  action: string; // URL or action identifier
+  style?: 'primary' | 'secondary' | 'danger' | 'success';
+  data?: Record<string, any>;
+}
+
+// User Analytics Interface
+export interface UserAnalytics {
+  // Engagement Metrics
+  engagement: {
+    totalSessions: number;
+    averageSessionDuration: number; // in minutes
+    lastActive: Date;
+    daysActive: number;
+    streak: number; // consecutive days active
+    favoriteFeatures: string[];
+    timeOfDayPreference?: 'morning' | 'afternoon' | 'evening' | 'night';
+  };
+  
+  // Productivity Metrics
+  productivity: {
+    tasksCreated: number;
+    tasksCompleted: number;
+    completionRate: number; // percentage
+    averageTaskCompletionTime: number; // in hours
+    projectsCreated: number;
+    projectsCompleted: number;
+    documentsCreated: number;
+    collaborations: number;
+  };
+  
+  // Team & Collaboration Metrics
+  collaboration: {
+    teamsJoined: number;
+    teamsCreated: number;
+    messagesSent: number;
+    commentsMade: number;
+    sharesMade: number;
+    mentionsReceived: number;
+    collaborationScore: number; // 0-100
+  };
+  
+  // Learning & Skill Metrics
+  learning: {
+    featuresUsed: string[];
+    skillsDeveloped: string[];
+    tutorialsCompleted: number;
+    helpArticlesViewed: number;
+    learningPathProgress: number; // percentage
+    certificationsEarned: string[];
+  };
+  
+  // Platform Usage Patterns
+  usage: {
+    preferredPlatform: 'web' | 'mobile' | 'desktop';
+    deviceTypes: string[];
+    browser?: string;
+    os?: string;
+    screenResolution?: string;
+    bandwidthUsage?: number; // in MB
+    storageUsage?: number; // in MB
+  };
+  
+  // Achievement & Gamification
+  achievements: {
+    badgesEarned: string[];
+    points: number;
+    level: number;
+    rank?: string;
+    milestones: Milestone[];
+    recentAchievements: Achievement[];
+  };
+  
+  // Quality & Performance
+  quality: {
+    errorRate: number; // percentage
+    satisfactionScore?: number; // 1-5
+    feedbackProvided: number;
+    bugReports: number;
+    featureRequests: number;
+  };
+  
+  // Financial & Subscription Analytics
+  financial: {
+    subscriptionValue: number;
+    lifetimeValue: number;
+    paymentSuccessRate: number;
+    churnRisk: number; // 0-100
+    upgradeLikelihood: number; // 0-100
+  };
+  
+  // Security & Compliance
+  security: {
+    loginFrequency: number;
+    failedLoginAttempts: number;
+    passwordStrength: number; // 0-100
+    twoFactorUsage: number; // percentage of logins
+    suspiciousActivityCount: number;
+    lastSecurityReview?: Date;
+  };
+  
+  // Timestamps & Metadata
+  metadata: {
+    firstSeen: Date;
+    lastUpdated: Date;
+    dataCollectionConsent: boolean;
+    analyticsOptIn: boolean;
+    dataRetentionPeriod: number; // in days
+  };
+}
+
+// Supporting Interfaces for Analytics
+export interface Milestone {
+  id: string;
+  name: string;
+  description: string;
+  type: 'usage' | 'productivity' | 'collaboration' | 'learning' | 'financial';
+  achievedAt: Date;
+  value: number;
+  badgeUrl?: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  category: 'engagement' | 'productivity' | 'social' | 'learning' | 'exploration';
+  points: number;
+  icon: string;
+  achievedAt: Date;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+}
+
+// Optional: Enhanced Analytics with Time-series Data
+export interface TimeSeriesAnalytics {
+  date: Date;
+  metrics: {
+    sessions: number;
+    tasksCompleted: number;
+    timeSpent: number; // in minutes
+    featuresUsed: string[];
+    errors: number;
+  };
+}
+
+// Optional: User Behavior Patterns
+export interface UserBehaviorPatterns {
+  weeklyPattern: {
+    monday: number;
+    tuesday: number;
+    wednesday: number;
+    thursday: number;
+    friday: number;
+    saturday: number;
+    sunday: number;
+  };
+  dailyPeakHours: number[]; // hours of day (0-23) when user is most active
+  preferredFeatures: string[];
+  avoidancePatterns: string[]; // features the user avoids
+  learningVelocity: number; // how quickly user adopts new features
 }
 
 const timeBasedCode: string = generateTimeBasedCode();

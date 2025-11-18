@@ -11,7 +11,6 @@ export class RNConfigAnalyzer extends ConfigFileAnalyzer {
       './app.config.js', 
       './app.config.ts', 
       './metro.config.js',
-      './metro.config.ts',
       './rn-cli.config.js'
     ];
   }

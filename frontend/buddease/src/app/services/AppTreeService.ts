@@ -1,8 +1,9 @@
 // AppTreeService.ts - Enhanced Version
 import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
-import DirectoryExplorer from './DirectoryExplorer';
+import DirectoryExplorer from '@/app/pages/dashboards/DirectoryExplorer';
 import { FileTreeService, FileTreeNode } from './FileTreeService';
-import appTreeApiService from './appTreeApi';
+import appTreeApiService from '@/app/api/appTreeApi';
+import { DocumentTree } from '';
 
 export class AppTreeService {
   private projectAnalyzer: ProjectTreeAnalyzer;
@@ -13,14 +14,51 @@ export class AppTreeService {
     this.projectAnalyzer = new ProjectTreeAnalyzer(rootPath);
     this.fileTreeService = new FileTreeService();
     // Initialize with current directory structure
-    const initialTree = this.fileTreeService.generateFileTree(rootPath);
+    const initialTree = FileTreeService.generateFileTree(rootPath); 
     this.directoryExplorer = new DirectoryExplorer(JSON.stringify(initialTree));
   }
+
+
+  // Add the getTree method to the class
+  async getTree(): Promise<DocumentTree | null> {
+    try {
+      // Use the hybrid service
+      const treeData = await appTreeApiService.getTreeData();
+      
+      if (!treeData) {
+        // Return sample data if no data available
+        return {
+          documents: {
+            category1: {
+              document1: {
+                title: "Document Title 1",
+                content: "Document Content 1",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+              document2: {
+                title: "Document Title 2", 
+                content: "Document Content 2",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            },
+          },
+        };
+      }
+      
+      return treeData;
+    } catch (error) {
+      console.error('Error while fetching tree data:', error);
+      return null;
+    }
+  }
+
 
   // Comprehensive project analysis
   async analyzeProject(userQuery?: string): Promise<any> {
     const analysis = await this.projectAnalyzer.analyzeProjectTree();
-    const treeStructure = this.fileTreeService.generateFileTree(process.cwd());
+    const treeStructure = FileTreeService.generateFileTree(process.cwd());
     
     let contextResponse = '';
     if (userQuery) {
@@ -174,7 +212,7 @@ export class AppTreeService {
       this.projectAnalyzer.clearCache();
       
       // Regenerate file tree
-      this.fileTreeService.generateFileTree(process.cwd());
+      FileTreeService.generateFileTree(process.cwd());
       
       console.log('✅ All data sources refreshed successfully');
     } catch (error) {

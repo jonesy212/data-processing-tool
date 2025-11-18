@@ -3,32 +3,50 @@ import { SecureMetadata, SecureField } from "./SecureField";
 import crypto from 'crypto';
 
 class SecureFieldManager {
-    #apiKey: string;
+   #apiKey: string;
     #fields: Map<string, SecureField<any>> = new Map();
     #allowUserAccess: boolean = true;
-    #encryptionKey: string;
+    #encryptionKey: Buffer;
+    #algorithm: string = 'aes-256-gcm';
 
 
+    constructor(apiKey: string, encryptionKey: string) {
+        this.#apiKey = apiKey;
+        this.#encryptionKey = crypto.scryptSync(encryptionKey, 'salt', 32);
+    }
 
-  constructor(apiKey: string, encryptionKey: string) {
-    this.#apiKey = apiKey;
-    this.#encryptionKey = encryptionKey;
-
-  }
-
+    
   encrypt(data: string): string {
-    const cipher = crypto.createCipher('aes-256-cbc', this.#encryptionKey);
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(this.#algorithm, this.#encryptionKey, iv);
+    
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return encrypted;
+    
+    // Get auth tag for GCM mode
+    const authTag = cipher.getAuthTag();
+    
+    // Combine IV + authTag + encrypted data
+    return Buffer.concat([iv, authTag, Buffer.from(encrypted, 'hex')).toString('base64')]);
   }
 
   decrypt(encryptedData: string): string {
-    const decipher = crypto.createDecipher('aes-256-cbc', this.#encryptionKey);
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    const data = Buffer.from(encryptedData, 'base64');
+    
+    // Extract components
+    const iv = data.subarray(0, 16);
+    const authTag = data.subarray(16, 32);
+    const encrypted = data.subarray(32);
+    
+    const decipher = crypto.createDecipheriv(this.#algorithm, this.#encryptionKey, iv);
+    decipher.setAuthTag(authTag);
+    
+    let decrypted = decipher.update(encrypted.toString('hex'), 'hex', 'utf8');
     decrypted += decipher.final('utf8');
+    
     return decrypted;
   }
+
 
   /**
    * Set the field as sensitive and apply necessary configurations.
@@ -37,21 +55,18 @@ class SecureFieldManager {
    * @param allowedRoles - The roles that can access this field (optional).
    * @param canView - Whether the field is viewable (default is true).
    */
-  setSensitive(isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView = true): this {
-    // Create the field with the sensitive metadata
-    const field = SecureFieldManager.createField(this.#apiKey, isSensitive, allowUserAccess, allowedRoles, canView);
-    
-    // Store the field in the internal fields map (you can customize this for each field)
-    this.#fields.set('apiKey', field);  // Example for apiKey field, use different key as needed
+    setSensitive(isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView = true): this {
+        const field = SecureFieldManager.createField(this.#apiKey, isSensitive, allowUserAccess, allowedRoles, canView);
+        this.#fields.set('apiKey', field);
+        return this;
+    }
 
-    return this;
-  }
+    setUserAccess(allow: boolean): this {
+        this.#allowUserAccess = allow;
+        return this;
+    }
 
 
-  setUserAccess(allow: boolean): this {
-    this.#allowUserAccess = allow;
-    return this;
-  }
 
   /**
    * Static method to create a SecureField.
@@ -61,9 +76,10 @@ class SecureFieldManager {
    * @param allowedRoles - The roles that can access the field.
    * @param canView - Whether the field can be viewed.
    */
-  static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
-    return { value, isSensitive, allowUserAccess, allowedRoles, canView };
-  }
+
+    static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
+      return { value, isSensitive, allowUserAccess, allowedRoles, canView };
+    }
 
 
   /**
@@ -73,25 +89,22 @@ class SecureFieldManager {
    * @param isAdmin - Whether the user has admin privileges.
    * @returns The sanitized state object.
    */
-  static sanitizeState(state: any, userRole: string, isAdmin: boolean): any {
-    return Object.keys(state).reduce<Record<string, any>>((sanitized, key) => {
-      const field = state[key];
-      if (field && field.isSensitive) {
-        if (
-          field.allowUserAccess ||
-          isAdmin ||
-          field.allowedRoles?.includes(userRole)
-        ) {
-          sanitized[key] = field.value;
-        } else {
-          sanitized[key] = "REDACTED";
-        }
-      } else {
-        sanitized[key] = field;
-      }
-      return sanitized;
-    }, {});
-  }
+    static sanitizeState(state: any, userRole: string, isAdmin: boolean): any {
+        return Object.keys(state).reduce<Record<string, any>>((sanitized, key) => {
+            const field = state[key];
+            if (field && field.isSensitive) {
+                if (field.allowUserAccess || isAdmin || field.allowedRoles?.includes(userRole)) {
+                    sanitized[key] = field.value;
+                } else {
+                    sanitized[key] = "REDACTED";
+                }
+            } else {
+                sanitized[key] = field;
+            }
+            return sanitized;
+        }, {});
+    }
+
 
   /**
    * Sanitize a single secure field based on user role and permissions.
@@ -119,34 +132,6 @@ class SecureFieldManager {
       return Object.keys(metadata).reduce<Record<string, any>>((sanitized, key) => {
           const field = metadata[key];
           sanitized[key] = this.sanitizeField(field, userRole, isAdmin);
-          return sanitized;
-      }, {});
-  }
-
-
-  /**
-   * Sanitize sensitive fields in the state based on user role and permissions.
-   * @param state - The state object to sanitize.
-   * @param userRole - The role of the user accessing the state.
-   * @param isAdmin - Whether the user has admin privileges.
-   * @returns The sanitized state object.
-   */
-  sanitizeState(state: any, userRole: string, isAdmin: boolean): any {
-      return Object.keys(state).reduce<Record<string, any>>((sanitized, key) => {
-          const field = state[key];
-          if (field && field.isSensitive) {
-              if (
-                  field.allowUserAccess ||
-                  isAdmin ||
-                  field.allowedRoles?.includes(userRole)
-              ) {
-                  sanitized[key] = field.value;
-              } else {
-                  sanitized[key] = "REDACTED";
-              }
-          } else {
-              sanitized[key] = field;
-          }
           return sanitized;
       }, {});
   }

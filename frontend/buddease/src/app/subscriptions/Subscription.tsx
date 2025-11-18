@@ -11,6 +11,7 @@ import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
+import { Data } from '@/app/models/data/Data';
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

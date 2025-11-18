@@ -18,6 +18,7 @@ export abstract class ConfigFileAnalyzer extends BaseAnalyzer {
       
       if (!fs.existsSync(fullPath)) {
         console.log(`⚠️ Config file not found: ${configPath}`);
+        console.log(`   Looking for: ${fullPath}`);
         continue;
       }
 
@@ -27,9 +28,19 @@ export abstract class ConfigFileAnalyzer extends BaseAnalyzer {
         
         const fileCorrections = await this.analyzeConfigFile(fullPath, configFile);
         corrections.push(...fileCorrections);
-        
-        console.log(`✅ Analyzed ${configFile}: ${fileCorrections.length} issues found`);
-        
+
+
+        if (fileCorrections.length > 0) {
+          console.log(`❌ Found ${fileCorrections.length} issues in ${configFile}:`);
+          fileCorrections.forEach((correction, index) => {
+            console.log(`   ${index + 1}. [${correction.severity}] ${correction.title}`);
+            console.log(`      Description: ${correction.message}`);
+            console.log(`      Suggestion: ${correction.suggestion}`);
+          });
+        } else {
+          console.log(`✅ No issues found in ${configFile}`);
+        }
+                
       } catch (error) {
         console.error(`❌ Failed to analyze ${configPath}:`, error);
         

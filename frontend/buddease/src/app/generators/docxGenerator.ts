@@ -3,6 +3,9 @@ import { User, UserData } from "@/app/users/User";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from 'file-saver';
 import JSZip from "jszip";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+  import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from "@/app/users/User";
 
 // Make the interface generic
 export interface DocxGeneratorOptions<
@@ -100,9 +103,6 @@ fileInput.accept = '.docx';
 fileInput.onchange = async (e) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
-
-  // Import the concrete types
-  import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from "@/app/users/User";
 
   const options: DocxGeneratorOptions<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
     templateFile: file,

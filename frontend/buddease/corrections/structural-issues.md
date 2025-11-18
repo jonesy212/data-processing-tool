@@ -1,6 +1,6 @@
 # 🏗️ Structural Issues Report
-**Generated:** 2025-11-17T06:20:44.183Z
-**Total Structural Issues:** 141
+**Generated:** 2025-11-18T21:23:34.977Z
+**Total Structural Issues:** 142
 
 ## 📄 ReactWebAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts
@@ -11,6 +11,27 @@
 
 **Location:**
 `/Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts:632`
+
+**Problem Code:**
+```typescript
+
+```
+
+**Suggested Fix:**
+```typescript
+
+```
+---
+
+## 📄 AntiPatternChecker.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/performance/AntiPatternChecker.ts
+
+### 1. undefined
+**Severity:** HIGH
+**Type:** warning
+
+**Location:**
+`/Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/performance/AntiPatternChecker.ts:120`
 
 **Problem Code:**
 ```typescript
@@ -2595,6 +2616,10 @@ The following files are strongly related and should be reviewed together:
 - UserCard.tsx
 - Visualization.tsx
 
+### PersonaCard.tsx
+**Related Files:**
+- ThemeConfigContext.tsx
+
 ### CalendarEventViewingDetails.tsx
 **Related Files:**
 - DefaultCalendarEventViewingDetails.tsx
@@ -2605,6 +2630,12 @@ The following files are strongly related and should be reviewed together:
 **Related Files:**
 - ChatApi.ts
 - ChatEventService.ts
+- ChatRoomComponent.tsx
+- GroupChat.ts
+
+### ChatRoomComponent.tsx
+**Related Files:**
+- ChatMessage.tsx
 
 ### ChatRoomDashboard.tsx
 **Related Files:**
@@ -2637,6 +2668,11 @@ The following files are strongly related and should be reviewed together:
 ### Palette.tsx
 **Related Files:**
 - ColorPalette.tsx
+- index.tsx
+
+### ResponsiveDesign.tsx
+**Related Files:**
+- CollaborationBoardStore.tsx
 
 ### DynamicContent.tsx
 **Related Files:**
@@ -2647,9 +2683,17 @@ The following files are strongly related and should be reviewed together:
 - AnimationsAndTansitions.tsx
 - ColorPalette.tsx
 
+### ThemeConfigContext.tsx
+**Related Files:**
+- PersonaCard.tsx
+
 ### Channel.ts
 **Related Files:**
 - ChatPage.tsx
+
+### GroupChat.ts
+**Related Files:**
+- ChatMessage.tsx
 
 ### BrainstormingSettings.ts
 **Related Files:**
@@ -2658,6 +2702,21 @@ The following files are strongly related and should be reviewed together:
 ### CollaborationPreferences.ts
 **Related Files:**
 - BrainstormingSettings.ts
+- TeamBuildingSettings.ts
+- ProjectManagementSettings.ts
+- MeetingsSettings.ts
+
+### MeetingsSettings.ts
+**Related Files:**
+- CollaborationPreferences.ts
+
+### ProjectManagementSettings.ts
+**Related Files:**
+- CollaborationPreferences.ts
+
+### TeamBuildingSettings.ts
+**Related Files:**
+- CollaborationPreferences.ts
 
 ### ProgressBar.tsx
 **Related Files:**
@@ -2695,6 +2754,10 @@ The following files are strongly related and should be reviewed together:
 **Related Files:**
 - Project.tsx
 
+### TodoItem.tsx
+**Related Files:**
+- index.tsx
+
 ### Trades.tsx
 **Related Files:**
 - CryptoTradingPhase.tsx
@@ -2702,6 +2765,10 @@ The following files are strongly related and should be reviewed together:
 ### VideoUploader.tsx
 **Related Files:**
 - ImageUploader.tsx
+
+### CollaborationBoardStore.tsx
+**Related Files:**
+- ResponsiveDesign.tsx
 
 ### DummyCardLoader.tsx
 **Related Files:**
@@ -2774,6 +2841,11 @@ The following files are strongly related and should be reviewed together:
 ### FormInputComponent.tsx
 **Related Files:**
 - FormInput.tsx
+
+### index.tsx
+**Related Files:**
+- Palette.tsx
+- TodoItem.tsx
 
 ### ApiClient.ts
 **Related Files:**

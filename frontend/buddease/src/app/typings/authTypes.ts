@@ -22,6 +22,7 @@ export interface DashboardConfig {
   redirectPath?: string;
   userRole?: string;
   permissions?: string[];
+  user?: string
 }
 
 export interface DashboardLoaderProps {

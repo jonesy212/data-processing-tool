@@ -6,10 +6,18 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
+import { PackageJson } from '@/app/scripts/generate-commands-doc'
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+interface ProjectFile {
+    content?: string;
+    path?: string;
+    // add other properties as needed
+}
 
 // === PROJECT TREE ANALYZER CLASS ===
 export class ProjectTreeAnalyzer {
@@ -19,6 +27,7 @@ export class ProjectTreeAnalyzer {
   interfaceRegistry: Map<string, any>;
   componentRegistry: Map<string, any>;
   apiRegistry: Map<string, any>;
+  packageJson: PackageJson;
 
   constructor(rootPath = '.') {
     this.rootPath = rootPath;
@@ -26,6 +35,20 @@ export class ProjectTreeAnalyzer {
     this.interfaceRegistry = new Map();
     this.componentRegistry = new Map();
     this.apiRegistry = new Map();
+    this.packageJson = this.loadPackageJson();
+  }
+
+
+
+  private loadPackageJson(): PackageJson {
+    try {
+      const packageJsonPath = path.join(this.rootPath, 'package.json');
+      const content = fs.readFileSync(packageJsonPath, 'utf-8');
+      return JSON.parse(content);
+    } catch (error) {
+      console.warn('Could not load package.json:', error);
+      return {} as PackageJson;
+    }
   }
 
   async analyzeProjectTree(): Promise<ProjectStructure> {
@@ -44,6 +67,7 @@ export class ProjectTreeAnalyzer {
       apis: Array.from(this.apiRegistry.entries()),
       files: [],
       totalFiles: this.fileCache.size,
+      packageJson: this.packageJson
     };
     
     this.analysisCache = result;
@@ -674,7 +698,7 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
 }
 
 export { mappersFile };
-
+export type { ProjectFile }
 
 // === COMMANDS SECTION ===
 

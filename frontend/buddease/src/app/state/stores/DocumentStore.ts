@@ -1,20 +1,22 @@
+import { DocumentPhaseEnum } from '@/app/models/data/StatusType'
 import axiosInstance from '@/app/api/csrfToken';
+import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { ClientInformation } from '@/app/client/ClientInformation';
-import { DocumentPhaseTypeEnum } from "@/app/components/documents/editing/DocumentPhaseType";
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
-import { useNotification } from '@/app/context/NotificationContext';
-import { ResearchReport, TechnicalReport } from '@/app/documentation/documents/report/Report';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { ResearchReport, TechnicalReport } from '@/app/documents/Report';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentPath } from "@/app/documents/DocumentPath";
-import { DocumentPermissions } from '@/app/documents/DocumentPermissions';
+import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -22,15 +24,15 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, TodoSubtasks } from '@/app/models/data/Data';
-import { FileData } from '@/app/models/data/FileData';
-import { FolderData } from '@/app/models/data/FolderData';
+import FileData from '@/app/models/data/FileData';
+import FolderData from '@/app/models/data/FolderData';
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { FinancialReport } from '@/app/server/ServerDocumentGenerator';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { AllTypes } from "@/app/typings/PropTypes";
-import { AccessHistory } from '@/app/versions/AccessHistory';
+import  AccessHistory from '@/app/versions/AccessHistory';
 import { Version } from '@/app/versions/Version';
 import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { ContentState } from 'draft-js';
@@ -153,7 +155,7 @@ interface DocumentBase<
 
   // Optional additional content
   artwork?: any[];
-  clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  clientInformation?: ClientInformation;
   supportedLanguages?: string[];
   body?: WritableDraft<HTMLElement> | HTMLElement;
   comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
@@ -329,7 +331,7 @@ export interface DocumentStore<
   getData: (id: string) => Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   addDocument: (document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  updateDocument: (id: string, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  updateDocument: (id: number, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   deleteDocument: (id: string) => void;
   updateDocumentTags: (id: string, newTags: string[]) => void;
   selectedDocument?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

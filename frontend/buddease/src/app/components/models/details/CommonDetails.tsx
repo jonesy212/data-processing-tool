@@ -146,5 +146,5 @@ interface CommonDetailsProps<
 };    
  
 export { CommonDetails };
-export type { Customizations };
+export type { Customizations, CommonDetailsProps };
 

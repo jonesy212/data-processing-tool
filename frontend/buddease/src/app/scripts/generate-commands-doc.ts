@@ -3,7 +3,64 @@ import fs from 'fs';
 import path from 'path';
 
 interface PackageJson {
+  // Core identification
+  name: string;
+  version: string;
+  description?: string;
+  keywords?: string[];
+  
+  // Entry points
+  main?: string;
+  module?: string;
+  types?: string;
+  browser?: string;
+  
+  // Dependencies - CRITICAL for your multi-feature platform
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+  optionalDependencies?: Record<string, string>;
+  
+  // Scripts - Essential for your complex build process
   scripts: Record<string, string>;
+  
+  // Framework & runtime requirements
+  engines?: {
+    node?: string;
+    npm?: string;
+    yarn?: string;
+  };
+  
+  // Platform configuration
+  private?: boolean;
+  type?: 'module' | 'commonjs';
+  
+  // Workspaces - Important for monorepo structure (likely for your multi-feature app)
+  workspaces?: string[];
+  
+  // Modern exports
+  exports?: PackageJsonExports;
+  
+  // Additional metadata
+  author?: string | { name: string; email?: string; url?: string };
+  license?: string;
+  repository?: string | { type: string; url: string };
+}
+
+interface PackageJsonExports {
+  '.': string | { 
+    import?: string;
+    require?: string;
+    types?: string;
+    default?: string;
+  };
+  './package.json': string;
+  [key: `./${string}`]: string | { 
+    import?: string;
+    require?: string;
+    types?: string;
+    default?: string;
+  };
 }
 
 function generateCommandsDoc(): void {
@@ -85,3 +142,4 @@ if (require.main === module) {
 }
 
 export { generateCommandsDoc };
+export type { PackageJson, PackageJsonExports }

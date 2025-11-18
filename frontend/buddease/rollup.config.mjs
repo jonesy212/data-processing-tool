@@ -11,6 +11,11 @@ export default {
   plugins: [
     resolve(), // Resolve node_modules dependencies
     commonjs(), // Convert CommonJS modules to ES modules
+    typescript({ 
+      tsconfig: './tsconfig.json',
+      declaration: true,
+      declarationDir: 'dist'
+    })
   ],
   external: ['react', 'react-dom'], // Specify external dependencies
 };
