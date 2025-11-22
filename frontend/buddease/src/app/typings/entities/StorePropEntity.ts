@@ -1,6 +1,6 @@
 // StorePropEntity.ts
 import { Data } from '@/app/models/data/Data';
-import SnapshotStore from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -45,13 +45,9 @@ type StorePropEntityTemplate = {
 // ------------------------------
 // 3️⃣ Structured Metadata with StorePropEntityTemplate
 // ------------------------------
-type StorePropStructuredMetadata = StructuredMetadata<
+type StorePropStructuredMetadata = DefaultMeta<T
   StorePropEntityTemplate['T'],
-  StorePropEntityTemplate['K'],
-  StorePropEntityTemplate['Meta'],
-  StorePropEntityTemplate['AttachmentType'],
-  StorePropEntityTemplate['ExcludedFields'],
-  StorePropEntityTemplate['IncludedFields']
+  StorePropEntityTemplate['K']
 >;
 
 // Example Data object
@@ -93,9 +89,9 @@ const storeProps: SnapshotStoreProps<
   category: "store-props",                            // Required
   timestamp: new Date(),                              // Required
   criteria: {},                                       // Required
-  snapshotStoreConfig: {},                            // Required
+  snapshotStoreConfig: {} as SnapshotStoreConfig<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,                            // Required
   schema: {},                                         // Required
-  options: {},                                        // Required
+  options: {} as SnapshotStoreOptions<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,                                        // Required
   callback: (
     snapshotStore: SnapshotStore
   ) => {

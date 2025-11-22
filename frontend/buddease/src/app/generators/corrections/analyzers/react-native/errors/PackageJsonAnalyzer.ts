@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 
 export class PackageJsonAnalyzer extends ConfigFileAnalyzer {
+    private packageData: any = null;
+
   protected getConfigPaths(): string[] {
     return ['./package.json'];
   }
@@ -28,13 +30,13 @@ export class PackageJsonAnalyzer extends ConfigFileAnalyzer {
     const corrections: Correction[] = [];
     
     try {
-      // Read the file content
+      // Read the file content and store it
       const configContent = await this.readConfigFile(configPath);
       if (!configContent) return corrections;
 
-      const packageJson = JSON.parse(configContent);
-      const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
-      const scripts = packageJson.scripts || {};
+      this.packageData = JSON.parse(configContent);
+      const deps = { ...this.packageData.dependencies, ...this.packageData.devDependencies };
+      const scripts = this.packageData.scripts || {};
       
       // React Native specific package.json analysis
       if (deps['react-native']) {
@@ -169,6 +171,40 @@ export class PackageJsonAnalyzer extends ConfigFileAnalyzer {
     }
     
     return corrections;
+  }
+
+ // Add the required getter methods
+  getName(): string {
+    return this.packageData?.name || 'unknown';
+  }
+
+  getVersion(): string {
+    return this.packageData?.version || '0.0.0';
+  }
+
+  getDependencies(): Record<string, string> {
+    return this.packageData?.dependencies || {};
+  }
+
+  getDevDependencies(): Record<string, string> {
+    return this.packageData?.devDependencies || {};
+  }
+
+  getScripts(): Record<string, string> {
+    return this.packageData?.scripts || {};
+  }
+
+  getDescription(): string {
+    return this.packageData?.description || '';
+  }
+
+  getKeywords(): string[] {
+    return this.packageData?.keywords || [];
+  }
+
+  // Optional: Get the raw package data
+  getRawData(): any {
+    return this.packageData;
   }
 
   private async readConfigFile(configPath: string): Promise<string | null> {

@@ -1,13 +1,13 @@
 // app/state/context/AppContext.tsx
-import React, { createContext, useContext, useEffect, useRef } from "react";
-import { ProjectStore } from "../stores/ProjectStore";
-import { CryptoStore } from "../stores/CryptoStore";
-import { TaskStore } from "../stores/TaskStore";
-import { PhaseStore } from "../stores/PhaseStore";
-import { useDispatch } from "react-redux";
-import { hydrateSnapshot, persistSnapshot } from "@/app/state/snapshots/snapshotUtils"; // <- add your snapshot helpers
-import { RootState } from "@/app/state/store"; // if you have a typed Redux root
-import { useSelector } from "react-redux";
+import React, { createContext, useContext, useEffect, useRef } from 'react';
+import { ProjectStore } from '../stores/ProjectStore';
+import { CryptoStore } from '../stores/CryptoStore';
+import { TaskManagerStore } from '@/app/stores/TaskStore';
+import { PhaseStore } from '../stores/PhaseStore';
+import { useDispatch } from 'react-redux';
+import { hydrateSnapshot, persistSnapshot } from '@/app/utils/snapshotUtils'; // <- add your snapshot helpers
+import { RootState } from '@/app/state/redux/slices/RootSlice'
+import { useSelector } from 'react-redux';
 
 /**
  * --------------------------------------
@@ -34,7 +34,7 @@ export interface AppStores {
  * Using `useRef` prevents re-instantiation on React re-renders.
  */
 const useInitializeStores = (): AppStores => {
-  const storesRef = useRef<AppStores>();
+  const storesRef = useRef<AppStores>(initialValue);
 
   if (!storesRef.current) {
     const taskStore = new TaskStore();
@@ -103,3 +103,6 @@ export const useStores = (): AppStores => {
   }
   return context;
 };
+
+
+

@@ -1,7 +1,7 @@
 // ContentRoute.ts
 // app/api/log-event/route.ts (or pages/api/log-event.ts if not using App Router)
 import { NextRequest, NextResponse } from 'next/server';
-import { ContentLogger } from '@/lib/server/ContentLogger';
+import { ContentLogger } from '@/app/logging/ContentLogger';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();

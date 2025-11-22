@@ -2,7 +2,7 @@
 // scripts/generateComponentsScript.ts
 import fs from 'fs';
 import path from 'path';
-import { PatternAnalyzer } from './PatternAnalyzer';
+import { PatternAnalyzer } from '@/app/scripts/generateComponentsScript'
 import { ComponentPatternDetector } from './ComponentPatternDetector';
 import { TemplateGenerator } from './TemplateGenerator';
 

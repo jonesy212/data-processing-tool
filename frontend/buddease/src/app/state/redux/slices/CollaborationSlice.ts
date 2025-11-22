@@ -34,7 +34,7 @@ import { SecurityMeasure } from "@/app/server/security/SecurityMeasures";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { useUIManager } from "@/app/state/stores/UISlice";
-import { Document } from "@/app/stores/DocumentStore";
+import { Document } from "@/app/state/stores/DocumentStore";
 import { Todo } from "@/app/todos/Todo";
 import { Idea } from "@/app/users/Ideas";
 import { VersionData } from "@/app/versions/VersionData";
@@ -63,10 +63,10 @@ interface CollaborationState<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T> {
   sharedProjects: Project[];
-  sharedMeetings: Meeting[];
+  sharedMeetings: Meeting<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   participants: Participant[]
-  tasks: Task[];
-  communications: Communication[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  communications: Communication<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   sharedResources: Resource[];
   projects: Project[];
   milestones: Milestone[];
@@ -99,7 +99,7 @@ interface CollaborationState<
   collaboration: {
     documentData: DocumentData<T, K>;
     uiManager: ReturnType<typeof useUIManager>;
-    userService: UserService;
+    userService: UserService<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   };
   // Add other collaboration-related state properties here
 }

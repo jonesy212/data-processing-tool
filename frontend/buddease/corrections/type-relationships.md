@@ -1,7 +1,7 @@
 # 🔗 Type Relationships Report
-**Generated:** 2025-11-18T21:23:34.977Z
+**Generated:** 2025-11-22T18:55:54.755Z
 
-## 🔄 Type Dependency Graph (1157 types)
+## 🔄 Type Dependency Graph (1162 types)
 
 *Shows how types relate to each other through inheritance and implementation*
 
@@ -896,11 +896,15 @@
 - **createCacheHeaders**
 - **createContentHeaders**
 - **createRequestHeaders**
+- **getEndpointStats**
+- **findEndpointByPath**
+- **getEndpointUrl**
+- **getCategoryUrls**
 - **getEndpoint**
 - **getCategories**
 - **getEndpointsForCategory**
-- **getEndpointStats**
-- **findEndpointByPath**
+- **getConfigurations**
+- **getEndpoints**
 - **loadDashboardState**
 - **fetchData**
 - **fetchHighlights**
@@ -1152,6 +1156,7 @@
 - **createPresentation**
 - **updatePresentation**
 - **deletePresentation**
+- **getCacheKey**
 - **getTaskById**
 - **fetchTaskData**
 - **updateTaskProgress**
@@ -3679,15 +3684,16 @@
 
 ### NotificationProviderProps
 **Metadata:**
-- **File:** src/app/features/support/NotificationProvider.tsx
+- **File:** src/app/state/context/NotificationContext.tsx
 - **Type:** interface
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
 - **Dependents:** 0
 
-**Members (1):**
-- **Properties:** 1
+**Members (2):**
+- **Properties:** 2
   - children
+  - store
 ---
 
 ### SupportTicketComponentProps
@@ -9219,7 +9225,7 @@
 
 ### NotificationProvider
 **Metadata:**
-- **File:** src/app/features/support/NotificationProvider.tsx
+- **File:** src/app/state/context/NotificationContext.tsx
 - **Type:** component
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -12090,45 +12096,6 @@
   - createRequestHeaders
 ---
 
-### getEndpoint
-**Metadata:**
-- **File:** src/app/api/getEndpoint.ts
-- **Type:** class
-- **Role:** 🏛️ Root
-- **Dependencies:** 0
-- **Dependents:** 0
-
-**Members (1):**
-- **Methods:** 1
-  - getEndpoint
----
-
-### getCategories
-**Metadata:**
-- **File:** src/app/api/ApiConfig.ts
-- **Type:** class
-- **Role:** 🏛️ Root
-- **Dependencies:** 0
-- **Dependents:** 0
-
-**Members (1):**
-- **Methods:** 1
-  - getCategories
----
-
-### getEndpointsForCategory
-**Metadata:**
-- **File:** src/app/api/ApiConfig.ts
-- **Type:** class
-- **Role:** 🏛️ Root
-- **Dependencies:** 0
-- **Dependents:** 0
-
-**Members (1):**
-- **Methods:** 1
-  - getEndpointsForCategory
----
-
 ### getEndpointStats
 **Metadata:**
 - **File:** src/app/api/ApiConfigManager.ts
@@ -12153,6 +12120,97 @@
 **Members (1):**
 - **Methods:** 1
   - findEndpointByPath
+---
+
+### getEndpointUrl
+**Metadata:**
+- **File:** src/app/api/ApiConfigManager.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getEndpointUrl
+---
+
+### getCategoryUrls
+**Metadata:**
+- **File:** src/app/api/ApiConfigManager.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getCategoryUrls
+---
+
+### getEndpoint
+**Metadata:**
+- **File:** src/app/api/getEndpoint.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getEndpoint
+---
+
+### getCategories
+**Metadata:**
+- **File:** src/app/api/ApiConfigService.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getCategories
+---
+
+### getEndpointsForCategory
+**Metadata:**
+- **File:** src/app/api/ApiConfigService.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getEndpointsForCategory
+---
+
+### getConfigurations
+**Metadata:**
+- **File:** src/app/api/ApiConfigService.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getConfigurations
+---
+
+### getEndpoints
+**Metadata:**
+- **File:** src/app/api/ApiConfigService.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getEndpoints
 ---
 
 ### loadDashboardState
@@ -14055,7 +14113,7 @@
 
 ### getInstance
 **Metadata:**
-- **File:** src/app/services/TaskService.ts
+- **File:** src/app/services/ConfigurationService.ts
 - **Type:** class
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -15418,6 +15476,19 @@
   - deletePresentation
 ---
 
+### getCacheKey
+**Metadata:**
+- **File:** src/app/services/TaskService.ts
+- **Type:** class
+- **Role:** 🏛️ Root
+- **Dependencies:** 0
+- **Dependents:** 0
+
+**Members (1):**
+- **Methods:** 1
+  - getCacheKey
+---
+
 ### getTaskById
 **Metadata:**
 - **File:** src/app/services/TaskService.ts
@@ -15581,19 +15652,10 @@
 - **Most Dependent Type:** None
 - **Most Reused Type:** None
 
-## ⚠️ Circular Dependencies
-
-1. **TodoListProps**
-2. **TodoList**
-3. **TodoListProps**
-4. **ContentDetailsProps**
-5. **ContentDetails**
-6. **ContentDetailsProps**
-
 ## 📈 Summary
 
-- **Total Types:** 1157
-- **Root Types:** 1157
+- **Total Types:** 1162
+- **Root Types:** 1162
 - **Leaf Types:** 0
 - **Intermediate Types:** 0
 - **Total Relationships:** 0

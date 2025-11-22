@@ -18,11 +18,11 @@ import { LiveEvent } from "@refinedev/core";
 
 
 interface SubscriptionPayload<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
+  T, extends BaseDataEntity = BaseDataRoot,
+  K, extends T = T,
+  Meta, extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType, extends Attachment = Attachment,
+  ExcludedFields, extends keyof T = never,
   IncludedFields extends keyof T = keyof T,
   S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > {
@@ -87,7 +87,7 @@ interface SubscriptionPayload<
   notifyEventSystem: (eventType: string, eventData: any, source: string, event: Event) => void;  // assuming it's a function to notify the event system
   updateProjectState: ( stateType: ProjectStateEnum,
     projectId: string,
-    newState: Project,
+    newState: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ,
     state: object
   ) => void;  // function to update project state

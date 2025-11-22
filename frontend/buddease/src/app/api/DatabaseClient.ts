@@ -1,7 +1,7 @@
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { BaseData } from '@/app/models/data/Data';
 import { AxiosResponse } from "axios";
-import axiosInstance from '@/app/api/csrfToken';
+import { buildUrl } from '@/utils/urlBuilder'; 
 import {
     Pool,
     PoolConfig,
@@ -147,8 +147,9 @@ class DatabaseClient {
   >(formData: FormData): Promise<DatasetModel<T, K> | null> {
     try {
       const endpoint = endpoints.data.uploadData; // Use endpoint configuration
+      const url = buildUrl(endpoint); // Even for endpoints without params
       const response = await internalApiService.post<DatasetModel<T, K>>(
-        endpoint.path,
+        url,
         formData,
         {
           headers: {
@@ -170,11 +171,9 @@ class DatabaseClient {
     testType: string
   ): Promise<void> {
     try {
-      const endpoint = endpoints.data.hypothesisTest; // You'll need to add this to your endpoints
-      await internalApiService.post(
-        endpoint.path,
-        { datasetId, testType }
-      );
+      const endpoint = endpoints.data.hypothesisTest;
+      const url = buildUrl(endpoint, { datasetId, testType }); // Use URL builder
+      await internalApiService.post(url, { datasetId, testType });
       console.log("Hypothesis test executed successfully");
     } catch (error) {
       console.error("Error running hypothesis test:", error);
@@ -184,8 +183,9 @@ class DatabaseClient {
 
   static async fetchDatasets<T extends BaseDataEntity, K extends T = T>(): Promise<DatasetModel<T, K>[]> {
     try {
-      const endpoint = endpoints.data.list; // Use your data list endpoint
-      const response = await internalApiService.get<DatasetModel<T, K>[]>(endpoint.path);
+      const endpoint = endpoints.data.list;
+      const url = buildUrl(endpoint); // Use URL builder
+      const response = await internalApiService.get<DatasetModel<T, K>[]>(url);
       return response.data;
     } catch (error) {
       console.error("Error fetching datasets:", error);
@@ -197,8 +197,9 @@ class DatabaseClient {
     datasetId: number
   ): Promise<DatasetModel<T, K> | null> {
     try {
-      const endpoint = endpoints.data.single(datasetId); // Use your data single endpoint
-      const response = await internalApiService.get<DatasetModel<T, K>>(endpoint.path);
+      const endpoint = endpoints.data.single;
+      const url = buildUrl(endpoint, { id: datasetId }); // Use URL builder
+      const response = await internalApiService.get<DatasetModel<T, K>>(url);
       return response.data;
     } catch (error) {
       console.error("Error fetching dataset:", error);
@@ -208,8 +209,10 @@ class DatabaseClient {
 
   static async deleteDataset(datasetId: number): Promise<void> {
     try {
-      const endpoint = endpoints.data.remove(datasetId); // Use your data remove endpoint
-      await internalApiService.delete(endpoint.path);
+     const endpoint = endpoints.data.remove;
+     const url = buildUrl(endpoint, { id: datasetId }); // Use URL builder
+ 
+      await internalApiService.delete(url);
       console.log("Dataset deleted successfully");
     } catch (error) {
       console.error("Error deleting dataset:", error);
@@ -220,8 +223,9 @@ class DatabaseClient {
   // ADD: Database backup/restore using the integrated pattern
   static async backupDatabase(): Promise<any> {
     try {
-      const endpoint = endpoints.documents.backup; // Use your documents backup endpoint
-      const response = await internalApiService.post(endpoint.path);
+      const endpoint = endpoints.documents.backup;
+      const url = buildUrl(endpoint); // Use URL builder
+      const response = await internalApiService.post(url);
       return response.data;
     } catch (error) {
       console.error("Error backing up database:", error);
@@ -231,8 +235,9 @@ class DatabaseClient {
 
   static async restoreDatabase(backupId: string): Promise<void> {
     try {
-      const endpoint = endpoints.documents.retrieveBackup; // Use your documents retrieveBackup endpoint
-      await internalApiService.post(endpoint.path, { backupId });
+      const endpoint = endpoints.documents.retrieveBackup;
+      const url = buildUrl(endpoint, { backupId }); // Use URL builder
+      await internalApiService.post(url, { backupId });
       console.log("Database restored successfully");
     } catch (error) {
       console.error("Error restoring database:", error);

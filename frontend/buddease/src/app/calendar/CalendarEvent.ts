@@ -106,7 +106,7 @@ interface CalendarEvent<
   isCompleted?: boolean;
   isActive?: boolean;
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
-  priority?: AllStatus;
+  priority?: string | AllStatus | null;
   location?: string;
   host?: boolean | Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   guestSpeakers?: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

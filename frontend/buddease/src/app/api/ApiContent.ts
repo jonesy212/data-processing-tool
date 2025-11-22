@@ -65,7 +65,7 @@ const handleContentApiErrorAndNotify = (
     useNotification().notify({
       id: String(errorMessageId),
       message: errorMessageText,
-      data: { originalError: errorMessage, errorObject: error },
+      data: { originalError: errorMessage, error: error },
       timestamp: new Date(),
       type: "ApiClientError" as NotificationType,
       position,

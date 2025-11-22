@@ -3,6 +3,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { LogData } from '@/app/models/LogData'
+
 // 1. Base Log Entity
 export interface BaseLogEntity extends BaseDataEntity {
   timestamp: Date;

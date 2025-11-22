@@ -1,5 +1,4 @@
-// cleanup-compiled-enhanced.js
-// scripts/cleanup-compiled-enhanced.js
+// scripts/cleanup-compiled.js
 import fs from 'fs';
 import path from 'path';
 import readline from 'readline';

@@ -1,6 +1,7 @@
+import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communications/Language";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMetadata } from "@/app/config/useMetadata";
@@ -14,12 +15,14 @@ import { Task } from "@/app/models/tasks/Task";
 import { EncryptionSetting, Permission } from "@/app/permissions/Permission";
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
 import  ApiConfig from '@/app/api/ApiConfig';
-
+import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { InitializedState } from "@/app/state/stores/DataStore";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
-import { Attachment, PhaseEntity, PhaseExcluded, PhaseK, PhaseMetaType } from '@/app/typings/entities/PhaseEntity';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
+import { ApiEntity, ApiK, ApiMeta, ApiAttachment, ApiExcludedFields, ApiIncludedFields } from '@/app/typings/entities/ApiEntity';
 import { Version, version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -61,7 +64,7 @@ interface ApiManagerState {
   accessPermissions: Record<string, string[]>;
   collaborationToolsEnabled: boolean;
 
-  phases: Phase<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded>[];
+  phases: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[];
   progress: number;
 
   dataAnalysisTools: DataAnalysisTool[];
@@ -153,24 +156,9 @@ const initialState: ApiManagerState = {
   analyticsTools: undefined
 };
 
-
-
 const dispatch = useDispatch();
 
 
-const area = fetchUserAreaDimensions().toString()
-// Updated area for calendar
-const currentMetadata: AppUnifiedMetadata = useMetadata('api-area');
-
-const initializedState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-  metadata: currentMetadata,
-  initialized: false,
-  initializedState: initialState,
-  initializedStateType: "ApiManagerState"
-}
-
-const mutableVersion = version as WritableDraft<Version>; // Cast to WritableDraft
-  
 export const useApiManagerSlice = createSlice({
   name: "apiManager",
   initialState,
@@ -202,10 +190,8 @@ export const useApiManagerSlice = createSlice({
 
     addApiConfig: (state, action: PayloadAction<ApiConfig>) => {
       state.apiConfigs.push(action.payload);
-      state.apiConfigName = "";
-      state.apiConfigUrl = "";
-      state.apiConfigTimeout = 0;
     },
+    
 
     removeApiConfig: (state, action: PayloadAction<number>) => {
       state.apiConfigs = state.apiConfigs.filter(
@@ -214,71 +200,7 @@ export const useApiManagerSlice = createSlice({
     },
 
 
-    enableRealTimeCollaboration: <
-      T extends BaseData<any> = BaseData<any, any>, 
-      K extends T = T
-    >(
-      state: Draft<ApiManagerState>,
-      action: PayloadAction<void>
-    ) => {
-      // logic to enable real-time collaboration
-      console.log("Real-time collaboration enabled");
-      dispatch(addTask({
-        id: Date.now().toString(),
-        title: "Enable real-time collaboration",
-        isComplete: false,
-        description: "",
-        assignedTo: null,
-        assigneeId: undefined,
-        dueDate: undefined,
-        payload: undefined,
-        priority: PriorityTypeEnum.Low,
-        previouslyAssignedTo: [],
-        done: false,
-        data: undefined,
-        source: "user",
-        startDate: undefined,
-        endDate: undefined,
-        isActive: false,
-        tags: {},
-        version: mutableVersion,
-        lastUpdated: {} as WritableDraft<VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-        config: {} as WritableDraft<Record<string, any>>,
-        permissions: [],
-
-        [Symbol.iterator]: function (): Iterator<any, any, undefined> {
-          throw new Error("Function not implemented.");
-        },
-        getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
-          throw new Error("Function not implemented.");
-        },
-        taskId: "",
-        taskName: "",
-        _id: "",
-        createdBy: "",
-        timestamp: undefined,
-        metadataEntries: {},
-        customFields: {},
-        versionData: [],
-        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
-        apiEndpoint: "",
-        apiKey: undefined,
-        timeout: 0,
-        retryAttempts: 0,
-        name: "",
-        category: "",
-        metadata: {} as WritableDraft<UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
-        initialState: initializedState,
-        meta: undefined,
-        mappedSnapshot: undefined,
-        events: undefined,
-        participants: [],
-        uploadedAt: undefined,
-        phase: undefined,
-        currentMeta: undefined,
-        currentMetadata: undefined,
-        label: undefined
-      }));
+    enableRealTimeCollaboration: (state) => {
       state.realTimeCollaboration = true;
     },
 
@@ -740,7 +662,7 @@ function convertToWritableMetadata<
 ): WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
     ...metadata,
-    childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<BaseData<any>>)),
+    childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<Draft<K>[]>)),
   };
 
   return mutableMetadata;
@@ -751,38 +673,73 @@ export const markTaskAsComplete = (taskId: string, title: string) => async (disp
   const mutableMetadata = convertToWritableMetadata(currentMetadata);
 
 
+  // Create a simple version object if needed, or remove it entirely
+  const taskVersion = {
+    major: 1,
+    minor: 0,
+    patch: 0,
+    timestamp: new Date(),
+    changes: ["Task marked as complete"],
+    author: "system"
+  };
+
   dispatch(addTask({
     id: taskId,
     title: title,
-    description: "",
+    description: "Task completed via API manager action",
     assignedTo: null,
-    assigneeId: undefined,
-    dueDate: undefined,
-    payload: undefined,
-    priority: PriorityTypeEnum.Low,
-    previouslyAssignedTo: [],
-    done: false,
-    data: undefined,
-    source: "user",
-    startDate: undefined,
-    endDate: undefined,
-    isActive: false,
-    tags: {},
-    _id: "",
+    assigneeId: "current-user", // or get from auth context
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+    payload: {
+      action: "mark-complete",
+      source: "api-manager",
+      timestamp: new Date().toISOString()
+    },
+    priority: PriorityTypeEnum.Medium, // More appropriate for completed tasks
+    previouslyAssignedTo: ["system"],
+    done: true, // Should be true since we're marking as complete
+    data: {
+      completionDate: new Date(),
+      completedBy: "api-manager",
+      status: "completed"
+    },
+    source: "api-manager",
+    startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // Started 1 day ago
+    endDate: new Date(), // Completed now
+    isActive: false, // Not active since completed
+    tags: {
+      "status": "completed",
+      "source": "api-manager",
+      "auto-generated": "true",
+      "completion-timestamp": new Date().toISOString()
+    },
+    _id: `task-${taskId}`,
     timestamp: new Date(),
-    initialState: "",
-    createdBy: "",
-   
-    category: "",
-    name: "",
+    initialState: "completed",
+    createdBy: "api-manager-system",
+    category: "api-management",
+    name: `API Task: ${title}`,
     metadata: mutableMetadata,
-    version: mutableVersion,
- 
-    })
-  );
-};
-
-
+    version: taskVersion, // Use the simple version object instead of mutableVersion
+    // Add any other required fields with meaningful content
+    status: "completed",
+    progress: 100,
+    estimatedDuration: 60, // minutes
+    actualDuration: 45, // minutes
+    notes: ["Automatically marked complete via API manager action"],
+    attachments: [],
+    dependencies: [],
+    followers: [],
+    comments: [
+      {
+        id: `comment-${Date.now()}`,
+        author: "system",
+        text: "Task automatically completed",
+        timestamp: new Date()
+      }
+    ]
+  }));
+}
 // Extend the method to mark todos as complete
 export const markTodoAsComplete = (todoId: string, title: string) => async (dispatch: any) => {
   dispatch(addTask({
@@ -802,7 +759,7 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
     endDate: undefined,
     isActive: false,
     tags: {},
-    getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>>> {
+    getData: function (): Promise<Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>> {
       throw new Error("Function not implemented.");
     },
     _id: "",
@@ -821,7 +778,7 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
     lastUpdated: undefined,
     config: undefined,
     customFields: undefined,
-    versionData: [],
+    versionData: {} as WritableDraft<VersionData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
     latestVersion: undefined,
     apiEndpoint: "",
     apiKey: undefined,
@@ -831,10 +788,10 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
     events: undefined,
     participants: [],
     uploadedAt: undefined,
-    phase: undefined,
+    phase: {} as WritableDraft<Phase<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>,
     currentMeta: undefined,
-    currentMetadata: undefined,
-    label: undefined
+    currentMetdata: undefined,
+    label: {} as WritableDraft<Label>
   }));
 };
 

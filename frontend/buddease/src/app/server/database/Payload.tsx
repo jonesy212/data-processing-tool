@@ -1,36 +1,37 @@
 // Payload.ts
 import { SnapshotActions } from "@/app/actions/SnapshotActions";
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import addSnapshot from "@/app/api/SnapshotApi";
+import {
+  SnapshotEntity,
+  SnapshotK,
+} from "@/app/typings/entities/SnapshotEntity";
+import { addSnapshot } from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import useSubscription from "@/app/hooks/useSubscription";
-import { SnapshotLogger } from "@/app/libraries/logging/Logger";
+import { SnapshotLogger } from "@/app/logging/Logger";
 import { BaseData } from "@/app/models/data/Data";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from "@/app/state/context/NotificationContext";
+import { addToSnapshotList, category } from "@/utils/snapshotUtils";
 import {
-    addToSnapshotList,
-    category,
-} from "@/utils/snapshotUtils";
-import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
 } from "@/utils/web3/applicationUtils";
-
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { LiveEvent } from "@refinedev/core";
-import { AppState } from "react-native";
+import { AppState } from "@/app/state/redux/slices/AppSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const { notify } = useNotification();
 const subscribers = await subscriptionApi.getSubscribersAPI();
-const { setSnapshots } = SnapshotActions<T, K>();
+const { setSnapshots } = SnapshotActions<SnapshotEntity, SnapshotK>();
+
 const { subscribe, unsubscribe } = useSubscription({
   channel: "your_channel_here",
-  onLiveEvent: (event: LiveEvent) => {
+  onLiveEvent: async (event: LiveEvent) => {
     const payload = event.payload;
 
     // Handle errors in the payload
@@ -55,57 +56,144 @@ const { subscribe, unsubscribe } = useSubscription({
 
     const dispatch = useDispatch();
 
-    // Determine the type of operation based on the scenario (e.g., replacing or appending)
-    const isAppendingSnapshot = true; // This can be set based on your app's logic
+    // Determine the type of operation based on the scenario
+    const isAppendingSnapshot = true;
 
-    if (isAppendingSnapshot) {
-      // Option 1: Use addSnapshot action if available (recommended)
-      dispatch(addSnapshot(snapshot));
+    try {
+      if (isAppendingSnapshot) {
+        // ✅ Clean, direct API call - perfect for real-time
+        const result = await addSnapshot(snapshot);
+        console.log("Snapshot added successfully:", result);
 
-      // Option 2: Or use setSnapshots with the updated array
-      // dispatch(setSnapshots([...currentSnapshots, snapshot]));
-    } else {
-      // If we're replacing the entire snapshot list
-      dispatch(setSnapshots([snapshot]));
+        // Option 1: If you need to update Redux store after successful API call
+        dispatch(setSnapshots([...currentSnapshots, result]));
+
+        // Option 2: Or let the subscription service handle updates via the API response
+        // The notify in addSnapshot API will likely trigger updates
+      } else {
+        // If we're replacing the entire snapshot list
+        dispatch(setSnapshots([snapshot]));
+      }
+
+      // If you need to update the snapshot list with subscribers
+      addToSnapshotList(snapshot, subscribers);
+    } catch (error) {
+      console.error("Failed to add snapshot:", error);
+      SnapshotLogger.log("Error", "Failed to process snapshot", error);
+
+      // Optional: Show user notification
+      notify({
+        type: "error",
+        message: "Failed to save snapshot",
+        description: "Please try again later",
+      });
     }
-
-    // If you need to update the snapshot list with subscribers
-    addToSnapshotList(snapshot, subscribers);
   },
   enabled: true, // Enable subscription
 });
 
-const payload: Partial<
-  SubscriptionPayload<
-    BaseData<any>, // T
-    BaseData<any>, // K (extends T)
-    never, // ExcludedFields
-    CustomSnapshotData<BaseData<any>, BaseData<any>>, // S
-    StructuredMetadata<BaseData<any>, BaseData<any>> // Meta
-  >
+// ------------------------------
+// 6️⃣ Example SubscriptionPayload using the template
+// ------------------------------
+const subscriptionPayload: SubscriptionPayload<
+  SubscriptionEntityTemplate["T"],
+  SubscriptionEntityTemplate["K"],
+  SubscriptionEntityTemplate["Meta"],
+  SubscriptionEntityTemplate["AttachmentType"],
+  SubscriptionEntityTemplate["ExcludedFields"],
+  SubscriptionEntityTemplate["IncludedFields"]
 > = {
-  id: "unique_id",
-  subscriberId: "unique_id",
-  email: "<EMAIL>",
-  value: 100,
-  category: category,
-  notify: notify,
-  notifyEventSystem: notifyEventSystem,
-  updateProjectState: updateProjectState,
-  logActivity: logActivity,
-  triggerIncentives: triggerIncentives,
-  subscribe: subscribe,
-  unsubscribe: unsubscribe,
-  // Optional properties are not required to be defined
+  error: undefined,
+  meta: subscriptionData.meta,
+  notify: (id, message, content, date, type, notificationPosition) => {
+    console.log("Notification:", {
+      id,
+      message,
+      content,
+      date,
+      type,
+      notificationPosition,
+    });
+  },
+  id: "payload-001",
+  content: "Subscription payload content",
+  date: new Date(),
+  subscribers: [],
+  subscription: subscriptionData.subscription,
+  onSnapshotCallbacks: [],
+  onSnapshotCallback: (snapshot) => console.log("Snapshot:", snapshot),
+  onSnapshotCallbackError: (error) => console.error("Snapshot error:", error),
+  onSnapshotCallbackRemoved: (snapshot) =>
+    console.log("Snapshot removed:", snapshot),
+  onSnapshotCallbackAdded: (snapshot) =>
+    console.log("Snapshot added:", snapshot),
+  onSnapshotCallbackScheduled: (time) =>
+    console.log("Snapshot scheduled:", time),
+  onDisconnectingCallbacks: [],
+  onDisconnectCallback: () => console.log("Disconnected"),
+  onDisconnectCallbackError: (error) =>
+    console.error("Disconnect error:", error),
+  onDisconnectCallbackRemoved: () => console.log("Disconnect removed"),
+  onDisconnectCallbackAdded: () => console.log("Disconnect added"),
+  onDisconnectCallbackScheduled: (time) =>
+    console.log("Disconnect scheduled:", time),
+  onReconnectingCallbacks: [],
+  onReconnectCallback: () => console.log("Reconnected"),
+  onReconnectCallbackError: (error) => console.error("Reconnect error:", error),
+  onReconnectCallbackRemoved: () => console.log("Reconnect removed"),
+  onReconnectCallbackAdded: () => console.log("Reconnect added"),
+  onReconnectCallbackScheduled: (time) =>
+    console.log("Reconnect scheduled:", time),
+  onErrorCallbacks: [],
+  onUnsubscribeCallbacks: [],
+  state: "active",
+  notifyEventSystem: (eventType, eventData, source, event) => {
+    console.log("Event system notified:", {
+      eventType,
+      eventData,
+      source,
+      event,
+    });
+  },
+  updateProjectState: (stateType, projectId, newState, content, state) => {
+    console.log("Project state updated:", {
+      stateType,
+      projectId,
+      newState,
+      content,
+      state,
+    });
+  },
+  logActivity: (params) => console.log("Activity logged:", params),
+  triggerIncentives: (params) => console.log("Incentives triggered:", params),
+  name: "Subscription Payload",
+  data: subscriptionData,
+  email: "user@example.com",
+  subscribe: () => console.log("Subscribed"),
+  value: 99.99,
+  category: { name: "Premium", id: "cat-premium" },
+  unsubscribe: (subscriberId, unsubscribeDetails, callback) => {
+    console.log("Unsubscribed:", {
+      subscriberId,
+      unsubscribeDetails,
+      callback,
+    });
+  },
+  toSnapshotStore: (snapshot) =>
+    console.log("Stored in snapshot store:", snapshot),
+  getId: () => "payload-001",
+  getUserId: () => "user-123",
+  receiveSnapshot: (snapshot) => console.log("Received snapshot:", snapshot),
+  getState: () => "active",
+  onError: (error) => console.error("Error:", error),
+  triggerError: (error) => console.error("Triggered error:", error),
+  onUnsubscribe: () => console.log("Unsubscribed callback"),
+  onSnapshot: (snapshot) => console.log("Snapshot callback:", snapshot),
+  triggerOnSnapshot: (snapshot) => console.log("Triggered snapshot:", snapshot),
+  subscriber: undefined,
+  message: "Subscription payload message",
+  subscriberId: "sub-12345",
+  type: "success",
 };
 
-export type {
-    CreateSnapshotsPayload,
-    CreateSnapshotStoresPayload,
-    ExtendedBaseDataPayload,
-    Payload,
-    UpdateSnapshotPayload
-};
-
-  export { payload };
-
+export { payload };

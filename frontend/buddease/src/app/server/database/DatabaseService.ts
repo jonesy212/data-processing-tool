@@ -67,8 +67,10 @@ export abstract class BaseDatabaseService implements DatabaseService {
     'staking_rewards', 'defi_integrations', 'nft_collections', 'smart_contracts'
   ]);
 
-  constructor(connectionString: string) {
-    this.pool = new Pool({ connectionString });
+  constructor(config: DatabaseConfig) {
+    this.pool = new Pool({
+      connectionString: config.url,
+    });
   }
 
   public async connect(): Promise<void> {
@@ -223,50 +225,7 @@ export abstract class BaseDatabaseService implements DatabaseService {
       await this.client.end();
     }
   }
-
-  async findOne(params: { tableName: string; query: { id: string; } }): Promise<any> {
-    try {
-      const { tableName, query } = params;
-      // Execute database query to find a record by identifier
-      const result = await this.client.query(
-        `SELECT * FROM ${tableName} WHERE id = $1`,
-        [query.id]
-      );
-
-      // Check if any record was found
-      if (result.rows.length > 0) {
-        // Return the first record found
-        return result.rows[0];
-      } else {
-        // If no record found, return null or throw an error as per your application logic
-        return null; // Or throw new Error('Record not found');
-      }
-    } catch (error) {
-      console.error("Error in findOne method:", error);
-      throw error;
-    }
-  }
-  async update(data: any): Promise<any> {
-    try {
-      // Extract the necessary data for the update operation
-      const { id, ...updatedFields } = data;
-
-      // Execute the update query
-      const result = await this.client.query(
-        `UPDATE your_table SET ${Object.keys(updatedFields)
-          .map((key, index) => `${key} = $${index + 1}`)
-          .join(", ")} WHERE id = $${Object.keys(updatedFields).length + 1}`,
-        [...Object.values(updatedFields), id]
-      );
-
-      // Return any relevant data or confirmation
-      return result.rows;
-    } catch (error) {
-      console.error("Error in update method:", error);
-      throw error;
-    }
-  }
-
+  
   async create(data: any): Promise<any> {
     try {
       // Execute the insert query
@@ -287,53 +246,6 @@ export abstract class BaseDatabaseService implements DatabaseService {
     }
   }
 
-  async insert(data: any): Promise<any> {
-    try {
-      // Execute the insert query
-      const result = await this.client.query(
-        `INSERT INTO your_table (${Object.keys(data).join(
-          ", "
-        )}) VALUES (${Object.keys(data)
-          .map((_, index) => `$${index + 1}`)
-          .join(", ")}) RETURNING *`,
-        Object.values(data)
-      );
-      // Return the inserted data
-      return result.rows[0];
-    } catch (error) {
-      console.error("Error in insert method:", error);
-      throw error;
-    }
-  }
-
-  async delete(identifier: string): Promise<any> {
-    try {
-      // Execute the delete query
-      const result = await this.client.query(
-        `DELETE FROM your_table WHERE id = $1`,
-        [identifier]
-      );
-
-      // Return any relevant data or confirmation
-      return result.rows;
-    } catch (error) {
-      console.error("Error in delete method:", error);
-      throw error;
-    }
-  }
-
-  async findAll(): Promise<any[]> {
-    try {
-      // Execute the SELECT query to retrieve all records
-      const result = await this.client.query(`SELECT * FROM your_table`);
-
-      // Return the retrieved data
-      return result.rows;
-    } catch (error) {
-      console.error("Error in findAll method:", error);
-      throw error;
-    }
-  }
 
   async count(): Promise<number> {
     try {

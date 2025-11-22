@@ -1,55 +1,72 @@
-//ReducerGenerator.tsx
+// ReducerGenerator.tsx
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
 import { Collaborator }  from '@/app/collaborators/Collaborator'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CollaboratorEntity } from '@/app/typings/entites/CollaboratorEntity'
 
 export type WritableDraft<EntityData> = Draft<EntityData>;
 
-interface EntityState<EntityData> {
-  entities: { [id: string]: EntityData };
+// UPDATED: EntityState to match your RootState structure
+interface EntityState<
+  T extends BaseDataEntity = BaseDataRoot
+> {
+  entities: { [id: string]: T }; // Use T instead of EntityData to match your generic structure
 }
 
-export interface EntityAction<EntityData>
-  extends PayloadAction<Draft<EntityData>> {
-  // You can include additional properties if needed
+export interface EntityAction<
+  T extends BaseDataEntity = BaseDataRoot
+> extends PayloadAction<Draft<T>> {
   id: string;
 }
-//type-guard
-function isEntityAction<EntityData>(
-  action: EntityAction<EntityData> | PayloadAction<string>
-): action is EntityAction<EntityData> {
-  return (action as EntityAction<EntityData>).id !== undefined;
+
+// Updated type guard
+function isEntityAction<
+  T extends BaseDataEntity = BaseDataRoot
+>(
+  action: EntityAction<T> | PayloadAction<string>
+): action is EntityAction<T> {
+  return (action as EntityAction<T>).id !== undefined;
 }
-interface EntityReducerOptions<EntityData> {
+
+interface EntityReducerOptions<
+  T extends BaseDataEntity = BaseDataRoot
+> {
   type: string;
-  updateFunction: (entity: EntityData, payload: any) => void;
+  updateFunction: (entity: T, payload: any) => void;
 }
 
-
-export const createEntityReducer = <EntityData extends Draft<any>>(
-  options: EntityReducerOptions<EntityData>
+// UPDATED: createEntityReducer with proper generics
+export const createEntityReducer = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  options: EntityReducerOptions<T>
 ) => (
-  state: WritableDraft<EntityState<EntityData>>,
-  action: EntityAction<EntityData> | PayloadAction<string>
+  state: WritableDraft<EntityState<T>>,
+  action: EntityAction<T> | PayloadAction<string>
 ) => {
   if (isDraft(state)) {
-    const draft = state as WritableDraft<EntityState<EntityData>>;
+    const draft = state as WritableDraft<EntityState<T>>;
 
     if (isEntityAction(action)) {
       const entity = draft.entities[action.id];
       if (entity) {
-        options.updateFunction(entity as EntityData, action.payload);
+        options.updateFunction(entity as T, action.payload);
       }
     }
   }
 };
 
-// Example usage:
-
-
+// Example usage with proper typing:
 export const setCollaboratorsReducer = createEntityReducer({
   type: "setCollaborators",
-  updateFunction: (entity: { collaborators: Collaborator[] }, payload) => {
+  updateFunction: (entity: { collaborators: CollaboratorEntity[] }, payload) => {
     entity.collaborators = payload.collaborators;
   },
 });
@@ -60,4 +77,3 @@ export const setDueDateReducer = createEntityReducer({
     entity.dueDate = payload.dueDate;
   },
 });
-// Add more generic reducers as needed

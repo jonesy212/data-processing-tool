@@ -1,5 +1,5 @@
 // VersionData.ts
-import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import { Permission } from '@/app/permissions/Permission';
 import getAppPath from '@/app/config/appStructure/appPath';
 import { AppStructureItem, AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import FrontendStructure, { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
@@ -60,11 +60,7 @@ interface SharedContent<
 
 interface CoreDataItem<
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > extends SharedIdentifiers<T, K>,
   SharedTimestamps {
   id?: string | number;
@@ -73,7 +69,8 @@ interface CoreDataItem<
   type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
   path?: string;
   draft?: boolean;
-  permissions?: AppStructurePermissions;
+  permissions?: Permission[];
+  appPermissions?: AppStructurePermissions;
 }
 
 interface SharedUpdateHistory<
@@ -114,8 +111,7 @@ interface VersionedDataItem<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->
-  extends CoreDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends CoreDataItem<T, K> {
   versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   items?: Record<string, VersionedDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -124,12 +120,8 @@ interface VersionedDataItem<
 
 interface AppStructureDataItem<
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends CoreDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  K extends T = T
+> extends CoreDataItem<T, K>,
   SharedIdentifiers<T, K> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -314,7 +306,7 @@ const transformToStructureItems = (data: Record<string, AppStructureDataItem<  A
       name: value.name || `Unnamed Item (${key})`, // Provide a default name if none is given
       type: value.type || "unknown", // Default type if none is provided
       path: value.path || `/${key}`, // Default path if none is provided
-      content: value.content || "", // Default content if none is provided
+      content: value.content || {} as Content<AppEntity,  AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, // Default content if none is provided
       draft: value.draft || false, // Default draft status if none is provided
       permissions: value.permissions || undefined, // Use provided permissions or undefined
       versions: value.versions || undefined, // Use provided versions or undefined

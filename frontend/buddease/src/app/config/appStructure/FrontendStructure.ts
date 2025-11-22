@@ -8,6 +8,14 @@ import { Permission } from '@/app/permissions/Permission';
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
+import { 
+  UserEntity,
+  UserK, 
+  UserMeta,
+  UserAttachment, 
+  UserExcludedFields, 
+  UserIncludedFields
+ } from '@/app/typings/entities/UserEntity';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/app/config/appStructure/appPath";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
@@ -17,22 +25,14 @@ import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import * as path from "path";
 
 
-interface MyData extends BaseData<any> {
-  customField: string;
-}
-
-interface MyExtendedData extends MyData {
-  additionalField: number;
-}
-
-type MyMetadata = StructuredMetadata<MyData, MyExtendedData>;
-
 
 // Define UserConfigData with type arguments
-type UserConfigDataWithArgs = UserConfigData<UserData, UserData, StructuredMetadata<UserData, UserData>>;
+type UserConfigDataWithArgs = UserConfigData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>;
 
+const loadedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = await fetchUser();
 
-const userConfigData: UserConfigData<MyData, MyExtendedData, MyMetadata> = {
+const userConfigData: UserConfigData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
+  ...loadedUser,
   username: 'username',
   storeId: 0, 
   role: UserRoles.Administrator,
@@ -188,6 +188,7 @@ export default class FrontendStructure<
       resolve({
         version1: {
           id: "version1",
+          userId: 'user-01',
           name: "Backend Version 1",
           type: "backend",
           path: "/backend/version1",
@@ -214,6 +215,7 @@ export default class FrontendStructure<
         },
         version2: {
           id: "version2",
+          userId: 'user-02',
           name: "Backend Version 2",
           type: "backend",
           path: "/backend/version2",
@@ -249,6 +251,7 @@ export default class FrontendStructure<
         versionA: {
           id: "versionA",
           name: "Frontend Version A",
+          userId: 'user-01',
           type: "frontend",
           path: "/frontend/versionA",
           content: "Frontend version A content",
@@ -275,6 +278,7 @@ export default class FrontendStructure<
         versionB: {
           id: "versionB",
           name: "Frontend Version B",
+          userId: 'user-02',
           type: "frontend",
           path: "/frontend/versionB",
           content: "Frontend version B content",
@@ -381,6 +385,8 @@ export default class FrontendStructure<
         versions,
         data,
         changes,
+        description, structureData, getVersionNumber, calculateHash,
+        
         versionData: versionDataArray,
         latestVersion: createLatestVersion(latestVersionData),
         lastUpdated: latestVersionData.lastUpdated,
@@ -433,8 +439,7 @@ export default class FrontendStructure<
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
-export const frontendStructure: FrontendStructure<UserData, UserConfigDataWithArgs> = new FrontendStructure<UserData, UserConfigDataWithArgs>(projectPath);
-
+export const frontendStructure = new FrontendStructure<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>(projectPath);
 
 const dir = path.join(
   getAppPath(getCurrentAppInfo().versionNumber, getCurrentAppInfo().appVersion),

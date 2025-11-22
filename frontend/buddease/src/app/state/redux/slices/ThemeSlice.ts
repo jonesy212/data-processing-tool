@@ -7,7 +7,7 @@ import ThemeValidator from "@/app/components/security/validateTheme";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import React, { SetStateAction } from "react";
 import { useDispatch } from "react-redux";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 interface ThemeSetterState {
   setThemeConfig: React.Dispatch<React.SetStateAction<string>>;
@@ -113,6 +113,13 @@ interface ThemeState {
 
 const initialState: ThemeState = {
   // Core Theme
+  colorFontUsage: {
+     themeUsage: {} as ColorFontUsage;
+    themeMetrics: {} as ColorFontUsage;
+    themeSecurity: C{} as olorFontUsage;
+    themeGovernance: {} as ColorFontUsage;
+    themeCompliance: {} as ColorFontUsage;
+  },
   core: {
     theme: {
       primaryColor: "#007bff",
@@ -392,10 +399,10 @@ const themeSlice = createSlice({
   initialState,
   reducers: {
     updateTheme: (state, action: PayloadAction<Partial<Theme>>) => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
     },
     resetTheme: (state) => {
-      state.theme = {
+      state.core.theme = {
         primaryColor: "#007bff",
         secondaryColor: "#6c757d",
         fontSize: "16px",
@@ -420,7 +427,7 @@ const themeSlice = createSlice({
     // Add more theme-related reducers as needed
     toggleDarkMode: (state) => {
       state.isDarkMode = !state.isDarkMode;
-      const updatedTheme = { ...state.theme };
+      const updatedTheme = { ...state.core.theme };
       if (state.isDarkMode) {
         updatedTheme.primaryColor = "#333";
         updatedTheme.secondaryColor = "#666";
@@ -428,7 +435,7 @@ const themeSlice = createSlice({
         updatedTheme.primaryColor = "#007bff";
         updatedTheme.secondaryColor = "#6c757d";
       }
-      state.theme = updatedTheme;
+      state.core.theme = updatedTheme;
       return {
         ...state,
         theme: updatedTheme,
@@ -436,8 +443,8 @@ const themeSlice = createSlice({
     },
 
     setPrimaryColor: (state, action: PayloadAction<string>) => {
-      state.theme.primaryColor = action.payload;
-      const updatedTheme = { ...state.theme };
+      state.core.theme.primaryColor = action.payload;
+      const updatedTheme = { ...state.core.theme };
       handleThemeChangeEvent(updatedTheme);
       return {
         ...state,
@@ -445,8 +452,8 @@ const themeSlice = createSlice({
       };
     },
     setSecondaryColor: (state, action: PayloadAction<string>) => {
-      state.theme.secondaryColor = action.payload;
-      const updatedTheme = { ...state.theme };
+      state.core.theme.secondaryColor = action.payload;
+      const updatedTheme = { ...state.core.theme };
       handleThemeChangeEvent(updatedTheme);
       return {
         ...state,
@@ -455,8 +462,8 @@ const themeSlice = createSlice({
     },
 
     setFontSize: (state, action: PayloadAction<string>) => {
-      state.theme.fontSize = action.payload;
-      const updatedTheme = { ...state.theme };
+      state.core.theme.fontSize = action.payload;
+      const updatedTheme = { ...state.core.theme };
       handleThemeChangeEvent(updatedTheme);
       return {
         ...state,
@@ -464,27 +471,27 @@ const themeSlice = createSlice({
       };
     },
     setFontFamily: (state, action: PayloadAction<WritableDraft<Theme>>) => {
-      state.theme = action.payload;
+      state.core.theme = action.payload;
     },
     applyThemeConfig: (state, action: PayloadAction<Partial<Theme>>) => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
     },
     customizeThemeProperties(state, action: PayloadAction<Partial<Theme>>) {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
     },
     switchTheme: (state, action: PayloadAction<Theme>) => {
-      state.theme = action.payload;
+      state.core.theme = action.payload;
     },
 
     localizeThemeSettings: (state, action: PayloadAction<Partial<Theme>>) => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
     },
 
     handleThemeEvents: (state, action: PayloadAction<Partial<Theme>>) => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
 
       // Handle theme events
-      handleThemeEvents(state.theme);
+      handleThemeEvents(state.core.theme);
 
       // Function to handle theme change event
       const handleThemeChangeEvent = (theme: Theme) => {
@@ -529,7 +536,7 @@ const themeSlice = createSlice({
       };
       handleThemeChangeEvent(updatedTheme);
       // Call any theme event handling functions
-      handleThemeChangeEvent(state.theme);
+      handleThemeChangeEvent(state.core.theme);
       // Call theme change event handler function
 
       // Function to handle theme update event
@@ -548,7 +555,7 @@ const themeSlice = createSlice({
         // Example: Send an API request to update theme settings
         axiosInstance.put("/api/theme", theme);
       };
-      handleThemeUpdateEvent(state.theme);
+      handleThemeUpdateEvent(state.core.theme);
       // Call any theme update handling functions
       handleThemeUpdateEvent(updatedTheme);
     },
@@ -557,9 +564,9 @@ const themeSlice = createSlice({
       state,
       action: PayloadAction<Partial<Theme>>
     ): WritableDraft<ThemeState> => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
       // Validate theme settings
-      const validationErrors = ThemeValidator.validateTheme(state.theme);
+      const validationErrors = ThemeValidator.validateTheme(state.core.theme);
       if (validationErrors.length > 0) {
         throw new Error(validationErrors.join(","));
       }
@@ -567,40 +574,40 @@ const themeSlice = createSlice({
     },
 
     documentThemeSettings: (state, action: PayloadAction<Partial<Theme>>) => {
-      state.theme = { ...state.theme, ...action.payload };
+      state.core.theme = { ...state.core.theme, ...action.payload };
       ThemeLogger.logThemeUpdate('Document Theme Settings', action.payload);
     },
   
     // Optimization and Performance
     optimizeThemePerformance: (state) => {
-      optimizePerformance(state.theme); // Assume this function exists
+      optimizePerformance(state.core.theme); // Assume this function exists
       ThemeLogger.log("Theme Performance", "Theme performance optimized");
     },
 
     optimizePerformance: (state: WritableDraft<ThemeState>, action: PayloadAction<Partial<Theme>>) => {
-      const mergedTheme = mergeTheme(state.theme, action.payload);
-      state.theme = optimizePerformance(mergedTheme);
-      console.log("Theme performance optimized", state.theme);
+      const mergedTheme = mergeTheme(state.core.theme, action.payload);
+      state.core.theme = optimizePerformance(mergedTheme);
+      console.log("Theme performance optimized", state.core.theme);
     },
   
     // Analyze Theme Usage
     analyzeThemeUsage: (state, action: PayloadAction<Partial<Theme>>) => {
       const usageData = analyzeThemeUsage(action.payload); // Assume this function exists
-      state.themeUsage = { ...state.themeUsage, ...usageData };
+      state.analytics.themeUsage = { ...state.analytics.themeUsage, ...usageData };
       ThemeLogger.log("Theme Usage", "Analyzed theme usage", usageData);
     },
   
     // Visualize Theme Metrics
     visualizeThemeMetrics: (state, action: PayloadAction<Partial<Theme>>) => {
       const metricsData = visualizeThemeMetrics(action.payload); // Assume this function exists
-      state.themeMetrics = { ...state.themeMetrics, ...metricsData };
+      state.analytics.themeMetrics = { ...state.analytics.themeMetrics, ...metricsData };
       ThemeLogger.log("Theme Metrics", "Visualized theme metrics", metricsData);
     },
   
     // Secure Theme Settings
     secureThemeSettings: (state, action: PayloadAction<Partial<Theme>>) => {
       const securityData = secureThemeSettings(action.payload); // Assume this function exists
-      state.themeSecurity = { ...state.themeSecurity, ...securityData };
+      state.analytics.themeSecurity = { ...state.analytics.themeSecurity, ...securityData };
       ThemeLogger.log("Theme Security", "Secured theme settings", securityData);
     },
   
@@ -621,183 +628,183 @@ const themeSlice = createSlice({
     // Sync with Design Systems
     syncWithDesignSystems: (state, action: PayloadAction<Partial<Theme>>) => {
       const designSystemData = syncWithDesignSystems(action.payload); // Assume this function exists
-      state.themeDesignSystems = { ...state.themeDesignSystems, ...designSystemData };
+      state.development.themeDesignSystems = { ...state.development.themeDesignSystems, ...designSystemData };
       ThemeLogger.log("Design Systems", "Synced theme settings with design systems", designSystemData);
     },
   
     // Collaborate on Theme Development
     collaborateOnThemeDevelopment: (state, action: PayloadAction<Partial<Theme>>) => {
       const developmentData = collaborateOnThemeDevelopment(action.payload); // Assume this function exists
-      state.themeDevelopment = { ...state.themeDevelopment, ...developmentData };
+      state.development.development.themeDevelopment = { ...state.development.themeDevelopment, ...developmentData };
       ThemeLogger.log("Theme Development", "Collaborated on theme development", developmentData);
     },
   
     // Track Theme Changes
     trackThemeChanges: (state, action: PayloadAction<Partial<Theme>>) => {
       const changeData = trackThemeChanges(action.payload); // Assume this function exists
-      state.themeChanges = { ...state.themeChanges, ...changeData };
+      state.development.themeChanges = { ...state.development.themeChanges, ...changeData };
       ThemeLogger.log("Theme Changes", "Tracked theme changes", changeData);
     },
   
     // Backup and Restore Themes
     backupAndRestoreThemes: (state, action: PayloadAction<Partial<Theme>>) => {
       const backupData = backupAndRestoreThemes(action.payload); // Assume this function exists
-      state.themeBackup = { ...state.themeBackup, ...backupData };
+      state.development.themeBackup = { ...state.development.themeBackup, ...backupData };
       ThemeLogger.log("Theme Backup", "Backed up and restored themes", backupData);
     },
   
     // Automate Theme Deployment
     automateThemeDeployment: (state, action: PayloadAction<Partial<Theme>>) => {
       const deploymentData = automateThemeDeployment(action.payload); // Assume this function exists
-      state.themeDeployment = { ...state.themeDeployment, ...deploymentData };
+      state.development.themeDeployment = { ...state.development.themeDeployment, ...deploymentData };
       ThemeLogger.log("Theme Deployment", "Automated theme deployment", deploymentData);
     },
   
     // Manage Theme Dependencies
     manageThemeDependencies: (state, action: PayloadAction<Partial<Theme>>) => {
       const dependenciesData = manageThemeDependencies(action.payload); // Assume this function exists
-      state.themeDependencies = { ...state.themeDependencies, ...dependenciesData };
+      state.development.themeDependencies = { ...state.development.themeDependencies, ...dependenciesData };
       ThemeLogger.log("Theme Dependencies", "Managed theme dependencies", dependenciesData);
     },
   
     // Monitor Theme Health
     monitorThemeHealth: (state, action: PayloadAction<Partial<Theme>>) => {
       const healthData = monitorThemeHealth(action.payload); // Assume this function exists
-      state.themeHealth = { ...state.themeHealth, ...healthData };
+      state.quality.themeHealth = { ....quality.themeHealth, ...healthData };
       ThemeLogger.log("Theme Health", "Monitored theme health", healthData);
     },
   
     // Empower Theme Customization
     empowerThemeCustomization: (state, action: PayloadAction<Partial<Theme>>) => {
       const customizationData = empowerThemeCustomization(action.payload); // Assume this function exists
-      state.themeCustomization = { ...state.themeCustomization, ...customizationData };
+      state.quality.themeCustomization = { ...state.quality.themeCustomization, ...customizationData };
       ThemeLogger.log("Theme Customization", "Empowered theme customization", customizationData);
     },
   
     // Support Dynamic Theming
     supportDynamicTheming: (state, action: PayloadAction<Partial<Theme>>) => {
       const themingData = supportDynamicTheming(action.payload); // Assume this function exists
-      state.themeTheming = { ...state.themeTheming, ...themingData };
+      state.quality.themeTheming = { ...state.quality.themeTheming, ...themingData };
       ThemeLogger.log("Dynamic Theming", "Supported dynamic theming", themingData);
     },
   
     // Facilitate Theme Migration
     facilitateThemeMigration: (state, action: PayloadAction<Partial<Theme>>) => {
       const migrationData = facilitateThemeMigration(action.payload); // Assume this function exists
-      state.themeMigration = { ...state.themeMigration, ...migrationData };
+      state.quality.themeMigration = { ...state.quality.themeMigration, ...migrationData };
       ThemeLogger.log("Theme Migration", "Facilitated theme migration", migrationData);
     },
   
     // Resolve Theme Conflicts
     resolveThemeConflicts: (state, action: PayloadAction<Partial<Theme>>) => {
       const conflictsData = resolveThemeConflicts(action.payload); // Assume this function exists
-      state.themeConflicts = { ...state.themeConflicts, ...conflictsData };
+      state.quality.themeConflicts = { ...state.quality.themeConflicts, ...conflictsData };
       ThemeLogger.log("Theme Conflicts", "Resolved theme conflicts", conflictsData);
     },
   
     // Enhance Theme Consistency
     enhanceThemeConsistency: (state, action: PayloadAction<Partial<Theme>>) => {
       const consistencyData = enhanceThemeConsistency(action.payload); // Assume this function exists
-      state.themeConsistency = { ...state.themeConsistency, ...consistencyData };
+      state.quality.themeConsistency = { ...state.quality.themeConsistency, ...consistencyData };
       ThemeLogger.log("Theme Consistency", "Enhanced theme consistency", consistencyData);
     },
   
     // Streamline Theme Workflow
     streamlineThemeWorkflow: (state, action: PayloadAction<Partial<Theme>>) => {
       const workflowData = streamlineThemeWorkflow(action.payload); // Assume this function exists
-      state.themeWorkflow = { ...state.themeWorkflow, ...workflowData };
+      state.functionality.themeWorkflow = { ...state.functionality.themeWorkflow, ...workflowData };
       ThemeLogger.log("Theme Workflow", "Streamlined theme workflow", workflowData);
     },
   
     // Test Theme Functionality
     testThemeFunctionality: (state, action: PayloadAction<Partial<Theme>>) => {
       const functionalityData = testThemeFunctionality(action.payload); // Assume this function exists
-      state.themeFunctionality = { ...state.themeFunctionality, ...functionalityData };
+      state.functionality.themeFunctionality = { ...state.functionality.themeFunctionality, ...functionalityData };
       ThemeLogger.log("Theme Functionality", "Tested theme functionality", functionalityData);
     },
   
     // Integrate with UI Components
     integrateWithUIComponents: (state, action: PayloadAction<Partial<Theme>>) => {
       const componentsData = integrateWithUIComponents(action.payload); // Assume this function exists
-      state.themeComponents = { ...state.themeComponents, ...componentsData };
+      state.functionality.themeComponents = { ...state.functionality.themeComponents, ...componentsData };
       ThemeLogger.log("UI Components", "Integrated with UI components", componentsData);
     },
   
     // Scale Theme Across Platforms
     scaleThemeAcrossPlatforms: (state, action: PayloadAction<Partial<Theme>>) => {
       const platformsData = scaleThemeAcrossPlatforms(action.payload); // Assume this function exists
-      state.themePlatforms = { ...state.themePlatforms, ...platformsData };
+      state.functionality.themePlatforms = { ...state.functionality.themePlatforms, ...platformsData };
       ThemeLogger.log("Theme Platforms", "Scaled theme across platforms", platformsData);
     },
   
     // Share Theme Configurations
     shareThemeConfigurations: (state, action: PayloadAction<Partial<Theme>>) => {
       const configurationsData = shareThemeConfigurations(action.payload); // Assume this function exists
-      state.themeConfigurations = { ...state.themeConfigurations, ...configurationsData };
+      state.functionality.themeConfigurations = { ...state.functionality.themeConfigurations, ...configurationsData };
       ThemeLogger.log("Theme Configurations", "Shared theme configurations", configurationsData);
     },
   
     // Version Theme Configurations
     versionThemeConfigurations: (state, action: PayloadAction<Partial<Theme>>) => {
       const configurationsData = versionThemeConfigurations(action.payload); // Assume this function exists
-      state.themeConfigurations = { ...state.themeConfigurations, ...configurationsData };
+      state.functionality.themeConfigurations = { ...state.functionality.themeConfigurations, ...configurationsData };
       ThemeLogger.log("Theme Versions", "Versioned theme configurations", configurationsData);
     },
 
     setHeaderColor: (state, action: PayloadAction<string>) => {
-      state.theme.headerColor = action.payload;
+      state.core.theme.headerColor = action.payload;
     },
 
     setFooterColor: (state, action: PayloadAction<string>) => {
-      state.theme.footerColor = action.payload;
+      state.core.theme.footerColor = action.payload;
     },
 
     setBodyColor: (state, action: PayloadAction<string>) => {
-      state.theme.bodyColor = action.payload;
+      state.core.theme.bodyColor = action.payload;
     },
 
     setBorderColor: (state, action: PayloadAction<string>) => {
-      state.theme.borderColor = action.payload;
+      state.core.theme.borderColor = action.payload;
     },
     setBorderStyle: (state, action: PayloadAction<string>) => {
-      state.theme.borderStyle = action.payload;
+      state.core.theme.borderStyle = action.payload;
     },
 
     setPadding: (state, action: PayloadAction<string>) => {
-      state.theme.padding = action.payload;
+      state.core.theme.padding = action.payload;
     },
     setMargin: (state, action: PayloadAction<string>) => {
-      state.theme.margin = action.payload;
+      state.core.theme.margin = action.payload;
     },
 
     setBrandIcon: (state, action: PayloadAction<string>) => {
-      state.theme.brandIcon = action.payload;
+      state.core.theme.brandIcon = action.payload;
     },
 
     setBrandName: (state, action: PayloadAction<string>) => {
-      state.theme.brandName = action.payload;
+      state.core.theme.brandName = action.payload;
     },
 
     setBorderWidth: (state, action: PayloadAction<string>) => {
-      state.theme.borderWidth = action.payload;
+      state.core.theme.borderWidth = action.payload;
     },
     setBorderRadius: (state, action: PayloadAction<string>) => {
-      state.theme.borderRadius = action.payload;
+      state.core.theme.borderRadius = action.payload;
     },
     setBoxShadow: (state, action: PayloadAction<string>) => {
-      state.theme.boxShadow = action.payload;
+      state.core.theme.boxShadow = action.payload;
     },
     customizeTheme: (
       state,
       action: PayloadAction<Partial<ThemeCustomizationProps>>
     ) => {
-      state.theme = {
-        ...state.theme,
+      state.core.theme = {
+        ...state.core.theme,
         ...action.payload,
       };
     },
     setBackgroundColor: (state, action: PayloadAction<string>) => {
-      state.theme.backgroundColor = action.payload;
+      state.core.theme.backgroundColor = action.payload;
     },
 
     // Add more theme-related reducers as needed
@@ -878,14 +885,14 @@ export { initialState as initialThemeState };
 export type { ThemeState };
 
 // Theme selectors
-export const selectThemeCore = (state: { theme: ThemeState }) => state.theme.core;
-export const selectCurrentTheme = (state: { theme: ThemeState }) => state.theme.core.currentTheme;
-export const selectIsDarkMode = (state: { theme: ThemeState }) => state.theme.core.isDarkMode;
-export const selectThemeColors = (state: { theme: ThemeState }) => state.theme.core.theme;
-export const selectThemeManagement = (state: { theme: ThemeState }) => state.theme.management;
-export const selectThemeAnalytics = (state: { theme: ThemeState }) => state.theme.analytics;
-export const selectThemeGovernance = (state: { theme: ThemeState }) => state.theme.governance;
-export const selectThemeDevelopment = (state: { theme: ThemeState }) => state.theme.development;
-export const selectThemeQuality = (state: { theme: ThemeState }) => state.theme.quality;
-export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.theme.functionality;
-export const selectFontColor = (state: { theme: ThemeState }) => state.theme.colorFontUsage;
+export const selectThemeCore = (state: { theme: ThemeState }) => state.core.theme.core;
+export const selectCurrentTheme = (state: { theme: ThemeState }) => state.core.theme.core.currentTheme;
+export const selectIsDarkMode = (state: { theme: ThemeState }) => state.core.theme.core.isDarkMode;
+export const selectThemeColors = (state: { theme: ThemeState }) => state.core.theme.core.theme;
+export const selectThemeManagement = (state: { theme: ThemeState }) => state.core.theme.management;
+export const selectThemeAnalytics = (state: { theme: ThemeState }) => state.core.theme.analytics;
+export const selectThemeGovernance = (state: { theme: ThemeState }) => state.core.theme.governance;
+export const selectThemeDevelopment = (state: { theme: ThemeState }) => state.core.theme.development;
+export const selectThemeQuality = (state: { theme: ThemeState }) => state.core.theme.quality;
+export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.core.theme.functionality;
+export const selectFontColor = (state: { theme: ThemeState }) => state.core.theme.colorFontUsage;

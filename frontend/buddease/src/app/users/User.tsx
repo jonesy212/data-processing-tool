@@ -1,7 +1,5 @@
 // User.tsx
-import {
-    fetchUserAreaDimensions
-} from "@/app/config/MetaDataOptions";
+import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";

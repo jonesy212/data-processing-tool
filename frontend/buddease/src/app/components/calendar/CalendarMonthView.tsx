@@ -1,9 +1,11 @@
 // MonthView.jsx
+// import CalendarMonth from '@/CalendarMonthView';
 import { TaskActions } from "@/app/actions/TaskActions";
 import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
 import TaskList from "@/app/components/lists/TaskList";
-import CryptoTransaction from "@/app/crypto/CryptoTransaction";
-import { ContentPost } from "@/app/models/content/ContentPost";
+import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
+import { ContentPost } from '@/app/typings/contentTypes'
+import { TaskEntity } from '@/app/typings/entites/TaskEntity'
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
@@ -17,10 +19,10 @@ import {
 import { rootStores } from "@/app/state/stores/RootStores";
 import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import React from "react";
 import { useDispatch } from "react-redux";
 import CalendarMonth from "./CalendarMonth";
-// import CalendarMonth from '@/CalendarMonthView';
  import * as taskApi from "@/app/api/TasksApi";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { TaskState } from "@/app/state/redux/slices/TaskSlice";
@@ -29,9 +31,18 @@ import { MonthInfo } from "./Month";
 
 import { TaskCollection } from "@/app/actions/SnapshotActions";
 import { updateTaskDetails } from "@/app/state/redux/slices/ContentSlice";
-const {notify} = useNotification;
 
-interface MonthViewProps extends CommonCalendarProps {
+
+const { notify } = useNotification();
+
+interface MonthViewProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> extends CommonCalendarProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   selectedProject: (state: RootState, projectId: string) => Project | null;
   month: MonthInfo[]; // Add month prop
   year: YearInfo[]; // Add year prop

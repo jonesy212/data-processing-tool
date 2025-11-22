@@ -39,7 +39,7 @@ import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { createDataStore, DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { StorePropAttachment, StorePropEntity, StorePropExcludedFields, StorePropIncludedFields, StorePropK, StorePropMeta } from '@/app/typings/entities/StorePropEntity';
+import { StorePropAttachment, StorePropEntity, StorePropExcludedFields, StorePropIncludedFields, StorePropK, StorePropMeta, StorePropStructuredMetadata } from '@/app/typings/entities/StorePropEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from "@/app/versions/Version";

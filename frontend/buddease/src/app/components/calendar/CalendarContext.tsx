@@ -82,7 +82,7 @@ type CalendarContextType<
 };
 
 // Create the context
-const CalendarContext = createContext<CalendarContextType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(
+const CalendarContext = createContext<CalendarContextType<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> | undefined>(
   undefined
 );
 
@@ -107,8 +107,8 @@ export const CalendarProvider: React.FC<CalendarContextProps<T, K, Meta, Attachm
   // Function to update calendar data
   const updateCalendarData = (
     newData:
-      | SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-      | ((prevState: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[])
+      | SimpleCalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>[]
+      | ((prevState: SimpleCalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>[]) => SimpleCalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>[])
   ) => {
     setCalendarData(newData);
   };

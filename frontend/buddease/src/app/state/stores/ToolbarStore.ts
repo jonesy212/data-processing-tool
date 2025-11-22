@@ -1,15 +1,14 @@
 import { action, makeAutoObservable } from 'mobx';
 
 import { ToolbarActions } from '@/app/actions/ToolbarActions';
-import { Theme } from '@/app/components/libraries/ui/theme/Theme';
-import { User } from '@/app/components/users/User';
+import { Theme } from '@/app/libraries/ui/theme/Theme';
+import { User } from '@/app/users/User';
 import { ParticipantData } from '@/app/pages/management/ParticipantManagementPage';
-import featureStore from '@/featureStateManagement';
+import featureStore from '@/app/state/featureStateManagement';
 import { AlignmentOptions, ToolbarState } from '@/app/state/redux/slices/toolbarSlice';
-import { useDispatch } from 'react-redux';
-const dispatch = useDispatch();
 
 export class ToolbarStore {
+  theme: Theme;
   state: ToolbarState = {
     isFeatureEnabled: false,
     isToolbarOpen: false,
@@ -20,9 +19,13 @@ export class ToolbarStore {
     order: 0,
     fontSize: 14,
     fontColor: "#000000",
+    themeType: '',
     isBold: false,
     isItalic: false,
     isUnderline: false,
+    // ADD THESE PROPERTIES:
+    toolbarBackgroundColor: "#ffffff", // default toolbar background
+    toolbarFontColor: "#000000", // default toolbar font color
     leftToolbar: {
       isVisible: true,
       alignment: AlignmentOptions.LEFT,
@@ -39,8 +42,8 @@ export class ToolbarStore {
     screenSharingEnabled: false,
     participantManagementEnabled: false,
     selectedToolbar: null,
-      toolbars: [],
-      x: 0,
+    toolbars: [],
+    x: 0,
     y: 0,
   };
 
@@ -65,70 +68,48 @@ export class ToolbarStore {
       showParticipantManagementModal: action,
       addParticipant: action,
       removeParticipant: action,
-      // Add more actions here as needed
+      // ADD THESE ACTIONS:
+      setToolbarBackgroundColor: action,
+      setToolbarFontColor: action,
+      changeToolbarBackgroundColor: action,
+      changeToolbarFontColor: action,
     });
   }
 
   // Methods to interact with toolbar state
 
   toggleFeature = (userId: User, feature: string, isEnabled: boolean) => {
-    // Example logic to toggle a feature
-    // Replace with your actual implementation
     if (isEnabled) {
       console.log(`Enabling feature ${feature} for user ${userId}`);
-      // Dispatch action to update state if using Redux toolkit
-      dispatch(ToolbarActions.enableFeature(feature));
-      this.state.isFeatureEnabled = true; // Example update to state
+      this.state.isFeatureEnabled = true;
     } else {
       console.log(`Disabling feature ${feature} for user ${userId}`);
-      // Dispatch action to update state if using Redux toolkit
-      // dispatch(ToolbarActions.disableFeature(feature));
-      this.state.isFeatureEnabled = false; // Example update to state
+      this.state.isFeatureEnabled = false;
     }
   };
 
   enableFeature = (feature: string) => {
-    // Example logic to enable a feature
-    // Replace with your actual implementation
     console.log(`Enabling feature: ${feature}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.enableFeature(feature));
-    this.state.isFeatureEnabled = true; // Example update to state
+    this.state.isFeatureEnabled = true;
   };
 
   disableFeature = (feature: string) => {
-    // Example logic to disable a feature
-    // Replace with your actual implementation
     console.log(`Disabling feature: ${feature}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.disableFeature(feature));
-    this.state.isFeatureEnabled = false; // Example update to state
+    this.state.isFeatureEnabled = false;
   };
 
   showToolbar = () => {
-    // Example logic to show the toolbar
-    // Replace with your actual implementation
     console.log('Showing toolbar');
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.showToolbar());
-    this.state.isToolbarOpen = true; // Example update to state
+    this.state.isToolbarOpen = true;
   };
 
   hideToolbar = () => {
-    // Example logic to hide the toolbar
-    // Replace with your actual implementation
     console.log('Hiding toolbar');
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.hideToolbar());
-    this.state.isToolbarOpen = false; // Example update to state
+    this.state.isToolbarOpen = false;
   };
 
   resetToolbarState = () => {
-    // Example logic to reset toolbar state
-    // Replace with your actual implementation
     console.log('Resetting toolbar state');
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.resetToolbarState());
     this.state = {
       ...this.state,
       isFeatureEnabled: false,
@@ -140,6 +121,8 @@ export class ToolbarStore {
       order: 0,
       fontSize: 14,
       fontColor: "#000000",
+      toolbarBackgroundColor: "#ffffff",
+      toolbarFontColor: "#000000",
       isBold: false,
       isItalic: false,
       isUnderline: false,
@@ -160,145 +143,132 @@ export class ToolbarStore {
       participantManagementEnabled: false,
       selectedToolbar: null,
       toolbars: [],
+      x: 0,
+      y: 0,
     };
   };
 
   setToolbarSize = (size: number) => {
-    // Example logic to set toolbar size
-    // Replace with your actual implementation
     console.log(`Setting toolbar size to ${size}`);
-    // Dispatch action to update state if using Redux toolkit
-    dispatch(ToolbarActions.setToolbarSize(size));
-    this.state.fontSize = size; // Example update to state
+    this.state.fontSize = size;
   };
-    
     
   addFeature = (name: string, description: string) => {
     featureStore.addFeature(name, description);
   };
 
-  // Example method to remove feature from FeatureStore
   removeFeature = (featureId: string) => {
     featureStore.removeFeature(featureId);
   };
 
-  // Example method to set current feature in FeatureStore
   setCurrentFeature = (featureId: string) => {
     featureStore.setCurrentFeature(featureId);
   };
 
-
   setPosition = (x: number, y: number) => {
-    // Example logic to set toolbar position
-    // Replace with your actual implementation
     console.log(`Setting toolbar position to (${x}, ${y})`);
-    // Dispatch action to update state if using Redux toolkit
-    dispatch(ToolbarActions.setPosition({ x, y }));
-    // Example update to state
-      // Modify state or perform other actions as needed
-      this.state.x = x;
-      this.state.y = y;
-      this.state.isDraggable = true;
-      this.state.isFloating = true;
-      
+    this.state.x = x;
+    this.state.y = y;
+    this.state.isDraggable = true;
+    this.state.isFloating = true;
   };
 
   setTheme = (theme: Theme) => {
-    // Example logic to set toolbar theme
-    // Replace with your actual implementation
     console.log(`Setting toolbar theme: ${theme}`);
-    // Dispatch action to update state if using Redux toolkit
-    dispatch(ToolbarActions.setTheme({ theme }));
-    // Example update to state
-      // Modify state or perform other actions as needed
-      this.state.theme = theme;
-      
+    this.theme = theme;
   };
 
   customizeToolbar = (backgroundColor: string, textColor: string) => {
-    // Example logic to customize toolbar appearance
-    // Replace with your actual implementation
     console.log(`Customizing toolbar: background=${backgroundColor}, text=${textColor}`);
-    // Dispatch action to update state if using Redux toolkit
-    dispatch(ToolbarActions.customizeToolbar({ backgroundColor, textColor }));
-    // Example update to state
-    // Modify state or perform other actions as needed
+    this.state.toolbarBackgroundColor = backgroundColor;
+    this.state.toolbarFontColor = textColor;
   };
 
   setLanguage = (language: string) => {
-    // Example logic to set toolbar language
-    // Replace with your actual implementation
     console.log(`Setting toolbar language: ${language}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.setLanguage(language));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
 
   setUserPreferences = (preferences: Record<string, any>) => {
-    // Example logic to set user preferences
-    // Replace with your actual implementation
     console.log(`Setting user preferences: ${JSON.stringify(preferences)}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.setUserPreferences({ preferences }));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
 
   fetchParticipantData = (userId: User, participantData: ParticipantData[]) => {
-    // Example logic to fetch participant data
-    // Replace with your actual implementation
     console.log(`Fetching participant data for user ${userId}: ${JSON.stringify(participantData)}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.fetchParticipantData({ userId, participantData }));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
 
   showParticipantManagementModal = (show: boolean) => {
-    // Example logic to show/hide participant management modal
-    // Replace with your actual implementation
     console.log(`Showing participant management modal: ${show}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.showParticipantManagementModal(show));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
 
   addParticipant = (userId: User, participant: ParticipantData) => {
-    // Example logic to add a participant
-    // Replace with your actual implementation
     console.log(`Adding participant for user ${userId}: ${JSON.stringify(participant)}`);
-    // Dispatch action to update state if using Redux toolkit
-    // dispatch(ToolbarActions.addParticipant({ userId, participant }));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
 
   removeParticipant = (userId: User, participantId: string) => {
-    // Example logic to remove a participant
-    // Replace with your actual implementation
     console.log(`Removing participant ${participantId} for user ${userId}`);
-    // Dispatch action to update state if using Redux toolkit
-    dispatch(ToolbarActions.removeParticipant({ userId, participantId }));
-    // Example update to state
-    // Modify state or perform other actions as needed
   };
-    
-    
+
+  // NEW METHODS FOR TOOLBAR COLORS:
+  setToolbarBackgroundColor = (color: string) => {
+    console.log(`Setting toolbar background color to: ${color}`);
+    this.state.toolbarBackgroundColor = color;
+  };
+
+  setToolbarFontColor = (color: string) => {
+    console.log(`Setting toolbar font color to: ${color}`);
+    this.state.toolbarFontColor = color;
+  };
 
   changeToolbarBackgroundColor = (color: string) => {
-    setToolbarBackgroundColor(color);
+    console.log(`Changing toolbar background color to: ${color}`);
+    this.state.toolbarBackgroundColor = color;
+    
     // Additional logic specific to toolbar
+    if (color === '#ffffff') {
+      console.log("Toolbar background set to white");
+    }
+    
+    // You can add validation, analytics, etc. here
   };
 
   changeToolbarFontColor = (color: string) => {
-    setToolbarFontColor(color);
+    console.log(`Changing toolbar font color to: ${color}`);
+    this.state.toolbarFontColor = color;
+    
     // Additional logic specific to toolbar
+    const backgroundColor = this.state.toolbarBackgroundColor;
+    console.log(`Current toolbar background: ${backgroundColor}`);
+    
+    // You can add contrast validation here
+    if (!this.isAccessibleContrast(color, backgroundColor)) {
+      console.warn("Low contrast between toolbar text and background");
+    }
   };
 
-  // Additional methods can be added as per your application's requirements
+  // Helper method for contrast checking
+  private isAccessibleContrast = (textColor: string, backgroundColor: string): boolean => {
+    // Simple contrast check - implement proper contrast ratio calculation
+    return textColor !== backgroundColor;
+  };
+
+  // Getter methods to access state
+  get toolbarBackgroundColor() {
+    return this.state.toolbarBackgroundColor;
+  }
+
+  get toolbarFontColor() {
+    return this.state.toolbarFontColor;
+  }
+
+  get currentToolbarState() {
+    return this.state;
+  }
 }
 
-export const useToolbarStore = () => new ToolbarStore();
-export type { ToolbarState }; // Exporting ToolbarState if needed
+// Create a singleton instance
+export const toolbarStore = new ToolbarStore();
+
+// Hook for React components
+export const useToolbarStore = () => toolbarStore;
+
+export type { ToolbarState };

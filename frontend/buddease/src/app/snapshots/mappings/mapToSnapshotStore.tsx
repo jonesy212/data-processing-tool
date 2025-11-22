@@ -114,24 +114,6 @@ function mapSnapshotSync<
 }
 
 
-
-// Synchronous version
-function mapSnapshotSync<  
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
-): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
-  return mapSnapshotCore(snapshot, mapFn, callback);
-}
-
-
 const someAsyncOperation: AsyncOperation<string | undefined> = async (
   snapshotId,
   criteria

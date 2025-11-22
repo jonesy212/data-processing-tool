@@ -2,7 +2,7 @@
 import path from 'path'
 import { Correction, CorrectionReport } from '@/app/generators/corrections/CorrectionGenerator'
 import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
-import { ProjectFile } from '@/app/scripts/generate-commands-doc'
+import { ProjectFile } from '@/app/scripts/generateTree'
 
 export interface ComponentBreakdown {
     name: string;

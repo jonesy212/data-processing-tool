@@ -1,10 +1,11 @@
+import { Idea } from '@/app/users/Ideas';
 import { apiService } from "@/app/api/ApiDetails";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import Logger from "@/app/libraries/logging/Logger";
+import Logger from "@/app/logging/Logger";
 import { Task } from "@/app/models/tasks/Task";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/app/typings/entities/TaskEntity';
@@ -14,23 +15,32 @@ import { action, observable, runInAction } from "mobx";
 
 const API_BASE_URL = endpoints.tasks;
 
+
+/* ================================================================== */
+/*  1.  generic singleton helper (module-scoped)                      */
+/* ================================================================== */
+const TASK_CACHE = new Map<string, TaskService<any, any, any, any, any, any>>();
+
+function getCacheKey<
+  T extends TaskEntity,
+  K extends T = T,
+  Meta extends TaskMeta = TaskMeta,
+  AttachmentType extends TaskAttachment = TaskAttachment,
+  ExcludedFields extends keyof T = TaskExcludedFields,
+  IncludedFields extends keyof T = keyof T
+>(): string {
+  // stable key from the *actual* types passed at call-site
+  return `${T.name}-${K.name}-${Meta.name}-${AttachmentType.name}-${String(ExcludedFields)}-${String(IncludedFields)}`;
+}
+
 class TaskService<
   T extends TaskEntity,
   K extends T = T,
   Meta extends TaskMeta = TaskMeta,
   AttachmentType extends TaskAttachment = TaskAttachment,
   ExcludedFields extends keyof T = TaskExcludedFields,
-  IncludedFields extends keyof T = TaskIncludedFields
+  IncludedFields extends keyof T = keyof T
 > {
-
-  static instance: TaskService<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
-  static getInstance() {
-    if (!this.instance) {
-      this.instance = new TaskService();
-    }
-    return this.instance;
-  }
 
   @observable tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   @observable loading = false;
@@ -157,15 +167,14 @@ class TaskService<
 
   @action
   fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>> => {
-    const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
+    const endpoint = `${API_BASE_URL}/${taskId}`;
     return apiService.callApi(endpoint, requestData)
       .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>>(apiEndpoint))
       .then(response => response.data)
-      .catch(error => {
+      .catch((error: unknown) => {
         throw new Error(`Failed to fetch task with ID ${taskId}`);
       });
   };
-
 
   @action
   fetchUpdatedData = async (
@@ -409,7 +418,7 @@ class TaskService<
     } catch (error: any) {
       Logger.error(error);
       apiNotificationsService.error(
-        NOTIFICATION_MESSAGES.Task.TASK_MARKED_IN_PROGRESS_FAILED
+        NOTIFICATION_MESSAGES.Tasks.TASK_MARKED_IN_PROGRESS_FAILED
       );
     }
   }

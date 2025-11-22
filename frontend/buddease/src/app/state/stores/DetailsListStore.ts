@@ -1,5 +1,13 @@
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 // DetailsListStore.ts
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { DetailsEntity,
+DetailsK,
+DetailsMeta,
+DetailsAttachment,
+DetailsExcludedFields,
+DetailsIncludedFields } from '@/app/typings/entities/DetailsEntity'
 import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
@@ -37,9 +45,10 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { data, SnapshotConfig, SnapshotDataType } from "@/app/snapshots";
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 
-import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
-import { K, T } from '@/app/models/data/dataStoreMethods';
+
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
@@ -51,10 +60,10 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { useMetadata } from "@/app/config/useMetadata";
 
 const { notify } = useNotification();
-const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
-const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
+
+const { latestVersion = createLatestVersion<DetailsEntity, DetailsK, DetailsMeta, DetailsAttachment, DetailsExcludedFields, DetailsIncludedFields>(), ...rest } = data;
+const currentMetadata = useMetadata<ProjectEntity, ProjectK>(area);
+const currentMeta = useMeta<ProjectEntity, ProjectK>(area);
 
 // Union type of all status enums
 export type AllStatus =
@@ -68,6 +77,17 @@ export type AllStatus =
   | PriorityTypeEnum
   | ProductStatus
   | SecurityStatus;
+
+// Create a compatible DetailsItemCommon type that works with your specific types
+type DetailsItemCommon<
+  T extends BaseDataEntity = DetailsEntity,
+  K extends T = DetailsK,
+  Meta extends DefaultMeta<T, K> = DetailsMeta,
+  AttachmentType extends Attachment = DetailsAttachment,
+  ExcludedFields extends keyof T = DetailsExcludedFields,
+  IncludedFields extends keyof T = DetailsIncludedFields
+> = DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
 
 
 // Define a generic interface for details
@@ -224,14 +244,14 @@ class DetailsListStoreClass <
     return "";
   }
 
-  private createDefaultPhase(): Phase<PhaseData<BaseData<any>>, K> {
+  private createDefaultPhase(): Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {
       id: "",
       name: "",
       description: "",
       startDate: new Date(),
       projectId: "",
-      subPhases: [], // Set subPhases as an empty array to meet the expected type
+      subPhases: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Set subPhases as an empty array to meet the expected type
       endDate: new Date() ? new Date() : undefined,
       label: {},
       currentMeta: currentMeta,
@@ -977,10 +997,10 @@ class DetailsListStoreClass <
           },
           duration: 0,
         },
-        data: {} as DetailsItemExtended<T, K>["data"],
+        data: {} as DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["data"],
         isActive: false,
         type: "details",
-        analysisResults: {} as DetailsItemExtended<T, K>["analysisResults"],
+        analysisResults: {} as DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["analysisResults"],
         updatedAt: undefined,
       });
     }
@@ -1045,7 +1065,7 @@ class DetailsListStoreClass <
     }
   }
 
-  addDetailsItem(detailsItem: DetailsItemExtended<T, K>): void {
+  addDetailsItem(detailsItem: DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     let status: AllStatus = detailsItem.status || TaskStatus.Pending;
 
     this.details = {
@@ -1066,17 +1086,18 @@ class DetailsListStoreClass <
       return;
     }
 
-    const newDetailsItem: DetailsItemExtended<T, K> = {
+    const newDetailsItem: DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: Date.now().toString(),
       title: this.detailsTitle,
       status: TaskStatus.Pending,
       description: this.detailsDescription,
       createdBy: this.createdBy,
       // data: {} as Data,
-      phase: {} as DetailsItemExtended<T, K>["phase"],
+      phase: {} as DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["phase"],
       isActive: false,
       type: "details",
       _id: "",
+      date: new Date(),
       analysisResults: [],
       updatedAt: undefined,
       currentMeta: this.currentMeta,
@@ -1091,7 +1112,7 @@ class DetailsListStoreClass <
     this.detailsStatus = TaskStatus.Pending;
   }
 
-  setDetails(details: Record<string, DetailsItemExtended<T, K>[]>): void {
+  setDetails(details: Record<string, DetailsItemExtended<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>): void {
     this.details = details;
   }
 

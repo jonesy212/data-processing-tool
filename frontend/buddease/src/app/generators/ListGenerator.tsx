@@ -1,4 +1,12 @@
 import { BaseData, Data } from '@/app/models/data/Data';
+import { 
+  DetailsEntity, 
+  DetailsK, 
+  DetailsMeta, 
+  DetailsAttachment, 
+  DetailsExcludedFields, 
+  DetailsIncludedFields 
+} from "@/app/typings/entities/DetailsEntity";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import DetailsListItem from '@/app/components/models/data/DetailsListItem'
 import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes'
@@ -27,17 +35,19 @@ type DetailsItemCommon<
   IncludedFields extends keyof T = keyof T
   > = DetailsItem<AllProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
+
 interface ListGeneratorProps<
-  T extends BaseDataEntity = BaseDataRoot,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  T extends BaseDataEntity = DetailsEntity,
+  K extends T = DetailsK,
+  Meta extends DefaultMeta<T, K> = DetailsMeta,
+  AttachmentType extends Attachment = DetailsAttachment,
+  ExcludedFields extends keyof T = DetailsExcludedFields,
+  IncludedFields extends keyof T = DetailsIncludedFields
 > {
   items: DetailsItemCommon<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   onItemClick?: (contentItemId: DetailsItemCommon<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, tracker: K, event?: ReactiveMouseEvent) => void;
 }
+
 
 const ListGenerator = <
   T extends BaseDataEntity = BaseDataRoot,

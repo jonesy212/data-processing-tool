@@ -1,8 +1,17 @@
 // Collaborator.ts
-import { Member } from "@/app/members/Member";
+import { Member } from "@/app/models/members/Member";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
-export interface Collaborator extends Member {
+export interface Collaborator<
+  T extends BaseDataEntity,
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> extends Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   collaborations: number; // Number of collaborations
   // Add any other properties specific to Collaborator
 }
@@ -17,7 +26,14 @@ export interface Contribution {
   date?: string;
 }
 
-interface Contributor extends Member {
+interface Contributor<
+  T extends BaseDataEntity,
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>  extends Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   contributions: Contribution[]; // detailed breakdown per project
   joinedAt?: Date;
   active?: boolean;

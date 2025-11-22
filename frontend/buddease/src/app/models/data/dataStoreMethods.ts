@@ -25,6 +25,8 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { Version } from "@/app/versions/Version";
 import { BaseData, Data } from "./Data";
+import { UserSettings } from "@/app/config/UserSettings";
+import { User } from "@/app/users/User";
 
 // Assuming T is defined in your context
 type T = BaseDataEntity; // Replace with the appropriate type if necessary
@@ -44,7 +46,11 @@ export interface UserConfigData<
   // Add configuration-specific fields here
   settings: UserSettings;
   enabledFeatures: string[];
-  userSpecificData: T;
+  userSpecificData: {
+    customField?: string;
+    additionalField?: number;
+    [key: string]: any; // allow extras
+  };
 }
 
 type ConvertMeta<

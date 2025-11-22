@@ -1,10 +1,84 @@
 // TsConfigAnalyzer.ts
-import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer'
+import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
+import ts from 'typescript';
+
+function checkCompilerOptionDeprecation(fileName: string, content: string): Correction | null {
+  if (!content.trim()) return null;
+
+  try {
+    const tsConfig = JSON.parse(content);
+    const compilerOptions = tsConfig.compilerOptions || {};
+
+    // Check for deprecated VALUES, not just the existence of properties
+    if (compilerOptions.moduleResolution === 'node') {
+      return {
+        id: 'ts-deprecation-module-resolution-node',
+        type: 'warning',
+        severity: 'medium',
+        file: fileName,
+        message: 'TypeScript moduleResolution "node" is deprecated',
+        code: '"moduleResolution": "node"',
+        fix: 'Use "node10" or "bundler" instead of "node" for module resolution',
+        suggestion: 'Use "node10" or "bundler" instead of "node" for module resolution',
+        category: 'compilation' as const
+      };
+    }
+
+    // Check for other deprecated options that should be removed entirely
+    const removedOptions: Record<string, string> = {
+      'out': 'Use "outDir" instead',
+      'keyofStringsOnly': 'This option is deprecated and should be removed',
+      'noStrictGenericChecks': 'This option is deprecated and should be removed',
+      'suppressExcessPropertyErrors': 'This option is deprecated and should be removed',
+      'suppressImplicitAnyIndexErrors': 'This option is deprecated and should be removed',
+      'noImplicitUseStrict': 'This option is deprecated in favor of module formatting',
+      'noErrorTruncation': 'This option is deprecated and should be removed'
+    };
+
+    for (const [option, fix] of Object.entries(removedOptions)) {
+      if (compilerOptions.hasOwnProperty(option)) {
+        return {
+          id: `ts-deprecation-${option}`,
+          type: 'warning',
+          severity: 'medium',
+          file: fileName,
+          message: `TypeScript compiler option "${option}" is deprecated`,
+          code: JSON.stringify({ [option]: compilerOptions[option] }, null, 2),
+          fix: fix,
+          suggestion: fix,
+          category: 'compilation' as const
+        };
+      }
+    }
+
+    // Optional: Suggest updating very old targets
+    if (compilerOptions.target === 'es3' || compilerOptions.target === 'es5') {
+      return {
+        id: 'ts-deprecation-old-target',
+        type: 'suggestion',
+        severity: 'low', 
+        file: fileName,
+        message: `Consider updating from target "${compilerOptions.target}" to a newer ECMAScript version`,
+        code: `"target": "${compilerOptions.target}"`,
+        fix: 'Use "es2017" or newer for better performance and features',
+        suggestion: 'Use "es2017" or newer for better performance and features',
+        category: 'compilation' as const
+      };
+    }
+
+  } catch (error) {
+    console.warn('Failed to check for deprecated TypeScript options:', error);
+  }
+
+  return null;
+}
+
 
 export class TsConfigAnalyzer extends ConfigFileAnalyzer {
+  
   protected getConfigPaths(): string[] {
     return ['./tsconfig.json', './tsconfig.build.json'];
   }
@@ -15,6 +89,15 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
     try {
       const content = await fs.promises.readFile(configPath, 'utf8');
       
+      const tsConfig = JSON.parse(content);      // <-- this works
+
+      /* 1.  deprecation guard  */
+      const depCorr = checkCompilerOptionDeprecation(configPath, content);
+      if (depCorr) corrections.push(depCorr);
+
+      /* 2.  module-resolution check (sync)  */
+      corrections.push(...this.analyzeModuleResolution(content, configFile));
+
       // Check if file is empty first
       if (content.trim().length === 0) {
         corrections.push(this.createCorrection(
@@ -30,7 +113,6 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
         return corrections;
       }
       
-      const tsConfig = JSON.parse(content);
       const compilerOptions = tsConfig.compilerOptions || {};
       const isReactNative = this.isReactNativeProject();
 
@@ -89,6 +171,32 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
           ));
         }
       }
+
+      const currentModuleResolution = compilerOptions.moduleResolution;
+      if (currentModuleResolution && currentModuleResolution !== 'node' && currentModuleResolution !== 'bundler' && currentModuleResolution !== 'node10') {
+        corrections.push(this.createCorrection(
+          'tsconfig-module-resolution-rn',
+          'warning',
+          'medium',
+          'Recommended module resolution for React Native',
+          configPath,
+          `Current moduleResolution: "${currentModuleResolution}" - React Native works best with "bundler" or "node" resolution`,
+          'Set "moduleResolution": "bundler" for Metro bundler or "node" for compatibility',
+          'compilation'
+        ));
+      } else if (!currentModuleResolution) {
+        corrections.push(this.createCorrection(
+          'tsconfig-module-resolution-rn',
+          'suggestion',
+          'medium',
+          'Module resolution not specified for React Native',
+          configPath,
+          'Missing moduleResolution setting',
+          'Set "moduleResolution": "bundler" for better Metro bundler performance',
+          'compilation'
+        ));
+      }
+    
 
       // Check for strict mode with proper description
       if (!compilerOptions.strict) {
@@ -247,6 +355,7 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
       }
 
     } catch (error) {
+      console.error('TsConfigAnalyzer internal error:', error); // ← add this
       const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
 
       corrections.push(this.createCorrection(
@@ -357,5 +466,33 @@ export class TsConfigAnalyzer extends ConfigFileAnalyzer {
   private extractMajorVersion(version: string): number {
     const match = version.match(/[0-9]+/);
     return match ? parseInt(match[0]) : 0;
+  }
+
+  private analyzeModuleResolution(content: string, configFile: string): Correction[] {
+    const corrections: Correction[] = [];
+
+    try {
+      const tsConfig = JSON.parse(content);
+      const compilerOptions = tsConfig.compilerOptions || {};
+
+      // Only suggest adding moduleResolution if it's missing
+      if (!compilerOptions.moduleResolution) {
+        corrections.push(this.createCorrection(
+          'tsconfig-missing-module-resolution',
+          'suggestion',
+          'medium',
+          'moduleResolution not specified',
+          configFile,
+          'Missing moduleResolution field',
+          'Set "moduleResolution": "bundler" for modern bundlers or "node10" for Node.js',
+          'compilation'
+        ));
+      }
+
+    } catch (error) {
+      // Ignore parse errors - they're handled elsewhere
+    }
+
+    return corrections;
   }
 }

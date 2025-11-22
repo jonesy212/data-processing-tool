@@ -9,7 +9,8 @@ import {
   DetailsExcludedFields, 
   DetailsIncludedFields 
 } from "@/app/typings/entities/DetailsEntity";
-import { BaseDataEntity, DefaultMeta, Attachment, DefaultExcludedFields } from "@/app/config/BaseConfig";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Use the specific DetailsEntity types
 interface ChecklistItemProps<

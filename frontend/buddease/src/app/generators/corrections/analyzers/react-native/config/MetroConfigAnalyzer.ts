@@ -11,6 +11,9 @@ export class MetroConfigAnalyzer extends ConfigFileAnalyzer {
     protected async analyzeConfigFile(configPath: string, configFile: string): Promise<Correction[]> {
     const corrections: Correction[] = [];
     
+    const METRO_OWNED = new Set(['metro.config.js', 'metro.config.ts']);
+      if (METRO_OWNED.has(path.basename(configFile))) return corrections;
+
     try {
       const content = await fs.promises.readFile(configPath, 'utf8');
       

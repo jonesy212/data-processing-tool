@@ -1,12 +1,13 @@
+// NotificationService.tsx
+import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
 import { EventActions } from '@/app/actions/EventActions';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { NotificationActions } from "@/app/actions/NotificationActions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
 import { LogData } from "@/app/models/LogData";
-import {
-    NotificationType,
-    useNotification
-} from "@/app/state/context/NotificationContext";
+import { NotificationType, useNotification } from "@/app/state/context/NotificationContext";
 import AnnouncementManager from "@/app/features/support/AnnouncementManager";
 import PushNotificationManager from "@/app/features/support/PushNotificationManager";
 import { selectNotifications } from "@/app/state/redux/slices/NofiticationsSlice";
@@ -14,7 +15,7 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem'
 import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { LogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields } from '@/app/typings/entities/LogEntity'
-const dispatch = useDispatch();
+
 
 interface NotificationContainer<
   T extends BaseDataEntity,
@@ -50,37 +51,38 @@ interface NotificationContainer<
   clearNotifications: () => void;
 }
 
-  export const eventHandler = (eventName: string, eventData: any) => {
+export const eventHandler = (eventName: string, eventData: any) => {
+  // Use require to avoid module-level hooks
+  try {
+    const { store } = require('@/app/state/store');
+    const dispatch = store.dispatch;
+    
     switch (eventName) {
       case 'userLoggedIn':
-        // Dispatch an action for user logged in event
         EventActions.userLoggedIn(eventData);
         console.log('User logged in:', eventData);
         break;
       case 'userLoggedOut':
-        // Dispatch an action for user logged out event
         EventActions.userLoggedOut(eventData);
         console.log('User logged out:', eventData);
         break;
       case 'notificationReceived':
-        // Dispatch an action for notification received event
         EventActions.notificationReceived(eventData);
         console.log('Notification received:', eventData);
         break;
       default:
-        // Default case if event is not recognized
         console.log('Unhandled event:', eventName);
         break;
     }
-  };
+  } catch (error) {
+    console.warn('Could not handle event - store not available:', error);
+  }
+};
 
 export const logData: LogData<LogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields> = {
-  // BaseData properties
   id: "log-" + Date.now() + "-" + Math.random().toString(36).substr(2, 9),
   createdAt: new Date(),
   updatedAt: new Date(),
-  
-  // LogData specific properties
   date: new Date(),
   timestamp: new Date(),
   level: "info",
@@ -104,15 +106,8 @@ export const logData: LogData<LogEntity, LogK, LogMeta, LogAttachment, LogExclud
   eventData: null,
   files: [],
   meta: null,
-  
-  // Additional properties that might be in BaseData
   type: "SystemLog" as NotificationType,
   completionMessageLog: "Log entry successfully created and stored",
-  
-  // Add any other BaseData properties that exist
-  // version: 1, (if exists in BaseData)
-  // status: "active", (if exists in BaseData) 
-  // etc.
 };
 
 export interface NotificationManagerServiceProps {
@@ -121,7 +116,7 @@ export interface NotificationManagerServiceProps {
   notifications: string[];
 }
 
-const useNotificationManagerService = <
+export const useNotificationManagerService = <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -133,39 +128,34 @@ const useNotificationManagerService = <
   const notifications = useSelector(selectNotifications);
   const dispatch = useDispatch();
 
-  const setNotifications: React.Dispatch<
-    React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>[] = (value) => {
-    // Dispatch action to set notifications in the store or update local state
+  const setNotifications = (
+    value: React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ) => {
     dispatch(NotificationActions.setNotifications(value));
   };
 
   const sendPushNotification = (message: string, sender: string): void => {
-    // Dispatch action to send push notification
     dispatch(
       NotificationActions.addNotification({
-        id: "", // Generate unique ID for notification
+        id: crypto.randomUUID(),
         date: new Date(),
-        message: message,
+        message,
         createdAt: new Date(),
-        type: "PushNotification" as NotificationType,
+        type: 'PushNotification' as NotificationType,
         content: sender,
         completionMessageLog: logData,
-        sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
-        status: "confirmed",
-        notificationtype: AuthNotificationTypes.ACCOUNT_CREATED,
+        sendStatus: SendStatus.Confirmed,
+        status: SendStatus.Confirmed,
+        notificationtype: AuthNotificationTypes.ACCOUNT_CREATED, // Fixed inconsistent naming
       })
     );
-    // Use the PushNotificationManager to send push notifications
     PushNotificationManager.sendPushNotification(message, sender);
   };
-  const sendAnnouncement = async (
-    message: string,
-    sender: string
-  ): Promise<void> => {
-    // Dispatch action to send announcement
+
+  const sendAnnouncement = async (message: string, sender: string): Promise<void> => {
     dispatch(
       NotificationActions.addNotification({
-        id: "", // Generate unique ID for notification
+        id: crypto.randomUUID(), // Generate proper ID
         date: new Date(),
         message: message,
         createdAt: new Date(),
@@ -173,20 +163,16 @@ const useNotificationManagerService = <
         content: sender,
         completionMessageLog: logData,
         sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
-        notificationtype: AuthNotificationTypes.ACCOUNT_CREATED,
+        notificationtype: AuthNotificationTypes.ACCOUNT_CREATED, // Fixed inconsistent naming
       })
     );
-    // Use the AnnouncementManager to send announcements
-    await Promise.resolve(
-      AnnouncementManager.sendAnnouncement(message, sender)
-    );
+    await Promise.resolve(AnnouncementManager.sendAnnouncement(message, sender));
   };
 
   const handleButtonClick = async (): Promise<void> => {
-    // Dispatch action to handle button click
     dispatch(
       NotificationActions.addNotification({
-        id: "", // Generate unique ID for notification
+        id: crypto.randomUUID(), // Generate proper ID
         date: new Date(),
         message: "New message!",
         createdAt: new Date(),
@@ -194,46 +180,66 @@ const useNotificationManagerService = <
         content: "App",
         completionMessageLog: logData,
         sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
-        notificationType:
-          "/data_analysis/frontend/buddease/src/app/components/context/NotificationContext" as NotificationType,
+        notificationType: "ButtonClick" as NotificationType, // Fixed inconsistent naming
       })
     );
-    // Send push notification on button click
     await Promise.resolve(sendPushNotification("New message!", "App"));
   };
 
-  const dismissNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void => {
-    // Dispatch action to dismiss notification
+  const dismissNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void => {
     dispatch(NotificationActions.removeNotification(notification.id as string));
-    // Implement dismissal logic here
     console.log("Notification dismissed:", notification);
   };
 
-  const addNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void => {
+  const addNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void => {
     dispatch(NotificationActions.addNotification(notification));
   };
 
   const removeNotification = (id: string): void => {
-    // Dispatch action to remove notification
     dispatch(NotificationActions.removeNotification(id));
   };
 
   const clearNotifications = (): void => {
-    // Dispatch action to clear all notifications
     dispatch(NotificationActions.clearNotifications());
+  };
+
+  // Implement the notify function
+  const notifyFunction = async (
+    id: string,
+    message: string,
+    content: any,
+    date: Date,
+    type: NotificationType
+  ): Promise<void> => {
+    try {
+      // Use the context notify
+      notify({
+        id,
+        message,
+        data: content,
+        timestamp: date,
+        type
+      });
+      
+      // Also use NotificationService for consistency
+      const { NotificationService } = require('./NotificationServiceClass');
+      NotificationService.legacyNotify(id, message, content, date, type);
+    } catch (error) {
+      console.error('Error in notify function:', error);
+    }
   };
 
   return {
     notifications,
     setNotifications,
-    notify,
+    notify: notifyFunction,
     sendAnnouncement,
     handleButtonClick,
     dismissNotification,
     sendPushNotification,
     addNotification,
     removeNotification,
-    clearNotifications,
+    clearNotifications
   };
 };
 

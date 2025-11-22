@@ -99,9 +99,7 @@ interface UserConfig<
 
 interface DataWithParentAndChildIds<
   T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  K extends T = T
 > extends BaseDataEntity {
   parentId?: string;
   childIds?: K[];

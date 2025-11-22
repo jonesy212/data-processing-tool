@@ -355,13 +355,3 @@ export const NOTIFICATION_TYPES = {
    ...EventNotificationTypes
 } as const;
 
-
-// UsageExample
-// // Notify when a new trading phase starts
-// notify(
-//   'trading-enthusiast-start',
-//   'Enthusiast Profile phase started',
-//   { phase: 'ENTHUSIAST_PROFILE' },
-//   new Date(),
-//   PhaseNotificationTypes.TRADING_ENTHUSIAST_PROFILE_START
-// );

@@ -716,7 +716,7 @@ export class ErrorAnalyzer extends ConfigFileAnalyzer {
         }
         
         // Fix undefined descriptions
-        if (!correction.c || correction.description === 'undefined') {
+        if (!correction.description || correction.description === 'undefined') {
             correction.description = correction.message || 'No description provided';
         }
         

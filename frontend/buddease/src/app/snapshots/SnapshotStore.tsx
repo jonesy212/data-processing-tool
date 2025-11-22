@@ -1,6 +1,7 @@
 // SnapshotStore.ts
 
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
+import { FilterMethods } from 'app/snapshots/methods/FilterMethods'
 import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';

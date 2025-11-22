@@ -202,7 +202,6 @@ class CodeQualityScript {
     return issues;
   }
 
-  // Duplicate code detection logic
   private async detectDuplicates(files: string[]): Promise<Array<{file: string, duplicates: Array<{lines: string[], count: number, startLine: number}>}>> {
     const allBlocks: Array<{file: string, block: string, lines: string[], startLine: number}> = [];
     
@@ -453,8 +452,8 @@ class CodeQualityScript {
     return true;
   }
 
-  private extractCodeBlocks(content: string, filePath: string): Array<{block: string, lines: string[], startLine: number}> {
-    const blocks: Array<{block: string, lines: string[], startLine: number}> = [];
+private extractCodeBlocks(content: string, filePath: string): Array<{file: string, block: string, lines: string[], startLine: number}> {
+    const blocks: Array<{file: string, block: string, lines: string[], startLine: number}> = [];
     const lines = content.split('\n');
     
     let currentBlock: string[] = [];
@@ -489,6 +488,7 @@ class CodeQualityScript {
             .join('\n');
           
           blocks.push({
+            file: filePath, // Add the file path here
             block: normalizedBlock,
             lines: [...currentBlock],
             startLine: blockStartLine
@@ -501,8 +501,8 @@ class CodeQualityScript {
     });
 
     return blocks.filter(block => block.lines.length >= this.MIN_DUPLICATE_LINES);
-  }
-
+}
+  
   private calculateParenthesesDepth(line: string): number {
     let maxDepth = 0;
     let currentDepth = 0;
@@ -569,7 +569,10 @@ class CodeQualityScript {
       suggestion: `Replace with named constant: const ${constantName} = ${issue.number};`,
       category: 'maintainability',
       line: issue.line
-      message, code, fix
+      message: issue.message,
+      code: issue.code,
+      fix: issue.fix,
+    
     };
   }
 
@@ -584,7 +587,9 @@ class CodeQualityScript {
       suggestion: `Break down into smaller functions. Consider extracting:\n- ${issue.method}Core()\n- ${issue.method}Validation()\n- ${issue.method}Processing()`,
       category: 'maintainability',
       line: issue.startLine,
-      message, code, fix
+      message: issue.message,
+      code: issue.code 
+      fix: issue.fix 
     };
   }
 
@@ -598,8 +603,10 @@ class CodeQualityScript {
       codeSnippet: dup.lines.slice(0, 3).join('\n') + '\n...',
       suggestion: 'Extract duplicate code into a reusable function or utility',
       category: 'maintainability',
-      line: dup.startLin,e
-      message, code, fix
+      line: dup.startLine,
+      message: issue.message,
+      code: issue.code, 
+      fix: issue.fix
     }));
   }
 
@@ -616,7 +623,9 @@ class CodeQualityScript {
       suggestion,
       category: 'readability',
       line: issue.line,
-      message, code, fix
+      message: issue.message,
+      code: issue.code, 
+      fix: issue.fix
     };
   }
 
@@ -633,7 +642,9 @@ class CodeQualityScript {
       suggestion,
       category: 'maintainability',
       line: issue.line,
-      message, code, fix
+      message: .message,
+      code: .code, 
+      fix: .fix
     };
   }
 

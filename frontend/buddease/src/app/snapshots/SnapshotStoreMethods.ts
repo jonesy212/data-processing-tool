@@ -1,6 +1,14 @@
 // SnapshotSttoreMethods.ts
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { Subscription } from 'react-redux';
+import { SnapshotConfig } from '@/app/snapshots/Snapshot';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { DataStore } from '@/app/state/stores/DataStore';
+import { CategoryProperties } from '@/app/personas/ScenarioBuilder';
+import { SnapshotData } from '@/app/snapshots';
 
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot, SnapshotStoreConfig } from ".";
 import SnapshotStore from "./SnapshotStore";
@@ -41,7 +49,6 @@ interface SnapshotStoreMethods<
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -52,6 +59,7 @@ interface SnapshotStoreMethods<
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   ) => Promise<{snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>}>;

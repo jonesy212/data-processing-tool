@@ -184,8 +184,15 @@ class EndpointConfigManager {
     this.configMap.set(name, config);
   }
 
-  listEndpointGroups(): string[] {
+  listEndpointGroups(): (keyof EndpointConfigurations)[] {
     return Array.from(this.configMap.keys());
+  }
+
+  // Alternative method if you specifically need string keys only
+  listEndpointGroupNames(): string[] {
+    return Array.from(this.configMap.keys()).filter(key => 
+      typeof key === 'string'
+    ) as string[];
   }
 }
 

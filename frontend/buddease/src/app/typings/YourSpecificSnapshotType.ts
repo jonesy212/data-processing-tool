@@ -2008,35 +2008,27 @@ function convertSnapshotContent<T extends BaseData>(
 
   return content;
 }
+export function convertSnapshotToMap<
+  T  extends BaseDataEntity,
+  K  extends T = T,
+  M  extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  A  extends Attachment = Attachment,
+  Ex extends keyof T = DefaultExcludedFields<T>,
+  In extends keyof T = keyof T
+>(
+  snapshot: Snapshot<T, K, M, A, Ex, In>
+): Map<string, T> {
+  if (!snapshot?.data) return new Map<string, T>();
 
-function convertSnapshotToMap<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): Map<string, any> {
-  const map = new Map<string, any>();
+  // already a Map → return it as-is
+  if (snapshot.data instanceof Map) return snapshot.data;
 
-  if (snapshot && snapshot.data) {
-    // Check if snapshot.data is an object and not a Map
-    if (typeof snapshot.data === 'object' && !(snapshot.data instanceof Map)) {
-      Object.keys(snapshot.data as T).forEach(key => {
-        // Ensure the key exists on the data object
-        if (snapshot.data && key in snapshot.data) {
-          map.set(key, (snapshot.data as T)[key]);
-        }
-      });
-    } else if (snapshot.data instanceof Map) {
-      // If snapshot.data is a Map, merge it directly into the new map
-      snapshot.data.forEach((value, key) => {
-        map.set(key, value);
-      });
-    }
-  }
-
+  // plain object → copy into a Map
+  const map = new Map<string, T>();
+  Object.keys(snapshot.data).forEach((k) => {
+    const v = (snapshot.data as T)[k as keyof T];
+    if (v !== undefined) map.set(k, v);
+  });
   return map;
 }
 

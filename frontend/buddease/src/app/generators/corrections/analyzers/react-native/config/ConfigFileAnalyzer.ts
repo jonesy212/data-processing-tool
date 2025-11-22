@@ -9,6 +9,14 @@ export abstract class ConfigFileAnalyzer extends BaseAnalyzer {
   protected abstract getConfigPaths(): string[];
   protected abstract analyzeConfigFile(configPath: string, configFile: string): Promise<Correction[]>;
 
+  /** Synchronous single-file entry required by cachedAnalyze */
+  analyzeFile(_filePath: string): Correction[] {
+    // We already have an async analyser – just fire-and-forget and
+    // return the corrections synchronously (cache guarantees one hit per file).
+    const corrections: Correction[] = [];
+    this.analyze().then(c => corrections.push(...c)).catch(() => {});
+    return corrections;
+  }
   async analyze(): Promise<Correction[]> {
     const corrections: Correction[] = [];
     const configPaths = this.getConfigPaths();

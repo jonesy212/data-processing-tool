@@ -1,3 +1,4 @@
+import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 // BaseConfig.ts
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
@@ -62,7 +63,7 @@ interface BaseEntity<
   IncludedFields extends keyof T = keyof T
   > extends SharedIdentifiers<T, K>,
   SharedTimestamps, CoreRecordProperties,
-  AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   filePathOrUrl?: string;

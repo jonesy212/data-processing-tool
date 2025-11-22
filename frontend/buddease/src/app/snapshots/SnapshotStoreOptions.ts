@@ -1,3 +1,4 @@
+import { Data } from '@/app/models/data/Data';
 import { SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import { ProjectMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -355,7 +356,7 @@ interface SnapshotStoreOptions<
     id: string | number,
     snapshotId: string | null,
     criteria: CriteriaType,
-    categoryProperties: CategoryProperties | undefined,
+    categoryProperties: CategoryPropertyBundle<T, K> | undefined,
     subscriberId: string | undefined,
     delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

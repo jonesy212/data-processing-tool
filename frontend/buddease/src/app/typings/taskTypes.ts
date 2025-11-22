@@ -72,6 +72,7 @@ type Tasks<
 
 
 interface TaskEntityExtended extends TaskEntity {
+  appPermissions: Permission[];
   permissions: Permission[];
   ownerId: string;
 }

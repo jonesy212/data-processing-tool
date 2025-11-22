@@ -1,3 +1,14 @@
+import { internalApiService } from '@/app/api/ApiClient';
+import { IdeationPhase } from '@/app/users/userJourney/IdeationPhase';
+import { 
+  ProjectEntity,
+  ProjectK, 
+  ProjectMeta, 
+  ProjectAttachment, 
+  ProjectExcludedFields, 
+  ProjectIncludedFields 
+} from '@/app/types/ProjectEntity';
+
 // state/hybrid/ProjectManagerStore.ts
 /**
  * Project Manager Store
@@ -17,7 +28,7 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import { ApiProject } from "@/app/api/ApiProject";
 import Milestone from "@/app/typings/milestoneTypes";
-import { CommonData } from "@/app/components/models/CommonData";
+import { CommonData } from "@/app/models/CommonData";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
@@ -32,18 +43,18 @@ import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { YourSettingsResponseType } from '@/app/typings/typings/typeguards/isYourSettingsResponseType';
+import { YourSettingsResponseType } from '@/app/typings/typeguards/isYourSettingsResponseType';
 
 const dispatch = useDispatch();
 
 
-type ProjType = Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type TaskType = Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type UserType = User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type PhaseType = IdeationPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type MilestoneType = Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type ProductType = Product<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-type InsightType = Insight<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type ProjType = Project<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type TaskType = Task<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type UserType = User<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type PhaseType = IdeationPhase<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type MilestoneType = Milestone
+type ProductType = Product<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type InsightType = Insight
 
 
 export interface ProjectManagerStore<
@@ -114,7 +125,7 @@ const useProjectManagerStore = (): ProjectManagerStore => {
     setIsLoading(true);
     setError(null);
     try {
-        const response = await axiosInstance.get("/settings");
+        const response = await internalApiService.get("/settings");
         // ... actual API call logic
         setSettings(parsedData[0]);
     } catch (error: any) {
@@ -251,6 +262,7 @@ const assignTaskToIdeationPhaseAPI = async (
     setError((err as Error).message);
   }
 };
+
   const assignTaskToCurrentUser = async (
     projectId: string,
     task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -309,13 +321,13 @@ const assignTaskToIdeationPhaseAPI = async (
     if (!proj) return 0;
     
     const totalTasks = proj.tasks.length + 
-      proj.milestones.reduce((acc: number, m: Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+      proj.milestones.reduce((acc: number, m: Milestone) => 
         acc + m.tasks.length, 0);
     
-    const completedTasks = proj.tasks.filter((t: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+    const completedTasks = proj.tasks.filter((t: Task<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>) => 
       t.isCompleted).length +
-      proj.milestones.reduce((acc: number, m: Milestone<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
-        acc + m.tasks.filter((t: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+      proj.milestones.reduce((acc: number, m: Milestone) => 
+        acc + m.tasks.filter((t: Task<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>) => 
           t.completed).length, 0);
     
     return totalTasks ? (completedTasks / totalTasks) * 100 : 0;

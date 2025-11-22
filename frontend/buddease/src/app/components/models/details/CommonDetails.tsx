@@ -5,7 +5,6 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import React, { useState } from "react";
 import { CommonData } from "@/app/models/CommonData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 

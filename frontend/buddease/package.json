@@ -103,7 +103,21 @@
     "dev:mobile": "PLATFORM=mobile react-native start",
     "dev:web": "PLATFORM=web next dev",
     "build:mobile": "PLATFORM=mobile react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
-    "build:web": "PLATFORM=web next build"
+    "build:web": "PLATFORM=web next build",
+
+
+    "analyze:snapshots":     "PLATFORM=web pnpm generate:corrections:snapshots",
+    "analyze:critical":      "PLATFORM=web pnpm generate:corrections:critical",
+    "analyze:quick-fixes":   "PLATFORM=web pnpm generate:corrections:quick",
+    "analyze:all-issues":    "PLATFORM=web pnpm generate:corrections",
+
+    "dev:snapshots-first":   "PLATFORM=web pnpm generate:corrections:snapshots && pnpm dev:web",
+    "dev:critical-first":    "PLATFORM=web pnpm generate:corrections:critical && pnpm dev:web",
+
+    "analyze:snapshots:mobile": "PLATFORM=mobile pnpm generate:corrections:snapshots",
+    "analyze:critical:mobile":  "PLATFORM=mobile pnpm generate:corrections:critical",
+    "dev:snapshots-first:mobile": "PLATFORM=mobile pnpm generate:corrections:snapshots && pnpm dev:mobile",
+    "dev:critical-first:mobile":  "PLATFORM=mobile pnpm generate:corrections:critical && pnpm dev:mobile"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",

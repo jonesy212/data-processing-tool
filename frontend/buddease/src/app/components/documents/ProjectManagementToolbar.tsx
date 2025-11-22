@@ -3,7 +3,7 @@
   import React from 'react';
   import { Task } from '@/app/models/tasks/Task';
   import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-  import { useCalendarManagerStore } from '@/app/components/state/stores/CalendarStore';
+  import { useCalendarManagerStore } from '@/app/state/stores/CalendarStore';
   import { rootStores } from '@/app/state/stores/RootStores';
   import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
   import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
@@ -13,10 +13,11 @@
   import ToolbarItem from './ToolbarItem';
   import { showModalOrNotification } from '@/app/hooks/commHooks/idleTimeoutUtils';
   import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-  import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
+  import { TaskEntity, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
+  import { TaskEntityExtended } from 'app/typings/taskTypes'
 
   const ProjectManagementToolbar: React.FC<{ 
-    task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>  
+    task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>  
   }> = ({ task }) => {
     const toolbarOptions = {
       tasks: ["Task List", "Create Task", "Assign Task"],
@@ -40,7 +41,11 @@
       );
     }
 
-    const handleOptionClick = async (option: string, index: number, task: Task, props?: TodoManagerStoreProps) => {
+    const handleOptionClick = async (
+      option: string, 
+      index: number, 
+      task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 
+      props?: TodoManagerStoreProps) => {
       // Logic to handle option click based on the active dashboard
       console.log(`Clicked ${option} in Project Management dashboard`);
 
@@ -52,7 +57,7 @@
       if(!props){
         throw Error("props is undefined")
       }
-      const events: Record<string, CalendarEvent<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]> = {}; // Initialize an empty object
+      const events: Record<string, CalendarEvent<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>[]> = {}; // Initialize an empty object
       switch (option) {
         case "Task List":
           // Logic for handling task list option
@@ -95,7 +100,7 @@
           useTodoManagerStore(props).fetchTodosRequest();
           break;
         case "Add Todo":
-            const todo: Todo = new TodoImpl(); // Initialize todo with a new Todo object
+            const todo: Todo<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = new TodoImpl(); // Initialize todo with a new Todo object
             useTodoManagerStore(props).addTodo(todo);
           break;
         case "Manage Todos":

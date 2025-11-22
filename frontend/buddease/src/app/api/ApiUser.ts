@@ -11,13 +11,14 @@ import { User } from "@/app/users/User";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { buildUrl } from '@/utils/urlBuilder'; 
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import updateUI from '@/app/documents/editing/updateUI';
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 
-const API_BASE_URL = endpoints.users;
+const userEndpoints = endpoints.users;
 
 interface AdminUser<
   T extends BaseDataEntity,
@@ -50,14 +51,9 @@ export const fetchUserRequest = (userId: string) => ({
   payload: userId,
 });
 
-const dispatch = useDispatch();
 export const { userId } = useParams();
 const parsedUserId = Number(userId);
 
-const constructUrl = (basePath: string, ...pathParts: (string | number)[]): string => {
-  const cleanParts = pathParts.filter(part => part != null && part !== '');
-  return cleanParts.length > 0 ? `${basePath}/${cleanParts.join('/')}` : basePath;
-};
 
 class UserService <
   T extends BaseDataEntity,
@@ -71,17 +67,17 @@ class UserService <
     return parsedUserId;
   }
 
-  // Update the createUser method to use internalApiService
+  // Update the createUser method to use buildUrl
   createUser = async (newUser: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
-      const API_ADD_ENDPOINT = constructUrl(API_BASE_URL as string, 'add');
+      const url = buildUrl(userEndpoints.add);
       
       const response = await internalApiService.post(
-        API_ADD_ENDPOINT,
+        url,
         newUser,
-        undefined, // config (optional)
-        "CREATE_USER_SUCCESS", // successMessageId
-        "CREATE_USER_ERROR"    // errorMessageId
+        undefined,
+        "CREATE_USER_SUCCESS",
+        "CREATE_USER_ERROR"
       );
 
       return response.data;
@@ -92,18 +88,18 @@ class UserService <
 
   static fetchUser = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], authToken: string) => {
     try {
-      const API_SINGLE_ENDPOINT = constructUrl(API_BASE_URL as string, 'single', userId);
+      const url = buildUrl(userEndpoints.single, { userId: Number(userId) });
 
       const response = await internalApiService.get(
-        API_SINGLE_ENDPOINT,
+        url,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
             Accept: "application/json",
           },
         },
-        "FETCH_USER_SUCCESS", // successMessageId
-        "FETCH_USER_ERROR"    // errorMessageId
+        "FETCH_USER_SUCCESS",
+        "FETCH_USER_ERROR"
       );
 
       UserActions.fetchUserSuccess({ user: response.data });
@@ -120,13 +116,13 @@ class UserService <
 
   static fetchUserbyUserName = async (userName: string) => { 
     try {
-      const API_SINGLE_BY_USERNAME_ENDPOINT = constructUrl(API_BASE_URL as string, 'single', 'username', userName);
+      const url = buildUrl(userEndpoints.singleByUsername, { username: userName });
 
       const response = await internalApiService.get(
-        API_SINGLE_BY_USERNAME_ENDPOINT,
-        undefined, // config
-        "FETCH_USER_SUCCESS", // successMessageId
-        "FETCH_USER_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "FETCH_USER_SUCCESS",
+        "FETCH_USER_ERROR"
       );
 
       return response.data;
@@ -137,13 +133,13 @@ class UserService <
 
   static fetchUserById = async (userId: string) => {
     try {
-      const API_SINGLE_ENDPOINT = constructUrl(API_BASE_URL as string, 'single', userId);
+      const url = buildUrl(userEndpoints.single, { userId: Number(userId) });
       
       const response = await internalApiService.get(
-        API_SINGLE_ENDPOINT,
-        undefined, // config
-        "FETCH_USER_SUCCESS", // successMessageId
-        "FETCH_USER_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "FETCH_USER_SUCCESS",
+        "FETCH_USER_ERROR"
       );
       
       return response.data;
@@ -177,13 +173,13 @@ class UserService <
 
   fetchUserById = async (userId: string) => {
     try {
-      const API_SINGLE_ENDPOINT = constructUrl(API_BASE_URL as string, 'single', userId);
+      const url = buildUrl(userEndpoints.single, { userId: Number(userId) });
       
       const response = await internalApiService.get(
-        API_SINGLE_ENDPOINT,
-        undefined, // config
-        "FETCH_USER_SUCCESS", // successMessageId
-        "FETCH_USER_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "FETCH_USER_SUCCESS",
+        "FETCH_USER_ERROR"
       );
       
       const user = response.data;
@@ -205,13 +201,13 @@ class UserService <
     }
   ) => {
     try {
-      const API_LIST_ENDPOINT = constructUrl(API_BASE_URL as string, 'list', req.userId);
+      const url = buildUrl(userEndpoints.list, { userId: req.userId });
 
       const response = await internalApiService.get(
-        API_LIST_ENDPOINT,
-        undefined, // config
-        "FETCH_USER_DATA_SUCCESS", // successMessageId
-        "FETCH_USER_DATA_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "FETCH_USER_DATA_SUCCESS",
+        "FETCH_USER_DATA_ERROR"
       );
       
       const userData = response.data;
@@ -230,14 +226,14 @@ class UserService <
     
   updateUser = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], updatedUserData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
-      const API_UPDATE_ENDPOINT = constructUrl(API_BASE_URL as string, 'update', userId);
+      const url = buildUrl(userEndpoints.update, { userId: Number(userId) });
 
       const response = await internalApiService.put(
-        API_UPDATE_ENDPOINT,
+        url,
         updatedUserData,
-        undefined, // config
-        "UPDATE_USER_SUCCESS", // successMessageId
-        "UPDATE_USER_ERROR"    // errorMessageId
+        undefined,
+        "UPDATE_USER_SUCCESS",
+        "UPDATE_USER_ERROR"
       );
       
       const updatedUser = response.data;
@@ -255,13 +251,13 @@ class UserService <
   // Bulk requests
   fetchUsers = async () => {
     try {
-      const API_LIST_ENDPOINT = constructUrl(API_BASE_URL as string, 'list');
+      const url = buildUrl(userEndpoints.list);
       
       const response = await internalApiService.get(
-        API_LIST_ENDPOINT,
-        undefined, // config
-        "FETCH_USERS_SUCCESS", // successMessageId
-        "FETCH_USERS_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "FETCH_USERS_SUCCESS",
+        "FETCH_USERS_ERROR"
       );
       
       const users = response.data;
@@ -278,14 +274,14 @@ class UserService <
 
   updateUsers = async (updatedUsersData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
-      const API_UPDATE_LIST_ENDPOINT = constructUrl(API_BASE_URL as string, 'updateList');
+      const url = buildUrl(userEndpoints.updateList);
 
       const response = await internalApiService.put(
-        API_UPDATE_LIST_ENDPOINT,
+        url,
         updatedUsersData,
-        undefined, // config
-        "UPDATE_USERS_SUCCESS", // successMessageId
-        "UPDATE_USERS_ERROR"    // errorMessageId
+        undefined,
+        "UPDATE_USERS_SUCCESS",
+        "UPDATE_USERS_ERROR"
       );
       
       const updatedUsers = response.data;
@@ -302,13 +298,13 @@ class UserService <
 
   deleteUser = async (user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     try {
-      const API_REMOVE_ENDPOINT = constructUrl(API_BASE_URL as string, 'remove', user.id);
+      const url = buildUrl(userEndpoints.remove, { userId: Number(user.id) });
 
       const response = await internalApiService.delete(
-        API_REMOVE_ENDPOINT,
-        undefined, // config
-        "DELETE_USER_SUCCESS", // successMessageId
-        "DELETE_USER_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "DELETE_USER_SUCCESS",
+        "DELETE_USER_ERROR"
       );
       
       UserActions.deleteUserSuccess(user as unknown as number);
@@ -324,13 +320,13 @@ class UserService <
 
   deleteUsers = async (userIds: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"][]) => {
     try {
-      const API_LIST_ENDPOINT = constructUrl(API_BASE_URL as string, 'list');
+      const url = buildUrl(userEndpoints.list);
 
       await internalApiService.delete(
-        API_LIST_ENDPOINT,
-        { data: { userIds } }, // config with data
-        "DELETE_USERS_SUCCESS", // successMessageId
-        "DELETE_USERS_ERROR"    // errorMessageId
+        url,
+        { data: { userIds: userIds.map(id => Number(id)) } },
+        "DELETE_USERS_SUCCESS",
+        "DELETE_USERS_ERROR"
       );
       
       UserActions.deleteUsersSuccess(userIds as number[]);
@@ -345,13 +341,13 @@ class UserService <
 
   searchUsers = async (searchQuery: string) => {
     try {
-      const API_SEARCH_ENDPOINT = constructUrl(API_BASE_URL as string, 'search');
+      const url = buildUrl(userEndpoints.search, { query: searchQuery });
 
       const response = await internalApiService.get(
-        `${API_SEARCH_ENDPOINT}?query=${searchQuery}`,
-        undefined, // config
-        "SEARCH_USERS_SUCCESS", // successMessageId
-        "SEARCH_USERS_ERROR"    // errorMessageId
+        url,
+        undefined,
+        "SEARCH_USERS_SUCCESS",
+        "SEARCH_USERS_ERROR"
       );
       
       const users = response.data;
@@ -369,14 +365,14 @@ class UserService <
   // Assign role to user
   assignUserRole = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], role: string) => {
     try {
-      const API_ASSIGN_ROLE_ENDPOINT = constructUrl(API_BASE_URL as string, 'assignRole', userId);
+      const url = buildUrl(userEndpoints.assignRole, { userId: Number(userId) });
 
       const response = await internalApiService.put(
-        API_ASSIGN_ROLE_ENDPOINT,
+        url,
         { role },
-        undefined, // config
-        "ASSIGN_ROLE_SUCCESS", // successMessageId
-        "ASSIGN_ROLE_ERROR"    // errorMessageId
+        undefined,
+        "ASSIGN_ROLE_SUCCESS",
+        "ASSIGN_ROLE_ERROR"
       );
       
       const assignedUser = response.data;
@@ -401,14 +397,14 @@ class UserService <
     role: UserRole;
   }) => {
     try {
-      const API_BULK_UPDATE_ROLES_ENDPOINT = constructUrl(API_BASE_URL as string, 'bulkUpdateRoles');
+      const url = buildUrl(userEndpoints.bulkUpdateRoles);
 
       const response = await internalApiService.put(
-        API_BULK_UPDATE_ROLES_ENDPOINT,
+        url,
         { users },
-        undefined, // config
-        "UPDATE_ROLES_SUCCESS", // successMessageId
-        "UPDATE_ROLES_ERROR"    // errorMessageId
+        undefined,
+        "UPDATE_ROLES_SUCCESS",
+        "UPDATE_ROLES_ERROR"
       );
       
       const updatedUsers = response.data;
@@ -430,14 +426,17 @@ class UserService <
   // Other methods follow the same pattern...
   assignProjectOwner = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], projectId: string) => {
     try {
-      const API_ASSIGN_PROJECT_OWNER_ENDPOINT = constructUrl(API_BASE_URL as string, 'assignProjectOwner', userId, projectId);
+      const url = buildUrl(userEndpoints.assignProjectOwner, { 
+        userId: Number(userId), 
+        projectId 
+      });
 
       const response = await internalApiService.put(
-        API_ASSIGN_PROJECT_OWNER_ENDPOINT,
-        undefined, // data
-        undefined, // config
-        "ASSIGN_PROJECT_OWNER_SUCCESS", // successMessageId
-        "ASSIGN_PROJECT_OWNER_ERROR"    // errorMessageId
+        url,
+        undefined,
+        undefined,
+        "ASSIGN_PROJECT_OWNER_SUCCESS",
+        "ASSIGN_PROJECT_OWNER_ERROR"
       );
       
       return response.data;
@@ -452,3 +451,4 @@ class UserService <
 export default UserService;
 export const userService = new UserService();
 export type { AdminUser, UserProfile };
+

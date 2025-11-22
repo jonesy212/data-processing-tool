@@ -1,11 +1,11 @@
 // dexApi.ts
-import DEXData from "@/app/components/models/data/DEXData";
+import DEXData from "@/app/models/data/DEXData";
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError } from "axios";
 import {
   fetchData,
   handleApiErrorAndNotify,
-} from "./ApiData";
+} from "@/app/api/ApiData";
 
 // Function to fetch DEX data
 export const fetchDexData = async (): Promise<DEXData[]> => {

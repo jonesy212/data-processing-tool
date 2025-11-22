@@ -1,6 +1,6 @@
 // ChatApi.ts
 import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
-import { uiStore } from '@/app/components/state/stores/UIStore';
+import { uiStore } from '@/app/state/stores/UIStore';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { ChatRoom } from '@/app/communications/ChatRoom'

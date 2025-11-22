@@ -13,6 +13,8 @@ import { YourResponseType,  YourSettingsResponseType } from '@/app/typings/respo
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useState } from 'react';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the interface for different types of settings
 export interface Settings  {
@@ -34,13 +36,13 @@ export interface Settings  {
 }
 
     // Define the store interface
-    export interface SettingManagerStore<
-        T  extends BaseDataEntity = AppEntity,        // concrete defaults
-        K  extends T = T,
-        Meta extends DefaultMeta<T,K> = DefaultMeta<T,K>,
-        AttachmentType extends Attachment = Attachment,
-        ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-        IncludedFields extends keyof T = keyof T
+export interface SettingManagerStore<
+    T  extends BaseDataEntity = AppEntity,        // concrete defaults
+    K  extends T = T,
+    Meta extends DefaultMeta<T,K> = DefaultMeta<T,K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
     > {
     // State
     settings: YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;

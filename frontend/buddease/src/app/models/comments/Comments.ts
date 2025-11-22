@@ -5,21 +5,19 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-
+import { SharedTimestamps, BaseEntityProperties } from '@/app/documents/RelatedProps'
 
 // Base comment shared by all comment types
-interface BaseComment {
+interface BaseComment<T extends BaseDataEntity> extends BaseEntityProperties, SharedTimestamps {
   id: string;
   author: string | number | readonly string[];
   content: string;
-  createdAt: Date;
-  updatedAt?: Date;
   editedAt?: Date;
   editedBy?: string;
   likes?: number;
   pinned?: boolean;
   resolved?: boolean;
-  tags?: TagsRecord<any, any> | string[];
+  tags?: TagsRecord<T> | string[];
   highlights?: string[];
   watchLater?: boolean;
   customProperty?: string;
@@ -54,8 +52,9 @@ interface Comment<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    BaseComment {
+> extends 
+BaseComment<T>,
+BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   postId?: string | number;
   data?: string | Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
@@ -88,10 +87,19 @@ interface ForumComment extends Comment<any> {
   threadId: string; // specific to forum
 }
 
-interface CustomComment extends BlogComment {
-  // Define properties specific to your custom comment type
-  // content: string;
-  data?: string | Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
+interface CustomComment<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BlogComment {
+  // Use AllProperties for flexible data structure
+  data?: string | AllProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  // Additional custom properties
+  customType?: string;
+  metadata?: Record<string, any>;
 }
 
 // Map entity → comment type for easy reference
@@ -100,7 +108,7 @@ interface EntityCommentMap {
   video: VideoComment;
   chat: ChatComment;
   task: TaskComment;
-  custom: CustomComment;
+  custom: CustomComment<any, any, any, any, any, any>; // Updated to use generic CustomComment
 }
 
 export type EntityComments<T extends keyof EntityCommentMap> = EntityCommentMap[T][];

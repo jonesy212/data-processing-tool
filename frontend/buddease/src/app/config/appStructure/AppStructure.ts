@@ -1,3 +1,4 @@
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import * as apiFile from '@/api/ApiFiles';
 import { Versions } from '@/app/versions/Version'
 import SecurityAPI from '@/app/api/SecurityAPI';
@@ -34,10 +35,8 @@ interface AppStructureItem<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> {
-  id: string;
+> BaseEntityProperties {
   userId: string;
-  name: string;
   type: string | Promise<FileType>;
   path: string;
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;

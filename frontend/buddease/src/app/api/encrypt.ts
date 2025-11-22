@@ -1,4 +1,4 @@
-import { encryptString } from "@/backend/security/encryptString";
+import { encryptString } from "@/app/server/security/encryptString";
 
 export default async function handler(req, res) {
   try {

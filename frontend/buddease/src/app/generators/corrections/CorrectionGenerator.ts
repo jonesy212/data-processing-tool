@@ -18,6 +18,9 @@ import { SnapshotAnalyzer } from './SnapshotAnalyzer';
 import { StructureValidator } from './StructureValidator';
 import { TypeRelationshipMapper } from './TypeRelationshipMapper';
 import { BuildErrorHandler } from '@/utils/BuildErrorHandler'
+import { readFileSync, statSync } from 'fs';
+
+import { resolve } from 'path';
 
 interface Correction {
     id: string;
@@ -27,7 +30,7 @@ interface Correction {
     line?: number;
     title?: string;
     message: string;
-    descriptiion?: string
+    description?: string
     code: string;
     fix: string;
     codeSnippet?: string;
@@ -66,6 +69,10 @@ interface CorrectionReport {
     numericalSummary?: Record<string, any>;
 }
 
+/* ---------- 1-shot file cache ---------- */
+type Cached = { mtime: number; issues: Correction[] };
+const fileCache = new Map<string, Cached>();
+
 export class CorrectionGenerator {
     private analyzer: ProjectTreeAnalyzer;
     private errorAnalyzer: ErrorAnalyzer;
@@ -80,6 +87,17 @@ export class CorrectionGenerator {
     private metroLogAnalyzer: MetroLogAnalyzer;       
     private breakdownAnalyzer = new ComprehensiveBreakdownAnalyzer();
 
+    private cachedAnalyze(filePath: string, analyzer: (content: string) => Correction[]): Correction[] {
+    const key = resolve(filePath);
+    const mtime = statSync(key).mtimeMs;
+    const hit = fileCache.get(key);
+    if (hit && hit.mtime === mtime) return hit.issues;
+
+    const content = readFileSync(key, 'utf8');
+    const issues = analyzer(content);          // your current logic
+    fileCache.set(key, { mtime, issues });
+    return issues;
+    }
     /* ------------------------------------------------------------------ */
     /*  Human Review Guide – zero-touch instructions                      */
     /* ------------------------------------------------------------------ */
@@ -241,7 +259,13 @@ export class CorrectionGenerator {
 
 
     async generateCorrections(focusArea?: string): Promise<CorrectionReport> {
-        console.log('🔧 Analyzing project for corrections...');
+        
+        if (this.hasInitialized) {
+            console.log('♻️  Re-using already-initialized analysers');
+        } else {
+            console.log('🔧 Analysing project for corrections...');
+            this.hasInitialized = true;
+        }
 
         const projectStructure = await this.analyzer.analyzeProjectTree();
 
@@ -255,9 +279,26 @@ export class CorrectionGenerator {
         const rawSecurityIssues = await this.securityAuditor.auditSecurity(projectStructure);
         const securityIssues: Correction[] = rawSecurityIssues.map(issue => this.convertSecurityIssueToCorrection(issue));
     
-        const metroConfigIssues: Correction[] = await this.metroConfigAnalyzer.analyze();
-        const metroLogIssues: Correction[] = await this.metroLogAnalyzer.analyze();
+        /* ---- web ---- */
+        const metroConfigIssues = this.cachedAnalyze(
+        'metro.config.js',
+        () => this.metroConfigAnalyzer.analyzeFile('metro.config.js')
+        );
+        const metroLogIssues = this.cachedAnalyze(
+        'metro.config.js',
+        () => this.metroLogAnalyzer.analyzeFile('metro.config.js')
+        );
 
+
+        /* ---- mobile ---- (same physical file, now served from cache) */
+        const metroConfigIssuesMob = this.cachedAnalyze(
+        'metro.config.js',
+        () => this.metroConfigAnalyzer.analyzeFile('metro.config.js')
+        );
+        const metroLogIssuesMob = this.cachedAnalyze(
+        'metro.config.js',
+        () => this.metroLogAnalyzer.analyzeFile('metro.config.js')
+        );
         
         let snapshotIssues: Correction[] = [];
         if (focusArea === 'snapshots') {
@@ -269,7 +310,9 @@ export class CorrectionGenerator {
             ...structureIssues,
             ...securityIssues,
             ...metroConfigIssues, 
-            ...metroLogIssues  
+            ...metroLogIssues,
+            ...metroConfigIssuesMob, 
+            ...metroLogIssuesMob,    
         ];
 
         // If focusing on snapshots, filter to only snapshot-related issues
@@ -448,17 +491,33 @@ export class CorrectionGenerator {
         // Console summary (AFTER all files are generated)
         console.log(`✅ Generated ${files.length} correction files in ${outputDir}`);
 
-        // NEW: Comprehensive breakdown summary
+        // Comprehensive breakdown summary
         if ('comprehensiveBreakdown' in report && report.comprehensiveBreakdown) {
-            console.log('\n📊 COMPREHENSIVE BREAKDOWN:');
-            console.log('═'.repeat(50));
-            console.log(`Components: ${report.comprehensiveBreakdown.summary.affectedComponents}/${report.comprehensiveBreakdown.summary.totalComponents} affected`);
-            console.log(`Methods: ${report.comprehensiveBreakdown.summary.affectedMethods}/${report.comprehensiveBreakdown.summary.totalMethods} affected`);
-            console.log(`Interfaces: ${report.comprehensiveBreakdown.summary.affectedInterfaces}/${report.comprehensiveBreakdown.summary.totalInterfaces} affected`);
-            
-            const riskScore = BreakdownReportGenerator.generateNumericalSummary(report.comprehensiveBreakdown).riskAssessment;
-            console.log(`Overall Risk Score: ${riskScore}/100`);
+        console.log('\n📊 COMPREHENSIVE BREAKDOWN:');
+        console.log('═'.repeat(50));
+        console.log(`Components : ${report.comprehensiveBreakdown.summary.affectedComponents}/${report.comprehensiveBreakdown.summary.totalComponents} affected`);
+        console.log(`Methods    : ${report.comprehensiveBreakdown.summary.affectedMethods}/${report.comprehensiveBreakdown.summary.totalMethods} affected`);
+        console.log(`Interfaces : ${report.comprehensiveBreakdown.summary.affectedInterfaces}/${report.comprehensiveBreakdown.summary.totalInterfaces} affected`);
+
+        const riskScore = BreakdownReportGenerator.generateNumericalSummary(report.comprehensiveBreakdown).riskAssessment;
+        console.log(`Overall Risk Score : ${riskScore}/100`);
+
+        /* --------------  daily burn-down -------------- */
+        console.log('\n📈 90-DAY FIX PLAN');
+        console.log('═'.repeat(50));
+        const raw = report.summary;
+        const total = raw.totalErrors;
+        const daily = Math.ceil(total / 90);
+        console.log(`Total Issues : ${total}`);
+        console.log(`Critical     : ${raw.critical}`);
+        console.log(`High         : ${raw.high}`);
+        console.log(`Medium       : ${raw.medium}`);
+        console.log(`Low          : ${raw.low}`);
+        console.log('');
+        console.log(`To finish in 90 days → fix ${daily} issue${daily === 1 ? '' : 's'} per day.`);
+        /* ---------------------------------------------- */
         }
+
 
         return files;
     }
@@ -645,8 +704,6 @@ export class CorrectionGenerator {
                 console.log(`   Focus: ${focusArea}`);
             }
             console.log(`   Output: ${outputDir}`);
-
-            await this.generateCorrectionFiles(outputDir, focusArea);
 
             console.log('\n🎉 Correction analysis complete!');
             console.log('\n📋 Recommended next steps:');

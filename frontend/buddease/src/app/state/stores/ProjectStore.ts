@@ -1,12 +1,17 @@
+import { PhaseMeta } from '@/app/typings/phaseTypes';
+import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
+import { AppPhase } from '@/types/PhaseEntity';
+import { Phase } from '@/app/models/phases/Phase';
+import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { makeAutoObservable, reaction } from "mobx";
 import { v4 as uuid } from "uuid";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Milestone } from "@/app/typiings/milestoneTypes";
+import { Milestone } from "@/app/typiings/entites/milestoneTypes";
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import NotificationStore from "@/app/state/stores/NotificationStore"; // the advanced one
-import { } from '@/app/state/stores/SettingsStore'
+import { SettingsStore } from '@/app/state/stores/SettingsStore'
 
 /**
  * Coordinator store for Projects
@@ -109,6 +114,11 @@ export class ProjectStore {
     members: projectData.members || [],
     tasks: projectData.tasks || [],
     status: projectData.status || 'active',
+    isActive: true,
+    leader: '',
+    phase: {} as Phase<AppPhase>,
+    phases: [],
+  
     createdAt: projectData.createdAt || new Date(),
     updatedAt: projectData.updatedAt || new Date(),
     owner: projectData.owner || 'current-user',
@@ -131,7 +141,7 @@ export class ProjectStore {
   // -------------------
   // Project Methods
   // -------------------
-  addProject(projectData: Omit<Project, "id">) {
+  addProject(projectData: Omit<Project<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>, "id">) {
     const newProject = this.createProject(projectData);
     this.projects.push(newProject);
 

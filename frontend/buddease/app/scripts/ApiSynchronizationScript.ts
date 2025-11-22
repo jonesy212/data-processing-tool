@@ -1,9 +1,9 @@
-import { persistenceMiddleware } from './../../src/app/middleware/core/persistenceMiddleware.';
-import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/types';
-import { Logger } from '@/app/logger/Logger';
+import { persistenceMiddleware } from '@/app/middleware/core/persistenceMiddleware.';
+import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/core/types'
+import { Logger } from '@/app/logging/Logger';
 
 
-import { PersistenceLayer, createPersistenceAdapter, usePersistenceLayer } from './persistenceLayer';
+import { PersistenceLayer, createPersistenceAdapter, usePersistenceLayer } from '@/app/dataIntegration/persistenceLayer';
 import { PersistenceConfig, CacheProxyConfig } from '@/app/typings/persistenceTypes';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -25,7 +25,8 @@ class ApiSynchronizationScript<
   private syncInProgress = false;
   private persistenceLayer: PersistenceLayer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   private middleware: MiddlewareFunction[] = [];
-  private changeLogManager: ChangeLogManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  private changeLogManager!: ChangeLogManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  private readonly entityName: string;
 
   constructor(
     private apiBaseUrl: string,
@@ -33,6 +34,7 @@ class ApiSynchronizationScript<
     entityName: string,
     persistenceConfig?: PersistenceConfig
   ) {
+    this.entityName = entityName;
     this.changeLogManager = new ChangeLogManager(entityName);
        // Initialize your persistence layer
     const adapter = createPersistenceAdapter(
@@ -512,6 +514,20 @@ class ApiSynchronizationScript<
     
     // Optional: Also clear from persistent storage if needed
     this.clearPersistedLogs();
+  }
+
+    // 2. tiny helper (or inline it)
+  private persistLogs(logs: any[]): void {
+    localStorage.setItem(`${this.entityName}_change_log`, JSON.stringify(logs));
+  }
+
+  private clearPersistedLogs(): void {
+    try {
+      localStorage.removeItem(`${this.entityName}_change_log`);
+      this.persistLogs([]); // clear
+    } catch (error) {
+      console.warn('Failed to clear persisted logs:', error);
+    }
   }
 
   private clearPersistedLogs(): void {

@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 import { observable } from "mobx";
 import internalApiService from '@/app/api/ApiClient'; // Use the service
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { TradeLogger } from "./TradeLogger";
+import { TradeLogger } from '@/app/logging/TradeLogger'
 
 const TRADING_API_BASE_URL = endpoints.trading;
 

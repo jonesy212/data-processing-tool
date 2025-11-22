@@ -6,7 +6,7 @@ import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react
 
 
 export class MetroLogAnalyzer extends ConfigFileAnalyzer {
-    
+  
   async analyze(): Promise<Correction[]> {
     const corrections: Correction[] = [];
     

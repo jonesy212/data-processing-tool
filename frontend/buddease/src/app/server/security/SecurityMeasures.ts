@@ -1,12 +1,8 @@
 // security/SecurityMeasures
 import { createHeaders } from "@/app/api/ApiClient";
 import { SecurityMeasure, SecurityMeasureType, SecurityMeasureHeader, SecurityMeasureLogger } from '@/app/typings/securityMeasureTypes'
-// Define security measure types
-export enum SecurityMeasureType {
-  Header = "Header",
-  Logger = "Logger",
-  // Add more types as needed
-}
+
+
 
 // Action to implement security measures
 const requestHeaders = createHeaders();
@@ -105,7 +101,17 @@ const securityHeader: SecurityMeasureHeader = {
   description: "Add X-Content-Type-Options header",
   name: "X-Content-Type-Options",
   value: "nosniff",
+  appliesTo: 'both',
+  enabled: true,
+  priority: 'low'
 };
 
 // Call the function with the security header
 implementHeaderSecurity(securityHeader, requestHeaders);
+
+// #TODO REMOVE
+// Total Issues : 4932
+// Critical     : 125
+// High         : 401
+// Medium       : 2890
+// Low          : 1516

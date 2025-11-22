@@ -1,6 +1,6 @@
 //ApiDetails.ts
 
-import detailsApiService from '@/app/api/service/DetailsService';
+import { detailsApiService } from '@/app/api/service/DetailsService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -39,13 +39,13 @@ const handleDetailsApiErrorAndNotify = (
   console.error("Error:", error);
 
   const errorMessage = detailsNotificationMessages[errorMessageId];
-  useNotification().notify(
-    errorMessageId,
-    errorMessage,
-    NOTIFICATION_MESSAGES.Details.ERROR,
-    new Date(),
-    NotificationTypeEnum.ERROR
-  );
+  useNotification().notify({
+    id: errorMessageId,
+    message: errorMessage,
+    data: error,
+    timestamp: new Date(),
+    type: NotificationTypeEnum.ERROR
+  });
   throw error;
 };
 
@@ -60,15 +60,15 @@ export const fetchDetails = async <
   try {
     const details = await detailsApiService.fetchDetails<T, K, Meta>();
     
-    // Notify success
+    // Notify success using object parameter
     const successMessage = detailsNotificationMessages.FETCH_DETAILS_SUCCESS;
-    useNotification().notify(
-      'FETCH_DETAILS_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: 'FETCH_DETAILS_SUCCESS',
+      message: successMessage,
+      data: details,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS
+    });
 
     return details;
   } catch (error) {
@@ -90,13 +90,13 @@ export const createdDetails = async <
     
     // Notify success
     const successMessage = detailsNotificationMessages.ADD_DETAILS_SUCCESS;
-    useNotification().notify(
-      'ADD_DETAILS_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: 'ADD_DETAILS_SUCCESS',
+      message: successMessage,
+      data: createdDetails,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS
+    });
 
     return createdDetails;
   } catch (error) {
@@ -120,13 +120,13 @@ export const addDetails = async <
 
     // Notify success
     const successMessage = detailsNotificationMessages.ADD_DETAILS_SUCCESS;
-    useNotification().notify(
-      'ADD_DETAILS_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: 'ADD_DETAILS_SUCCESS',
+      message: successMessage,
+      data: createdDetails,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS
+    });
 
     return createdDetails;
   } catch (error) {
@@ -140,13 +140,13 @@ export const removeDetails = async (detailsId: string): Promise<void> => {
 
     // Notify success
     const successMessage = detailsNotificationMessages.REMOVE_DETAILS_SUCCESS;
-    useNotification().notify(
-      'REMOVE_DETAILS_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: 'REMOVE_DETAILS_SUCCESS',
+      message: successMessage,
+      data: { detailsId },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS
+    });
   } catch (error) {
     handleDetailsApiErrorAndNotify(error, 'REMOVE_DETAILS_ERROR');
   }
@@ -168,13 +168,13 @@ export const updateDetails = async <
 
     // Notify success
     const successMessage = detailsNotificationMessages.UPDATE_DETAILS_SUCCESS;
-    useNotification().notify(
-      'UPDATE_DETAILS_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: 'UPDATE_DETAILS_SUCCESS',
+      message: successMessage,
+      data: updatedDetails,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS
+    });
 
     return updatedDetails;
   } catch (error) {

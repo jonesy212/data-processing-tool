@@ -63,49 +63,221 @@ export class DatabaseSetupScript {
     console.log('📄 Created database configuration');
   }
 
-  private generatePostgresConfig(dbConfig?: DatabaseConfig): string {
-    return `import { Pool } from 'pg';
+  private generateMySQLConfig(dbConfig?: DatabaseConfig): string {
+  return `import mysql from 'mysql2/promise';
 
 export const databaseConfig = {
   host: '${dbConfig?.host || 'localhost'}',
-  port: ${dbConfig?.port || 5432},
+  port: ${dbConfig?.port || 3306},
   database: '${dbConfig?.database || 'app_database'}',
-  user: '${dbConfig?.username || 'postgres'}',
+  user: '${dbConfig?.username || 'root'}',
   password: '${dbConfig?.password || 'password'}',
-  ssl: ${dbConfig?.ssl || false},
+  charset: 'utf8mb4',
+  timezone: '+00:00',
+  connectionLimit: 10,
+  acquireTimeout: 60000,
+  timeout: 60000,
+  reconnect: true,
 };
 
-export const pool = new Pool(databaseConfig);
+export const createPool = () => mysql.createPool(databaseConfig);
 
 export const connectDB = async () => {
   try {
-    const client = await pool.connect();
-    console.log('✅ Connected to PostgreSQL database');
-    return client;
+    const pool = createPool();
+    const connection = await pool.getConnection();
+    console.log('✅ Connected to MySQL database');
+    connection.release();
+    return pool;
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    throw error;
-  }
-};`;
-  }
-
-  private generateMongoConfig(dbConfig?: DatabaseConfig): string {
-    return `import mongoose from 'mongoose';
-
-const MONGODB_URI = process.env.MONGODB_URI || 
-  'mongodb://${dbConfig?.username || 'username'}:${dbConfig?.password || 'password'}@${dbConfig?.host || 'localhost'}:${dbConfig?.port || 27017}/${dbConfig?.database || 'app_database'}';
-
-export const connectDB = async (): Promise<void> => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB database');
-  } catch (error) {
-    console.error('❌ MongoDB connection failed:', error);
+    console.error('❌ MySQL connection failed:', error);
     throw error;
   }
 };
 
-export default mongoose;`;
+// Utility functions for common operations
+export const query = async (sql: string, params: any[] = []) => {
+  const pool = createPool();
+  try {
+    const [rows] = await pool.execute(sql, params);
+    return rows;
+  } finally {
+    await pool.end();
+  }
+};
+
+export const transaction = async (callback: (connection: any) => Promise<void>) => {
+  const pool = createPool();
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+  
+  try {
+    await callback(connection);
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+    await pool.end();
+  }
+};`;
+}
+
+private generateSQLiteConfig(): string {
+  return `import sqlite3 from 'sqlite3';
+  import { open, Database } from 'sqlite';
+  import path from 'path';
+
+  const dbPath = process.env.SQLITE_PATH || path.join(process.cwd(), 'database.sqlite');
+
+  export interface SQLiteConfig {
+    filename: string;
+    driver: typeof sqlite3.Database;
+  }
+
+  export const databaseConfig: SQLiteConfig = {
+    filename: dbPath,
+    driver: sqlite3.Database
+  };
+
+  let dbInstance: Database | null = null;
+
+  export const connectDB = async (): Promise<Database> => {
+    if (dbInstance) {
+      return dbInstance;
+    }
+
+    try {
+      dbInstance = await open({
+        filename: dbPath,
+        driver: sqlite3.Database
+      });
+
+      // Enable foreign keys and better performance
+      await dbInstance.exec(\`
+        PRAGMA foreign_keys = ON;
+        PRAGMA journal_mode = WAL;
+        PRAGMA synchronous = NORMAL;
+        PRAGMA cache_size = -64000;
+        PRAGMA temp_store = memory;
+      \`);
+
+      console.log('✅ Connected to SQLite database');
+      return dbInstance;
+    } catch (error) {
+      console.error('❌ SQLite connection failed:', error);
+      throw error;
+    }
+  };
+
+  // Utility functions for common operations
+  export const query = async (sql: string, params: any[] = []) => {
+    const db = await connectDB();
+    try {
+      return await db.all(sql, params);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const run = async (sql: string, params: any[] = []) => {
+    const db = await connectDB();
+    try {
+      return await db.run(sql, params);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const get = async (sql: string, params: any[] = []) => {
+    const db = await connectDB();
+    try {
+      return await db.get(sql, params);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  export const transaction = async (callback: (db: Database) => Promise<void>) => {
+    const db = await connectDB();
+    try {
+      await db.run('BEGIN TRANSACTION');
+      await callback(db);
+      await db.run('COMMIT');
+    } catch (error) {
+      await db.run('ROLLBACK');
+      throw error;
+    }
+  };
+
+  // Initialize database with basic tables
+  export const initializeDatabase = async () => {
+    const db = await connectDB();
+    
+    await db.exec(\`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS migrations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE NOT NULL,
+        executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    \`);
+
+    console.log('✅ Database tables initialized');
+  };`;
+}
+
+  private generatePostgresConfig(dbConfig?: DatabaseConfig): string {
+    return `import { Pool } from 'pg';
+
+    export const databaseConfig = {
+      host: '${dbConfig?.host || 'localhost'}',
+      port: ${dbConfig?.port || 5432},
+      database: '${dbConfig?.database || 'app_database'}',
+      user: '${dbConfig?.username || 'postgres'}',
+      password: '${dbConfig?.password || 'password'}',
+      ssl: ${dbConfig?.ssl || false},
+    };
+
+    export const pool = new Pool(databaseConfig);
+
+    export const connectDB = async () => {
+      try {
+        const client = await pool.connect();
+        console.log('✅ Connected to PostgreSQL database');
+        return client;
+      } catch (error) {
+        console.error('❌ Database connection failed:', error);
+        throw error;
+      }
+    };`;
+  }
+
+    private generateMongoConfig(dbConfig?: DatabaseConfig): string {
+      return `import mongoose from 'mongoose';
+
+    const MONGODB_URI = process.env.MONGODB_URI || 
+      'mongodb://${dbConfig?.username || 'username'}:${dbConfig?.password || 'password'}@${dbConfig?.host || 'localhost'}:${dbConfig?.port || 27017}/${dbConfig?.database || 'app_database'}';
+
+    export const connectDB = async (): Promise<void> => {
+      try {
+        await mongoose.connect(MONGODB_URI);
+        console.log('✅ Connected to MongoDB database');
+      } catch (error) {
+        console.error('❌ MongoDB connection failed:', error);
+        throw error;
+      }
+    };
+
+    export default mongoose;`;
   }
 
   private async setupDatabaseSchema(projectConfig: ProjectConfig): Promise<void> {

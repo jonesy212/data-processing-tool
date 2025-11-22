@@ -1361,7 +1361,7 @@ const {
   categoryProperties,
   delegate,
   snapshotData,
-  timestamp
+  timestamp,
   tags,
   initialState
 } = storeProps;

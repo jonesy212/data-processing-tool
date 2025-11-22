@@ -1,6 +1,6 @@
 # 🚀 Quick Fixes - Easy Wins
-**Generated:** 2025-11-18T21:23:34.977Z
-**Total Quick Fixes:** 1537
+**Generated:** 2025-11-22T18:55:54.755Z
+**Total Quick Fixes:** 1523
 
 > 💡 These fixes can be completed in under 5 minutes each
 
@@ -2283,6 +2283,23 @@
 
 ```
 
+## 📄 CorrectionGenerator.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionGenerator.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 506:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 ErrorAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/ErrorAnalyzer.ts
 
@@ -2307,7 +2324,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1155:**
+**Line 1178:**
 ```typescript
 
 ```
@@ -2324,7 +2341,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 345:**
+**Line 388:**
 ```typescript
 
 ```
@@ -2401,7 +2418,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 272:**
+**Line 275:**
 ```typescript
 
 ```
@@ -3621,6 +3638,23 @@
 
 ```
 
+## 📄 Payload.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/database/Payload.tsx
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 185:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 route.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/route.ts
 
@@ -3764,7 +3798,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 25:**
+**Line 28:**
 ```typescript
 
 ```
@@ -3798,7 +3832,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 92:**
+**Line 94:**
 ```typescript
 
 ```
@@ -3943,7 +3977,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 112:**
+**Line 110:**
 ```typescript
 
 ```
@@ -4063,23 +4097,6 @@
 **Category:** maintainability
 
 **Line 103:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 mapToSnapshotStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/mappings/mapToSnapshotStore.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 101:**
 ```typescript
 
 ```
@@ -4757,6 +4774,23 @@
 
 ```
 
+## 📄 SubscriptionEntity.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/entities/SubscriptionEntity.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 125:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 DynamicEventHandlerExample.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/eventHandlers/DynamicEventHandlerExample.tsx
 
@@ -4884,7 +4918,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 446:**
+**Line 438:**
 ```typescript
 
 ```
@@ -5732,7 +5766,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 23:**
+**Line 2:**
 ```typescript
 
 ```
@@ -6394,23 +6428,6 @@
 
 ```
 
-## 📄 ipfsConfig.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/ipfsConfig.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 27:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 useMeta.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/useMeta.tsx
 
@@ -6838,6 +6855,23 @@
 
 ```
 
+## 📄 ConfigFileAnalyzer.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 15:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 RegexHelpers.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/utils/RegexHelpers.ts
 
@@ -6935,23 +6969,6 @@
 **Category:** maintainability
 
 **Line 23:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 idleTimeoutHooks.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/idleTimeoutHooks.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 8:**
 ```typescript
 
 ```
@@ -7273,7 +7290,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1250:**
+**Line 1256:**
 ```typescript
 
 ```
@@ -7768,13 +7785,8 @@
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/database/DatabaseService.ts
 
 ### 1. undefined
-**Type:** suggestion
+**Type:** warning
 **Category:** maintainability
-
-**Line 241:**
-```typescript
-
-```
 
 **Fix:**
 ```typescript
@@ -7782,8 +7794,8 @@
 ```
 
 ### 2. undefined
-**Type:** warning
-**Category:** maintainability
+**Type:** suggestion
+**Category:** performance
 
 **Fix:**
 ```typescript
@@ -7841,6 +7853,27 @@
 
 ```
 
+## 📄 SecurityMeasures.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/security/SecurityMeasures.ts
+
+### 1. undefined
+**Type:** warning
+**Category:** maintainability
+
+**Fix:**
+```typescript
+
+```
+
+### 2. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 serverFileSystem.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/serverFileSystem.ts
 
@@ -7849,23 +7882,6 @@
 **Category:** maintainability
 
 **Line 93:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 ConfigurationService.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/services/ConfigurationService.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 97:**
 ```typescript
 
 ```
@@ -8058,32 +8074,6 @@
 
 ```
 
-## 📄 SnapshotStore.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotStore.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 259:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-### 2. undefined
-**Type:** warning
-**Category:** maintainability
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 SnapshotStore.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotStore.tsx
 
@@ -8091,7 +8081,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 984:**
+**Line 985:**
 ```typescript
 
 ```
@@ -8986,7 +8976,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 220:**
+**Line 230:**
 ```typescript
 
 ```
@@ -9135,18 +9125,6 @@
 ### 2. undefined
 **Type:** warning
 **Category:** maintainability
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 Todo.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/Todo.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
 
 **Fix:**
 ```typescript
@@ -9620,30 +9598,6 @@
 
 ```
 
-## 📄 AppStructure.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/appStructure/AppStructure.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 FrontendStructure.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/appStructure/FrontendStructure.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 getUserConfigs.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/getUserConfigs.ts
 
@@ -10076,18 +10030,6 @@
 
 ```
 
-## 📄 metadataUtils.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/metadataUtils.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 StoragService.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/storage/StoragService.ts
 
@@ -10472,7 +10414,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -10790,23 +10732,6 @@
 **Category:** maintainability
 
 **Line 2:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 Payload.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/database/Payload.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 5:**
 ```typescript
 
 ```
@@ -11189,6 +11114,18 @@
 ```typescript
 
 ```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ProjectManagerStore.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/hybrid/ProjectManagerStore.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
 
 **Fix:**
 ```typescript
@@ -12682,18 +12619,6 @@
 
 ## 📄 ApiTradingInfo.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiTradingInfo.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 ApiUser.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiUser.js
 
 ### 1. undefined
 **Type:** suggestion
@@ -14408,18 +14333,6 @@
 
 ```
 
-## 📄 BackendConfig.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/BackendConfig.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 BackendConfig.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/BackendConfig.ts
 
@@ -15152,18 +15065,6 @@
 
 ```
 
-## 📄 CorrectionGenerator.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionGenerator.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 CorrectionWizard.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionWizard.tsx
 
@@ -15178,18 +15079,6 @@
 
 ## 📄 BabelConfigAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/BabelConfigAnalyzer.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 ConfigFileAnalyzer.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -15380,18 +15269,6 @@
 
 ```
 
-## 📄 idleTimeoutUtils.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/commHooks/idleTimeoutUtils.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 idleTimeoutUtils.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/commHooks/idleTimeoutUtils.ts
 
@@ -15418,18 +15295,6 @@
 
 ## 📄 useNotificationBar.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/commHooks/useNotificationBar.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 useRealtimeData.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/commHooks/useRealtimeData.js
 
 ### 1. undefined
 **Type:** suggestion
@@ -15598,18 +15463,6 @@
 
 ## 📄 EnhancePhase.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phaseHooks/EnhancePhase.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 PhaseHooks.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/phaseHooks/PhaseHooks.js
 
 ### 1. undefined
 **Type:** suggestion
@@ -17288,8 +17141,8 @@
 
 ```
 
-## 📄 cleanup-compiled-enhanced.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/cleanup-compiled-enhanced.js
+## 📄 cleanup-compiled.js
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/cleanup-compiled.js
 
 ### 1. undefined
 **Type:** suggestion
@@ -17338,18 +17191,6 @@
 
 ## 📄 authToken.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/auth/authToken.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 BackendStructure.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/database/BackendStructure.js
 
 ### 1. undefined
 **Type:** suggestion
@@ -17506,18 +17347,6 @@
 
 ## 📄 SecurityMeasureLogger.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/security/SecurityMeasureLogger.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 SecurityMeasures.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/server/security/SecurityMeasures.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -17794,6 +17623,18 @@
 
 ## 📄 handleSnapshotStoreOperation.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/handleSnapshotStoreOperation.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 mapToSnapshotStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/mappings/mapToSnapshotStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -18320,18 +18161,6 @@
 
 ```
 
-## 📄 DetailsListStore.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 FeatureStore.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/FeatureStore.ts
 
@@ -18356,8 +18185,8 @@
 
 ```
 
-## 📄 NotificationService.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationService.ts
+## 📄 NotificationServiceClass.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -19052,18 +18881,6 @@
 
 ```
 
-## 📄 dataAnalysisUtils.js
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/dataAnalysisUtils.js
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 dataAnalysisUtils.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/dataAnalysisUtils.ts
 
@@ -19222,6 +19039,18 @@
 
 ## 📄 QualityChecksScript.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/app/scripts/QualityChecksScript.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 TemplateGenerator.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/app/scripts/TemplateGenerator.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -19391,7 +19220,7 @@
 **Type:** suggestion
 **Category:** performance
 
-**Line 76:**
+**Line 84:**
 ```typescript
 
 ```
@@ -19429,18 +19258,6 @@
 ```typescript
 
 ```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 tsconfig.json
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/tsconfig.json
-
-### 1. undefined
-**Type:** suggestion
-**Category:** development
 
 **Fix:**
 ```typescript

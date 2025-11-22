@@ -239,7 +239,6 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
     const corrections: Correction[] = [];
     
     try {
-          
       // Check if content is empty
       if (content.trim().length === 0) {
         corrections.push(this.createCorrection(
@@ -257,6 +256,7 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
 
       const tsconfig = JSON.parse(content);
       const compilerOptions = tsconfig.compilerOptions || {};
+      const isReactNative = this.isReactNativeProject();
 
       // Check for problematic TypeScript settings
       if (compilerOptions.noEmit === true) {
@@ -312,8 +312,36 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
         ));
       }
 
-    } catch (error) {
+      // FIXED: Updated module resolution check for React Native
+      if (isReactNative) {
+        const currentModuleResolution = compilerOptions.moduleResolution;
+        // Only warn if moduleResolution is set to something other than the recommended values
+        if (currentModuleResolution && currentModuleResolution !== 'node' && currentModuleResolution !== 'bundler' && currentModuleResolution !== 'node10') {
+          corrections.push(this.createCorrection(
+            'tsconfig-module-resolution-rn',
+            'warning',
+            'medium',
+            'Recommended module resolution for React Native',
+            configFile,
+            `Current moduleResolution: "${currentModuleResolution}" - React Native works best with "bundler" or "node" resolution`,
+            'Set "moduleResolution": "bundler" for Metro bundler or "node" for compatibility',
+            'compilation'
+          ));
+        } else if (!currentModuleResolution) {
+          corrections.push(this.createCorrection(
+            'tsconfig-module-resolution-rn',
+            'suggestion',
+            'medium',
+            'Module resolution not specified for React Native',
+            configFile,
+            'Missing moduleResolution setting',
+            'Set "moduleResolution": "bundler" for better Metro bundler performance',
+            'compilation'
+          ));
+        }
+      }
 
+    } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown parsing error';
 
       corrections.push(this.createCorrection(
@@ -329,6 +357,21 @@ export class BuildAnalyzer extends ConfigFileAnalyzer {
     }
 
     return corrections;
+  }
+
+  // Add this helper method to check if it's a React Native project
+  private isReactNativeProject(): boolean {
+    try {
+      const packageJsonPath = path.resolve(process.cwd(), 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+        const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+        return !!deps['react-native'];
+      }
+    } catch {
+      // Ignore errors
+    }
+    return false;
   }
 
   private analyzeWebpackConfig(content: string, configFile: string): Correction[] {

@@ -1,5 +1,5 @@
 # 🏗️ Structural Issues Report
-**Generated:** 2025-11-18T21:23:34.977Z
+**Generated:** 2025-11-22T18:55:54.755Z
 **Total Structural Issues:** 142
 
 ## 📄 ReactWebAnalyzer.ts
@@ -564,14 +564,14 @@ Create the missing interface or fix the reference
 **Path:** src/app/components/documents/ProjectManagementToolbar.tsx
 
 ### 1. Component 'ProjectManagementToolbar' references missing props interface '{ 
-    task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields'
+    task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields'
 **Severity:** HIGH
 **Type:** error
 
 **Problem Code:**
 ```typescript
 interface { 
-    task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields { /* not found */ }
+    task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields { /* not found */ }
 ```
 
 **Suggested Fix:**
@@ -2616,10 +2616,6 @@ The following files are strongly related and should be reviewed together:
 - UserCard.tsx
 - Visualization.tsx
 
-### PersonaCard.tsx
-**Related Files:**
-- ThemeConfigContext.tsx
-
 ### CalendarEventViewingDetails.tsx
 **Related Files:**
 - DefaultCalendarEventViewingDetails.tsx
@@ -2630,12 +2626,6 @@ The following files are strongly related and should be reviewed together:
 **Related Files:**
 - ChatApi.ts
 - ChatEventService.ts
-- ChatRoomComponent.tsx
-- GroupChat.ts
-
-### ChatRoomComponent.tsx
-**Related Files:**
-- ChatMessage.tsx
 
 ### ChatRoomDashboard.tsx
 **Related Files:**
@@ -2668,11 +2658,6 @@ The following files are strongly related and should be reviewed together:
 ### Palette.tsx
 **Related Files:**
 - ColorPalette.tsx
-- index.tsx
-
-### ResponsiveDesign.tsx
-**Related Files:**
-- CollaborationBoardStore.tsx
 
 ### DynamicContent.tsx
 **Related Files:**
@@ -2683,17 +2668,9 @@ The following files are strongly related and should be reviewed together:
 - AnimationsAndTansitions.tsx
 - ColorPalette.tsx
 
-### ThemeConfigContext.tsx
-**Related Files:**
-- PersonaCard.tsx
-
 ### Channel.ts
 **Related Files:**
 - ChatPage.tsx
-
-### GroupChat.ts
-**Related Files:**
-- ChatMessage.tsx
 
 ### BrainstormingSettings.ts
 **Related Files:**
@@ -2702,21 +2679,6 @@ The following files are strongly related and should be reviewed together:
 ### CollaborationPreferences.ts
 **Related Files:**
 - BrainstormingSettings.ts
-- TeamBuildingSettings.ts
-- ProjectManagementSettings.ts
-- MeetingsSettings.ts
-
-### MeetingsSettings.ts
-**Related Files:**
-- CollaborationPreferences.ts
-
-### ProjectManagementSettings.ts
-**Related Files:**
-- CollaborationPreferences.ts
-
-### TeamBuildingSettings.ts
-**Related Files:**
-- CollaborationPreferences.ts
 
 ### ProgressBar.tsx
 **Related Files:**
@@ -2754,10 +2716,6 @@ The following files are strongly related and should be reviewed together:
 **Related Files:**
 - Project.tsx
 
-### TodoItem.tsx
-**Related Files:**
-- index.tsx
-
 ### Trades.tsx
 **Related Files:**
 - CryptoTradingPhase.tsx
@@ -2765,10 +2723,6 @@ The following files are strongly related and should be reviewed together:
 ### VideoUploader.tsx
 **Related Files:**
 - ImageUploader.tsx
-
-### CollaborationBoardStore.tsx
-**Related Files:**
-- ResponsiveDesign.tsx
 
 ### DummyCardLoader.tsx
 **Related Files:**
@@ -2841,11 +2795,6 @@ The following files are strongly related and should be reviewed together:
 ### FormInputComponent.tsx
 **Related Files:**
 - FormInput.tsx
-
-### index.tsx
-**Related Files:**
-- Palette.tsx
-- TodoItem.tsx
 
 ### ApiClient.ts
 **Related Files:**

@@ -1,3 +1,4 @@
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import ApiConfig from '@/app/api/ApiConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
 import { createSystemConfigs } from '@/app/api/systemConfigs';
@@ -16,7 +17,7 @@ import { useNotification } from '@/app/state/context/NotificationContext';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
 
 import { getConfigsData } from '@/api/getConfigsApi';
-import LazyLoadScriptConfigImpl from '@/app/components/configs/LazyLoadScriptConfig';
+import LazyLoadScriptConfigImpl from '@/app/config/LazyLoadScriptConfig';
 import { API_VERSION_HEADER } from '@/app/config/AppConfig';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import dataVersions from '@/app/configs/DataVersionsConfig';
@@ -34,8 +35,6 @@ interface BaseRetryConfig {
   maxRetries?: number;
   retryDelay?: number;
 }
-
-
 
 interface BaseMetadataConfig<
   T extends BaseDataEntity = BaseDataRoot,
@@ -173,6 +172,7 @@ private getDefaultApiConfig(): ApiConfig {
       contentType: API_VERSION_HEADER, // Use dynamic API version header
       encoding: "utf-8", // Default encoding
     },
+    configurations, endpoints, getEndpoint, getUrl,
     withCredentials: false,
     baseURL: process.env.REACT_APP_API_BASE_URL || "",
     backendConfig: backendConfig,
@@ -404,6 +404,7 @@ private getDefaultApiConfig(): ApiConfig {
           maxRetries: 3,
           retryDelay: 0,
         },
+        configurations, endpoints, getEndpoint, getUrl,
       };
 
       return {
@@ -483,6 +484,9 @@ private getDefaultApiConfig(): ApiConfig {
         encoding: "utf-8",
       },
       withCredentials: true,
+
+      configurations, endpoints, getEndpoint, getUrl,
+
       onLoad: (response) => console.log("Script loaded successfully", response),
     };
   }
@@ -541,5 +545,5 @@ private getDefaultApiConfig(): ApiConfig {
 const configServiceInstance = ConfigurationService.getInstance();
 
 export { configServiceInstance };
-export type { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, ConfigurationOptions };
+export type { BaseMetadataConfig, BaseRetryConfig, ConfigurationOptions };
 

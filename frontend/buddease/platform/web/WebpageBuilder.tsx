@@ -1,5 +1,5 @@
-import axiosInstance from '@/app/api/csrfToken';
-import { endpoints } from '@/app/api/endpointConfigurations';
+import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import {
   ToolbarOptionsComponent,
   ToolbarOptionsProps,
@@ -11,14 +11,19 @@ import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import { WebLogger } from "@/app/logging/Logger";
 import Clipboard from "@/app/ts/clipboard";
-import { WebEndpoints } from '@/app/typings/categories/WebEndpoints';
+import { WebEndpoints } from "@/app/typings/categories/WebEndpoints";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { ContentState, Editor, EditorState, Modifier, RichUtils } from "draft-js";
+import {
+  ContentState,
+  Editor,
+  EditorState,
+  Modifier,
+  RichUtils,
+} from "draft-js";
 import React, { useState } from "react";
 
 const BASE_URL = "https://example.com";
 const API_BASE_URL = endpoints.web;
-
 
 interface DocumentProps {
   title: string;
@@ -33,12 +38,15 @@ interface WebpageBuilderProps {
   onSave: (document: DocumentProps) => void;
   onError: (error: string) => void;
 }
-const WebpageBuilder: React.FC<WebpageBuilderProps> = ({ document, onSave, onError }) => {
+const WebpageBuilder: React.FC<WebpageBuilderProps> = ({
+  document,
+  onSave,
+  onError,
+}) => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createWithContent(ContentState.createFromText(document.content))
   );
 
-    
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();
   const { handleError } = useErrorHandling(); // Access handleError function from useErrorHandling
@@ -57,8 +65,8 @@ const WebpageBuilder: React.FC<WebpageBuilderProps> = ({ document, onSave, onErr
     ...API_BASE_URL,
     newData: {
       path: `${BASE_URL}/api/messages/web/newData`,
-      method: 'GET',
-      description: 'Fetch latest data',
+      method: "GET",
+      description: "Fetch latest data",
     },
   };
 

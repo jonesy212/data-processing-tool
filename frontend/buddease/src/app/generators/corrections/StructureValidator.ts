@@ -45,11 +45,6 @@ export class StructureValidator extends BaseAnalyzer {
         this.readPackageJson()
       ]);
 
-      const [files, packageJson] = await Promise.all([
-        this.scanProjectFiles(),
-        this.readPackageJson()
-      ]);
-
       const [interfaces, components, apis] = await Promise.all([
         this.extractInterfaces(files),
         this.extractComponents(files),
@@ -80,8 +75,6 @@ export class StructureValidator extends BaseAnalyzer {
       throw new Error(`Project structure scan failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-
-
 
   private extractPackageJsonData(analyzer: PackageJsonAnalyzer): PackageJson {
     // Assuming PackageJsonAnalyzer has a method or property to get the actual package.json data

@@ -87,6 +87,11 @@ import { createMergedEndpoints } from '@/utils/endpointMerger';
 import ApiConfig from './ApiConfig';
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 
+import { createMergedEndpoints } from '@/utils/endpointMerger';
+import ApiConfig from './ApiConfig';
+import { EndpointConfigurations } from '@/app/config/EndpointConfig';
+import { buildUrl } from '@/utils/urlBuilder'; // Add this import
+
 // Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {
   analytics: analyticsConfig,
@@ -279,12 +284,36 @@ export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
 export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
-  ...params: any[]
-) => apiConfig.getUrl(category, endpointKey, ...params);
+  params?: Record<string, any>
+): string => {
+  const endpoint = endpoints[category][endpointKey];
+  return buildUrl(endpoint, params);
+};
+
+
+
+
+// Enhanced helper function to get full endpoint info
+export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
+  category: T,
+  endpointKey: keyof EndpointConfigurations[T],
+  params?: Record<string, any>
+) => {
+  const endpoint = endpoints[category][endpointKey];
+  const url = buildUrl(endpoint, params);
+  
+  return {
+    url,
+    config: typeof endpoint === 'function' ? endpoint(params) : endpoint,
+    original: endpoint
+  };
+};
 
 // Export default API instance
 export default apiConfig;
 
-// UI hooks (keep if used)
-const { handleFilterTasks } = useSearchOptions();
-const { addFilter } = useFiltering(searchOptions);
+// // UI hooks (keep if used)
+// goes in React Components
+
+// const { handleFilterTasks } = useSearchOptions();
+// const { addFilter } = useFiltering(searchOptions);

@@ -21,7 +21,6 @@ export interface ApiConfig {
   apiKeys?: Record<string, string>;
 }
 
-
 class ApiConfigService implements ApiConfig {
   [x: string]: any;
   name: any;
@@ -35,9 +34,10 @@ class ApiConfigService implements ApiConfig {
   onLoad?: (response: any) => void;
   apiKeys?: Record<string, string>;
 
+  // Change from private to protected so child classes can access it
   constructor(
-    private configurations: EndpointConfigurations,
-    protected endpoints: Endpoints,
+    protected configurations: EndpointConfigurations, // Changed to protected
+    protected endpoints: Endpoints, // Also changed to protected for consistency
     options?: Partial<ApiConfig>
   ) {
     // Initialize interface properties
@@ -52,7 +52,6 @@ class ApiConfigService implements ApiConfig {
     this.onLoad = options?.onLoad;
     this.apiKeys = options?.apiKeys;
   }
-
 
   // TYPE-SAFE METHODS
   getEndpoint<T extends EndpointCategory>(
@@ -129,6 +128,15 @@ class ApiConfigService implements ApiConfig {
   // Get endpoints for a specific category
   getEndpointsForCategory<T extends EndpointCategory>(category: T): EndpointKey<T>[] {
     return Object.keys(this.configurations[category]) as EndpointKey<T>[];
+  }
+
+  // Add getter methods for child class access (optional but good practice)
+  getConfigurations(): EndpointConfigurations {
+    return this.configurations;
+  }
+
+  getEndpoints(): Endpoints {
+    return this.endpoints;
   }
 }
 

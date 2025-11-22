@@ -3,7 +3,7 @@ import {  BaseDatabaseService } from '@/app/server/database/DatabaseService';
 import { DatabaseConfig } from '@/app/config/DatabaseConfig';
 import { MysqlDatabaseService } from '@/app/server/database/MysqlDatabaseService';
 import { PostgresDatabaseService } from '@/app/server/database/PostgresDatabaseService';
-import { DatabaseType } from '@src/app/typings/database'
+import { DatabaseType } from '@/app/typings/database'
 
 export class DatabaseServiceFactory {
   static createDatabaseService(config: DatabaseConfig, type: DatabaseType): BaseDatabaseService {

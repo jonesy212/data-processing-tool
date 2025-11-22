@@ -4,16 +4,20 @@ import { NotificationTypeEnum, useNotification } from '@/app/state/context/Notif
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 
-
-
 export interface Crypto {
   id: string;
   name: string;
   symbol: string;
+  currentPrice?: number;
+  priceChange24h?: number;
+  marketCap?: number;
   // Add more properties as needed
 }
+
 export interface CryptoStore {
   cryptos: Record<string, Crypto>;
+  isLoading: boolean;
+  error: string | null;
   fetchCryptos: () => void;
   updateCrypto: (id: string, updatedCrypto: Crypto) => void;
   deleteCrypto: (id: string) => void;
@@ -37,6 +41,15 @@ const useCryptoStore = (): CryptoStore => {
       }
       const data = await response.json();
       setCryptos(data);
+      
+      // Notify success for fetch
+      notify({
+        id: 'fetchCryptosSuccess',
+        message: NOTIFICATION_MESSAGES.Crypto.FETCH_CRYPTOS_SUCCESS,
+        data: { count: Object.keys(data).length },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS
+      });
     } catch (error) {
       handleError(error, "fetching cryptos");
     } finally {
@@ -49,40 +62,52 @@ const useCryptoStore = (): CryptoStore => {
       ...prevCryptos,
       [id]: updatedCrypto,
     }));
-    notify(
-      "updateCryptSuccess",
-      "Crypto updated successfully",
-      NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    ); // Notify success
+    
+    // Notify success for update
+    notify({
+      id: 'updateCryptoSuccess',
+      message: NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_SUCCESS,
+      data: { cryptoId: id, cryptoName: updatedCrypto.name },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS
+    });
   };
 
   const deleteCrypto = (id: string) => {
+    const deletedCrypto = cryptos[id];
     setCryptos((prevCryptos) => {
       const updatedCryptos = { ...prevCryptos };
       delete updatedCryptos[id];
       return updatedCryptos;
     });
-    notify(
-      "CryptoDeleteSuccessfully",
-      "Crypto deleted successfully",
-      NOTIFICATION_MESSAGES.Crypto.DELETE_CRYPTO_FAILURE,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    ); // Notify success
+    
+    // Notify success for delete - FIXED: Using SUCCESS message, not FAILURE
+    notify({
+      id: 'deleteCryptoSuccess',
+      message: NOTIFICATION_MESSAGES.Crypto.DELETE_CRYPTO_SUCCESS,
+      data: { cryptoId: id, cryptoName: deletedCrypto?.name },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS
+    });
   };
 
   const handleError = (error: any, action: string) => {
     console.error(`Error ${action}:`, error);
-    setError(`Error ${action}: ${error.message || "Unknown error"}`);
-    notify(
-      `Error ${action}`,
-      "Failed to perform action",
-      "error", // Changed null to "error" to fix the error
-      new Date(),
-      NotificationTypeEnum.OPERATION_ERROR
-    );
+    const errorMessage = `Error ${action}: ${error.message || "Unknown error"}`;
+    setError(errorMessage);
+    
+    // Notify error with object pattern
+    notify({
+      id: `error${action.replace(/\s+/g, '')}`,
+      message: `Failed to ${action}`,
+      data: { 
+        originalError: error.message,
+        action: action
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error'
+    });
   };
 
   const store: CryptoStore = makeAutoObservable({

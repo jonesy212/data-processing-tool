@@ -128,10 +128,10 @@ class NotificationStore {
 
       advanced: {
         chat: { enabled: !!basic.chat },
-        calendar: { enabled: !!basic.calendar },
-        audioCall: { enabled: !!basic.audioCall },
-        videoCall: { enabled: !!basic.videoCall },
-        screenShare: { enabled: !!basic.screenShare }
+        calendar: { enabled: !!basic.calendar, syncDirection, updateExisting, addAs, visibility },
+        audioCall: { enabled: !!basic.audioCall, provider, voice, language, retryAttempts },
+        videoCall: { enabled: !!basic.videoCall, autoJoin, enableVideo, enableAudio, recording },
+        screenShare: { enabled: !!basic.screenShare,  autoJoin, enableVideo, enableAudio, recording }
       },
 
       deliveryStrategy: "all",

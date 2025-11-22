@@ -1,3 +1,4 @@
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 // src/app/state/slices/RootSlice.ts
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
@@ -9,14 +10,14 @@ import { PagingState } from './../../../pages/Paging';
 import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
 import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
 import { NotificationState } from './NotificationSlice';
-import { EntityId } from '@/app/state/redux/slices/RootSlice';
+import EntityId from '@/app/state/redux/slices/RootSlice';
 import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
 import { EventState } from '@/app/state/redux/slices/EventSlice';
 import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
 import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
 import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
 import { TodoManagerState } from './../../../todos/Todo';
-import { CalendarManagerState } from '@/app/components/calendar/CalendarSlice';
+import { CalendarManagerState } from '@/app/state/redux/slices//CalendarSlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
 import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
 import { TrackerManagerState } from './TrackerSlice';
@@ -44,6 +45,7 @@ type ReorderPayload = { from: number; to: number };
 interface TaskManagerState {
   tasks: TaskCollection;
 }
+
 export interface RootState<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -161,11 +163,24 @@ const rootSlice = createSlice({
         previouslyAssignedTo: action.payload.previouslyAssignedTo ?? [],
         done: action.payload.done ?? false,
 
+        assigneeId: action.payload.assigneeId,
+        data: action.payload.data,
+        progress: action.payload.progress,
+        getData: action.payload.getData,
 
+        source: action.payload.source,
+        date: action.payload.date,
+        major: action.payload.major,
+        minor: action.payload.minor,
 
-         assigneeId, data, progress, getData,
-         source, date, major, minor,
-         participants, uploadedAt, phase, phaseName,
+        participants: action.payload.participants,
+        uploadedAt: action.payload.uploadedAt,
+        phase: action.payload.phase,
+        phaseName: action.payload.phaseName,
+
+        isCompleted: action.payload.isCompleted,
+        label: action.payload.label,
+
         // Add any other AppTask fields your TaskEntity defines...
       } as AppTask;
       state.tasks.unshift(newTask);

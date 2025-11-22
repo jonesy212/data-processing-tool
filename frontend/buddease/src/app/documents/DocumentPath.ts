@@ -1,3 +1,4 @@
+import { Permission } from '@/app/permissions/Permission';
 // DocumentPath.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CommonData } from "@/app/models/CommonData";
@@ -27,7 +28,8 @@ interface DocumentPath<
   title: string;
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  permissions?: AppStructurePermissions;
+  permissions?: Permission[];
+  appPermissions?: AppStructurePermissions;
   folders: string[];
   folderPath: string;
   previousContent?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

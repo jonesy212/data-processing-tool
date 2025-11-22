@@ -2,7 +2,8 @@
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { handleApiError } from "@/app/api/ApiLogs";
 import internalApiService from "./ApiClient";
-import { CategoryProperties, CategoryPropertyBundle } from "@/app/pages/personas/ScenarioBuilder";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
 import { AxiosError, AxiosResponse } from "axios";
 import { NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
 
@@ -72,7 +73,7 @@ const handleCategoryApiErrorAndNotify = (
   useNotification().notify({
     id: `category-${String(errorMessageId)}`,
     message,
-    data: { error },
+    data: { originalError: errorMessage },
     timestamp: new Date(),
     type: NotificationTypeEnum.ERROR,
   });
