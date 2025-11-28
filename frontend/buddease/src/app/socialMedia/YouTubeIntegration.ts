@@ -1,3 +1,4 @@
+// YouTubeIntegration.ts
 import UserDetails from "@/app/users/User";
 
 interface YouTubeUserDetails {

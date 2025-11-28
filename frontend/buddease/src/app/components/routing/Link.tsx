@@ -1,3 +1,4 @@
+// Link.tsx
 import React from 'react';
 
 interface HATEOASLink {

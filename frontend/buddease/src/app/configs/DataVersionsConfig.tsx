@@ -1,3 +1,4 @@
+// DataVersionsConfig.tsx
 import AppStructure, { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';

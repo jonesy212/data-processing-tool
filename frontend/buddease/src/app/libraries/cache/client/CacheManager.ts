@@ -1,3 +1,4 @@
+// CacheManager.ts
 //client/CacheManager.ts
 'use client';
 

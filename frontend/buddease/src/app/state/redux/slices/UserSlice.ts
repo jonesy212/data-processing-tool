@@ -1,3 +1,4 @@
+// UserSlice.ts
 import { AllTypes } from '@/app/typings/PropTypes';
 import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
 import { Attachment } from "@/app/documents/attachment/Attachment";

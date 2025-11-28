@@ -1,3 +1,4 @@
+// ApiUserSettings.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { HeadersConfig } from "@/app/api/headers/HeadersConfig";

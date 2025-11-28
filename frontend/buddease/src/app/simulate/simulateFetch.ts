@@ -1,3 +1,4 @@
+// simulateFetch.ts
 import { StatusType } from "@/app/models/data/StatusType";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { Attachment } from '@/app/documents/attachment/Attachment';

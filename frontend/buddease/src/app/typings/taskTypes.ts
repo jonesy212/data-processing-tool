@@ -1,3 +1,4 @@
+// taskTypes.ts
 import { Task } from "@/app/components/models/tasks/Task";
 import { Permission } from '@/app/permissions/Permission';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

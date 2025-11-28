@@ -1,3 +1,4 @@
+// CourseSetupPhase.tsx
 import { Data } from '@/app/models/data/Data';
 import SnapshotStore, {
     Snapshot,

@@ -1,3 +1,4 @@
+// ContentDetails.tsx
 // ContentDetails.ts
 import { CalendarEventViewingDetailsProps } from "@/app/components/calendar/CalendarEventViewingDetails";
 import ListGenerator from "@/app/generators/ListGenerator";

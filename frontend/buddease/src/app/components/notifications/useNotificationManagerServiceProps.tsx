@@ -1,7 +1,7 @@
-import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
+// useNotificationManagerServiceProps.tsx
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import useNotificationManagerService from "@/app/service/NotificationService";
 
-// useNotificationManagerServiceProps.tsx
 export interface NotificationManagerServiceProps {
     notify: (message: string) => void;
     clearNotifications: () => void;

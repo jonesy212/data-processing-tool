@@ -1,3 +1,4 @@
+// HookConverter.ts
 // TypeScript hooks
 const onCacheUpdateSuccess = (cacheName: string) => {
     console.log(`${cacheName} cache updated successfully.`);

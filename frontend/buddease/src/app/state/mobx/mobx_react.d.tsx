@@ -1,3 +1,4 @@
+// mobx_react.d.tsx
 // mobx-react.d.ts
 declare module "mobx-react" {
   export function addExample(): void;

@@ -1,3 +1,4 @@
+// FrontendStructure.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { hashString } from "@/app/generators/HashUtils";

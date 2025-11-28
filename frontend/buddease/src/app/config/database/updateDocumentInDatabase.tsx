@@ -1,17 +1,20 @@
+// updateDocumentInDatabase.tsx
 import DatabaseClient from "@/api/DatabaseClient";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
-import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
-import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { Drawing } from "@/app/libraries/drawing/generateDrawingJSON";
+import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useAuth } from "@/state/context/AuthContext";
 import { AxiosError, AxiosResponse } from "axios";
-
+import { databaseConfig } from '@/app/server/database/config'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 const { notify } = useNotification();
 
@@ -102,7 +105,13 @@ if (typeof documentId === "string" || typeof documentId === "object") {
 
 
 // Combined function to load drawing from the database
-async function loadDrawingFromDatabase(
+async function loadDrawingFromDatabase<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | DocumentId
 ): Promise<Drawing | string> {
   try {
@@ -118,7 +127,7 @@ async function loadDrawingFromDatabase(
       return drawing;
     } else if (typeof documentId === "string") {
       // Initialize database client
-      const dbClient = new DatabaseClient(config);
+      const dbClient = new DatabaseClient(databaseConfig);
 
       // Connect to the database
       await dbClient.connect();
@@ -153,7 +162,7 @@ async function loadDrawingFromDatabase(
 const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   try {
     // Initialize database client
-    const dbClient = new DatabaseClient(config);
+    const dbClient = new DatabaseClient(databaseConfig);
 
     // Connect to the database
     await dbClient.connect();
@@ -171,11 +180,17 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   }
 };
 
- const saveDocumentToDatabase = async (document: DatasetModel<T, K, Meta>, content: string): Promise<void> => { 
+ const saveDocumentToDatabase = async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T>(document: DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content: string): Promise<void> => { 
   try {
 
     // Initialize database client
-    const dbClient = new DatabaseClient(config);
+    const dbClient = new DatabaseClient(databaseConfig);
     // Connect to the database
     await dbClient.connect();
     // Save the document
@@ -194,7 +209,7 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
  const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
   try {
     // Initialize database client
-    const dbClient = new DatabaseClient(config);
+    const dbClient = new DatabaseClient(databaseConfig);
 
     // Connect to the database
     await dbClient.connect();

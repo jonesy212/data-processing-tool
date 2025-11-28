@@ -1,3 +1,4 @@
+// buildSnapshotData.ts
 import { BaseData } from '@/app/models/data/Data';
 import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";

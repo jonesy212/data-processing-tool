@@ -1,3 +1,4 @@
+// closeChatSettingsPanel.ts
 import { useRef } from "react";
 import ChatSettings from "@/app/hooks/userInterface/ChatSettingsPanel";
 

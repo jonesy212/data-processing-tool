@@ -1,3 +1,4 @@
+// CalendarEventViewingDetails.tsx
 import React from'react';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { useEffect, useState } from "react";

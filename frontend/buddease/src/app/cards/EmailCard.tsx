@@ -1,3 +1,4 @@
+// EmailCard.tsx
 // components/EmailCard.tsx
 import React from 'react';
 

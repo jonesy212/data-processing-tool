@@ -3,14 +3,24 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { BaseData } from '@/app/models/data/Data';
-import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from '@/app/models/phases/Phase';
+import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
-import { createMeta } from "@/server/metadata/MetadataHooks";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { createMeta } from "@/app/config/metadata/createMeta";
+import { 
+  BaseEntityProperties, 
+  SharedIdentifiers, 
+  SharedSnapshotProperties, 
+  SharedStatusFlags, 
+  SharedTimestamps 
+} from '@/app/documents/RelatedProps';
+import { CourseEntity, CourseK, CourseMeta, CourseAttachment, CourseExcludedFields, CourseIncludedFields } from '@/app/typings/entities/CourseEntity'
+
 
 // Interfaces for course structure
 interface Lesson {
@@ -18,89 +28,139 @@ interface Lesson {
   content: string;
 }
 
-interface Course <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->{
+interface Course<
+  T extends BaseDataEntity = CourseEntity,
+  K extends T = CourseK,
+  Meta extends DefaultMeta<T, K> = CourseMeta,
+  AttachmentType extends Attachment = CourseAttachment,
+  ExcludedFields extends keyof T = CourseExcludedFields,
+  IncludedFields extends keyof T = CourseIncludedFields
+> extends SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // Core course data
+  id: string;
   title: string;
-  phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  description: string;
+  
+  // Composition instead of inheritance
+  entities: {
+    phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    instructor: BasicUserInfo;
+    attachments: AttachmentType[];
+  };
+  
+  // Course-specific metadata
+  meta: Meta;
+  category: string;
+  difficulty: string;
+  totalDuration: number;
+  enrollmentCount: number;
 }
 
+interface LessonEntity extends 
+  BaseDataEntity,
+  BaseEntityProperties,
+  SharedTimestamps,
+  SharedStatusFlags {
+  
+  // Lesson-specific fields only
+  content: string;
+  order: number;
+  duration: number;
+  phaseId: string;
+  lessonType: 'video' | 'text' | 'quiz' | 'exercise';
+  videoUrl?: string;
+  transcript?: string;
 
-type AdaptedPhaseData = PhaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-& BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+}
 
+type AdaptedPhaseData = PhaseData<PhaseEntity, PhaseK, PhaseMeta,PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>
+& BaseData<PhaseEntity, PhaseK, PhaseMeta,PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
 
 // Class generator to create course structure
-class CourseBuilder {
-  private course: Course;
+class CourseBuilder<
+  T extends BaseDataEntity = CourseEntity,
+  K extends T = CourseK,
+  Meta extends DefaultMeta<T, K> = CourseMeta,
+  AttachmentType extends Attachment = CourseAttachment,
+  ExcludedFields extends keyof T = CourseExcludedFields,
+  IncludedFields extends keyof T = CourseIncludedFields
+> {
+  private course: Course<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   constructor(title: string) {
-    this.course = { title, phases: [] };
+    this.course = { 
+      title, 
+      id: '',
+      description: '',
+      entities: {
+        phases: [],
+        instructor: {} as BasicUserInfo,
+        attachments: []
+      },
+      meta: {} as Meta,
+      category: '',
+      difficulty: '',
+      totalDuration: 0,
+      enrollmentCount: 0
+    };
   }
 
-  getCourse(): Course {
+  getCourse(): Course<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return this.course;
   }
-  
 
-    addCoursePhase(phaseTitle: string): void {
-      this.addPhase<AdaptedPhaseData<T, K>>(phaseTitle);
-    }
-  
+  addCoursePhase(phaseTitle: string): void {
+    this.addPhase(phaseTitle);
+  }
+
   addPhase<
-    T extends PhaseData<BaseData<any, any, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
-    K extends T = T,
-    Meta extends PhaseMeta = PhaseMeta
+    PT extends T = T,  // Use class-level T as constraint
+    PK extends K = K,  // Use class-level K as constraint  
+    PMeta extends Meta = Meta  // Use class-level Meta as constraint
   >(
     phaseTitle: string
   ): void {
-     // Get the area dimensions (with optional properties)
+    // Get the area dimensions (with optional properties)
     const dimensions = fetchUserAreaDimensions();
 
-      // Construct the area object with optional properties
-      const area = {
-        prefix: 'USER',
-        name: 'JohnDoe',
-        type: NotificationTypeEnum.USER_ID,
-        id: '12345',
-        title: 'UserAccount',
-        dimensions: dimensions, // Add the dimensions to the area object
-        chatThreadName: 'GeneralChat', // Optional
-        chatMessageId: 'msg-1', // Optional
-        chatThreadId: 'thread-1', // Optional
-        dataDetails: { key: 'value' }, // Optional
-        generatorType: 'customType', // Optional
-      };
+    // Construct the area object with optional properties
+    const area = {
+      prefix: 'USER',
+      name: 'JohnDoe',
+      type: NotificationTypeEnum.USER_ID,
+      id: '12345',
+      title: 'UserAccount',
+      dimensions: dimensions,
+      chatThreadName: 'GeneralChat',
+      chatMessageId: 'msg-1',
+      chatThreadId: 'thread-1',
+      dataDetails: { key: 'value', date: new Date() },
+      generatorType: 'customType',
+    };
 
-
-    // Dynamically set the FetchOptions using properties from the `area` object
-    const options: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-      elementId: area.id, // Use `area.id` as the `elementId`
-      listenForResize: true, // Set to true to listen for resize
+    // Use class-level generic parameters in FetchOptions
+    const options: FetchOptions<PT, PK, PMeta, AttachmentType, ExcludedFields, IncludedFields> = {
+      elementId: area.id,
+      listenForResize: true,
       onChange: (dimensions) => {
         console.log(`Updated dimensions for area "${area.name}":`, dimensions);
       }
     };
 
-    // Call the fetchUserAreaDimensions function using the dynamically created options
+    // Call the fetchUserAreaDimensions function
     const areaDimensions = fetchUserAreaDimensions(options);
-    // Use 'useMeta' for currentMeta with PhaseMeta constraints
-    const currentMeta: Meta = createMeta<T, K>({
+    
+    // Use class-level generic parameters for metadata
+    const currentMeta: PMeta = createMeta<PT, PK>({
       id: 'meta-id',
       description: 'Phase Meta',
     });
 
-    // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-    const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = 
-      useMetadata<T, K, Meta>({ area: 'phase-area' });
+    // Use class-level generic parameters for unified metadata
+    const currentMetadata: UnifiedMetadata<PT, PK, PMeta, AttachmentType, ExcludedFields, IncludedFields> = 
+      useMetadata<PT, PK, PMeta>({ area: 'phase-area' });
 
-    
-
+    // Generate unique ID
     const generateUniqueId = UniqueIDGenerator.generateID(
       area.prefix,
       area.name,
@@ -113,28 +173,91 @@ class CourseBuilder {
       area.dataDetails,
       area.generatorType
     );
-    // Example logic for adding a phase
-    this.course.phases.push({
+
+    // Create phase using class-level generic parameters
+    const phase: Phase<PT, PK, PMeta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: generateUniqueId,
-        title: phaseTitle,
-        description: "",
-        label: {
-          text: "",
-          color: "" 
-        },
-        currentMeta: currentMeta,
-        currentMetadata: currentMetadata,
-        date: new Date(),
-        lessons: [],
-        name: "",
-        startDate: new Date(),
-        endDate: new Date(),
-        subPhases: [],
-        component: {} as React.FC, // Use React.FC as the type
-        hooks: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        duration: 0,
-    }
-    );
+      title: phaseTitle,
+      description: "",
+      label: {
+        text: "",
+        color: "" 
+      },
+      currentMeta: currentMeta,
+      currentMetadata: currentMetadata,
+      date: new Date(),
+      lessons: [],
+      name: "",
+      startDate: new Date(),
+      endDate: new Date(),
+      subPhases: [],
+      component: {} as React.FC,
+      hooks: {} as CustomPhaseHooks<PT, PK, PMeta, AttachmentType, ExcludedFields, IncludedFields>,
+      duration: 0,
+      
+      // Normalized shared properties
+      ...this.createBaseEntityProperties(phaseTitle, 'PHASE'),
+      ...this.createSharedTimestamps(),
+      ...this.createSharedStatusFlags(),
+      
+      // Phase-specific normalized properties
+      order: this.course.entities.phases.length + 1,
+      objectives: [],
+      courseId: this.course.id,
+      phaseType: 'content',
+      
+      // Shared snapshot properties
+      permissions: [],
+      visibility: 'public' as VisibilityLevel
+    };
+
+    this.course.entities.phases.push(phase as any);
+    this.course.phases.push(phase as any);
+  }
+
+  // Specialized phase methods using class-level generics
+  addVideoPhase<
+    PT extends T = T,
+    PK extends K = K, 
+    PMeta extends Meta & { videoType: string } = Meta & { videoType: string }
+  >(
+    title: string, 
+    videoUrl: string
+  ): void {
+    const videoMeta: PMeta = {
+      ...this.createBaseMeta(),
+      videoType: 'interactive',
+      description: `Video phase: ${title}`
+    } as PMeta;
+
+    this.addPhase<PT, PK, PMeta>(title);
+  }
+
+  addQuizPhase<
+    PT extends T = T,
+    PK extends K = K,
+    PMeta extends Meta & { quizConfig: any } = Meta & { quizConfig: any }  
+  >(
+    title: string, 
+    questionCount: number
+  ): void {
+    const quizMeta: PMeta = {
+      ...this.createBaseMeta(),
+      quizConfig: { questionCount, timeLimit: 30 },
+      description: `Quiz phase: ${title}`
+    } as PMeta;
+
+    this.addPhase<PT, PK, PMeta>(title);
+  }
+
+  // Helper method for base metadata
+  private createBaseMeta(): Partial<Meta> {
+    return {
+      id: 'meta-id',
+      description: 'Phase metadata',
+      tags: [],
+      keywords: []
+    };
   }
 
   addLesson(phaseIndex: number, lesson: Lesson): void {
@@ -149,20 +272,43 @@ class CourseBuilder {
       if (currentPhase.lessons) {
         currentPhase.lessons.push(lesson);
       } else {
-        // If lessons array doesn't exist, create it and add the lesson
         currentPhase.lessons = [lesson];
       }
     } else {
       throw new Error("Invalid phase index");
     }
   }
-  
-  generateCourse(): Course {
+
+  generateCourse(): Course<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return this.course;
+  }
+
+  // Helper methods for normalized structure
+  private createBaseEntityProperties(title: string, type: string): BaseEntityProperties {
+    return {
+      title,
+      name: title,
+      type: type as any,
+      key: `${type.toLowerCase()}_${title.toLowerCase().replace(/\s+/g, '_')}`
+    };
+  }
+
+  private createSharedTimestamps(): SharedTimestamps {
+    return {
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+  }
+
+  private createSharedStatusFlags(): SharedStatusFlags {
+    return {
+      isActive: true,
+      isCompleted: false
+    };
   }
 }
 
-// Example usage
+// basic usage
 const courseBuilder = new CourseBuilder("Cryptocurrency Workshop");
 
 courseBuilder.addPhase("Month 1 - Intro To Cryptocurrency");
@@ -176,6 +322,16 @@ courseBuilder.addLesson(1, {
   title: "Lesson 1: Introduction to Trading",
   content: "...",
 });
+
+
+// Specialized usage with custom types
+const advancedBuilder = new CourseBuilder<CourseEntity, CourseK, CourseMeta & { advanced: boolean }>(
+  "Advanced Course"
+);
+
+advancedBuilder.addVideoPhase("Advanced Video Phase", "video-url");
+advancedBuilder.addQuizPhase("Assessment", 10);
+
 
 const cryptocurrencyCourse = courseBuilder.generateCourse();
 console.log(cryptocurrencyCourse);

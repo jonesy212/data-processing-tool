@@ -1,3 +1,4 @@
+// Integration.tsx
 // Integration.ts
 
 import { addReport, fetchReports, removeReport } from "@/app/api/ApiReport";

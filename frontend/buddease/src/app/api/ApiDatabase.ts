@@ -1,14 +1,10 @@
 // ApiDatabase.ts
 import { handleApiError } from "@/app/api/ApiLogs";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import {  } from '@/app/state/context/NotificationContext'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import {
-    NotificationTypeEnum,
-    useNotification,
-    NotificationDataPayload
-} from "@/app/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification, NotificationDataPayload } from "@/app/state/context/NotificationContext";
 import { User } from "@/app/users/User";
 import { AxiosError } from "axios";
 

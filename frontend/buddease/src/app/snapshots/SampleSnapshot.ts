@@ -1,3 +1,4 @@
+// SampleSnapshot.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";

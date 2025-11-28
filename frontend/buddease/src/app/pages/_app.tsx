@@ -1,17 +1,5 @@
-
 // _app.tsx
-import { PhaseActivityProvider } from '@/app/state/context/PhaseActivityContext'
-import { AppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields } from '@/app/typings/entities/ContentEntity'
-import { AppStoresProvider } from "@/app/state/context/AppContext";
-import { DataProvider, Refine } from "@refinedev/core";
-import { BytesLike, uuidV4 } from "ethers";
-import { AppProps } from "next/app";
-import { useParams } from "next/navigation";
-import React, { SetStateAction, useState } from "react";
-import { Navigator, Routes } from "react-router-dom";
-import { v4 as uuidVFour } from "uuid"; 
-import { useTheme } from "@/app/libraries/ui/useTheme";
-import { EnhancedThemeProvider } from '@/app/platform/styles/EnhancedThemeContextType'
+
 import BlogComponent from "@/app/components/blogs/BlogComponent";
 import ChartComponent from "@/app/components/charts/ChartComponent";
 import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
@@ -22,6 +10,7 @@ import OnboardingComponent from "@/app/components/onboarding/OnboardingComponent
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import NotificationManager from "@/app/features/support/NotificationManager";
 import { NotificationProvider } from '@/app/features/support/NotificationProvider';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
 import generateAppTree, { AppTree } from "@/app/generators/generateAppTree";
@@ -38,26 +27,35 @@ import {
     default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { useTheme } from "@/app/libraries/ui/useTheme";
 import { LogData } from "@/app/models/LogData";
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
+import { EnhancedThemeProvider } from '@/app/platform/styles/EnhancedThemeContextType';
 import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
 import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
 import ErrorHandler from "@/app/shared/ErrorHandler";
+import { AppStoresProvider } from "@/app/state/context/AppContext";
 import { AuthProvider } from "@/app/state/context/AuthContext";
 import { DynamicPromptProvider } from "@/app/state/context/DynamicPromptContext";
+import { PhaseActivityProvider } from '@/app/state/context/PhaseActivityContext';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
+import { AppContentEntity, ContentAttachment, ContentExcludedFields, ContentIncludedFields, ContentK, ContentMeta } from '@/app/typings/entities/ContentEntity';
 import { DocumentTree } from "@/app/users/User";
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { DataProvider, Refine } from "@refinedev/core";
+import { BytesLike, uuidV4 } from "ethers";
+import { AppProps } from "next/app";
+import { useParams } from "next/navigation";
+import React, { SetStateAction, useState } from "react";
 import {
-    Route,
-    Router,
-    useLocation,
+    Navigator, Route,
+    Router, Routes, useLocation,
     useNavigate,
-    useSearchParams,
+    useSearchParams
 } from "react-router-dom";
+import { v4 as uuidVFour } from "uuid";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
 import ChangePasswordForm from "./forms/ChangePasswordForm";
@@ -75,14 +73,16 @@ import FilePreview from "@/app/components/documents/FilePreview";
 import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
 import StepComponent from "@/app/components/phases/steps/StepComponent";
 import { RouteGuard } from "@/app/components/routing/RouteGuard";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { authProvider } from "@/app/interfaces/provider/authProviderInstance";
 import ToolbarItemsContext from "@/app/libraries/toolbar/ToolbarItemsProvider";
 import steps from "@/app/phases/steps/steps";
 import useNotificationManagerService from "@/app/services/NotificationService";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import StepProvider, { useStepContext } from "@/app/state/context/StepContext";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -90,8 +90,6 @@ import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import FormBuilder from "./forms/formBuilder/FormBuilder";
 import LogViewer from "./logs/LogViewer";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig'
-import { Attachment } from '@/app/documents/attachment/Attachment'
 
 interface ExtendedAppProps<
   T extends BaseDataEntity = BaseDataEntity,

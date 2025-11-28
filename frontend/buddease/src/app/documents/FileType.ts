@@ -1,3 +1,4 @@
+// FileType.ts
 // FileTypeEnum.ts
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { CalendarLogger } from "@/app/libraries/logging/Logger";

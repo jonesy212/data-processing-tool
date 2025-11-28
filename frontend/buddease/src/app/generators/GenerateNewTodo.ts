@@ -1,5 +1,5 @@
-
 // GenerateNewTodo.ts
+
 import { Todo } from "@/app/components/todos/Todo";
 let currentTodoId = 1;
 

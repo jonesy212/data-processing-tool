@@ -60,7 +60,7 @@ export default defineConfig({
     },
   },
 
-  // Snowpack mount equivalent
+  // mount
   publicDir: 'public',
   root: '.',
 

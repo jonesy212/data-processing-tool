@@ -1,3 +1,4 @@
+// FetchSnapshotPayload.ts
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";

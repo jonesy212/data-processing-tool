@@ -1,6 +1,6 @@
 // debugMethods.ts
 
-import { Config } from '@/app/config/BaseConfig'
+import { Config } from '@/app/api/ConfigManager'
 
 interface DebugEntry {
   id: string;
@@ -22,10 +22,6 @@ interface TempDataStorage<T> {
   ttl: number;
 }
 
-interface Config {
-  id: string;
-
-}
 
 export const DebugMethods = {
   /**

@@ -1,9 +1,11 @@
+// MetadataHooks.ts
 // config/metadata/MetadataHooks.ts
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
+import { Version } from '@/app/versions/Version';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";

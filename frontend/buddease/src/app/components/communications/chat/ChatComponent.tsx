@@ -1,3 +1,4 @@
+// ChatComponent.tsx
 import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import React, { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+// SnapshotApi.ts
 import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
 import { headersConfig } from '@/app/api/headers/HeadersConfig';
 import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
@@ -1954,218 +1955,218 @@ function createSnapshotContainer<
       isSubscribed: false,
       // Implementations of methods can be added here as needed
 
-        subscribeToSnapshot: (
-      snapshotId: string,
-      callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ) => {
-      // Generate a unique ID for this subscriber
-      const subscriberId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Create the subscriber object
-      const subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        id: subscriberId,
-        snapshotId,
-        callback,
-        unsubscribe: () => {
-          // Remove this subscriber from the list
-          subscriberManagement.subscribers = subscriberManagement.subscribers.filter(
-            sub => sub.id !== subscriberId
-          );
-          
-          // If no more subscribers, clean up the subscription
-          if (subscriberManagement.subscribers.length === 0) {
-            subscriberManagement.subscription?.unsubscribe(snapshotId, unsubscribe, callback);
-            subscriberManagement.subscription = null;
-            subscriberManagement.isSubscribed = false;
-          }
-        }
-      };
-
-      // Add the subscriber to the list
-      subscriberManagement.subscribers.push(subscriber);
-
-      // If this is the first subscriber, set up the actual subscription
-      if (!subscriberManagement.isSubscribed) {
-        subscriberManagement.subscription = setupRealTimeUpdates(snapshotId, (updatedSnapshot) => {
-          // Notify all subscribers of the update
-          subscriberManagement.subscribers.forEach(sub => {
-            sub.callback(updatedSnapshot);
-          });
-        });
-        subscriberManagement.isSubscribed = true;
-      }
-
-      return subscriber;
-    },
-    getSubscribers: async (subscribers, snapshots) => ({ subscribers, snapshots }),
-    notifySubscribers: async (message, subscribers, callback, data) => subscribers,
-    notify: (id, message, content, data, date, type, notificationPosition) => {},
-    subscribe: (snapshotId, unsubscribe, subscriber, data, event, callback, value) => [],
-    manageSubscription: (snapshotId, callback, snapshot) => snapshot,
-    subscribeToSnapshotList: (snapshotId, callback) => {},
-    unsubscribeFromSnapshot: (snapshotId, callback) => {},
-    subscribeToSnapshotsSuccess: (callback) => '',
-    unsubscribeFromSnapshots: (callback) => {},
-    unsubscribe: (unsubscribeDetails, callback) => {},
-    subscribeToSnapshots: (snapshotStore, snapshotId, snapshotData, category, snapshotConfig, callback, snapshots, unsubscribe) => [],
-    clearSnapshot: () => {},
-    clearSnapshotSuccess: (context) => {},
-    addToSnapshotList: async (snapshots, subscribers, storeProps) => null,
-    removeSubscriber: (event, snapshotId, snapshot, snapshotStore, dataItems, criteria, category) => {},
-    addSnapshotSubscriber: (snapshotId, subscriber) => {},
-    removeSnapshotSubscriber: (snapshotId, subscriber) => {},
-    transformSubscriber: (subscriberId, sub) => sub,
-    defaultSubscribeToSnapshots: (snapshotId, callback, snapshot) => {},
-    getSnapshotsBySubscriber: async (subscriber) => [],
-    getSnapshotsBySubscriberSuccess: (snapshots) => {},
-  };
-
-  if(!subscriberManagement === undefined || !subscriberManagement.subscribers === undefined){
-    throw new Error("can't find subscribers")
-  }
-  return {
-    id: data.id,
-    mappedSnapshotData: new Map(), // Initialize as needed
-    timestamp: data.timestamp,
-    currentCategory: data.currentCategory,
-    criteria: {} as CriteriaType, // Set appropriate criteria
-    items: [], // Store items related to the snapshot, initialize as an empty array
-    config: Promise.resolve({} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>), // Configuration object for the snapshot, initialize as an empty object
-    isExpired: () => false, // Flag to indicate if the snapshot is expired
-    subscribers: Array.from(subscriberManagement.subscribers.keys()), // Return the list of subscriber IDs
-    snapshotCategory: {
-      id: data.id,
-      name: data.name,
-      snapshots: data.snapshots,
-    }, 
-    // Stores the category of the snapshot
-    snapshotSubscriberId: "", // Identifier for the current subscriber
-    initialConfig: {} as SnapshotConfig< BaseData<any>,  BaseData<any>>,
-
-    setSnapshotCategory: (id: string, newCategory: string | Category) => {
-      // Update logic here
-    },
-    getSnapshotCategory: (id: string) => {
-      // Fetch logic here
-      return undefined;
-    },
-    snapshotId: 0, // Replace with the actual snapshot ID
-    snapshot: (
-      id: string | number | undefined,
-      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      categoryProperties: CategoryProperties | undefined,
-      callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-      dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscriberId: string,
-      endpointCategory: string | number,
-      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,
-      snapshotId?: string | number | null,
-      snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
-    ) => {
-      // Logic to return a Snapshot
-      return {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Placeholder
-    },
-    snapshotStore: null,
-    snapshotData: (
-      id: string | number | undefined,
-      data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
-      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,
-      snapshotId?: string | number | null,
-      storeId?: number
-    ): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-      return new Promise((resolve, reject) => {
-        try {
-          if (id === undefined || id === null) {
-            throw new Error("Invalid id: id cannot be undefined or null.");
-          }
+      subscribeToSnapshot: (
+        snapshotId: string,
+        callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+        snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      ) => {
+        // Generate a unique ID for this subscriber
+        const subscriberId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
-          const idStr = String(id);
-        
-          if (!mappedSnapshotData) {
-            throw new Error("mappedSnapshotData is null or undefined.");
+        // Create the subscriber object
+        const subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          id: subscriberId,
+          snapshotId,
+          callback,
+          unsubscribe: () => {
+            // Remove this subscriber from the list
+            subscriberManagement.subscribers = subscriberManagement.subscribers?.filter(
+              sub => sub.id !== subscriberId
+            );
+            
+            // If no more subscribers, clean up the subscription
+            if (subscriberManagement.subscribers.length === 0) {
+              subscriberManagement.subscription?.unsubscribe(snapshotId, this, callback);
+              subscriberManagement.subscription = null;
+              subscriberManagement.isSubscribed = false;
+            }
           }
+        };
 
-          // Handle snapshot data
-          const existingSnapshot = mappedSnapshotData.get(idStr);
-          const updatedData = existingSnapshot ? { ...existingSnapshot, ...data } : data;
-          mappedSnapshotData.set(idStr, updatedData);
+        // Add the subscriber to the list
+        subscriberManagement.subscribers.push(subscriber);
 
-          // Process the snapshot data
-          const processedSnapshotData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-            id,
-            snapshotId,
-            data: updatedData,
-            category,
-            categoryProperties,
-            timestamp: updatedData.timestamp || new Date().toISOString(),
-            metadata: updatedData.metadata,
-            // Include any other required properties
-          };
-
-          // Handle the async save operation
-          dataStoreMethods.save(processedSnapshotData)
-            .then(() => resolve(processedSnapshotData))
-            .catch(error => {
-              console.error("Failed to save snapshot data:", error);
-              reject(new Error("Failed to process snapshot data"));
+        // If this is the first subscriber, set up the actual subscription
+        if (!subscriberManagement.isSubscribed) {
+          subscriberManagement.subscription = setupRealTimeUpdates(snapshotId, (updatedSnapshot) => {
+            // Notify all subscribers of the update
+            subscriberManagement.subscribers.forEach(sub => {
+              sub.callback(updatedSnapshot);
             });
-        } catch (error) {
-          console.error("Error in snapshotData:", error);
-          reject(error);
+          });
+          subscriberManagement.isSubscribed = true;
         }
-      });
-    },
-    data: data.data,
-    snapshotsArray: [], // Replace with actual snapshots array if applicable
-    snapshotsObject: {}, // Replace with actual snapshots object if applicable
 
-    removeSubscriber: (subscriberId: string): void => {
-      if (subscribers.has(subscriberId)) {
-        subscribers.delete(subscriberId); // Remove the subscriber
-      } else {
-        console.warn(`Subscriber ID ${subscriberId} not found.`);
-      }
-    },
-    onInitialize: (callback: () => void): void => {
-      // Trigger callback when the container initializes
-      callback();
-    },
-    onError: (error: Error): void => {
-      console.error("An error occurred:", error);
-      // Handle error logic (e.g., logging, notifying users)
-    },
+        return subscriber;
+      },
+      getSubscribers: async (subscribers, snapshots) => ({ subscribers, snapshots }),
+      notifySubscribers: async (message, subscribers, callback, data) => subscribers,
+      notify: (id, message, content, data, date, type, notificationPosition) => {},
+      subscribe: (snapshotId, unsubscribe, subscriber, data, event, callback, value) => [],
+      manageSubscription: (snapshotId, callback, snapshot) => snapshot,
+      subscribeToSnapshotList: (snapshotId, callback) => {},
+      unsubscribeFromSnapshot: (snapshotId, callback) => {},
+      subscribeToSnapshotsSuccess: (callback) => '',
+      unsubscribeFromSnapshots: (callback) => {},
+      unsubscribe: (unsubscribeDetails, callback) => {},
+      subscribeToSnapshots: (snapshotStore, snapshotId, snapshotData, category, snapshotConfig, callback, snapshots, unsubscribe) => [],
+      clearSnapshot: () => {},
+      clearSnapshotSuccess: (context) => {},
+      addToSnapshotList: async (snapshots, subscribers, storeProps) => null,
+      removeSubscriber: (event, snapshotId, snapshot, snapshotStore, dataItems, criteria, category) => {},
+      addSnapshotSubscriber: (snapshotId, subscriber) => {},
+      removeSnapshotSubscriber: (snapshotId, subscriber) => {},
+      transformSubscriber: (subscriberId, sub) => sub,
+      defaultSubscribeToSnapshots: (snapshotId, callback, snapshot) => {},
+      getSnapshotsBySubscriber: async (subscriber) => [],
+      getSnapshotsBySubscriberSuccess: (snapshots) => {},
+    };
 
-    getSnapshotData: (
-      id: string | number | undefined,
-      snapshotId: number,
-      snapshotData: T,
-      categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,
-    ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
-      // Fetch logic to get snapshot data based on ID
-      return data.mappedSnapshotData.get(id); // Replace with your data fetching logic
-    },
-    deleteSnapshot: (id: string): boolean => {
-      const deleted = data.mappedSnapshotData.delete(id); // Delete snapshot by ID
-      return deleted; // Return true if deletion was successful
-    },
-    // Additional properties from SnapshotData and SnapshotRelationships, if needed
-  };
-}
+    if(!subscriberManagement === undefined || !subscriberManagement.subscribers === undefined){
+      throw new Error("can't find subscribers")
+    }
+    return {
+      id: data.id,
+      mappedSnapshotData: new Map(), // Initialize as needed
+      timestamp: data.timestamp,
+      currentCategory: data.currentCategory,
+      criteria: {} as CriteriaType, // Set appropriate criteria
+      items: [], // Store items related to the snapshot, initialize as an empty array
+      config: Promise.resolve({} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>), // Configuration object for the snapshot, initialize as an empty object
+      isExpired: () => false, // Flag to indicate if the snapshot is expired
+      subscribers: Array.from(subscriberManagement.subscribers.keys()), // Return the list of subscriber IDs
+      snapshotCategory: {
+        id: data.id,
+        name: data.name,
+        snapshots: data.snapshots,
+      }, 
+      // Stores the category of the snapshot
+      snapshotSubscriberId: "", // Identifier for the current subscriber
+      initialConfig: {} as SnapshotConfig< BaseData<any>,  BaseData<any>>,
+
+      setSnapshotCategory: (id: string, newCategory: string | Category) => {
+        // Update logic here
+      },
+      getSnapshotCategory: (id: string) => {
+        // Fetch logic here
+        return undefined;
+      },
+      snapshotId: 0, // Replace with the actual snapshot ID
+      snapshot: (
+        id: string | number | undefined,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        categoryProperties: CategoryProperties | undefined,
+        callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+        dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        subscriberId: string,
+        endpointCategory: string | number,
+        storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        category?: Category,
+        snapshotId?: string | number | null,
+        snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+      ) => {
+        // Logic to return a Snapshot
+        return {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Placeholder
+      },
+      snapshotStore: null,
+      snapshotData: (
+        id: string | number | undefined,
+        data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        categoryProperties: CategoryProperties | undefined,
+        dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        category?: Category,
+        snapshotId?: string | number | null,
+        storeId?: number
+      ): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+        return new Promise((resolve, reject) => {
+          try {
+            if (id === undefined || id === null) {
+              throw new Error("Invalid id: id cannot be undefined or null.");
+            }
+          
+            const idStr = String(id);
+          
+            if (!mappedSnapshotData) {
+              throw new Error("mappedSnapshotData is null or undefined.");
+            }
+
+            // Handle snapshot data
+            const existingSnapshot = mappedSnapshotData.get(idStr);
+            const updatedData = existingSnapshot ? { ...existingSnapshot, ...data } : data;
+            mappedSnapshotData.set(idStr, updatedData);
+
+            // Process the snapshot data
+            const processedSnapshotData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+              id,
+              snapshotId,
+              data: updatedData,
+              category,
+              categoryProperties,
+              timestamp: updatedData.timestamp || new Date().toISOString(),
+              metadata: updatedData.metadata,
+              // Include any other required properties
+            };
+
+            // Handle the async save operation
+            dataStoreMethods.save(processedSnapshotData)
+              .then(() => resolve(processedSnapshotData))
+              .catch(error => {
+                console.error("Failed to save snapshot data:", error);
+                reject(new Error("Failed to process snapshot data"));
+              });
+          } catch (error) {
+            console.error("Error in snapshotData:", error);
+            reject(error);
+          }
+        });
+      },
+      data: data.data,
+      snapshotsArray: [], // Replace with actual snapshots array if applicable
+      snapshotsObject: {}, // Replace with actual snapshots object if applicable
+
+      removeSubscriber: (subscriberId: string): void => {
+        if (subscribers.has(subscriberId)) {
+          subscribers.delete(subscriberId); // Remove the subscriber
+        } else {
+          console.warn(`Subscriber ID ${subscriberId} not found.`);
+        }
+      },
+      onInitialize: (callback: () => void): void => {
+        // Trigger callback when the container initializes
+        callback();
+      },
+      onError: (error: Error): void => {
+        console.error("An error occurred:", error);
+        // Handle error logic (e.g., logging, notifying users)
+      },
+
+      getSnapshotData: (
+        id: string | number | undefined,
+        snapshotId: number,
+        snapshotData: T,
+        categoryProperties: CategoryProperties | undefined,
+        dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        category?: Category,
+      ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
+        // Fetch logic to get snapshot data based on ID
+        return data.mappedSnapshotData.get(id); // Replace with your data fetching logic
+      },
+      deleteSnapshot: (id: string): boolean => {
+        const deleted = data.mappedSnapshotData.delete(id); // Delete snapshot by ID
+        return deleted; // Return true if deletion was successful
+      },
+      // Additional properties from SnapshotData and SnapshotRelationships, if needed
+    };
+  }
 
 
 
@@ -2306,7 +2307,7 @@ export async function getSnapshotConfig<
   category?: Category,
   categoryProperties?: CategoryProperties,
   subscriberId?: string,
-  delegate?: Promise<DataStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]>,
+  delegate?: Promise<DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
   snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot?: (
     id: string | number | undefined,
@@ -2427,9 +2428,9 @@ export async function getSnapshotConfig<
             )
           );
         },
-        {} as DataStore<T, K>,
-        {} as DataStoreMethods<T, K>,
-        {} as UnifiedMetadata<T, K, Meta, keyof T>,
+        {} as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        {} as DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         subscriberId,
         endpointCategory,
         storeProps,
@@ -2462,7 +2463,7 @@ const getSnapshotStoreConfigData = <
   snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
   storeId: number,
-  config: SnapshotStoreConfig<SnapshotWithCriteria<T, any>, any>
+  config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -2509,9 +2510,9 @@ const getSnapshotConfigData = <
 >(
   snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  criteria: CriteriaType,
-  storeId: number):
-  Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  criteria: CriteriaType, 
+  storeId: number
+): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -2560,8 +2561,9 @@ const getSnapshotStoreConfig = <
   snapshotFunction: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
+    category?: Category,    
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>,
     snapshotContainerData?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null

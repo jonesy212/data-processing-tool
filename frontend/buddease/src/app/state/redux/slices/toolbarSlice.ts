@@ -1,3 +1,4 @@
+// toolbarSlice.ts
 import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 

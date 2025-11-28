@@ -12,7 +12,7 @@ import { ChildRelationship, Data, SharedRelationshipData } from '@/app/models/da
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';

@@ -1,3 +1,4 @@
+// DataAnalysisSlice.ts
 import { DataAnalysis } from "@/app/projects/DataAnalysisPhase/DataAnalysis";
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

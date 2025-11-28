@@ -2,14 +2,14 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
-import { AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
+import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/app/config/MetaDataOptions";
-import { CoreMetadata } from "@/app/server/metadata/MetadataStateManager";
+import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from '@/app/config/MetaDataOptions';
+import { CoreMetadata } from '@/app/confg/MetadataStateManager';
 import { Version } from '../versions/Version';
 import { VersionData, VersionHistory } from '../versions/VersionData';
-import { Permissions } from '@app/server/security/getPermissions'
+import { Permissions } from '@/app/server/security/getPermissions'
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -18,7 +18,7 @@ interface SharedMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Omit<CoreMetadata<T, K>, "schema">,
+> extends Omit<CoreMetadata<T, K>, 'schema'>,
     Partial<VersionMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     Partial<ConfigMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     Partial<StatusMetadata>,
@@ -27,7 +27,7 @@ interface SharedMetadata<
   lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   latestVersion?: Pick<
     VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    "id" | "versionNumber" | "timestamp" | "author" | "schema"
+    'id' | 'versionNumber' | 'timestamp' | 'author' | 'schema'
   >;
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 

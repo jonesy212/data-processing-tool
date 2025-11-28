@@ -1,3 +1,4 @@
+// types.ts
 // types/middleware.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

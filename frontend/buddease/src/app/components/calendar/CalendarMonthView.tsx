@@ -1,31 +1,32 @@
+// CalendarMonthView.tsx
 // MonthView.jsx
 // import CalendarMonth from '@/CalendarMonthView';
 import { TaskActions } from "@/app/actions/TaskActions";
+import * as taskApi from "@/app/api/TasksApi";
 import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
-import TaskList from "@/app/components/lists/TaskList";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-import { ContentPost } from '@/app/typings/contentTypes'
-import { TaskEntity } from '@/app/typings/entites/TaskEntity'
-import { NotificationPosition } from "@/app/models/data/StatusType";
+import TaskList from "@/app/components/lists/TaskList";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationPosition, PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { updateTask } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {
-    dropTask,
-    resizeTask,
-    updateTaskPositionAsync,
+  dropTask,
+  resizeTask,
+  TaskState,
+  updateTaskPositionAsync,
 } from "@/app/state/redux/slices/TaskSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { ContentPost } from '@/app/typings/contentTypes';
+import { TaskEntity } from '@/app/typings/entites/TaskEntity';
 import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import React from "react";
 import { useDispatch } from "react-redux";
 import CalendarMonth from "./CalendarMonth";
- import * as taskApi from "@/app/api/TasksApi";
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { TaskState } from "@/app/state/redux/slices/TaskSlice";
 import { YearInfo } from "./CalendarYear";
 import { MonthInfo } from "./Month";
 

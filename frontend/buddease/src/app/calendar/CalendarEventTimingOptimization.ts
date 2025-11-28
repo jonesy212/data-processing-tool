@@ -1,10 +1,11 @@
+// CalendarEventTimingOptimization.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attendee } from "@/app/components/calendar/Attendee";
 import { DayOfWeekProps } from "@/app/components/calendar/DayOfWeek";
 import { Month } from "@/app/components/calendar/Month";
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { User } from "@/app/users/User";
@@ -124,11 +125,6 @@ interface CalendarEventTimingOptimization<
   reassignmentHistory?: Record<string, ReassignEventResponse[]>; // Record of event IDs to arrays of reassignment responses
   todoIds?: string[]; // Array of todo IDs associated with the event
   relatedEventsList?: string[]; // Array of related event IDs
-  eventId?: string;
-  suggestedStartTime?: Date;
-  suggestedEndTime?: Date;
-  suggestedDuration?: number;
-
 }
 
 

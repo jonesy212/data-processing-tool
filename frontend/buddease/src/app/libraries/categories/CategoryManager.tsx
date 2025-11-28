@@ -1,3 +1,4 @@
+// CategoryManager.tsx
 // CategoryManager.ts
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { allCategories } from '@/app/models/data/DataStructureCategories';

@@ -1,3 +1,4 @@
+// DeviceDimensions.ts
 import { useState, useEffect } from "react";
 
 export interface DeviceDimensions {

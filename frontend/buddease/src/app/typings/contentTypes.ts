@@ -1,3 +1,4 @@
+// contentTypes.ts
 
 enum ContentType {
     Text = 'text',

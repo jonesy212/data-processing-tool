@@ -1,3 +1,4 @@
+// SnapshotImplementation.ts
 // import { Data } from '@/app/models/data/Data';
 // import { generateSnapshotId } from "@/app/utils/snapshotUtils";
 // import { Snapshot } from '@/app/snapshots/Snapshot';

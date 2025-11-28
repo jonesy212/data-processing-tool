@@ -1,3 +1,4 @@
+// UserPreferences.ts
 // userPreferences.ts
 import { apiService } from "@/app/api/ApiDetails";
 import { NotificationPreferences } from "@/app/cards/modal/chat/ChatSettingsModal";

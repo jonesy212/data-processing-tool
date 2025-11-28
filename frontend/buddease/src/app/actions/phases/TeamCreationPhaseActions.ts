@@ -1,3 +1,4 @@
+// TeamCreationPhaseActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { TeamCreationPhase } from '@/app/components/phases/steps/TeamCreation'
 export const TeamCreationPhaseActions = {

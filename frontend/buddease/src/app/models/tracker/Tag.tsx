@@ -1,3 +1,4 @@
+// Tag.tsx
 import { TagComponent } from '@/app/components/models/tracker/TagComponent';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SpecificMetadata } from '@/app/config/StructuredMetadata';

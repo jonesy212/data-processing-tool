@@ -1,3 +1,4 @@
+// UserJourney.tsx
 // UserJourneyManager.tsx
 import React, { useState } from "react";
 import { OnboardingPhase } from "./UserJourneyManager";

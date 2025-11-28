@@ -1,3 +1,4 @@
+// TeamProgress.tsx
 import TeamProgressBar from '@/TeamProgressBar';
 import React from "react";
 

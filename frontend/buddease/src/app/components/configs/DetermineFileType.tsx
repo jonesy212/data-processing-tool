@@ -1,3 +1,4 @@
+// DetermineFileType.tsx
 import React from "react";
 import { FileTypeEnum } from "@/app/documents/FileType";
 

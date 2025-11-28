@@ -32,9 +32,9 @@ import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/app/typings/YourSpecificSnapshotType';
 import { Version } from '@/app/versions/Version';
-import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
-import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
-import { DataStoreWithSnapshotMethods } from '@/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { environmentAwareEndpointManager } from '@/app/config/endpoints/EnvironmentAwareEndpointManager';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 
 
 // Define the API endpoint for retrieving snapshot data

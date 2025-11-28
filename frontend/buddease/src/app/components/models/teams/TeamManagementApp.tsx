@@ -1,3 +1,4 @@
+// TeamManagementApp.tsx
 import React, { useState } from 'react';
 import RandomWalkVisualization from '@/app/hooks/userInterface/RandomWalkVisualization';
 import { CollaborationPreferences } from '@/app/components/interfaces/settings/CollaborationPreferences';

@@ -9,9 +9,10 @@ import MainConfig from '@/app/config/MainConfig';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ApiConfig } from '@/app/services/ConfigurationServices';
+import { ApiConfig } from '@/app/api/ApiConfigService'
 import ShoppingCenterConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import { createSystemConfigs, SystemConfigs } from '@/app/api/systemConfigs';
 
 interface LazyLoadScriptConfig {
   configureScript(): unknown;
@@ -71,7 +72,7 @@ class LazyLoadScriptConfigImpl<
 
   // Additional associated properties
   apiConfig?: ApiConfig;
-  dataVersions?: (versions: DataVersions) => void;
+  dataVersions?: (versions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   systemConfigs?: ReturnType<typeof createSystemConfigs>;
   userConfigs?: typeof UserConfigs;
   aquaConfig?: AquaConfig;
@@ -110,7 +111,7 @@ class LazyLoadScriptConfigImpl<
       onBeforeLoad?: () => void;
       onScriptError?: (error: ErrorEvent) => void;
       onTimeout?: () => void;
-      dataVersions?: (versions: DataVersions) => void;
+      dataVersions?: (versions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
       systemConfigs?: typeof SystemConfigs;
       asyncLoad?: boolean;
       deferLoad?: boolean;

@@ -1,3 +1,4 @@
+// entityMapper.ts
 // server/repository/mappers/userMapper.ts
 
 import { DefaultExcludedFields } from '@/app/config/BaseConfig';

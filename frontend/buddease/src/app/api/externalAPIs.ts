@@ -1,3 +1,4 @@
+// externalAPIs.ts
 //externalAPIs.ts
 export const externalAPIs = {
     wix: {

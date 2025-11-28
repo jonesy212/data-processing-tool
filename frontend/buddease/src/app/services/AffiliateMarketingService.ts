@@ -1,3 +1,4 @@
+// AffiliateMarketingService.ts
 import { action, makeAutoObservable } from "mobx";
 import { endpoints } from '@/app/api/endpointConfigurations';
 

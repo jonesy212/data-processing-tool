@@ -1,3 +1,4 @@
+// route.ts
 // Server-side only
 import { NextRequest, NextResponse } from 'next/server';
 import DatabaseClient from '@/app/lib/server/DatabaseClient'; // Server version

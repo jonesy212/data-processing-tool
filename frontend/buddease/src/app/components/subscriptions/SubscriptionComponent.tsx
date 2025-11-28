@@ -1,3 +1,4 @@
+// SubscriptionComponent.tsx
 import { getSubscriberId } from "@/app/api/subscriberApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import useRealtimeData, {

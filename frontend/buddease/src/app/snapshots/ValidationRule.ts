@@ -1,3 +1,4 @@
+// ValidationRule.ts
 
 // Base types for context
 import { SnapshotStoreConfig } from '@/app/snapshots';

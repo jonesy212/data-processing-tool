@@ -1,3 +1,4 @@
+// generateComponentExample.ts
 import { CacheManager } from '@/utils/cache/CacheManager';
 // Example 1: Simple component
 generateComponent('MyButton');

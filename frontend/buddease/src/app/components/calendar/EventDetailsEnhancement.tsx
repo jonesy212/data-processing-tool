@@ -1,3 +1,4 @@
+// EventDetailsEnhancement.tsx
 // Assuming EventDetails is already defined as interface EventDetails
 
 import React from "react";

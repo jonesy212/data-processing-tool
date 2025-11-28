@@ -1,3 +1,4 @@
+// generatePresentationJSON.ts
 import { Presentation } from "@/app/documents/Presentation";
 
 // Function to generate JSON from a Presentation object

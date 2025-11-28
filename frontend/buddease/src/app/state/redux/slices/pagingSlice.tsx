@@ -1,3 +1,4 @@
+// pagingSlice.tsx
 import { PagingState } from "@/app/pages/Paging";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ApiManagerState } from "./ApiSlice";

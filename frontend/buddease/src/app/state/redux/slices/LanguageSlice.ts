@@ -1,3 +1,4 @@
+// LanguageSlice.ts
 //  LanguageSlice.ts
 interface LanguageState {
   currentLanguage: string | null;

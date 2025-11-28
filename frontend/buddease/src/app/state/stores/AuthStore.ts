@@ -1,5 +1,5 @@
-import { SecuritySettings } from '@/app/settings/SecuritySettings';
 // AuthStore.ts
+import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { AuthenticationProvider } from '@app/interfaces/provider/AuthenticationProvider';
 import { NFT } from '@/app/models/cypto/NFT'

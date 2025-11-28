@@ -5,7 +5,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import UserFormComponent from '@/UserFormComponent'; // Adjust the import path as needed
 // Mock external dependencies and context providersimport { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 
 
 jest.mock('@/app/components/support/DynamicComponentsContext', () => ({

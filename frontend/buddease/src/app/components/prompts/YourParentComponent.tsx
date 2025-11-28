@@ -1,3 +1,4 @@
+// YourParentComponent.tsx
 import React, { useState } from "react";
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
 import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";

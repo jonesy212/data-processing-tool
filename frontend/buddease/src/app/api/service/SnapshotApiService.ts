@@ -1,9 +1,9 @@
+// SnapshotApiService.ts
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotStoreConfig } from '@/app/snapshots';
-// SnapshotApiService.ts
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';

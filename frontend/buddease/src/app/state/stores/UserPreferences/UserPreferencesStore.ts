@@ -1,3 +1,4 @@
+// UserPreferencesStore.ts
 // src/app/state/stores/UserPreferences/UserPreferencesStore.ts
 
 import themeSettings from '@/app/components/libraries/ui/theme/ThemeConfig';

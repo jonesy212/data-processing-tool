@@ -1,3 +1,4 @@
+// FrontendStructureViewer.tsx
 // FrontendStructureViewer with action-level permission checks
 import FrontendStructure from '@/app/config/appStructure/FrontendStructureComponent';
 import React, { useState } from 'react';

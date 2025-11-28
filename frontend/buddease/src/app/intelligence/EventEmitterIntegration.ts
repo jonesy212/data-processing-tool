@@ -1,3 +1,4 @@
+// EventEmitterIntegration.ts
 // EventEmitterIntegration.tsx
 
 export const enhancePromptWithEntities = (prompt: string, entities: any, userContext: any): string => {

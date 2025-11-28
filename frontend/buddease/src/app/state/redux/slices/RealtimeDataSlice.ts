@@ -1,3 +1,4 @@
+// RealtimeDataSlice.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { RealtimeData } from '@/app/hooks/commHooks/processSnapshotStore';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';

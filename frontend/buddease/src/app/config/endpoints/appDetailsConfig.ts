@@ -1,3 +1,4 @@
+// appDetailsConfig.ts
 
 // detailsConfig.ts
 

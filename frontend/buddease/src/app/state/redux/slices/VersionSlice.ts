@@ -1,3 +1,4 @@
+// VersionSlice.ts
 // useVersionManagerSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

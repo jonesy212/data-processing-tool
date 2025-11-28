@@ -1,3 +1,4 @@
+// DataAnalysisPhase.tsx
 import Visualization from "@/app/hooks/userInterface/Visualization";
 import { PhaseProps } from "@/app/pages/development/PlanningPhase";
 import { sendDataToBackend } from "@/app/services/dataAnalysisOrchestrator";

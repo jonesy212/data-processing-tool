@@ -1,3 +1,4 @@
+// CriteriaOptions.tsx
 // CriteriaOptions.ts
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";

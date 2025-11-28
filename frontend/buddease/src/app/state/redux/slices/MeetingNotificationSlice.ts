@@ -1,3 +1,4 @@
+// MeetingNotificationSlice.ts
 // MeetingNotificationSlice.tsx
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 

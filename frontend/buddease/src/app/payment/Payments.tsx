@@ -1,3 +1,4 @@
+// Payments.tsx
 import { handleCryptoPaymentSelect } from '@/app/documents/screenFunctionality/ShortcutKeys';
 import React from 'react';
 

@@ -1,3 +1,4 @@
+// fetchContent.tsx
 import { handleApiErrorAndNotify } from '@/app/api/ApiData';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { AxiosError } from 'axios';

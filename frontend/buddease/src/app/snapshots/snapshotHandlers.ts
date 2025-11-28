@@ -18,7 +18,7 @@ import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -28,7 +28,7 @@ import {
   NotificationTypeEnum,
   useNotification
 } from "@/app/state/context/NotificationContext";
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';

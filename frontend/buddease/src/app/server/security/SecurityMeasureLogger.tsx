@@ -1,3 +1,4 @@
+// SecurityMeasureLogger.tsx
 // SecurityMeasureLogger.ts
 
 import Logger from "@/app/libraries/logging/Logger";

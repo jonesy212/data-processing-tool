@@ -1,3 +1,4 @@
+// ProjectCard.tsx
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";

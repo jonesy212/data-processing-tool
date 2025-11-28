@@ -1,3 +1,4 @@
+// SensitiveUserFieldst.ts
 const SensitiveUserFields = [
   'password',
   'securityAnswer',

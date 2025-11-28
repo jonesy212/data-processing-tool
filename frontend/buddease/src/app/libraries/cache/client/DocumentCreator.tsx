@@ -1,3 +1,4 @@
+// DocumentCreator.tsx
 // DocumentCreator.ts
 'use client';
 import { ClientDocumentGenerator, DocumentTypeEnum } from '@/app/lib/documents/client/DocumentGenerator';

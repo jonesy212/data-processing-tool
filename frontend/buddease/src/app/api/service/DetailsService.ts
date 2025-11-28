@@ -1,3 +1,4 @@
+// DetailsService.ts
 // api/ApiDetails.ts
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
@@ -6,7 +7,8 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { AxiosError } from 'axios';
 
@@ -20,7 +22,7 @@ export const detailsApiService = {
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
       detailsItemId: string
-    ): Promise<{ detailsItem: DetailsItem<T, K, Meta> }> => {
+    ): Promise<{ detailsItem: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}/${detailsItemId}`);
       notify(
@@ -54,7 +56,7 @@ export const detailsApiService = {
   >(
     detailsItemId: string,
     updatedDetailsItemData: any
-  ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta> }> => {
+  ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${detailsItemId}`, updatedDetailsItemData);
       notify(

@@ -33,7 +33,7 @@ import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -885,16 +885,16 @@ interface SnapshotSuccessMethods<
   ) => void;
 
   configureSnapshotStore: (
-    snapshotStore: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    data: Map<string, Snapshot<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>>,
-    events: Record<string, CalendarEvent<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>[]>,
+    data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    newData: Snapshot<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: ConfigureSnapshotStorePayload<BaseDataEntity>,
-    store: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>,
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (
-      snapshotStore: SnapshotStore<T, K, Meta, IncludedFields AttachmentType, ExcludedFields>
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => void
     payload: ConfigureSnapshotStorePayload<
       T,

@@ -1,3 +1,4 @@
+// SnapshotContainerEntity.ts
 
 
 import { SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity'

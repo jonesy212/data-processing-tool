@@ -1,5 +1,6 @@
+// projectSubscriptionPayload.ts
 import { createSubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 
 const projectCategory = "Project Management"; // Example category
 

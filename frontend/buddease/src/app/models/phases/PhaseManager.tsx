@@ -1,3 +1,4 @@
+// PhaseManager.tsx
 import Stopwatch from "@/app/calendar/Stopwatch";
 import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";
 import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/config/MetaDataOptions";

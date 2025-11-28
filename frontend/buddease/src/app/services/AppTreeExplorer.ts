@@ -1,3 +1,4 @@
+// AppTreeExplorer.ts
 // AppTreeExplorer.tsx
 import React, { useState, useEffect } from 'react';
 import EnhancedTreeView from '@/app/pages/dashboards/EnhancedTreeView'

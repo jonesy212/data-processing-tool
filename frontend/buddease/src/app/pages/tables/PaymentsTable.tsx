@@ -1,3 +1,4 @@
+// PaymentsTable.tsx
 import TableGenerator from '@/app/generators/GenerateTable';
 import React from 'react';
 

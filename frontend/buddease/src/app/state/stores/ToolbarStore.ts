@@ -1,3 +1,4 @@
+// ToolbarStore.ts
 import { action, makeAutoObservable } from 'mobx';
 
 import { ToolbarActions } from '@/app/actions/ToolbarActions';

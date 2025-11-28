@@ -1,11 +1,12 @@
+// projectManagement.ts
+import { ProjectData } from '@/app/models/projects/Project';
 import {
   ProjectAttachment,
   ProjectEntity,
   ProjectIncludedFields,
   ProjectK,
   ProjectMeta
-} from '@/app/components/models/ProjectModel';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+} from '@/app/typings/entities/ProjectEntity';
 import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
@@ -168,6 +169,7 @@ export class ProjectManager<
       id: taskData.id || `task-${Date.now()}`,
       description: taskData.description || 'New task',
       completed: taskData.completed || false,
+      title: taskData.title || 'Task Title',
       created: new Date(),
       ...taskData
     };

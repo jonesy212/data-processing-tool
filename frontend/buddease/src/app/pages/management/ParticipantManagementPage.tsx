@@ -1,7 +1,8 @@
+// ParticipantManagementPage.tsx
  
 import { ToolbarActions } from "@/app/actions/ToolbarActions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { MobXRootState } from "@/app/state/stores/RootStores";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";

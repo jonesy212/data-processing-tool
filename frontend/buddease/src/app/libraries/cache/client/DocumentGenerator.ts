@@ -1,3 +1,4 @@
+// DocumentGenerator.ts
 'use client';
 
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';

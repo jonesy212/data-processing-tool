@@ -1,3 +1,4 @@
+// BugFilter.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Member } from '@/app/models/members/Member';
 import { eventService } from "@/app/services/EventService";

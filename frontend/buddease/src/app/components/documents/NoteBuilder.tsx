@@ -1,3 +1,4 @@
+// NoteBuilder.tsx
 import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { Snapshot } from '@/app/snapshots/Snapshot';

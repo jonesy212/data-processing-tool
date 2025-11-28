@@ -113,20 +113,25 @@ interface VersionedDataItem<
   IncludedFields extends keyof T = keyof T
 > extends CoreDataItem<T, K> {
   versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   items?: Record<string, VersionedDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 
 interface AppStructureDataItem<
   T extends BaseDataEntity,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends CoreDataItem<T, K>,
   SharedIdentifiers<T, K> {
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: string | VersionData<BaseDataEntity, BaseDataEntity> | null;
   items?: Record<string, AppStructureDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  userId?: string | null;
 }
 
 interface ExtendedVersionData<
@@ -154,7 +159,7 @@ interface ExtendedVersionData<
   releaseDate?: string | Date;
   lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   buildVersions?: BuildVersion;
-  currentHash: string;
+  currentHash: string | undefined;
 
   // Publication info
   published?: boolean;
@@ -264,7 +269,7 @@ interface VersionData<
 
   // Misc
   checksum: string;
-  currentHash?: string;
+  currentHash: string | undefined;
   versionNumber?: string;
 }
 
@@ -589,6 +594,7 @@ const versionData: Promise<VersionData<VersionEntity, VersionK, VersionMeta, Ver
   const resolvedVersionData: VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
     id: "version-1",
     name: "Initial Version",
+    appVersion: 'App Version',
     lastUpdated: new Date(),
     appPathWithVersion,
     version: null,

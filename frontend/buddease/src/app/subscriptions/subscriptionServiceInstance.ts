@@ -1,3 +1,4 @@
+// subscriptionServiceInstance.ts
 import { BaseData } from '@/app/models/data/Data';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";

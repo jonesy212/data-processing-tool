@@ -1,3 +1,4 @@
+// createLatestVersion.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import VersionImpl from "@/app/versions/Version";
@@ -118,8 +119,20 @@ export function createLatestVersion<
       return this.appVersion;
     },
 
-    calculateHash() {
-      return this.hashStructure([this.appVersion]); 
+    hash(input: string): string {
+      return HashGenerator.generateHash(input, 'sha256');
+    },
+
+    calculateHash(): string {
+      // Create a simple hash from version information
+      const content = `${this.major}.${this.minor}.${this.patch}-${this.appVersion}-${Date.now()}`;
+      let hash = 0;
+      for (let i = 0; i < content.length; i++) {
+        const char = content.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(36);
     },
 
     updateStructureHash() {
@@ -164,7 +177,17 @@ export function createLatestVersion<
     return this; // Add this line to return the Version object
     },
     versionNotes: '',
-    toData: ""
+      toData(): any {
+      return {
+        major: this.major,
+        minor: this.minor,
+        patch: this.patch,
+        appVersion: this.appVersion,
+        checksum: this.checksum,
+        currentHash: this.currentHash,
+        versionNotes: this.versionNotes
+      };
+    }
   }
 
   // ✅ Define default VersionData
@@ -271,7 +294,14 @@ export function createLatestVersion<
       author: "system",
       timestamp: now,
       area: "default",
-      metadataEntries: [{}],
+      metadataEntries: [{
+        originalPath: '', 
+        alternatePaths: [], 
+        author: '', 
+        timestamp: new Date(), 
+        fileType, title, description, keywords,
+
+      }],
       latestVersion: defaultLatestVersion, // no recursion here
       schema: {
         // Provide actual SchemaField objects
@@ -326,7 +356,12 @@ export function createLatestVersion<
   };
 
   // ✅ Return merged structure (caller can override anything)
-  return { ...defaultVersionData, ...versionData };
+  return { 
+        ...defaultVersionData, 
+        ...versionData, 
+        createdAt: versionData.createdAt || now,
+        updatedAt: now
+   };
 }
 
 
@@ -348,7 +383,12 @@ export function createLastUpdatedWithVersion<
     changeLogSummary: summary || "No changes recorded.",
     versionData: [], // Initialize as empty array or appropriate value
     latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+      description, structureData, getVersionNumber, calculateHash,
+      createdAt: now,
+      createdBy: "system", // Example author
       version: {
+        id, major, minor, patch, 
+
         transformToStructureItems: function (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
           return data.map((item: any) => ({
             id: item.id,
@@ -362,9 +402,7 @@ export function createLastUpdatedWithVersion<
         versionNotes: "",
         toData: "",
       } as VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      description: "Initial version", // Example description
-      createdAt: now,
-      createdBy: "system", // Example author
+
     }),
     history: []
   }
@@ -379,14 +417,18 @@ const versionHistory: VersionHistory<VersionEntity, VersionK,VersionMeta, Versio
     versionNumber: "1.0.0",
     userId: "user123",
     content: "Initial version of the content.",
-    
+    description: '',
+    structureData: '',
+    getVersionNumber: '',
+    calculateHash: '',
+  
 
     metadata: {
       author: "Author Name",
       timestamp: new Date(),
       area: 'version history area',
       metadataEntries: {},
-      latestVersion: createLatestVersion<VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(),
+      latestVersion: createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(),
       schema: {}
     },
     releaseDate: "2024-11-24",

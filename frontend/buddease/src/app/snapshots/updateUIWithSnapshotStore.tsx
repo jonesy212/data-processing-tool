@@ -1,3 +1,4 @@
+// updateUIWithSnapshotStore.tsx
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 

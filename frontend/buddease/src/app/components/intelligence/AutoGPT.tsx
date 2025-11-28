@@ -1,3 +1,4 @@
+// AutoGPT.tsx
 // src/app/components/AutoGPTPrompt.tsx
 import React, { useState } from 'react';
 import useAutoGPT from '@/app/hooks/useAutoGPT';

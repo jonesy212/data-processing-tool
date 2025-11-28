@@ -1,3 +1,4 @@
+// appEventTypes.ts
 import { SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/events/BaseEvent';

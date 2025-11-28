@@ -1,9 +1,8 @@
-import { NotificationChannels } from '@/app/components/settings/NotificationChannels';
-import { NotificationTypes } from '@/NotificationTypes';
+// NotificationSettings.ts
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 
 interface BaseNotificationSettings {
   enabled: boolean;
-  // FIXED: notificationType should use our notification types, not channels
   notificationType: NotificationType; // From our modular system
 }
 
@@ -17,11 +16,12 @@ interface NotificationChannelsSettings {
   audioCall: boolean;
   videoCall: boolean;
   screenShare: boolean;
+  inApp: boolean;
 }
 
 interface NotificationSettings extends BaseNotificationSettings {
   channels: NotificationChannelsSettings;
-  types: NotificationTypes; // This should reference your specific type categories
+  types: NotificationType; 
 }
 
 

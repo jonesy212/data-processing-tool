@@ -1,3 +1,4 @@
+// route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { processTradesServerAPI } from '@/app/exchangeIntegrationServer';
 

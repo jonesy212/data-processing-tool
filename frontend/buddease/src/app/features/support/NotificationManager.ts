@@ -1,3 +1,4 @@
+// NotificationManager.ts
 import { apiNotificationMessages } from "@/app/api/ApiData";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";

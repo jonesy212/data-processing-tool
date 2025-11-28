@@ -1,8 +1,9 @@
+// CryptoActions.tsx
 // CryptoActions.ts
 import { StatusType } from "@/app/models/data/StatusType";
 import { createAction } from "@reduxjs/toolkit";
 import { TradeIdea} from '@/app/trading/TradeIdea'
-import { MarketData } from '@/app/trading/TradingStrategy'
+import { MarketData } from '@/app/components/crypto/TradingStrategy'
 import { CryptoManagementCriteria } from '@/app/pages/searches/CriteriaOptions'
 import { InvestmentStrategy } from '@/app/components/crypto/InvestmentStrategy'
 import { ContentManagementPhaseEnum } from '@/app/components/phases/ContentManagementPhase'

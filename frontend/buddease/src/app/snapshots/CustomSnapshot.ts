@@ -1,3 +1,4 @@
+// CustomSnapshot.ts
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

@@ -1,3 +1,4 @@
+// newStoreUtils.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
@@ -15,7 +16,6 @@ import SnapshotStore from "./SnapshotStore";
 
 const snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = {/* your snapshot configuration logic here */}
 
-// newStoreUtils.ts
 export const createSnapshotStores = async <
   T extends BaseDataEntity,
   K extends T = T,

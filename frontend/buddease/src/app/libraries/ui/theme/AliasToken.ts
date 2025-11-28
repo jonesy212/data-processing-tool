@@ -1,3 +1,4 @@
+// AliasToken.ts
 import type * as React from 'react';
 import { DesignSystemConfig } from '@/MapProperties';
 

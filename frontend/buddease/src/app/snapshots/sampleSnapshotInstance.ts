@@ -1,3 +1,4 @@
+// sampleSnapshotInstance.ts
 import { SnapshotEvent } from '@/app/typings/appEventTypes'
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';

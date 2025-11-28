@@ -1,3 +1,4 @@
+// SettingsManagerStore.ts
 // SettingsStore.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
@@ -119,7 +120,7 @@ const useSettingManagerStore = <
             notify({
                 id: 'updateSettingsSuccess',
                 message: 'Settings updated successfully',
-                data: { originalError: null },   // or any NotificationDataPayload you need
+                data: { originalError: undefined },   // or any NotificationDataPayload you need
                 timestamp: new Date(),
                 type: NotificationTypeEnum.OPERATION_SUCCESS
             });

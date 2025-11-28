@@ -1,18 +1,21 @@
-// UpdatePreference.tsx
+// UserPreference.tsx
+import { NotificationChannelsSettings } from '@/app/features/support/NotificationSettings';
 import React, { useState } from 'react';
 
 const UpdatePreference: React.FC = () => {
   // State variables to manage user preferences
   const [theme, setTheme] = useState<string>('light');
   const [language, setLanguage] = useState<string>('en');
-  const [notificationSettings, setNotificationSettings] = useState<{
-    email: boolean;
-    inApp: boolean;
-    push: boolean;
-  }>({
+  const [notificationSettings, setNotificationSettings] = useState<NotificationChannelsSettings>({
     email: true,
-    inApp: true,
     push: false,
+    sms: false,
+    chat: true,
+    calendar: true,
+    audioCall: false,
+    videoCall: false,
+    screenShare: false,
+    inApp: true, // Make sure this matches your current usage
   });
 
   // Function to handle theme change
@@ -100,5 +103,4 @@ const UpdatePreference: React.FC = () => {
     </div>
   );
 };
-
-export default UpdatePreference;
+export default UserPreference

@@ -1,3 +1,4 @@
+// BrowserBehaviorManager.ts
 type BrowserBehaviorConfig = {
     isAutoDismiss: boolean;      // Determines if the UI auto-dismisses notifications or popups
     isClosable: boolean;         // Determines if the user can manually close the UI element

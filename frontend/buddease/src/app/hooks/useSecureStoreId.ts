@@ -1,3 +1,4 @@
+// useSecureStoreId.ts
 // useSecureStoreId
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 import { useAuth } from "@/state/context/AuthContext";

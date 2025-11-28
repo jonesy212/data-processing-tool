@@ -1,3 +1,4 @@
+// CustomPayload.ts
 import { CustomSnapshotData } from '@/app/snapshots';
 import { Payload } from '@/app/server/database/Payload';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

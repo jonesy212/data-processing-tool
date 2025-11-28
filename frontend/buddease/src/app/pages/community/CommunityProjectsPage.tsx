@@ -1,3 +1,4 @@
+// CommunityProjectsPage.tsx
 // app/pages/community/CommunityProjectsPage.tsx
 import { CommunityData } from '@/app/components/models/CommunityData';
 import { Team } from '@/app/components/models/teams/Team';

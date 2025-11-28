@@ -1,3 +1,4 @@
+// InitApp.ts
 import { configurationService } from "@/services/ConfigurationService";
 
 async function initApp() {

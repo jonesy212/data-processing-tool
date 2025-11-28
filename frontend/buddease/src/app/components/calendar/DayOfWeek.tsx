@@ -1,3 +1,4 @@
+// DayOfWeek.tsx
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Task } from '@/models/tasks/Task';

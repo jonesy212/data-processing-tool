@@ -1,19 +1,29 @@
 # 📊 Comprehensive Error Breakdown
-**Generated:** 2025-11-22T18:55:54.755Z
+**Generated:** 2025-11-28T06:48:30.121Z
 
 ## 🎯 Executive Summary
 
 ### Impact Analysis
-- **Affected Components:** 2138/2138
+- **Affected Components:** 2155/2155
 - **Affected Methods:** 0/0
-- **Affected Interfaces:** 163/163
+- **Affected Interfaces:** 162/162
 
 ## 🏗️ Components Breakdown
 
-### UserProfile
-**File:** src/components/UserProfile.tsx
+### TypeScript Analysis
+**File:** TypeScript Analysis
 **Total Issues:** 1
-**Critical:** 1 | **High:** 0 | **Medium:** 0 | **Low:** 0
+**Critical:** 0 | **High:** 0 | **Medium:** 0 | **Low:** 1
+
+### ApiUser
+**File:** src/app/api/ApiUser.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
+
+### UserPreference
+**File:** src/app/users/preferences/UserPreference.tsx
+**Total Issues:** 3
+**Critical:** 1 | **High:** 0 | **Medium:** 0 | **Low:** 2
 
 ### CryptoActions
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/actions/CryptoActions.tsx
@@ -302,8 +312,8 @@
 
 ### Provider
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/Provider.tsx
-**Total Issues:** 4
-**Critical:** 1 | **High:** 0 | **Medium:** 2 | **Low:** 1
+**Total Issues:** 5
+**Critical:** 1 | **High:** 0 | **Medium:** 3 | **Low:** 1
 
 ### AdminDashboard
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/admin/AdminDashboard.tsx
@@ -357,8 +367,8 @@
 
 ### DatePicker
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/DatePicker.tsx
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 3 | **Low:** 0
 
 ### Month
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/calendar/Month.tsx
@@ -474,11 +484,6 @@
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/StrategyOptions.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
-
-### TradingStrategy
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/TradingStrategy.ts
-**Total Issues:** 3
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### VerifiableCredential
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/VerifiableCredential.ts
@@ -997,8 +1002,8 @@
 
 ### useMeta
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/useMeta.tsx
-**Total Issues:** 3
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
 ### useMetadata
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/useMetadata.tsx
@@ -1295,6 +1300,11 @@
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
+### CorrectionMessageGenerator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionMessageGenerator.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+
 ### CorrectionWizard
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionWizard.tsx
 **Total Issues:** 3
@@ -1364,6 +1374,11 @@
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts
 **Total Issues:** 5
 **Critical:** 1 | **High:** 1 | **Medium:** 2 | **Low:** 1
+
+### TypeScriptAnalyzer
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/TypeScriptAnalyzer.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### AppConfigAnalyzer
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/AppConfigAnalyzer.ts
@@ -1575,6 +1590,11 @@
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
+### useDynamicNavigation
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useDynamicNavigation.ts
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
+
 ### useFilePath
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useFilePath.ts
 **Total Issues:** 3
@@ -1772,6 +1792,11 @@
 
 ### drawingLibrary
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/libraries/drawing/drawingLibrary.ts
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+
+### ProjectEventEmitter
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/libraries/eventSystem/ProjectEventEmitter.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -2432,8 +2457,8 @@
 
 ### NotificationService
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/services/NotificationService.tsx
-**Total Issues:** 4
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 2
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### PremiumFeatures
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/services/PremiumFeatures.tsx
@@ -2755,6 +2780,16 @@
 **Total Issues:** 8
 **Critical:** 1 | **High:** 2 | **Medium:** 3 | **Low:** 2
 
+### NavigationContext
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/NavigationContext.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+
+### NavigationContextState
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/NavigationContextState.ts
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
+
 ### SnapshotContext
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/SnapshotContext.tsx
 **Total Issues:** 3
@@ -3047,23 +3082,23 @@
 
 ### TodoList
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoList.tsx
-**Total Issues:** 6
-**Critical:** 0 | **High:** 0 | **Medium:** 3 | **Low:** 3
+**Total Issues:** 7
+**Critical:** 0 | **High:** 0 | **Medium:** 3 | **Low:** 4
 
 ### DataSetModel
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/tasks/DataSetModel.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
+### TradingStrategy
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/trading/TradingStrategy.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+
 ### EventDataService
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/ts/EventDataService.tsx
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
-
-### ProjectEventEmitter
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/ts/ProjectEventEmitter.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### PropTypes
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/PropTypes.ts
@@ -3205,11 +3240,6 @@
 **Total Issues:** 3
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
-### VersionGenerator
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/versions/VersionGenerator.tsx
-**Total Issues:** 3
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
-
 ### createLatestVersion
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/versions/createLatestVersion.ts
 **Total Issues:** 3
@@ -3300,6 +3330,11 @@
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
+### fileHeaderManager
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/fileHeaderManager.ts
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+
 ### handleFileChangesUtils
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/handleFileChangesUtils.ts
 **Total Issues:** 3
@@ -3387,8 +3422,8 @@
 
 ### ComponentPatternDetector
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/app/scripts/ComponentPatternDetector.ts
-**Total Issues:** 1
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
 
 ### ConfigurationGenerationScript
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/app/scripts/ConfigurationGenerationScript.ts
@@ -3512,8 +3547,8 @@
 
 ### ApiLogs
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiLogs.ts
-**Total Issues:** 3
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### ApiNews
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiNews.ts
@@ -3562,11 +3597,6 @@
 
 ### ApiTradingInfo
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiTradingInfo.tsx
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
-
-### ApiUser
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiUser.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -3807,8 +3837,8 @@
 
 ### MetadataViewer
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/development/MetadataViewer.tsx
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### ProjectManagementToolbar
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/documents/ProjectManagementToolbar.tsx
@@ -4105,11 +4135,6 @@
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
-### GenerateCache
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/GenerateCache.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
-
 ### GenerateChatInterfaces
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/GenerateChatInterfaces.ts
 **Total Issues:** 2
@@ -4157,6 +4182,11 @@
 
 ### QualityReport
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/reports/QualityReport.ts
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+
+### PackageJsonValidator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/validators/PackageJsonValidator.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -4412,8 +4442,8 @@
 
 ### documentBuilderConfig
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/models/data/documentBuilderConfig.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### Tag
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/models/tracker/Tag.tsx
@@ -4422,8 +4452,8 @@
 
 ### NotificationChannelHelper
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/notifications/NotificationChannelHelper.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### MyAppWrapper
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/MyAppWrapper.tsx
@@ -4537,8 +4567,8 @@
 
 ### UserJourneyManager
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/personas/UserJourneyManager.tsx
-**Total Issues:** 3
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 2
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### FilteredEvents
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/searches/FilteredEvents.tsx
@@ -5087,8 +5117,8 @@
 
 ### TodoSlice
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/slices/TodoSlice.ts
-**Total Issues:** 1
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### UserSlice
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/slices/UserSlice.ts
@@ -5190,6 +5220,11 @@
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 0 | **Low:** 1
 
+### TodoItem
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoItem.tsx
+**Total Issues:** 3
+**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 1
+
 ### TodoService
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoService.ts
 **Total Issues:** 2
@@ -5202,11 +5237,6 @@
 
 ### appEventTypes
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/appEventTypes.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
-
-### appTypes
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/appTypes.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -5300,11 +5330,6 @@
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
-### metadataTypes
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/metadataTypes.ts
-**Total Issues:** 1
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
-
 ### phaseTypes
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/phaseTypes.ts
 **Total Issues:** 1
@@ -5339,6 +5364,11 @@
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/users/User.tsx
 **Total Issues:** 8
 **Critical:** 1 | **High:** 3 | **Medium:** 2 | **Low:** 2
+
+### VersionGenerator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/versions/VersionGenerator.tsx
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### roadmapCLI
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/cli/roadmapCLI.ts
@@ -6865,6 +6895,11 @@
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
+### GenerateCache
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/GenerateCache.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
 ### GenerateDatabase
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/GenerateDatabase.tsx
 **Total Issues:** 2
@@ -6885,15 +6920,25 @@
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
-### TypeScriptAnalyzer
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/TypeScriptAnalyzer.ts
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
-
 ### DebugBabelAnalyzer
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
+
+### ConfigurationValidator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/validators/ConfigurationValidator.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### FileStructureValidator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/validators/FileStructureValidator.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### MultiPlatformDirectoryValidator
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/validators/MultiPlatformDirectoryValidator.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
 ### generateCaptions
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/generateCaptions.ts
@@ -7027,11 +7072,6 @@
 
 ### useChatDashboard
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useChatDashboard.tsx
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
-
-### useDynamicNavigation
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useDynamicNavigation.ts
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
@@ -8605,6 +8645,11 @@
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
+### appTypes
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/appTypes.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
 ### ApiWebBaseEndpoints
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/categories/ApiWebBaseEndpoints.ts
 **Total Issues:** 1
@@ -9705,6 +9750,11 @@
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
 
+### metadataTypes
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/metadataTypes.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
 ### dataAnalysisTypes
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/phases/dataAnalysisTypes.ts
 **Total Issues:** 1
@@ -9874,11 +9924,6 @@
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/shared/ErrorBoundary.tsx
 **Total Issues:** 2
 **Critical:** 0 | **High:** 0 | **Medium:** 0 | **Low:** 2
-
-### UserPreference
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/users/preferences/UserPreference.tsx
-**Total Issues:** 2
-**Critical:** 1 | **High:** 0 | **Medium:** 0 | **Low:** 1
 
 ### BrowserCheck
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/BrowserCheck.tsx
@@ -10342,8 +10387,8 @@
 
 ### useNotificationManagerServiceProps
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/notifications/useNotificationManagerServiceProps.tsx
-**Total Issues:** 1
-**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+**Total Issues:** 2
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### Web3Config
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/Web3Config.ts
@@ -10459,11 +10504,6 @@
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TenantStore.ts
 **Total Issues:** 1
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
-
-### TodoItem
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoItem.tsx
-**Total Issues:** 2
-**Critical:** 0 | **High:** 0 | **Medium:** 2 | **Low:** 0
 
 ### GenerateTimeStampUtilsUtils
 **File:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/GenerateTimeStampUtilsUtils.ts
@@ -10640,6 +10680,51 @@
 **Total Issues:** 3
 **Critical:** 0 | **High:** 2 | **Medium:** 1 | **Low:** 0
 
+### admin
+**File:** src/components/admin
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### calendar
+**File:** src/components/calendar
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### chat
+**File:** src/components/chat
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### crypto
+**File:** src/components/crypto
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### documents
+**File:** src/components/documents
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### README
+**File:** README.md
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### generateSnapshots
+**File:** src/app/scripts/generateSnapshots.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### cleanSnapshots
+**File:** src/app/scripts/cleanSnapshots.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
+### resetDevelopmentData
+**File:** src/app/scripts/resetDevelopmentData.ts
+**Total Issues:** 1
+**Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 0
+
 ### Link
 **File:** src/app/components/routing/Link.tsx
 **Total Issues:** 2
@@ -10750,7 +10835,7 @@
 **Implementations:** 0
 
 ### NotificationManagerServiceProps
-**File:** src/app/services/NotificationService.tsx
+**File:** src/app/components/notifications/useNotificationManagerServiceProps.tsx
 **Issues:** 1
 **Implementations:** 0
 
@@ -10871,11 +10956,6 @@
 
 ### UserSettingsFormProps
 **File:** src/app/pages/forms/UserSettingsForm.tsx
-**Issues:** 1
-**Implementations:** 0
-
-### UserJourneyManagerProps
-**File:** src/app/pages/personas/UserJourneyManager.tsx
 **Issues:** 1
 **Implementations:** 0
 
@@ -11552,6 +11632,7 @@
 - **SearchCriteria:** 7 issues
 - **EventService:** 7 issues
 - **UserContext:** 7 issues
+- **TodoList:** 7 issues
 - **DApp:** 7 issues
 - **Toolbar:** 7 issues
 - **DynamicIconsAndImages:** 7 issues
@@ -11579,7 +11660,6 @@
 - **DynamicForm:** 6 issues
 - **PreviewForm:** 6 issues
 - **DashboardLayout:** 6 issues
-- **TodoList:** 6 issues
 - **IdeaCreationPhase:** 6 issues
 - **BlogComponent:** 6 issues
 - **ProjectManagementToolbar:** 6 issues
@@ -11595,6 +11675,7 @@
 - **ApiData:** 5 issues
 - **ApiMetadata:** 5 issues
 - **ContentApiService:** 5 issues
+- **Provider:** 5 issues
 - **ChatRoomComponent:** 5 issues
 - **CustomBox:** 5 issues
 - **EditorWithPrompt:** 5 issues
@@ -11644,7 +11725,6 @@
 - **DynamicEventHandlerService:** 4 issues
 - **PortfolioService:** 4 issues
 - **PriceApiService:** 4 issues
-- **Provider:** 4 issues
 - **Attendee:** 4 issues
 - **CalendarApp:** 4 issues
 - **CalendarPhase:** 4 issues
@@ -11698,7 +11778,6 @@
 - **generateTree:** 4 issues
 - **GenerateComponent:** 4 issues
 - **DatabaseService:** 4 issues
-- **NotificationService:** 4 issues
 - **TaskService:** 4 issues
 - **teamService:** 4 issues
 - **RetrieveSnapshotData:** 4 issues
@@ -11772,6 +11851,8 @@
 - **LazyLoadScript:** 4 issues
 - **WebpageBuilder:** 4 issues
 - **Profile:** 4 issues
+- **ApiUser:** 3 issues
+- **UserPreference:** 3 issues
 - **CryptoActions:** 3 issues
 - **SnapshotActions:** 3 issues
 - **ApiDocument:** 3 issues
@@ -11800,6 +11881,7 @@
 - **getSocketConnection:** 3 issues
 - **CalendarEventAttendeeAvailabilityAnalysis:** 3 issues
 - **CalendarYear:** 3 issues
+- **DatePicker:** 3 issues
 - **Month:** 3 issues
 - **WebSocket:** 3 issues
 - **WebSocketClient:** 3 issues
@@ -11811,7 +11893,6 @@
 - **LoginContainer:** 3 issues
 - **TeamContext:** 3 issues
 - **ClientSanitization:** 3 issues
-- **TradingStrategy:** 3 issues
 - **continuousMonitoringAndImprovement:** 3 issues
 - **DocumentFormattingOptionsComponent:** 3 issues
 - **FilePreview:** 3 issues
@@ -11850,7 +11931,6 @@
 - **endpointManager:** 3 issues
 - **idleTimeout:** 3 issues
 - **createMetadata:** 3 issues
-- **useMeta:** 3 issues
 - **useMetadata:** 3 issues
 - **calendarEventManager:** 3 issues
 - **scheduleCoordinator:** 3 issues
@@ -11879,6 +11959,7 @@
 - **PackageRecommendationGenerator:** 3 issues
 - **CircularDependencyDetector:** 3 issues
 - **CorrectionGenerator:** 3 issues
+- **CorrectionMessageGenerator:** 3 issues
 - **CorrectionWizard:** 3 issues
 - **ErrorAnalyzer:** 3 issues
 - **ErrorTracker:** 3 issues
@@ -11889,6 +11970,7 @@
 - **ImplementationCounter:** 3 issues
 - **PlatformDetector:** 3 issues
 - **ReactNativeAnalyzer:** 3 issues
+- **TypeScriptAnalyzer:** 3 issues
 - **AppConfigAnalyzer:** 3 issues
 - **BabelConfigAnalyzer:** 3 issues
 - **ConfigFileAnalyzer:** 3 issues
@@ -11993,6 +12075,7 @@
 - **BackgroundService:** 3 issues
 - **DataAnalysisService:** 3 issues
 - **FileTreeService:** 3 issues
+- **NotificationService:** 3 issues
 - **PremiumFeatures:** 3 issues
 - **CustomActionEngine:** 3 issues
 - **ReminderCondition:** 3 issues
@@ -12033,6 +12116,7 @@
 - **snapshotValidationUtils:** 3 issues
 - **YouTubeIntegration:** 3 issues
 - **AppContext:** 3 issues
+- **NavigationContext:** 3 issues
 - **SnapshotContext:** 3 issues
 - **ProjectManagerStore:** 3 issues
 - **SliceGenerator:** 3 issues
@@ -12068,6 +12152,7 @@
 - **ClientSubscriber:** 3 issues
 - **subscriptionServiceInstance:** 3 issues
 - **useSnapshotSubscriptions:** 3 issues
+- **TradingStrategy:** 3 issues
 - **EventDataService:** 3 issues
 - **PropTypes:** 3 issues
 - **YourSpecificSnapshotType:** 3 issues
@@ -12084,7 +12169,6 @@
 - **AppVersion:** 3 issues
 - **SearchHistory:** 3 issues
 - **VersionData:** 3 issues
-- **VersionGenerator:** 3 issues
 - **createLatestVersion:** 3 issues
 - **DuplicateDetector:** 3 issues
 - **ErrorManager:** 3 issues
@@ -12094,6 +12178,7 @@
 - **AppCacheManagerExtended:** 3 issues
 - **FrontendCacheInteraction:** 3 issues
 - **credentialConstants:** 3 issues
+- **fileHeaderManager:** 3 issues
 - **handleFileChangesUtils:** 3 issues
 - **hypothesisTesting:** 3 issues
 - **metadataUtils:** 3 issues
@@ -12106,12 +12191,12 @@
 - **FluenceConnection:** 3 issues
 - **ApiSynchronizationScript:** 3 issues
 - **CodeScaffoldingScript:** 3 issues
+- **ComponentPatternDetector:** 3 issues
 - **ConfigurationGenerationScript:** 3 issues
 - **TemplateGenerator:** 3 issues
 - **deployApp:** 3 issues
 - **ClickableList:** 3 issues
 - **ApiDrawing:** 3 issues
-- **ApiLogs:** 3 issues
 - **ApiTodo:** 3 issues
 - **ConfigManager:** 3 issues
 - **InstagramAPI:** 3 issues
@@ -12137,7 +12222,6 @@
 - **DesignDashboard:** 3 issues
 - **FormInputComponent:** 3 issues
 - **ProfessionalTraderDocuments:** 3 issues
-- **UserJourneyManager:** 3 issues
 - **SearchItems:** 3 issues
 - **convertAnalysisToDoc:** 3 issues
 - **SecurityMeasures:** 3 issues
@@ -12145,6 +12229,7 @@
 - **FileApiService:** 3 issues
 - **transformSnapshotsToStores:** 3 issues
 - **FetchTodos:** 3 issues
+- **TodoItem:** 3 issues
 - **DynamicTextArea:** 3 issues
 - **CalendarUtils:** 3 issues
 - **ApiDataAnalysis:** 3 issues
@@ -12223,7 +12308,6 @@
 - **getSnapshotEndpoint:** 2 issues
 - **Client:** 2 issues
 - **AttendancePrediction:** 2 issues
-- **DatePicker:** 2 issues
 - **WebSocketServer:** 2 issues
 - **CommunityDetails:** 2 issues
 - **CryptoPortfolio:** 2 issues
@@ -12249,6 +12333,7 @@
 - **BackendConfig:** 2 issues
 - **FrontendConfig:** 2 issues
 - **ipfsConfig:** 2 issues
+- **useMeta:** 2 issues
 - **projectConverter:** 2 issues
 - **projectManagement:** 2 issues
 - **CustomModifier:** 2 issues
@@ -12275,6 +12360,7 @@
 - **idleTimeoutCondition:** 2 issues
 - **useBatchProcessing:** 2 issues
 - **useDataExport:** 2 issues
+- **useDynamicNavigation:** 2 issues
 - **useNotificationSystem:** 2 issues
 - **usePhaseManagement:** 2 issues
 - **useSecureProjectId:** 2 issues
@@ -12291,6 +12377,7 @@
 - **CategoryManager:** 2 issues
 - **CategoryMapper:** 2 issues
 - **drawingLibrary:** 2 issues
+- **ProjectEventEmitter:** 2 issues
 - **avoidCollisions:** 2 issues
 - **generateRandomWalkPositions:** 2 issues
 - **DraggableDiv:** 2 issues
@@ -12336,6 +12423,7 @@
 - **createOptions:** 2 issues
 - **defaultSnapshotBuilder:** 2 issues
 - **defineConfig:** 2 issues
+- **NavigationContextState:** 2 issues
 - **SettingsManagerStore:** 2 issues
 - **ThemeSettingsSagas:** 2 issues
 - **DocumentSlice.test:** 2 issues
@@ -12345,7 +12433,6 @@
 - **TrackerStore:** 2 issues
 - **SubscriptionLevel:** 2 issues
 - **DataSetModel:** 2 issues
-- **ProjectEventEmitter:** 2 issues
 - **UnifiedSystemType:** 2 issues
 - **baseResponseTypes:** 2 issues
 - **SmartContractInteraction:** 2 issues
@@ -12378,12 +12465,12 @@
 - **ApiContent:** 2 issues
 - **ApiDetails:** 2 issues
 - **ApiEndpoints:** 2 issues
+- **ApiLogs:** 2 issues
 - **ApiNews:** 2 issues
 - **ApiNote:** 2 issues
 - **ApiTradeCore:** 2 issues
 - **ApiTradingData:** 2 issues
 - **ApiTradingInfo:** 2 issues
-- **ApiUser:** 2 issues
 - **ApiUserRole:** 2 issues
 - **ApiVideo:** 2 issues
 - **BlogAPI:** 2 issues
@@ -12409,7 +12496,6 @@
 - **CryptoManager:** 2 issues
 - **CryptoService:** 2 issues
 - **predict:** 2 issues
-- **MetadataViewer:** 2 issues
 - **Integration:** 2 issues
 - **selectDocumentEditingPermissions:** 2 issues
 - **TagComponent:** 2 issues
@@ -12434,7 +12520,6 @@
 - **EventStore:** 2 issues
 - **ShortcutKeys:** 2 issues
 - **ApiCodeGenerator:** 2 issues
-- **GenerateCache:** 2 issues
 - **GenerateChatInterfaces:** 2 issues
 - **GenerateNewTodo:** 2 issues
 - **TeamManagementFeatureGenerator:** 2 issues
@@ -12443,6 +12528,7 @@
 - **RNConfigAnalyzer:** 2 issues
 - **MetroLogAnalyzer:** 2 issues
 - **QualityReport:** 2 issues
+- **PackageJsonValidator:** 2 issues
 - **generateAppTree:** 2 issues
 - **generateDynamicData:** 2 issues
 - **generateFileChecklist:** 2 issues
@@ -12474,9 +12560,7 @@
 - **CommonData:** 2 issues
 - **UserManagement:** 2 issues
 - **dataStoreMethods:** 2 issues
-- **documentBuilderConfig:** 2 issues
 - **Tag:** 2 issues
-- **NotificationChannelHelper:** 2 issues
 - **MyAppWrapper:** 2 issues
 - **configureCollaborationPreferences:** 2 issues
 - **DirectoryExplorer:** 2 issues
@@ -12487,6 +12571,7 @@
 - **usePhaseWithLoad:** 2 issues
 - **ParticipantManagementPage:** 2 issues
 - **TeamBuilder:** 2 issues
+- **UserJourneyManager:** 2 issues
 - **SearchLibrary:** 2 issues
 - **UserSearch:** 2 issues
 - **VideoLifecyclePhase:** 2 issues
@@ -12553,6 +12638,7 @@
 - **ProjectSlice:** 2 issues
 - **SecurityEventSlice:** 2 issues
 - **ThemeSlice:** 2 issues
+- **TodoSlice:** 2 issues
 - **UserSlice:** 2 issues
 - **AuthStore:** 2 issues
 - **BrowserCheckStore:** 2 issues
@@ -12566,7 +12652,6 @@
 - **VideoStore:** 2 issues
 - **TodoService:** 2 issues
 - **appEventTypes:** 2 issues
-- **appTypes:** 2 issues
 - **DocumentEntity:** 2 issues
 - **MetaEntity:** 2 issues
 - **StorePropEntity:** 2 issues
@@ -12677,7 +12762,6 @@
 - **FeedbackAggregator:** 2 issues
 - **NotificationMessages:** 2 issues
 - **GenerateDatabase:** 2 issues
-- **TypeScriptAnalyzer:** 2 issues
 - **DebugBabelAnalyzer:** 2 issues
 - **generateTokens:** 2 issues
 - **snapshotCache:** 2 issues
@@ -12690,7 +12774,6 @@
 - **generateDynamicDummyHook:** 2 issues
 - **DynamicPromptPhaseHook:** 2 issues
 - **useChatDashboard:** 2 issues
-- **useDynamicNavigation:** 2 issues
 - **useIconLoaderAsync:** 2 issues
 - **useJobSearch:** 2 issues
 - **useStorageManager:** 2 issues
@@ -12874,7 +12957,6 @@
 - **SortableTableHeaders:** 2 issues
 - **TagCloud:** 2 issues
 - **ErrorBoundary:** 2 issues
-- **UserPreference:** 2 issues
 - **AndroidSpecificContent:** 2 issues
 - **CaptionManagementPage:** 2 issues
 - **ActionList:** 2 issues
@@ -12901,9 +12983,9 @@
 - **DraggableIndicator:** 2 issues
 - **LoadingIndicator:** 2 issues
 - **LoadingSpinner:** 2 issues
+- **useNotificationManagerServiceProps:** 2 issues
 - **useDrag:** 2 issues
 - **PresentationService:** 2 issues
-- **TodoItem:** 2 issues
 - **PlanningPhase:** 2 issues
 - **SearchContext:** 2 issues
 - **CommunicationPage:** 2 issues
@@ -12917,7 +12999,7 @@
 - **requestHeaders:** 2 issues
 - **FormUI:** 2 issues
 - **FormInput:** 2 issues
-- **UserProfile:** 1 issues
+- **TypeScript Analysis:** 1 issues
 - **OrderBookData:** 1 issues
 - **StrategyOptions:** 1 issues
 - **VoiceNavigation:** 1 issues
@@ -12943,7 +13025,6 @@
 - **SnapshotCategoryManager:** 1 issues
 - **ErrorState:** 1 issues
 - **ErrorStore:** 1 issues
-- **ComponentPatternDetector:** 1 issues
 - **BookMarkActions:** 1 issues
 - **CalendarEventActions:** 1 issues
 - **CallActions:** 1 issues
@@ -12963,6 +13044,7 @@
 - **LazyLoadedImage:** 1 issues
 - **CalendarService:** 1 issues
 - **articleKeywords:** 1 issues
+- **MetadataViewer:** 1 issues
 - **CommonDetails:** 1 issues
 - **OnboardingHook:** 1 issues
 - **ReferralSystem:** 1 issues
@@ -12993,6 +13075,8 @@
 - **ThemeSwitcher:** 1 issues
 - **CommonData.test:** 1 issues
 - **StatusType:** 1 issues
+- **documentBuilderConfig:** 1 issues
+- **NotificationChannelHelper:** 1 issues
 - **Unauthorized:** 1 issues
 - **ModalFunctions:** 1 issues
 - **OnboardingQuestionnaireData:** 1 issues
@@ -13030,7 +13114,6 @@
 - **MeetingSlice:** 1 issues
 - **PhaseSlice:** 1 issues
 - **SettingsSlice:** 1 issues
-- **TodoSlice:** 1 issues
 - **pagingSlice:** 1 issues
 - **phaseActivitySlice:** 1 issues
 - **ArticleStore:** 1 issues
@@ -13053,12 +13136,12 @@
 - **UserEntity:** 1 issues
 - **VersionEntity:** 1 issues
 - **VideoEntity:** 1 issues
-- **metadataTypes:** 1 issues
 - **phaseTypes:** 1 issues
 - **realtimeTypes:** 1 issues
 - **snapshotTypes:** 1 issues
 - **taskTypes:** 1 issues
 - **teamTypes:** 1 issues
+- **VersionGenerator:** 1 issues
 - **TokenUtils:** 1 issues
 - **logDataHelpers:** 1 issues
 - **openVideoOptionsMenu:** 1 issues
@@ -13205,9 +13288,13 @@
 - **NotificationTypes:** 1 issues
 - **TaskProjectFeedback:** 1 issues
 - **UnifiedNotificationTypes:** 1 issues
+- **GenerateCache:** 1 issues
 - **GenerateNewTask:** 1 issues
 - **GenerateNewTeam:** 1 issues
 - **GenerateTable:** 1 issues
+- **ConfigurationValidator:** 1 issues
+- **FileStructureValidator:** 1 issues
+- **MultiPlatformDirectoryValidator:** 1 issues
 - **generateCaptions:** 1 issues
 - **generateDevConfigurationSummaryContent:** 1 issues
 - **generateHeaders:** 1 issues
@@ -13381,6 +13468,7 @@
 - **Trades:** 1 issues
 - **BaseTypes:** 1 issues
 - **apiTypes:** 1 issues
+- **appTypes:** 1 issues
 - **ApiWebBaseEndpoints:** 1 issues
 - **AuthEndpoints:** 1 issues
 - **TradingEndpoints:** 1 issues
@@ -13531,6 +13619,7 @@
 - **ContentEntity:** 1 issues
 - **VersionHistoryEntity:** 1 issues
 - **fileTypes:** 1 issues
+- **metadataTypes:** 1 issues
 - **dataAnalysisTypes:** 1 issues
 - **promptTypes:** 1 issues
 - **registrationTypes:** 1 issues
@@ -13612,7 +13701,6 @@
 - **GoogleAnalyticsScript:** 1 issues
 - **EventCategory:** 1 issues
 - **AndroidIcon:** 1 issues
-- **useNotificationManagerServiceProps:** 1 issues
 - **Web3Config:** 1 issues
 - **createMeta:** 1 issues
 - **AnnouncementManager:** 1 issues
@@ -13653,6 +13741,15 @@
 - **MeetingSchedulerViewerToolbar:** 1 issues
 - **UserIdeaComponentUI:** 1 issues
 - **FullscreenControls:** 1 issues
+- **admin:** 1 issues
+- **calendar:** 1 issues
+- **chat:** 1 issues
+- **crypto:** 1 issues
+- **documents:** 1 issues
+- **README:** 1 issues
+- **generateSnapshots:** 1 issues
+- **cleanSnapshots:** 1 issues
+- **resetDevelopmentData:** 1 issues
 - **Checkbox:** 1 issues
 - **UserList:** 1 issues
 - **DataPreview:** 1 issues
@@ -13662,14 +13759,16 @@
 - **securityHeaders:** 1 issues
 
 ### By File Type
-- **.tsx:** 2381 issues
-- **.json:** 9 issues
-- **.ts:** 2451 issues
-- **.js:** 71 issues
+- **:** 27 issues
+- **.ts:** 2471 issues
+- **.tsx:** 2380 issues
+- **.json:** 13 issues
+- **.js:** 73 issues
 - **.jsx:** 27 issues
-- **:** 7 issues
+- **.md:** 1 issues
+- **.cjs:** 1 issues
 
 ### By Complexity
-- **Simple (Low):** 1520 issues
-- **Moderate (Medium):** 2900 issues
-- **Complex (High/Critical):** 526 issues
+- **Simple (Low):** 1522 issues
+- **Moderate (Medium):** 2946 issues
+- **Complex (High/Critical):** 525 issues

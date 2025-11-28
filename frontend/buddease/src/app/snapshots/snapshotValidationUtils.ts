@@ -1,3 +1,4 @@
+// snapshotValidationUtils.ts
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';

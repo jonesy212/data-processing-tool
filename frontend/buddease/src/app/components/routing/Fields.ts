@@ -1,3 +1,4 @@
+// Fields.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Task } from '@/app/models/tasks/Task';
 import { ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields } from "@/app/typings/entities/ExampleEntity";

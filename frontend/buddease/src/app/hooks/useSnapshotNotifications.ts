@@ -1,5 +1,6 @@
+// useSnapshotNotifications.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';

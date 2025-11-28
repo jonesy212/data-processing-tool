@@ -1,3 +1,4 @@
+// IdeaLifecycleComponent.tsx
 import { allLifecyclePhases } from '@/app/components/phases/lifecycles';
 import React from 'react';
 

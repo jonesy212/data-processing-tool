@@ -1,3 +1,4 @@
+// CommonData.tsx
 // CommonDetails.tsx
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
@@ -10,7 +11,7 @@ import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';

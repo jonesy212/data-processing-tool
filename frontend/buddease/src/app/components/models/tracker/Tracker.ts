@@ -1,3 +1,4 @@
+// Tracker.ts
 //Tracker.ts
 
 import { HighlightColor } from "@/app/components/styling/Palette";

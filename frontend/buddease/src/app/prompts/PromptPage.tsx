@@ -1,3 +1,4 @@
+// PromptPage.tsx
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import React, { useState } from "react";
 import { Data } from '@/app/models/data/Data';

@@ -1,3 +1,4 @@
+// LanguageEnum.ts
 //LanguageEnum.ts
 export enum LanguageEnum {
   English = "English",

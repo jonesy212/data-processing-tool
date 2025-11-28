@@ -1,15 +1,16 @@
-import { Idea } from '@/app/users/Ideas';
+// TaskService.ts
 import { apiService } from "@/app/api/ApiDetails";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import Logger from "@/app/logging/Logger";
 import { Task } from "@/app/models/tasks/Task";
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/app/typings/entities/TaskEntity';
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskMeta } from '@/app/typings/entities/TaskEntity';
+import { Idea } from '@/app/users/Ideas';
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
 

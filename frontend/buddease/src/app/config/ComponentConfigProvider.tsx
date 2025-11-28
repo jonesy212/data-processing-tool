@@ -1,3 +1,4 @@
+// ComponentConfigProvider.tsx
 // ComponentConfigProvider.ts
 import React, { createContext, useContext, useState } from "react";
 import { ComponentsConfig, defaultComponentConfig } from "./ComponentsConfig";

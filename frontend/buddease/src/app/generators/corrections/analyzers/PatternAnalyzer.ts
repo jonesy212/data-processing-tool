@@ -1,9 +1,12 @@
+// PatternAnalyzer.ts
 // analyzers/PatternAnalyzer.ts
 
 import fs from 'fs';
 import path from 'path';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
+import { CorrectionMessageGenerator } from '@/app/generators/corrections/CorrectionMessageGenerator'
+import { CorrectionFactory } from '@/app/config/factory/CorrectionFactory'
 
 export class PatternAnalyzer extends BaseAnalyzer  {
 
@@ -1164,5 +1167,97 @@ private findDuplicates(blocks: Array<{lines: string[], startLine: number}>): Arr
       hash = hash & hash;
     }
     return Math.abs(hash).toString(36).substring(0, 8);
+  }
+
+
+    protected createPerformanceCorrection(
+      id: string,
+      title: string,
+      file: string,
+      codeSnippet: string,
+      suggestion: string,
+      line?: number
+    ): Correction {
+      return CorrectionFactory.createPerformanceIssue(id, title, file, codeSnippet, suggestion, line);
+    }
+
+  private createPatternCorrection(id: string, file: string, context: any = {}): Correction {
+    console.log('🔍 [PatternAnalyzer] START createPatternCorrection:', { 
+      id, 
+      file, 
+      contextKeys: Object.keys(context),
+      contextValues: context 
+    });
+
+    // Debug available templates first
+    CorrectionMessageGenerator.debugTemplates();
+    
+    let message = CorrectionMessageGenerator.generateMessage(id, context);
+    
+    console.log('🔍 [PatternAnalyzer] After generateMessage:', { 
+      message,
+      messageValid: !!(message && message !== 'undefined' && message !== 'null')
+    });
+    
+    // If message is still undefined, use a fallback
+    if (!message || message === 'undefined' || message === 'null') {
+      console.error(`❌ [PatternAnalyzer] UNDEFINED MESSAGE for ID: ${id}`);
+      console.error(`❌ [PatternAnalyzer] File: ${file}`);
+      console.error(`❌ [PatternAnalyzer] Context:`, JSON.stringify(context, null, 2));
+      message = `Performance improvement opportunity in ${file}`;
+    }
+    
+    const correction = this.createPerformanceCorrection(
+      id,
+      message,
+      file,
+      context.code || '',
+      context.fix || '',
+      context.line
+    );
+
+    console.log('🔍 [PatternAnalyzer] FINAL correction message:', correction.message);
+    console.log('🔍 [PatternAnalyzer] END createPatternCorrection\n');
+    
+    return correction;
+  }
+  // Example usage:
+  private detectUnsafeJsonParsing(filePath: string, content: string): Correction[] {
+    const corrections: Correction[] = [];
+    
+    if (content.includes('JSON.parse(') && !content.includes('try {') && !content.includes('catch')) {
+      corrections.push(this.createPatternCorrection(
+        `unsafe-json-parse-${path.basename(filePath)}`,
+        filePath,
+        {
+          context: path.basename(filePath),
+          code: 'const data = JSON.parse(jsonString); // Unsafe without error handling',
+          fix: `try {\n  const data = JSON.parse(jsonString);\n} catch (error) {\n  console.error('JSON parse error:', error);\n}`,
+          type: 'warning',
+          severity: 'medium'
+        }
+      ));
+    }
+
+    return corrections;
+  }
+
+  private detectConsoleInProduction(filePath: string, content: string): Correction[] {
+    const corrections: Correction[] = [];
+    
+    if (content.includes('console.log(') && !filePath.includes('test')) {
+      corrections.push(this.createPatternCorrection(
+        `console-in-production-${path.basename(filePath)}`,
+        filePath,
+        {
+          code: 'console.log("Debug message"); // Remove from production',
+          fix: '// Remove console statements or use proper logging',
+          type: 'suggestion',
+          severity: 'low'
+        }
+      ));
+    }
+
+    return corrections;
   }
 }

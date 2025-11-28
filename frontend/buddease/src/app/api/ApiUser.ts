@@ -86,11 +86,20 @@ class UserService <
     }
   };
 
-  static fetchUser = async (userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"], authToken: string) => {
+  static async fetchUser<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    userId: string,
+    authToken: string
+  ): Promise<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     try {
       const url = buildUrl(userEndpoints.single, { userId: Number(userId) });
-
-      const response = await internalApiService.get(
+      const response = await internalApiService.get<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         url,
         {
           headers: {
@@ -112,7 +121,7 @@ class UserService <
       console.error("Error fetching user:", error);
       throw error;
     }
-  };
+  }
 
   static fetchUserbyUserName = async (userName: string) => { 
     try {

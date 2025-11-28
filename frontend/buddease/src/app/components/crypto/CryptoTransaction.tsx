@@ -1,6 +1,6 @@
+// CryptoTransaction.tsx
 import React from "react";
 
-// CryptoTransaction.tsx
 interface CryptoTransaction {
   id: string;
   timestamp: Date | undefined;

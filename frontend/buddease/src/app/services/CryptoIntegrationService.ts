@@ -1,3 +1,4 @@
+// CryptoIntegrationService.ts
 // src/services/CryptoIntegrationService.ts
 import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
 import internalApiService from '@/app/api/ApiClient';

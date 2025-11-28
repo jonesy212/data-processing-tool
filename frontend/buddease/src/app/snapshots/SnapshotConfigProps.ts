@@ -1,3 +1,4 @@
+// SnapshotConfigProps.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";

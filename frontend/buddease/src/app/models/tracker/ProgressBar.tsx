@@ -1,3 +1,4 @@
+// ProgressBar.tsx
   import React from "react";
 
 export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";

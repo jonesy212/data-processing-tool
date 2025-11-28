@@ -1,3 +1,4 @@
+// useWebNotifications.ts
 import { useState } from 'react';
 
 const useWebNotifications = () => {

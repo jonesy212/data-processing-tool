@@ -1,3 +1,4 @@
+// SnapshotStoreDelegate.ts
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 // // SnapshotStoreDelegate.ts

@@ -1,3 +1,4 @@
+// PostLaunchActivitiesPhase.tsx
 import RefactoringRebrandingPhase from '@/app/projects/RefactoringRebrandingPhase';
 import CollaborationSettingsPhase from '@/collaborationPhase/CollaborationSettingsPhase';
 import React from 'react';

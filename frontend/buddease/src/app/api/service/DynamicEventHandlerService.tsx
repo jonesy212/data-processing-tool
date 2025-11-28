@@ -1,3 +1,4 @@
+// DynamicEventHandlerService.tsx
 // DynamicEventHandlerService.ts
 import { CustomMouseEvent } from '@/app/services/EventService'
 import SnapshotList from "@/app/snapshots/SnapshotList";

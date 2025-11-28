@@ -1,3 +1,4 @@
+// SnapshohtDevConfigs.ts
 // //SnapshohtDevConfigs.ts
 
 // import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";

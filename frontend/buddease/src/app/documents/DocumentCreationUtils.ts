@@ -13,7 +13,12 @@ export const getFormattedOptions = (userOptions: DocumentFormattingOptions): Doc
       bold: false,
       italic: false,
       underline: false,
-      margin: 20,
+      margin: {
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20
+      },
       // Add more default options as needed
     };
   
@@ -27,35 +32,39 @@ export const getFormattedOptions = (userOptions: DocumentFormattingOptions): Doc
   
 
 export const createPdfDocument = async (content: string, options: any) => {
-  // Create a new PDF document
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage();
+  try {
+    // Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage();
 
-  // Add content to the page
-  const { width, height } = page.getSize();
- // Use the `embedFont` method without referencing `Font.Helvetica`
- const font = await pdfDoc.embedFont("Helvetica");
+    // Add content to the page
+    const { width, height } = page.getSize();
+    const font = await pdfDoc.embedFont("Helvetica");
 
- // Format the content based on options
- const formattedContent = formatContent(content, options, width);
+    // Format the content based on options
+    const formattedContent = formatContent(content, options, width);
 
-  // Add formatted content to the page
-  page.drawText(formattedContent, {
-    font,
-    size: options.fontSize || 12,
-    color: rgb(0, 0, 0), // Customize color based on options
-    x: 50,
-    y: height - 100,
-  });
+    // Add formatted content to the page
+    page.drawText(formattedContent, {
+      font,
+      size: options.fontSize || 12,
+      color: rgb(0, 0, 0),
+      x: 50,
+      y: height - 100,
+    });
 
-  // Add more content and formatting as needed
+    // Save the document
+    const pdfBytes = await pdfDoc.save();
+    
+    // Fix: Use type assertion to handle the Uint8Array
+    const pdfBlob = new Blob([pdfBytes as unknown as BlobPart], { type: 'application/pdf' });
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
 
-  // Save the document or display it as needed
-  const pdfBytes = await pdfDoc.save();
-  // Example: Display the PDF in a new window
-  const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-  const pdfUrl = URL.createObjectURL(pdfBlob);
-  window.open(pdfUrl, '_blank');
+  } catch (error) {
+    console.error('Error creating PDF document:', error);
+    throw error;
+  }
 };
 
 const formatContent = (content: string, options: DocumentFormattingOptions, width: number): string => {

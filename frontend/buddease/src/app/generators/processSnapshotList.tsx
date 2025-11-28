@@ -1,3 +1,4 @@
+// processSnapshotList.tsx
 import DynamicEventHandlerExample from "@/app/components/documents/screenFunctionality/ShortcutKeys";
 import DynamicEventHandlerService from "@/app/components/event/DynamicEventHandlerExample";
 import SnapshotList from "@/app/snapshots/SnapshotList";

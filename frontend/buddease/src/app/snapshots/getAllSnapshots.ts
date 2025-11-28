@@ -1,1 +1,2 @@
+// getAllSnapshots.ts
 getAllSnapshots.ts

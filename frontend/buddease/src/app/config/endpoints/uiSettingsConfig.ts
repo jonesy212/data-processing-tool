@@ -1,3 +1,4 @@
+// uiSettingsConfig.ts
 // UiSettingsConfig.ts
 import { BASE_URL } from '@/app/api/baseUrl';
 import { UiSettingsEndpoints } from '@/app/typings/categories/UiSettingsEndpoints';

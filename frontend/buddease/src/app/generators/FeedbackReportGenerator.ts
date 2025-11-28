@@ -1,6 +1,6 @@
+// FeedbackReportGenerator.ts
 import { Feedback } from "@/app/features/support/Feedback";
 
-// FeedbackReportGenerator.ts
 export interface FeedbackReport {
   projectId: string;
   projectName: string;

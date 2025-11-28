@@ -1,6 +1,6 @@
+// AccessHistory.ts
 import { AccessRecord } from "@/app/documents/DocumentOptions";
 
-// AccessHistory.ts
 class AccessHistory {
   // Properties
   userId: string;

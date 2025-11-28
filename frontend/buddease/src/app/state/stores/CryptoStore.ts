@@ -1,6 +1,8 @@
+// CryptoStore.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 

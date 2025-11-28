@@ -1,3 +1,4 @@
+// useChatDashboard.tsx
 // hooks/useChatDashboard.ts
 import { useEffect } from 'react';
 

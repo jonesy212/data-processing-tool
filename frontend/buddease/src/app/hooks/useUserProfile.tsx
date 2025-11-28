@@ -1,7 +1,9 @@
+// useUserProfile.tsx
 // UseUserProfile.tsx
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { useState } from 'react';
 
 const API_BASE_URL = endpoints.user; // Use the user endpoint

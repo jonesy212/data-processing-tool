@@ -1,3 +1,4 @@
+// authToken.ts
 // Example code to include authentication token in requests
 export const authToken = 'YOUR_AUTH_TOKEN';
 fetch('/api/data', {

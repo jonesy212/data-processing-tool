@@ -1,3 +1,4 @@
+// useCameraAccess.ts
 import { useEffect, useState } from 'react';
 
 const useCameraAccess = () => {

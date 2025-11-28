@@ -1,3 +1,4 @@
+// waitForLoad.ts
 // Generalized waitForLoad function
 export function waitForLoad<T>(
   checkCondition: () => boolean | T, 

@@ -1,10 +1,11 @@
+// SearchCriteria.tsx
 import { debounce } from "@/app/pages/searches/Debounce";
 import { MessageType } from "@/app/generators/MessaageType";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import FormatEnum from "@/app/form/FormatEnum";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
@@ -17,7 +18,7 @@ import { TenantManagementPhaseEnum } from "@/app/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/security/SecurityFeatureEnum";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { userService } from "@/app/api/ApiUserr";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "../../routing/FuzzyMatch";

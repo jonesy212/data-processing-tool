@@ -1,9 +1,10 @@
 // components/DynamicNamingConventions.tsx
 import { default as handleDynamicNotificationMessage, default as NOTIFICATION_MESSAGES } from '@/app/features/support/NotificationMessages';
 import { configServiceInstance } from '@/app/services/ConfigurationService';
-import { useDynamicComponents } from '@/DynamicComponentsContext';
+import { useDynamicComponents } from '@/app/components/DynamicComponentsContext';
 import { NamingConventionsError } from '@/shared/sharedError';
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import React from 'react';
 
 interface DynamicNamingConventionsProps {
@@ -18,20 +19,26 @@ const handleNamingConventionsErrors = (
 ) => {
   let errorDetails = details || error.message || "";
 
-
+  const defaultMessage = NOTIFICATION_MESSAGES.NamingConventionsError?.DEFAULT || "Naming conventions error occurred";
+  
   const errorMessage = handleDynamicNotificationMessage(
-    NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT,
+    defaultMessage,
     error.message,
     errorDetails
   );
 
-  notify(
-    "An error occurred while retrieving naming conventions.",
-    errorMessage,
-    NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT,
-    new Date(),
-    NotificationTypeEnum.ERROR
-  );
+
+  notify({
+    id: UniqueIDGenerator.generateNotificationIDFromMessage("naming-conventions-error"),
+    content: errorMessage,
+    timestamp: new Date(),
+    type: NotificationTypeEnum.ERROR,
+    data: {
+      errorType: "NamingConventionsError",
+      originalError: error.message,
+      details: errorDetails
+    }
+  });
 };
 
 const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({

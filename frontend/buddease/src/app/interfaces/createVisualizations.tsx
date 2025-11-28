@@ -1,3 +1,4 @@
+// createVisualizations.tsx
 // createVisualizations.ts
 import { Line, Bar } from "react-chartjs-2";
 import { VisualizationData } from "@/app/users/User";

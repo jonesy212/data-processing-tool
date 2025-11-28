@@ -1,3 +1,4 @@
+// useSecureUserId.ts
 //useSecureUserId.ts
 import UserRoles from '@/app/models/UserRoles';
 import { useAuth } from '@/state/context/AuthContext';

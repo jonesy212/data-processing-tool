@@ -1,3 +1,4 @@
+// configConfig.ts
 // src/config/endpoints/configConfig.ts
 import { BASE_URL } from '@/app/api/baseUrl';
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';

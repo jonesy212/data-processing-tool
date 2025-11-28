@@ -1,3 +1,4 @@
+// ProjectStore.ts
 import { PhaseMeta } from '@/app/typings/phaseTypes';
 import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
 import { AppPhase } from '@/types/PhaseEntity';

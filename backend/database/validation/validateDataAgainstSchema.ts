@@ -1,8 +1,8 @@
 // validateDataAgainstSchema.ts
 
-import { Data } from '@/app/models/data/Data';
+import { Data } from '@/app/models/data/Data'
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SchemaField } from '@/server/database/SchemaField';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
 
 // Function to validate data against a schema
 

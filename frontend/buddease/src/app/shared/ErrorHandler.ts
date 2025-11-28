@@ -1,3 +1,4 @@
+// ErrorHandler.ts
 // utils/ErrorHandler.ts
 import { configNotificationMessages } from '@/app/api/ConfigManager'
 import { cryptoNotificationMessages } from '@/app/api/ApiCrypto';

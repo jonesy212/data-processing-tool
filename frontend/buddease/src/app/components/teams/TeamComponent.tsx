@@ -1,3 +1,4 @@
+// TeamComponent.tsx
 // src/components/Teams/TeamComponent.tsx
 
 import React, { useEffect, useState } from "react";

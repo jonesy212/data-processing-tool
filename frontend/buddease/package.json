@@ -43,7 +43,7 @@
     "fix:react-native": "tsx src/app/scripts/analyze-errors.ts file src/app/generators/corrections/analyzers/ReactNativeAnalyzer.ts",
     "test:error-system": "tsx app/scripts/test-error-analysis.ts",
     "analyze:typescript-errors": "tsx src/utils/BuildErrorHandler.ts --type-check",
-    "clean:compiled": "node src/app/scripts/cleanup-compiled.js", 
+    "clean:compiled": "node src/app/scripts/cleanup-compiled.js",
     "fix:critical": "tsx src/utils/BuildErrorHandler.ts --fix-critical",
     "type-check": "tsc --noEmit",
     "generate:tree": "tsx src/app/scripts/generateTree.ts",
@@ -61,7 +61,6 @@
     "test:types": "pnpm type-check && pnpm analyze:all",
     "validate:build": "pnpm test:types && pnpm build",
     "generate:corrections": "tsx --tsconfig tsconfig.json src/app/generators/corrections/CorrectionGenerator.ts",
-
     "generate:corrections:critical": "tsx src/app/generators/corrections/CorrectionGenerator.ts --critical",
     "generate:corrections:snapshots": "tsx src/app/generators/corrections/CorrectionGenerator.ts --snapshots",
     "generate:corrections:quick": "tsx src/app/generators/corrections/CorrectionGenerator.ts --quick",
@@ -71,6 +70,11 @@
     "dev:with-snapshot-fixes": "pnpm generate:corrections:snapshots && pnpm dev",
     "dev:correction-roadmap": "pnpm run scan:full && pnpm run review:roadmap",
     "quick:fixes": "pnpm generate:corrections:quick && echo '✅ Check ./corrections/quick-fixes.md for easy wins (zsh commands)'",
+    "fix:filename-cases": "tsx scripts/fixFilenameCases.ts",
+    "fix-imports": "ts-node scripts/fix-imports.ts",
+    "fix-imports:interactive": "ts-node scripts/fix-imports.ts --interactive",
+    "fix-imports:dry-run": "ts-node scripts/fix-imports.ts --dry-run",
+    "apply-import-fixes": "ts-node scripts/apply-import-fixes.ts",
     "track:progress": "echo 'Check ./error-tracking/progress-report.md'",
     "track:history": "echo 'Check ./error-tracking/error-history.json'",
     "dev:with-tracking": "pnpm generate:corrections && pnpm track:progress && pnpm dev",
@@ -104,20 +108,16 @@
     "dev:web": "PLATFORM=web next dev",
     "build:mobile": "PLATFORM=mobile react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "build:web": "PLATFORM=web next build",
-
-
-    "analyze:snapshots":     "PLATFORM=web pnpm generate:corrections:snapshots",
-    "analyze:critical":      "PLATFORM=web pnpm generate:corrections:critical",
-    "analyze:quick-fixes":   "PLATFORM=web pnpm generate:corrections:quick",
-    "analyze:all-issues":    "PLATFORM=web pnpm generate:corrections",
-
-    "dev:snapshots-first":   "PLATFORM=web pnpm generate:corrections:snapshots && pnpm dev:web",
-    "dev:critical-first":    "PLATFORM=web pnpm generate:corrections:critical && pnpm dev:web",
-
+    "analyze:snapshots": "PLATFORM=web pnpm generate:corrections:snapshots",
+    "analyze:critical": "PLATFORM=web pnpm generate:corrections:critical",
+    "analyze:quick-fixes": "PLATFORM=web pnpm generate:corrections:quick",
+    "analyze:all-issues": "PLATFORM=web pnpm generate:corrections",
+    "dev:snapshots-first": "PLATFORM=web pnpm generate:corrections:snapshots && pnpm dev:web",
+    "dev:critical-first": "PLATFORM=web pnpm generate:corrections:critical && pnpm dev:web",
     "analyze:snapshots:mobile": "PLATFORM=mobile pnpm generate:corrections:snapshots",
-    "analyze:critical:mobile":  "PLATFORM=mobile pnpm generate:corrections:critical",
+    "analyze:critical:mobile": "PLATFORM=mobile pnpm generate:corrections:critical",
     "dev:snapshots-first:mobile": "PLATFORM=mobile pnpm generate:corrections:snapshots && pnpm dev:mobile",
-    "dev:critical-first:mobile":  "PLATFORM=mobile pnpm generate:corrections:critical && pnpm dev:mobile"
+    "dev:critical-first:mobile": "PLATFORM=mobile pnpm generate:corrections:critical && pnpm dev:mobile"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -286,7 +286,6 @@
     "metro-config": "^0.83.3",
     "nock": "^14.0.10",
     "react-native-typescript-transformer": "^1.2.13",
-    "snowpack": "^3.8.8",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",

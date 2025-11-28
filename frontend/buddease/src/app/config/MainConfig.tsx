@@ -1,3 +1,4 @@
+// MainConfig.tsx
 import { Button, Card, Divider, Tabs, Typography } from "antd";
 import React, { useState } from "react";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";

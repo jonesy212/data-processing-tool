@@ -1,3 +1,4 @@
+// SmartContractInteraction.ts
 import { Signature } from "ethers";
 import { SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { Transaction, BaseTransaction } from "@/app/payment/Transaction";

@@ -1,3 +1,4 @@
+// featureStateManagement.ts
 // Example MobX Store for a Feature
 import { makeAutoObservable } from "mobx";
 

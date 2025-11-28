@@ -1,3 +1,4 @@
+// mapToSnapshotStore.tsx
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';

@@ -1,3 +1,4 @@
+// generateRandomWalkPositions.ts
 import avoidCollisions from "./avoidCollisions";
 
 const generateRandomWalkPositions = (steps = 100) => {

@@ -1,3 +1,4 @@
+// MessaageType.tsx
 // MessageType.tsx
 import { MessageBaseParams } from '@/app/typings/entities/MessageEntity';
 import { Message } from "@/app/generators/GenerateChatInterfaces";

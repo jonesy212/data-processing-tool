@@ -1,3 +1,4 @@
+// UserStore.ts
 import {
     NotificationTypeEnum,
     useNotification,

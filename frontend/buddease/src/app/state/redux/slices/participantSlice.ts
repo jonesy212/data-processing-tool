@@ -1,3 +1,4 @@
+// participantSlice.ts
 // useParticipantSlice.ts
  
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";

@@ -1,3 +1,4 @@
+// TagCreationComponent.tsx
 // TagCreationComponent.ts
 import { createTag } from '@/app/state/redux/slices/useTagManagerSlice';
 import { TagOptions } from '@/app/models/tracker/Tag';

@@ -1,6 +1,7 @@
+// CorrectionFactory.ts
 // factory/CorrectionFactory.ts
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { CorrectionInput, CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/typings/CorrectionTypes';
+import { CorrectionInput } from '@/typings/correctionTypes';
 
 export class CorrectionFactory {
   static create(input: CorrectionInput): Correction {
@@ -12,9 +13,13 @@ export class CorrectionFactory {
       file: input.file,
       codeSnippet: input.codeSnippet,
       suggestion: input.suggestion,
+      message: input.message || '',
       category: input.category,
       line: input.line,
-      description: input.descrption || input.message
+      description: input.description|| input.suggestion,
+      code: input.code,
+      fix: input.fix,
+      documentationLink: input.documentationLink || '',
     };
   }
 
@@ -145,4 +150,6 @@ export class CorrectionFactory {
       line
     });
   }
+
+  
 }

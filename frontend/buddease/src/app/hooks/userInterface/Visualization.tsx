@@ -1,3 +1,4 @@
+// Visualization.tsx
 import ChartComponent from "@/app/components/charts/ChartComponent";
 import { NextApiRequest, NextApiResponse } from "next";
 import React, { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+// DynamicRenderer.tsx
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import React, { useEffect, useState } from "react";
 import { useDynamicComponents } from "@/app/DynamicComponentsContext";

@@ -1,3 +1,4 @@
+// parsePDF.tsx
 import { ParsedData } from '@/app/dataIntegration/parseData';
 import { YourPDFType } from "@/app/documents/DocType";
 import useErrorHandling from "@/app/hooks/useErrorHandling";

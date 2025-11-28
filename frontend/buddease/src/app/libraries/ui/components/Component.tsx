@@ -1,3 +1,4 @@
+// Component.tsx
 
 import { ComponentActions } from "@/app/actions/ComponentActions";
 import ProjectService from "@/app/api/ProjectService";

@@ -1,3 +1,4 @@
+// DetailsContext.tsx
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';

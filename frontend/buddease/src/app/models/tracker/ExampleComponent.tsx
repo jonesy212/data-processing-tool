@@ -1,3 +1,4 @@
+// ExampleComponent.tsx
 import { useStore } from '@/app/hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import React from 'react';

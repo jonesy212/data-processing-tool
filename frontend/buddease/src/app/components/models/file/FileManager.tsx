@@ -1,3 +1,4 @@
+// FileManager.tsx
 // Props for FileManager
 import { fetchFolderContentsAPI } from '@/app/api/ApiFiles';
 import Folder from '@/app/models/data/Folder'

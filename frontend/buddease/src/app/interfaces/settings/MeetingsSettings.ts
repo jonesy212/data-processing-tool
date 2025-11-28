@@ -1,3 +1,4 @@
+// MeetingsSettings.ts
 interface MeetingsSettings {
   enableMeetings: boolean;
   meetingPlatform: "zoom" | "teams" | "googleMeet" | "custom"; // Preferred meeting platform

@@ -1,4 +1,3 @@
-//  NFTService.ts
 // NFTService.ts
 
 class NFTService {

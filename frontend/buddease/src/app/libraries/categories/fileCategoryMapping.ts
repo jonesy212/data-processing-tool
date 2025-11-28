@@ -297,6 +297,7 @@ function wrapMapInSnapshot<
     versionInfo: {} as ExtendedVersionData<T, K, M, A, Ex, In>, 
     snapshotContainer: {} as SnapshotContainer<T, K, M, A, Ex, In>, 
     onInitialize: (callback: () => void) => {},
+    
     schema: {} as Record<string, SchemaField>,
     // (add any other mandatory CoreSnapshot fields your build demands)
   } as Snapshot<T, K, M, A, Ex, In>;

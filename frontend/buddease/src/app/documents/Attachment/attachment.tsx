@@ -1,3 +1,4 @@
+// Attachment.tsx
 import FileMetadata from '@/app/components/models/file/FileManager';
 
 interface Attachment {

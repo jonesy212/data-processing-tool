@@ -1,3 +1,4 @@
+// reportTypeGuards.ts
 import { AddReportType } from "@/app/api/ApiReport";
 import { ResearchReport, TechnicalReport } from "@/app/documents/Report";
 import { FinancialReport } from "@/app/server/ServerDocumentGenerator";

@@ -1,3 +1,4 @@
+// RoadmapScoringPlugin.ts
 
 // Purpose:
 // Decouple roadmap priority logic from code → allow PM-driven weighting.

@@ -1,3 +1,4 @@
+// useComponentGenerator.ts
 // client/useComponentGenerator.ts
 import { useState } from 'react';
 

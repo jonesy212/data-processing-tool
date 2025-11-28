@@ -1,3 +1,4 @@
+// BackendConfigComponent.tsx
 // components/configs/BackendConfigComponent.tsx
 import { BackendConfig } from '@/app/config/BackendConfig';
 import { useDashboard } from '@/app/context/DashboardContext';

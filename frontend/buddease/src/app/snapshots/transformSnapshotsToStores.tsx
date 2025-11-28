@@ -1,3 +1,4 @@
+// transformSnapshotsToStores.tsx
 // import { initialSnapshot } from "@/app/crypto/exchangeIntegration";
 // import { BaseData } from '@/app/models/data/Data';
 // import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";

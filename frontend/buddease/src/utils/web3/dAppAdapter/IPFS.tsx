@@ -1,6 +1,6 @@
 // Import necessary libraries or modules
 import { getConfigsData } from '@/app/api/getConfigsApi';
-import { BaseDataEntity, BassDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { ipfsConfig } from '@/app/config/ipfsConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { documentOptions } from '@/app/hooks/userScenarioCreation';
@@ -78,7 +78,7 @@ if (currentUser) {
 
 
 export class ExtendedDAppAdapter<
-  T extends BaseDataEntity = BassDataRoot,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -166,7 +166,7 @@ export class ExtendedDAppAdapter<
     // Get configuration data from your application
     const currentUser = useAuth().state.user;
 
-    let dappAdapterConfig: DAppAdapterConfig<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields>;
+    let dappAdapterConfig: DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
     if (currentUser) {
       const currentUserForDapp: DappProps['currentUser'] = {
@@ -277,7 +277,7 @@ const baseConfig = {
   dappProps: {} as ExtendedDappProps,
 };
 
-const extendedConfig: ExtendedDAppAdapterConfig = {
+const extendedConfig: ExtendedDAppAdapterConfig<ExtendedDappEntity, ExtendedDappK, ExtendedDappMeta, ExtendedDappAttachment, ExtendedDappExcludedFields, ExtendedDappIncludedFields> = {
   ...baseConfig,
   ethereumRpcUrl: "https://your-ethereum-rpc-url",
   ipfsConfig: {

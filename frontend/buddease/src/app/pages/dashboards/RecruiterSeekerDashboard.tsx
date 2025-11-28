@@ -1,3 +1,4 @@
+// RecruiterSeekerDashboard.tsx
 import { useAuth } from '@/app/components/auth/AuthContext';
 import React from 'react';
 

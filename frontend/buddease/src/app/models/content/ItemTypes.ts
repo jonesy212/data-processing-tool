@@ -1,3 +1,4 @@
+// ItemTypes.ts
 // ItemTypes.ts;
 
 export const ItemTypes = {

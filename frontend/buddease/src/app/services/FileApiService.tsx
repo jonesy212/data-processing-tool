@@ -1,10 +1,11 @@
+// FileApiService.tsx
 import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/app/api/ApiClient";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { FileType } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { sendNotification } from "@/app/users/UserSlice";
 import { VersionData } from "@/app/versions/VersionData";
 import { AxiosError, AxiosResponse } from "axios";

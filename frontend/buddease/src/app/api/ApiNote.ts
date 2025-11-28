@@ -1,3 +1,4 @@
+// ApiNote.ts
 // ApiNotes.ts
 import internalApiService from '@/app/api/ApiClient'; // ✅ ADD THIS
 import axiosInstance from '@/app/api/csrfToken';

@@ -1,3 +1,4 @@
+// PropTypes.ts
 // PropTypes.tsx
 import {
     BaseDataEntity,
@@ -25,9 +26,7 @@ import {
     ProgressBarProps,
     ProgressPhase,
 } from "@/app/models/tracker/ProgressBar";
-import {
-    NotificationType
-} from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";

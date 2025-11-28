@@ -1,3 +1,4 @@
+// index.ts
 
 export * from '@/app/actions/SnapshotActions';
 export * from '@/app/snapshots/LocalStorageSnapshotStore';

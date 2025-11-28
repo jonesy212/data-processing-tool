@@ -1,3 +1,4 @@
+// UIContext.tsx
 // UIContext.ts
 // stores/StoreProvider.tsx
 import * as React from 'react';

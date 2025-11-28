@@ -1,3 +1,4 @@
+// ColorPicker.tsx
 // components/ColorPicker.tsx
 import React from "react";
 import { ChromePicker, ColorResult } from "react-color";

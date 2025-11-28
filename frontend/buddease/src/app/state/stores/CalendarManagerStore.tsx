@@ -1,3 +1,4 @@
+// CalendarManagerStore.tsx
 // CalendarEvent.tsx
 
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -29,10 +30,8 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import {
-    NotificationTypeEnum,
-    useNotification
-} from "@/state/context/NotificationContext";
+import { useNotification } from "@/state/context/NotificationContext";
+
 import { makeAutoObservable } from "mobx";
 import {
     AssignEventStore,
@@ -90,7 +89,7 @@ import { EventRecord } from "@/app/state/stores/DataStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
-
+import { ExchangeDataTypeEnum } from '@/app/models/cypto/exchangeIntegration';
 
 const dispatch = useDispatch()
 const { subscriber, tempSubscriber } = createSubscriber();
@@ -310,7 +309,7 @@ class CalendarManagerStoreClass<
   public timestamp: Date;
 
   constructor(
-    documentManager: DocumentStore<T, K>,
+    documentManager: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeOptions: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category?: Category,
@@ -476,6 +475,8 @@ class CalendarManagerStoreClass<
     return {
       // Convert eventData to the format required for a snapshot
       ...eventData,
+      deleted, initialState, isCore, initialConfig,
+
       // Add any additional properties needed for the snapshot
     };
   }
@@ -502,8 +503,8 @@ class CalendarManagerStoreClass<
 
   // Function to get RealtimeDataItems from events
   private getRealtimeDataItems(events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> []>
-  ): RealtimeDataItem[] {
-    const realtimeDataItems: RealtimeDataItem[] = [];
+  ): RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const realtimeDataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   
     for (const eventList of Object.values(events)) {
       const convertedItems = eventList.map(this.convertCalendarEventToRealtimeDataItem);
@@ -601,7 +602,7 @@ class CalendarManagerStoreClass<
 
   
   async initialize(storeId: number) {
-    const options = await useSnapshotManager(storeId) 
+    const options = await useSnapshotManager(storeId, storeProps) 
       ? new SnapshotManagerOptions<T, K>().get() 
       : new SnapshotManagerOptions<T, K>({ /* your default options here */ }).get();
     

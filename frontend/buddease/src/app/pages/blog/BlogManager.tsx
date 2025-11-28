@@ -1,3 +1,4 @@
+// BlogManager.tsx
 import { AndroidBlogPosts } from '@/AIoSBlogPosts';
 import BlogOverview from '@/app/pages/blog/BlogOverview';
 import { logData } from '@/app/services/NotificationService';

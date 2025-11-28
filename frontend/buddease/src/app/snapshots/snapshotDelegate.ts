@@ -1,5 +1,5 @@
-import { BaseDataEntity } from '@/app/config/BaseConfig';
 // snapshotDelegate.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';

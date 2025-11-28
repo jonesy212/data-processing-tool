@@ -1,9 +1,10 @@
+// AppTreeService.ts
 // AppTreeService.ts - Enhanced Version
 import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
 import DirectoryExplorer from '@/app/pages/dashboards/DirectoryExplorer';
 import { FileTreeService, FileTreeNode } from './FileTreeService';
 import appTreeApiService from '@/app/api/appTreeApi';
-import { DocumentTree } from '';
+import { DocumentTree } from "@/app/users/User";
 
 export class AppTreeService {
   private projectAnalyzer: ProjectTreeAnalyzer;
@@ -58,7 +59,8 @@ export class AppTreeService {
   // Comprehensive project analysis
   async analyzeProject(userQuery?: string): Promise<any> {
     const analysis = await this.projectAnalyzer.analyzeProjectTree();
-    const treeStructure = FileTreeService.generateFileTree(process.cwd());
+    const treeStructure = this.fileTreeService.generateFileTree(process.cwd());
+    
     
     let contextResponse = '';
     if (userQuery) {
@@ -220,6 +222,23 @@ export class AppTreeService {
       throw error;
     }
   }
+
+
+  async getTreeData(): Promise<DocumentTree | null> {
+    try {
+      // Your implementation to fetch tree data
+      // This could be from an API, database, or file system
+      const response = await fetch('/api/tree-data'); // or your API endpoint
+      if (!response.ok) {
+        throw new Error('Failed to fetch tree data');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching tree data:', error);
+      return null;
+    }
+  }
+
 }
 
 export default new AppTreeService();

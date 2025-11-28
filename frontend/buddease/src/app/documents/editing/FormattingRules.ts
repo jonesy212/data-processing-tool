@@ -1,3 +1,4 @@
+// FormattingRules.ts
 interface FormattingRules {
   allowedFonts?: string[];
   allowedFontSizes?: number[];

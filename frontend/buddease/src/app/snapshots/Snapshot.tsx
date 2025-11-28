@@ -1,3 +1,4 @@
+// Snapshot.tsx
 // snapshot
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";

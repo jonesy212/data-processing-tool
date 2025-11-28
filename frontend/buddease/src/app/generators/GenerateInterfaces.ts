@@ -1,3 +1,4 @@
+// GenerateInterfaces.ts
 import { readCache, writeCache } from '@/utils/ReadAndWriteCache';
 import { generateUniqueApiId } from '@/generateNewApiConfig';
 import { CacheData } from '@/generators/GenerateCache'; // Import CacheData type

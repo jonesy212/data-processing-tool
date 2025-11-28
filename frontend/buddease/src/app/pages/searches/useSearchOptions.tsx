@@ -1,3 +1,4 @@
+// useSearchOptions.tsx
 // useSearchOptions.ts
 import { FilterActions } from '@/app/actions/FilterActions';
 import { searchOptions } from '@/app/pages/searches/SearchOptions';

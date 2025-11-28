@@ -1,3 +1,4 @@
+// ExternalReference.ts
 //todo: move to the right foder
 
 export interface ExternalReference {

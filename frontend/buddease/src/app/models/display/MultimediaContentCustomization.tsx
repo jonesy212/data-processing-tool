@@ -1,3 +1,4 @@
+// MultimediaContentCustomization.tsx
 // MultimediaContentCustomization.ts
 import { getDataFrameInfo } from "@/app/api/DataDashboardApi";
 import React from "react";

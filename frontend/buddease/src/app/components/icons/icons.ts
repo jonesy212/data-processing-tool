@@ -1,5 +1,5 @@
-
 // icons.ts
+
 import { IconLoader } from "./IconLoader";
 import { createDynamicIconLoader } from "./iconLoaderFactory";
 

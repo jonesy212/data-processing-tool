@@ -1,9 +1,9 @@
+// EducationalVideoMetadata.ts
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { UserData } from '@/app/components/users/User';
 import { VideoMetadata } from '@/app/config/StructuredMetadata';
 import { BaseData } from '@/app/models/data/Data';
 
-// EducationalVideoMetadata.ts
 interface EducationalVideoMetadata<
   T extends BaseData<any>, // Content-specific data
   K extends T = T,         // Default fallback to the same type

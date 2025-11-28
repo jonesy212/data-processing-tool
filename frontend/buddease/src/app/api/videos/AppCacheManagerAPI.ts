@@ -1,3 +1,4 @@
+// AppCacheManagerAPI.ts
 import { BackendConfig } from '@/app/config/BackendConfig';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { FrontendConfig } from '@/app/config/FrontendConfig';

@@ -1,3 +1,4 @@
+// ColorPalette.tsx
 // components/Palette.tsx
 
 import React from "react";

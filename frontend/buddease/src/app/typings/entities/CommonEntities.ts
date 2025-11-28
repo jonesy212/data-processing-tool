@@ -1,3 +1,4 @@
+// CommonEntities.ts
 import { BackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';

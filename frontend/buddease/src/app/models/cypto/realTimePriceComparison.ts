@@ -1,3 +1,4 @@
+// realTimePriceComparison.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import DEXData from '@/app/models/data/DEXData';
 import { ExchangeData } from '@/app/models/data/ExchangeData';

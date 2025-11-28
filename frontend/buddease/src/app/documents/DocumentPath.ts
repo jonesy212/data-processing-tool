@@ -1,5 +1,5 @@
-import { Permission } from '@/app/permissions/Permission';
 // DocumentPath.ts
+import { Permission } from '@/app/permissions/Permission';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";

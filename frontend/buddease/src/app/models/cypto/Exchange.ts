@@ -1,5 +1,5 @@
-import { AppEntity } from '@/app/typings/entities/AppEntity';
 // Exchange.ts
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { ExchangeData } from "@/app/models/data/ExchangeData";

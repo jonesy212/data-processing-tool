@@ -1,3 +1,4 @@
+// BackgroundService.ts
 // app/services/BackgroundService.ts
 import { ChangeLogManager } from '@/app/utils/ChangeLogManager';
 import { ApiSynchronizationScript } from '@/app/services/ApiSynchronizationScript';

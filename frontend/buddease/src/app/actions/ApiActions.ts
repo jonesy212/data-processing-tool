@@ -1,5 +1,6 @@
+// ApiActions.ts
 // apiActions.ts
-import ApiConfig from '@/app/api/ApiConfig';
+import { ApiConfig } from '@/app/api/ApiConfigServce';
 
 import { createAction } from "@reduxjs/toolkit";
 

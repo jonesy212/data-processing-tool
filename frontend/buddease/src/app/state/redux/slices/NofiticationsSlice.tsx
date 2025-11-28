@@ -1,10 +1,11 @@
+// NofiticationsSlice.tsx
 // NotificationSlice.tsx
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import {
     NotificationAttachment,

@@ -1,3 +1,4 @@
+// ServerDesignDashboard.tsx
 // ServerDesignDashboard.ts
 import { DesignDashboardBaseProps } from '@/app/pages/dashboards/DesignDashboard';
 import { ApiConfig } from '@/app/services/ConfigurationService';
@@ -90,7 +91,7 @@ const ServerDesignDashboard: React.FC<ServerDesignDashboardProps> = ({
 
       {/* Metadata & Preferences */}
       <MetadataViewer metadata={{}} />
-      <UpdatePreference />
+      <UserPreference />
       <GenerateUserPreferences />
       <UserPreferences />
       <UserSettings />

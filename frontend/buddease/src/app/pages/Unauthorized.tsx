@@ -1,7 +1,8 @@
 // Unauthorized.tsx
 import { NotificationPosition } from '@/app/models/data/StatusType';
 import { useAuth } from '@/state/context/AuthContext';
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNavigate } from 'react-router-dom';
 import AccessDenied from '@/app/components/AccessDenied';
 

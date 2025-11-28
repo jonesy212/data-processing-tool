@@ -1,3 +1,4 @@
+// CryptoManagerComponent.tsx
 import React from "react";
 import { useEffect, useState } from "react";
 import { useSecureUserId } from '@/app/hooks/useSecureStoreId';

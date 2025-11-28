@@ -1,3 +1,4 @@
+// ProjectManager.tsx
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import {
   addSnapshot,
@@ -248,4 +249,4 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
 };
 
 export default ProjectManagerComponent;
-export type { ProjectPhase };
+export { ProjectPhase };

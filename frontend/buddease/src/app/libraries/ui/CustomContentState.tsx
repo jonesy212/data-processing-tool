@@ -1,3 +1,4 @@
+// CustomContentState.tsx
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ContentState } from 'draft-js';
 

@@ -1,3 +1,4 @@
+// ChatSettingsModal.tsx
 import { SecuritySettings } from '@/app/settings/SecuritySettings'
 import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
 import { DocumentEditingPermissions } from '@/app/permissions/Permission';

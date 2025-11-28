@@ -1,4 +1,5 @@
-import { SharedIdentifiers } from '@/app/documents/RelatedProps';
+// AppStructure.ts
+import { SharedIdentifiers, BaseEntityProperties } from '@/app/documents/RelatedProps';
 import * as apiFile from '@/api/ApiFiles';
 import { Versions } from '@/app/versions/Version'
 import SecurityAPI from '@/app/api/SecurityAPI';
@@ -14,8 +15,7 @@ import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
 
 const { userId } = useSecureUserId()
-
-type UnifiedVersionMap<
+export type UnifiedVersionMap<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -25,9 +25,12 @@ type UnifiedVersionMap<
 > = {
   versionMeta: Versions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   structure: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  };
+};
 
-// Define the interface for AppStructureItem
+//
+// Corrected AppStructureItem interface
+// Note: it now *extends* BaseEntityProperties (previously missing `extends`)
+//
 interface AppStructureItem<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -35,19 +38,47 @@ interface AppStructureItem<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> BaseEntityProperties {
-  userId: string;
+> extends BaseEntityProperties {
+  userId: string | null;
   type: string | Promise<FileType>;
   path: string;
-  content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined;
+
+  /**
+   * Content can be:
+   * - a plain string
+   * - a structured Content<T,...> object
+   * - undefined if not present
+   */
+  content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   draft: boolean;
+
   permissions?: AppStructurePermissions;
-  versions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  items?: {
-    [key: string]: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-  };
-  getStructure?(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
+
+  /**
+   * Versions for this item (if any).
+   * - DataVersions is expected to be a structured mapping of version -> data
+   * - Allow undefined if there are no versions yet
+   */
+  versions?: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  /**
+   * versionData stores either:
+   * - a serialized string (e.g. JSON or CID)
+   * - a typed VersionData object
+   * - null if no version data exists
+   */
+  versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+
+  /**
+   * Child items (folder-like). Using Record<string, AppStructureItem<...>> is more explicit than an index signature
+   */
+  items?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+
+  /**
+   * Optional helper to load structure asynchronously
+   */
+  getStructure?: () => Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
 }
 
 interface AppStructurePermissions extends Permission {

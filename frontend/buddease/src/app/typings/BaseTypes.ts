@@ -1,5 +1,5 @@
-import { BaseDataRoot } from '@/app/config/BaseConfig';
 // BaseTypes.ts
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 // BaseTypes.ts - Central type definitions that work with your entity system
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

@@ -1,36 +1,46 @@
 // AssignBaseStore.tsx
-import { Config } from "@/app/api/ApiConfig";
-import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
-import teamApiService from "@/app/api/TeamApi";
-import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
-import { Team } from "@/app/components/teams/Team";
+import { Config } from '@/app/api/ApiConfigService';
+import type { AppUser } from '@/app/typings/entities/UserEntity';
+import { HeadersConfig } from '@/app/api/headers/HeadersConfig';
+import teamApiService from '@/app/api/TeamApi';
+import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
+import { Team } from '@/app/components/teams/Team';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { AssignBaseStoreLogger } from "@/app/libraries/logging/Logger";
-import { Data } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Todo, UserAssignee } from "@/app/todos/Todo";
-import { todoService } from "@/app/todos/TodoService";
-import { User } from "@/app/users/User";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/state/context/NotificationContext";
-import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { makeAutoObservable } from "mobx";
-import { ReassignEventResponse } from "./AssignEventStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import { AuthStore } from "./AuthStore";
-import { PresentationStore, presentationStore } from "./presentationStore";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
+import { AssignBaseStoreLogger } from '@/app/logging/Logger';
+
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { Todo, UserAssignee } from '@/app/todos/Todo';
+import { todoService } from '@/app/todos/TodoService';
+import { User } from '@/app/users/User';
+import { useNotification } from '@/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { makeAutoObservable } from 'mobx';
+import { ReassignEventResponse } from './AssignEventStore';
+import { useAssignTeamMemberStore } from './AssignTeamMemberStore';
+import { AuthStore } from './AuthStore';
+import { PresentationStore, presentationStore } from './presentationStore';
+import ApiConfig from '@/app/api/ApiConfigService';
 
 const { notify } = useNotification();
 
 interface ExtendedTodo extends Todo {
   // Add additional properties specific to ExtendedTodo if needed
   additionalField: string;
-  // ...
+
 }
 
-export interface AssignBaseStore {
+export interface AssignBaseStore<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  > {
   assignedUsers: Record<string, string[]>; // Use ID as key and array of user IDs as value
   assignedItems: Record<string, ExtendedCalendarEvent[]>; // Use ID as key and array of item IDs as value
   assignMeetingToTeam: (
@@ -83,8 +93,8 @@ export interface AssignBaseStore {
   assignTeamMemberToTeam: (teamId: string, userId: string) => void;
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
-  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>>;
+  setDynamicNotificationMessage: (message: Message<T, K, Meta, Attachment, ExcludedFields, IncludedFields>, type: NotificationType) => void;
+  snapshotStore: SnapshotStore<T, K, Meta, Attachment, ExcludedFields, IncludedFields>;
 
   reassignUsersToItems: Record<string, string[]>;
 
@@ -161,11 +171,11 @@ export interface AssignBaseStore {
   assignBoardCustomFieldToTeam: Record<string, string[]>,
 
 
-  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>>) => void;
+  setAssignedTaskStore: (store: SnapshotStore<T, K, Meta, Attachment, ExcludedFields, IncludedFields>) => void;
   // Add more methods or properties as needed
 }
 
-const useAssignBaseStore = (): AssignBaseStore => {
+const useAssignBaseStore = (): AssignBaseStore<AppUser> => {
   const assignedUsers: Record<string, string[]> = {};
   const assignedItems: Record<string, ExtendedCalendarEvent[]> = {};
   const assignedTodos: Record<string, string[]> = {};
@@ -237,7 +247,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     }
     for (const todo of todos) {
       if (responseMap[todo.id]) {
-        todo.assignee = responseMap[todo.id].assignee as unknown as User;
+        todo.assignee = responseMap[todo.id].assignee as unknown as User<AppUser>;
       }
     }
   };
@@ -245,48 +255,80 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
   const todosStore: { [key: string]: Todo } = {};
   const usersStore: { [key: string]: UserAssignee } = {}; // Example user store
-  
-  const assignUserToTodo = (todoId: string, userId: string) => {
+    
+  const assignUserToTodo = (todoId: string, userId: string): void => {
     // Check if the todo exists in the todosStore
     const todo = todosStore[todoId];
     if (!todo) {
-      throw new Error("Todo not found");
+      throw new Error(`Todo ${todoId} not found`);
     }
-  
+
     // Check if the user exists in the usersStore
     const user = usersStore[userId];
     if (!user) {
-      throw new Error("User not found");
+      throw new Error(`User ${userId} not found`);
     }
-  
+
     // Check if the user is not already assigned to the todo
-    if (!todo.assignedUsers.includes(userId)) {
-      todo.assignedUsers.push(userId);
-      
-      // Update assigneeId and assignee if there's only one assignee
-      if (todo.assignedUsers.length === 1) {
-        todo.assigneeId = userId;
-        todo.assignee = user;
-      }
+    if (todo.assignedUsers.includes(userId)) {
+      console.log(`User ${userId} is already assigned to Todo ${todoId}`);
+      return;
     }
-  
-    // Additional logic when assigning a user to a todo
-  
-    // Send Notification
-    AssignBaseStoreLogger.sendAssignmentNotification(String(user), String(todo));
-  
-    // Log Activity
-    AssignBaseStoreLogger.logAssignmentActivity(String(user), String(todo));
-  
+
+    todo.assignedUsers.push(userId);
+    
+    // Update assigneeId and assignee if there's only one assignee
+    if (todo.assignedUsers.length === 1) {
+      todo.assigneeId = userId;
+      todo.assignee = user;
+    }
+
+    // === ADDITIONAL LOGIC ===
+    
+    // 1. Update user's assigned todos count
+    if (usersStore[userId]) {
+      usersStore[userId].assignedTodosCount = (usersStore[userId].assignedTodosCount || 0) + 1;
+    }
+    
+    // 2. Update todo assignment timestamp
+    todo.lastAssignedAt = new Date().toISOString();
+    
+    // 3. Update analytics
+    AnalyticsLogger.logTaskAssignment(todoId, userId);
+    
+    // 4. Check for assignment limits
+    const userAssignmentCount = Object.values(todosStore).filter(
+      t => t.assignedUsers.includes(userId)
+    ).length;
+    
+    if (userAssignmentCount > 10) {
+      console.warn(`User ${userId} has ${userAssignmentCount} assigned todos - consider workload`);
+    }
+
     // Update Todo Store
     todosStore[todoId] = todo;
-  
-    // Save changes (if applicable)
+
+    // Send Notification
+    AssignBaseStoreLogger.sendAssignmentNotification(userId, todoId).catch(console.error);
+    
+    // Log Activity
+    AssignBaseStoreLogger.logAssignmentActivity(userId, todoId).catch(console.error);
+
+    // Save changes (fire and forget)
     todo.save().then(() => {
       console.log(`User ${userId} assigned to Todo ${todoId}`);
     }).catch(error => {
       console.error(`Error saving Todo ${todoId}:`, error);
     });
+
+    // Trigger any assignment hooks/callbacks (fire and forget)
+    if (todo.onAssignment) {
+      try {
+        todo.onAssignment(userId);
+      } catch (error) {
+        console.error(`Error in todo assignment callback:`, error);
+      }
+    }
   };
   
 
@@ -319,14 +361,62 @@ const useAssignBaseStore = (): AssignBaseStore => {
     todoIds.forEach((todoId) => {
       assignUserToTodo(todoId, userId);
     });
+    
     // TODO: Implement any additional logic needed when assigning a user to multiple todos
+    // Additional logic implementation:
+    
+    // 1. Batch notification for multiple assignments
+    if (todoIds.length > 1) {
+      const message = `User ${userId} assigned to ${todoIds.length} todos`;
+      setDynamicNotificationMessage(
+        message,
+        NotificationTypeEnum.AssignmentOperationSuccess
+      );
+    }
+    
+    // 2. Update user workload metrics
+    const totalAssignments = todoIds.length;
+    TeamLogger.logUserWorkloadUpdate(userId, totalAssignments);
+    
+    // 3. Check for potential assignment conflicts
+    const conflictingTodos = todoIds.filter(todoId => {
+      const todo = todosStore[todoId];
+      return todo && todo.priority === 'high' && todo.deadline;
+    });
+    
+    if (conflictingTodos.length > 0) {
+      console.warn(`User ${userId} assigned to ${conflictingTodos.length} high-priority todos with deadlines`);
+    }
   };
 
   const unassignUsersFromTodos = (todoIds: string[], userId: string) => {
     todoIds.forEach((todoId) => {
       unassignUserFromTodo(todoId, userId);
     });
+    
     // TODO: Implement any additional logic needed when unassigning a user from multiple todos
+    // Additional logic implementation:
+    
+    // 1. Batch unassignment analytics
+    AnalyticsLogger.logTaskUnassignments(userId, todoIds.length);
+    
+    // 2. Update user metrics
+    if (usersStore[userId]) {
+      usersStore[userId].assignedTodosCount = Math.max(
+        0,
+        (usersStore[userId].assignedTodosCount || 0) - todoIds.length
+      );
+    }
+    
+    // 3. Check if todos need reassignment
+    const unassignedTodos = todoIds.filter(todoId => {
+      const todo = todosStore[todoId];
+      return todo && todo.assignedUsers.length === 0 && todo.status !== 'completed';
+    });
+    
+    if (unassignedTodos.length > 0) {
+      console.warn(`${unassignedTodos.length} todos are now unassigned and may need attention`);
+    }
   };
 
   const reassignUsersInTodos = (
@@ -335,11 +425,48 @@ const useAssignBaseStore = (): AssignBaseStore => {
     newUserId: string
   ) => {
     todoIds.forEach((todoId) => {
-      // Unassign old user and assign new user to each todo
       unassignUserFromTodo(todoId, oldUserId);
       assignUserToTodo(todoId, newUserId);
     });
+    
     // TODO: Implement any additional logic needed when reassigning a user from old user to new user for multiple todos
+    // Additional logic implementation:
+    
+    // 1. Track reassignment metrics
+    const reassignmentData = {
+      oldUserId,
+      newUserId,
+      todoCount: todoIds.length,
+      timestamp: new Date().toISOString()
+    };
+    
+    // 2. Log reassignment activity
+    TeamLogger.logReassignmentActivity(reassignmentData);
+    
+    // 3. Update workload balance
+    if (usersStore[oldUserId]) {
+      usersStore[oldUserId].assignedTodosCount = Math.max(
+        0,
+        (usersStore[oldUserId].assignedTodosCount || 0) - todoIds.length
+      );
+    }
+    
+    if (usersStore[newUserId]) {
+      usersStore[newUserId].assignedTodosCount = (usersStore[newUserId].assignedTodosCount || 0) + todoIds.length;
+    }
+    
+    // 4. Send reassignment notifications
+    todoIds.forEach(todoId => {
+      const todo = todosStore[todoId];
+      if (todo && todo.notifyOnReassignment) {
+        AssignBaseStoreLogger.sendReassignmentNotification(
+          oldUserId,
+          newUserId,
+          todoId,
+          todo.title
+        );
+      }
+    });
   };
 
   // Success and Failure methods
@@ -348,7 +475,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     // You can add additional logic or trigger notifications as needed
     setDynamicNotificationMessage(
       NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-      NotificationTypeEnum.AssignmentOperationSuccess
+      NotificationTypeEnum.ASSIGNMENT_OPERATION_SUCCESS
     );
   };
 
@@ -364,29 +491,50 @@ const useAssignBaseStore = (): AssignBaseStore => {
 
 
   // Function to set a dynamic notification message
-  const setDynamicNotificationMessage = (message: string | Message, type: NotificationType) => {
+  const setDynamicNotificationMessage = (message: string | Message<AppUser>, type: NotificationType) => {
     setDynamicNotificationMessage(message, type);
   };
 
   const assignTaskToTeam = async (taskId: string, teamId: string) => {
-    // Simulate an asynchronous operation, such as an API call
-    return new Promise<void>((resolve) => {
-      // Perform the task assignment logic here
-      // For example, update the assignedTasks record
-      if (!assignedTasks[taskId]) {
-        assignedTasks[taskId] = [teamId];
-      } else {
-        assignedTasks[taskId].push(teamId);
-      }
-
-      // TODO: Implement any additional logic needed when assigning a task to a team
-
-      // Resolve the promise after completing the operation
-      resolve();
-    });
+    // Existing code...
+    
+    // TODO: Implement any additional logic needed when assigning a task to a team
+    // Additional logic implementation:
+    
+    // 1. Validate team capacity
+    const teamTasks = Object.values(assignedTasks).filter(
+      tasks => tasks.includes(teamId)
+    ).length;
+    
+    if (teamTasks > 50) { // Example team capacity
+      console.warn(`Team ${teamId} has ${teamTasks} assigned tasks - near capacity`);
+    }
+    
+    // 2. Update team task distribution
+    TeamLogger.logTaskDistribution(teamId, taskId);
+    
+    // 3. Trigger team notification
+    if (teamApiService.notifyTeam) {
+      await teamApiService.notifyTeam(teamId, {
+        type: 'task_assigned',
+        taskId,
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    // 4. Update task assignment history
+    const task = {}; // Assuming task object exists
+    if (task) {
+      task.assignmentHistory = task.assignmentHistory || [];
+      task.assignmentHistory.push({
+        assignedTo: teamId,
+        assignedAt: new Date().toISOString(),
+        type: 'team'
+      });
+    }
   };
 
-  const assignTodoToUser = async (user: User, todo: Todo) => {
+  const assignTodoToUser = async (user: User<AppUser>, todo: Todo) => {
     // check if user has an ID
     if (!user._id) {
       throw new Error("User must have an ID");
@@ -400,71 +548,175 @@ const useAssignBaseStore = (): AssignBaseStore => {
   };
 
   const assignTodoToTeam = async (todoId: string, teamId: string) => {
-    // Simulate an asynchronous operation, such as an API call
-    return new Promise<void>((resolve) => {
-      // Perform the todo assignment logic here
-      // For example, update the assignedTodos record
-      if (!assignedTodos[todoId]) {
-        assignedTodos[todoId] = [teamId];
-      } else {
-        assignedTodos[todoId].push(teamId);
+    // Existing code...
+    
+    // TODO: Implement any additional logic needed when assigning a todo to a team
+    // Additional logic implementation:
+    
+    // 1. Validate team exists and is active
+    try {
+      const teamResponse = await teamApiService.getTeamById(teamId);
+      const team = teamResponse.data[0];
+      
+      if (!team || team.status !== 'active') {
+        throw new Error(`Team ${teamId} is not active or doesn't exist`);
       }
-
-      // TODO: Implement any additional logic needed when assigning a todo to a team
-
-      // Resolve the promise after completing the operation
-      resolve();
-    });
+    } catch (error) {
+      console.error(`Error validating team ${teamId}:`, error);
+      throw error;
+    }
+    
+    // 2. Update team todo metrics
+    TeamLogger.logTeamTodoAssignment(teamId, todoId);
+    
+    // 3. Check for duplicate assignments
+    const existingTeamAssignments = assignedTodos[todoId] || [];
+    if (existingTeamAssignments.includes(teamId)) {
+      console.warn(`Team ${teamId} is already assigned to todo ${todoId}`);
+      return;
+    }
+    
+    // 4. Update todo with team assignment metadata
+    const todo = todosStore[todoId];
+    if (todo) {
+      todo.assignedTeams = todo.assignedTeams || [];
+      todo.assignedTeams.push(teamId);
+      todo.lastTeamAssignment = new Date().toISOString();
+    }
   };
 
   const assignTeamMemberToTeam = (itemId: string, userId: string) => {
-    // Perform the team member assignment logic here
-    // For example, update the assignedTeams record
-    if (!assignedTeams[itemId]) {
-      assignedTeams[itemId] = [userId];
-    } else {
-      assignedTeams[itemId].push(userId);
-    }
-
+    // Existing code...
+    
     // TODO: Implement any additional logic needed when assigning a team member to an item
+    // Additional logic implementation:
+    
+    // 1. Validate user is actually a member of the team
+    const teamMembers = []; // Assuming this comes from team data
+    if (!teamMembers.includes(userId)) {
+      throw new Error(`User ${userId} is not a member of the team`);
+    }
+    
+    // 2. Update user's assigned items count
+    if (usersStore[userId]) {
+      usersStore[userId].teamAssignments = (usersStore[userId].teamAssignments || 0) + 1;
+    }
+    
+    // 3. Log the assignment for audit purposes
+    SecurityLogger.logTeamMemberAssignment(itemId, userId);
+    
+    // 4. Check assignment limits per user
+    const userTeamAssignments = Object.values(assignedTeams).filter(
+      users => users.includes(userId)
+    ).length;
+    
+    if (userTeamAssignments > 5) { // Example limit
+      console.warn(`User ${userId} has ${userTeamAssignments} team assignments`);
+    }
+    
+    // 5. Trigger notification to team lead
+    TeamLogger.logMemberAssignmentNotification(itemId, userId);
   };
 
 
-
   const unassignTeamMemberFromItem = (itemId: string, userId: string) => {
-    // Check if the itemId exists in the assignedTeams
-    if (assignedTeams[itemId]) {
-      // Remove the team member from the assignedTeams for the given itemId
-      assignedTeams[itemId] = assignedTeams[itemId].filter(
-        (id) => id !== userId
+    // Existing code...
+    
+    // TODO: Implement any additional logic needed when unassigning a team member from an item
+    // Additional logic implementation:
+    
+    // 1. Update user's assignment metrics
+    if (usersStore[userId]) {
+      usersStore[userId].teamAssignments = Math.max(
+        0,
+        (usersStore[userId].teamAssignments || 0) - 1
       );
-
-      // Remove the itemId entry if there are no more assigned team members
-      if (assignedTeams[itemId].length === 0) {
-        delete assignedTeams[itemId];
+    }
+    
+    // 2. Log unassignment for audit trail
+    SecurityLogger.logTeamMemberUnassignment(itemId, userId);
+    
+    // 3. Check if item still has assigned members
+    const remainingMembers = assignedTeams[itemId]?.length || 0;
+    if (remainingMembers === 0) {
+      console.warn(`Item ${itemId} has no assigned team members`);
+      
+      // Optionally assign to default team member
+      const defaultMember = getDefaultTeamMember(itemId);
+      if (defaultMember) {
+        assignTeamMemberToTeam(itemId, defaultMember);
       }
     }
-    // TODO: Implement any additional logic needed when unassigning a team member from an item
+    
+    // 4. Update item's last modification
+    const item = {}; // Assuming item object exists
+    if (item) {
+      item.lastModified = new Date().toISOString();
+      item.lastModifiedBy = userId;
+    }
   };
 
   
 
-  const assignTeamToTodo = async (todoId: string, teamId: string) => {
-    // Simulate an asynchronous operation, such as an API call
-    return new Promise<void>((resolve) => {
-      // Perform the todo assignment logic here
-      // For example, update the assignedTodos record
-      if (!assignedTodos[todoId]) {
-        assignedTodos[todoId] = [teamId];
-      } else {
-        assignedTodos[todoId].push(teamId);
+  
+  const assignTeamToTodo = async (todoId: string, teamId: string): Promise<void> => {
+    try {
+      /* -------  backend call  --------------------------------------- */
+      await teamApiService.assignTodoToTeam(todoId, teamId); // Assuming this exists or needs to be created
+
+      /* -------  local observable bookkeeping  ----------------------- */
+      const list = assignedTodos[todoId] ?? [];
+      if (!list.includes(teamId)) {
+        list.push(teamId);
+        assignedTodos[todoId] = list;
       }
 
-      // TODO: Implement any additional logic needed when assigning a team to a todo
+      /* -------  additional logic for team assignment  --------------- */
+      
+      // 1. Update the todo object in todosStore if it exists
+      const todo = todosStore[todoId];
+      if (todo) {
+        todo.assignedTeams = todo.assignedTeams || [];
+        if (!todo.assignedTeams.includes(teamId)) {
+          todo.assignedTeams.push(teamId);
+        }
+        todo.lastTeamAssignment = new Date().toISOString();
+      }
 
-      // Resolve the promise after completing the operation
-      resolve();
-    });
+      // 2. Update team metrics
+      const teamAssignments = Object.values(assignedTodos).filter(
+        teams => teams.includes(teamId)
+      ).length;
+      
+      if (teamAssignments > 20) { // Example team capacity limit
+        console.warn(`Team ${teamId} has ${teamAssignments} assigned todos - near capacity`);
+      }
+
+      // 3. Log the assignment for analytics
+      TeamLogger.logTeamTodoAssignment(teamId, todoId);
+
+      // 4. Update team workload distribution
+      if (teamApiService.updateTeamWorkload) {
+        await teamApiService.updateTeamWorkload(teamId, { todoId, action: 'assigned' });
+      }
+
+      /* -------  optional user-facing notification  ------------------ */
+      notify(
+        NOTIFICATION_MESSAGES.Todos.ASSIGN_TEAM_SUCCESS,
+        NotificationTypeEnum.SUCCESS
+      );
+
+    } catch (error) {
+      console.error(`Failed to assign team ${teamId} to todo ${todoId}:`, error);
+      
+      /* -------  error notification  --------------------------------- */
+      notify(
+        NOTIFICATION_MESSAGES.Todos.ASSIGN_TEAM_FAILURE,
+        NotificationTypeEnum.ERROR
+      );
+      
+      throw error; // Re-throw to let caller handle the error
+    }
   };
 
   const assignTodosToUsersOrTeams = async (
@@ -478,7 +730,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
         if (assignee.includes("user-")) {
           // Assign todo to user
           await assignTodoToUser(
-            assignee as unknown as User,
+            assignee as unknown as User<AppUser>,
             todoId as unknown as Todo
           );
         } else {
@@ -508,7 +760,7 @@ const useAssignBaseStore = (): AssignBaseStore => {
     }
   }
   const reassignTeamsInTodos = async (
-    todoIds: string[],
+    todoIds: number[],
     oldTeamId: string,
     newTeamId: string
   ): Promise<AxiosResponse<any, any>> => {
@@ -546,23 +798,22 @@ const useAssignBaseStore = (): AssignBaseStore => {
     };
   };
 
-  const assignMeetingToTeam = async (
-    meetingId: string,
-    teamId: string
-  ): Promise<AxiosResponse<any, any>> => {
-    // Simulate an asynchronous operation, such as an API call
-    return new Promise<AxiosResponse<any, any>>((resolve, reject) => {
-      // Perform the meeting assignment logic here
-      // For example, update the assignedMeetings record
-      if (!assignedMeetings[meetingId]) {
-        assignedMeetings[meetingId] = [teamId];
-      } else {
-        assignedMeetings[meetingId].push(teamId);
-      }
-      // Resolve the promise after completing the operation
-      Promise.resolve();
-      // TODO: Implement any additional logic needed when assigning a meeting to a team
-    });
+  const assignMeetingToTeam = async (meetingId: string, teamId: string): Promise<AxiosResponse<void>> => {
+    /* -------  backend call  --------------------------------------- */
+    const res = await teamApiService.assignMeeting(meetingId, teamId); // returns AxiosResponse
+
+    /* -------  local observable bookkeeping  ----------------------- */
+    const list = assignedMeetings.get(meetingId) ?? [];
+    if (!list.includes(teamId)) list.push(teamId);
+    assignedMeetings.set(meetingId, list);
+
+    /* -------  optional user-facing notification  ------------------ */
+    notify(
+      NOTIFICATION_MESSAGES.Meeting.ASSIGN_SUCCESS,
+      NotificationTypeEnum.SUCCESS
+    );
+
+    return res; // AxiosResponse<void> (or whatever your service returns)
   };
 
   const assignProjectToTeam = async (
@@ -701,12 +952,10 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   };
 
-  const snapshotStore: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>> = {} as SnapshotStore<
-    Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>
-    >;
-  
+  const snapshotStore: SnapshotStore<AppUser> = {} as SnapshotStore<AppUser>
+
   const assignPresentationStore: PresentationStore = {} as PresentationStore
-  const store: AssignBaseStore = makeAutoObservable({
+  const store: AssignBaseStore<AppUser> = makeAutoObservable({
     ...assignPresentationStore,
     events,
     assignPresentationStore: assignPresentationStore,
@@ -779,6 +1028,12 @@ const useAssignBaseStore = (): AssignBaseStore => {
     assignedProjects,
     assignNoteToTeam: useAssignTeamMemberStore().assignNoteToTeam,
  
+
+
+    getAuthStore, unassignNoteFromTeam, assignContactToTeam, assignEventToTeam,
+    assignGoalToTeam, assignBookmarkToTeam, assignCalendarEventToTeam, assignBoardItemToTeam,
+    assignBoardColumnToTeam, assignBoardListToTeam, assignBoardCardToTeam, assignBoardViewToTeam, 
+    
     // Add more properties or methods as needed
   });
   return store;

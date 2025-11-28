@@ -5,7 +5,7 @@ import { DocumentSize } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
 import { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
 import { DappProps, fluenceApiKey } from './web3/dAppAdapter/DAppAdapterConfig';
-
+import ApiConfig from '@/app/api/ApiConfigService';
 
 // Example implementation of YourClass with combined functionality
 class YourClass<

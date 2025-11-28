@@ -1,3 +1,4 @@
+// YourComponent.tsx
 import { endpoints } from '@/api/endpointConfigurations';
 import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
  

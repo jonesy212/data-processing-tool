@@ -1,3 +1,4 @@
+// BrowserCheckStore.ts
 import { action, makeAutoObservable } from "mobx";
 import { isBrowser } from "@/utils/isBrowser";
 import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";

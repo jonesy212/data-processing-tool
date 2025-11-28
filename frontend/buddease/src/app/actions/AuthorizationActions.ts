@@ -1,5 +1,5 @@
-//todo better manager authorization actions here
 // AuthorizationActions.ts
+//todo better manager authorization actions here
 
 // Import necessary actions from other action modules
 import { DataActions } from '@/app/actions/DataActions';

@@ -1,3 +1,4 @@
+// YourSpecificSnapshotType.ts
 import getSnapshotId from "@/app/api/SnapshotApi";
 import { snapshotApi } from './../api/SnapshotApi';
 

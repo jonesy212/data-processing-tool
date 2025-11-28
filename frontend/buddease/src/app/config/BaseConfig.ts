@@ -1,5 +1,5 @@
-import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 // BaseConfig.ts
+import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SharedTimestamps } from '@/app/models/CommonData';

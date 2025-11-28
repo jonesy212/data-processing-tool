@@ -1,3 +1,4 @@
+// drawingLibrary.ts
 // Import type declarations from the corresponding .d.ts file
 import path from 'path';
 import 'drawingLibrary';

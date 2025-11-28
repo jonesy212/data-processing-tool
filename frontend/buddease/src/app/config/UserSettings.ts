@@ -1,3 +1,4 @@
+// UserSettings.ts
 import { CollaborationOptions } from "@/app//interfaces/options/CollaborationOptions";
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
@@ -26,7 +27,7 @@ import { PrivacySettings, selectedSettings } from "@/app/settings/PrivacySetting
 import { TaskEntity } from '@/app/snapshots/SnapshotActoins';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { resetState } from "@/app/state/redux/slices/AppSlice";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";

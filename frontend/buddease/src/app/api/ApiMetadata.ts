@@ -8,11 +8,11 @@ import HeadersConfig from "@/app/api/headers/HeadersConfig";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { useNotification } from '@/app/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { VersionData } from '@/app/versions/VersionData';
-import { NotificationType } from "@/state/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_BASE_URL = endpoints.metadata;
@@ -298,7 +298,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     ExcludedFields extends DefaultExcludedFields<T> = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
   >(
-    metadata: UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<AxiosResponse<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return await this.requestHandler(
       () => internalApiService.post(
@@ -536,7 +536,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     ExcludedFields extends DefaultExcludedFields<T> = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
   >(
-    metadata: UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => internalApiService.post(

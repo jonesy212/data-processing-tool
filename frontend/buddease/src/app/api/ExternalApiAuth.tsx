@@ -1,3 +1,4 @@
+// ExternalApiAuth.tsx
 // components/users/ExternalApiAuth.ts
 "use client";
 

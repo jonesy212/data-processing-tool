@@ -1,7 +1,7 @@
+// BrandingSettings.ts
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Tag } from "@/app/models/tracker/Tag";
 
-// BrandingSettings.ts
 interface BrandingSettings {
   // ===== LOGO SETTINGS =====
   logoUrl: string;

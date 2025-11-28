@@ -1,3 +1,4 @@
+// GenerateText.ts
 // generateText.ts
 
 import { DocumentGenerator } from '@/app/server/ServerDocumentGenerator';

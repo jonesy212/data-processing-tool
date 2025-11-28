@@ -1,3 +1,4 @@
+// Search.tsx
 import { searchDocuments } from "@/app/api/ApiDocument"; // Assuming SearchResult is the type of each item in searchResults
 import { userId } from "@/app/api/ApiUser";
 import useErrorHandling from "@/app/hooks/useErrorHandling";

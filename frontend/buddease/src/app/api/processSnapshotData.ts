@@ -1,3 +1,4 @@
+// processSnapshotData.ts
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 
 import { BaseEntity } from '@/app/config/BaseConfig';

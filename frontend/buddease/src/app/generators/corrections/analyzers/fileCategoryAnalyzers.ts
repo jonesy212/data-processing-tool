@@ -1,3 +1,4 @@
+// fileCategoryAnalyzers.ts
 // src/app/analyzers/fileCategoryAnalyzers.ts
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { CorrectionSeverity, CorrectionCategory, CorrectionType } from '@/app/typings/correctionTypes';

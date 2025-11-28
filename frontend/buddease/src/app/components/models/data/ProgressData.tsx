@@ -1,3 +1,4 @@
+// ProgressData.tsx
 import React, { useState } from 'react';
 
 interface ProgressDataProps {

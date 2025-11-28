@@ -1,3 +1,4 @@
+// AppVersion.ts
 import getAppPath from '@/app/config/appStructure/appPath';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DocumentTypeEnum } from "@/app/typings/documentTpyes";

@@ -1,3 +1,4 @@
+// ChatSlice.ts
 // chat/ChatSlice.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Message } from "@/app/generators/GenerateChatInterfaces";

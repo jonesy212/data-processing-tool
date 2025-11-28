@@ -1,5 +1,5 @@
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
 // DetailsListStore.ts
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { DetailsEntity,

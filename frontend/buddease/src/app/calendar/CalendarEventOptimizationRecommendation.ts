@@ -1,6 +1,6 @@
+// CalendarEventOptimizationRecommendation.ts
 import { RecommendedOptimization } from "@/app/models/data/EventPriorityClassification";
 
-// CalendarEventOptimizationRecommendation.ts
 interface CalendarEventOptimizationRecommendation extends RecommendedOptimization {
   eventId: string; // ID of the event for which the optimization recommendation is provided
   recommendation: string; // Description of the optimization recommendation

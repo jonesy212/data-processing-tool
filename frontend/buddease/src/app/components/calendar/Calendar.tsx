@@ -1,3 +1,4 @@
+// Calendar.tsx
 import { Label } from '@/app/branding/BrandingSettings';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import MonthView from '@/app/components/calendar/CalendarMonthView';

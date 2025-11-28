@@ -1,3 +1,4 @@
+// contentApiService.ts
 import { contentApiService } from './contentApiService'; // (public interface)
 
 // Re-export the service methods as clean functions

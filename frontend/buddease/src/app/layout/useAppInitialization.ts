@@ -1,3 +1,4 @@
+// useAppInitialization.ts
 // app/layout/useAppInitialization.ts
 import { ApiSynchronizationScript } from '@/app/services/ApiSynchronizationScript';
 import { ChangeLogManager } from '@/app/utils/ChangeLogManager';

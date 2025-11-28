@@ -1,3 +1,4 @@
+// continuousMonitoringAndImprovement.ts
 import { getCurrentPrice } from "@/app/api/ApiCrypto";
 import { automatedDecisionMaking } from "@/app/utils/automatedDecisionMakingUtils";
 import { MarketData } from "./TradingStrategy";

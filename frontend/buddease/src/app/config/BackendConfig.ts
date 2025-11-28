@@ -1,5 +1,6 @@
 // BackendConfig.ts
-import { ApiConfig, CacheConfig, RetryConfig } from "../services/ConfigurationService";
+import { CacheConfig, RetryConfig } from "../services/ConfigurationService";
+import { ApiConfig } from '@/app/api/ApiConfigService'
 
 export interface BackendConfig {
   appName: string;

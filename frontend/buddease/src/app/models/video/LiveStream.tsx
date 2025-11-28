@@ -1,3 +1,4 @@
+// LiveStream.tsx
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { ModalGenerator } from "@/app/generators/GenerateModal";
 import React, { useState } from "react";

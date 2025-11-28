@@ -1,3 +1,4 @@
+// ScenarioBuilder.tsx
 import { categorizeNews } from "@/app/components/community/articleKeywords";
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { generateValidationRulesCode } from "@/app/server/security/validationRulesCode";

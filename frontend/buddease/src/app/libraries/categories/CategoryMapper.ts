@@ -1,5 +1,6 @@
-// utils/CategoryMapper.ts
-import { CorrectionCategory } from '@/types/CorrectionTypes';
+// CategoryMapper.ts
+
+import { CorrectionCategory } from '@/app/typings/correctionTypes';
 
 export class CategoryMapper {
   static suggestCategory(title: string, suggestion: string, codeSnippet: string): CorrectionCategory {

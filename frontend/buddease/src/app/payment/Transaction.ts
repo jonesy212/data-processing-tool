@@ -1,3 +1,4 @@
+// Transaction.ts
 import  { CustomTransactionProps } from '@/app/typings/cryptoTypes/SmartContractInteraction'
 import { AccessList, Signature } from "ethers";
 

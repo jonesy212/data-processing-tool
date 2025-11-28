@@ -1,3 +1,4 @@
+// LocalizationConfig.ts
 export interface LocalizationConfig {
   defaultLocale: string;
   supportedLocales: string[];

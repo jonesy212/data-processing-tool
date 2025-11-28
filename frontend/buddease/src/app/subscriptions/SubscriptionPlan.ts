@@ -1,3 +1,4 @@
+// SubscriptionPlan.ts
 
 interface SubscriptionPlan {
   id: string;

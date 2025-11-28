@@ -1,3 +1,4 @@
+// convertToLocalStorageSnapshotStore.ts
 import { LocalStorageSnapshotStore } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { DataStore } from "@/app/state/stores/DataStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

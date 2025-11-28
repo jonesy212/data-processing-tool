@@ -1,3 +1,4 @@
+// SnapshotStoreOptions.ts
 import { Data } from '@/app/models/data/Data';
 import { SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import { ProjectMetadata } from '@/app/config/StructuredMetadata';

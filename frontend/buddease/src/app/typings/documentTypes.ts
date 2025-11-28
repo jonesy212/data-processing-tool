@@ -1,3 +1,4 @@
+// documentTypes.ts
 // documents.ts
 // app/types/shared.ts (or app/types/documents.ts)
 export enum DocumentTypeEnum {

@@ -1,3 +1,4 @@
+// CryptoEnthusiastTraderInfo.tsx
 import React from 'react';
 
 interface TraderInfo {

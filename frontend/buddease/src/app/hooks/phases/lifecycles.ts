@@ -1,3 +1,4 @@
+// lifecycles.ts
 // lifecycles.tsx
 import { getLastActivityTimeForPhase } from '@app/hooks/phases/PhaseActivity'
 import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntiity';

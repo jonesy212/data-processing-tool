@@ -1,3 +1,4 @@
+// TableStyle.ts
 interface TableStyle {
   backgroundColor: string;
   textColor: string;

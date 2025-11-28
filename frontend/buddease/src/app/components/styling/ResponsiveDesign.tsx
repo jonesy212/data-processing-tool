@@ -1,3 +1,4 @@
+// ResponsiveDesign.tsx
 // components/ResponsiveDesign.tsx
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";

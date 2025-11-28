@@ -1,3 +1,4 @@
+// IconLoader.tsx
 //iconloader.tsx
 import Image from "next/image";
 import React from "react";

@@ -1,3 +1,4 @@
+// GenerateComponent.tsx
 import fs from "fs";
 import path from "path";
 import { ModifiedDate } from "@/app/documents/DocType";

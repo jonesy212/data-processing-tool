@@ -1,3 +1,4 @@
+// Subscriber.tsx
 import { SubscriptionActions } from "@/app/actions/SubscriptionActions";
 import apiNotificationsService from "@/app/api/NotificationsService";
 import addSnapshot, * as snapshotApi from "@/app/api/SnapshotApi";

@@ -1,9 +1,11 @@
-// CoreSnapshot.ts
+// CoreSnapshot.tsx
+
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { ChatRoom } from '@/app/communications/ChatRoom';
 import { Sender } from '@/app/components/communications/CommunicationPage';
 import { Task } from '@/app/components/models/tasks/Task';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Data } from '@/app/models/data/Data'
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
@@ -11,7 +13,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Content } from "@/app/models/content/AddContent";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotBase, SnapshotData } from ".";
@@ -103,8 +105,14 @@ interface CoreSnapshot<
   contentItem?: string | ContentItem;
   label?: Label | string | Record<string, string> | null;
   excludedFields?: ExcludedFields;
-  message?: (type: NotificationType, content: string, additionalData?: string, userId?: number, sender?: Sender, channel?: ChatRoom) => Message;
-  user?: User;
+  message?: (
+    type: NotificationType, 
+    content: string, 
+    additionalData?: string, 
+    userId?: number,
+     sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+     channel?: ChatRoom) => Messag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  user?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   type?: string | AllTypes;
   phases?: ProjectPhaseTypeEnum;
   phase?: PhaseDefault | null;

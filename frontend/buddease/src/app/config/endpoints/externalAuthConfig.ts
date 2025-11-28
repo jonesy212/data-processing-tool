@@ -1,3 +1,4 @@
+// externalAuthConfig.ts
 // externalAuthConfig.tts
 import { ExternalAuthEndpoints } from '@/app/typings/categories/ExternalAuthEndpoints';
 

@@ -1,3 +1,4 @@
+// SupportTicketComponent.tsx
 // SupportTicketComponent.ts
 // app/features/support/SupportTicketComponent.tsx
 import React, { useState } from 'react';

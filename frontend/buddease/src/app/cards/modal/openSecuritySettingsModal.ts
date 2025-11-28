@@ -1,3 +1,4 @@
+// openSecuritySettingsModal.ts
 import { SecuritySettings } from '@/app/settings/SecuritySettings'
 
 const openSecuritySettingsModal = async (

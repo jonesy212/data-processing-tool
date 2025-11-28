@@ -1,3 +1,4 @@
+// Provider.tsx
 // components/AppProviders.tsx
 'use client';
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';

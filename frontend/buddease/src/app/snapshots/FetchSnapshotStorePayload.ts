@@ -1,3 +1,4 @@
+// FetchSnapshotStorePayload.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';

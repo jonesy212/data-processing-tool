@@ -1,3 +1,4 @@
+// isCompatibleTempData.ts
 //isCompatibleTempData.ts
 import { TempData } from "@/app/components/models/data/TempData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

@@ -1,3 +1,4 @@
+// getSnapshotEntries.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { K, T } from "./SnapshotConfig";
 

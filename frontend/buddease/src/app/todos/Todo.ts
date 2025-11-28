@@ -1,3 +1,4 @@
+// Todo.ts
 import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Collaborator } from '@/app/collaborators/Collaborator';
 import { DayOfWeekProps } from '@/app/components/calendar/DayOfWeek';
@@ -9,6 +10,7 @@ import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import ChecklistItem, { ChecklistItemProps } from '@/app/models/ChecklistItem';
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -31,7 +33,7 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
@@ -48,7 +50,10 @@ import { config } from 'process';
 import { FC } from 'react';
 import { options } from 'sanitize-html';
 
-export type UserAssignee = Pick<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
+export type UserAssignee = Pick<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>
+& {
+  assignedTodosCount?: number;
+};
 
 export interface Todo<
   T extends BaseDataEntity = BaseDataRoot,
@@ -80,7 +85,7 @@ export interface Todo<
   assigneeId: string;
   assignee: UserAssignee | null;
   assignedUsers: string[];
-  collaborators: Collaborator[];
+  collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   labels: string[];
   comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| CustomComment)[] | undefined;
   attachments?: AttachmentType[];
@@ -135,9 +140,9 @@ export interface Todo<
   snapshot: Snapshot<T, any>;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  videoData?: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  videoData?: VideoData<T, K>
   timestamp: string | Date;
-  suggestedDay?: DayOfWeekProps["day"] | null;
+  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["day"] | null;
   suggestedWeeks?: number[] | null;
   suggestedMonths?: Month[] | null;
   suggestedSeasons?: Season[] | null;
@@ -234,7 +239,7 @@ class TodoImpl<
   assignee: UserAssignee | null = null;
   assigneeId: string = "";
   assignedUsers: string[] = [];
-  collaborators: Collaborator[] = [];
+  collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   labels: string[] = [];
   comments: Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   attachments: AttachmentType[] = [];
@@ -270,7 +275,7 @@ class TodoImpl<
   videoUrl: string = "";
   videoThumbnail: string = "";
   videoDuration: number = 0;
-  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  videoData: VideoData<T, K> = {} as VideoData<T, K>;
   save: () => Promise<void> = async () => {
     return new Promise<void>((resolve) => {
       setTimeout(() => {

@@ -1,3 +1,4 @@
+// appTypes.ts
 import { Post } from "@/app/components/community/DiscussionForumComponent";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Attachment } from '@/app/documents/attachment/Attachment';

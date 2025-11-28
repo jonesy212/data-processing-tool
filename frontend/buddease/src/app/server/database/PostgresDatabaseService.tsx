@@ -1,7 +1,8 @@
+// PostgresDatabaseService.tsx
 // server/database/PostgresDatabaseService.tsx
 
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
-import { BaseDatabaseService } from "@/server/BaseDatabaseService";
+import { BaseDatabaseService } from '@/app/server/database/DatabaseService'
 import { Client } from "pg";
 
 export class PostgresDatabaseService extends BaseDatabaseService {

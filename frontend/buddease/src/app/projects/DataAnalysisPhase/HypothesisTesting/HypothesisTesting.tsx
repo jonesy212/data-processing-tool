@@ -1,3 +1,4 @@
+// HypothesisTesting.tsx
 import React, { useState } from "react";
 
 const HypothesisTesting: React.FC<{ onTestRun: (selectedTest: string) => void }> = ({

@@ -1,3 +1,4 @@
+// DashboardComponent.tsx
 // DashboardComponent.ts
 import React from "react";
 

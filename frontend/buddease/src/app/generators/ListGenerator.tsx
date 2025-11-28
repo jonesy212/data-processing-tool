@@ -1,3 +1,4 @@
+// ListGenerator.tsx
 import { BaseData, Data } from '@/app/models/data/Data';
 import { 
   DetailsEntity, 

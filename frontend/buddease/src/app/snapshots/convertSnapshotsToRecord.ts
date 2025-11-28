@@ -1,10 +1,10 @@
+// convertSnapshotsToRecord.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-// convertSnapshotsToRecord.ts
 function convertSnapshotsToRecord<
   T extends BaseDataEntity,
   K extends T = T,

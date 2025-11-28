@@ -1,3 +1,4 @@
+// SnapshotActions.tsx
 // snapshots/SnapshotActions.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -436,7 +437,6 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
     storeId: number,
     snapshotId: string | number,
     snapshotStore: TaskSnapshotStore,
-    snapshotId: string,
     snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     type: string,
     event: Event
@@ -552,13 +552,13 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
     throw new Error('Function not implemented.');
   },
 
-  removeItem: function (key: string): Promise<void> {
+  removeItem: function (key: string | number): Promise<void> {
     throw new Error('Function not implemented.');
   },
 
   getSnapshot: function (
     snapshot: (id: string) => Promise<{
-      category: any;
+      category: Category;
       timestamp: any;
       id: any;
       snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;

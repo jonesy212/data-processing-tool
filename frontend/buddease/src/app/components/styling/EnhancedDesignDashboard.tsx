@@ -1,3 +1,4 @@
+// EnhancedDesignDashboard.tsx
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
 import DesignDashboard from "@/app/pages/dashboards/DesignDashboard";

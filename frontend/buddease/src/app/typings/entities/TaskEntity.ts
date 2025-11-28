@@ -1,7 +1,9 @@
 // TaskEntity.ts
+import { Permission } from '@/app/permissions/Permission';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
 import { Task } from '@/app/models/tasks/Task';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -19,7 +21,7 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 
-export interface TaskEntity extends BaseEntity<AppMetadata> {
+interface TaskEntity extends BaseEntity<AppMetadata<AppTaskMetadata>> {
   name: string;
   status?: AllStatus;
   priority?: PriorityTypeEnum;
@@ -39,7 +41,7 @@ interface TaskEntityExtended extends TaskEntity {
 }
 
 // 2. Type definitions with 6 parameters
-type TaskEntity = TaskEntity;
+type TaskEntity = BaseMetaEntity;
 type TaskK = TaskEntityExtended;
 type TaskMeta = DefaultMeta<TaskEntity, TaskK>;
 type TaskAttachment = Attachment;

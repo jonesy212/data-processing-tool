@@ -1,3 +1,4 @@
+// ErrorBoundaryProvider.tsx
 import React, { createContext, ReactNode } from 'react';
 
 // Define a specific type for the error handler

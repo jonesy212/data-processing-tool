@@ -1,5 +1,7 @@
 // Version.ts
-import { Content } from '@/app/components/models/content/AddContent';
+import HashGenerator from '@/app/generators/HashGenerator'
+import SharedContent from '@/app/versions/Version'
+
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import metadata from '@/app/layout';
@@ -19,7 +21,7 @@ import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { dataVersions } from "@/app/config/DocumentBuilderConfig";
-import { sharedMetadata } from "@/app/config/metadata/MetadataStateManager";
+import { sharedMetadata } from "@/app/config/MetadataStateManager";
 import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -216,7 +218,7 @@ const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta
     sharedMetadata: sharedMetadata,
     sharedBaseData: {} as SharedRelationshipData<any>,
     taggable: {} as Taggable<T>,
-    metadataEntries: {} as MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    metadataEntries: {} as MetadataEntriesType<T, K>,
   };
 }
 
@@ -861,7 +863,7 @@ static createVersion<
       isActive: this.isActive ?? true,
       releaseDate: this.releaseDate ? (this.releaseDate instanceof Date ? this.releaseDate.toISOString() : this.releaseDate) : '',
       buildVersions: this.buildVersions,
-      documentId: this.documentId ?? '',
+      documentId: this.documentId ?? this.documentId.toString(),
       draft: this.draft ?? false,
       userId: this.userId ?? '',
       content: this.content ?? '',
@@ -949,14 +951,6 @@ static createVersion<
   private async generateStructureHashAsync(): Promise<string> {
     const frontendStructure = await this.frontendStructure;
     return sha256(JSON.stringify(frontendStructure));
-  }
-
-  // Method to get structure hash
-  private async generateStructureHash(): Promise<string> {
-    if (!this.frontendStructure) {
-      return '';
-    }
-    return HashGenerator.hashStructure(this.frontendStructure);
   }
 
   // Public method to get structure hash

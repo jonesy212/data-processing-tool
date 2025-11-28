@@ -1,3 +1,4 @@
+// UpdateSnapshotParams.ts
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -5,7 +6,7 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 interface UpdateSnapshotParams<

@@ -1,3 +1,4 @@
+// AquaChat.tsx
 'use client';
 
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';

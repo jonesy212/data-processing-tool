@@ -1,3 +1,4 @@
+// ChatSettings.ts
 // Define a type for chat settings
 
 interface ChatSettings {

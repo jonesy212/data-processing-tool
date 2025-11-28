@@ -1,3 +1,4 @@
+// componentSagas.ts
 // /app/sagas/componentSagas.ts
 import { takeLatest, call, put } from "redux-saga/effects";
 import { ComponentActions } from "@/app/actions/ComponentActions";

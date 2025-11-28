@@ -1,3 +1,4 @@
+// eventHandlers.ts
 import { EventEmitter } from '@/app/libraries/eventSystem';
 import { 
   SnapshotEvent, 

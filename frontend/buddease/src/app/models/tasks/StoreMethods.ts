@@ -1,3 +1,4 @@
+// StoreMethods.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 

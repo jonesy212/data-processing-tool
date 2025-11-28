@@ -1,4 +1,6 @@
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+// AnnouncementManager.ts
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 
 class AnnouncementManager {
   static sendAnnouncement(message: string, sender: string): void {

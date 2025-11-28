@@ -1,5 +1,5 @@
-
 // NotificationContext.tsx
+
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
@@ -14,9 +14,8 @@ import { LogData } from '@/app/models/LogData'
 import { createContext, useContext, ReactNode } from 'react';
 import { 
   NotificationTypeEnum, 
-  NotificationType as UnifiedNotificationType 
-} from '@/app/features/support/NotificationTypes'; // Import from single source
-
+  NotificationType 
+} from '@/app/features/support/UnifiedNotificationTypes'
 // Define missing Notification type
 interface Notification {
   id: string;
@@ -43,6 +42,7 @@ interface NotificationDataPayload<T = unknown> {
   entityType?: string;
   userId?: string;
   extra?: T;
+  count?: number
 }
 
 interface NotificationOptions {
@@ -53,7 +53,7 @@ interface NotificationOptions {
   error?: string;
   duration?: number;
   position?: NotificationPosition;
-  type?: NotificationType;
+  type?: NotificationTypeEnum;
   onClose?: () => void;
   persistent?: boolean;
   action?: {
@@ -193,4 +193,4 @@ export const useNotificationStore = (): NotificationContextType => {
 };
 
 export {  useNotification };
-export type {  NotificationContextProps, NotificationContextType, NotificationOptions,  };
+export type {  NotificationContextProps, NotificationContextType, NotificationOptions, CustomNotificationType, NotificationDataPayload };

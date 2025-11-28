@@ -1,3 +1,4 @@
+// ProjectActions.ts
 // projects/ProjectActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import Milestone from "@/app/typings/milestoneTypes";
@@ -53,32 +54,21 @@ export const ProjectActions = {
       type: string;
     }>("updateProject"),
     
-
-    
     // Associated entities actions
   checkProjectCompletion: createAction<{ projectId: string, project: Project }>("checkProjectCompletion"),
   updateProjectCompletion: createAction<{ projectId: string, completion: number }>("updateProjectCompletion"),
   updateProjectPending: createAction<{ projectId: string, pending: boolean }>( "updateProjectPending"),
 
 
+  // Batch actions for fetching
+  batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
+  batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
+    "batchFetchProjectsSuccess"
+  ),
+  batchFetchProjectsFailure: createAction<{ error: string }>(
+    "batchFetchProjectsFailure"
+  ),
 
-
-
-
-
-    // Batch actions for fetching
-    batchFetchProjectsRequest: createAction("batchFetchProjectsRequest"),
-    batchFetchProjectsSuccess: createAction<{ projects: Project[] }>(
-      "batchFetchProjectsSuccess"
-    ),
-    batchFetchProjectsFailure: createAction<{ error: string }>(
-      "batchFetchProjectsFailure"
-    ),
-  
-  
-  
-  
-  
   // Batch actions for updating
   batchUpdateProjectsRequest: createAction<{
     ids: number[];
@@ -88,14 +78,10 @@ export const ProjectActions = {
     "batchUpdateProjectsSuccess"
   ),
 
-
   generateExecutiveSummaryContent: createAction<{ projectId: string, executiveSummaryContent: string }>("generateExecutiveSummaryContent"),
   updateExecutiveSummary: createAction<{ projectId: string, executiveSummaryContent: string }>("updateExecutiveSummary"),
   shareExcecutiveSummary: createAction<{ projectId: string, recipients: string[] }>("shareExcecutiveSummary"),
   removeExecutiveSummary: createAction<{ projectId: string }>("removeExecutiveSummary"),
-
-  
-
 
   batchUpdateProjectsFailure: createAction<{ error: string }>(
     "batchUpdateProjectsFailure"

@@ -1,3 +1,4 @@
+// DynamicEventHandlerExample.tsx
 import { TooltipActions } from "@/app/actions/TooltipActions";
 import { UIActions } from "@/app/actions/UIActions";
 import * as ApiAnalysis from "@/app/api/service/ApiAnalysisService";

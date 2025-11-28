@@ -1,3 +1,4 @@
+// openNotificationPreferencesModal.tsx
 import { ChatSettingsModal, ModalGenerator } from "@/app/generators/GenerateModal";
 import React, { useState } from "react";
 // import { ModalGenerator, ModalProps, ChatSettingsModal } from "./ModalComponents"; // Import the modal components

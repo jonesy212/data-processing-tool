@@ -1,3 +1,4 @@
+// BaseAnalyzer.ts
 // analyzers/BaseAnalyzer.ts
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { CorrectionFactory } from '@/app/config/factory/CorrectionFactory';

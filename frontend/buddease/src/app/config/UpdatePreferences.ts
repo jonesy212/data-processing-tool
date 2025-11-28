@@ -1,3 +1,4 @@
+// UpdatePreferences.ts
 // Assuming you're using a library like Axios for making HTTP requests
 import axiosInstance from '@/app/api/csrfToken'
 

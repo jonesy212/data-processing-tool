@@ -1,3 +1,4 @@
+// MapProperties.ts
     import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { UserSettings } from "@/app/config/UserSettings";
 

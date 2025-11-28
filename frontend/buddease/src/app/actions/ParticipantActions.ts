@@ -1,7 +1,7 @@
+// ParticipantActions.ts
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { createAction } from "@reduxjs/toolkit";
 
-// ParticipantActions.ts
 export const ParticipantActions = {
   // Standard actions
   setParticipants: createAction<Participant[]>("setParticipants"),

@@ -1,3 +1,4 @@
+// Branding.ts
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { Theme } from "./Theme";
 import { validateHexColor } from "./ThemeConfig";

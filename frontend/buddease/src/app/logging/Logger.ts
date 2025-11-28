@@ -1,21 +1,18 @@
 // Logger.ts
 import { getFromLocalStorage, saveToLocalStorage } from '@/app/hooks/useLocalStorage'
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
+import { EndpointConfigurations, EndpointConfig } from '@/app/config/EndpointConfig';
+import { getEndpointUrl, getConfiguredEndpoint } from '@/app/api/getConfiguredEndpoint'
 import { Attachment } from '@/app/documents/attachment/Attachment';
-
+import { NotificationDataPayload } from '@/app/state/context/NotificationContext'
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { Task } from "@/app/components/models/tasks/Task";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/state/context/NotificationContext";
+import { useNotification } from "@/app/state/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { BaseData } from '@/app/models/data/Data';
 import { LogData } from "@/app/models/LogData";
-import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/teamTypes';
-
+import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/TeamEntity';
 
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -49,12 +46,21 @@ function createErrorNotificationContent(error: Error): any {
 const errorLogger = {
   error: (errorMessage: string, extraInfo: any) => {
     console.error(errorMessage, extraInfo);
+    const errorContent = createErrorNotificationContent(new Error(errorMessage));
+    
     notify({
-      "Error occurred",
-      NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-      {},
-      new Date(),
-      NotificationTypeEnum.ERROR
+      id: `error${errorMessage.replace(/\s+/g, '')}`,
+      message: "Error occurred",
+      data: { 
+        originalError: errorMessage,
+        extra: {
+          ...extraInfo,
+          ...errorContent
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      level: 'error'
     });
   },
 };
@@ -68,7 +74,6 @@ class Logger {
       console.log(`[${logType}] ${message}`);
     }
   }
-
 
   static error(errorMessage: string, extraInfo?: any) {
     console.error(errorMessage, extraInfo);
@@ -94,21 +99,30 @@ class Logger {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log session event");
-        }
-      })
-      .catch((error: any) => {
-        notify({
-          "Error logging session event",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          createErrorNotificationContent,
-          new Date(),
-          NotificationTypeEnum.LOGGING_ERROR
-        });
-        console.error(error);
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log session event");
+      }
+    })
+    .catch((error: any) => {
+      notify({
+        id: `logSessionEventError${sessionID}`,
+        message: "Error logging session event",
+        data: {
+          originalError: error.message,
+          extra: {
+            sessionID,
+            event,
+            errorDetails: error,
+            errorContent: createErrorNotificationContent(error)
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.LOGGING_ERROR,
+        level: 'error'
       });
+      console.error(error);
+    });
   }
 
   static logError(errorMessage: string, user: string | null = null) {
@@ -218,6 +232,36 @@ class Logger {
     );
   }
 
+
+  /**
+   * Protected method to get configured endpoint using your existing system
+   */
+  protected static getConfiguredEndpoint<T extends keyof EndpointConfigurations>(
+    category: T,
+    endpointKey: keyof EndpointConfigurations[T],
+    ...params: any[]
+  ): { path: string; method: string; fullConfig?: any } {
+    return getConfiguredEndpoint(category, endpointKey, ...params);
+  }
+
+  /**
+   * Protected method to get just the URL for fetch calls
+   */
+  protected static getEndpointUrl<T extends keyof EndpointConfigurations>(
+    category: T,
+    endpointKey: keyof EndpointConfigurations[T],
+    ...params: any[]
+  ): string {
+    return getEndpointUrl(category, endpointKey, ...params);
+  }
+
+  /**
+   * Specific helper for log endpoints
+   */
+  protected static getLogEndpoint(endpointKey: keyof EndpointConfigurations['logs'], ...params: any[]): string {
+    return this.getEndpointUrl('logs', endpointKey, ...params);
+  }
+
   // Helper method to sanitize sensitive data in payloads
   private static sanitizePayload(payload: any): any {
     if (!payload || typeof payload !== 'object') return payload;
@@ -269,39 +313,39 @@ class AudioLogger extends Logger {
     audioID: string,
     duration: number
   ) {
-    let logAudioEventUrl: string = ""; // Initialize with an empty string
+  // Use the protected method from Logger to get the endpoint URL
+  const logAudioEventUrl = this.getLogEndpoint('logAudioEvent', uniqueID, audioID, duration);
 
-    if (typeof endpoints.logs.logAudioEvent === "string") {
-      logAudioEventUrl = endpoints.logs.logAudioEvent;
-    } else if (typeof endpoints.logs.logAudioEvent === "function") {
-      logAudioEventUrl = endpoints.logs.logAudioEvent();
-    } else {
-      // Handle the case when logAudioEvent is a nested object
-      // For example: logAudioEventUrl = endpoints.logs.logAudioEvent.someNestedEndpoint;
-      // or logAudioEventUrl = endpoints.logs.logAudioEvent.someNestedFunction();
-    }
-
-    fetch(logAudioEventUrl, {
-      method: "POST",
-      body: JSON.stringify({ uniqueID, audioID, duration }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+  fetch(logAudioEventUrl, {
+    method: "POST",
+    body: JSON.stringify({ uniqueID, audioID, duration }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log audio event");
+      }
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log audio event");
-        }
-      })
-      .catch((error) => {
-        notify({
-          "Error logging audio event",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          createErrorNotificationContent,
-          new Date(),
-          error
-        });
+    .catch((error) => {
+      notify({
+        id: `logAudioEventError${uniqueID}`,
+        message: "Error logging audio event",
+        data: {
+          originalError: error.message,
+          extra: {
+            uniqueID,
+            audioID,
+            duration,
+            errorDetails: error
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
       });
+    });
   }
 }
 
@@ -394,7 +438,7 @@ class SearchLogger extends Logger {
 }
 
 class TeamLogger extends Logger {
-  static async logTeamCreation(teamId: string, team: Team, storeId: number, color?: string | null,): Promise<void> {
+  static async logTeamCreation(teamId: string, team: Team, storeId: number, color?: string | null): Promise<void> {
     try {
       // Convert teamId to a number if necessary
       const numericTeamId = parseInt(teamId, 10);
@@ -414,7 +458,6 @@ class TeamLogger extends Logger {
     color?: string | null,
   ): Promise<void> {
     try {
-
       if (storeId !== undefined) {
         storeId = parseInt(storeId.toString(), 10);
 
@@ -462,7 +505,9 @@ class TeamLogger extends Logger {
     data?: any
   ): Promise<void> {
     try {
-      const logUrl = this.getLogUrl(action);
+      // Use Logger's protected method instead of getLogUrl
+      const logUrl = this.getLogEndpoint('logTeamEvent', action, message, teamId, data);
+      
       await fetch(logUrl, {
         method: "POST",
         body: JSON.stringify({ action, message, teamId, data }),
@@ -503,16 +548,13 @@ class TeamLogger extends Logger {
     data?: any,
   ): Promise<void> {
     try {
-      // Convert teamId to a number using the utility method
-
       if (storeId !== undefined && color !== undefined) {
         const teamData: TeamData<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> | null =
         (await useTeamManagerStore(storeId)).getTeamData(
           teamId,
           team,
           color
-        )
-
+        );
 
         if (!teamData) {
           throw new Error("Team data is null");
@@ -523,22 +565,42 @@ class TeamLogger extends Logger {
           throw new Error("Team data is not of type TeamData");
         }
 
-        // Now that we've confirmed teamData is not null, we can assert its type as TeamData
-        const teamDataTyped: TeamData<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> = teamData!;
+        // Create a safe copy for logging
+        let teamDataForLogging = teamData;
         const teamDataString = JSON.stringify(teamData);
         const teamDataStringLength = teamDataString.length;
+        
         if (teamDataStringLength > 10000) {
-          // Truncate the team data string to 10000 characters
-          const truncatedTeamDataString = teamDataString.substring(0, 10000);
-          // Assign truncated data to teamData
-          // Note: You may need to assign to teamDataTyped instead of teamData
-          teamDataTyped.data = truncatedTeamDataString;
+          // Create a truncated version without modifying the original
+          teamDataForLogging = {
+            ...teamData,
+            // Add truncation info without breaking the type
+            metadata: {
+              ...(teamData as any).metadata,
+              truncated: true,
+              originalLength: teamDataStringLength
+            }
+          };
         }
 
-        const logUrl = this.getLogUrl("teamEvent");
+        // Use Logger's protected method instead of getLogUrl
+        const logUrl = this.getLogEndpoint('logTeamEvent', teamId, message, storeId);
+        
         await fetch(logUrl, {
           method: "POST",
-          body: JSON.stringify({ teamId, message, teamData, data }),
+          body: JSON.stringify({ 
+            teamId, 
+            message, 
+            teamData: teamDataForLogging, 
+            data,
+            // Add truncation info separately
+            ...(teamDataStringLength > 10000 && {
+              truncationInfo: {
+                originalLength: teamDataStringLength,
+                isTruncated: true
+              }
+            })
+          }),
           headers: {
             "Content-Type": "application/json",
           },
@@ -548,22 +610,6 @@ class TeamLogger extends Logger {
       console.error(`Error logging team event for team ${teamId}:`, error);
       throw error;
     }
-  }
-
-  private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
-    }
-
-    return logUrl;
   }
 }
 
@@ -661,7 +707,8 @@ class AnimationLogger extends Logger {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
     try {
-      const logUrl = this.getLogUrl("animationEvent");
+      // Use Logger's protected method instead of getLogUrl
+      const logUrl = this.getLogEndpoint('logAnimationEvent', message, uniqueID, animationID, duration);
 
       const response = await fetch(logUrl, {
         method: "POST",
@@ -687,14 +734,14 @@ class AnimationLogger extends Logger {
     }
   }
 
- static generateID<  
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
+  static generateID<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     prefix: string,
     name: string,
     type: NotificationType,
@@ -722,22 +769,6 @@ class AnimationLogger extends Logger {
     return UniqueIDGenerator.generateID("TRK", name, type, id, NotificationTypeEnum.GENERATED_ID);
   }
 
-  private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // logUrl = endpoints.logs.logEvent.someNestedFunction();
-    }
-
-    return logUrl;
-  }
-
   static logAnimationStopped(
     uniqueID: string,
     animationID: string,
@@ -760,7 +791,8 @@ class DataLogger extends Logger {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
     try {
-      const logUrl = this.getLogUrl("dataEvent");
+      // Use Logger's protected method instead of getLogUrl
+      const logUrl = this.getLogEndpoint('logDataEvent', message, data);
 
       const response = await fetch(logUrl, {
         method: "POST",
@@ -782,28 +814,8 @@ class DataLogger extends Logger {
       throw error; // Re-throw the error to propagate it further if needed
     }
   }
-
-  private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    const logEvent = endpoints.logging?.[action]; // Access nested property using optional chaining
-
-    if (typeof logEvent === "string") {
-      logUrl = logEvent;
-    } else if (typeof logEvent === "function") {
-      logUrl = logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      if (logEvent) {
-        const captureLog = logEvent.captureLog; // Access property directly
-        if (typeof captureLog === "function") {
-          logUrl = captureLog();
-        }
-      }
-    }
-    return logUrl;
-  }
 }
+
 
 // Extend Logger for video logs
 class VideoLogger extends Logger {
@@ -817,46 +829,44 @@ class VideoLogger extends Logger {
     this.logVideoEvent(uniqueID, videoID, duration);
   }
 
-  private static logVideoEvent(
-    uniqueID: string,
-    videoID: string,
-    duration: number
-  ) {
-    let logVideoEventUrl: string;
+private static logVideoEvent(
+  uniqueID: string,
+  videoID: string,
+  duration: number
+) {
+  // Use the protected method from Logger to get the endpoint URL
+  const logVideoEventUrl = this.getLogEndpoint('logVideoEvent', uniqueID, videoID, duration);
 
-    if (typeof endpoints.logs.logVideoEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logVideoEventUrl = endpoints.logs.logVideoEvent;
-    } else if (typeof endpoints.logs.logVideoEvent === "function") {
-      // If it's a function, call it to get the endpoint URL
-      logVideoEventUrl = endpoints.logs.logVideoEvent();
-    } else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log video event endpoint");
-    }
-
-    fetch(logVideoEventUrl, {
-      method: "POST",
-      body: JSON.stringify({ uniqueID, videoID, duration }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+  fetch(logVideoEventUrl, {
+    method: "POST",
+    body: JSON.stringify({ uniqueID, videoID, duration }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log video event");
+      }
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log video event");
-        }
-      })
-      .catch((error) => {
-        notify(
-          "logEventError" + error.message,
-          "Error logging video event.",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-
-        );
+    .catch((error) => {
+      notify({
+        id: `logVideoEventError${uniqueID}`,
+        message: "Error logging video event.",
+        data: {
+          originalError: error.message,
+          extra: {
+            uniqueID,
+            videoID,
+            duration,
+            errorDetails: error
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
       });
+    });
   }
 }
 
@@ -866,45 +876,41 @@ class ChannelLogger extends Logger {
     this.logChannelEvent(uniqueID, channelID);
   }
 
-  private static logChannelEvent(uniqueID: string, channelID: string) {
-    let logChannelEventUrl: string;
+private static logChannelEvent(uniqueID: string, channelID: string) {
+  // Use the protected method from Logger to get the endpoint URL
+  const logChannelEventUrl = this.getLogEndpoint('logChannelEvent', uniqueID, channelID);
 
-    if (typeof endpoints.logs.logChannelEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logChannelEventUrl = endpoints.logs.logChannelEvent;
-    } else if (typeof endpoints.logs.logChannelEvent === "function") {
-      // If it's a function, call it to get the endpoint URL
-      logChannelEventUrl = endpoints.logs.logChannelEvent();
-    } else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log channel event endpoint");
-    }
-
-    fetch(logChannelEventUrl, {
-      method: "POST",
-      body: JSON.stringify({ uniqueID, channelID }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+  fetch(logChannelEventUrl, {
+    method: "POST",
+    body: JSON.stringify({ uniqueID, channelID }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log channel event");
+      }
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log channel event");
-        }
-      })
-      .catch((error) => {
-        notify(
-          "logEventError" + error.message,
-          "Error logging channel event",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-        );
+    .catch((error) => {
+      notify({
+        id: `logChannelEventError${uniqueID}`,
+        message: "Error logging channel event",
+        data: {
+          originalError: error.message,
+          extra: {
+            uniqueID,
+            channelID,
+            errorDetails: error
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
       });
+    });
   }
 }
-
-
 
 class ChatLogger extends Logger {
   static logChat(message: string, uniqueID: string, roomID: string) {
@@ -913,18 +919,8 @@ class ChatLogger extends Logger {
   }
 
   private static logChatEvent(uniqueID: string, roomID: string) {
-    let logChatEventUrl: string;
-
-    if (typeof endpoints.logs.logChatEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logChatEventUrl = endpoints.logs.logChatEvent;
-    } else if (typeof endpoints.logs.logChatEvent === "function") {
-      // If it's a function, call it to get the endpoint URL
-      logChatEventUrl = endpoints.logs.logChatEvent();
-    } else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log chat event endpoint");
-    }
+    // Use the protected method from Logger to get the endpoint URL
+    const logChatEventUrl = this.getLogEndpoint('logChatEvent', uniqueID, roomID);
 
     fetch(logChatEventUrl, {
       method: "POST",
@@ -933,23 +929,30 @@ class ChatLogger extends Logger {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log chat event");
-        }
-      })
-      .catch((error) => {
-        notify(
-          "logEventError" + error.message,
-          "Error logging chat event.",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-        );
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log chat event");
+      }
+    })
+    .catch((error) => {
+      notify({
+        id: `logChatEventError${uniqueID}`,
+        message: "Error logging chat event.",
+        data: {
+          originalError: error.message,
+          extra: {
+            uniqueID,
+            roomID,
+            errorDetails: error
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
       });
+    });
   }
 }
-
 
 
 class FormLogger extends Logger {
@@ -957,7 +960,8 @@ class FormLogger extends Logger {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
     try {
-      const logUrl = this.getLogUrl("formEvent");
+      // Use Logger's protected method instead of getLogUrl
+      const logUrl = this.getLogEndpoint('logFormEvent', eventType, formID, eventData);
 
       const response = await fetch(logUrl, {
         method: "POST",
@@ -980,22 +984,6 @@ class FormLogger extends Logger {
       throw error; // Re-throw the error to propagate it further if needed
     }
   }
-
-  private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // logUrl = endpoints.logs.logEvent.someNestedFunction();
-    }
-
-    return logUrl;
-  }
 }
 
 class CollaborationLogger extends Logger {
@@ -1012,18 +1000,8 @@ class CollaborationLogger extends Logger {
     uniqueID: string,
     collaborationID: string
   ) {
-    let logCollaborationEventUrl: string;
-
-    if (typeof endpoints.logs.logCollaborationEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logCollaborationEventUrl = endpoints.logs.logCollaborationEvent;
-    } else if (typeof endpoints.logs.logCollaborationEvent === "function") {
-      // If it's a function, call it to get the endpoint URL
-      logCollaborationEventUrl = endpoints.logs.logCollaborationEvent();
-    } else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log collaboration event endpoint");
-    }
+    // Use Logger's protected method instead of manual endpoint resolution
+    const logCollaborationEventUrl = this.getLogEndpoint('logCollaborationEvent', uniqueID, collaborationID);
 
     fetch(logCollaborationEventUrl, {
       method: "POST",
@@ -1032,29 +1010,30 @@ class CollaborationLogger extends Logger {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to log collaboration event");
-        }
-      })
-      .catch((error) => {
-        notify(
-          "logCollaborationEventError" + error.message,
-          "Error logging collaboration event.",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-        );
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log collaboration event");
+      }
+    })
+    .catch((error) => {
+      notify({
+        id: `logCollaborationEventError${uniqueID}`,
+        message: "Error logging collaboration event.",
+        data: {
+          originalError: error.message,
+          extra: {
+            uniqueID,
+            collaborationID,
+            errorDetails: error
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
       });
+    });
   }
 }
-
-class ComponentLogger extends Logger {
-  static log(action: string, message: string, uniqueID: string) {
-    Logger.logWithOptions("User", `${action} (${message})`, uniqueID);
-  }
-}
-
 
 class DocumentLogger extends Logger {
   static logDocument(message: string, uniqueID: string, documentID: string) {
@@ -1063,18 +1042,8 @@ class DocumentLogger extends Logger {
   }
 
   private static logDocumentEvent(uniqueID: string, documentID: string) {
-    let logDocumentEventUrl: string;
-
-    if (typeof endpoints.logs.logDocumentEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logDocumentEventUrl = endpoints.logs.logDocumentEvent;
-    } else if (typeof endpoints.logs.logDocumentEvent === "function") {
-      // If it's a function, call it to get the endpoint URL
-      logDocumentEventUrl = endpoints.logs.logDocumentEvent();
-    } else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log document event endpoint");
-    }
+    // Use Logger's protected method instead of manual endpoint resolution
+    const logDocumentEventUrl = this.getLogEndpoint('logDocumentEvent', uniqueID, documentID);
 
     fetch(logDocumentEventUrl, {
       method: "POST",
@@ -1089,13 +1058,21 @@ class DocumentLogger extends Logger {
         }
       })
       .catch((error) => {
-        notify(
-          "logDocumentEventError" + error.message,
-          "Error logging document event.",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          new Date(),
-          error
-        );
+        notify({
+          id: `logDocumentEventError${uniqueID}`,
+          message: "Error logging document event.",
+          data: {
+            originalError: error.message,
+            extra: {
+              uniqueID,
+              documentID,
+              errorDetails: error
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.ERROR,
+          level: 'error'
+        });
       });
     // Log to file
     FileLogger.logToFile(
@@ -1104,6 +1081,13 @@ class DocumentLogger extends Logger {
     );
   }
 }
+
+class ComponentLogger extends Logger {
+  static log(action: string, message: string, uniqueID: string) {
+    Logger.logWithOptions("User", `${action} (${message})`, uniqueID);
+  }
+}
+
 
 class FileLogger extends Logger {
   static logToFile(message: string, fileName: string) {
@@ -1125,26 +1109,18 @@ class FileLogger extends Logger {
   }
 
   static logDocumentEvent(uniqueID: string, documentID: string) {
-    let logDocumentEventUrl: string;
-
-    if (typeof endpoints.logs.logDocumentEvent === "string") {
-      // If it's a string, directly use the endpoint URL
-      logDocumentEventUrl = endpoints.logs.logDocumentEvent;
-    }
-    if (typeof endpoints.logs.logDocumentEvent === "function") {
-      // If it's a function, call it to get the endpoint
-      logDocumentEventUrl = endpoints.logs.logDocumentEvent();
-    }
-    else {
-      // Handle the case where it's neither a string nor a function
-      throw new Error("Invalid log document event endpoint");
-    }
+    // Use Logger's protected method instead of manual endpoint resolution
+    const logDocumentEventUrl = this.getLogEndpoint('logDocumentEvent', uniqueID, documentID);
+    
+    // You can now use logDocumentEventUrl for your fetch call if needed
+    return logDocumentEventUrl;
   }
 
   static logDocument(message: string, uniqueID: string, documentID: string) {
     super.logWithOptions("Document", message, uniqueID);
     this.logDocumentEvent(uniqueID, documentID);
   }
+
   // You can add more specific logging methods for different log types as needed
 
   static captureLog(logType: string, message: string, fileName: string) {
@@ -1162,35 +1138,35 @@ class FileLogger extends Logger {
     }
   }
 }
-class TaskLogger<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends Logger {
+
+
+class TaskLogger extends Logger {
   static logTaskEvent<
-    DataType extends BaseDataEntity,
-    KeyType extends DataType = DataType,
-    MetaType extends DefaultMeta<DataType, KeyType> = DefaultMeta<DataType, KeyType>,
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof DataType = DefaultExcludedFields<DataType>,
-    IncludedFields extends keyof DataType = keyof DataType
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    taskID: Task<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>["id"],
-    event: Task<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>,
+    taskID: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"],
+    event: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     completionMessage: string,
     type: string,
-    notify: (message: string, type: string, date: Date, id: string) => void,
-    meta: Map<string, Snapshot<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>> & 
-          BaseData<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>
+    notify: (notification: {
+      id: string;
+      message: string;
+      data: NotificationDataPayload;
+      timestamp: Date;
+      type: NotificationType;
+      level: string;
+    }) => void,
+    meta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): void {
     // Define the completionMessageLog with proper typing
-    const completionMessageLog: LogData<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields> & 
-      Partial<NotificationData<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>> = {
+    const completionMessageLog = {
       timestamp: new Date(),
-      level: "INFO",
+      level: "INFO" as const,
       message: completionMessage,
       user: null,
       createdAt: new Date(),
@@ -1207,17 +1183,24 @@ class TaskLogger<
       topics: [],
       highlights: [],
       files: [],
-      meta: meta as Map<string, Snapshot<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>>,
-    };
+      meta: meta
+    } as LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & 
+    Partial<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
     if (completionMessageLog.createdAt) {
       const notifyCallback = () => {
-        notify(
-          "Success",
-          NOTIFICATION_MESSAGES.Logger.LOG_INFO,
-          new Date(),
-          String(taskID)
-        );
+        notify({
+          id: `taskCompletionSuccess${taskID}`,
+          message: "Success",
+          data: {
+            extra: {
+              taskID: String(taskID)
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.INFO,
+          level: 'success'
+        });
       };
 
       UniqueIDGenerator.generateNotificationID(
@@ -1234,20 +1217,34 @@ class TaskLogger<
     );
   }
 
-  static logTaskCompleted(
+  static logTaskCompleted<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     existingTaskId: string,
     taskName: string,
     type: NotificationType,
-    notify: (message: string, type: string, date: Date, id: string) => void,
+    notify: (notification: {
+      id: string;
+      message: string;
+      data: NotificationDataPayload;
+      timestamp: Date;
+      type: NotificationTypeEnum;
+      level: string;
+    }) => void,
   ) {
     // Generate or retrieve the task ID
     const taskID = UniqueIDGenerator.generateTaskID(existingTaskId, taskName, type);
 
     // Additional logic specific to logging task completion
     const completionMessage = `Task ${taskID} has been completed.`;
-    const event = {} as Task<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>;
+    const event = {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-    const meta = new Map<string, Snapshot<DataType, KeyType, MetaType, AttachmentType, ExcludedFields, IncludedFields>>();
+    const meta = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
     // Log the completion event
     TaskLogger.logTaskEvent(
@@ -1263,7 +1260,9 @@ class TaskLogger<
   static logTaskCreated(name: string, taskID: string) {
     super.logWithOptions(
       "Task Created",
-      `Task ${taskID} created`, taskID);
+      `Task ${taskID} created`, 
+      taskID
+    );
     // Additional logic specific to logging task creation
   }
 
@@ -1296,6 +1295,7 @@ class TaskLogger<
   // Add more methods as needed for other task-related events
 }
 
+
 class CalendarLogger extends Logger {
   static logCalendarEvent(message: string, uniqueID: string, eventID: string) {
     super.logWithOptions("Calendar", message, uniqueID);
@@ -1323,13 +1323,21 @@ class CalendarLogger extends Logger {
           }
         })
         .catch((error) => {
-          notify(
-            "logCalendarEvent failed: " + error.message,
-            "Error logging calendar event.",
-            NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-            new Date(),
-            error
-          );
+          notify({
+            id: `logCalendarEventError${uniqueID}`,
+            message: "Error logging calendar event.",
+            data: {
+              originalError: error.message,
+              extra: {
+                uniqueID,
+                eventID,
+                errorDetails: error
+              }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.ERROR,
+            level: 'error'
+          });
         });
     } else {
       console.error("logCalendarEventUrl is not defined");
@@ -1360,21 +1368,9 @@ class WebLogger extends Logger {
       throw error;
     }
   }
-
+  // Remove the entire getLogUrl method and replace its usage with:
   private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
-    }
-
-    return logUrl;
+    return this.getLogEndpoint('logEvent', action);
   }
 }
 
@@ -1768,6 +1764,10 @@ class SecurityLogger extends Logger {
 
 
 class AssignBaseStoreLogger extends Logger {
+  private static isEndpointConfig(obj: any): obj is EndpointConfig {
+    return obj && typeof obj === "object" && "url" in obj && typeof obj.url === "string";
+  }
+
   static async sendAssignmentNotification(userId: string, todoId: string): Promise<void> {
     try {
       const message = `User ${userId} has been assigned to Todo ${todoId}`;
@@ -1805,16 +1805,31 @@ class AssignBaseStoreLogger extends Logger {
   }
 
   private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
+    let logUrl = "";
 
     if (typeof endpoints.logs.logEvent === "string") {
       logUrl = endpoints.logs.logEvent;
     } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
+      const endpointResult = endpoints.logs.logEvent();
+      
+      // Handle both string and EndpointConfig return types
+      if (typeof endpointResult === "string") {
+        logUrl = endpointResult;
+      } else if (endpointResult && typeof endpointResult === "object" && "url" in endpointResult) {
+        // If it's an EndpointConfig object, use the url property
+        logUrl = (endpointResult as EndpointConfig).url;
+      } else {
+        throw new Error("Invalid endpoint configuration - expected string or EndpointConfig");
+      }
+    } else if (endpoints.logs.logEvent && typeof endpoints.logs.logEvent === "object") {
+      // Handle the case when logEvent is a nested EndpointConfig object
+      if ("url" in endpoints.logs.logEvent) {
+        logUrl = (endpoints.logs.logEvent as EndpointConfig).url;
+      } else {
+        throw new Error("Nested endpoint object missing url property");
+      }
     } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
+      throw new Error("Invalid log event endpoint configuration");
     }
 
     return logUrl;
@@ -1895,22 +1910,6 @@ class SnapshotLogger extends Logger {
     }
   }
 
-  private static getLogUrl(action: string): string {
-    let logUrl = ""; // Initialize with an empty string
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      logUrl = endpoints.logs.logEvent();
-    } else {
-      // Handle the case when logEvent is a nested object
-      // For example: logUrl = endpoints.logs.logEvent.someNestedEndpoint;
-      // or logUrl = endpoints.logs.logEvent.someNestedFunction();
-    }
-
-    return logUrl;
-  }
-
   static async logErrorToService(error: Error): Promise<void> {
     try {
       // Example: Send error details to a remote logging service
@@ -1969,11 +1968,26 @@ class ThemeLogger extends Logger {
     if (typeof endpoints.logs.logThemeEvent === "string") {
       logThemeEventUrl = endpoints.logs.logThemeEvent;
     } else if (typeof endpoints.logs.logThemeEvent === "function") {
-      logThemeEventUrl = endpoints.logs.logThemeEvent();
-    } else {
+      const endpointResult = endpoints.logs.logThemeEvent();
+      
+      // Handle both string and EndpointConfig return types
+      if (typeof endpointResult === "string") {
+        logThemeEventUrl = endpointResult;
+      } else if (endpointResult && typeof endpointResult === "object" && "path" in endpointResult) {
+        // If it's an EndpointConfig object, use the path property
+        logThemeEventUrl = (endpointResult as EndpointConfig).path;
+      } else {
+        throw new Error("Invalid endpoint configuration - expected string or EndpointConfig");
+      }
+    } else if (endpoints.logs.logThemeEvent && typeof endpoints.logs.logThemeEvent === "object") {
       // Handle the case when logThemeEvent is a nested object
-      // Example: logThemeEventUrl = endpoints.logs.logThemeEvent.someNestedEndpoint;
-      // or logThemeEventUrl = endpoints.logs.logThemeEvent.someNestedFunction();
+      if ("path" in endpoints.logs.logThemeEvent) {
+        logThemeEventUrl = (endpoints.logs.logThemeEvent as EndpointConfig).path;
+      } else {
+        throw new Error("Nested endpoint object missing path property");
+      }
+    } else {
+      throw new Error("Invalid log theme event endpoint configuration");
     }
 
     fetch(logThemeEventUrl, {
@@ -1989,13 +2003,23 @@ class ThemeLogger extends Logger {
         }
       })
       .catch((error) => {
-        notify(
-          "Error logging theme event",
-          NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-          createErrorNotificationContent,
-          new Date(),
-          error
-        );
+        notify({
+          id: `logThemeEventError${eventType}`,
+          message: "Error logging theme event",
+          data: {
+            originalError: error.message,
+            extra: {
+              eventType,
+              themeName,
+              details,
+              errorDetails: error,
+              errorContent: createErrorNotificationContent(error)
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.ERROR,
+          level: 'error'
+        });
         console.error(error);
       });
   }

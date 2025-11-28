@@ -1,3 +1,4 @@
+// refreshUI.ts
 // refreshUI.js
 // Reusable refreshUI function
 function refreshUI(updates: {

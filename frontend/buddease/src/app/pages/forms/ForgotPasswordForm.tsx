@@ -1,3 +1,4 @@
+// ForgotPasswordForm.tsx
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions"; // Import sanitizeInput function
 import React, { useState } from 'react';
 

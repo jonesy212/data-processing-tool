@@ -1,3 +1,4 @@
+// dynamicHooks.ts
 // DynamicHooks.tsx
 import { loadDashboardState } from "@/app/api/ApiDashboard";
 import Web3Provider from '@/app/components/web3/Web3Provider';

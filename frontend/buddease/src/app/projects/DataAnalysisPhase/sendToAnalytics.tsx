@@ -1,3 +1,4 @@
+// sendToAnalytics.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';

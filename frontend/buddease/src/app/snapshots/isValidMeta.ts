@@ -1,3 +1,4 @@
+// isValidMeta.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { version } from '@/app/versions/Version';

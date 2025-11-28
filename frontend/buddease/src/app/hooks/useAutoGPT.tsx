@@ -1,3 +1,4 @@
+// useAutoGPT.tsx
 // src/app/hooks/useAutoGPT.ts
 import { useEffect, useState } from 'react';
 import OpenAI from 'openai';

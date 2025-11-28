@@ -1,3 +1,4 @@
+// ReactWebAnalyzer.ts
 // analyzers/ReactWebAnalyzer.ts
 import { BuildAnalyzer } from '@/app/generators/corrections/analyzers/BuildAnalyzer';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';

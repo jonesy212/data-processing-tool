@@ -1,3 +1,4 @@
+// DocumentSnapshotStore.tsx
 import React, { useState, useEffect } from "react";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -13,7 +14,6 @@ interface DocumentSnapshotStoreProps {
 type DocumentSnapshots = Array<Snapshot<Document, any>>;
 
 
-// DocumentSnapshotStore.tsx
 const DocumentSnapshotStore: React.FC<DocumentSnapshotStoreProps> = ({
   initialState = null,
   initialStates = [],

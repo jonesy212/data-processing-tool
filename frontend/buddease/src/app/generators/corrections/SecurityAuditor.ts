@@ -1,4 +1,5 @@
 // SecurityAuditor.ts
+import { CorrectionMessageGenerator } from './CorrectionMessageGenerator';
 import path from 'path';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
@@ -347,6 +348,43 @@ export class SecurityAuditor {
     lines.push('');
 
     return lines.join('\n');
+  }
+
+
+
+    private createSecurityCorrection(id: string, file: string, context: any = {}): Correction {
+    return {
+      id,
+      type: context.type || 'error',
+      severity: context.severity || 'high',
+      file,
+      message: CorrectionMessageGenerator.generateMessage(id, context),
+      code: context.code || '',
+      fix: context.fix || '',
+      category: 'security'
+    };
+  }
+
+  // Usage example:
+  private analyzeSensitiveData(interfaceInfo: any): Correction[] {
+    const corrections: Correction[] = [];
+    
+    interfaceInfo.properties?.forEach(prop => {
+      if (this.isSensitiveField(prop.name, prop.fieldType)) {
+        corrections.push(this.createSecurityCorrection(
+          `sensitive-data-${interfaceInfo.name}-${prop.name}`,
+          interfaceInfo.file,
+          {
+            fieldName: prop.name,
+            interfaceName: interfaceInfo.name,
+            code: `interface ${interfaceInfo.name} {\n  ${prop.name}: ${prop.type}\n}`,
+            fix: `Use SecureFieldManager for sensitive field '${prop.name}'`
+          }
+        ));
+      }
+    });
+
+    return corrections;
   }
 }
 

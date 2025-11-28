@@ -1,3 +1,4 @@
+// BlogList.tsx
 
 import React from "react";
 import { Attachment } from "@/app/documents/attachment/Attachment";

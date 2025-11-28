@@ -1,3 +1,4 @@
+// ProjectWithCryptoIntegration.tsx
 import { useCryptoIntegration } from '@/app/hooks/useCryptoIntegration';
 // Example usage in a React component
 const ProjectWithCryptoIntegration: React.FC = () => {

@@ -1,3 +1,4 @@
+// BugApiService.tsx
 // BugApiService
 
 import { ClientNotificationMessages, clientNotificationMessages } from '@/app/api/ApiClient';
@@ -5,7 +6,7 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken'; // Assuming you have an axios instance configured
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { AxiosError, AxiosResponse } from 'axios';
 
 const API_BASE_URL = endpoints.client;

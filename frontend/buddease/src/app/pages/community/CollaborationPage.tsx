@@ -1,3 +1,4 @@
+// CollaborationPage.tsx
 import triggerAutosave from "@/app/components/documents/editing/triggerAutosave";
 import RealTimeVisualization from "@/app/components/models/realtime/RealTimeVisualization";
 import { ResponsiveDesign } from "@/app/components/styling/ResponsiveDesign";

@@ -1,3 +1,4 @@
+// scheduleAction.ts
 // Define a generic type for actions
 import { ApiActions } from '@/app/actions/ApiActions';
 import { AuthActions } from '@/app/actions/AuthActions';

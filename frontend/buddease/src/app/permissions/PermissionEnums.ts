@@ -1,3 +1,4 @@
+// PermissionEnums.ts
 // PermissionLevel.ts
 export enum PermissionLevel {
   None = 'None',

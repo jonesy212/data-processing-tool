@@ -1,3 +1,4 @@
+// ShortcutKeys.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 import React from "react";

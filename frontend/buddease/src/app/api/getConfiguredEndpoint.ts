@@ -1,6 +1,8 @@
 // getConfiguredEndpoint.ts
 // Enhanced endpoint access using your ApiConfig system
-import { apiConfig, getApiEndpoint, getApiEndpointUrl } from '@/app/api/endpointConfigurations';
+import { apiConfig, getApiEndpoint, getApiEndpointUrl, getEndpointUrl } from '@/app/api/endpointConfigurations';
+import { EndpointConfigurations, EndpointConfig } from '@/app/config/EndpointConfig';
+
 
 // Option 1: Using the existing helper functions
 export const getConfiguredEndpoint = <T extends keyof EndpointConfigurations>(

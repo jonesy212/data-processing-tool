@@ -117,7 +117,7 @@ interface Permissions {
     }
   };
 
-
+export type { Permissions }
 
 
 

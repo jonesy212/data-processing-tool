@@ -1,3 +1,4 @@
+// domEventHandlers.ts
 
 import { DragActions } from "@/app/actions/DragActions";
 import { SearchActions } from "@/app/actions/SearchActions";

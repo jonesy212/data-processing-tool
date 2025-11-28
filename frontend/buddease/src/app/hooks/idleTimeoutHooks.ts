@@ -1,3 +1,4 @@
+// idleTimeoutHooks.ts
 import EXTENDED_NOTIFICATION_MESSAGES from "@/app/features/support/ExtendedNotificationMessages";
 import { IdleTimeoutType } from "@/app/config/UserSettings";
 import { DynamicHookParams } from "./DynamicHookParams";

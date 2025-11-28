@@ -1,6 +1,6 @@
+// socialMediaActions.ts
 import { createAction } from "@reduxjs/toolkit";
 
-// socialMediaActions.ts
 export const socialMediaActions = {
   updateFacebookEndpoints: createAction<{ endpoints: any }>("updateFacebookEndpoints"),
   updateInstagramEndpoints: createAction<{ endpoints: any }>("updateInstagramEndpoints"),

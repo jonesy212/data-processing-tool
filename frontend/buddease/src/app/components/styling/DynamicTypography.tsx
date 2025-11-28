@@ -1,3 +1,4 @@
+// DynamicTypography.tsx
 // components/DynamicTypography.tsx
 import React from "react";
 import DummyCardLoader, { ContentItem } from "@/app/cards/DummyCardLoader";

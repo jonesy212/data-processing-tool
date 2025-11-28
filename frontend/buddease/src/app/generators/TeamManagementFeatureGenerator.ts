@@ -1,3 +1,4 @@
+// TeamManagementFeatureGenerator.ts
 import { generateApiCode } from '@/ApiCodeGenerator'; // Import the correct type definition
 import ApiCodeOptions from '@/ApiCodeOptions';
 

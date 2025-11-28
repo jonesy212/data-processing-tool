@@ -1,5 +1,5 @@
-import { NotificationPosition } from '@/app/models/data/StatusType';
 // ApiContent.ts
+import { NotificationPosition } from '@/app/models/data/StatusType';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';

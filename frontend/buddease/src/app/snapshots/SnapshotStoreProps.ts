@@ -375,7 +375,7 @@ type ExampleEntity = BaseDataEntity & { name: string };
 // Initialize storeProps with meaningful values
 const storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> = {
   category: "storeProp-category",  // Assuming category can be a string
-  initialState: "",
+  initialState: {} as InitializedState<StorePropEntity, StorePropEntity, StorePropMeta, Attachment, never, keyof StorePropEntity>,
   callback: (snapshotStore: SnapshotStore<
     StorePropEntity, StorePropK,
     StorePropMeta, StorePropAttachment,

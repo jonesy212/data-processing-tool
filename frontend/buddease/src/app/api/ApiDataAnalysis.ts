@@ -1,5 +1,5 @@
-import { NotificationPosition } from '@/app/models/data/StatusType';
 // ApiDataAnalysis.ts
+import { NotificationPosition } from '@/app/models/data/StatusType';
 import { handleApiError } from '@/app/api/ApiLogs';
 import internalApiService from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";

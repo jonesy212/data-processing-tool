@@ -1,3 +1,4 @@
+// generateFileChecklist.tsx
 // generateFileChecklist.ts
 import FeatureStore from "@/app/state/stores/FeatureStore";
 import FeatureStructure from "@/app/pages/personas/FeatureStructure";

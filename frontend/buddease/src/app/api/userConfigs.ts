@@ -1,3 +1,4 @@
+// userConfigs.ts
 import { UserConfig } from "@/app/snapshots";
 import { UserData } from "@/app/users/User";
 import { userPreferences } from "@/app/config/UserPreferences";
@@ -22,7 +23,6 @@ interface UserConfigData<
   }
 
   
-// userConfigs.ts
 export const UserConfigs = {
     apiUrl: 'https://user.api.com',
     theme: 'light',

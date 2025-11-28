@@ -1,16 +1,19 @@
-import { NotificationService } from '@/app/state/stores/NotificationService';
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { NotificationContainer } from '@/app/services/NotificationService'
-import ApiConfig from '@/app/api/ApiConfig';
-import handleApiError from '@/app/api/SnapshotApi';
-import handleSnapshotApiError from '@/app/api/SnapshotApi';
+// ApiCommunicationService.ts
+import { AxiosError } from 'axios';
+import { headersConfig } from '@/app/api/headers/HeadersConfig';
+import { handleApiError } from '@/app/api/ApiLogs';
 import internalApiService from '@/app/api/ApiClient';
+import ApiConfig from '@/app/api/ApiConfigService';
+import handleApiError from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationContainer } from '@/app/services/NotificationService';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
-import { AxiosResponse } from 'axios';
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { NotificationManagerService } from "@/app/state/notifications/NotificationManagerService";
+import { NotificationService } from '@/app/service/NotificationService';
+import { AxiosResponse, AxiosError } from 'axios';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
@@ -203,73 +206,25 @@ async takeSnapshot(
   }
 }
 
-async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
-  try {
-    const response = await internalApiService.post(
-      `${this.config.baseURL}/snapshots/batch`,
-      { snapshots },
-      {
-        headers: headersConfig,
-        timeout: this.config.timeout,
-      }
-    );
-
-    // ✅ return boolean safely
-    return response.status === 200;
-  } catch (error) {
-    handleApiError(error as AxiosError<unknown>, "Failed to batch save snapshots");
-    return false;
-  }
-}
-
-
-  async takeSnapshot(
-    content: any,
-    date: Date,
-    projectType: any,
-    projectId: string,
-    projectState: any,
-    projectPriority: any,
-    projectMembers: any[]
-  ): Promise<any> {
-    try {
-      const snapshotData = {
-        content,
-        date,
-        projectType,
-        projectId,
-        projectState,
-        projectPriority,
-        projectMembers,
-      };
-
-      const response = await internalApiService.post(`${this.config.baseURL}/snapshots`, snapshotData, {
-        headers: headersConfig,
-        timeout: this.config.timeout,
-      });
-
-      return response.data;
-    } catch (error) {
-      handleApiError(error, "Failed to take snapshot");
-      throw error;
-    }
-  }
-
   async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
     try {
-      const response = await internalApiService.post(`${this.config.baseURL}/snapshots/batch`, {
-        snapshots,
-      }, {
-        headers: headersConfig,
-        timeout: this.config.timeout,
-      });
+      const response = await internalApiService.post(
+        `${this.config.baseURL}/snapshots/batch`,
+        { snapshots },
+        {
+          headers: headersConfig,
+          timeout: this.config.timeout,
+        }
+      );
 
+      // ✅ return boolean safely
       return response.status === 200;
     } catch (error) {
-      handleApiError(error, "Failed to batch save snapshots");
+      handleApiError(error as AxiosError<unknown>, "Failed to batch save snapshots");
       return false;
     }
   }
+
 
   // === DATASET OPERATIONS ===
 

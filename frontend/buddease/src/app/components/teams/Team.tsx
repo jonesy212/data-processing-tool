@@ -1,3 +1,4 @@
+// Team.tsx
 "use client";
 import { CommonData } from "@/app/models/CommonData";
 import { FileTypeEnum } from "@/app/documents/FileType";
@@ -21,7 +22,6 @@ import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { TeamMeta } from '@/app/typings/entities/TeamEntity'
 import { AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity'
 
 const options: SearchOptions = {
@@ -210,7 +210,7 @@ const team: Team = {
   isActive: true,
   leader: {
     // ... (keep existing leader object, but remove server dependencies)
-  },
+  } ,
   data: {} as TeamData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Team,
   assignedProjects: [],
   reassignedProjects: [],

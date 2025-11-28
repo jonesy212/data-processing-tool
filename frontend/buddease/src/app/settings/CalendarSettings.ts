@@ -1,3 +1,4 @@
+// CalendarSettings.ts
 import { EventNotificationsSettings } from '@/app/settings/NotificationChannels'
 import { ReminderSettings } from '@/app/settings/Reminder'
 // Define the CalendarSettingsEnum to represent various calendar settings

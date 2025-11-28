@@ -1,3 +1,4 @@
+// disposeGeolocationServices.ts
 import GeolocationService from "@/app/services/GeolocationService";
 
 const geolocationService = new GeolocationService();  

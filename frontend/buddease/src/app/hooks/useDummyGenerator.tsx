@@ -1,3 +1,4 @@
+// useDummyGenerator.tsx
 // useDummyGenerator.ts
 import { useState } from 'react';
 export interface DummyHookActions {

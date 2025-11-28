@@ -1,6 +1,6 @@
+// TaskHistoryEntry.tsx
 import { HistoryEntry, HistoryStore, baseStore } from "@/app/state/stores/HistoryStore";
 
-// TaskHistoryEntry.tsx
 interface TaskHistoryEntry {
     id: number;
     taskId: number;

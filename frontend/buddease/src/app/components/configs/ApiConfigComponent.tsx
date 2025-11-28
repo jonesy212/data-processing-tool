@@ -32,7 +32,7 @@ import BackendStructure from '@/app/server/database/BackendStructure';
 import { backendConfig } from "@/configs/BackendConfig";
 
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 
 import { userPreferences, UserPreferences } from "@/app/config/UserPreferences";
 

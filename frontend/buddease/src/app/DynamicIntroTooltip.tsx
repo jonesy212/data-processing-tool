@@ -1,5 +1,5 @@
-//TODO: IMPlEMENTATION IN MOBX AN INTRO TIP
 // DynamicIntroTooltip.tsx
+//TODO: IMPlEMENTATION IN MOBX AN INTRO TIP
 import IntroJs from 'intro.js';
 import { IntroStep } from 'intro.js/src/core/steps';
 

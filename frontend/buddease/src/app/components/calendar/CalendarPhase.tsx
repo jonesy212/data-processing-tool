@@ -1,3 +1,4 @@
+// CalendarPhase.tsx
 import React, { useEffect, useState } from "react";
 import { createPhaseHook, idleTimeoutDuration } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { navigateToCalendarPage } from "@/app/navigation/navigateToCalendar";

@@ -1,15 +1,15 @@
 // utilMethods.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { Snapshot } from "@/app/types"; // adjust path to where Snapshot<T,K> lives
+import { Snapshot } from "@/app/snapshots/Snapshot"; // adjust path to where Snapshot<T,K> lives
 import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore } from '@/app/state/stores/DataStore';
-import SnapshotStore from "@/app/snapshotstore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotUnion, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 
@@ -273,12 +273,12 @@ export const UtilMethods = {
     storeId: number,
     snapshotId: string,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T> | null,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     timestamp: string | number | Date | undefined,
     type: string,
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
-    snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
     category?: Category
   ): Promise<string[] | undefined> {
@@ -362,11 +362,7 @@ export const UtilMethods = {
 
   getSnapshotEntries: function <
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
   >(
     snapshotId: string
   ): Map<string, T> | undefined {

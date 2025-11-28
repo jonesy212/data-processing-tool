@@ -6,7 +6,7 @@ import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Content } from "@/app/models/content/AddContent";

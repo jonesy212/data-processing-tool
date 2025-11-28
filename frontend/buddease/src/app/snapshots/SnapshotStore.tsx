@@ -1,3 +1,4 @@
+// SnapshotStore.tsx
 // SnapshotStore.ts
 
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
@@ -25,8 +26,7 @@ import { SnapshotMethodsImplementation } from '@/app/snapshots/methods/snapshotM
 import { ValidationMethods } from '@/app/snapshots/methods/validationMethods';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { NotificationType, NotificationTypeEnum } from '@/state/context/NotificationContext';
-
+import {NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { Video } from '@/app/typings/videoTypes/Video';
 
 import getConfig from 'next/config';
@@ -250,7 +250,7 @@ class SnapshotStore<
   description?: string = "";
   category?: Category;
   options?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  categoryProperties: CategoryProperties | undefined;
+  categoryProperties?: CategoryPropertyBundle<T, K>
   message: any = undefined;
   timestamp: string | number | Date | undefined;
   logging?: boolean;
@@ -2030,7 +2030,7 @@ handleActions(action: any): void {
         (isSnapshotStoreConfig(options.configOption) ? options.configOption.description : undefined) ||
         ""
       ).toString(),
-      NotificationTypeEnum.GeneratedId
+      NotificationTypeEnum.GENERATED_ID
     );
 
     this.handleSnapshotFailure = (snapshots) => {

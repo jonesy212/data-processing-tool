@@ -1,3 +1,4 @@
+// ChatRoomComponent.tsx
 // ChatRoom.tsx
 import axiosInstance from '@/app/api/csrfToken'
 import { ChatLogger } from "@/app/libraries/logging/Logger";

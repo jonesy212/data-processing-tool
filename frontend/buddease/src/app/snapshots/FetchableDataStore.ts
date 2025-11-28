@@ -1,6 +1,6 @@
+// FetchableDataStore.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-// FetchableDataStore.ts
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshot } from '@/app/snapshots/Snapshot';

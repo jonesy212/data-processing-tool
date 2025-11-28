@@ -1,3 +1,4 @@
+// route.ts
 // app/api/apiKey/[key]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 

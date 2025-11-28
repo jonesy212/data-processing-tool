@@ -1,3 +1,4 @@
+// getCurrentAppType.ts
 import { AppConfig, getAppConfig } from "@/app/config/AppConfig";
 import { RootState } from "./state/redux/slices/RootSlice";
 

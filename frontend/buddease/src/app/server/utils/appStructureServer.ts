@@ -1,3 +1,4 @@
+// appStructureServer.ts
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { FileSystemService } from '@/app/config/appStructure/AppStructure'; // Import the interface

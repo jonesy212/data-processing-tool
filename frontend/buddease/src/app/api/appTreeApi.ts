@@ -1,3 +1,4 @@
+// appTreeApi.ts
 // AppTreeApi.ts
 
 import { handleApiError } from "@/app/api/ApiLogs";
@@ -6,11 +7,9 @@ import {
   saveToLocalStorage,
 } from "@/app/hooks/useLocalStorage";
 import AppTreeService from "@/app/services/AppTreeService";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification, } from '@/app/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { setThreshold } from '@/utils/setThresholdUtils';

@@ -1,3 +1,4 @@
+// securityMeasureTypes.ts
 // SecurityMeasureTypes.ts
 import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import { SecurityStatus } from "@/app/models/data/StatusType";

@@ -1,3 +1,4 @@
+// BackendStructureComponent.tsx
  import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";

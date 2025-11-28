@@ -1,3 +1,4 @@
+// ActivityFeedComponent.tsx
 import apiNotificationsService from "@/app/api/NotificationsService";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import React, { useEffect, useState } from "react";

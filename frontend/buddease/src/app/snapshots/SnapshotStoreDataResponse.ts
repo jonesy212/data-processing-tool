@@ -1,3 +1,4 @@
+// SnapshotStoreDataResponse.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';

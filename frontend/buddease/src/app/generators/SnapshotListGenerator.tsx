@@ -1,6 +1,6 @@
+// SnapshotListGenerator.tsx
 import SnapshotList, { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
-// SnapshotListGenerator.tsx
 class SnapshotListGenerator {
     generateSnapshotList(rawData: any): SnapshotList {
       const snapshotList = new SnapshotList();

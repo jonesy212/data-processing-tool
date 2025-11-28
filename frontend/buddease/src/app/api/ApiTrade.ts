@@ -1,3 +1,4 @@
+// ApiTrade.ts
 // ApiTrade.ts - MobX Observable Trade API
 import { AxiosResponse } from "axios";
 import { observable } from "mobx";

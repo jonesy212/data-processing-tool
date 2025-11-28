@@ -1,3 +1,4 @@
+// DashboardLoader.tsx
 // components/DashboardLoader.tsx
 import ResizablePanels from '@/app/hooks/userInterface/ResizablePanels';
 import useResizablePanels from '@/app/hooks/userInterface/useResizablePanels';

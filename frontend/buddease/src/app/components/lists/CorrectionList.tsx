@@ -1,15 +1,7 @@
 // CorrectionList.tsx
 import React, { useState, useEffect } from 'react';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 
-interface Correction {
-  id: string;
-  title: string;
-  description: string;
-  severity: 'error' | 'warning' | 'suggestion';
-  category: string;
-  file?: string;
-  line?: number;
-}
 
 export const CorrectionList: React.FC = () => {
   const [corrections, setCorrections] = useState<Correction[]>([]);

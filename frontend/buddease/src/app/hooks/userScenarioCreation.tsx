@@ -1,3 +1,4 @@
+// userScenarioCreation.tsx
 import { useState } from 'react';
 import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';

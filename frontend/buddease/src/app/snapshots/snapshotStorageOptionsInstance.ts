@@ -39,7 +39,7 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
-import { NotificationType } from "@/state/context/NotificationContext";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { SnapshotActionType } from "./SnapshotActionType";

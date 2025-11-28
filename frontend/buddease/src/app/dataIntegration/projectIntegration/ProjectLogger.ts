@@ -1,3 +1,4 @@
+// ProjectLogger.ts
 import { Logger } from "./activityLogger";
 import { ProjectPhase } from "./projectManagement";
 

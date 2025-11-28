@@ -1,3 +1,4 @@
+// TagComponent.tsx
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from '@/app/models/tracker/Tag';

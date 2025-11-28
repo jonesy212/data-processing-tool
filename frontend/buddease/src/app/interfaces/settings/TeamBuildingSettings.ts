@@ -1,3 +1,4 @@
+// TeamBuildingSettings.ts
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { BrainstormingSettings } from "./BrainstormingSettings";
 

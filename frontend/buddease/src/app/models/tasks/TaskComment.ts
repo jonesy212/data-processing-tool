@@ -1,3 +1,4 @@
+// TaskComment.ts
 // TaskComment.tsx
 interface TaskComment {
     id: string; // Unique identifier for the comment

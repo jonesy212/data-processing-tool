@@ -1,3 +1,4 @@
+// IconLibraryManager.tsx
 import React from "react";
 import { IconLoader } from "./IconLoader";
 import { IconLibrary, loadIconLibrary } from "./iconLibraryLoader";

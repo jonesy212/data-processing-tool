@@ -1,5 +1,5 @@
-import { Data } from '@/app/models/data/Data';
 // SnapshotContainer.ts
+import { Data } from '@/app/models/data/Data';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { ContentItem } from '@/app/cards/DummyCardLoader';

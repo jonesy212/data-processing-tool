@@ -1,3 +1,4 @@
+// TextCard.tsx
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
 import { DocumentTypeEnum } from '@/app/server/ServerDocumentGenerator';

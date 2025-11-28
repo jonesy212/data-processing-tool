@@ -1,3 +1,4 @@
+// Event.ts
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Snapshot } from '@/app/snapshots/Snapshot';

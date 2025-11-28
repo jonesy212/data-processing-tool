@@ -4,6 +4,7 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { UserPreferences } from "@/app/config/UserPreferences";
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
 import { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
@@ -40,7 +41,7 @@ import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { SnapshotStoreConfig } from "@/app/snapshots/";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
@@ -522,7 +523,7 @@ export interface UserData<
   username: string;
   
   // Account & Security
-  role: UserRole | undefined;
+  role?: string | UserRole;
   lastLogin?: Date;
   lastLogout?: Date;
   lastPasswordChange?: Date;
@@ -753,12 +754,12 @@ const UserDetails: React.FC<{ user: User<UserEntity, UserK, UserMeta, UserAttach
 };
 const area = fetchUserAreaDimensions().toString();
 const currentMeta: AppStructuredMetadata = useMeta(area)
-const currentMetadata: AppUnifiedMetadata = useMetadata('user-area');
+const currentMetadata: AppUnifiedMetadata = useMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>('user-area');
 
 export const usersDataSource: Record<string, UserData> = {
   1: {
     currentMetadata: currentMetadata,
-    currentMeta: meta,
+    currentMeta: currentMeta,
     // User Data
     id: 1,
     username: "User 1",
@@ -817,6 +818,7 @@ export const usersDataSource: Record<string, UserData> = {
       accessFailedCount: 0,
       subscriptionType: "",
       subscriptionEndDate: null,
+      latestVersion: createLatestVersion,
       childIds: [],
       relatedData: [],
       paymentMethod: "",

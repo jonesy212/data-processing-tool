@@ -1,3 +1,4 @@
+// sortingConfig.ts
 import { SortingEndpoints } from '@/app/typings/categories/SortingEndpoints';
 
 export const sortingConfig: SortingEndpoints = {

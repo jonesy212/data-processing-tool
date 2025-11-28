@@ -1,3 +1,4 @@
+// useLocalStorage.ts
 import { useEffect, useState } from 'react';
 
 // Function to get data from local storage

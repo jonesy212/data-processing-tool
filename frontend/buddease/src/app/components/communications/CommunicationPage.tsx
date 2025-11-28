@@ -1,3 +1,4 @@
+// CommunicationPage.tsx
 // Communication.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { User } from "@/app/users/User";

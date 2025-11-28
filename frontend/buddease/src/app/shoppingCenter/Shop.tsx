@@ -1,3 +1,4 @@
+// Shop.tsx
 import React from 'react';
 import ShoppingCenterConfig from '@/app/ShoppingCenterConfig'; // Import the ShoppingCenterConfig interface
 

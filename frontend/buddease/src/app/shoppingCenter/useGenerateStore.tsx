@@ -1,3 +1,4 @@
+// useGenerateStore.tsx
 import { useState } from 'react';
 
 const useStoreGenerator = (initialState: any, context: any) => {

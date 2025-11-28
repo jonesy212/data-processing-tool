@@ -1,3 +1,4 @@
+// route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { manageSubscriptionsServer } from '@/app/api/exchangeIntegrationServer';
 import { getSubscriberId, getSubscribersAPI } from '@/app/api/subscriberApi';

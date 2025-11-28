@@ -1,3 +1,4 @@
+// feedbackConfig.ts
 import { BASE_URL } from '@/app/api/baseUrl';
 import { FeedbackEndpoints } from '@/app/typings/categories/FeedbackEndpoints';
 

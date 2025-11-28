@@ -1,3 +1,4 @@
+// CustomSlider.tsx
 import { Slider } from 'antd';
 import React, { ChangeEvent, ChangeEventHandler, useState } from 'react';
 

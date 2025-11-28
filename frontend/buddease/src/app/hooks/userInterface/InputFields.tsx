@@ -1,3 +1,4 @@
+// InputFields.tsx
 import React from "react";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 

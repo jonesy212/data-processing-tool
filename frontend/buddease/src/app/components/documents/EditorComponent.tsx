@@ -1,3 +1,4 @@
+// EditorComponent.tsx
 import { Editor } from "draft-js";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";

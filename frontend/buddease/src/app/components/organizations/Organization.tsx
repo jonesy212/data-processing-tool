@@ -1,3 +1,4 @@
+// Organization.tsx
 interface Organization {
     id: string;
     name: string;

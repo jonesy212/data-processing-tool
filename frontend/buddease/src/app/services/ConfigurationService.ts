@@ -1,5 +1,7 @@
+// ConfigurationService.ts
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import ApiConfig from '@/app/api/ApiConfig';
+import ApiConfigServce from '@/app/api/ApiConfigService';
+import { ApiConfig } from '@/app/api/ApiConfigService'
 import { handleApiError } from '@/app/api/ApiLogs';
 import { createSystemConfigs } from '@/app/api/systemConfigs';
 import { UserConfigs } from '@/app/api/userConfigs';

@@ -1,3 +1,4 @@
+// NotificationDisplay.tsx
 import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice'
 import React from 'react';
 

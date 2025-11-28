@@ -1,3 +1,4 @@
+// Campaign.tsx
 // Define the interface for campaign data
 interface CampaignData {
     id: number;

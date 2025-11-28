@@ -1,3 +1,4 @@
+// LoadingIndicator.tsx
 import React from 'react';
 
 interface LoadingIndicatorProps {

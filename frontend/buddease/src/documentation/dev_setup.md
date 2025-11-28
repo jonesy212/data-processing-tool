@@ -1,4 +1,4 @@
-Development Setup
+# Development Setup
 To set up the development environment, follow these steps:
 
 Install project dependencies:

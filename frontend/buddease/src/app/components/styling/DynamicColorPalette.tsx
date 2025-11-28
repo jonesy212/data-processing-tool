@@ -1,3 +1,4 @@
+// DynamicColorPalette.tsx
 // components/DynamicColorPalette.tsx
 import React from 'react';
 import ColorPalette, { ColorSwatchProps } from '@/ColorPalette';

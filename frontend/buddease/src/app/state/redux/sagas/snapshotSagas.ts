@@ -1,3 +1,4 @@
+// snapshotSagas.ts
 // sagas/snapshotSagas.ts
 import { SnapshotActions } from '@/app/actions/SnapshotActions';
 import { YourResponseType } from '@/app/components/typings/types';

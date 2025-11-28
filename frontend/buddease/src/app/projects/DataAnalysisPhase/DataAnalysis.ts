@@ -1,3 +1,4 @@
+// DataAnalysis.ts
 // models/dataAnalysis/DataAnalysis.ts
 
 export class DataAnalysis {

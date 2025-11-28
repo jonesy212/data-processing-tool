@@ -1,3 +1,4 @@
+// stopBackgroundChatAudio.ts
 // Define the BackgroundChatAudio class
 class BackgroundChatAudio {
   private audioElement: HTMLAudioElement;

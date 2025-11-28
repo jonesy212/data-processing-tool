@@ -1,3 +1,4 @@
+// MarkerActions.ts
 // marker/MarkerActions.ts
 import { Marker } from "@/app/components/models/data/Marker";
 import { createAction } from "@reduxjs/toolkit";

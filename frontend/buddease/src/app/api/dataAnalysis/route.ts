@@ -1,3 +1,4 @@
+// route.ts
 // dataAnalysis/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';

@@ -1,48 +1,50 @@
-import { DocumentPhaseEnum } from '@/app/models/data/StatusType'
+// DocumentStore.ts
 import axiosInstance from '@/app/api/csrfToken';
-import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { FinancialReport } from '@/app/documents/Report';
 import { ClientInformation } from '@/app/client/ClientInformation';
-import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { ResearchReport, TechnicalReport } from '@/app/documents/Report';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
+import { ResearchReport, TechnicalReport } from '@/app/documents/Report';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from '@/app/models/data/FileData';
 import FolderData from '@/app/models/data/FolderData';
-import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { DocumentPhaseEnum, ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
 import { UserRoleEnum } from '@/app/models/UserRoles';
-import { FinancialReport } from '@/app/server/ServerDocumentGenerator';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { AllTypes } from "@/app/typings/PropTypes";
-import  AccessHistory from '@/app/versions/AccessHistory';
+import AccessHistory from '@/app/versions/AccessHistory';
 import { Version } from '@/app/versions/Version';
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { DocumentSize } from './../../documents/DocumentOptions';
-import { DocumentWithBuilderProps } from './../../hooks/userScenarioCreation';
+import { DocumentSize } from '@/app/documents/DocumentOptions';
+import { DocumentWithBuilderProps } from '@/app/hooks/userScenarioCreation';
 import { VersionData } from './../../versions/VersionData';
 import { WritableDraft } from './../redux/ReducerGenerator';
 import { AllStatus } from './DetailsListStore';
+import { Entity } from '@/app/config/BaseConfig';
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -125,7 +127,7 @@ interface DocumentBase<
   lastModifiedDate?: ModifiedDate;
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
-  lastModifiedByTeam?: Team;
+  lastModifiedByTeam?: Team | null;;
   timestamp?: Date;
 
   // Content

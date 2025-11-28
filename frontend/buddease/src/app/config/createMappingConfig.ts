@@ -1,6 +1,6 @@
+// createMappingConfig.ts
 import { CommonData } from '@/app/models/CommonData';
 import { ParsedData } from '@/app/dataIntegration/parseData';
-// createMappingConfig.ts
 import { DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SupportedData } from '@/app/models/CommonData';

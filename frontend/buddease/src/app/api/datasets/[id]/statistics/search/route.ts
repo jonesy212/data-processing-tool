@@ -1,3 +1,4 @@
+// route.ts
 // src/app/api/datasets/search/route.ts
 export async function GET(request: NextRequest) {
   try {

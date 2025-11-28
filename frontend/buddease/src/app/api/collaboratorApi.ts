@@ -1,3 +1,4 @@
+// collaboratorApi.ts
 
 import { AxiosError } from 'axios';
 import CalendarEventCollaborator from '@/components/calendar/CalendarEventCollaborator';

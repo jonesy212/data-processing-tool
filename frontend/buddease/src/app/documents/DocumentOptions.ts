@@ -1,3 +1,4 @@
+// DocumentOptions.ts
 // documentOptions.ts
 
 import { CustomStyle } from '@/app/api/service/ApiService';
@@ -6,6 +7,7 @@ import {
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import { CustomProperties, HighlightColor } from "@/app/components/styling/Palette";
+import { Data } from '@/app/models/data/Data';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -234,6 +236,10 @@ export interface DocumentOptions<
   ) => {
     phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
     phaseType: DocumentPhaseTypeEnum;
+    subPhases?: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    latestVersion?: string;
+    date?: Date;
+    createdBy?: string;
   };
   documentPhase:
   | string
@@ -645,7 +651,7 @@ export const getDefaultDocumentOptions = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): DocumentOptions => {
+>(): DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // todo update dynamic conent version
   const versionData = "document of version 1.0.0";
   const checksum = computeChecksum(versionData);
@@ -654,6 +660,7 @@ export const getDefaultDocumentOptions = <
     previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     documentOptions: {
+      documentId: '',
       previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     uniqueIdentifier: "",
@@ -871,7 +878,7 @@ export const getDefaultDocumentOptions = <
   workspaceViewers: [],
   workspaceAdmins: [],
   workspaceMembers: [],
-  data: [],
+  data: {} as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   name: "Untitled Document",
   url: "/documents/0",
   versionNumber: "1.0.0",
@@ -889,7 +896,7 @@ export const getDefaultDocumentOptions = <
     timestamp: new Date().toISOString(),
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
-    metadataEntries: {} as MetadataEntriesType<T, K, Meta>,
+    metadataEntries: {} as MetadataEntriesType<T, K>,
     latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     schema: {}
     },
@@ -931,7 +938,7 @@ export const getDefaultDocumentOptions = <
     phaseType: DocumentPhaseTypeEnum
   ) => {
     // Internal logic for additional parameters
-    const subPhases: [] = [];
+    const subPhases: (string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[] = [];
     const latestVersion = "";
     const date = new Date();
     const createdBy = "user";
@@ -1075,7 +1082,7 @@ export const getDefaultDocumentOptions = <
   revisionOptions: undefined,
   additionalOptionsLabel: "",
   };
-};
+}
 // Extend DocumentOptions to include additional properties
 interface ExtendedDocumentOptions<
   T extends BaseDataEntity = BaseDataEntity,

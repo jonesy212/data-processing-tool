@@ -1,3 +1,4 @@
+// ImageList.tsx
 import ClickableList from '@/app/actions/ClickableList';
 import React from 'react';
 

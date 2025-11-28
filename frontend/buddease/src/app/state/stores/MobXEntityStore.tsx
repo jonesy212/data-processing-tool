@@ -1,3 +1,4 @@
+// MobXEntityStore.tsx
 
 import { GlobalStateActions } from '@/app/actions/GlobalStateActions';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
@@ -10,7 +11,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
 import Version from '@/app/versions/Version';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
@@ -18,6 +19,8 @@ import * as docx from 'docx';
 import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from 'docx';
 import { action, makeAutoObservable } from 'mobx';
 import { useDispatch } from 'react-redux';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 
@@ -58,7 +61,14 @@ class CustomXmlComponent extends XmlComponent {
 }
 
 
-export default class MobXEntityStore {
+export default class MobXEntityStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   private rootKey: string;
   constructor() {
     makeAutoObservable(this);

@@ -1,3 +1,4 @@
+// createVersionInfo.ts
 import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";

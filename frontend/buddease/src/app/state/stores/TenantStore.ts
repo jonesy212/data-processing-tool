@@ -1,3 +1,4 @@
+// TenantStore.ts
 import { Tenant } from '@/app/components/users/TenantStore';
 import { makeAutoObservable } from "mobx";
 
@@ -9,7 +10,6 @@ interface Tenant {
   description: string;
 }
   
-// TenantStore.ts
 interface TenantStore {
     tenants: Tenant[];
     currentTenantId: string;

@@ -1,3 +1,4 @@
+// TeamMemberPermissionsImpl.ts
 import { MemberPermission, TeamPermission, Permission } from '@/app/permissions/Permission'
 import { TeamMemberPermissions } from '@/app/models/teams/TeamMembers'
 

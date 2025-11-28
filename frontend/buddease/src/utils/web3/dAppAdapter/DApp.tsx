@@ -24,7 +24,7 @@ import Connection from "@/app/server/database/Connection";
 import isValidAuthToken from "@/app/server/security/AuthValidation";
 import { DatabaseType } from '@/app/typings/database';
 import { AppEntity } from "@/app/typings/entities/AppEntity";
-import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typngs/entities/ExtendedDappEntity';
+import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typings/entities/ExtendedDappEntity';
 import { UserData } from "@/app/users/User";
 import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
@@ -45,11 +45,7 @@ export type CustomDocumentOptionProps<
 
 interface CustomApp<
  T extends BaseDataEntity = AppEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
+  K extends T = T
 > extends CommonRelationship<T, K>, SharedIdentifiers<T, K> {
     id: string;
     name: string;    
@@ -71,7 +67,7 @@ type CustomDAppAdapterConfig<
   Meta extends DefaultMeta<T, K>,
   AttachmentType extends Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T =  DefaultIncludedFields<T>
+  IncludedFields extends keyof T =  T
 > = DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
@@ -81,8 +77,8 @@ class CustomDAppAdapter<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
-  DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  IncludedFields extends keyof T = keyof T
+  // DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > extends YourClass {
   private adapter: FC<DAppAdapterProps>;
   private config: DAppAdapterConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -131,7 +127,7 @@ class CustomDAppAdapter<
           /* themeConfig */
           primaryColor: "#000000",
           infoColor: "#000000",
-          theme: ThemeEnum.DARK,
+          default: ThemeEnum.DARK,
         },
         dappProps
       );

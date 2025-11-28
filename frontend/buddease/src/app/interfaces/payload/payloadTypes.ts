@@ -1,3 +1,4 @@
+// payloadTypes.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { StatusType } from "@/app/models/data/StatusType";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -8,7 +9,7 @@ import {
   DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { BaseData } from "@/app/models/data/Data";
-import { NotificationType } from "@/state/context/NotificationContext";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
@@ -140,7 +141,7 @@ interface UpdateSnapshotPayload<T> extends Payload {
 
 export type { 
   Payload,
-  UpdateSnapshotPayload
+  UpdateSnapshotPayload,
   CreateSnapshotsPayload,
   ExtendedBaseDataPayload,
   CreateSnapshotStoresPayload,

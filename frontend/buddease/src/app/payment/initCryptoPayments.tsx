@@ -1,3 +1,4 @@
+// initCryptoPayments.tsx
 
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import DynamicEventHandlerService from "@/app/event/DynamicEventHandlerExample";

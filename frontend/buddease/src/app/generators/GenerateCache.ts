@@ -1,5 +1,6 @@
-// generateCache.ts
- import { FileTypeEnum } from "@/app/documents/FileType";
+// GenerateCache.ts
+
+import { FileTypeEnum } from "@/app/documents/FileType";
 import { BaseData } from '@/app/models/data/Data';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -34,13 +35,14 @@ import userSettings from "@/app/config/UserSettings";
 import { IBackendStructure } from "@/app/config/appStructure/IBackendStructure";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields } from '@/app/typings/entities/RealtimeDataEntity';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 const initialData: any = {}; 
 
-// export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
-export const realtimeData = {} as RealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
+export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
 
 // Updated cache data structure based on the provided tree structure
 export interface CacheData<  
@@ -58,7 +60,7 @@ export interface CacheData<
   backendStructure: IBackendStructure,
   frontendConfig: typeof frontendConfig
   userSettings: typeof userSettings,
-  realtimeData:  RealtimeData
+  realtimeData:  RealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   backendConfig: typeof backendConfig,
   // fetchData?: (userId: string, dispatch:DataAnalysisDispatch) => Promise<void>,
   // Add new top-level cache properties for UI phases

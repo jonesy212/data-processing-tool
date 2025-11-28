@@ -1,3 +1,4 @@
+// ApiVisualPreferences.tsx
 type ApiVidusalPreferences = {
     setTheme: (theme: string) => Promise<void>;
     setDarkMode: (isDarkMode: boolean) => Promise<void>;

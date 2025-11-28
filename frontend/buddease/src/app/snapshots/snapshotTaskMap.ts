@@ -1,3 +1,4 @@
+// snapshotTaskMap.ts
 import { Snapshot } from ".";
 import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
 

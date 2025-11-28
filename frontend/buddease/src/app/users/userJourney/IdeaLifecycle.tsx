@@ -1,3 +1,4 @@
+// IdeaLifecycle.tsx
 // Updated IdeaLifecycle component
 import React from "react";
 import { useLifecycle } from './hooks/useLifecycle';

@@ -1,3 +1,4 @@
+// ReactNativeAnalyzer.ts
 // corrections/analyzers/react-native/ReactNativeAnalyzer.ts
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';

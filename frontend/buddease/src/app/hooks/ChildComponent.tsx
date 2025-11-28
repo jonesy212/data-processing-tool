@@ -1,3 +1,4 @@
+// ChildComponent.tsx
 import { BrandingSettings } from '@/app/branding/BrandingSettings';
 import { Router } from 'next/router';
 import React from 'react';

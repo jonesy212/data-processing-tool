@@ -1,3 +1,4 @@
+// CollaborationDisplay.tsx
 // components/collaborations/CollaborationDisplay/CollaborationDisplay.tsx
 import React, { useRef, useState } from 'react';
 import { useDrag } from '@/app/components/libraries/animations/DraggableAnimation/useDrag';

@@ -1,3 +1,4 @@
+// AdminDashboard.tsx
 import { useDynamicComponents } from "@/app/DynamicComponentsContext";
 import DynamicNamingConventions from "@/app/DynamicNamingConventions";
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
@@ -18,7 +19,7 @@ import { User } from "@/app/users/User";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import ApiConfig from '@/app/api/ApiConfig';
+import ApiConfig from '@/app/api/ApiConfigServce';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
 
 import NotificationManager from '@/app/features/support/NotificationManager';

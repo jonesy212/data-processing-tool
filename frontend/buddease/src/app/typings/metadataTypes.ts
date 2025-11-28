@@ -1,21 +1,15 @@
+// metadataTypes.ts
 // AppMetadata.ts
 
 import { ValidationRule } from './../snapshots/ValidationRule';
-import { TaskMetadata } from '@/app/config/MetaDataOptions';
+import { TaskMetadata,  } from '@/app/config/MetaDataOptions';
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-interface AppMetadata<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+interface AppMetadata<AppTaskMetadata extends BaseDataEntity> extends UnifiedMetadata<AppTaskMetadata> {
   
   // 🎯 Application Identity & Versioning
   appVersion: string;

@@ -1,3 +1,4 @@
+// index.ts
 export * from '@/chat/ChatInput';
 export * from '@/chat/ChatMessage'; // Include other relevant modules
 export * from '@/chat/ChatNotification';

@@ -1,3 +1,4 @@
+// getDatabaseConfig.tsx
 // DatabaseConfig.tsx
 import { DatabaseConfig } from '@/app/config/DatabaseConfig'
 import { DatabaseType } from '@/app/typings/database'

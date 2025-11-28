@@ -1,3 +1,4 @@
+// getSnapshotDelegate.tsx
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';

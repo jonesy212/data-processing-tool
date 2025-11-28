@@ -1,3 +1,4 @@
+// SnapshotComponent.tsx
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";

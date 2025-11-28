@@ -1,11 +1,12 @@
+// EditorWithPrompt.tsx
 import React, { ReactNode, useState } from "react";
 
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 import { Prompt } from "@/app/prompts/PromptPage";
 import PromptSystem from "@/app/prompts/PromptSystem";
 import { generatePrompt } from "@/app/prompts/promptGenerator";
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import TextEditor from "./TextEditor"; // Assuming the correct path
-import { ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 
 interface EditorWithPromptProps {
   userId: string; // Add other necessary identifiers

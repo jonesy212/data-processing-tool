@@ -1,3 +1,4 @@
+// SetEventNotification.ts
 // SetEventNotification.tsx
 export interface SetCustomEventNotificationsPayload {
   eventId: string;

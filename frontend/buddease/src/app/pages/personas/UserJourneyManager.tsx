@@ -9,7 +9,7 @@ import PlanningPhase, {
 import FeedbackProcess, {
     FeedbackPhaseEnum,
 } from "@/app/components/phases/FeedbackPhase";
-import { IdeaLifecycleProcess } from '@/app/components/phases/IdeaLifecycleProcess';
+import IdeaLifecycleProcess from '@/app/components/phases/IdeaLifecycleProcess';
 import { IdeaLifecyclePhase } from "@/app/components/phases/ideaPhase/IdeaLifecyclePhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
@@ -25,7 +25,7 @@ import {
     ContentOrganization,
     ContentPublishing,
 } from "@/app/content/ContentMaintenance";
-import { UserSupportPhase } from "@/app/features/support/UserSupportPhaseComponent";
+import UserSupportPhase from "@/app/features/support/UserSupportPhaseComponent";
 import {
     DevelopmentPhaseEnum,
     ProjectPhaseTypeEnum,
@@ -63,8 +63,15 @@ type PhaseOptions =
   | DevelopmentPhaseEnum
   | ContentManagementPhaseEnum;
 
-interface UserJourneyManagerProps {
-  user: User;
+interface UserJourneyManagerProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   phaseName: PhaseOptions;
 }
 
@@ -120,10 +127,8 @@ const phaseComponents: Record<string, React.FC<any>> = {
   [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
 
   // Post-Launch Activities Phases
-  [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]:
-    PostLaunchActivitiesProcess,
-  [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]:
-    PostLaunchActivitiesProcess,
+  [PostLaunchActivitiesPhase.REFACTORING_REBRANDING]: PostLaunchActivitiesProcess,
+  [PostLaunchActivitiesPhase.COLLABORATION_SETTINGS]: PostLaunchActivitiesProcess,
 
   // Task Management Phases
   [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
@@ -161,9 +166,9 @@ const UserJourneyManager: React.FC = () => {
     useState<DevelopmentPhase>(PlanningPhase);
 
   let userData: UserData = {
-    ...(state.user as User)?.data,
+    ...(state.user as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)?.data,
     questionnaireResponses: {},
-    role: (state.user as User)?.data?.role || UserRoles.USER, // Ensure role is defined
+    role: (state.user as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)?.data?.role || UserRoles.USER, // Ensure role is defined
   };
 
   onboardingQuestionnaireData.forEach((question: any) => {

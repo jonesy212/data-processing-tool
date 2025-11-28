@@ -1,3 +1,4 @@
+// themeChangeAction.tsx
 import { BrandingSettings } from '@/app/branding/BrandingSettings';
 import { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';

@@ -1,3 +1,4 @@
+// EndpointConfig.ts
 import { AnalyticsEndpoints } from '@/app/typings/categories/AnalyticsEndpoints';
 import { ApiConfigEndpoints } from '@/app/typings/categories/ApiConfigEndpoints';
 import { CategoryEndpoints } from '@/app/typings/categories/CategoryEndpoints';

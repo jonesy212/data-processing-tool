@@ -1,11 +1,14 @@
 // ErrorPatternMatcher.ts
+
+import { CorrectionCategory } from '@/app/typings/correctionTypes';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
+import { CorrectionCategory } from '@/app/typings/correctionTypes'
 import fs from 'fs'
 
 interface ErrorPattern {
   pattern: RegExp;
-  category: Correction['category'];
+  correctionCategory: CorrectionCategory;
   severity: 'high' | 'medium' | 'low';
   message: string;
   suggestion: string;
@@ -68,7 +71,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // TypeScript Compilation Errors
     this.errorPatterns.set('typescript-type-error', {
       pattern: /error TS(\d+):/g,
-      category: 'compilation',
+      correctionCategory: 'compilation',
       severity: 'high',
       message: 'TypeScript type error',
       suggestion: 'Check type definitions, interfaces, and ensure proper TypeScript configuration. Run "npm run type-check" for details.'
@@ -76,7 +79,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('typescript-syntax-error', {
       pattern: /error TS\d+\s*:\s*'.*' expected|expected.*,|Unexpected token/g,
-      category: 'compilation',
+      correctionCategory: 'compilation',
       severity: 'high',
       message: 'TypeScript syntax error',
       suggestion: 'Fix syntax issues: missing semicolons, brackets, parentheses, or incorrect syntax structure.'
@@ -84,7 +87,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('typescript-cannot-find-module', {
       pattern: /error TS2307: Cannot find module/g,
-      category: 'import',
+      correctionCategory: 'import',
       severity: 'high',
       message: 'TypeScript cannot find module',
       suggestion: 'Check import paths, ensure module is installed, or add type definitions with @types/package-name'
@@ -92,7 +95,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('typescript-property-does-not-exist', {
       pattern: /error TS2339: Property.*does not exist on type/g,
-      category: 'types',
+      correctionCategory: 'types',
       severity: 'high',
       message: 'TypeScript property does not exist',
       suggestion: 'Check type definitions, use type assertions if needed, or extend interfaces properly'
@@ -101,7 +104,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // React & Next.js Specific Errors
     this.errorPatterns.set('react-hook-deps', {
       pattern: /React Hook .* has (a missing dependency|missing dependencies):/g,
-      category: 'react',
+      correctionCategory: 'react',
       severity: 'medium',
       message: 'React Hook dependency warning',
       suggestion: 'Add missing dependencies to useEffect/useCallback/useMemo dependency array or disable with eslint-disable-line if intentional'
@@ -109,7 +112,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('react-key-warning', {
       pattern: /Each child in a list should have a unique "key" prop/g,
-      category: 'react',
+      correctionCategory: 'react',
       severity: 'medium',
       message: 'Missing React key prop',
       suggestion: 'Add unique key prop to list items: {items.map(item => <div key={item.id}>...</div>)}'
@@ -117,7 +120,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('next-hydration', {
       pattern: /Hydration failed because|Text content does not match server-rendered HTML/g,
-      category: 'nextjs',
+      correctionCategory: 'nextjs',
       severity: 'high',
       message: 'Next.js hydration error',
       suggestion: 'Fix server-client rendering mismatches. Use useEffect for client-only code or suppress with suppressHydrationWarning'
@@ -125,7 +128,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('next-api-route', {
       pattern: /API resolved without sending a response|API route did not return a response/g,
-      category: 'nextjs',
+      correctionCategory: 'nextjs',
       severity: 'medium',
       message: 'Next.js API route issue',
       suggestion: 'Ensure API routes return proper responses: return res.json(), res.end(), or throw an error'
@@ -133,7 +136,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('next-dynamic-import', {
       pattern: /was not prerendered|Dynamic server usage/g,
-      category: 'nextjs',
+      correctionCategory: 'nextjs',
       severity: 'medium',
       message: 'Next.js dynamic import or SSR issue',
       suggestion: 'Use dynamic imports with ssr: false or move client-side code to useEffect'
@@ -142,7 +145,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Import/Module Resolution Errors
     this.errorPatterns.set('module-not-found', {
       pattern: /Module not found: Can't resolve|Cannot find module/g,
-      category: 'import',
+      correctionCategory: 'import',
       severity: 'high',
       message: 'Module resolution error',
       suggestion: 'Check import paths (relative vs absolute), ensure package is installed, or check tsconfig.json paths'
@@ -150,7 +153,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('export-not-found', {
       pattern: /Attempted import error:.*is not exported|has no exported member/g,
-      category: 'import',
+      correctionCategory: 'import',
       severity: 'high',
       message: 'Export not found',
       suggestion: 'Verify export names in source file. Check if using named vs default exports: import { Component } vs import Component'
@@ -158,7 +161,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('import-extension', {
       pattern: /Missing file extension|Need an appropriate loader/g,
-      category: 'import',
+      correctionCategory: 'import',
       severity: 'medium',
       message: 'Import file extension issue',
       suggestion: 'Add file extensions to imports or configure webpack/TypeScript to handle file extensions properly'
@@ -167,7 +170,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Webpack & Bundler Errors
     this.errorPatterns.set('webpack-chunk', {
       pattern: /ChunkLoadError|Loading chunk.*failed/g,
-      category: 'bundler',
+      correctionCategory: 'bundler',
       severity: 'medium',
       message: 'Webpack chunk loading error',
       suggestion: 'Check dynamic imports, ensure proper code splitting, and verify publicPath configuration'
@@ -175,7 +178,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('webpack-module-build', {
       pattern: /Module build failed|Module parse failed/g,
-      category: 'bundler',
+      correctionCategory: 'bundler',
       severity: 'high',
       message: 'Webpack module build failure',
       suggestion: 'Check loader configuration, file formats, and ensure proper webpack loaders are installed'
@@ -183,7 +186,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('webpack-asset', {
       pattern: /Cannot find module.*\.(png|jpg|svg|gif)|Asset optimization error/g,
-      category: 'bundler',
+      correctionCategory: 'bundler',
       severity: 'medium',
       message: 'Webpack asset processing error',
       suggestion: 'Install file-loader/url-loader for assets or use Next.js static file handling'
@@ -192,7 +195,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Dependency & Package Errors
     this.errorPatterns.set('peer-dependency', {
       pattern: /requires a peer of|missing peer dependency/g,
-      category: 'dependencies',
+      correctionCategory: 'dependencies',
       severity: 'medium',
       message: 'Peer dependency warning',
       suggestion: 'Install required peer dependencies: npm install peer-package or update package versions for compatibility'
@@ -200,7 +203,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('dependency-conflict', {
       pattern: /conflicting peer dependency|incompatible with/g,
-      category: 'dependencies',
+      correctionCategory: 'dependencies',
       severity: 'high',
       message: 'Dependency version conflict',
       suggestion: 'Resolve version conflicts using npm/yarn resolutions, or update packages to compatible versions'
@@ -208,7 +211,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('package-not-found', {
       pattern: /npm ERR! 404|Package.*not found/g,
-      category: 'dependencies',
+      correctionCategory: 'dependencies',
       severity: 'high',
       message: 'Package not found in registry',
       suggestion: 'Check package name spelling, verify registry access, or use correct package scope'
@@ -217,7 +220,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // ESLint & Code Quality Warnings
     this.errorPatterns.set('eslint-warning', {
       pattern: /warning\s+.*eslint|ESLint:/g,
-      category: 'linting',
+      correctionCategory: 'linting',
       severity: 'low',
       message: 'ESLint warning',
       suggestion: 'Address code quality issues. Run "npm run lint" to see details and "npm run lint:fix" to auto-fix'
@@ -225,7 +228,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('eslint-error', {
       pattern: /error\s+.*eslint/g,
-      category: 'linting',
+      correctionCategory: 'linting',
       severity: 'medium',
       message: 'ESLint error',
       suggestion: 'Fix critical code quality issues. Some rules may require manual intervention'
@@ -233,7 +236,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('prettier-format', {
       pattern: /prettier|Code style issues found/g,
-      category: 'formatting',
+      correctionCategory: 'formatting',
       severity: 'low',
       message: 'Code formatting issue',
       suggestion: 'Run "npm run format" or "npx prettier --write" to automatically format code'
@@ -242,7 +245,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Performance & Bundle Size Warnings
     this.errorPatterns.set('bundle-size', {
       pattern: /large.*bundle size|bundle size.*large|First Load JS.*is too heavy/g,
-      category: 'performance',
+      correctionCategory: 'performance',
       severity: 'medium',
       message: 'Large bundle size detected',
       suggestion: 'Implement code splitting, lazy loading, tree shaking, or analyze bundle with webpack-bundle-analyzer'
@@ -250,7 +253,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('memory-usage', {
       pattern: /JavaScript heap out of memory|FATAL ERROR/g,
-      category: 'performance',
+      correctionCategory: 'performance',
       severity: 'high',
       message: 'Memory usage issue',
       suggestion: 'Increase Node.js memory limit: --max-old-space-size=4096, or optimize memory usage in code'
@@ -259,7 +262,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Build & Compilation Configuration
     this.errorPatterns.set('config-error', {
       pattern: /Configuration error|Invalid configuration/g,
-      category: 'configuration',
+      correctionCategory: 'configuration',
       severity: 'high',
       message: 'Build configuration error',
       suggestion: 'Check configuration files (next.config.js, webpack.config.js, tsconfig.json) for syntax errors'
@@ -267,7 +270,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('environment-variable', {
       pattern: /Environment variable.*is missing|process\.env\./g,
-      category: 'configuration',
+      correctionCategory: 'configuration',
       severity: 'medium',
       message: 'Missing environment variable',
       suggestion: 'Add required environment variables to .env.local file or deployment environment'
@@ -276,7 +279,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // CSS & Styling Issues
     this.errorPatterns.set('css-module', {
       pattern: /Cannot find module.*\.module\.css|CSS import error/g,
-      category: 'styling',
+      correctionCategory: 'styling',
       severity: 'medium',
       message: 'CSS module import error',
       suggestion: 'Check CSS module configuration in next.config.js or ensure proper CSS loader setup'
@@ -284,7 +287,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('tailwind-config', {
       pattern: /tailwindcss|@apply.*cannot be used/g,
-      category: 'styling',
+      correctionCategory: 'styling',
       severity: 'low',
       message: 'Tailwind CSS configuration issue',
       suggestion: 'Check tailwind.config.js for proper content paths and plugin configuration'
@@ -293,7 +296,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Testing & Jest Errors
     this.errorPatterns.set('jest-test', {
       pattern: /Jest failed|Test suite failed to run/g,
-      category: 'testing',
+      correctionCategory: 'testing',
       severity: 'medium',
       message: 'Jest test failure',
       suggestion: 'Check test configurations, ensure proper mocking, and verify test environment setup'
@@ -301,7 +304,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('snapshot-test', {
       pattern: /Snapshot test failed|Snapshots are obsolete/g,
-      category: 'testing',
+      correctionCategory: 'testing',
       severity: 'low',
       message: 'Jest snapshot test issue',
       suggestion: 'Update snapshots with "npm test -- -u" or review UI changes that affect snapshots'
@@ -310,7 +313,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Authentication & Security
     this.errorPatterns.set('auth-error', {
       pattern: /Authentication error|JWT.*invalid|NextAuth.*error/g,
-      category: 'authentication',
+      correctionCategory: 'authentication',
       severity: 'high',
       message: 'Authentication error',
       suggestion: 'Check authentication configuration, environment variables, and token validation'
@@ -318,7 +321,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('cors-error', {
       pattern: /CORS error|Access-Control-Allow-Origin/g,
-      category: 'security',
+      correctionCategory: 'security',
       severity: 'medium',
       message: 'CORS policy violation',
       suggestion: 'Configure CORS headers in API routes or check origin whitelist in authentication setup'
@@ -327,7 +330,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Database & API Errors
     this.errorPatterns.set('database-connection', {
       pattern: /Database connection|Connection refused|ECONNREFUSED/g,
-      category: 'database',
+      correctionCategory: 'database',
       severity: 'high',
       message: 'Database connection error',
       suggestion: 'Check database server status, connection strings, and network connectivity'
@@ -335,7 +338,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('api-timeout', {
       pattern: /timeout|ETIMEDOUT|socket hang up/g,
-      category: 'api',
+      correctionCategory: 'api',
       severity: 'medium',
       message: 'API request timeout',
       suggestion: 'Increase timeout settings, optimize API responses, or implement retry logic'
@@ -344,7 +347,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Mobile & React Native Specific
     this.errorPatterns.set('react-native-module', {
       pattern: /NativeModule\.|react-native.*not found/g,
-      category: 'mobile',
+      correctionCategory: 'mobile',
       severity: 'high',
       message: 'React Native module error',
       suggestion: 'Check native module linking, ensure proper iOS/Android setup, or use web-compatible alternatives'
@@ -352,7 +355,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('metro-bundler', {
       pattern: /Metro.*error|bundling failed/g,
-      category: 'mobile',
+      correctionCategory: 'mobile',
       severity: 'high',
       message: 'Metro bundler error',
       suggestion: 'Clear Metro cache: npx react-native start --reset-cache, check import cycles'
@@ -361,7 +364,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Web3 & Blockchain Specific
     this.errorPatterns.set('web3-provider', {
       pattern: /web3\.eth|ethers\.providers|Missing provider/g,
-      category: 'web3',
+      correctionCategory: 'web3',
       severity: 'medium',
       message: 'Web3 provider error',
       suggestion: 'Check Web3 provider configuration, ensure proper network connection, or use fallback providers'
@@ -369,7 +372,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('contract-interaction', {
       pattern: /contract call failed|transaction failed/g,
-      category: 'web3',
+      correctionCategory: 'web3',
       severity: 'high',
       message: 'Smart contract interaction error',
       suggestion: 'Verify contract addresses, ABI compatibility, and gas settings for transactions'
@@ -378,7 +381,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // File System & I/O Errors
     this.errorPatterns.set('file-not-found', {
       pattern: /ENOENT|no such file or directory/g,
-      category: 'filesystem',
+      correctionCategory: 'filesystem',
       severity: 'medium',
       message: 'File not found error',
       suggestion: 'Check file paths, ensure files exist, and verify case sensitivity in imports'
@@ -386,7 +389,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('permission-denied', {
       pattern: /EACCES|permission denied/g,
-      category: 'filesystem',
+      correctionCategory: 'filesystem',
       severity: 'high',
       message: 'File system permission error',
       suggestion: 'Check file permissions, run with appropriate user privileges, or fix ownership issues'
@@ -395,7 +398,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Generic Fallback Patterns
     this.errorPatterns.set('generic-error', {
       pattern: /Error:|ERROR\s|Exception:/g,
-      category: 'general',
+      correctionCategory: 'general',
       severity: 'medium',
       message: 'Generic error detected',
       suggestion: 'Review error context in logs, check recent code changes, and verify environment setup'
@@ -403,7 +406,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('warning-message', {
       pattern: /Warning:|WARN\s/g,
-      category: 'general',
+      correctionCategory: 'general',
       severity: 'low',
       message: 'Generic warning',
       suggestion: 'Review warnings as they may indicate potential issues or deprecated usage'
@@ -412,7 +415,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
     // Network & HTTP Errors
     this.errorPatterns.set('network-error', {
       pattern: /Network Error|net::ERR_/g,
-      category: 'network',
+      correctionCategory: 'network',
       severity: 'medium',
       message: 'Network connection error',
       suggestion: 'Check internet connection, API endpoint availability, and CORS configuration'
@@ -420,7 +423,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
 
     this.errorPatterns.set('http-status', {
       pattern: /404 Not Found|500 Internal Server Error|403 Forbidden/g,
-      category: 'network',
+      correctionCategory: 'network',
       severity: 'medium',
       message: 'HTTP status error',
       suggestion: 'Check API endpoints, server status, and request/response handling'
@@ -756,7 +759,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'high' as const,
         title: 'Module resolution error',
         suggestion: 'Install missing dependency or fix import path',
-        category: 'compilation' as const
+        correctionCategory: 'compilation' as const
       },
       {
         pattern: /Invariant Violation: (.*)/,
@@ -765,7 +768,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'critical' as const,
         title: 'Invariant Violation',
         suggestion: 'Check component props and state management',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /Error: (.*) is not a function/,
@@ -774,7 +777,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'high' as const,
         title: 'Function call on non-function',
         suggestion: 'Check function exports and imports',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /TypeError: (.*) is not an object/,
@@ -783,7 +786,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'high' as const,
         title: 'Property access on non-object',
         suggestion: 'Check object initialization and null checks',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /TransformError: (.*)/,
@@ -792,7 +795,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'high' as const,
         title: 'Babel transform error',
         suggestion: 'Check Babel configuration and file syntax',
-        category: 'compilation' as const
+        correctionCategory: 'compilation' as const
       },
       {
         pattern: /Native module (.*) cannot be null/,
@@ -801,7 +804,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'critical' as const,
         title: 'Native module not found',
         suggestion: 'Check React Native linking and native dependencies',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /No bundle URL present/,
@@ -810,7 +813,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'critical' as const,
         title: 'Metro bundle not available',
         suggestion: 'Check Metro bundler and React Native server',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /AppRegistry is not a registered callable module/,
@@ -819,7 +822,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'critical' as const,
         title: 'App registration error',
         suggestion: 'Check app entry point and registration',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /Maximum update depth exceeded/,
@@ -828,7 +831,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'high' as const,
         title: 'Infinite re-render loop',
         suggestion: 'Check useEffect dependencies and state updates',
-        category: 'runtime' as const
+        correctionCategory: 'runtime' as const
       },
       {
         pattern: /VirtualizedList: missing keys/,
@@ -837,7 +840,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
         severity: 'medium' as const,
         title: 'Missing keys in VirtualizedList',
         suggestion: 'Add unique key prop to list items',
-        category: 'performance' as const
+        correctionCategory: 'performance' as const
       }
     ];
 
@@ -908,37 +911,37 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
   private reactNativeErrors = {
     'Native module cannot be null': {
       severity: 'critical' as const,
-      category: 'runtime' as const,
+      correctionCategory: 'runtime' as const,
       fix: 'Check React Native linking and native module installation'
     },
     'Invariant Violation: requireNativeComponent': {
       severity: 'critical' as const,
-      category: 'compilation' as const,
+      correctionCategory: 'compilation' as const,
       fix: 'Verify React Native component registration and linking'
     },
     'No bundle URL present': {
       severity: 'critical' as const,
-      category: 'runtime' as const,
+      correctionCategory: 'runtime' as const,
       fix: 'Check Metro bundler and React Native server'
     },
     'Module AppRegistry is not a registered callable module': {
       severity: 'critical' as const,
-      category: 'runtime' as const,
+      correctionCategory: 'runtime' as const,
       fix: 'Check React Native app registration and Metro bundler'
     },
     'Unable to resolve module': {
       severity: 'critical' as const,
-      category: 'compilation' as const,
+      correctionCategory: 'compilation' as const,
       fix: 'Install missing dependency or fix import path'
     },
     'TransformError': {
       severity: 'high' as const,
-      category: 'compilation' as const,
+      correctionCategory: 'compilation' as const,
       fix: 'Check Babel configuration and Metro bundler settings'
     },
     'Unable to resolve module from': {
       severity: 'high' as const,
-      category: 'compilation' as const,
+      correctionCategory: 'compilation' as const,
       fix: 'Verify import paths and module installations'
     }
   };

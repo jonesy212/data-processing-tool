@@ -1,3 +1,4 @@
+// CryptoSectionToolbar.tsx
 // CryptoSectionToolbar.ts
 import React from 'react';
 import ToolbarItem from '@/app/components/documents/ToolbarItem';

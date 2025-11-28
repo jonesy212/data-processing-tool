@@ -8,6 +8,13 @@ export interface Step {
   component: React.ComponentType<StepComponentProps>;
   status?: 'pending' | 'active' | 'completed';
   props?: Record<string, any>; 
+
+  description?: string;           
+  role?: string;                  
+  phase?: string;                 
+  next?: string;                  
+  back?: string;                  
+
 }
 
 export interface StepComponentProps {

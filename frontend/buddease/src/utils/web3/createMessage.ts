@@ -7,7 +7,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Content } from '@/app/models/content/AddContent';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 
 type MessageProps<

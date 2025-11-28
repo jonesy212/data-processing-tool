@@ -1,3 +1,4 @@
+// SnapshotList.tsx
 // SnapshotList.ts
 import { Label } from "@/app/branding/BrandingSettings";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
@@ -5,7 +6,7 @@ import { ChatRoom } from "@/app/communications/ChatRoom";
 import { Sender } from "@/app/communications/CommunicationPage";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";

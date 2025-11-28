@@ -1,3 +1,4 @@
+// Repository.ts
 interface Repository<T extends BaseDataEntity> {
   getById(id: string): Promise<T | null>;
   save(entity: T): Promise<void>;

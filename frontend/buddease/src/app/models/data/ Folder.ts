@@ -1,3 +1,4 @@
+//  Folder.ts
 
 interface Folder {
   id: string;

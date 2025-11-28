@@ -1,9 +1,16 @@
+// UserPreferencesActions.ts
 // generators/UserPreferencesActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { Audio } from "openai/resources/index.mjs";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Phase } from '@/app/models/phases/Phase';
+import { AppPhase } from '@/app/typings/entities/PhaseEntity';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import type {
+  ActionCreatorWithPayload,
+  ActionCreatorWithoutPayload
+} from '@reduxjs/toolkit';
+
 
 // Communication Preferences
 export const UserCommunicationPreferencesActions = {
@@ -427,99 +434,177 @@ export const UserProfilePreferencesActions = {
 };
 
 
-// Define action types for user profile preferences
-export type UserProfilePreferencesActionTypes =
-  | ReturnType<typeof UserProfilePreferencesActions.setProfilePreferences>
-  | ReturnType<typeof UserProfilePreferencesActions.setBioPreferences>
-  | import { createAction, PayloadAction } from "@reduxjs/toolkit";
 
 // Define the generic type for all actions
+import type { PayloadAction } from '@reduxjs/toolkit';
+
 type AppDevelopmentActionsType<
-  T extends BaseDataEntity,
-  K extends T = T,
+  T  extends BaseDataEntity,
+  K  extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  A  extends Attachment = Attachment,
+  Excl extends keyof T = DefaultExcludedFields<T>,
+  Incl extends keyof T = keyof T
 > = {
-  addSubPhase: ReturnType<typeof createAction<string>>;
-  removeSubPhase: ReturnType<typeof createAction<string>>;
-  updateSubPhase: ReturnType<typeof createAction<{ subPhaseId: number; newDetails: any }>>;
-  
-  canTransitionTo: ReturnType<typeof createAction<{ nextPhase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
-  handleTransitionTo: ReturnType<typeof createAction<{ nextPhase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
-  
-  resetIdleTimeout: ReturnType<typeof createAction>;
-  activatePhase: ReturnType<typeof createAction>;
-  deactivatePhase: ReturnType<typeof createAction>;
+  addSubPhase: PayloadAction<string>;
+  removeSubPhase: PayloadAction<string>;
+  updateSubPhase: PayloadAction<{ subPhaseId: number; newDetails: any }>;
 
-  fetchPhaseRequest: ReturnType<typeof createAction<number>>;
-  fetchPhaseSuccess: ReturnType<typeof createAction<{ phase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
-  fetchPhaseFailure: ReturnType<typeof createAction<{ error: string }>>;
+  resetIdleTimeout: PayloadAction<void>;
+  activatePhase: PayloadAction<void>;
+  deactivatePhase: PayloadAction<void>;
+  batchFetchPhasesRequest: PayloadAction<void>;
 
-  updatePhaseRequest: ReturnType<typeof createAction<{ phaseId: number; phaseData: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
-  updatePhaseSuccess: ReturnType<typeof createAction<{ phase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
-  updatePhaseFailure: ReturnType<typeof createAction<{ error: string }>>;
+  canTransitionTo: PayloadAction<{
+    nextPhase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  handleTransitionTo: PayloadAction<{
+    nextPhase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
 
-  batchFetchPhasesRequest: ReturnType<typeof createAction>;
-  batchFetchPhasesSuccess: ReturnType<typeof createAction<{ phases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
-  batchFetchPhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+  fetchPhaseRequest: PayloadAction<number>;
+  fetchPhaseSuccess: PayloadAction<{ phase: Phase<T, K, Meta, A, Excl, Incl> }>;
+  fetchPhaseFailure: PayloadAction<{ error: string }>;
 
-  batchUpdatePhasesRequest: ReturnType<typeof createAction<{ ids: number[]; newPhases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
-  batchUpdatePhasesSuccess: ReturnType<typeof createAction<{ phases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
-  batchUpdatePhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+  updatePhaseRequest: PayloadAction<{
+    phaseId: number;
+    phaseData: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  updatePhaseSuccess: PayloadAction<{ phase: Phase<T, K, Meta, A, Excl, Incl> }>;
+  updatePhaseFailure: PayloadAction<{ error: string }>;
 
-  batchRemovePhasesRequest: ReturnType<typeof createAction<number[]>>;
-  batchRemovePhasesSuccess: ReturnType<typeof createAction<number[]>>;
-  batchRemovePhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+  batchFetchPhasesSuccess: PayloadAction<{
+    phases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchFetchPhasesFailure: PayloadAction<{ error: string }>;
 
-  updatePhaseDetails: ReturnType<typeof createAction<Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>;
-  updatePhaseStatus: ReturnType<typeof createAction<"pending" | "inProgress" | "completed">>;
-  updatePhaseName: ReturnType<typeof createAction<string>>;
+  batchUpdatePhasesRequest: PayloadAction<{
+    ids: number[];
+    newPhases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchUpdatePhasesSuccess: PayloadAction<{
+    phases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchUpdatePhasesFailure: PayloadAction<{ error: string }>;
+
+  batchRemovePhasesRequest: PayloadAction<number[]>;
+  batchRemovePhasesSuccess: PayloadAction<number[]>;
+  batchRemovePhasesFailure: PayloadAction<{ error: string }>;
+
+  updatePhaseDetails: PayloadAction<Phase<T, K, Meta, A, Excl, Incl>>;
+  updatePhaseStatus: PayloadAction<'pending' | 'inProgress' | 'completed'>;
+  updatePhaseName: PayloadAction<string>;
+};
+
+
+type AppDevelopmentActionCreators<
+  T  extends BaseDataEntity,
+  K  extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  A  extends Attachment = Attachment,
+  Excl extends keyof T = DefaultExcludedFields<T>,
+  Incl extends keyof T = keyof T
+> = {
+  addSubPhase: ActionCreatorWithPayload<string>;
+  removeSubPhase: ActionCreatorWithPayload<string>;
+  updateSubPhase: ActionCreatorWithPayload<{ subPhaseId: number; newDetails: any }>;
+
+  resetIdleTimeout: ActionCreatorWithoutPayload;
+  activatePhase: ActionCreatorWithoutPayload;
+  deactivatePhase: ActionCreatorWithoutPayload;
+  batchFetchPhasesRequest: ActionCreatorWithoutPayload;
+
+  canTransitionTo: ActionCreatorWithPayload<{
+    nextPhase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  handleTransitionTo: ActionCreatorWithPayload<{
+    nextPhase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+
+  fetchPhaseRequest: ActionCreatorWithPayload<number>;
+  fetchPhaseSuccess: ActionCreatorWithPayload<{
+    phase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  fetchPhaseFailure: ActionCreatorWithPayload<{ error: string }>;
+
+  updatePhaseRequest: ActionCreatorWithPayload<{
+    phaseId: number;
+    phaseData: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  updatePhaseSuccess: ActionCreatorWithPayload<{
+    phase: Phase<T, K, Meta, A, Excl, Incl>;
+  }>;
+  updatePhaseFailure: ActionCreatorWithPayload<{ error: string }>;
+
+  batchFetchPhasesSuccess: ActionCreatorWithPayload<{
+    phases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchFetchPhasesFailure: ActionCreatorWithPayload<{ error: string }>;
+
+  batchUpdatePhasesRequest: ActionCreatorWithPayload<{
+    ids: number[];
+    newPhases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchUpdatePhasesSuccess: ActionCreatorWithPayload<{
+    phases: Phase<T, K, Meta, A, Excl, Incl>[];
+  }>;
+  batchUpdatePhasesFailure: ActionCreatorWithPayload<{ error: string }>;
+
+  batchRemovePhasesRequest: ActionCreatorWithPayload<number[]>;
+  batchRemovePhasesSuccess: ActionCreatorWithPayload<number[]>;
+  batchRemovePhasesFailure: ActionCreatorWithPayload<{ error: string }>;
+
+  updatePhaseDetails: ActionCreatorWithPayload<Phase<T, K, Meta, A, Excl, Incl>>;
+  updatePhaseStatus: ActionCreatorWithPayload<'pending' | 'inProgress' | 'completed'>;
+  updatePhaseName: ActionCreatorWithPayload<string>;
 };
 
 // Now define the constant
-export const AppDevelopmentActions: AppDevelopmentActionsType<any> = {
-  addSubPhase: createAction<string>("addSubPhase"),
-  removeSubPhase: createAction<string>("removeSubPhase"),
-  updateSubPhase: createAction<{ subPhaseId: number; newDetails: any }>("updateSubPhase"),
+export const AppDevelopmentActions: AppDevelopmentActionCreators<any> = {
+  addSubPhase: createAction<string>('addSubPhase'),
+  removeSubPhase: createAction<string>('removeSubPhase'),
+  updateSubPhase: createAction<{ subPhaseId: number; newDetails: any }>('updateSubPhase'),
 
-  canTransitionTo: createAction<{ nextPhase: Phase<Data<any, any, any, any, any, any>> }>("canTransitionTo"),
-  handleTransitionTo: createAction<{ nextPhase: Phase<Data<any, any, any, any, any, any>> }>("handleTransitionTo"),
+  canTransitionTo: createAction<{ nextPhase: Phase<AppPhase> }>('canTransitionTo'),
+  handleTransitionTo: createAction<{ nextPhase: Phase<AppPhase> }>('handleTransitionTo'),
 
-  resetIdleTimeout: createAction("resetIdleTimeout"),
-  activatePhase: createAction("activatePhase"),
-  deactivatePhase: createAction("deactivatePhase"),
+  resetIdleTimeout:  createAction<void>('resetIdleTimeout'),
+  activatePhase:     createAction<void>('activatePhase'),
+  deactivatePhase:   createAction<void>('deactivatePhase'),
 
-  fetchPhaseRequest: createAction<number>("fetchPhaseRequest"),
-  fetchPhaseSuccess: createAction<{ phase: Phase<Data<any, any, any, any, any, any>> }>("fetchPhaseSuccess"),
-  fetchPhaseFailure: createAction<{ error: string }>("fetchPhaseFailure"),
+  fetchPhaseRequest: createAction<number>('fetchPhaseRequest'),
+  fetchPhaseSuccess: createAction<{ phase: Phase<AppPhase> }>('fetchPhaseSuccess'),
+  fetchPhaseFailure: createAction<{ error: string }>('fetchPhaseFailure'),
 
-  updatePhaseRequest: createAction<{ phaseId: number; phaseData: Phase<Data<any, any, any, any, any, any>> }>("updatePhaseRequest"),
-  updatePhaseSuccess: createAction<{ phase: Phase<Data<any, any, any, any, any, any>> }>("updatePhaseSuccess"),
-  updatePhaseFailure: createAction<{ error: string }>("updatePhaseFailure"),
+  updatePhaseRequest: createAction<{ phaseId: number; phaseData: Phase<AppPhase> }>('updatePhaseRequest'),
+  updatePhaseSuccess: createAction<{ phase: Phase<AppPhase> }>('updatePhaseSuccess'),
+  updatePhaseFailure: createAction<{ error: string }>('updatePhaseFailure'),
 
-  batchFetchPhasesRequest: createAction("batchFetchPhasesRequest"),
-  batchFetchPhasesSuccess: createAction<{ phases: Phase<Data<any, any, any, any, any, any>>[] }>("batchFetchPhasesSuccess"),
-  batchFetchPhasesFailure: createAction<{ error: string }>("batchFetchPhasesFailure"),
+  batchFetchPhasesRequest: createAction<void>('batchFetchPhasesRequest'),
+  batchFetchPhasesSuccess: createAction<{ phases: Phase<AppPhase>[] }>('batchFetchPhasesSuccess'),
+  batchFetchPhasesFailure: createAction<{ error: string }>('batchFetchPhasesFailure'),
 
-  batchUpdatePhasesRequest: createAction<{ ids: number[]; newPhases: Phase<Data<any, any, any, any, any, any>>[] }>("batchUpdatePhasesRequest"),
-  batchUpdatePhasesSuccess: createAction<{ phases: Phase<Data<any, any, any, any, any, any>>[] }>("batchUpdatePhasesSuccess"),
-  batchUpdatePhasesFailure: createAction<{ error: string }>("batchUpdatePhasesFailure"),
+  batchUpdatePhasesRequest: createAction<{ ids: number[]; newPhases: Phase<AppPhase>[] }>('batchUpdatePhasesRequest'),
+  batchUpdatePhasesSuccess: createAction<{ phases: Phase<AppPhase>[] }>('batchUpdatePhasesSuccess'),
+  batchUpdatePhasesFailure: createAction<{ error: string }>('batchUpdatePhasesFailure'),
 
-  batchRemovePhasesRequest: createAction<number[]>("batchRemovePhasesRequest"),
-  batchRemovePhasesSuccess: createAction<number[]>("batchRemovePhasesSuccess"),
-  batchRemovePhasesFailure: createAction<{ error: string }>("batchRemovePhasesFailure"),
+  batchRemovePhasesRequest: createAction<number[]>('batchRemovePhasesRequest'),
+  batchRemovePhasesSuccess: createAction<number[]>('batchRemovePhasesSuccess'),
+  batchRemovePhasesFailure: createAction<{ error: string }>('batchRemovePhasesFailure'),
 
-  updatePhaseDetails: createAction<Phase<Data<any, any, any, any, any, any>>>("updatePhaseDetails"),
-  updatePhaseStatus: createAction<"pending" | "inProgress" | "completed">("updatePhaseStatus"),
-  updatePhaseName: createAction<string>("updatePhaseName"),
+  updatePhaseDetails: createAction<Phase<AppPhase>>('updatePhaseDetails'),
+  updatePhaseStatus: createAction<'pending' | 'inProgress' | 'completed'>('updatePhaseStatus'),
+  updatePhaseName: createAction<string>('updatePhaseName'),
 };
 
 
- UserProfilePreferencesActions.setContactPreferences>
+export type UserProfilePreferencesActionTypes =
+  | ReturnType<typeof UserProfilePreferencesActions.setContactPreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setAddressPreferences>
-  | ReturnType<typeof UserProfilePreferencesActions.setSocialMediaPreferences>;
+  | ReturnType<typeof UserProfilePreferencesActions.setSocialMediaPreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setProfilePreferences>
+  | ReturnType<typeof UserProfilePreferencesActions.setBioPreferences>
+
 
 // Support and Feedback Preferences
 export const UserSupportFeedbackPreferencesActions = {

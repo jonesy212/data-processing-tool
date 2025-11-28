@@ -1,3 +1,4 @@
+// Project.tsx
 // projects/Project.ts (CLIENT-SIDE ONLY)
 import { Exchange } from '@/app/models/cypto/Exchange';
 import { TeamService } from '@/app/services/teamService'

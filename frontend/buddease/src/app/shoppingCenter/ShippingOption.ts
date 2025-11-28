@@ -1,3 +1,4 @@
+// ShippingOption.ts
 
 interface ShippingOption {
     name: string;

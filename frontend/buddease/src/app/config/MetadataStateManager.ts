@@ -1,3 +1,4 @@
+// MetadataStateManager.ts
 // server/metadata/MetadataStateManager.ts
 import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createMetadata } from '@/app/config/metadata/createMetadata';

@@ -1,6 +1,7 @@
 // generate-commands-doc.ts
 import fs from 'fs';
 import path from 'path';
+import { StructureValidator } from './src/app/generators/corrections/StructureValidator';
 
 interface PackageJson {
   // Core identification
@@ -64,9 +65,14 @@ interface PackageJsonExports {
 }
 
 function generateCommandsDoc(): void {
-  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
-  const packageJson: PackageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const structureValidator = new StructureValidator();
+  const packageJson = await structureValidator.getPackageJsonData();
   
+  if (!packageJson) {
+    console.error('❌ Could not read package.json');
+    return;
+  }
+
   const categories = {
     '🚀 Development & Build': ['dev', 'build', 'start', 'lint'],
     '🔍 Code Analysis & Quality': ['analyze:', 'type-check', 'lint:types', 'test:types', 'validate:build'],

@@ -1,3 +1,4 @@
+// CalendarEventActions.ts
 // CalendarActions.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
@@ -144,7 +145,7 @@ export const CalendarActions = <
   }>("shareEvent"),
   shareFilesWithinCalendarEvent: createAction<{
     eventId: string;
-    files: CustomFile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    files: CustomFile<T>[];
     calendarEventId: string;
     recipients: string[];
   }>("shareFilesWithinCalendarEvent"),

@@ -7,8 +7,8 @@ import { Persona } from '@/app/pages/personas/Persona';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
-import { TaskData } from '@/app/models/tasks/Task';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { Phase } from "@/app/models/phases/Phase";
 
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
@@ -17,7 +17,7 @@ import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseDataRoot, BaseConfig } from '@/app/config/BaseConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria'
 import { AppContentEntity,
@@ -83,7 +83,11 @@ const AddContent: React.FC<{
     const newContent: DefaultContent = {
       id: Math.floor(Math.random() * 1000),
 
-      apiEndpoint, apiKey, timeout, retryAttempts, 
+      apiEndpoint: 0,
+      apiKey: 0,
+      timeout: 0,
+      retryAttempts: 0,
+      
       
 
       title,
@@ -96,7 +100,7 @@ const AddContent: React.FC<{
       categoryProperties: undefined,
       items: [],
       contentItems: [],
-      latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
+      latestVersion: createLatestVersion<DefaultContent>(),
       schema: {},
     };
 
@@ -599,7 +603,7 @@ const taskContent: Content<AppContentEntity, ContentK, ContentMeta, ContentAttac
     {
       id: 'update-002',
       title: 'Task Status Updated',
-      body: 'The status of the task has been changed to In Progress.'
+      body: 'The status of the task has been changed to In Progress.',
       heading: 'Status Update',
       type: 'text',
       status: StatusType.InProgress,
@@ -621,7 +625,7 @@ const taskContent: Content<AppContentEntity, ContentK, ContentMeta, ContentAttac
   contentItems: [],
   // relatedData: [],
   phase: {} as Phase<AppContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>,
-  metadata: undefined,
+  metadata: null,
   username: '',
   storeId: '',
   role: '',

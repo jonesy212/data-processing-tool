@@ -1,3 +1,4 @@
+// RandomWalkVisualization.tsx
 import React from "react";
 
 import { endpoints } from '@/app/api/endpointConfigurations';

@@ -1,3 +1,4 @@
+// DataState.ts
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment"

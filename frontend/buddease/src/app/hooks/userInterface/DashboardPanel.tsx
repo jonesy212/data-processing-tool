@@ -1,3 +1,4 @@
+// DashboardPanel.tsx
 import React, { useState } from "react";
 import DynamicDashboard from "@/app/dashboards/DynamicDashboard";
 import NavigationMenu from "@/app/interfaces/NavigationMenu";

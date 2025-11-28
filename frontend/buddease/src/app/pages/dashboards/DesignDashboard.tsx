@@ -1,3 +1,4 @@
+// DesignDashboard.tsx
 "use client"; // Add this to ensure it's a client component
 
 import YourParentComponent from "@/app/components/prompts/YourParentComponent";
@@ -9,7 +10,7 @@ import DynamicTypography, {
     HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
 import FrontendStructure from "@/configs/appStructure/FrontendStructureComponent";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import DataPreview, {
     DataPreviewProps,
 } from "@/app/users/DataPreview";

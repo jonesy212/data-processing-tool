@@ -1,5 +1,5 @@
-// Function to perform database operation
 // DatabaseOperations.ts
+// Function to perform database operation
 
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { DatabaseService } from '@/app/config/DatabaseTypes';

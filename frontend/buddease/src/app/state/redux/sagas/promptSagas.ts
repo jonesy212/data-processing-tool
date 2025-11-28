@@ -1,3 +1,4 @@
+// promptSagas.ts
 import { call, put, takeEvery } from 'redux-saga/effects';
 import { generateDynamicPrompts } from '@/app/prompts/promptGenerator';
 import { NOTIFICATION_TYPES, FETCH_PROMPTS_REQUEST } from '@/app/components/support/NotificationTypes';

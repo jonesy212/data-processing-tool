@@ -1,3 +1,4 @@
+// BlogGroup.tsx
 import React from "react";
 import { BlogPost } from "@/app/components/community/DiscussionForumComponent";
 import GroupGenerator from "@/app/generators/GroupGenerator";

@@ -1,3 +1,4 @@
+// assignPermissions.ts
 import { Permission } from '@/app/permissions/Permission';
 import * as userApi from '@/app/api/UsersApi'
 import * as documentApi from '@/app/api/ApiDocument'

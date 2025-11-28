@@ -1,3 +1,4 @@
+// useFetchUser.ts
 import { userService } from '@/app/api/ApiUser';
 import { sendNotification } from '@/app/state/redux/slices/UserSlice';
 import isValidAuthToken from '@/security/AuthValidation';

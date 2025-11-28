@@ -1,6 +1,7 @@
-import { ApiConfig, configServiceInstance } from '@/app/services/ConfigurationService';
+// ConfigurationServiceComponent.tsx
+import { configServiceInstance } from '@/app/services/ConfigurationService';
 import React from 'react';
-import  ApiConfig from '@/app/api/ApiConfig';
+import { ApiConfig } from '@/app/api/ApiConfigService'
 
 interface ConfigurationServiceComponentProps {
   apiConfigs: ApiConfig[]

@@ -1,5 +1,5 @@
-import { BaseDataEntity } from '@/app/config/BaseConfig';
 // SubscribeToSnapshotsPayload.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { BaseData } from '@/app/models/data/Data';

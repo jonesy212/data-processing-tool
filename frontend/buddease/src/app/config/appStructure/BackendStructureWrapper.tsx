@@ -1,3 +1,4 @@
+// BackendStructureWrapper.tsx
 // BackendStructureWrapper.ts
 
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';

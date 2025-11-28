@@ -1,3 +1,4 @@
+// appPath.ts
 import * as path from "path";
 
 import { AppVersion } from "@/app/versions/AppVersion"; // adjust import path

@@ -1,3 +1,4 @@
+// analyzeDuplicates.ts
 // scripts/analyzeDuplicates.ts
 import fs from 'fs';
 import path from 'path';

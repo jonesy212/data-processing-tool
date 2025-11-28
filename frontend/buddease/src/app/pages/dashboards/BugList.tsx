@@ -1,3 +1,4 @@
+// BugList.tsx
 // BugList.ts
 import React from 'react';
 import ListGenerator from '@/app/generators/ListGenerator';

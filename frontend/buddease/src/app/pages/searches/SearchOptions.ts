@@ -1,3 +1,4 @@
+// SearchOptions.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
 import { DashboardPreferenceEnum } from "@/app/dashboards/DashboardSettings";
 import { FileTypeEnum } from "@/app/documents/FileType";

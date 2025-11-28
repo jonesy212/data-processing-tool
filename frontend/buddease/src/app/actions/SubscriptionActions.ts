@@ -10,7 +10,7 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { category } from '@/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
@@ -18,13 +18,13 @@ import { LiveEvent } from "@refinedev/core";
 
 
 interface SubscriptionPayload<
-  T, extends BaseDataEntity = BaseDataRoot,
-  K, extends T = T,
-  Meta, extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType, extends Attachment = Attachment,
-  ExcludedFields, extends keyof T = never,
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > {
   error: string | undefined;
   meta: {

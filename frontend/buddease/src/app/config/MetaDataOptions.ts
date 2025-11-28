@@ -1,3 +1,4 @@
+// MetaDataOptions.ts
 import { TagsRecord } from '@/app/models/tracker/Tag'
 import { StatusType } from '@/app/models/data/StatusType';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/calendar/ScheduledData';
@@ -949,11 +950,11 @@ function createMediaMetadata(
     isActive,
     config,
 
-    customFields
-    initialState
-    meta
-    permissions
-    metadata
+    customFields,
+    initialState,
+    meta,
+    permissions,
+    metadata,
   } = metadataOptions;
 
   return {

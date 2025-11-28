@@ -1,3 +1,4 @@
+// EmailConfirmationPhaseComponent.tsx
 import { updateUIWithCopiedText } from '@/app/documents/editing/updateUI';
 import useUIStore from '@/app/components/libraries/ui/useUIStore';
 import React from 'react';

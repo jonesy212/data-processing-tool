@@ -1,5 +1,5 @@
-import { DetailsListStore } from './../state/stores/DetailsListStore';
 // milestoneTypes.ts
+import { DetailsListStore } from './../state/stores/DetailsListStore';
 import { StatusType } from '@/app/models/data/StatusType';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Reminder } from '@/app/settings/Reminder'

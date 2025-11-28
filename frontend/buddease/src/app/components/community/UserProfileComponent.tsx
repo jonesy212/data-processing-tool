@@ -1,3 +1,4 @@
+// UserProfileComponent.tsx
 import React, { useEffect } from 'react';
 import useUserProfile from '@/app/hooks/useUserProfile';
 

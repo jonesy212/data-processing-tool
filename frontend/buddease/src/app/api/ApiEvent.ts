@@ -1,4 +1,4 @@
-import { NotificationTypeEnum } from '@/state/context/NotificationContext';
+// ApiEvent.ts
 // EventApi.ts
 import headersConfig from '@/api/headers/HeadersConfig';
 import { handleApiError } from '@/app/api/ApiLogs';

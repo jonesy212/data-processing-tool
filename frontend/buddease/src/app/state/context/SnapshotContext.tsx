@@ -1,3 +1,4 @@
+// SnapshotContext.tsx
 // // SnapshotContext.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";

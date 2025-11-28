@@ -1,3 +1,4 @@
+// index.tsx
 // pages/index.tsx
 import useMessagingSystem from "@/app/components/communications/chat/useMessagingSystem";
 import generateDynamicContent from '@/app/documents/DynamicContentGenerator';

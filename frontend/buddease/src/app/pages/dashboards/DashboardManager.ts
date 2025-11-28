@@ -1,3 +1,4 @@
+// DashboardManager.ts
 // DashboardManager.tsx
 import React, { useState } from 'react';
 import { DashboardOverview, ProjectWorkspace, CommunicationHub } from './DashboardComponents';

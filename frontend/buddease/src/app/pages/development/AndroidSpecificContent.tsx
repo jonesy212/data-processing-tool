@@ -1,3 +1,4 @@
+// AndroidSpecificContent.tsx
 // AndroidSpecificContent.ts
 import { useThemeConfig } from '@/app/hooks/userInterface/ThemeConfigContext';
 import AddContent, { ContentProps } from '@/app/components/models/content/AddContent';

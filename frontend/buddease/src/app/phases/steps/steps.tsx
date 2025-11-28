@@ -1,3 +1,4 @@
+// steps.tsx
 import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
 import { useStepContext } from "@/app/state/context/StepContext";
 import { TradeData } from "@/app/trading/TradeData";

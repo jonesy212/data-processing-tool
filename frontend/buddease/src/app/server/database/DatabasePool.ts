@@ -1,3 +1,4 @@
+// DatabasePool.ts
 import { Pool, QueryResult } from 'pg';
 
 // Define the Pool class

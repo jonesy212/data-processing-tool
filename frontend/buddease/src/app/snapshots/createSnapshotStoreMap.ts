@@ -1,3 +1,4 @@
+// createSnapshotStoreMap.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';

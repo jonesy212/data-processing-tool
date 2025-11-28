@@ -1,35 +1,43 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// useDynamicNavigation.ts
+import { useEffect, useRef } from "react";
+import { useNavigation } from "./NavigationContext";
 
-const useDynamicNavigation = (condition: () => boolean, path: string, direction: "backward" | "forward") => {
-  const navigate = useNavigate();
+/**
+ * condition: a boolean OR a function returning boolean
+ * path: target path
+ * view: optional view name
+ * options:
+ *  - direction: "none" | "backward" | "forward"  (controls custom stack navigation)
+ *  - once: boolean - only trigger once when condition becomes true
+ */
+export const useDynamicNavigation = (
+  condition: boolean | (() => boolean),
+  path: string,
+  view?: string,
+  options?: { direction?: "none" | "backward" | "forward"; once?: boolean }
+) => {
+  const nav = useNavigation();
+  const triggered = useRef(false);
+  const getCondition = typeof condition === "function" ? condition : () => condition;
 
   useEffect(() => {
-    if (condition()) {
-      navigate(path);
-    }
-  }, [condition, navigate, path]);
+    const cond = getCondition();
+    if (!cond) return;
+    if (options?.once && triggered.current) return;
 
-  useEffect(() => {
-    try {
-      if (condition()) {
-        if (direction === "backward") {
-          // Implement logic to navigate backward in history
-          // For example, you can revert to the previous state or action
-          console.log("Navigating backward in history...");
-        } else if (direction === "forward") {
-          // Implement logic to navigate forward in history
-          // For example, you can redo a previously undone action
-          console.log("Navigating forward in history...");
-        } else {
-          throw new Error("Invalid direction for navigating history.");
-        }
-      }
-    } catch (error) {
-      console.error("Error navigating history:", error);
-      // Handle any errors that occur during navigation
+    // signal state machine
+    nav.sendEvent({ type: "NAV_START" });
+
+    if (!options?.direction || options.direction === "none") {
+      nav.navigateTo(path, view);
+    } else if (options.direction === "backward") {
+      nav.goBack();
+    } else if (options.direction === "forward") {
+      nav.goForward();
     }
-  }, [condition, direction]);
+
+    nav.sendEvent({ type: "NAV_END" });
+    triggered.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCondition(), path, view, options?.direction, options?.once]);
 };
-
-export default useDynamicNavigation;

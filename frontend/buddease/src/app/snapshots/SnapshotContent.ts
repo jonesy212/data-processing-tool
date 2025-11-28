@@ -1,3 +1,4 @@
+// SnapshotContent.ts
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot, SnapshotData } from '@/app/snapshots';

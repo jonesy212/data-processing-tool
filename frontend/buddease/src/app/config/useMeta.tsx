@@ -1,3 +1,4 @@
+// useMeta.tsx
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { PhaseData } from "@/app/models/phases/Phase";

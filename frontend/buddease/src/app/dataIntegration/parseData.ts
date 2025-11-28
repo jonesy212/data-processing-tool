@@ -1,3 +1,4 @@
+// parseData.ts
 
 // Function to parse and process the received data
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';

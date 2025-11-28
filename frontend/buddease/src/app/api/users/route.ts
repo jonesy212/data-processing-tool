@@ -1,3 +1,4 @@
+// route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PostgresDatabaseService } from '@/app/server/database/PostgresDatabaseService';
 

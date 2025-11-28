@@ -1,3 +1,4 @@
+// PricingDashboard.tsx
 import ArbitrageRiskManager, {
   ArbitrageTrade,
   RiskManagementOptions,

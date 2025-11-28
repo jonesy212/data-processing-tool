@@ -1,3 +1,4 @@
+// BasicStopwatchComponent.tsx
 // CountdownTimerComponent.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 

@@ -1,3 +1,4 @@
+// PrivacySettings.ts
 import { UserRole } from "@/app/models/UserRole";
 import { User } from "@/app/users/User";
 

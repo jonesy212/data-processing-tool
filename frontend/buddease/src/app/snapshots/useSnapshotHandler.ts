@@ -1,3 +1,4 @@
+// useSnapshotHandler.ts
 // // useSnapshotHandler.ts
 // import { useState } from 'react';
 // import { CustomSnapshotData } from '@/app/snapshots/LocalStorageSnapshotStore';

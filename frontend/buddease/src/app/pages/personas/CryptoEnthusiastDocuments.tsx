@@ -1,8 +1,9 @@
+// CryptoEnthusiastDocuments.tsx
 import { updateDocumentInDatabase } from "@/app/config/database/updateDocumentInDatabase";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { DocumentStatusEnum } from "@/app/server/ServerDocumentGenerator";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import React, { useState } from "react";
 
 

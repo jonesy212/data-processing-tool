@@ -3,14 +3,15 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import { SharedConfig } from '@/app/config/BaseConfig';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 // Import any other necessary dependencies
 
 export interface Config extends SharedConfig {
+  id: string;
   apiUrl: string;
   apiKey: string;
   maxConnections: number;
-  
   // Add other configuration properties as needed
 }
 

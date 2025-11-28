@@ -1,3 +1,4 @@
+// FakeDataGenerator.ts
 // src/app/generators/GenerateFakeData.ts
 import { faker } from '@faker-js/faker';
 import { Data } from '@/app/models/data/Data';

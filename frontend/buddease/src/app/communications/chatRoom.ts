@@ -1,3 +1,4 @@
+// ChatRoom.ts
 import ChatMessage from '@/app/components/communications/chat/ChatMessage'
 import { User } from '@/app/users/User'
 

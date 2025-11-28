@@ -121,6 +121,8 @@ const NOTIFICATION_MESSAGES = {
     Crypto: {
         DEFAULT: "Error reading crypto configuration file",
         FETCH_CRYPTO_SUCCESS: "Crypto fetched successfully",
+        
+        FETCH_CRYPTOS_SUCCESS: 'Fetching cryptos...'
         FETCH_CRYPTO_FAILURE: "Error fetching crypto. Please try again",
         FETCH_CRYPTO_REQUEST: "Fetching crypto..",
         UPDATE_CRYPTO_SUCCESS: "Crypto updated successfully",
@@ -162,6 +164,7 @@ const NOTIFICATION_MESSAGES = {
         COMPLETE_ALL_EVENTS_ERROR: "Failed to complete all calendar events",
         COMPLETE_ALL_EVENTS_SUCCESS: "All calendar events completed successfully",
         EVENT_REMINDER_SUCCESS: "Calendar event was successfully",
+        EVENT_REMOVED_SUCCESS: '"Calendar event was removed successfully"',
         UPDATE_EVENT_SUCCESS: "Calendar event updated successfully",
         UPDATE_EVENT_TITLE_SUCCESS: "Updated event title",
         UPDATE_EVENT_ERROR: "Failed to update calendar event",
@@ -259,6 +262,7 @@ const NOTIFICATION_MESSAGES = {
         DOWNLOAD_DOCUMENT_ERROR: "Download document error",
         FETCH_DOCUMENT_FROM_ARCHIVE_SUCCESS: 'Fetched document from archive is successfully',
         FETCH_DOCUMENT_FROM_ARCHIVE_ERROR: 'Error fetching document from archive',
+        FETCH_FROM_ARCHIVE_ERROR: 'Error fetching from the archive',
         EXPORT_DOCUMENTS_SUCCESS: "Exported documents have been successfully downloaded",
         EXPORT_DOCUMENTS_ERROR: "Error exporting documents. Please try again",
         EXPORT_DOCUMENT_ERROR: "Error exporting document. Please try again",

@@ -142,7 +142,17 @@ export const isPublicCalendarField = (
   return publicFields.includes(field as CalendarIncludedFields);
 };
 
-// 16. Complete type exports
+
+export type AppCalendarEvent = CalendarEvent<
+  CalendarEntity,
+  CalendarK,
+  CalendarMeta,
+  CalendarAttachment,
+  CalendarExcludedFields,
+  CalendarIncludedFields
+>;
+
+// Complete type exports
 export type {
   CalendarExcludedFields,
   CalendarIncludedFields

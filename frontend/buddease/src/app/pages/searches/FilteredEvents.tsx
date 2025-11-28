@@ -1,3 +1,4 @@
+// FilteredEvents.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { initialState } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";

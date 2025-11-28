@@ -1,3 +1,4 @@
+// dataMethods.ts
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -154,7 +155,6 @@ export function addDataStatus<
 }
 
 
-// dataMethods.ts
 export function setData<
   T extends BaseDataEntity,
   K extends T = T,

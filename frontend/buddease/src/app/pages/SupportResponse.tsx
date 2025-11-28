@@ -1,3 +1,4 @@
+// SupportResponse.tsx
 import React from'react';
 const SupportResponse = ({ message }: { message: string }) => {
   return (

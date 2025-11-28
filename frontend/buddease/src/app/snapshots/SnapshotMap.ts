@@ -1,3 +1,4 @@
+// SnapshotMap.ts
 // Function to add or update a snapshot in the map
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";

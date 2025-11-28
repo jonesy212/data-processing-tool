@@ -1,3 +1,4 @@
+// AppContext.ts
 // app/state/context/AppContext.tsx
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { ProjectStore } from '../stores/ProjectStore';

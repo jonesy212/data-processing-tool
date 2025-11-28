@@ -1,3 +1,4 @@
+// route.ts
 // src/app/api/datasets/[id]/statistics/route.ts
 export async function GET(
   request: NextRequest,

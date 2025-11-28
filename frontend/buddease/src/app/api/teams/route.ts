@@ -1,3 +1,4 @@
+// route.ts
 // app/api/teams/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { DatabaseClient } from '@/app/api/DatabaseClient';

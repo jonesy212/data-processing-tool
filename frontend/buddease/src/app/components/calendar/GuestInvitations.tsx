@@ -1,3 +1,4 @@
+// GuestInvitations.tsx
 import React from 'react';
 
 interface GuestInvitationsProps {

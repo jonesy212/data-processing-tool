@@ -1,3 +1,4 @@
+// route.ts
 // complete/route.ts
 import { serverConfigService } from '@/app/server/ServerConfigurationService';
 import { NextRequest, NextResponse } from 'next/server';

@@ -1,3 +1,4 @@
+// Language.ts
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 
 interface Language {

@@ -1,3 +1,4 @@
+// useIconLoaderAsync.tsx
 // useIconLoaderAsync.ts
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+// yourResponseTypeDataExample.ts
 // parseDataExample.ts
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields } from '@/app/typings/entities/ExampleEntity'

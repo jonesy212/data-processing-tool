@@ -1,3 +1,4 @@
+// EventService.tsx
 // EventService.ts
 import { EventActions } from '@/app/actions/EventActions';
 import { UIActions } from '@/app/actions/UIActions';

@@ -1,3 +1,4 @@
+// dataStoreTypeGuards.ts
 import { Data } from '@/app/models/data/Data';
 import { BaseData } from '@/app/models/data/Data';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";

@@ -1,3 +1,4 @@
+// authenticationHeaders.tsx
 import { User } from "@/app/users/User";
 import configData from "@/app/config/endpoints/configData";
 import { AppUserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'

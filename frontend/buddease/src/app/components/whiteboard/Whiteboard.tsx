@@ -1,3 +1,4 @@
+// Whiteboard.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io, { Socket as SocketIOClientSocket } from "socket.io-client";

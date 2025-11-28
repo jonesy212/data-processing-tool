@@ -1,3 +1,4 @@
+// BaseCustomEvent.ts
 // CustomEvent.ts
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
 import { Attachment } from "@/app/documents/attachment/Attachment";

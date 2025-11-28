@@ -1,3 +1,4 @@
+// SecurityAudit.ts
 import { useSecurityAudit } from '@/app/hooks/useSecurityAudit';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import SecureFieldManager from "./SecureFieldManager";

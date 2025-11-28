@@ -1,4 +1,5 @@
 // TeamEntity.ts
+import { Member } from '@/app/models/teams/TeamMembers';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -40,7 +41,7 @@ interface TeamEntity extends BaseDataEntity {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
-  members: Members;
+  members: Members<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   createdDate: Date;
   permissions: TeamPermission;
   settings?: TeamSettings;

@@ -1,3 +1,4 @@
+// PopulationDynamicsSimulation.tsx
 import React from 'react';
 
 interface PopulationDynamicsSimulationProps {}

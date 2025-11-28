@@ -1,3 +1,4 @@
+// DashboardSettings.ts
 // Define the DashboardPreferenceEnum to represent various dashboard preferences
 export enum DashboardPreferenceEnum {
   Theme = 'Theme',

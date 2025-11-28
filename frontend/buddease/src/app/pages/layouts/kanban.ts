@@ -1,3 +1,4 @@
+// kanban.ts
 const initializeAppLayout = () => {
   // Get dimensions of window for responsive layout
   fetchUserAreaDimensions({

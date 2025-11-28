@@ -1,3 +1,8 @@
+// AppSlice.ts
+import { UserData } from '@/app/users/User';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { ProjectData } from '@/app/models/projects/Project';
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { AppActions } from '@/app/actions/AppActions';
 import { UserProfile, userService } from '@/app/api/ApiUser';
 import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
@@ -6,9 +11,8 @@ import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
-import { UIState } from '@/app/state/redux/slices/UISlice';
+import { UIState } from '@/app/state/stores/UISlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
-import EntityId from '@/app/state/redux/slices/RootSlice';
 import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
 import { BlogState } from '@/app/state/redux/slices/BlogSlice';
@@ -28,9 +32,10 @@ import { AlignmentOptions, ToolbarState } from '@/app/state/redux/slices/toolbar
 import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
+import { EntityId } from '@reduxjs/toolkit';
 
-interface AppState {
-    user: UserProfile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+interface AppState<AppEntity> {
+    user: UserProfile<AppEntity>,
     currentPage: null,
     currentLayout: null,
     currentTheme: null,
@@ -57,7 +62,7 @@ interface AppState {
   dataAnalysisManager: DataAnalysisState,
   calendarManager: CalendarManagerState
   todoManager:TodoManagerState,
-  documentManager: DocumentSliceState<T, K, Meta>,
+  documentManager: DocumentSliceState<AppState>,
 
   // API & Networking
   apiManager: ApiManagerState,
@@ -65,7 +70,7 @@ interface AppState {
 
   // Event & Collaboration
   eventManager: EventState
-  collaborationManager: CollaborationState<UserProfile, ProjectData>;
+  collaborationManager: CollaborationState<UserProfile<AppState>, ProjectData>;
 
   // Entity & Notification
   entityManager: EntityState<any, EntityId>
@@ -160,7 +165,7 @@ const initialState: AppState = {
   dataAnalysisManager: {} as DataAnalysisState,
   calendarManager: {} as CalendarManagerState,
   todoManager: {} as TodoManagerState,
-  documentManager: {} as DocumentSliceState,
+  documentManager: {} as DocumentSliceState<AppEntity>,
 
   // API & Networking
   apiManager: {} as ApiManagerState,
@@ -247,7 +252,7 @@ export const useAppManagerSlice = createSlice({
     // Define reducers specific to the app state here, if any
     // You can also use reducers from the VideoSlice if needed
   },
-  extraReducers: (builder: ActionReducerMapBuilder<AppState>) => {
+  extraReducers: (builder: ActionReducerMapBuilder<AppEntity>) => {
     // Add additional case reducers here
     builder.addCase(AppActions.createTask, (state, action: PayloadAction<string>) => {
       // In a real-world scenario, you would handle adding the new task to your state here

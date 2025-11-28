@@ -1,3 +1,4 @@
+// fileTypes.tsx
 interface AppFile {
   id?: string;
   name?: string;

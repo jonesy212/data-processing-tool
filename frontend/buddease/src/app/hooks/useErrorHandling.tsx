@@ -1,3 +1,4 @@
+// useErrorHandling.tsx
 import safeParseData from "@/app/dataIntegration/SafeParseData";
 import { ParsedData } from "@/app/dataIntegration/parseData";
 import { FileLogger } from "@/app/libraries/logging/Logger";

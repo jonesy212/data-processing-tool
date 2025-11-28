@@ -2,7 +2,8 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import Logger from '@/app/libraries/logging/Logger';
 import { TradeAction } from '@/app/models/cypto/Exchange';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { payload } from '@/app/utils/Payload'; // Adjust path as needed
 
 const { notify } = useNotification() || { notify: () => {} };

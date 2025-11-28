@@ -1,3 +1,4 @@
+// GenerateModal.tsx
 import React, { useState } from "react";
 
 // Define different modal components (you can have more)

@@ -1,3 +1,4 @@
+// getCurrentSnapshotConfigOptions.tsx
 // getCurrentSnapshotConfigOptions.ts
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';

@@ -1,3 +1,4 @@
+// createOptions.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import fetchSnapshotById from "@/app/api/SnapshotApi";
@@ -42,7 +43,6 @@ import {
 
 
 
-// createOptions.ts
 function createOptions<
   T extends BaseDataEntity,
   K extends T = T,

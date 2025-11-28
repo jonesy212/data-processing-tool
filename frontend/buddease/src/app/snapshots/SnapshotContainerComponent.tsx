@@ -1,3 +1,4 @@
+// SnapshotContainerComponent.tsx
 import { constructTarget, Target } from '@/app/api/EndpointConstructor';
 import { fetchAllSnapshots } from '@/app/api/SnapshotApi';
 import { endpoints } from '@/app/components/api/endpointConfigurations';

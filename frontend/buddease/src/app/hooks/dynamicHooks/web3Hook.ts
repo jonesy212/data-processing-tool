@@ -1,3 +1,4 @@
+// web3Hook.ts
 class Web3Hook {
     // Implement your logic to interact with web3
     static hook() {

@@ -1,3 +1,4 @@
+// determineSnapshotStoreCategory.ts
 //determineSnapshotStoreCategory.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 

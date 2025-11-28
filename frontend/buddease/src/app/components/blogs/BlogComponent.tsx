@@ -1,3 +1,4 @@
+// BlogComponent.tsx
 import * as subscriberApi from '@/api/subscriberApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";

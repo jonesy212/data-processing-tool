@@ -1,3 +1,4 @@
+// determineType.ts
 import { determineFileTypeAPI } from "@/app/api/ApiFiles";
 import loadFile from "@/app/components/documents/FileLoadOptions";
 

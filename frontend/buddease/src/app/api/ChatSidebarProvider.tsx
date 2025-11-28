@@ -1,3 +1,4 @@
+// ChatSidebarProvider.tsx
 import { openChatSidebar } from '@/components/communications/chat/chatUtils';
 import React, { createContext, useContext, useState } from 'react';
 

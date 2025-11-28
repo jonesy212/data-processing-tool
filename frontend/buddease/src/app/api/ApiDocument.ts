@@ -1,8 +1,6 @@
-import { NotificationPosition } from '@/app/models/data/StatusType';
-import { NotificationTypeEnum } from '@/state/context/NotificationContext';
 // ApiDocument.ts
-import { Tag } from 'sanitize-html';
-import Subtask from '@/app/model/tasks/Subtask'
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationPosition } from '@/app/models/data/StatusType';
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
@@ -13,6 +11,7 @@ import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Presentation } from "@/app/documents/editing/Presentation";
+import Subtask from '@/app/model/tasks/Subtask';
 import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
@@ -21,6 +20,7 @@ import { AppDocument } from '@/app/typings/entities/DocumentEntity';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
 import { current } from "immer";
+import { Tag } from 'sanitize-html';
 
 
 import { endpoints } from '@/app/api/endpointConfigurations';

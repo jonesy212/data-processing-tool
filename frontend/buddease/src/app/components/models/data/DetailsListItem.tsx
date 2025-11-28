@@ -1,3 +1,4 @@
+// DetailsListItem.tsx
 import { BaseData, Data } from '@/app/models/data/Data';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 

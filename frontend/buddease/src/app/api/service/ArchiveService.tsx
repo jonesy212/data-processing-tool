@@ -1,9 +1,14 @@
+// ArchiveService.tsx
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import {VersionHistoryEntity } from '@/app/typings/entities/VersionHistoryEntity'
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { notify } from '@/utils/snapshotUtils';
 import StorageService from '@/utils/storage/StoragService';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+
+const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
 // Archive types
 export interface ArchiveMetadata {
@@ -58,7 +63,7 @@ const defaultConfig: ArchiveConfig = {
 };
 
 // Archive service class (optional, for more complex scenarios)
-class ArchiveService {
+class ArchiveService extends VersionHistoryEntity {
   private config: ArchiveConfig;
   private storage: StorageService;
 
@@ -214,6 +219,7 @@ class ArchiveService {
         data: compressed, // Store compressed data
         metadata: {
           ...snapshot.metadata,
+          area: area
           isCompressed: true,
           compressionType: this.config.compressionType
         }

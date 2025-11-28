@@ -1,3 +1,4 @@
+// TradingPhaseConfig.tsx
 import VerificationProcess from "@/app/phases/crypto/VerificationProcess";
 
 let verificationDone: boolean = false;

@@ -1,3 +1,4 @@
+// convertSnapshotToItem.ts
 // import { Data } from '@/app/models/data/Data';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotItem } from "./SnapshotList";

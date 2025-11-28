@@ -1,3 +1,4 @@
+// TableComponent.tsx
 // Import necessary components and styles
 import { Table } from 'antd';
 import 'antd/dist/antd.css';

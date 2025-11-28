@@ -1,3 +1,4 @@
+// Payload.tsx
 // Payload.ts
 import { SnapshotActions } from "@/app/actions/SnapshotActions";
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
@@ -5,7 +6,7 @@ import {
   SnapshotEntity,
   SnapshotK,
 } from "@/app/typings/entities/SnapshotEntity";
-import { addSnapshot } from "@/app/api/SnapshotApi";
+import addSnapshot from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import useSubscription from "@/app/hooks/useSubscription";
 import { SnapshotLogger } from "@/app/logging/Logger";
@@ -95,14 +96,9 @@ const { subscribe, unsubscribe } = useSubscription({
 // ------------------------------
 // 6️⃣ Example SubscriptionPayload using the template
 // ------------------------------
-const subscriptionPayload: SubscriptionPayload<
-  SubscriptionEntityTemplate["T"],
-  SubscriptionEntityTemplate["K"],
-  SubscriptionEntityTemplate["Meta"],
-  SubscriptionEntityTemplate["AttachmentType"],
-  SubscriptionEntityTemplate["ExcludedFields"],
-  SubscriptionEntityTemplate["IncludedFields"]
-> = {
+const payload: SubscriptionPayload<
+  SubscriptionEntityTemplate["T"]
+  > = {
   error: undefined,
   meta: subscriptionData.meta,
   notify: (id, message, content, date, type, notificationPosition) => {

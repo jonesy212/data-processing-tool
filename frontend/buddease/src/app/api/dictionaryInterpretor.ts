@@ -1,3 +1,4 @@
+// dictionaryInterpretor.ts
 // To create an API that connects dictionaries for interpretation and answers to questions on specific subjects, and then connect it to your prompting system to improve answers for users, you can follow these steps:
 
 // Design the API Endpoints: Define the endpoints for your API that will allow users to query specific subjects and receive answers.

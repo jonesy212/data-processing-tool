@@ -1,3 +1,4 @@
+// GenerateUtilityFunctions.tsx
 import { applyCollaborationPreferences, initializeCollaborationPreferences } from "@/app/hooks/phaseHooks/PhaseHooks";
 
 export const generateUtilityFunctions = () => {

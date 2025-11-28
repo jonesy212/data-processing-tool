@@ -1,3 +1,4 @@
+// comparePrices.ts
 import { ExchangeData } from '@/app/components/models/data/ExchangeData';
 
 interface PriceComparisonResult {

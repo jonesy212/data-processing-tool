@@ -1,3 +1,4 @@
+// PaginationStore.ts
 import { action, makeObservable, observable } from "mobx";
 
 class PaginationStore {

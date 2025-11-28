@@ -1,3 +1,4 @@
+// ApiSlice.ts
 import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communications/Language";

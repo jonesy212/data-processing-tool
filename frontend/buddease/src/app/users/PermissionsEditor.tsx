@@ -1,3 +1,4 @@
+// PermissionsEditor.tsx
 import { generateNFT } from '@/app/generators/NFTGenerator';
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from '@/app/models/UserRoles';

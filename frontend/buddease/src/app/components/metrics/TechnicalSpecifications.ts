@@ -1,3 +1,4 @@
+// TechnicalSpecifications.ts
 // Define structure for TechnicalSpecifications
 
 interface TechnicalSpecifications {

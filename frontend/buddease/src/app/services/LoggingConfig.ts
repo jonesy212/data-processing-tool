@@ -1,3 +1,4 @@
+// LoggingConfig.ts
 
 export interface LoggingConfig {
   level: 'error' | 'warn' | 'info' | 'debug' | 'trace';

@@ -3,7 +3,7 @@
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from '@/app/models/content/AddContent';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { T } from '@/app/models/data/dataStoreMethods';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';

@@ -1,9 +1,11 @@
+// BrandingUpdater.tsx
 
 import RandomWalkSuggestions from '@/app/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/models/data/Data';
 import configServiceInstance from '@/app/services/ConfigurationService';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import ReactDOM from 'react-dom';
 
 

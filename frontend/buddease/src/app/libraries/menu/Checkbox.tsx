@@ -1,3 +1,4 @@
+// Checkbox.tsx
 import React from "react";
 interface CheckBoxProps{
   label: string;

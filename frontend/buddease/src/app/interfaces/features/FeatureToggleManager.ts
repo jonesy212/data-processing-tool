@@ -1,7 +1,9 @@
+// FeatureToggleManager.ts
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import focusManagerInstance from "@/app/models/accessibility/FocusManager";
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 
 const { notify } = useNotification();

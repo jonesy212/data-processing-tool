@@ -1,3 +1,4 @@
+// CollaborationData.ts
 import Milestone from '@/app/components/calendar/CalendarSlice';
 import { Communication } from '@/app/components/communications/CommunicationPage';
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
@@ -11,7 +12,6 @@ import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';
 
-// CollaborationData.ts
 // Define CollaborationData interface by extending BaseData and adding specific properties
 interface CollaborationData extends BaseData {
     sharedProjects?: Project[]; // Specific to collaboration

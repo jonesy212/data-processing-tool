@@ -1,3 +1,4 @@
+// TeamSummaryStep.tsx
 import React from "react";
 import SummaryStep from "@/app/phases/steps/SummaryStep";
 

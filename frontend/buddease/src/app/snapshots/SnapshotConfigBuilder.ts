@@ -7,7 +7,7 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import baseMeta from "@/app/server/database/baseMeta";
 import { ExcludedFields } from "../components/routing/Fields";
-import { NotificationTypeEnum } from "../context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { Attachment } from "../documents/attachment/Attachment";
 import { K, Meta, T } from "../models/data/dataStoreMethods";
 import { StoreMethods } from "../models/tasks/StoreMethods";

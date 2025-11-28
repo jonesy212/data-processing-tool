@@ -1,3 +1,4 @@
+// stopwatchConfig.tsx
 // stopwatchConfig.ts
 
 import BasicStopwatchComponent from "@/app/components/stopwatches/BasicStopwatchComponent";

@@ -1,3 +1,4 @@
+// closeEmojiPicker.ts
 // closeEmojiPicker.js
 
 /**

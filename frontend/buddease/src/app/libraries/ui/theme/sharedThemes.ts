@@ -1,3 +1,4 @@
+// sharedThemes.ts
 // constants.ts
 export const sharedColors = {
     primary: '#3498db',

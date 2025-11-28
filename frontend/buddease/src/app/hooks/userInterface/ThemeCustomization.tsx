@@ -1,3 +1,4 @@
+// ThemeCustomization.tsx
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";

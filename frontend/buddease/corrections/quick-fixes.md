@@ -1,8 +1,54 @@
 # 🚀 Quick Fixes - Easy Wins
-**Generated:** 2025-11-22T18:55:54.755Z
-**Total Quick Fixes:** 1523
+**Generated:** 2025-11-28T06:48:30.121Z
+**Total Quick Fixes:** 1549
 
 > 💡 These fixes can be completed in under 5 minutes each
+
+## 📄 TypeScript Analysis
+**Path:** TypeScript Analysis
+
+### 1. undefined
+**Type:** info
+**Category:** education
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ApiUser.ts
+**Path:** src/app/api/ApiUser.ts
+
+### 1. undefined
+**Type:** info
+**Category:** education
+
+**Line 45:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 UserPreference.tsx
+**Path:** src/app/users/preferences/UserPreference.tsx
+
+### 1. undefined
+**Type:** info
+**Category:** education
+
+**Line 8:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
 
 ## 📄 package.json
 **Path:** package.json
@@ -58,7 +104,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 161:**
+**Line 164:**
 ```typescript
 
 ```
@@ -92,7 +138,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 118:**
+**Line 114:**
 ```typescript
 
 ```
@@ -126,7 +172,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 62:**
+**Line 63:**
 ```typescript
 
 ```
@@ -160,7 +206,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 122:**
+**Line 123:**
 ```typescript
 
 ```
@@ -177,7 +223,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 85:**
+**Line 87:**
 ```typescript
 
 ```
@@ -228,7 +274,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 14:**
+**Line 15:**
 ```typescript
 
 ```
@@ -245,7 +291,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 168:**
+**Line 169:**
 ```typescript
 
 ```
@@ -262,7 +308,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 213:**
+**Line 214:**
 ```typescript
 
 ```
@@ -288,7 +334,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 14:**
+**Line 15:**
 ```typescript
 
 ```
@@ -314,7 +360,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 107:**
+**Line 108:**
 ```typescript
 
 ```
@@ -348,7 +394,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 47:**
+**Line 48:**
 ```typescript
 
 ```
@@ -365,7 +411,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 22:**
+**Line 23:**
 ```typescript
 
 ```
@@ -382,7 +428,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 61:**
+**Line 62:**
 ```typescript
 
 ```
@@ -399,7 +445,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -416,7 +462,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 17:**
+**Line 18:**
 ```typescript
 
 ```
@@ -433,7 +479,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 30:**
+**Line 31:**
 ```typescript
 
 ```
@@ -450,7 +496,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 49:**
+**Line 50:**
 ```typescript
 
 ```
@@ -467,7 +513,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 29:**
+**Line 30:**
 ```typescript
 
 ```
@@ -484,7 +530,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 19:**
+**Line 20:**
 ```typescript
 
 ```
@@ -501,7 +547,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 21:**
+**Line 22:**
 ```typescript
 
 ```
@@ -518,7 +564,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 21:**
+**Line 22:**
 ```typescript
 
 ```
@@ -535,7 +581,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 23:**
+**Line 24:**
 ```typescript
 
 ```
@@ -552,7 +598,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 42:**
+**Line 43:**
 ```typescript
 
 ```
@@ -569,7 +615,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 23:**
+**Line 24:**
 ```typescript
 
 ```
@@ -586,7 +632,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 15:**
+**Line 16:**
 ```typescript
 
 ```
@@ -603,7 +649,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 20:**
+**Line 21:**
 ```typescript
 
 ```
@@ -620,7 +666,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 7:**
+**Line 8:**
 ```typescript
 
 ```
@@ -637,7 +683,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 17:**
+**Line 18:**
 ```typescript
 
 ```
@@ -654,7 +700,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 11:**
+**Line 12:**
 ```typescript
 
 ```
@@ -671,7 +717,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 10:**
+**Line 11:**
 ```typescript
 
 ```
@@ -688,7 +734,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 11:**
+**Line 12:**
 ```typescript
 
 ```
@@ -722,7 +768,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 62:**
+**Line 63:**
 ```typescript
 
 ```
@@ -756,7 +802,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 24:**
+**Line 25:**
 ```typescript
 
 ```
@@ -773,7 +819,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 19:**
+**Line 20:**
 ```typescript
 
 ```
@@ -790,7 +836,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 35:**
+**Line 36:**
 ```typescript
 
 ```
@@ -807,7 +853,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -824,7 +870,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 55:**
+**Line 60:**
 ```typescript
 
 ```
@@ -841,7 +887,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 353:**
+**Line 354:**
 ```typescript
 
 ```
@@ -875,7 +921,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 367:**
+**Line 368:**
 ```typescript
 
 ```
@@ -909,7 +955,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 39:**
+**Line 40:**
 ```typescript
 
 ```
@@ -926,7 +972,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 24:**
+**Line 25:**
 ```typescript
 
 ```
@@ -943,7 +989,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 34:**
+**Line 35:**
 ```typescript
 
 ```
@@ -960,7 +1006,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 12:**
+**Line 13:**
 ```typescript
 
 ```
@@ -977,7 +1023,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 24:**
+**Line 25:**
 ```typescript
 
 ```
@@ -994,7 +1040,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 17:**
+**Line 18:**
 ```typescript
 
 ```
@@ -1011,7 +1057,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 71:**
+**Line 72:**
 ```typescript
 
 ```
@@ -1028,7 +1074,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 31:**
+**Line 32:**
 ```typescript
 
 ```
@@ -1045,7 +1091,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 226:**
+**Line 222:**
 ```typescript
 
 ```
@@ -1062,7 +1108,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 12:**
+**Line 13:**
 ```typescript
 
 ```
@@ -1105,7 +1151,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 154:**
+**Line 155:**
 ```typescript
 
 ```
@@ -1131,7 +1177,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1022:**
+**Line 1023:**
 ```typescript
 
 ```
@@ -1174,7 +1220,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 72:**
+**Line 73:**
 ```typescript
 
 ```
@@ -1191,7 +1237,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 164:**
+**Line 165:**
 ```typescript
 
 ```
@@ -1208,7 +1254,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 37:**
+**Line 38:**
 ```typescript
 
 ```
@@ -1242,7 +1288,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 118:**
+**Line 119:**
 ```typescript
 
 ```
@@ -1269,23 +1315,6 @@
 
 ```
 
-## 📄 TradingStrategy.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/TradingStrategy.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 138:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 conductTestingAndOptimization.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/crypto/conductTestingAndOptimization.ts
 
@@ -1293,7 +1322,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 26:**
+**Line 27:**
 ```typescript
 
 ```
@@ -1310,7 +1339,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 35:**
+**Line 36:**
 ```typescript
 
 ```
@@ -1378,7 +1407,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 38:**
+**Line 39:**
 ```typescript
 
 ```
@@ -1395,7 +1424,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 17:**
+**Line 18:**
 ```typescript
 
 ```
@@ -1412,7 +1441,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 27:**
+**Line 28:**
 ```typescript
 
 ```
@@ -1429,7 +1458,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 29:**
+**Line 30:**
 ```typescript
 
 ```
@@ -1446,7 +1475,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 32:**
+**Line 33:**
 ```typescript
 
 ```
@@ -1480,7 +1509,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 19:**
+**Line 20:**
 ```typescript
 
 ```
@@ -1514,7 +1543,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 14:**
+**Line 15:**
 ```typescript
 
 ```
@@ -1531,7 +1560,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 120:**
+**Line 121:**
 ```typescript
 
 ```
@@ -1548,7 +1577,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 88:**
+**Line 89:**
 ```typescript
 
 ```
@@ -1565,7 +1594,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 5:**
+**Line 6:**
 ```typescript
 
 ```
@@ -1582,7 +1611,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 190:**
+**Line 191:**
 ```typescript
 
 ```
@@ -1599,7 +1628,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 59:**
+**Line 60:**
 ```typescript
 
 ```
@@ -1616,7 +1645,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 41:**
+**Line 42:**
 ```typescript
 
 ```
@@ -1727,7 +1756,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 87:**
+**Line 88:**
 ```typescript
 
 ```
@@ -1787,7 +1816,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 523:**
+**Line 524:**
 ```typescript
 
 ```
@@ -1821,7 +1850,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 29:**
+**Line 30:**
 ```typescript
 
 ```
@@ -1838,7 +1867,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 41:**
+**Line 42:**
 ```typescript
 
 ```
@@ -1855,7 +1884,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 57:**
+**Line 60:**
 ```typescript
 
 ```
@@ -1906,7 +1935,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 45:**
+**Line 46:**
 ```typescript
 
 ```
@@ -1923,7 +1952,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -1983,7 +2012,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 5:**
+**Line 6:**
 ```typescript
 
 ```
@@ -2000,7 +2029,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 71:**
+**Line 80:**
 ```typescript
 
 ```
@@ -2017,7 +2046,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 518:**
+**Line 519:**
 ```typescript
 
 ```
@@ -2034,7 +2063,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 36:**
+**Line 37:**
 ```typescript
 
 ```
@@ -2051,7 +2080,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 79:**
+**Line 80:**
 ```typescript
 
 ```
@@ -2068,7 +2097,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 692:**
+**Line 688:**
 ```typescript
 
 ```
@@ -2137,7 +2166,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 44:**
+**Line 45:**
 ```typescript
 
 ```
@@ -2154,7 +2183,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 31:**
+**Line 32:**
 ```typescript
 
 ```
@@ -2171,7 +2200,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 326:**
+**Line 328:**
 ```typescript
 
 ```
@@ -2188,7 +2217,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 88:**
+**Line 89:**
 ```typescript
 
 ```
@@ -2205,7 +2234,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 96:**
+**Line 97:**
 ```typescript
 
 ```
@@ -2239,7 +2268,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 289:**
+**Line 290:**
 ```typescript
 
 ```
@@ -2290,7 +2319,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 506:**
+**Line 668:**
 ```typescript
 
 ```
@@ -2324,7 +2353,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1178:**
+**Line 1217:**
 ```typescript
 
 ```
@@ -2341,7 +2370,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 388:**
+**Line 389:**
 ```typescript
 
 ```
@@ -2358,7 +2387,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 281:**
+**Line 283:**
 ```typescript
 
 ```
@@ -2384,7 +2413,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 109:**
+**Line 110:**
 ```typescript
 
 ```
@@ -2418,7 +2447,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 275:**
+**Line 276:**
 ```typescript
 
 ```
@@ -2469,7 +2498,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 210:**
+**Line 213:**
 ```typescript
 
 ```
@@ -2588,7 +2617,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 227:**
+**Line 228:**
 ```typescript
 
 ```
@@ -2605,7 +2634,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 24:**
+**Line 25:**
 ```typescript
 
 ```
@@ -2690,7 +2719,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 34:**
+**Line 35:**
 ```typescript
 
 ```
@@ -2707,7 +2736,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 28:**
+**Line 29:**
 ```typescript
 
 ```
@@ -2724,7 +2753,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 106:**
+**Line 107:**
 ```typescript
 
 ```
@@ -2741,7 +2770,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 52:**
+**Line 53:**
 ```typescript
 
 ```
@@ -2775,7 +2804,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 72:**
+**Line 73:**
 ```typescript
 
 ```
@@ -2809,7 +2838,24 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 37:**
+**Line 38:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ProjectEventEmitter.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/libraries/eventSystem/ProjectEventEmitter.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 48:**
 ```typescript
 
 ```
@@ -2826,7 +2872,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 146:**
+**Line 147:**
 ```typescript
 
 ```
@@ -2843,7 +2889,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 64:**
+**Line 65:**
 ```typescript
 
 ```
@@ -2860,24 +2906,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 15:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 Logger.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/logging/Logger.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 556:**
+**Line 16:**
 ```typescript
 
 ```
@@ -2894,7 +2923,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 348:**
+**Line 349:**
 ```typescript
 
 ```
@@ -2928,7 +2957,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 351:**
+**Line 352:**
 ```typescript
 
 ```
@@ -2945,7 +2974,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 424:**
+**Line 428:**
 ```typescript
 
 ```
@@ -2979,7 +3008,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 523:**
+**Line 528:**
 ```typescript
 
 ```
@@ -3005,7 +3034,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 44:**
+**Line 45:**
 ```typescript
 
 ```
@@ -3022,7 +3051,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 86:**
+**Line 87:**
 ```typescript
 
 ```
@@ -3056,7 +3085,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 17:**
+**Line 18:**
 ```typescript
 
 ```
@@ -3073,7 +3102,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 27:**
+**Line 28:**
 ```typescript
 
 ```
@@ -3090,7 +3119,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 97:**
+**Line 98:**
 ```typescript
 
 ```
@@ -3107,7 +3136,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 41:**
+**Line 42:**
 ```typescript
 
 ```
@@ -3124,7 +3153,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 450:**
+**Line 451:**
 ```typescript
 
 ```
@@ -3141,7 +3170,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 158:**
+**Line 160:**
 ```typescript
 
 ```
@@ -3158,7 +3187,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 168:**
+**Line 166:**
 ```typescript
 
 ```
@@ -3278,7 +3307,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 16:**
+**Line 17:**
 ```typescript
 
 ```
@@ -3329,7 +3358,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 72:**
+**Line 73:**
 ```typescript
 
 ```
@@ -3363,7 +3392,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 92:**
+**Line 93:**
 ```typescript
 
 ```
@@ -3389,7 +3418,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 103:**
+**Line 104:**
 ```typescript
 
 ```
@@ -3423,7 +3452,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 331:**
+**Line 332:**
 ```typescript
 
 ```
@@ -3440,7 +3469,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 95:**
+**Line 96:**
 ```typescript
 
 ```
@@ -3466,7 +3495,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 229:**
+**Line 230:**
 ```typescript
 
 ```
@@ -3483,7 +3512,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 7:**
+**Line 8:**
 ```typescript
 
 ```
@@ -3500,7 +3529,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 11:**
+**Line 12:**
 ```typescript
 
 ```
@@ -3517,7 +3546,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 20:**
+**Line 21:**
 ```typescript
 
 ```
@@ -3534,7 +3563,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 8:**
+**Line 9:**
 ```typescript
 
 ```
@@ -3551,7 +3580,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 162:**
+**Line 163:**
 ```typescript
 
 ```
@@ -3645,7 +3674,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 185:**
+**Line 181:**
 ```typescript
 
 ```
@@ -3781,7 +3810,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 32:**
+**Line 33:**
 ```typescript
 
 ```
@@ -3798,7 +3827,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 28:**
+**Line 29:**
 ```typescript
 
 ```
@@ -3815,7 +3844,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 182:**
+**Line 184:**
 ```typescript
 
 ```
@@ -3832,7 +3861,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 94:**
+**Line 95:**
 ```typescript
 
 ```
@@ -3849,7 +3878,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -3900,7 +3929,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 279:**
+**Line 280:**
 ```typescript
 
 ```
@@ -3934,7 +3963,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 434:**
+**Line 435:**
 ```typescript
 
 ```
@@ -4062,7 +4091,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1179:**
+**Line 1206:**
 ```typescript
 
 ```
@@ -4096,7 +4125,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 103:**
+**Line 104:**
 ```typescript
 
 ```
@@ -4164,7 +4193,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 48:**
+**Line 49:**
 ```typescript
 
 ```
@@ -4181,7 +4210,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 11:**
+**Line 12:**
 ```typescript
 
 ```
@@ -4224,7 +4253,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 157:**
+**Line 158:**
 ```typescript
 
 ```
@@ -4250,7 +4279,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 155:**
+**Line 156:**
 ```typescript
 
 ```
@@ -4310,7 +4339,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 104:**
+**Line 102:**
 ```typescript
 
 ```
@@ -4396,7 +4425,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 87:**
+**Line 88:**
 ```typescript
 
 ```
@@ -4413,7 +4442,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 578:**
+**Line 579:**
 ```typescript
 
 ```
@@ -4439,7 +4468,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 542:**
+**Line 794:**
 ```typescript
 
 ```
@@ -4465,7 +4494,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 134:**
+**Line 135:**
 ```typescript
 
 ```
@@ -4534,7 +4563,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 51:**
+**Line 52:**
 ```typescript
 
 ```
@@ -4551,7 +4580,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1057:**
+**Line 1058:**
 ```typescript
 
 ```
@@ -4585,7 +4614,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 398:**
+**Line 399:**
 ```typescript
 
 ```
@@ -4628,7 +4657,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 126:**
+**Line 127:**
 ```typescript
 
 ```
@@ -4638,14 +4667,23 @@
 
 ```
 
-## 📄 ProjectEventEmitter.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/ts/ProjectEventEmitter.ts
+### 2. undefined
+**Type:** warning
+**Category:** maintainability
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 TradingStrategy.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/trading/TradingStrategy.ts
 
 ### 1. undefined
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 47:**
+**Line 138:**
 ```typescript
 
 ```
@@ -4662,7 +4700,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 114:**
+**Line 113:**
 ```typescript
 
 ```
@@ -4679,7 +4717,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 68:**
+**Line 69:**
 ```typescript
 
 ```
@@ -4696,7 +4734,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 203:**
+**Line 204:**
 ```typescript
 
 ```
@@ -4713,7 +4751,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 84:**
+**Line 85:**
 ```typescript
 
 ```
@@ -4747,7 +4785,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 152:**
+**Line 162:**
 ```typescript
 
 ```
@@ -4798,7 +4836,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 62:**
+**Line 63:**
 ```typescript
 
 ```
@@ -4824,7 +4862,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 81:**
+**Line 82:**
 ```typescript
 
 ```
@@ -4875,7 +4913,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 58:**
+**Line 59:**
 ```typescript
 
 ```
@@ -4892,7 +4930,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 238:**
+**Line 240:**
 ```typescript
 
 ```
@@ -4918,7 +4956,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 438:**
+**Line 443:**
 ```typescript
 
 ```
@@ -4935,7 +4973,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 392:**
+**Line 434:**
 ```typescript
 
 ```
@@ -5105,7 +5143,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 439:**
+**Line 435:**
 ```typescript
 
 ```
@@ -5149,6 +5187,23 @@
 **Category:** maintainability
 
 **Line 211:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ComponentPatternDetector.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/app/scripts/ComponentPatternDetector.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 396:**
 ```typescript
 
 ```
@@ -5319,27 +5374,6 @@
 
 ```
 
-## 📄 ApiLogs.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiLogs.ts
-
-### 1. undefined
-**Type:** warning
-**Category:** maintainability
-
-**Fix:**
-```typescript
-
-```
-
-### 2. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 ApiNews.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiNews.ts
 
@@ -5385,7 +5419,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -5423,7 +5457,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 104:**
+**Line 105:**
 ```typescript
 
 ```
@@ -5457,7 +5491,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -5508,7 +5542,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 12:**
+**Line 13:**
 ```typescript
 
 ```
@@ -5534,7 +5568,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -5553,18 +5587,6 @@
 
 ```
 
-## 📄 ApiUserPreferences.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/preferences/ApiUserPreferences.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 processSnapshotData.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/processSnapshotData.ts
 
@@ -5572,7 +5594,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 202:**
+**Line 203:**
 ```typescript
 
 ```
@@ -5593,18 +5615,6 @@
 ```typescript
 
 ```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 ApiUserService.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/service/ApiUserService.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
 
 **Fix:**
 ```typescript
@@ -5669,7 +5679,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 71:**
+**Line 72:**
 ```typescript
 
 ```
@@ -5696,18 +5706,6 @@
 
 ```
 
-## 📄 DummyCardLoader.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/cards/DummyCardLoader.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 FileUploadModalLauncher.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/cards/modal/FileUploadModalLauncher.tsx
 
@@ -5715,7 +5713,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -5732,7 +5730,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -5766,7 +5764,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -5825,7 +5823,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 63:**
+**Line 64:**
 ```typescript
 
 ```
@@ -5868,7 +5866,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 67:**
+**Line 68:**
 ```typescript
 
 ```
@@ -5902,7 +5900,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 142:**
+**Line 143:**
 ```typescript
 
 ```
@@ -5933,18 +5931,6 @@
 
 ```
 
-## 📄 MetadataViewer.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/development/MetadataViewer.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 EditorWithPrompt.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/components/documents/EditorWithPrompt.tsx
 
@@ -5952,7 +5938,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 70:**
+**Line 71:**
 ```typescript
 
 ```
@@ -5978,7 +5964,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -6140,7 +6126,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 41:**
+**Line 42:**
 ```typescript
 
 ```
@@ -6270,7 +6256,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 486:**
+**Line 487:**
 ```typescript
 
 ```
@@ -6308,7 +6294,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 487:**
+**Line 488:**
 ```typescript
 
 ```
@@ -6363,7 +6349,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 34:**
+**Line 35:**
 ```typescript
 
 ```
@@ -6406,7 +6392,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 86:**
+**Line 87:**
 ```typescript
 
 ```
@@ -6428,18 +6414,6 @@
 
 ```
 
-## 📄 useMeta.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/config/useMeta.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 ContentMaintenance.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/content/ContentMaintenance.tsx
 
@@ -6447,7 +6421,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -6481,7 +6455,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 103:**
+**Line 104:**
 ```typescript
 
 ```
@@ -6532,7 +6506,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 931:**
+**Line 932:**
 ```typescript
 
 ```
@@ -6558,7 +6532,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 640:**
+**Line 646:**
 ```typescript
 
 ```
@@ -6584,7 +6558,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 69:**
+**Line 70:**
 ```typescript
 
 ```
@@ -6697,7 +6671,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 108:**
+**Line 109:**
 ```typescript
 
 ```
@@ -6731,24 +6705,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 52:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 GenerateCache.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/GenerateCache.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 42:**
+**Line 53:**
 ```typescript
 
 ```
@@ -6794,7 +6751,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 39:**
+**Line 124:**
 ```typescript
 
 ```
@@ -6828,7 +6785,24 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 22:**
+**Line 23:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 TypeScriptAnalyzer.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/TypeScriptAnalyzer.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 90:**
 ```typescript
 
 ```
@@ -6968,7 +6942,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 23:**
+**Line 24:**
 ```typescript
 
 ```
@@ -7002,7 +6976,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 21:**
+**Line 22:**
 ```typescript
 
 ```
@@ -7019,7 +6993,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 244:**
+**Line 245:**
 ```typescript
 
 ```
@@ -7057,7 +7031,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 8:**
+**Line 9:**
 ```typescript
 
 ```
@@ -7074,7 +7048,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 58:**
+**Line 59:**
 ```typescript
 
 ```
@@ -7142,7 +7116,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 45:**
+**Line 47:**
 ```typescript
 
 ```
@@ -7188,7 +7162,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 34:**
+**Line 35:**
 ```typescript
 
 ```
@@ -7222,7 +7196,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 31:**
+**Line 32:**
 ```typescript
 
 ```
@@ -7249,6 +7223,23 @@
 
 ```
 
+## 📄 Logger.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/logging/Logger.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Line 525:**
+```typescript
+
+```
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 persistenceMiddleware..ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/middleware/core/persistenceMiddleware..ts
 
@@ -7256,7 +7247,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 68:**
+**Line 69:**
 ```typescript
 
 ```
@@ -7273,7 +7264,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 128:**
+**Line 129:**
 ```typescript
 
 ```
@@ -7294,18 +7285,6 @@
 ```typescript
 
 ```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 documentBuilderConfig.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/models/data/documentBuilderConfig.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
 
 **Fix:**
 ```typescript
@@ -7336,7 +7315,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 375:**
+**Line 376:**
 ```typescript
 
 ```
@@ -7353,7 +7332,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 9:**
+**Line 10:**
 ```typescript
 
 ```
@@ -7370,24 +7349,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 10:**
-```typescript
-
-```
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 NotificationChannelHelper.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/notifications/NotificationChannelHelper.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 27:**
+**Line 11:**
 ```typescript
 
 ```
@@ -7404,7 +7366,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 7:**
+**Line 8:**
 ```typescript
 
 ```
@@ -7472,7 +7434,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 20:**
+**Line 21:**
 ```typescript
 
 ```
@@ -7489,7 +7451,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 21:**
+**Line 22:**
 ```typescript
 
 ```
@@ -7611,7 +7573,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 81:**
+**Line 82:**
 ```typescript
 
 ```
@@ -7637,7 +7599,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 94:**
+**Line 95:**
 ```typescript
 
 ```
@@ -7711,7 +7673,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 55:**
+**Line 56:**
 ```typescript
 
 ```
@@ -7737,7 +7699,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 27:**
+**Line 28:**
 ```typescript
 
 ```
@@ -7809,7 +7771,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 24:**
+**Line 25:**
 ```typescript
 
 ```
@@ -7826,7 +7788,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 6:**
+**Line 7:**
 ```typescript
 
 ```
@@ -7843,7 +7805,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 47:**
+**Line 48:**
 ```typescript
 
 ```
@@ -7898,7 +7860,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 241:**
+**Line 242:**
 ```typescript
 
 ```
@@ -7915,7 +7877,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 817:**
+**Line 818:**
 ```typescript
 
 ```
@@ -7941,7 +7903,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 46:**
+**Line 47:**
 ```typescript
 
 ```
@@ -7987,7 +7949,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -8013,7 +7975,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -8047,7 +8009,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8064,7 +8026,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8107,7 +8069,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -8124,7 +8086,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -8141,7 +8103,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8158,7 +8120,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 12:**
+**Line 13:**
 ```typescript
 
 ```
@@ -8175,7 +8137,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8192,7 +8154,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8209,7 +8171,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8226,7 +8188,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 389:**
+**Line 390:**
 ```typescript
 
 ```
@@ -8243,7 +8205,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 30:**
+**Line 31:**
 ```typescript
 
 ```
@@ -8294,7 +8256,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 178:**
+**Line 179:**
 ```typescript
 
 ```
@@ -8328,7 +8290,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 208:**
+**Line 209:**
 ```typescript
 
 ```
@@ -8379,7 +8341,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 129:**
+**Line 130:**
 ```typescript
 
 ```
@@ -8447,7 +8409,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -8473,7 +8435,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 71:**
+**Line 72:**
 ```typescript
 
 ```
@@ -8490,7 +8452,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -8507,7 +8469,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -8524,7 +8486,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1204:**
+**Line 1205:**
 ```typescript
 
 ```
@@ -8567,7 +8529,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 123:**
+**Line 124:**
 ```typescript
 
 ```
@@ -8680,7 +8642,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 70:**
+**Line 71:**
 ```typescript
 
 ```
@@ -8794,7 +8756,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 14:**
+**Line 15:**
 ```typescript
 
 ```
@@ -8828,7 +8790,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 693:**
+**Line 694:**
 ```typescript
 
 ```
@@ -8845,7 +8807,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 51:**
+**Line 52:**
 ```typescript
 
 ```
@@ -8862,10 +8824,22 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 383:**
+**Line 384:**
 ```typescript
 
 ```
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 TodoSlice.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/slices/TodoSlice.ts
+
+### 1. undefined
+**Type:** warning
+**Category:** maintainability
 
 **Fix:**
 ```typescript
@@ -8879,7 +8853,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 44:**
+**Line 45:**
 ```typescript
 
 ```
@@ -8942,7 +8916,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 209:**
+**Line 219:**
 ```typescript
 
 ```
@@ -8959,7 +8933,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 43:**
+**Line 44:**
 ```typescript
 
 ```
@@ -8976,7 +8950,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 230:**
+**Line 231:**
 ```typescript
 
 ```
@@ -9014,7 +8988,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 16:**
+**Line 17:**
 ```typescript
 
 ```
@@ -9069,7 +9043,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 225:**
+**Line 226:**
 ```typescript
 
 ```
@@ -9095,7 +9069,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 411:**
+**Line 412:**
 ```typescript
 
 ```
@@ -9112,7 +9086,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 5:**
+**Line 6:**
 ```typescript
 
 ```
@@ -9164,6 +9138,18 @@
 
 ```
 
+## 📄 TodoItem.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoItem.tsx
+
+### 1. undefined
+**Type:** warning
+**Category:** maintainability
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 TodoService.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/TodoService.ts
 
@@ -9182,18 +9168,6 @@
 ### 1. undefined
 **Type:** warning
 **Category:** maintainability
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 appTypes.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/appTypes.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** readability
 
 **Fix:**
 ```typescript
@@ -9270,7 +9244,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 15:**
+**Line 16:**
 ```typescript
 
 ```
@@ -9307,23 +9281,6 @@
 ### 1. undefined
 **Type:** warning
 **Category:** maintainability
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 VersionGenerator.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/versions/VersionGenerator.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** maintainability
-
-**Line 264:**
-```typescript
-
-```
 
 **Fix:**
 ```typescript
@@ -9682,18 +9639,6 @@
 
 ```
 
-## 📄 TypeScriptAnalyzer.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/TypeScriptAnalyzer.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
 ## 📄 DebugBabelAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer.ts
 
@@ -9732,6 +9677,18 @@
 
 ## 📄 AndroidManifestAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/native/AndroidManifestAnalyzer.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 PackageJsonValidator.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/validators/PackageJsonValidator.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -9840,18 +9797,6 @@
 
 ## 📄 devCorrectionRoadmap.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/devCorrectionRoadmap.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 generate-commands-doc.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/generate-commands-doc.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -10030,6 +9975,18 @@
 
 ```
 
+## 📄 fileHeaderManager.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/fileHeaderManager.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 StoragService.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/storage/StoragService.ts
 
@@ -10155,7 +10112,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 4:**
+**Line 5:**
 ```typescript
 
 ```
@@ -10184,7 +10141,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -10225,7 +10182,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 8:**
+**Line 9:**
 ```typescript
 
 ```
@@ -10242,7 +10199,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 4:**
+**Line 5:**
 ```typescript
 
 ```
@@ -10271,7 +10228,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 15:**
+**Line 16:**
 ```typescript
 
 ```
@@ -10305,7 +10262,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 9:**
+**Line 10:**
 ```typescript
 
 ```
@@ -10356,7 +10313,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 5:**
+**Line 6:**
 ```typescript
 
 ```
@@ -10414,7 +10371,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -10431,7 +10388,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -10593,7 +10550,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -10622,7 +10579,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 13:**
+**Line 14:**
 ```typescript
 
 ```
@@ -10639,7 +10596,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 4:**
+**Line 5:**
 ```typescript
 
 ```
@@ -10680,7 +10637,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 2:**
+**Line 3:**
 ```typescript
 
 ```
@@ -10697,7 +10654,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -10714,7 +10671,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 20:**
+**Line 21:**
 ```typescript
 
 ```
@@ -10748,7 +10705,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -11035,7 +10992,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -11093,7 +11050,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -11110,7 +11067,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 3:**
+**Line 4:**
 ```typescript
 
 ```
@@ -11151,7 +11108,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -11168,7 +11125,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 1:**
+**Line 2:**
 ```typescript
 
 ```
@@ -11279,6 +11236,18 @@
 
 ```
 
+## 📄 NotificationStore.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationStore.tsx
+
+### 1. undefined
+**Type:** suggestion
+**Category:** maintainability
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 TeamStore.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/TeamStore.tsx
 
@@ -11322,7 +11291,7 @@
 **Type:** suggestion
 **Category:** maintainability
 
-**Line 6:**
+**Line 7:**
 ```typescript
 
 ```
@@ -12403,7 +12372,7 @@
 **Type:** suggestion
 **Category:** structure
 
-**Line 47:**
+**Line 48:**
 ```typescript
 
 ```
@@ -12559,6 +12528,18 @@
 
 ## 📄 ApiExchange.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiExchange.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ApiLogs.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiLogs.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -12977,8 +12958,32 @@
 
 ```
 
+## 📄 ApiUserPreferences.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/preferences/ApiUserPreferences.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 ApiService.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/service/ApiService.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 ApiUserService.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/api/service/ApiUserService.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -13111,6 +13116,18 @@
 
 ## 📄 DashboardConfigCard.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/cards/DashboardConfigCard.tsx
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 DummyCardLoader.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/cards/DummyCardLoader.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -15065,6 +15082,18 @@
 
 ```
 
+## 📄 CorrectionMessageGenerator.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionMessageGenerator.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 CorrectionWizard.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/CorrectionWizard.tsx
 
@@ -15547,18 +15576,6 @@
 
 ## 📄 useDummyGenerator.tsx
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useDummyGenerator.tsx
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 useDynamicNavigation.ts
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useDynamicNavigation.ts
 
 ### 1. undefined
 **Type:** suggestion
@@ -17153,6 +17170,18 @@
 
 ```
 
+## 📄 generate-commands-doc.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/generate-commands-doc.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 generateRoadmaps.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/scripts/generateRoadmaps.ts
 
@@ -17861,6 +17890,18 @@
 
 ```
 
+## 📄 NavigationContext.ts
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/NavigationContext.ts
+
+### 1. undefined
+**Type:** suggestion
+**Category:** performance
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 UndoRedoSaga.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/sagas/UndoRedoSaga.ts
 
@@ -18187,18 +18228,6 @@
 
 ## 📄 NotificationServiceClass.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationServiceClass.ts
-
-### 1. undefined
-**Type:** suggestion
-**Category:** performance
-
-**Fix:**
-```typescript
-
-```
-
-## 📄 NotificationStore.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/NotificationStore.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -19237,7 +19266,7 @@
 **Type:** suggestion
 **Category:** performance
 
-**Line 22:**
+**Line 23:**
 ```typescript
 
 ```
@@ -19254,7 +19283,7 @@
 **Type:** suggestion
 **Category:** performance
 
-**Line 85:**
+**Line 86:**
 ```typescript
 
 ```
@@ -19268,6 +19297,15 @@
 **Path:** ./package.json
 
 ### 1. undefined
+**Type:** suggestion
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+### 2. undefined
 **Type:** suggestion
 **Category:** structure
 
@@ -19384,8 +19422,8 @@ Remove unused interface or connect to a component
 Remove unused interface or connect to a component
 ```
 
-## 📄 NotificationService.tsx
-**Path:** src/app/services/NotificationService.tsx
+## 📄 useNotificationManagerServiceProps.tsx
+**Path:** src/app/components/notifications/useNotificationManagerServiceProps.tsx
 
 ### 1. Props interface 'NotificationManagerServiceProps' is defined but not used by any component
 **Type:** warning
@@ -19667,18 +19705,6 @@ Remove unused interface or connect to a component
 **Path:** src/app/pages/forms/UserSettingsForm.tsx
 
 ### 1. Props interface 'UserSettingsFormProps' is defined but not used by any component
-**Type:** warning
-**Category:** structure
-
-**Fix:**
-```typescript
-Remove unused interface or connect to a component
-```
-
-## 📄 UserJourneyManager.tsx
-**Path:** src/app/pages/personas/UserJourneyManager.tsx
-
-### 1. Props interface 'UserJourneyManagerProps' is defined but not used by any component
 **Type:** warning
 **Category:** structure
 
@@ -20485,6 +20511,24 @@ Rename to PascalCase: OnSubmit
 Create the src/components directory for better organization
 ```
 
+### 2. Structure issue: missing-directory-src-components
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+Create the src/components directory structure
+```
+
+### 3. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
 ## 📄 hooks
 **Path:** src/hooks
 
@@ -20495,6 +20539,24 @@ Create the src/components directory for better organization
 **Fix:**
 ```typescript
 Create the src/hooks directory for better organization
+```
+
+### 2. Structure issue: missing-directory-src-hooks
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+Create the src/hooks directory structure
+```
+
+### 3. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
 ```
 
 ## 📄 types
@@ -20567,4 +20629,244 @@ Create index.ts in src/hooks for cleaner imports
 **Fix:**
 ```typescript
 Create index.ts in src/utils for cleaner imports
+```
+
+## 📄 admin
+**Path:** src/components/admin
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 calendar
+**Path:** src/components/calendar
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 chat
+**Path:** src/components/chat
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 crypto
+**Path:** src/components/crypto
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 documents
+**Path:** src/components/documents
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 config
+**Path:** src/config
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 models
+**Path:** src/models
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 libraries
+**Path:** src/libraries
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 features
+**Path:** src/features
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 generators
+**Path:** src/generators
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 corrections
+**Path:** src/generators/corrections
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 documents
+**Path:** src/documents
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 data
+**Path:** src/data
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 README.md
+**Path:** README.md
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 next.config.cjs
+**Path:** next.config.cjs
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 Provider.tsx
+**Path:** src/app/Provider.tsx
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 .babelrc
+**Path:** .babelrc
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 .eslintrc.json
+**Path:** .eslintrc.json
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 snowpack.config.js
+**Path:** snowpack.config.js
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
+```
+
+## 📄 rollup.config.js
+**Path:** rollup.config.js
+
+### 1. undefined
+**Type:** warning
+**Category:** structure
+
+**Fix:**
+```typescript
+
 ```

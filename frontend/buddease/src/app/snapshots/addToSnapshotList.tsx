@@ -1,3 +1,4 @@
+// addToSnapshotList.tsx
 //import { Attachment } from '@/app/documents/attachment/Attachment';
 // import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 

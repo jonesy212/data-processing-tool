@@ -1,4 +1,4 @@
-import ApiConfig from '@/app/api/ApiConfig';
+import ApiConfig from '@/app/api/ApiConfigService';
 import { ClientConfig } from "@/app/client/Client";
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -47,7 +47,7 @@ export interface DappProps<
   // Project-related props
   currentProject: {
     id: string;
-    username: string;
+    name: string;
     description: string;
     tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     teamMembers: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

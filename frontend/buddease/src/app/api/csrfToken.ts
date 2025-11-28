@@ -1,3 +1,4 @@
+// csrfToken.ts
 // Client-side API calls from React components
 import { axiosInstance } from '@/app/api/axiosConfig';
 

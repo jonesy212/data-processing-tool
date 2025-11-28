@@ -1,3 +1,4 @@
+// FilterStore.ts
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {
   clearFilteredEvents as clearFilteredEventsAction,

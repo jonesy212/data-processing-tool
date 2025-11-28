@@ -1,3 +1,4 @@
+// InvitationData.ts
 import { Member } from '@/app/models/members/Member';
 
 // InvitationData.tsx

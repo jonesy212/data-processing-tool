@@ -1,3 +1,4 @@
+// ProjectPlanningPage.tsx
 // Example usage in another component or page
 import React from 'react';
 import IdeaLifecycleComponent

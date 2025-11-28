@@ -1,3 +1,4 @@
+// hasTokenExpired.ts
 const hasTokenExpired = (exp?: number): boolean => {
   if (exp === undefined) {
     return false; // If no `exp` claim, assume token is not expired

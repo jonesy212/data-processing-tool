@@ -1,3 +1,4 @@
+// ChecklistItem.tsx
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";

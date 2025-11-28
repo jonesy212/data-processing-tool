@@ -1,6 +1,5 @@
 // NotificationServiceClass.ts
-import { UnifiedNotificationOptions } from './UnifiedNotificationTypes';
-import { NotificationTypeEnum, NotificationType } from './UnifiedNotificationTypes';
+import { NotificationTypeEnum, UnifiedNotificationOptions } from '@/app/features/support/UnifiedNotificationTypes'
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { NotificationPosition } from '@/app/models/data/StatusType';
 

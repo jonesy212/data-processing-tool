@@ -1,7 +1,7 @@
+// CalendarEventInvitationPersonalization.ts
 import { PersonalizedInvitation } from "@/app/models/data/EventPriorityClassification";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
-// CalendarEventInvitationPersonalization.ts
 interface CalendarEventInvitationPersonalization extends WritableDraft<PersonalizedInvitation> {
   eventId: string; // ID of the event
   personalizedInvitations: PersonalizedInvitation[]; // Array of personalized invitations

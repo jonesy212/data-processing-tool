@@ -1,3 +1,4 @@
+// TodoStore.ts
 // TodoManagerStore.ts
 import { NotificationType } from "@/app/state/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
@@ -43,7 +44,8 @@ export interface TodoManagerStore<
   todoList: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  loading: MutableRefObject<boolean>;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   error: string | null;
   addTodos: (
     newTodos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -64,7 +66,7 @@ export interface TodoManagerStore<
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
    setDynamicNotificationMessage: (
-    message: Message,<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: NotificationType
   ) => void;
 
@@ -158,7 +160,7 @@ const useTodoManagerStore = <
 
 
   const addTodos = (
-    newTodos: Todo[],
+    newTodos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     data: SnapshotStore<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void => {
@@ -171,7 +173,7 @@ const useTodoManagerStore = <
         // Take snapshot for each todo
         if (data) {
           // Convert todo to snapshot format
-          const snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
+          const snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
             todoSnapshotId: generateSnapshotId,
             initialState: todo,
             category: "todo",
@@ -199,11 +201,11 @@ const useTodoManagerStore = <
   const todoList = Object.values(todos);
   const subscribeToSnapshot = (
     id: string,
-    callback: (snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo>) => void,
-    snapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> // Add 'snapshot' as an argument
+    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Add 'snapshot' as an argument
   ) => {
     // Define the conversion functions
-    const todoToData = (todo: Todo): Data => {
+    const todoToData = (todo: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Data => {
       // Implement the conversion logic here for Todo to Data
       const data: Data = {
         timestamp: undefined,
@@ -212,7 +214,7 @@ const useTodoManagerStore = <
       return data;
     };
   
-    const dataToTodo = (data: Data): Todo => {
+    const dataToTodo = (data: Data): Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
       // Implement the conversion logic here for Data to Todo
       const todo: Todo = {
         _id: "",
@@ -237,6 +239,7 @@ const useTodoManagerStore = <
           timestamp: "",
           category: undefined,
           deleted, initialState, isCore, initialConfig,
+          onInitialize, taskIdToAssign, schema, currentCategory,
           
         },
         timestamp: "",
@@ -259,7 +262,7 @@ const useTodoManagerStore = <
     // Check the type of 'data' and 'convertedTodo' to determine the correct conversion
     if ('id' in data && 'id' in convertedTodo) {
       // Perform conversion logic specific to Todo
-      const convertedSnapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         id,
         data: {
@@ -339,7 +342,7 @@ const useTodoManagerStore = <
 
       
       // Perform conversion logic specific to Data
-      const convertedSnapshot: Snapshot<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         data: {
           ...snapshot.data,
@@ -473,7 +476,7 @@ const useTodoManagerStore = <
     });
   };
 
-  const fetchTodosSuccess = (payload: { todos: Todo[] }) => {
+  const fetchTodosSuccess = (payload: { todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
     const { todos: newTodos } = payload;
     setTodos((prevTodos) => {
       const updatedTodos = { ...prevTodos };
@@ -484,7 +487,7 @@ const useTodoManagerStore = <
     });
   };
 
-  const completeAllTodosRequest = (payload: { todos: Todo[] }) => {
+  const completeAllTodosRequest = (payload: { todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
     console.log("Completing all Todos...");
     // Show loading indicator
     setUIState({ loading: true, error: null });
@@ -520,7 +523,7 @@ const useTodoManagerStore = <
     setTimeout(() => {
       // Update todos to mark all as done
       setTodos((prevTodos) => {
-        const updatedTodos: Record<string, Todo> = {};
+        const updatedTodos: Record<string, Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
         Object.keys(prevTodos).forEach((id) => {
           updatedTodos[id] = { ...prevTodos[id], done: true };
         });
@@ -577,12 +580,12 @@ const useTodoManagerStore = <
   };
 
   const batchFetchSnapshotsSuccess = async (payload: {
-    snapshots: Snapshots<Data, Meta>;
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }) => {
     console.log("Snapshots fetched successfully!");
     const { snapshots } = payload;
 
-    const { snapshotManager, snapshotStore } = await useSnapshotManager();
+    const { snapshotManager, snapshotStore } = await useSnapshotManager(initialStoreId);
   
     if (!snapshotManager && snapshotManager?.snapshotStore) {
       snapshotManager.setSnapshots(snapshots);
@@ -611,22 +614,37 @@ const useTodoManagerStore = <
           assignedTo: userId
         }
       }));
-      notify(
-        "assignTodoToUser",
-        "Todo assigned successfully!",
-        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.SUCCESS
-      );
+      notify({
+        id: "assignTodoToUser",
+        message: NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
+        data: {
+          extra: {
+            todoId,
+            userId,
+            operation: "assignTodoToUser"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.SUCCESS,
+        level: 'success'
+      });
     } catch (error: any) {
       setUIState({ loading: false, error: error.message });
-      notify(
-        "assignTodoToUserFailure",
-        error.message,
-        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: "assignTodoToUserFailure",
+        message: NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
+        data: {
+          extra: {
+            todoId,
+            userId,
+            operation: "assignTodoToUser",
+            error: error.message
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
     } finally {
       setUIState({ loading: false, error: null });
     }
@@ -643,13 +661,20 @@ const useTodoManagerStore = <
       }
       return updatedTodos;
     });
-    notify(
-      "updateTaskTitle",
-      "Task title updated successfully!",
-      NOTIFICATION_MESSAGES.Todos.TODO_TITLE_UPDATED,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notify({
+      id: "updateTaskTitle",
+      message: NOTIFICATION_MESSAGES.Todos.TODO_TITLE_UPDATED,
+      data: {
+        extra: {
+          todoId,
+          newTitle,
+          operation: "updateTaskTitle"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success'
+    });
   };
 
   const updateTaskDescription = (todoId: string, newDescription: string) => {
@@ -663,13 +688,20 @@ const useTodoManagerStore = <
       }
       return updatedTodos;
     });
-    notify(
-      "updateTaskDescription",
-      "Task description updated successfully!",
-      NOTIFICATION_MESSAGES.Todos.TODO_DESCRIPTION_UPDATED,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notify({
+      id: "updateTaskDescription",
+      message: NOTIFICATION_MESSAGES.Todos.TODO_DESCRIPTION_UPDATED,
+      data: {
+        extra: {
+          todoId,
+          newDescription,
+          operation: "updateTaskDescription"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success'
+    });
   };
 
   const updateTaskStatus = (todoId: string, newStatus: "pending" | "in-progress" | "completed") => {
@@ -683,15 +715,21 @@ const useTodoManagerStore = <
       }
       return updatedTodos;
     });
-    notify(
-      "updateTaskStatus",
-      "Task status updated successfully!",
-      NOTIFICATION_MESSAGES.Todos.TODO_STATUS_UPDATED,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notify({
+      id: "updateTaskStatus",
+      message: NOTIFICATION_MESSAGES.Todos.TODO_STATUS_UPDATED,
+      data: {
+        extra: {
+          todoId,
+          newStatus,
+          operation: "updateTaskStatus"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success'
+    });
   };
-
 
   const useTodoManagerStore = makeAutoObservable(
     {

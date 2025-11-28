@@ -1,6 +1,6 @@
+// ImportTasksPayload.tsx
 import { Task } from "./Task";
 
-// ImportTasksPayload.tsx
 interface ImportTasksPayload {
     data: string; // Data containing tasks to be imported, e.g., JSON data
     format: ImportFormat; // Format of the imported data

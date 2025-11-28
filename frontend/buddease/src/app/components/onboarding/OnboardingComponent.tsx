@@ -1,3 +1,4 @@
+// OnboardingComponent.tsx
 import OnboardingManager from '@/app/pages/onboarding/OnboardingManager';
 import introJs from 'intro.js';
 import React, { useEffect } from 'react';

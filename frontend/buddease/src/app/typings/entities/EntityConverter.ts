@@ -1,3 +1,4 @@
+// EntityConverter.ts
 import { conversionRules } from './EntityConversionRules';
 // --------------------
 // Step 1: Define entity mapping

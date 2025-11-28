@@ -1,3 +1,4 @@
+// updateNotificationSettings.ts
 // Import Axios and any other dependencies you need
 import axios from 'axios';
 

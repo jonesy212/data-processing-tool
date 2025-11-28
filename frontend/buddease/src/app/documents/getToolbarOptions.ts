@@ -1,3 +1,4 @@
+// getToolbarOptions.ts
 const getToolbarOptions = ({
     isDocumentEditor,
     fontSize,

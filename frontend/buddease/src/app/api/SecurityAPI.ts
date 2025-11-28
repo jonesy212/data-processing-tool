@@ -1,3 +1,4 @@
+// SecurityAPI.ts
 // SecurityAPI
 import axiosInstance from '@/app/api/csrfToken'
 import { SecuritySettings } from '@/app/settings/SecuritySettings'

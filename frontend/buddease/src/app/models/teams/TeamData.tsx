@@ -1,3 +1,4 @@
+// TeamData.tsx
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BrainstormingSettings } from '@/app/interfaces/settings/BrainstormingSettings';

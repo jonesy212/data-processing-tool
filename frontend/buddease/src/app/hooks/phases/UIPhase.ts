@@ -1,9 +1,9 @@
+// UIPhase.ts
 // DefaultNotification.ts
 // UIPhase.tsx
-// UIPhase.ts
 import { fetchData } from "@/app/api/ApiData";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
-import { NotificationType, NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import UserService from '@/app/api/ApiUser';

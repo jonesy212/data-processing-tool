@@ -1,5 +1,5 @@
-// CollaborationSettings
 // CollaborationSettings.tsx
+// CollaborationSettings
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import React, { useState } from 'react';
 

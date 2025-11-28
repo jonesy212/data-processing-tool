@@ -1,3 +1,4 @@
+// blogTypes.ts
 // app/types/blog.ts
 import { Content } from '@/app/models/content/AddContent';
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';

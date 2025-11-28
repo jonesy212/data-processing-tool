@@ -1,3 +1,4 @@
+// processSnapshotStore.ts
 // RealtimeDataComponent.tsx
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
 import { ExchangeData } from "@/app/models/data/ExchangeData";

@@ -1,3 +1,4 @@
+// LogData.tsx
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { Highlight } from "@/app/documents/NoteData";
 import CustomFile from "@/app/documents/File";
@@ -38,7 +39,7 @@ interface LogData<
   topics: string[] | undefined;
   highlights: Highlight[];
   eventData: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  files: CustomFile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  files: CustomFile<T>[];
   meta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null;
 }
 

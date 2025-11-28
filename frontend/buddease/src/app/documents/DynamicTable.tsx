@@ -1,3 +1,4 @@
+// DynamicTable.tsx
 // DynamicTable.ts
 import "antd/dist/antd.css";
 import { Table } from "antd";

@@ -1,6 +1,7 @@
 // GenericContainerGenerator.ts
 
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { AxiosError } from 'axios';
 
 // Define a generic container interface

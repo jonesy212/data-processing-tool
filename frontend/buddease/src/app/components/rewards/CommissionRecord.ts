@@ -1,3 +1,4 @@
+// CommissionRecord.ts
 import axiosInstance from '@/app/api/csrfToken';
 
 interface CommissionRecord {

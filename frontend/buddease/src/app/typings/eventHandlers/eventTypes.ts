@@ -1,3 +1,4 @@
+// eventTypes.ts
 import { EventDetails } from "@/app/components/calendar/CalendarEventViewingDetails";
 
 import { ProgressDataProps } from "@/app/components/models/data/ProgressData";

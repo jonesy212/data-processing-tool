@@ -1,3 +1,4 @@
+// CustomBox.tsx
 import ResizablePanels, {
   ResizablePanelsProps,
 } from "@/app/hooks/userInterface/ResizablePanels";

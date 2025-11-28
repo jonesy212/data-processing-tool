@@ -1,6 +1,6 @@
-import { DocumentTypeEnum } from "@/app/typings/documents";
-
 // determineDocumentType.ts
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
+
 function determineDocumentType(options: {
   content: string;
   filePathOrUrl?: string;

@@ -1,3 +1,4 @@
+// LayoutConfig.tsx
 //LayoutConfig.ts
 
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";

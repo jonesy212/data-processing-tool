@@ -1,3 +1,4 @@
+// FormElementStyles.tsx
 import React from 'react';
 import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { AnimationType, useAnimationHook } from '@/app/components/libraries/animations/AnimationLibrary';

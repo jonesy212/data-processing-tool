@@ -1,3 +1,4 @@
+// BaseDataOperations.ts
 // BaseDataOperations
 import { fetchApiData } from '@/app/api/ApiData';
 import { BaseData } from '@/app/models/data/Data';

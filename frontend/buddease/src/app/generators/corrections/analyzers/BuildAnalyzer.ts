@@ -1,3 +1,4 @@
+// BuildAnalyzer.ts
 // analyzers/BuildAnalyzer.ts
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import fs from 'fs';

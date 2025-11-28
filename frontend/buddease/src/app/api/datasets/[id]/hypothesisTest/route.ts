@@ -1,3 +1,4 @@
+// route.ts
 
 // src/app/api/datasets/[id]/hypothesis-test/route.ts
 import { runHypothesisTest } from '@/utils/hypothesisTesting';

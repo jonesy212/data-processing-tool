@@ -1,3 +1,4 @@
+// exchangeIntegrationServer.ts
 import { getConfigsData } from "@/app/api/getConfigsApi";
 import DatabaseClient from "@/app/api/DatabaseClient";
 import { ConfigLogger } from "@/app/libraries/logging/Logger";

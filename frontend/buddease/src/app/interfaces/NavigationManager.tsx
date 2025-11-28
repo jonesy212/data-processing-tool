@@ -1,11 +1,12 @@
 // NavigationManager.tsx
-import React, { useState, useEffect } from 'react';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import React, { useEffect, useState } from 'react';
 import NavigationMenu from './NavigationMenu';
-import VoiceControlledNavigation from './VoiceControlledNavigation';
 import PhasesNavigation from './PhasesNavigation';
-import { useStepNavigation, Step } from './useStepNavigation';
+import { Step, useStepNavigation } from './useStepNavigation';
+import VoiceControlledNavigation from './VoiceControlledNavigation';
 
 export type NavigationView = 
   | 'projectManagement'

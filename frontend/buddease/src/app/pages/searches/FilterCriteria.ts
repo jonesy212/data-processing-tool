@@ -1,3 +1,4 @@
+// FilterCriteria.ts
 
 import extractCriteria from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';

@@ -1,3 +1,4 @@
+// KPM.tsx
 let keystrokes = 0;
 let startTime: number | undefined; // Make startTime nullable to address the initialization issue
 

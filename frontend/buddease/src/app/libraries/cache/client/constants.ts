@@ -1,3 +1,4 @@
+// constants.ts
 export const STORE_KEYS = {
   USER_PREFERENCES: "userPreferences",
   USER_SETTINGS: "userSettings",

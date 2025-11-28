@@ -1,3 +1,4 @@
+// TraderTypesSelection.tsx
 import React, { useState } from 'react';
 
 interface TraderTypesSelectionProps {

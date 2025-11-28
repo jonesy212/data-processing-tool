@@ -1,3 +1,4 @@
+// RootSlice.ts
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 // src/app/state/slices/RootSlice.ts
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';

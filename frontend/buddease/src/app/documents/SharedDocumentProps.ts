@@ -46,7 +46,7 @@ export interface DocumentBuilderProps<
   ) => {
     phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
-    } | undefined;
+    }
   currentContent?: ContentState
   previousContent?: string | ContentState;
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;

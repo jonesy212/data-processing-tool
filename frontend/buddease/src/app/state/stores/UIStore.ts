@@ -1,3 +1,4 @@
+// UIStore.ts
 import { UserProfile } from '@/app/snapshots/userSnapshotData';
 
 import { UIActions } from '@/app/actions/UIActions';

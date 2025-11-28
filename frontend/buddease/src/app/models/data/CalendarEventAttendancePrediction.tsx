@@ -1,3 +1,4 @@
+// CalendarEventAttendancePrediction.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
 import AttendancePrediction, { EventAttendance } from "@/app/components/calendar/AttendancePrediction";
 

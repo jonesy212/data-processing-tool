@@ -1,5 +1,5 @@
-import { FileMetadata } from '@/app/typings/file/FileManager';
 // FileEntity.ts
+import { FileMetadata } from '@/app/typings/file/FileManager';
 import { CommonData } from '@/app/models/CommonData';
 import FileMetadata from '@/app/components/models/file/FileManager';
 

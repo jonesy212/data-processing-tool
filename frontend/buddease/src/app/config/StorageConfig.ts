@@ -1,3 +1,4 @@
+// StorageConfig.ts
 export interface StorageConfig {
   type: 'localStorage' | 'sessionStorage' | 'indexedDB' | 'custom';
   prefix: string;

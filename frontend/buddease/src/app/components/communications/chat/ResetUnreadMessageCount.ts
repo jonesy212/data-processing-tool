@@ -1,3 +1,4 @@
+// ResetUnreadMessageCount.ts
 // Assume you have a state or some mechanism to store unread message counts
 const unreadMessageCounts: Record<string, number> = {};
 

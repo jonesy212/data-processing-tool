@@ -16,7 +16,7 @@ import { category } from "@/utils/snapshotUtils";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotEvents } from '@/app/typings/eventTypes;
 import { SnapshotIdentity } from "./SnapshotIdentity";

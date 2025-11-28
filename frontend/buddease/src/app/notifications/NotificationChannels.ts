@@ -1,6 +1,6 @@
 // NotificationChannels.ts
 import { CalendarIntegrationSettings, VoiceSettings, VideoSettings, ScreenShareSettings } from '@/app/components/communications/chat/CalendarIntegrationSettings'
-import ChatSettings from '@/app/components/communications/chat/ChatSettingsPanel'
+import ChatSettings from '@/app/hooks/userInterface/ChatSettings'
 import { BaseNotificationSettings } from "@/app/features/support/NotificationSettings";
 import {
   EmailSettings,
@@ -80,6 +80,8 @@ interface BasicNotificationChannels {
   push: boolean;
   sms: boolean;
   chat: boolean;
+  inApp: boolean;
+  webhook: boolean;
   calendar: boolean;
   audioCall: boolean;
   videoCall: boolean;

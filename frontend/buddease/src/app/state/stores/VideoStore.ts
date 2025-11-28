@@ -1,3 +1,4 @@
+// VideoStore.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { Label } from '@/app/branding/BrandingSettings';

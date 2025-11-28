@@ -1,3 +1,4 @@
+// DirectoryExplorer.tsx
 // DirectoryExplorer.ts
 import { generateAppResponse, getAppContext } from "@/state/context/AppContextHelper";
 

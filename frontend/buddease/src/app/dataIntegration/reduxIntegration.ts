@@ -1,3 +1,4 @@
+// reduxIntegration.ts
 import { CryptoActions } from '@/app/actions/CryptoActions';
 import { ProjectManagementActions } from '@/app/actions/ProjectManagementActions';
 import { SnapshotActions } from '@/app/actions/SnapshotActions';

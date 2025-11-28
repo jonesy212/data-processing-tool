@@ -1,3 +1,4 @@
+// SnapshotManagerOptions.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';

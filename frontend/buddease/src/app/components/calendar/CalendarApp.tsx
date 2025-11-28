@@ -6,7 +6,7 @@ import { default as findSnapshotStoresById, default as snapshotContainer } from 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import CalendarDetails from "@/app/components/models/data/CalendarDetails";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { createMeta } from "@/app/config/medatada/MetadataHooks";
+import { createMeta } from "@/app/config/metadata/createMeta";
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMetadata } from "@/app/config/useMetadata";
@@ -722,7 +722,7 @@ function CalendarApp<
   const snapshotManager = useSnapshotManager<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(storeId, storeProps); // Initialize the snapshot manager
 
   // Define the CalendarEvent object
-  const calendarEvent: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> = {
+  const calendarEvent: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: "1",
     title: "Meeting",
     description: "Discuss project plans",
@@ -773,7 +773,7 @@ function CalendarApp<
     analysisResults: [],
     snapshots: [],
     getData: function (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-      return {} as Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>;
+      return {} as Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     },
     timestamp: undefined,
     meta: {},
@@ -796,7 +796,7 @@ function CalendarApp<
     );
   }
 
-  const validAnalysisResults: DataAnalysisResult<T, K>[] | undefined = isDataAnalysisResult(analysisResults)
+  const validAnalysisResults: DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined = isDataAnalysisResult(analysisResults)
   ? [analysisResults]
   : undefined;
 
@@ -807,7 +807,7 @@ function CalendarApp<
         data={{
           id: "1",
           tags: {},
-          metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<any, K>, never>,
+          metadata: {} as UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         }}
         details={{
           id: "1",
@@ -868,7 +868,7 @@ function CalendarApp<
           type: "calendarEvent",
           isActive: false,
           tags: ["work", "meeting"],
-          details: {} as DataDetails<T, K>,
+          details: {} as DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           updatedAt: new Date(),
         }}
         // #todo
@@ -939,6 +939,7 @@ function CalendarApp<
               isAuthorized: false,
               bannerUrl: "",
               currentMetadata, 
+              latestVersion,
               currentMeta: currentMeta
             },
           ],
@@ -961,7 +962,7 @@ function CalendarApp<
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (): Promise<SnapshotStore<BaseData>[]> {
+              getData: function (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
                 return Promise.resolve([]);
               },
               timestamp: undefined,
@@ -985,7 +986,7 @@ function CalendarApp<
               phases: [],
               type: ProjectType.Internal,
               currentPhase: null,
-              getData: function (): Promise<SnapshotStore<BaseData>[]> {
+              getData: function (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
                 return Promise.resolve([]);
               },
               timestamp: undefined,
@@ -996,7 +997,7 @@ function CalendarApp<
           leader: {
             username: "Charlie Brown",
             role: UserRoles.TeamLeader,
-          } as User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          } 
           pointOfContact: {
             username: "Dana White",
             role: UserRoles.Coordinator,
@@ -1079,7 +1080,7 @@ function CalendarApp<
                 reassignProject: reassignProject,
                 unassignProject: unassignProject,
                 updateProgress: updateProgress,
-                getData: function (): Promise<SnapshotStore<BaseData>[]> {
+                getData: function (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
                   return Promise.resolve([]);
                 },
                 timestamp: undefined,
@@ -1089,13 +1090,10 @@ function CalendarApp<
             },
           ],
           status: "active",
-          assignProject: (project) => console.log("Project assigned:", project),
-          reassignProject: (project) =>
-            console.log("Project reassigned:", project),
-          updateProgress: (progress) =>
-            console.log("Progress updated:", progress),
-          unassignProject: (project) =>
-            console.log("Project unassigned:", project),
+          assignProject: () => Promise.resolve(console.log("Project assigned")),
+          reassignProject: () => Promise.resolve(console.log("Project reassigned")),
+          updateProgress: () => Promise.resolve(console.log("Progress updated"), 0),
+          unassignProject: () => Promise.resolve(console.log("Project unassigned")),
           analysisType: "quantitative" as AnalysisTypeEnum | undefined,
 
           snapshots: [],

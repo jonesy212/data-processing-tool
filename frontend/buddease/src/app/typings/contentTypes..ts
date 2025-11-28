@@ -1,3 +1,4 @@
+// contentTypes..ts
 // contentTypes.ts
 export interface ContentResponseType {
   id: string;

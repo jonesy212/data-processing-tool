@@ -1,3 +1,4 @@
+// EmaiConfirmation.tsx
 // EmailConfirmationPage.tsx
 import React from 'react';
 

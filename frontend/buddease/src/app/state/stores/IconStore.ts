@@ -1,3 +1,4 @@
+// IconStore.ts
 import { makeAutoObservable } from 'mobx';
 import { RootStores } from '@/state/stores/RootStores';
 import { useAppDispatch } from '@/app/state/stores/useAppDispatch';

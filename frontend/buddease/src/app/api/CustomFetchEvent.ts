@@ -1,6 +1,6 @@
+// CustomFetchEvent.ts
 import { Promise } from "es6-promise";
 
-// CustomFetchEvent.ts
 // Logic for FetchEvent interface
 interface ExtendableEvent extends Event {
   waitUntil?(fn: Promise<any>): void;

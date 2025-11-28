@@ -1,3 +1,4 @@
+// createMergedEndpoints.ts
 // createMergedEndpoints.ts - UPDATED VERSION
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 import mergeConfigurations from './mergeConfigurations';

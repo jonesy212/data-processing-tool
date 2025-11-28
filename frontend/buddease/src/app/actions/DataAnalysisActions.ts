@@ -1,3 +1,4 @@
+// DataAnalysisActions.ts
 // dataAnalysis/DataAnalysisActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { DataAnalysis } from '@/app/projects/DataAnalysisPhase/DataAnalysis'

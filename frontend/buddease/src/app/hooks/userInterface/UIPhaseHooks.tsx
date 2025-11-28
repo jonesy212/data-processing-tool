@@ -1,3 +1,4 @@
+// UIPhaseHooks.tsx
 import UserService from "@/api/ApiUser";
 import { UIActions } from "@/app/actions/UIActions";
 import { fetchData } from "@/app/api/ApiData";
@@ -10,10 +11,10 @@ import NotificationMessagesFactory from "@/app/features/support/NotificationMess
 import useNotificationBar from "@/app/hooks/commHooks/useNotificationBar";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { LogData } from "@/app/models/LogData";
 import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
-import { NotificationType } from "@/state/context/NotificationContext";
 import useDarkModeToggle from "./useDarkModeToggle";
 
 const usePhaseUI = <

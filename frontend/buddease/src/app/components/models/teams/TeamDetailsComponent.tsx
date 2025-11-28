@@ -1,3 +1,4 @@
+// TeamDetailsComponent.tsx
 "use client";
 
 import { BaseData } from '@/app/models/data/Data';

@@ -1,5 +1,5 @@
-import { Entity } from '@/app/routing/FuzzyMatch';
 // FuzzyMatch.ts
+import { Entity } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
 import { useAuth } from "@/state/context/AuthContext";

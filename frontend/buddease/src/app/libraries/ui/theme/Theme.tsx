@@ -1,3 +1,4 @@
+// Theme.tsx
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";

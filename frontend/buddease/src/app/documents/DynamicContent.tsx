@@ -1,5 +1,5 @@
-
 // DynamicContent.tsx
+
 import React from 'react';
 
 interface DynamicContentProps {

@@ -1,9 +1,11 @@
+// ApiCrypto.tsx
 import { ApiActions } from '@/app/actions/ApiActions';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice';
 import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';

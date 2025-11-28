@@ -1,6 +1,6 @@
 # 🏗️ Structural Issues Report
-**Generated:** 2025-11-22T18:55:54.755Z
-**Total Structural Issues:** 142
+**Generated:** 2025-11-28T06:48:30.121Z
+**Total Structural Issues:** 166
 
 ## 📄 ReactWebAnalyzer.ts
 **Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts
@@ -10,17 +10,31 @@
 **Type:** warning
 
 **Location:**
-`/Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts:632`
+`/Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts:633`
 
 **Problem Code:**
 ```typescript
-
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts at line 633
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/ReactWebAnalyzer.ts
+// 
+//     Possible causes:
+//     1. File may have syntax errors or unusual formatting
+//     2. Missing proper file header comment
+//     3. Encoding issues detected
+//     4. Very long lines or complex nested structures
+// 
+//     Auto-fix attempted: ⚠️ Header already exists or fix failed
+// 
+//     Please check the file manually if issues persist.
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
-
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
 ```
+
 ---
 
 ## 📄 AntiPatternChecker.ts
@@ -35,13 +49,27 @@
 
 **Problem Code:**
 ```typescript
-
+// Check file: /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/performance/AntiPatternChecker.ts at line 120
+// // 🔍 Analysis Issue: Unable to extract code from /Users/dixiejones/data_analysis/frontend/buddease/src/app/generators/corrections/analyzers/react-native/performance/AntiPatternChecker.ts
+// 
+//     Possible causes:
+//     1. File may have syntax errors or unusual formatting
+//     2. Missing proper file header comment
+//     3. Encoding issues detected
+//     4. Very long lines or complex nested structures
+// 
+//     Auto-fix attempted: ⚠️ Header already exists or fix failed
+// 
+//     Please check the file manually if issues persist.
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
-
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
 ```
+
 ---
 
 ## 📄 ios
@@ -53,13 +81,17 @@
 
 **Problem Code:**
 ```typescript
-
+// Check file: ios
+// File not found: ios
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
-
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
 ```
+
 ---
 
 ## 📄 android
@@ -71,13 +103,17 @@
 
 **Problem Code:**
 ```typescript
-
+// Check file: android
+// File not found: android
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
-
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
 ```
+
 ---
 
 ## 📄 RootLayout.tsx
@@ -92,10 +128,11 @@
 interface RootLayoutProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CollaborationBoardStore.tsx
@@ -110,10 +147,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 FileCard.tsx
@@ -128,10 +166,11 @@ Create the missing interface or fix the reference
 interface { fileName: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 FolderCard.tsx
@@ -146,10 +185,11 @@ Create the missing interface or fix the reference
 interface { folderName: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PersonaCard.tsx
@@ -176,10 +216,11 @@ interface {
 } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DynamicComponentsContext.tsx
@@ -194,10 +235,11 @@ Create the missing interface or fix the reference
 interface DynamicComponentContextProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 AuthContext.tsx
@@ -212,10 +254,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode; token: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 AdminDashboard.tsx
@@ -230,10 +273,11 @@ Create the missing interface or fix the reference
 interface AdminDashboardProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 BlogComponent.tsx
@@ -248,10 +292,11 @@ Create the missing interface or fix the reference
 interface BlogProps<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarContext.tsx
@@ -266,10 +311,11 @@ Create the missing interface or fix the reference
 interface CalendarContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarMonth.tsx
@@ -284,10 +330,11 @@ Create the missing interface or fix the reference
 interface CalendarMonthProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarMonthView.tsx
@@ -302,10 +349,11 @@ Create the missing interface or fix the reference
 interface MonthViewProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarView.tsx
@@ -320,10 +368,11 @@ Create the missing interface or fix the reference
 interface CalendarViewProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarWeek.tsx
@@ -338,10 +387,11 @@ Create the missing interface or fix the reference
 interface WeekViewProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 YearView.tsx
@@ -356,10 +406,11 @@ Create the missing interface or fix the reference
 interface YearViewProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DayOfWeek.tsx
@@ -374,10 +425,11 @@ Create the missing interface or fix the reference
 interface DayOfWeekProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CommunicationPage.tsx
@@ -392,10 +444,11 @@ Create the missing interface or fix the reference
 interface CommunicationProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ChatComponent.tsx
@@ -410,10 +463,11 @@ Create the missing interface or fix the reference
 interface { dappProps: DappProps } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ChatMessage.tsx
@@ -428,10 +482,11 @@ Create the missing interface or fix the reference
 interface ChatMessageProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ChatRoomContext.tsx
@@ -446,10 +501,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ActivityFeedComponent.tsx
@@ -464,10 +520,11 @@ Create the missing interface or fix the reference
 interface RealtimeUpdates { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CustomBox.tsx
@@ -482,10 +539,11 @@ Create the missing interface or fix the reference
 interface CustomBoxProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ToggleSwitchContainer.tsx
@@ -500,10 +558,11 @@ Create the missing interface or fix the reference
 interface { taskId: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TeamContext.tsx
@@ -518,10 +577,11 @@ Create the missing interface or fix the reference
 interface TeamContextProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CommunityContribution.tsx
@@ -536,10 +596,11 @@ Create the missing interface or fix the reference
 interface { contribution: ContributionItem } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CryptoTransaction.tsx
@@ -554,10 +615,11 @@ Create the missing interface or fix the reference
 interface { transaction: CryptoTransaction } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ProjectManagementToolbar.tsx
@@ -574,10 +636,11 @@ interface {
     task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ToolbarOptions.tsx
@@ -592,10 +655,11 @@ Create the missing interface or fix the reference
 interface ToolbarOptionsProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 EventSentiment.tsx
@@ -610,10 +674,11 @@ Create the missing interface or fix the reference
 interface { event: CalendarEvent } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DetailsList.tsx
@@ -628,10 +693,11 @@ Create the missing interface or fix the reference
 interface DetailsListInterface { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ContentItem.tsx
@@ -646,10 +712,11 @@ Create the missing interface or fix the reference
 interface ContentItemProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CalendarDetails.tsx
@@ -664,10 +731,11 @@ Create the missing interface or fix the reference
 interface CalendarDetailsProps<CalendarDataAndEventDetails { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Details.tsx
@@ -682,10 +750,11 @@ Create the missing interface or fix the reference
 interface DetailsProps<DataAndEventDetails { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SearchResultItem.tsx
@@ -700,10 +769,11 @@ Create the missing interface or fix the reference
 interface SearchResultItemProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SentimentAnalysis.tsx
@@ -718,10 +788,11 @@ Create the missing interface or fix the reference
 interface { text: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 MultimediaContentCustomization.tsx
@@ -736,10 +807,11 @@ Create the missing interface or fix the reference
 interface MultimediaContentCustomizationProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 IntegrationLogicComponent.tsx
@@ -754,10 +826,11 @@ Create the missing interface or fix the reference
 interface IntegrateComponentsProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 RealTimeDataCollection.tsx
@@ -772,10 +845,11 @@ Create the missing interface or fix the reference
 interface {} { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 RealTimeVisualization.tsx
@@ -790,10 +864,11 @@ Create the missing interface or fix the reference
 interface RealTimeVisualizationProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Team.tsx
@@ -810,10 +885,11 @@ interface {
   team: Team<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Notification.tsx
@@ -828,10 +904,11 @@ Create the missing interface or fix the reference
 interface NotificationStyleProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 NotificationComponent.tsx
@@ -846,10 +923,11 @@ Create the missing interface or fix the reference
 interface NotificationComponentProps & CustomNotificationProps & ThemeConfigProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 FeedbackManagementContext.tsx
@@ -870,10 +948,11 @@ interface {
 } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingPreferencesStep.tsx
@@ -888,10 +967,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (preferences: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TwoFactorSetupPhase.tsx
@@ -906,10 +986,11 @@ Create the missing interface or fix the reference
 interface { onSetupComplete: () = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CryptoEnthusiastCalls.tsx
@@ -924,10 +1005,11 @@ Create the missing interface or fix the reference
 interface CryptoEnthusiastCallsProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 WelcomePhase.tsx
@@ -942,10 +1024,11 @@ Create the missing interface or fix the reference
 interface { onNextPhase: () = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PreferencesStep.tsx
@@ -970,10 +1053,11 @@ interface {
   onSubmit: (preferences: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TeamBasicInfoStep.tsx
@@ -988,10 +1072,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (basicInfo: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TeamReviewStep.tsx
@@ -1006,10 +1091,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (members: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TeamPreferencesStep.tsx
@@ -1024,10 +1110,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (preferences: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TeamSummaryStep.tsx
@@ -1042,10 +1129,11 @@ Create the missing interface or fix the reference
 interface { teamData: any } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ProductLaunchDetails.tsx
@@ -1060,10 +1148,11 @@ Create the missing interface or fix the reference
 interface { productData: ProductLaunchData } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ProtectedRoute.tsx
@@ -1078,10 +1167,11 @@ Create the missing interface or fix the reference
 interface ProtectedRouteProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 2. Component 'renderContent' references missing props interface 'any'
@@ -1093,10 +1183,11 @@ Create the missing interface or fix the reference
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SearchResult.tsx
@@ -1111,10 +1202,11 @@ Create the missing interface or fix the reference
 interface SearchResultProps<any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 BasicInfoStep.tsx
@@ -1129,10 +1221,11 @@ Create the missing interface or fix the reference
 interface BasicInfoStepProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 GenericStepContainer.tsx
@@ -1147,10 +1240,11 @@ Create the missing interface or fix the reference
 interface GenericStepContainerProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TaskSort.tsx
@@ -1165,10 +1259,11 @@ Create the missing interface or fix the reference
 interface TaskSort { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 BasicStopwatchComponent.tsx
@@ -1183,10 +1278,11 @@ Create the missing interface or fix the reference
 interface StopwatchProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DynamicComponents.tsx
@@ -1201,10 +1297,11 @@ Create the missing interface or fix the reference
 interface DynamicComponentProps & (ButtonProps | CardProps) { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DynamicSpacingAndLayout.tsx
@@ -1219,10 +1316,11 @@ Create the missing interface or fix the reference
 interface DynamicSpacingAndLayoutProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DynamicTypography.tsx
@@ -1237,10 +1335,11 @@ Create the missing interface or fix the reference
 interface DynamicTypographyProps & (BodyTextProps | HeadingProps) { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SubscriptionComponent.tsx
@@ -1255,10 +1354,11 @@ Create the missing interface or fix the reference
 interface Props { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradeData.tsx
@@ -1273,10 +1373,11 @@ Create the missing interface or fix the reference
 interface TradeDataProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 UserRolesEditor.tsx
@@ -1291,10 +1392,11 @@ Create the missing interface or fix the reference
 interface UserRoleEditorProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Whiteboard.tsx
@@ -1309,10 +1411,11 @@ Create the missing interface or fix the reference
 interface CanvasProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ComponentConfigProvider.tsx
@@ -1327,10 +1430,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 MainConfig.tsx
@@ -1345,10 +1449,11 @@ Create the missing interface or fix the reference
 interface MainConfigProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 FrontendStructureComponent.tsx
@@ -1363,10 +1468,11 @@ Create the missing interface or fix the reference
 interface { content: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 2. Duplicate component name detected: 'RenderContent'
@@ -1378,10 +1484,11 @@ Create the missing interface or fix the reference
 RenderContent
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Use unique names for components to avoid conflicts
 ```
+
 ---
 
 ## 📄 ContentMaintenance.tsx
@@ -1396,10 +1503,11 @@ Use unique names for components to avoid conflicts
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 2. Component 'ContentEditing' references missing props interface 'any'
@@ -1411,10 +1519,11 @@ Create the missing interface or fix the reference
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 3. Component 'ContentCreation' references missing props interface 'any'
@@ -1426,10 +1535,11 @@ Create the missing interface or fix the reference
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 4. Component 'ContentOrganization' references missing props interface 'any'
@@ -1441,10 +1551,11 @@ Create the missing interface or fix the reference
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 5. Component 'ContentPublishing' references missing props interface 'any'
@@ -1456,10 +1567,11 @@ Create the missing interface or fix the reference
 interface any { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DashboardComponent.tsx
@@ -1474,10 +1586,11 @@ Create the missing interface or fix the reference
 interface Props { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PhaseDashboard.tsx
@@ -1492,28 +1605,30 @@ Create the missing interface or fix the reference
 interface { phase: OnboardingPhase } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DocumentBuilder.tsx
 **Path:** src/app/documents/editing/DocumentBuilder.tsx
 
-### 1. Component 'DocumentBuilder' references missing props interface 'DocumentBuilderProps'
+### 1. Component 'DocumentBuilder' references missing props interface 'DocumentBuilderProps<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields'
 **Severity:** HIGH
 **Type:** error
 
 **Problem Code:**
 ```typescript
-interface DocumentBuilderProps { /* not found */ }
+interface DocumentBuilderProps<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ClearFiltersButton.tsx
@@ -1528,10 +1643,11 @@ Create the missing interface or fix the reference
 interface ClearFiltersButtonProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SortableTableHeaders.tsx
@@ -1546,10 +1662,11 @@ Create the missing interface or fix the reference
 interface TableHeaders { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ThemeManagerServiceContext.tsx
@@ -1564,10 +1681,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ToolbarItemsProvider.tsx
@@ -1582,10 +1700,11 @@ Create the missing interface or fix the reference
 interface { children: ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 UILibrary.tsx
@@ -1600,10 +1719,11 @@ Create the missing interface or fix the reference
 interface UIComponentRendererProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 2. Component 'EnhancedUIComponentRenderer' references missing props interface 'UIComponentRendererProps & {
@@ -1617,10 +1737,11 @@ interface UIComponentRendererProps & {
   onComponentLoad?: (componentType: string) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ReusableButton.tsx
@@ -1635,10 +1756,11 @@ Create the missing interface or fix the reference
 interface WebButtonProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 theme-provider.tsx
@@ -1659,10 +1781,11 @@ interface {
 } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 AddContent.tsx
@@ -1679,10 +1802,11 @@ interface {
   onComplete: (content: DefaultContent) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PhaseManager.tsx
@@ -1697,10 +1821,11 @@ Create the missing interface or fix the reference
 interface { phases: Phase<AppPhaseEntity { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 BlogPost.tsx
@@ -1715,10 +1840,11 @@ Create the missing interface or fix the reference
 interface BlogPost { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CollaborationPage.tsx
@@ -1733,10 +1859,11 @@ Create the missing interface or fix the reference
 interface CollaborationPageProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingConfirmationPage.tsx
@@ -1751,10 +1878,11 @@ Create the missing interface or fix the reference
 interface TradingConfirmationPageProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ContentCreationPage.tsx
@@ -1769,10 +1897,11 @@ Create the missing interface or fix the reference
 interface ContentCreationPageProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CoursePlanningPhase.tsx
@@ -1787,10 +1916,11 @@ Create the missing interface or fix the reference
 interface CoursePlanningPhasePros { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 BugComments.tsx
@@ -1805,10 +1935,11 @@ Create the missing interface or fix the reference
 interface BugCommentProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ClientDesignDashboard.tsx
@@ -1823,10 +1954,11 @@ Create the missing interface or fix the reference
 interface ClientDesignDashboardProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 EnhancedTreeView.tsx
@@ -1845,10 +1977,11 @@ interface {
   onClick: (node: FileTreeNode) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ### 2. Component 'FileContentViewer' references missing props interface '{
@@ -1866,10 +1999,11 @@ interface {
 } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ServerDesignDashboard.tsx
@@ -1884,10 +2018,11 @@ Create the missing interface or fix the reference
 interface ServerDesignDashboardProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PlanningPhase.tsx
@@ -1902,10 +2037,11 @@ Create the missing interface or fix the reference
 interface PlanningPhaseProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 FeedbackForm.tsx
@@ -1920,10 +2056,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (feedback: Feedback) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 index.tsx
@@ -1938,10 +2075,11 @@ Create the missing interface or fix the reference
 interface {} { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 AnimatedDashboard.tsx
@@ -1956,10 +2094,11 @@ Create the missing interface or fix the reference
 interface ClickableListItem { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DashboardLayout.tsx
@@ -1974,10 +2113,11 @@ Create the missing interface or fix the reference
 interface DashboardLayoutProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 LayoutContext.tsx
@@ -1992,10 +2132,11 @@ Create the missing interface or fix the reference
 interface LayoutContextProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CryptoEnthusiastTraderInfo.tsx
@@ -2010,10 +2151,11 @@ Create the missing interface or fix the reference
 interface { traderInfo: TraderInfo } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ProfessionalTraderCalls.tsx
@@ -2028,10 +2170,11 @@ Create the missing interface or fix the reference
 interface ProfessionalTraderCallsProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Profile.tsx
@@ -2046,10 +2189,11 @@ Create the missing interface or fix the reference
 interface ProfileProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Filter.tsx
@@ -2064,10 +2208,11 @@ Create the missing interface or fix the reference
 interface Filter { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SearchCriteria.tsx
@@ -2084,10 +2229,11 @@ interface {
   onUpdateCriteria: (criteria: string) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TaskFilter.tsx
@@ -2102,10 +2248,11 @@ Create the missing interface or fix the reference
 interface TaskFilter { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ReviewSteps.tsx
@@ -2120,10 +2267,11 @@ Create the missing interface or fix the reference
 interface ReviewStepProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SummaryStep.tsx
@@ -2140,10 +2288,11 @@ interface {
   onSubmit: (event: React.MouseEvent<HTMLButtonElement { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingAssetsStep.tsx
@@ -2158,10 +2307,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (assets: BlockchainAsset[]) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingBasicInfoStep.tsx
@@ -2176,10 +2326,11 @@ Create the missing interface or fix the reference
 interface { onSubmit: (basicInfo: any) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingReviewStep.tsx
@@ -2194,10 +2345,11 @@ Create the missing interface or fix the reference
 interface TradingReviewStep { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 TradingSummaryStep.tsx
@@ -2212,10 +2364,11 @@ Create the missing interface or fix the reference
 interface TradingSummaryStep { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DataAnalysisPhase.tsx
@@ -2230,10 +2383,11 @@ Create the missing interface or fix the reference
 interface DataAnalysisPhaseProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 HypothesisTesting.tsx
@@ -2248,10 +2402,11 @@ Create the missing interface or fix the reference
 interface { onTestRun: (selectedTest: string) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 EpidemiologicalModeling.tsx
@@ -2266,10 +2421,11 @@ Create the missing interface or fix the reference
 interface EpidemiologicalModelingProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PopulationDynamicsSimulation.tsx
@@ -2284,10 +2440,11 @@ Create the missing interface or fix the reference
 interface PopulationDynamicsSimulationProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ProjectManagementSimulation.tsx
@@ -2302,10 +2459,11 @@ Create the missing interface or fix the reference
 interface ProjectManagementSimulationProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 RemovingEventListeners.tsx
@@ -2320,10 +2478,11 @@ Create the missing interface or fix the reference
 interface { documentOptions: DocumentOptions } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 PromptPage.tsx
@@ -2338,10 +2497,11 @@ Create the missing interface or fix the reference
 interface PromptPageProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 Shop.tsx
@@ -2356,10 +2516,11 @@ Create the missing interface or fix the reference
 interface { shoppingCenterConfig: ShoppingCenterConfig } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SnapshotErrorHandling.tsx
@@ -2376,10 +2537,11 @@ interface {
     onError?: (error: Payload) = { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 CollaborationContext.tsx
@@ -2394,10 +2556,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 ContentContext.tsx
@@ -2412,10 +2575,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode, url: string } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DashboardContext.tsx
@@ -2430,10 +2594,11 @@ Create the missing interface or fix the reference
 interface { children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DynamicPromptContext.tsx
@@ -2448,10 +2613,11 @@ Create the missing interface or fix the reference
 interface DynamicPromptProviderProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 SearchContext.tsx
@@ -2466,10 +2632,11 @@ Create the missing interface or fix the reference
 interface { children: ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 StepContext.tsx
@@ -2484,10 +2651,11 @@ Create the missing interface or fix the reference
 interface { initialStep: number; steps: React.ReactNode[], children: React.ReactNode } { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 StoreProvider.tsx
@@ -2502,10 +2670,11 @@ Create the missing interface or fix the reference
 interface StoreProviderProp { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 UserContext.tsx
@@ -2520,10 +2689,11 @@ Create the missing interface or fix the reference
 interface UserContextType { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 User.tsx
@@ -2538,10 +2708,11 @@ Create the missing interface or fix the reference
 interface { user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 IdeaLifecycle.tsx
@@ -2556,10 +2727,11 @@ Create the missing interface or fix the reference
 interface IdeaLifecyclePhaseProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 EmojiPickerUtils.tsx
@@ -2574,10 +2746,11 @@ Create the missing interface or fix the reference
 interface EmojiPicker { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
 ---
 
 ## 📄 DApp.tsx
@@ -2592,10 +2765,527 @@ Create the missing interface or fix the reference
 interface AdapterProps { /* not found */ }
 ```
 
-**Suggested Fix:**
+**Fix:**
 ```typescript
 Create the missing interface or fix the reference
 ```
+
+---
+
+## 📄 components
+**Path:** src/components
+
+### 1. Structure issue: missing-directory-src-components
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Expected directory: src/components
+```
+
+**Fix:**
+```typescript
+Create the src/components directory structure
+```
+
+---
+
+### 2. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components
+// File not found: src/components
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 hooks
+**Path:** src/hooks
+
+### 1. Structure issue: missing-directory-src-hooks
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Expected directory: src/hooks
+```
+
+**Fix:**
+```typescript
+Create the src/hooks directory structure
+```
+
+---
+
+### 2. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/hooks
+// File not found: src/hooks
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 admin
+**Path:** src/components/admin
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components/admin
+// File not found: src/components/admin
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 calendar
+**Path:** src/components/calendar
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components/calendar
+// File not found: src/components/calendar
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 chat
+**Path:** src/components/chat
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components/chat
+// File not found: src/components/chat
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 crypto
+**Path:** src/components/crypto
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components/crypto
+// File not found: src/components/crypto
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 documents
+**Path:** src/components/documents
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/components/documents
+// File not found: src/components/documents
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 config
+**Path:** src/config
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/config
+// File not found: src/config
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 models
+**Path:** src/models
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/models
+// File not found: src/models
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 libraries
+**Path:** src/libraries
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/libraries
+// File not found: src/libraries
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 features
+**Path:** src/features
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/features
+// File not found: src/features
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 generators
+**Path:** src/generators
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/generators
+// File not found: src/generators
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 corrections
+**Path:** src/generators/corrections
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/generators/corrections
+// File not found: src/generators/corrections
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 documents
+**Path:** src/documents
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/documents
+// File not found: src/documents
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 data
+**Path:** src/data
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/data
+// File not found: src/data
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 README.md
+**Path:** README.md
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: README.md
+// File not found: README.md
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 next.config.cjs
+**Path:** next.config.cjs
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: next.config.cjs
+// File not found: next.config.cjs
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 Provider.tsx
+**Path:** src/app/Provider.tsx
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: src/app/Provider.tsx
+// File not found: src/app/Provider.tsx
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 .babelrc
+**Path:** .babelrc
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: .babelrc
+// File not found: .babelrc
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 .eslintrc.json
+**Path:** .eslintrc.json
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: .eslintrc.json
+// File not found: .eslintrc.json
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 snowpack.config.js
+**Path:** snowpack.config.js
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: snowpack.config.js
+// File not found: snowpack.config.js
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
+---
+
+## 📄 rollup.config.js
+**Path:** rollup.config.js
+
+### 1. undefined
+**Severity:** MEDIUM
+**Type:** warning
+
+**Problem Code:**
+```typescript
+// Check file: rollup.config.js
+// File not found: rollup.config.js
+```
+
+**Fix:**
+```typescript
+// Fix recommendation:
+// General fix required:
+    // Review the error context and implement appropriate solution
+```
+
 ---
 
 ## 🔗 File Associations

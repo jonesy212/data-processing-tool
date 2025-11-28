@@ -46,7 +46,7 @@ import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';
 import { getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import transformDataToSnapshot from '@/app/snapshots/transformDataToSnapshot';
 import { DataContext } from '@/app/state/context/DataContext';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { store } from '@/app/state/stores/useAppDispatch';
 import { Subscriber } from '@/app/subscribers/Subscriber';

@@ -1,3 +1,4 @@
+// EntitySlice.ts
 // Import necessary dependencies
 import axiosInstance from '@/app/api/csrfToken';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';

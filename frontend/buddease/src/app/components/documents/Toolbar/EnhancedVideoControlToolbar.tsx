@@ -4,8 +4,9 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { RootState } from '@/app/components/state/redux/slices/RootSlice';
 import { User } from '@/app/components/users/User';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import ParticipantData from '@/app/hooks/dataHooks/RealtimeUpdatesComponent';
-import { NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 

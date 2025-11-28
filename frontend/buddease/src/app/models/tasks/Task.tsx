@@ -1,8 +1,10 @@
+// Task.tsx
 
 // Task.ts
 import { ScheduledData } from "@/app/calendar/ScheduledData";
+import { Data } from '@/app/models/data/Data'
 import { SharedDetails } from '@/app/components/models/data/Details';
-import  { Progress } from "@/app/components/models/tracker/ProgressBar";
+import Progress from "@/app/components/models/tracker/ProgressBar";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -47,7 +49,7 @@ interface Task<
   assigneeId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"];
   dueDate: Date | null | undefined;
   done: boolean;
-  data: TaskData | undefined;
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   progress: Progress | undefined;
   selectedTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   position?: { x: number; y: number };
@@ -145,13 +147,15 @@ const createTask = <
     getData: async () => Promise.resolve(defaultTask),
     schema: {},
     selectedTask: {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    participants: [],
     ...taskData, // Merge provided data
   };
 
   return {
     ...defaultTask,
     metadata: taskMetadata(defaultTask), // Dynamically create metadata
-  } as Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
+  } 
+  // as Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 };
 
 

@@ -1,3 +1,4 @@
+// useProjectManager.ts
 // state/stores/hooks/useProjectManager.ts
 
 import { useEffect } from "react";

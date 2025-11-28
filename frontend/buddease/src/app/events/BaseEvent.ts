@@ -1,3 +1,4 @@
+// BaseEvent.ts
 import { BaseData } from '@/app/models/data/Data';
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';

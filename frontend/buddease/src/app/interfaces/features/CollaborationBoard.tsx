@@ -1,3 +1,4 @@
+// CollaborationBoard.tsx
 import React from 'react';
 import ProjectManagementSection from '@/app/interfaces/features/ProjectManagementSection'
 import CommunicationSection from '@/app/interfaces/features/CommunicationSection';

@@ -1,3 +1,4 @@
+// SearchHistory.ts
 class SearchHistory {
   // Properties
   query: string;

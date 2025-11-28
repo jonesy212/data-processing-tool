@@ -1,3 +1,4 @@
+// Details.tsx
 // components/Details.tsx
 
 import { Label } from '@/app/branding/BrandingSettings';

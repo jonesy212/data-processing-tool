@@ -1,3 +1,4 @@
+// AppMetadataEntity.ts
 // MetadataEntity.ts
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { AppBaseParams } from '@/app/typings/entities/AppEntity';

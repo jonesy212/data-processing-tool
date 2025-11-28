@@ -1,9 +1,15 @@
 // StructureValidator.ts
+import { ConfigurationValidator } from './validators/ConfigurationValidator';
+import { FileStructureValidator } from './validators/FileStructureValidator';
+import { PackageJsonValidator } from './validators/PackageJsonValidator';
+import { MultiPlatformDirectoryValidator } from './validators/MultiPlatformDirectoryValidator';
 import { PackageJsonAnalyzer } from './analyzers/react-native/errors/PackageJsonAnalyzer';
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import SecureFieldManager from "@/app/server/security/SecureFieldManager";
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
+import { CorrectionMessageGenerator } from '@/app/generators/corrections/CorrectionMessageGenerator';
+
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator'
 import { PackageJson } from '@/app/scripts/generate-commands-doc'
 
@@ -28,16 +34,41 @@ interface ProjectStructureAnalysis {
 
 
 export class StructureValidator extends BaseAnalyzer {
+  private projectRoot: string;
+  private directoryValidator: MultiPlatformDirectoryValidator;
+  private packageJsonValidator: PackageJsonValidator;
+  private fileStructureValidator: FileStructureValidator;
+  private configurationValidator: ConfigurationValidator;
+
+  constructor(projectRoot: string = '.') {
+    super();
+    this.projectRoot = path.resolve(projectRoot);
+    this.directoryValidator = new MultiPlatformDirectoryValidator(projectRoot);
+    this.packageJsonValidator = new PackageJsonValidator(projectRoot);
+    this.fileStructureValidator = new FileStructureValidator(projectRoot);
+    this.configurationValidator = new ConfigurationValidator(projectRoot);
+
+  }
+
 
   async analyze(): Promise<Correction[]> {
-    // You could get the project structure from somewhere or create a default
-    const projectStructure = await this.getProjectStructure();
-    return this.validateStructure(projectStructure);
+    console.log('🏗️  Validating multi-platform project structure...');
+    
+    const corrections: Correction[] = [];
+    
+    // Run all validation checks using the separate validators
+    corrections.push(...await this.directoryValidator.analyze());
+    corrections.push(...await this.packageJsonValidator.analyze());
+    corrections.push(...await this.fileStructureValidator.analyze());
+    corrections.push(...await this.configurationValidator.analyze());
+    
+    return corrections;
   }
+
 
   private async getProjectStructure(): Promise<ProjectStructure> {
     console.log('📁 Scanning project structure...');
-    
+
     try {
 
       const [files, packageJsonAnalyzer] = await Promise.all([
@@ -53,8 +84,8 @@ export class StructureValidator extends BaseAnalyzer {
 
 
       // Extract the actual package.json data from the analyzer
-      const packageJsonData = packageJsonAnalyzer ? 
-        this.extractPackageJsonData(packageJsonAnalyzer) : 
+      const packageJsonData = packageJsonAnalyzer ?
+        this.extractPackageJsonData(packageJsonAnalyzer) :
         null;
 
       // Log platform-specific insights
@@ -68,7 +99,7 @@ export class StructureValidator extends BaseAnalyzer {
         components,
         apis,
         totalFiles: files.length,
-        packageJson: packageJsonData  
+        packageJson: packageJsonData
       };
     } catch (error) {
       console.error('❌ Failed to scan project structure:', error);
@@ -96,14 +127,14 @@ export class StructureValidator extends BaseAnalyzer {
   private logPlatformInsights(pkg: PackageJson, componentCount: number, interfaceCount: number): void {
     console.log(`📊 ${pkg.name} v${pkg.version}`);
     console.log(`🏗️  Architecture: ${componentCount} components, ${interfaceCount} interfaces`);
-    
+
     // Detect platform features from dependencies
     const features = [];
     if (pkg.dependencies?.['socket.io']) features.push('Real-time Communication');
     if (pkg.dependencies?.['web3'] || pkg.dependencies?.['ethers']) features.push('Crypto/Web3');
     if (pkg.dependencies?.['react-router-dom']) features.push('SPA Routing');
     if (pkg.workspaces) features.push('Monorepo Structure');
-    
+
     if (features.length > 0) {
       console.log(`🎯 Detected features: ${features.join(', ')}`);
     }
@@ -113,16 +144,16 @@ export class StructureValidator extends BaseAnalyzer {
   private async scanProjectFiles(): Promise<string[]> {
     const files: string[] = [];
     const scanDirs = ['src', 'app', 'components', 'pages', 'utils', 'hooks', 'types'];
-    
+
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
         if (!fs.existsSync(dir)) return;
-        
+
         const items = await fs.promises.readdir(dir, { withFileTypes: true });
-        
+
         for (const item of items) {
           const fullPath = path.join(dir, item.name);
-          
+
           if (item.isDirectory()) {
             // Skip node_modules and other irrelevant directories
             if (!this.shouldSkipDirectory(item.name)) {
@@ -157,7 +188,7 @@ export class StructureValidator extends BaseAnalyzer {
 
   private shouldSkipDirectory(dirName: string): boolean {
     const skipDirs = [
-      'node_modules', '.git', '.next', 'dist', 'build', 
+      'node_modules', '.git', '.next', 'dist', 'build',
       'coverage', '.cache', '.vscode', '.idea'
     ];
     return skipDirs.includes(dirName) || dirName.startsWith('.');
@@ -166,12 +197,12 @@ export class StructureValidator extends BaseAnalyzer {
   private isRelevantSourceFile(filename: string): boolean {
     const sourceExtensions = ['.ts', '.tsx', '.js', '.jsx', '.d.ts'];
     const extension = path.extname(filename).toLowerCase();
-    
-    return sourceExtensions.includes(extension) && 
-          !filename.includes('.test.') && 
-          !filename.includes('.spec.') &&
-          !filename.includes('.stories.') &&
-          !filename.includes('.config.');
+
+    return sourceExtensions.includes(extension) &&
+      !filename.includes('.test.') &&
+      !filename.includes('.spec.') &&
+      !filename.includes('.stories.') &&
+      !filename.includes('.config.');
   }
 
   private isRelevantConfigFile(filename: string): boolean {
@@ -184,7 +215,7 @@ export class StructureValidator extends BaseAnalyzer {
 
   private async extractInterfaces(files: string[]): Promise<[string, InterfaceInfo][]> {
     const interfaces: [string, InterfaceInfo][] = [];
-    
+
     for (const file of files) {
       if (file.match(/\.(ts|tsx)$/)) {
         try {
@@ -196,28 +227,28 @@ export class StructureValidator extends BaseAnalyzer {
         }
       }
     }
-    
+
     console.log(`📊 Found ${interfaces.length} interfaces`);
     return interfaces;
   }
 
   private parseInterfacesFromContent(content: string, filePath: string): [string, InterfaceInfo][] {
     const interfaces: [string, InterfaceInfo][] = [];
-    
+
     // Pattern for interfaces
     const interfacePattern = /(?:export\s+)?interface\s+(\w+)\s*(?:extends\s+([^{]+))?\s*{([^}]*)}/g;
-    
+
     // Pattern for type aliases
     const typePattern = /(?:export\s+)?type\s+(\w+)\s*=\s*([^;]+);/g;
-    
+
     let match;
-    
+
     // Extract interfaces
     while ((match = interfacePattern.exec(content)) !== null) {
       const interfaceName = match[1];
       const extendsClause = match[2]?.trim();
       const interfaceBody = match[3];
-      
+
       interfaces.push([interfaceName, {
         name: interfaceName,
         file: filePath,
@@ -226,12 +257,12 @@ export class StructureValidator extends BaseAnalyzer {
         type: 'interface'
       }]);
     }
-    
+
     // Extract type aliases
     while ((match = typePattern.exec(content)) !== null) {
       const typeName = match[1];
       const typeDefinition = match[2];
-      
+
       interfaces.push([typeName, {
         name: typeName,
         file: filePath,
@@ -240,22 +271,22 @@ export class StructureValidator extends BaseAnalyzer {
         type: 'type'
       }]);
     }
-    
+
     return interfaces;
   }
 
   private extractProperties(interfaceBody: string): Array<{ name: string; type: string; optional: boolean }> {
     const properties: Array<{ name: string; type: string; optional: boolean }> = [];
     const lines = interfaceBody.split('\n');
-    
+
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*')) continue;
-      
+
       // Match property patterns: name: type, name?: type, readonly name: type
       const propertyPattern = /(?:readonly\s+)?(\w+)(\?)?\s*:\s*([^;,\n]+)/;
       const match = trimmed.match(propertyPattern);
-      
+
       if (match) {
         properties.push({
           name: match[1],
@@ -264,19 +295,19 @@ export class StructureValidator extends BaseAnalyzer {
         });
       }
     }
-    
+
     return properties;
   }
 
   private extractTypeProperties(typeDefinition: string): Array<{ name: string; type: string; optional: boolean }> {
     const properties: Array<{ name: string; type: string; optional: boolean }> = [];
-    
+
     // Check if it's an object type
     if (typeDefinition.trim().startsWith('{') && typeDefinition.trim().endsWith('}')) {
       const body = typeDefinition.substring(1, typeDefinition.length - 1);
       return this.extractProperties(body);
     }
-    
+
     return properties;
   }
 
@@ -287,7 +318,7 @@ export class StructureValidator extends BaseAnalyzer {
 
   private async extractComponents(files: string[]): Promise<[string, ComponentInfo][]> {
     const components: [string, ComponentInfo][] = [];
-    
+
     for (const file of files) {
       if (file.match(/\.(tsx|jsx)$/)) {
         try {
@@ -299,30 +330,30 @@ export class StructureValidator extends BaseAnalyzer {
         }
       }
     }
-    
+
     console.log(`⚛️  Found ${components.length} components`);
     return components;
   }
 
   private parseComponentsFromContent(content: string, filePath: string): [string, ComponentInfo][] {
     const components: [string, ComponentInfo][] = [];
-    
+
     // Pattern for function components (arrow and regular)
     const functionComponentPatterns = [
       /(?:export\s+)?const\s+(\w+)\s*:\s*React\.FC<.*?>\s*=\s*\(([^)]*)\)\s*=>/g,
       /(?:export\s+)?const\s+(\w+)\s*=\s*(?:\(([^)]*)\)\s*=>|\(([^)]*)\):\s*JSX\.Element)/g,
       /(?:export\s+)?function\s+(\w+)\s*\(([^)]*)\)\s*(?::\s*JSX\.Element)?\s*{/g
     ];
-    
+
     // Pattern for class components
     const classComponentPattern = /(?:export\s+)?class\s+(\w+)\s+extends\s+React\.Component<([^,>]+)/g;
-    
+
     for (const pattern of functionComponentPatterns) {
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const componentName = match[1];
         const propsParam = match[2] || match[3] || '';
-        
+
         if (componentName && componentName[0] === componentName[0].toUpperCase()) {
           const componentInfo: ComponentInfo = {
             name: componentName,
@@ -332,12 +363,12 @@ export class StructureValidator extends BaseAnalyzer {
             propsType: this.extractPropsType(content, componentName),
             exports: this.extractExports(content, componentName)
           };
-          
+
           components.push([componentName, componentInfo]);
         }
       }
     }
-    
+
     // Class components
     let match;
     while ((match = classComponentPattern.exec(content)) !== null) {
@@ -350,10 +381,10 @@ export class StructureValidator extends BaseAnalyzer {
         propsType: this.extractClassPropsType(content, componentName),
         exports: this.extractExports(content, componentName)
       };
-      
+
       components.push([componentName, componentInfo]);
     }
-    
+
     return components;
   }
 
@@ -364,7 +395,7 @@ export class StructureValidator extends BaseAnalyzer {
       /interface.*Props/,
       /type.*Props/
     ];
-    
+
     return propsPatterns.some(pattern => pattern.test(content));
   }
 
@@ -375,14 +406,14 @@ export class StructureValidator extends BaseAnalyzer {
       /React\.FC<([^>]+)>/,
       /:\s*React\.FC<([^>]+)>/
     ];
-    
+
     for (const pattern of patterns) {
       const match = content.match(pattern);
       if (match && match[1]) {
         return match[1].trim();
       }
     }
-    
+
     return undefined;
   }
 
@@ -394,7 +425,7 @@ export class StructureValidator extends BaseAnalyzer {
 
   private async extractApis(files: string[]): Promise<[string, ApiInfo][]> {
     const apis: [string, ApiInfo][] = [];
-    
+
     for (const file of files) {
       if (file.includes('api') || file.includes('service') || file.includes('utils')) {
         try {
@@ -406,20 +437,20 @@ export class StructureValidator extends BaseAnalyzer {
         }
       }
     }
-    
+
     console.log(`🔌 Found ${apis.length} API/services`);
     return apis;
   }
 
   private parseApisFromContent(content: string, filePath: string): [string, ApiInfo][] {
     const apis: [string, ApiInfo][] = [];
-    
+
     // Pattern for API functions (fetch, axios, etc.)
     const apiPatterns = [
       /(?:export\s+)?(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\)\s*(?::\s*([^{]+))?\s*{[\s\S]*?(?:fetch|axios|\.get|\.post|\.put|\.delete)/g,
       /(?:export\s+)?const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*(?::\s*([^{]+))?\s*=>\s*{[\s\S]*?(?:fetch|axios|\.get|\.post|\.put|\.delete)/g
     ];
-    
+
     for (const pattern of apiPatterns) {
       let match;
       while ((match = pattern.exec(content)) !== null) {
@@ -427,7 +458,7 @@ export class StructureValidator extends BaseAnalyzer {
         const parameters = match[2] || '';
         const returnType = match[3] || 'void';
         const isAsync = content.includes(`async ${apiName}`) || content.includes(`async function ${apiName}`) || content.includes(`const ${apiName} = async`);
-        
+
         const apiInfo: ApiInfo = {
           name: apiName,
           file: filePath,
@@ -441,18 +472,18 @@ export class StructureValidator extends BaseAnalyzer {
           }],
           exports: this.extractExports(content, apiName)
         };
-        
+
         apis.push([apiName, apiInfo]);
       }
     }
-    
+
     return apis;
   }
 
   // Helper methods for parsing
   private parseParameters(parameters: string): string[] {
     if (!parameters.trim()) return [];
-    
+
     return parameters.split(',')
       .map(param => param.trim())
       .filter(param => param.length > 0)
@@ -465,20 +496,20 @@ export class StructureValidator extends BaseAnalyzer {
 
   private extractExports(content: string, entityName: string): string[] {
     const exports: string[] = [];
-    
+
     // Check for export statements
     const exportPatterns = [
       new RegExp(`export\\s+(?:const|function|class|interface|type)\\s+${entityName}`, 'g'),
       new RegExp(`export\\s*\\{[^}]*\\b${entityName}\\b[^}]*\\}`, 'g'),
       new RegExp(`export\\s+default\\s+${entityName}`, 'g')
     ];
-    
+
     exportPatterns.forEach(pattern => {
       if (pattern.test(content)) {
         exports.push(entityName);
       }
     });
-    
+
     return exports;
   }
 
@@ -489,13 +520,13 @@ export class StructureValidator extends BaseAnalyzer {
       put: new RegExp(`${apiName}[\\s\\S]*?\\.put\\(`),
       delete: new RegExp(`${apiName}[\\s\\S]*?\\.delete\\(`)
     };
-    
+
     for (const [method, pattern] of Object.entries(methodPatterns)) {
       if (pattern.test(content)) {
         return method;
       }
     }
-    
+
     return 'unknown';
   }
 
@@ -505,26 +536,26 @@ export class StructureValidator extends BaseAnalyzer {
       if (fs.existsSync(packageJsonPath)) {
         const content = await fs.promises.readFile(packageJsonPath, 'utf8');
         const packageData = JSON.parse(content);
-        
+
         // Create a new PackageJsonAnalyzer instance
         const analyzer = new PackageJsonAnalyzer();
-        
+
         // If you need to pass the package data to the analyzer, you might need to modify PackageJsonAnalyzer
         // For example, add a method like analyzer.setPackageData(packageData)
-        
+
         return analyzer;
       }
     } catch (error) {
       console.warn('Could not read package.json:', error);
     }
-    
+
     // Return a new PackageJsonAnalyzer instance even if file doesn't exist
     return new PackageJsonAnalyzer();
   }
 
 
   // For getting raw package.json data (like in generateCommandsDoc.ts)
-  private async getPackageJsonData(): Promise<PackageJson | null> {
+  public async getPackageJsonData(): Promise<PackageJson | null> {
     try {
       const packageJsonPath = path.resolve(process.cwd(), 'package.json');
       if (fs.existsSync(packageJsonPath)) {
@@ -544,34 +575,42 @@ export class StructureValidator extends BaseAnalyzer {
   }
 
   async validateStructure(projectStructure: ProjectStructure): Promise<Correction[]> {
+    console.log('🏗️  Validating multi-platform project structure...');
+
+    // ⭐ Collect all corrections here
     const corrections: Correction[] = [];
 
-    // Create the comprehensive analysis object
-    const analysis: ProjectStructureAnalysis = this.createCorrectionProjectStructureAnalysis(projectStructure);
+    // Build the analysis object once
+    const analysis: ProjectStructureAnalysis =
+      this.createCorrectionProjectStructureAnalysis(projectStructure);
 
-    // Check for props defined but not used
+    // Run each validator exactly once
     corrections.push(...this.findUnusedProps(analysis));
-
-    // Check for missing props in components
     corrections.push(...this.findMissingProps(analysis));
-
-    // Check for inconsistent naming
     corrections.push(...this.findNamingInconsistencies(analysis));
-
-    // Check for file structure issues
     corrections.push(...await this.validateFileStructure(analysis));
-
-    // Check for import/export issues
     corrections.push(...await this.findImportIssues(analysis));
-
-    // Check for security structure issues
     corrections.push(...this.findSecurityIssues(analysis));
-
-    // Check for performance anti-patterns
     corrections.push(...this.findPerformanceIssues(analysis));
+    corrections.push(...await this.validateDirectories(analysis));
+    corrections.push(...await this.analyzePackageJson());
+    corrections.push(...await this.analyze());
 
-    return corrections;
+    // ⭐ Deduplicate corrections by ID + file
+    return this.removeDuplicateCorrections(corrections);
   }
+
+  private removeDuplicateCorrections(corrections: Correction[]): Correction[] {
+    const seen = new Set<string>();
+
+    return corrections.filter((c) => {
+      const key = `${c.id}::${c.file || ""}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
 
   private createCorrectionProjectStructureAnalysis(projectStructure: ProjectStructure): ProjectStructureAnalysis {
     return {
@@ -766,7 +805,7 @@ export class StructureValidator extends BaseAnalyzer {
     // Check file naming consistency using the original files array
     projectStructure.files.forEach((file: string) => {
       const fileName = path.basename(file);
-      
+
       if (fileName.match(/\.(tsx|jsx)$/) && !this.isPascalCase(fileName.replace(/\.(tsx|jsx)$/, ''))) {
         corrections.push({
           id: `file-naming-${fileName}`,
@@ -1283,4 +1322,129 @@ export class StructureValidator extends BaseAnalyzer {
       return false;
     }
   }
+
+
+  private createStructureCorrection(id: string, file: string, context: any = {}): Correction {
+      return {
+          id: `${id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          type: context.type || 'warning',
+          severity: context.severity || 'medium',
+          file,
+          message: context.message || `Structure issue: ${id}`, // Use your existing message system
+          code: context.code || '',
+          fix: context.fix || '',
+          category: 'structure',
+          timestamp: new Date().toISOString()
+      };
+  }
+
+  private async validateDirectories(analysis: ProjectStructureAnalysis): Promise<Correction[]> {
+    const corrections: Correction[] = [];
+    const expectedDirs = ['src/components', 'src/utils', 'src/hooks'];
+
+    expectedDirs.forEach(dir => {
+      if (!fs.existsSync(dir)) {
+        corrections.push(this.createStructureCorrection(
+          `missing-directory-${dir.replace(/\//g, '-')}`,
+          dir,
+          {
+            directoryPath: dir,
+            code: `// Expected directory: ${dir}`,
+            fix: `Create the ${dir} directory structure`
+          }
+        ));
+      }
+    });
+
+    return corrections;
+  }
+
+  private hasDependency(packageJson: any, dependency: string): boolean {
+    return !!(
+      (packageJson.dependencies && packageJson.dependencies[dependency]) ||
+      (packageJson.peerDependencies && packageJson.peerDependencies[dependency]) ||
+      (packageJson.devDependencies && packageJson.devDependencies[dependency])
+    );
+  }
+
+  private async validateConfigurationFiles(analysis: ProjectStructureAnalysis): Promise<Correction[]> {
+    const corrections: Correction[] = [];
+    
+    const configFiles = ['.gitignore', '.eslintrc.js', '.prettierrc'];
+    
+    configFiles.forEach(configFile => {
+        if (!fs.existsSync(configFile)) {
+            corrections.push(this.createStructureCorrection(
+                `missing-config-${configFile.replace(/\./g, '-')}`,
+                configFile,
+                {
+                    configFile,
+                    code: `// Missing configuration: ${configFile}`,
+                    fix: `Create ${configFile} with appropriate settings`
+                }
+            ));
+        }
+    });
+
+    return corrections;
+}
+
+
+  private async validatePackageJson(analysis: ProjectStructureAnalysis): Promise<Correction[]> {
+    const corrections: Correction[] = [];
+    const packageJsonPath = './package.json';
+
+    if (!fs.existsSync(packageJsonPath)) {
+      corrections.push(this.createStructureCorrection(
+        'missing-package-json',
+        packageJsonPath,
+        {
+          code: '// package.json file missing',
+          fix: 'Initialize project with npm init or create package.json manually'
+        }
+      ));
+      return corrections;
+    }
+
+    try {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+      // Check for React Native Reanimated
+      if (!this.hasDependency(packageJson, 'react-native-reanimated')) {
+        corrections.push(this.createStructureCorrection(
+          'package-json-missing-react-native-reanimated',
+          packageJsonPath,
+          {
+            code: '// Add react-native-reanimated to dependencies',
+            fix: 'npm install react-native-reanimated'
+          }
+        ));
+      }
+
+      // Check for build scripts
+      if (!packageJson.scripts?.build) {
+        corrections.push(this.createStructureCorrection(
+          'package-json-missing-build',
+          packageJsonPath,
+          {
+            code: '// Build script missing in package.json',
+            fix: 'Add "build": "your-build-command" to package.json scripts'
+          }
+        ));
+      }
+
+    } catch (error) {
+      corrections.push(this.createStructureCorrection(
+        'package-json-invalid',
+        packageJsonPath,
+        {
+          code: '// Invalid package.json format',
+          fix: 'Fix JSON syntax errors in package.json'
+        }
+      ));
+    }
+
+    return corrections;
+  }
+
 }

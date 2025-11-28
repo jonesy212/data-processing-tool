@@ -1,3 +1,4 @@
+// NotificationStore.tsx
 import { apiNotificationMessages } from "@/app/api/ApiData";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
@@ -8,7 +9,11 @@ import { NotificationPosition } from '@/app/models/data/StatusType';
 import { LogData } from '@/app/models/LogData';
 import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper';
 import { BasicNotificationChannels, NotificationChannels } from '@/app/notifications/NotificationChannels';
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationContextProps } from '@/app/state/context/NotificationContext';
+import { 
+  NotificationTypeEnum, 
+  NotificationType 
+} from '@/app/features/support/UnifiedNotificationTypes'
 import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
 
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
@@ -95,7 +100,7 @@ class NotificationStore {
     return `Notification sent: ${typeof notification === 'string' ? notification : notification.id}`;
   };
 
-  channelHelper: NotificationChannelHelper;
+  channelHelper: NotificationChannelHelper | undefined = undefined;
 
   private channels: NotificationChannels;
 

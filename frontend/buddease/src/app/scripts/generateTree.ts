@@ -1,3 +1,4 @@
+// generateTree.ts
 // generateTree.ts - Complete Enhanced Version (ESM)
 
 import { AnalysisReport } from '@/app/documents/Report';

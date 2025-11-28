@@ -1,3 +1,4 @@
+// useText.tsx
 import { useCallback, useState } from 'react';
 
 interface TextProps {

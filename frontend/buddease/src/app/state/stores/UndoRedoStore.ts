@@ -1,3 +1,4 @@
+// UndoRedoStore.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';

@@ -1,3 +1,4 @@
+// sanitizeDatabase.ts
 function sanitizeDatabaseSchema(
   schema: Record<string, any>,
   userRole: string,

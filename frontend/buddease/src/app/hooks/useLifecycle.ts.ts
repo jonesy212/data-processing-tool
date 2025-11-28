@@ -1,3 +1,4 @@
+// useLifecycle.ts.ts
 // hooks/useLifecycle.ts
 import { useState, useEffect, useCallback } from 'react';
 import { LifecycleManager } from '../LifecycleManager';

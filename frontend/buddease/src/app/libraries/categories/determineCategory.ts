@@ -1,3 +1,4 @@
+// determineCategory.ts
 // determinCategory.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";

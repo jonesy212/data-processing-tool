@@ -1,3 +1,4 @@
+// SnapshotStoreSubset.ts
 import { SnapshotData } from '@/app/snapshots';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 
@@ -9,7 +10,7 @@ import {
 } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotOperation } from "../actions/SnapshotActions";
@@ -25,7 +26,6 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 
-// SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<
   T extends BaseDataEntity,
   K extends T = T,

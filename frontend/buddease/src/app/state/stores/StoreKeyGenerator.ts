@@ -1,3 +1,4 @@
+// StoreKeyGenerator.ts
 // store_key_generator.ts
 
 // Function to generate a unique store key

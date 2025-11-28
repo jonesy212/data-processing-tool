@@ -1,5 +1,5 @@
 // ApiAnalysisService.tsx
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { AxiosError, AxiosResponse } from "axios";
 

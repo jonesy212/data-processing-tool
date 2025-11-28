@@ -1,3 +1,4 @@
+// types.ts
 export interface CacheWriteOptions {
   persistToServer?: boolean;
 }

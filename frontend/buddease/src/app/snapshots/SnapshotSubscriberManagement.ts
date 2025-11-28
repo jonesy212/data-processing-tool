@@ -6,7 +6,7 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { EventManagement } from '@/app/snapshots/SnapshotEvents';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';

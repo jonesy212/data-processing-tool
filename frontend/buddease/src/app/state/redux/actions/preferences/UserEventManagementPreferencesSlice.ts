@@ -1,3 +1,4 @@
+// UserEventManagementPreferencesSlice.ts
 // UserDataManagementPreferencesActions.ts
 import { createSlice } from "@reduxjs/toolkit";
 

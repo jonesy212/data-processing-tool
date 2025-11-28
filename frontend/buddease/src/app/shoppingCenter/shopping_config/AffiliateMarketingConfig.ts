@@ -1,3 +1,4 @@
+// AffiliateMarketingConfig.ts
 
 interface AffiliateMarketingConfig {
     enableAffiliateMarketing: boolean;

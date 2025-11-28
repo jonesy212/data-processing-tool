@@ -1,3 +1,4 @@
+// RealTimeDataCollection.tsx
 import {
     BaseDataEntity
 } from "@/app/a_analysis/frontend/buddease/src/app/configs/BaseConfig";
@@ -12,7 +13,7 @@ import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/models/cypto/
 import { Data } from '@/app/models/data/Data';
 import SnapshotList, { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux";
 import { RealtimeData, RealtimeDataItem } from "./RealtimeData";

@@ -1,3 +1,4 @@
+// TeamApi.ts
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/app/api/endpointConfigurations";

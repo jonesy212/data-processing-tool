@@ -1,3 +1,4 @@
+// UserActivityLogComponent.tsx
 // Import necessary libraries
 import axiosInstance from '@/app/api/csrfToken';
 import React, { useEffect, useState } from "react";

@@ -1,3 +1,4 @@
+// ContentContext.tsx
 import * as contentApi from '@/api/ApiContent';
 import { endpoints } from '@/api/endpointConfigurations';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';

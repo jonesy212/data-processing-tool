@@ -1,3 +1,4 @@
+// getConfigsApi.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { ipfsConfig } from '@/app/config/ipfsConfig';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';

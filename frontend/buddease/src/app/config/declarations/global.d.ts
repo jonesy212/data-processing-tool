@@ -1,3 +1,4 @@
+// global.d.ts
 declare module 'app' {
   // Empty declaration to resolve the TypeScript error
   // This is typically needed when a dependency expects an 'app' module

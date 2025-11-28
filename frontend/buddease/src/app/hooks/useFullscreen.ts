@@ -1,3 +1,4 @@
+// useFullscreen.ts
 // app/layout/useFullscreen.ts
 import { useCallback, useState, useEffect } from "react";
 

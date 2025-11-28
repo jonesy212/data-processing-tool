@@ -1,3 +1,4 @@
+// FrontendConfig.ts
 import { ApiConfig, CacheConfig, RetryConfig } from "../services/ConfigurationService";
 
 interface FrontendConfig {

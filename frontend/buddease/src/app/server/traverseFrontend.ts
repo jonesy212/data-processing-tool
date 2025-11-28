@@ -1,3 +1,4 @@
+// traverseFrontend.ts
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/app/config/appStructure/appPath";
 

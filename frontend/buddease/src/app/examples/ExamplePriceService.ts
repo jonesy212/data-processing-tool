@@ -1,3 +1,4 @@
+// ExamplePriceService.ts
 // Example usage in your trade execution
 import { getMarketPrice, priceService } from './priceService';
 

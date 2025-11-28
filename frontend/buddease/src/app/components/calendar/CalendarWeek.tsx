@@ -1,3 +1,4 @@
+// CalendarWeek.tsx
 // WeekView.jsx
 import React from 'react';
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';

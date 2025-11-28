@@ -1,3 +1,4 @@
+// FilteredEventsSlice.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
 import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent'

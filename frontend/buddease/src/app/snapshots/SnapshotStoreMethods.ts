@@ -1,3 +1,4 @@
+// SnapshotStoreMethods.ts
 // SnapshotSttoreMethods.ts
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { Subscription } from 'react-redux';

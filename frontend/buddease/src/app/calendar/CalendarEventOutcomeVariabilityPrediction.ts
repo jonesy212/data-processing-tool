@@ -1,6 +1,6 @@
+// CalendarEventOutcomeVariabilityPrediction.ts
 import { OutcomeVariabilityPrediction } from "@/app/models/data/EventPriorityClassification";
 
-// CalendarEventOutcomeVariabilityPrediction.ts
 interface CalendarEventOutcomeVariabilityPrediction extends OutcomeVariabilityPrediction {
     eventId: string; // ID of the event
     outcomeVariability: number; // Outcome variability predicted for the event

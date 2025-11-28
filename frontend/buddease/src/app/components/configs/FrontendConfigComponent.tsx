@@ -1,3 +1,4 @@
+// FrontendConfigComponent.tsx
 import React from "react";
 import { FrontendConfig } from "./FrontendConfig";
 

@@ -1,6 +1,6 @@
 // errorRecovery.ts
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotLogger } from '@/app/libraries/logging/Logger';
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 
 export interface EmergencyShutdownConfig {
   saveRecoveryState?: boolean;

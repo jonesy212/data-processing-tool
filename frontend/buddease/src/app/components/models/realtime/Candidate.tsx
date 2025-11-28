@@ -1,3 +1,4 @@
+// Candidate.tsx
 // Candidate.ts
 
 interface Candidate {

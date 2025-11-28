@@ -1,5 +1,6 @@
 // NotificationService.tsx
 import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
+import { NotificationManagerServiceProps } from '@/app/components/notifications/useNotificationManagerServiceProps'
 import { EventActions } from '@/app/actions/EventActions';
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
@@ -109,12 +110,6 @@ export const logData: LogData<LogEntity, LogK, LogMeta, LogAttachment, LogExclud
   type: "SystemLog" as NotificationType,
   completionMessageLog: "Log entry successfully created and stored",
 };
-
-export interface NotificationManagerServiceProps {
-  notify: (message: string) => void;
-  clearNotifications: () => void;
-  notifications: string[];
-}
 
 export const useNotificationManagerService = <
   T extends BaseDataEntity = BaseDataRoot,

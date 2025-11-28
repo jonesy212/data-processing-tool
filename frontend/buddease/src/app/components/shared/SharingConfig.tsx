@@ -1,3 +1,4 @@
+// SharingConfig.tsx
 import React, { useEffect, useState } from "react";
 
 // Expanded SharingConfig with additional options

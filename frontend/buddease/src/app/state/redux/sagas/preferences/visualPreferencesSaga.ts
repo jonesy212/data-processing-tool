@@ -1,3 +1,4 @@
+// visualPreferencesSaga.ts
 // Import necessary dependencies and constants
 import { UserVisualPreferencesActions } from "@/app/config/UserPreferencesActions";
 import { ThemeService } from "@/app/libraries/theme/ThemeService";

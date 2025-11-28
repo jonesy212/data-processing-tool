@@ -1,3 +1,4 @@
+// MappingConfig.tsx
 // MappingConfig.ts
 import { CryptoData, ParsedData } from "@/app/dataIntegration/parseData";
 import { SupportedData } from "@/app/models/CommonData";

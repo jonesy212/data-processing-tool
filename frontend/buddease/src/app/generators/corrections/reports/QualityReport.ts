@@ -1,7 +1,8 @@
+// QualityReport.ts
 // src/app/quality/reports/QualityReport.ts
 import fs from 'fs';
 import path from 'path';
-import { Correction } from '@/generators/corrections/CorrectionGenerator';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { CorrectionType } from '@/app/typings/correctionTypes';
 
 export interface QualityMetrics {

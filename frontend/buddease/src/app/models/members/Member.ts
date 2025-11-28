@@ -1,3 +1,4 @@
+// Member.ts
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

@@ -1,3 +1,4 @@
+// BugComments.tsx
 import { CommentData, CommentMeta, CommentType } from '@/app/components/models/data/Comments';
 import React, { useState } from 'react';
 

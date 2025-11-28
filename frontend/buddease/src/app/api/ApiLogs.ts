@@ -1,19 +1,16 @@
-//Apilogs.ts
+// ApiLogs.ts
+// Apilogs.ts
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import {
-    NotificationTypeEnum,
-    useNotification
-} from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { addLog } from "@/app/state/redux/slices/LogSlice";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { getApiEndpointUrl } from '@/app/api/endpointConfigurations';
 import { observable, runInAction } from "mobx";
-// Other imports remain unchanged
 
-// #todo
-const API_BASE_URL = endpoints.logging; // Direct access to the logging endpoint
-
+const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification();
 
 export const handleApiError = (
@@ -21,46 +18,75 @@ export const handleApiError = (
   errorMessage: string
 ): void => {
   console.error(`API Error: ${errorMessage}`);
+  
   if (axios.isAxiosError(error)) {
     if (error.response) {
       console.error("Response data:", error.response.data);
       console.error("Response status:", error.response.status);
       console.error("Response headers:", error.response.headers);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, responseData: error.response.data },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `error${errorMessage.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Generic.ERROR,
+        data: { 
+          originalError: error.message,
+          extra: {
+            errorMessage,
+            responseData: error.response.data,
+            status: error.response.status
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, requestDetails: error.request },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `error${errorMessage.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Generic.ERROR,
+        data: { 
+          originalError: error.message,
+          extra: {
+            errorMessage,
+            requestDetails: error.request
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
     } else {
       console.error("Error details:", error.message);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Generic.ERROR,
-        { errorMessage, errorDetails: error.message },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `error${errorMessage.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Generic.ERROR,
+        data: { 
+          originalError: error.message,
+          extra: {
+            errorMessage
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
     }
   } else {
     console.error("Non-Axios error:", error);
-    notify(
-      "ErrorId",
-      NOTIFICATION_MESSAGES.Generic.ERROR,
-      { errorMessage, errorDetails: error },
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    notify({
+      id: `error${errorMessage.replace(/\s+/g, '')}`,
+      message: NOTIFICATION_MESSAGES.Generic.ERROR,
+      data: { 
+        originalError: error.message,
+        extra: {
+          errorMessage,
+          errorDetails: error
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      level: 'error'
+    });
   }
 };
 
@@ -71,8 +97,8 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      //#todo  logSuccess
-      const logInfoEndpoint = API_BASE_URL.logInfo; // Directly access logInfo
+      // Use getApiEndpointUrl to get the actual URL string
+      const logInfoEndpoint = getApiEndpointUrl('logging', 'logInfo', { message, user });
       if (!logInfoEndpoint) {
         throw new Error("Log info endpoint not found");
       }
@@ -83,26 +109,33 @@ export const logsApiService = observable({
       runInAction(() => {
         addLog(`Info: ${message}`);
       });
-      notify(
-        "LogInfoSuccessId",
-        NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
-        { message },
-        new Date(),
-        NotificationTypeEnum.INFO
-      );
+      notify({
+        id: `logInfoSuccess${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
+        data: { 
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.INFO,
+        level: 'info'
+      });
       return response;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to log info message"
       );
-      notify(
-        "LogInfoErrorId",
-        NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
-        { message },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `logInfoError${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
+        data: { 
+          originalError: (error as Error).message,
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -110,13 +143,16 @@ export const logsApiService = observable({
   logApiRequest: async (endpoint: string): Promise<void> => {
     try {
       await axios.get(endpoint);
-      notify(
-        "logApi",
-        "ApiRequestSuccessId",
-        `API Request to ${endpoint} successful.`,
-        new Date(),
-        NotificationTypeEnum.INFO
-      );
+      notify({
+        id: `apiRequestSuccess${endpoint.replace(/\s+/g, '')}`,
+        message: `API Request to ${endpoint} successful.`,
+        data: { 
+          extra: { endpoint }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.INFO,
+        level: 'info'
+      });
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
@@ -130,8 +166,8 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      //#todo proper update 'logSuccess'
-      const logSuccessEndpoint = API_BASE_URL.logSuccess; // Directly access logSuccess
+      // Use getApiEndpointUrl to get the actual URL string
+      const logSuccessEndpoint = getApiEndpointUrl('logging', 'logSuccess', { message, user });
       if (!logSuccessEndpoint) {
         throw new Error("Log success endpoint not found");
       }
@@ -142,26 +178,33 @@ export const logsApiService = observable({
       runInAction(() => {
         addLog(`Success: ${message}`);
       });
-      notify(
-        "LogSuccessId",
-        NOTIFICATION_MESSAGES.Logger.LOG_SUCCESS,
-        { message },
-        new Date(),
-        NotificationTypeEnum.SUCCESS
-      );
+      notify({
+        id: `logSuccess${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_SUCCESS,
+        data: { 
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.SUCCESS,
+        level: 'success'
+      });
       return response;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to log success message"
       );
-      notify(
-        "LogSuccessErrorId",
-        NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
-        { message },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `logSuccessError${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
+        data: { 
+          originalError: (error as Error).message,
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -171,8 +214,8 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      //#todo proper update 'logFailure'
-      const logFailureEndpoint = API_BASE_URL.logFailure; // Directly access logFailure
+      // Use getApiEndpointUrl to get the actual URL string
+      const logFailureEndpoint = getApiEndpointUrl('logging', 'logFailure', { message, user });
       if (!logFailureEndpoint) {
         throw new Error("Log failure endpoint not found");
       }
@@ -183,26 +226,33 @@ export const logsApiService = observable({
       runInAction(() => {
         addLog(`Failure: ${message}`);
       });
-      notify(
-        "LogFailureId",
-        NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
-        { message },
-        new Date(),
-        NotificationTypeEnum.LOGGING_ERROR
-      );
+      notify({
+        id: `logFailure${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
+        data: { 
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.LOGGING_ERROR,
+        level: 'error'
+      });
       return response;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to log failure message"
       );
-      notify(
-        "LogFailureErrorId",
-        NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
-        { message },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: `logFailureError${message.replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
+        data: { 
+          originalError: (error as Error).message,
+          extra: { message, user }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },

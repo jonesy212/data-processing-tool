@@ -1,3 +1,4 @@
+// ApiProxy.ts
 // ApiProxy.ts/
 // Typed proxy for ergonomic endpoint access
 type EndpointFunction = (...params: any[]) => string;

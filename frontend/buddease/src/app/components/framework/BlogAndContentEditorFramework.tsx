@@ -1,3 +1,4 @@
+// BlogAndContentEditorFramework.tsx
 import { DashboardPanel } from '@/app/hooks/userInterface/DashboardPanel';
 import BlogAndContentEditorWrapper from '@/models/content/BlogAndContentEditorWrapper';
 import React from 'react';

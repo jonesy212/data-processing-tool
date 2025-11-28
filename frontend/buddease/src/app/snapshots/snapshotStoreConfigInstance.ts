@@ -12,6 +12,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
@@ -28,7 +29,6 @@ import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { NotificationType } from "@/state/context/NotificationContext";
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
@@ -41,16 +41,16 @@ import { fetchData } from "@/app/api/ApiData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
-  AppAttachment,
-  AppEntity,
-  AppExcludedFields,
-  AppIncludedFields,
-  AppK,
-  AppMeta,
-  AppParams,
-  AppSnapshot,
-  AppSnapshotsArray,
-  AppSnapshotStoreConfig,
+    AppAttachment,
+    AppEntity,
+    AppExcludedFields,
+    AppIncludedFields,
+    AppK,
+    AppMeta,
+    AppParams,
+    AppSnapshot,
+    AppSnapshotsArray,
+    AppSnapshotStoreConfig,
 } from '@/app/typings/entities/AppEntity';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 

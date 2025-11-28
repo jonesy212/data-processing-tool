@@ -1,3 +1,4 @@
+// generateDynamicDummyHook.tsx
 // useDynamicDummyGenerator.tsx
 import useDynamicHook, { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
 

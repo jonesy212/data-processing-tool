@@ -1,3 +1,4 @@
+// cacheMiddleware.ts
 import { MiddlewareContext, MiddlewareFunction } from '@/types';
 
 import { ConfigurationService } from '@/app/services/ConfigurationService';

@@ -1,3 +1,4 @@
+// WebSocket.tsx
 import { RetryConfig } from "@/app/services/ConfigurationService";
 import { useEffect, useState } from "react";
 

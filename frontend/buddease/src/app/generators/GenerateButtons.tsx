@@ -1,5 +1,7 @@
+// GenerateButtons.tsx
 // ButtonGenerator.tsx
 import { fetchEventData } from '@/app/api/ApiEvent';
+import { LifecycleConfig } from '@/app/hooks/phases/lifecycles'
 import userService from "@/app/api/ApiUser";
 import { Label } from '@/app/branding/BrandingSettings';
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
@@ -23,7 +25,6 @@ import useNotificationManagerService from "@/app/services/NotificationService";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-
 
 startVoiceRecognition;
 /**
@@ -99,7 +100,7 @@ interface ButtonGeneratorProps<
 
   onTransitionToNextPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
-    currentPhase: Phase
+    currentPhase: Phase<>
   ) => void;
   label?: Label | string | Record<string, string> | null; // Allow Record<string, string> as well
 
@@ -570,8 +571,31 @@ const createButtonGeneratorProps = <
   },
 });
 
+
+
+// Create buttonGeneratorProps with default configuration
+const buttonGeneratorProps = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  const defaultLifecycleManager = new LifecycleManager(getDefaultLifecycleConfig());
+  const [_, setCurrentPhase] = useState<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+    {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  );
+
+  return createButtonGeneratorProps(defaultLifecycleManager, setCurrentPhase);
+};
+
+
+
+
+
 // Hook for easy usage
-export const useButtonGeneratorProps = <
+const useButtonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -656,4 +680,3 @@ const getDefaultLifecycleConfig = (): LifecycleConfig => ({
 export { ButtonGenerator, buttonGeneratorProps, createButtonGeneratorProps, useButtonGeneratorProps };
 export type { ButtonGeneratorProps };
 
-export {  };

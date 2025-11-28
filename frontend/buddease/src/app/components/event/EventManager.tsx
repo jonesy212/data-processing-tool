@@ -1,3 +1,4 @@
+// EventManager.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';

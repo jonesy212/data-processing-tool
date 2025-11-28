@@ -1,13 +1,13 @@
 // UnifiedNotificationTypes.ts
 import { NOTIFICATION_TYPES } from '@/app/features/support/NotificationTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { LogData } from '@/app/models/LogData';
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { NotificationPosition } from '@/app/models/data/StatusType';
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 
-// Export all types from a single source
-// Centralized type definitions
+
 export const NotificationTypeEnum = NOTIFICATION_TYPES;
 export type NotificationType = keyof typeof NOTIFICATION_TYPES 
   | DocumentTypeEnum 

@@ -1,3 +1,4 @@
+// Trades.tsx
 import { TradingPlatform } from "@/app/crypto/TradingPlatform";
 
 interface TraderCallsProps {

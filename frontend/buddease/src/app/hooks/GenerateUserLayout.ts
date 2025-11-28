@@ -1,3 +1,4 @@
+// GenerateUserLayout.ts
 // useLayoutGenerator.tsx
 import { DocxGenerator, DocxGeneratorOptions } from '@/app/generators/docxGenerator';
 import { useEffect, useState } from 'react';

@@ -1,10 +1,11 @@
+// fetchUserAreaDimensions.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { UILogger } from '@/app/libraries/logging/Logger';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
-import { NotificationType } from "@/state/context/NotificationContext";
 
 interface AreaDimensions {
   width: number;

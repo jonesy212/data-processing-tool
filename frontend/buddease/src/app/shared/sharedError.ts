@@ -1,3 +1,4 @@
+// sharedError.ts
 // sharedErrorHandling.ts
 
 

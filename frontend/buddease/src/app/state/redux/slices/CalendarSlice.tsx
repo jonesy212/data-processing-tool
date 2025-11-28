@@ -1,10 +1,12 @@
+// CalendarSlice.tsx
 import { CalendarActions } from '@/app/actions/CalendarEventActions';
 import { ChatActions } from '@/app/actions/ChatActions';
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import { NotificationActions } from '@/app/actions/NotificationActions';
 import calendarApiService from '@/app/api/ApiCalendar';
 import { fetchEventData } from '@/app/api/ApiEvent';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { AppCalendarEvent } from '@/app/calendar/AppCalendarEvent';
 import CalendarEventCategory from '@/app/calendar/CalendarEventCategory';
 import CalendarEventConflictDetectionResult from '@/app/calendar/CalendarEventConflictDetectionResult';
 import CalendarEventContentGeneration from '@/app/calendar/CalendarEventContentGeneration';
@@ -47,26 +49,22 @@ import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysi
 import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/app/models/data/EventPriorityClassification';
 import {
     CalendarStatus,
-    PriorityStatus,
+    PriorityTypeEnum,
     ProjectPhaseTypeEnum,
     StatusType,
 } from '@/app/models/data/StatusType';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import { LogData } from '@/app/models/LogData';
 import { Task } from '@/app/models/tasks/Task';
-import { Member } from '@/app/models/teams/TeamMembers';
+import { Member } from '@/app/models/members/Members';
 import { Tag } from '@/app/models/tracker/Tag';
 import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import {
-    dispatchNotification,
-    NotificationData,
-    SendStatus,
-} from '@/app/state/redux/slices/NofiticationsSlice';
+import NotificationData, { dispatchNotification, SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
 import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
 import { CalendarMilestone } from '@/app/typings/milestoneTypes';
-import { Milestone } from '@/app/typings/mlestoneTypes';
+import { Milestone } from '@/app/typings/milestoneTypes';
 import { User } from '@/app/users/User';
 import {
     NotificationTypeEnum,
@@ -115,7 +113,7 @@ interface ShareFilesPayload<
 > {
   eventId?: string;
   calendarEventId: string;
-  files: CustomFile<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  files: CustomFile<T>[];
   handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -158,7 +156,7 @@ export interface CalendarManagerState<
   externalCalendarsOverlays: ExternalCalendarOverlay[];
   chatRooms: Record<string, ChatRoom> | undefined; // Updated to remove the array
   chatRoom: ChatRoom | undefined;
-  user: User | null;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   suggestedLocation: string | null;
   suggestedDuration: number | null;
   suggestedTheme: Theme | null;
@@ -170,7 +168,7 @@ export interface CalendarManagerState<
   suggestedMarketingChannels: MarketingChannel[];
   suggestEventPartnerships: CalendarEventPartnership[];
   suggestedPartnerships: CalendarEventPartnership[];
-  suggestedTags: Tag[];
+  suggestedTags: Tag<T>[];
   suggestedTimingOptimization: CalendarEventTimingOptimization[];
   suggestedLocations: Location[];
   eventContentAnalysis: EventContentAnalysis | null;
@@ -230,7 +228,7 @@ export const exportCalendarEvents = async (
   }
 };
 
-export const simulateSendReminder = async (event: CalendarEvent) => {
+export const simulateSendReminder = async (event: AppCalendarEvent) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       console.log("Reminder sent for event:", event);
@@ -242,7 +240,7 @@ export const simulateSendReminder = async (event: CalendarEvent) => {
 export const sendMessageToChatRoom = async (
   state: any,
   action: PayloadAction<{
-    calendarEvent: CalendarEvent;
+    calendarEvent: AppCalendarEvent;
     calendarEventId: string;
     chatRoomId: string;
   }>
@@ -312,7 +310,7 @@ export const sendMessageToChatRoom = async (
   };
 };
 
-export const sendReminderToExternalService = async (event: CalendarEvent) => {
+export const sendReminderToExternalService = async (event: AppCalendarEvent) => {
   // Simulate sending reminder to external service
   await simulateSendReminder(event);
 };
@@ -323,13 +321,13 @@ const notificationContext = useNotification();
 // Define createAsyncThunk with the thunk action creator
 export const sendCalendarEventReminder = createAsyncThunk(
   "calendarEvents/sendCalendarEventReminder",
-  async (event: CalendarEvent, { dispatch }) => {
+  async (event: AppCalendarEvent, { dispatch }) => {
     try {
       // Perform asynchronous operation, such as sending a reminder
       await sendReminderToExternalService(event);
 
       // Dispatch a success notification if showSuccessNotification is defined
-      notificationContext.actions?.showSuccessNotification?.(
+      notificationContext.showSuccessNotification?.(
         "",
         "Calendar event reminder sent successfully",
         NOTIFICATION_MESSAGES.CalendarEvents.EVENT_REMINDER_SUCCESS,
@@ -337,7 +335,7 @@ export const sendCalendarEventReminder = createAsyncThunk(
       );
     } catch (error: any) {
       // Dispatch an error notification if showErrorNotification is defined
-      notificationContext.actions?.showErrorNotification?.(
+      notificationContext.showErrorNotification?.(
         "Error sending calendar event reminder",
         error.message,
         new Date()
@@ -367,7 +365,7 @@ export const removeCalendarEventAsync = createAsyncThunk(
       await removeCalendarEventFromService(eventId);
 
       // Dispatch a success notification if showSuccessNotification is defined
-      notificationContext.actions?.showSuccessNotification?.(
+      notificationContext.showSuccessNotification?.(
         "",
         "Calendar event removed successfully",
         NOTIFICATION_MESSAGES.CalendarEvents.EVENT_REMOVED_SUCCESS,
@@ -375,7 +373,7 @@ export const removeCalendarEventAsync = createAsyncThunk(
       );
     } catch (error: any) {
       // Dispatch an error notification if showErrorNotification is defined
-      notificationContext.actions?.showErrorNotification?.(
+      notificationContext.showErrorNotification?.(
         "Error removing calendar event",
         error.message,
         new Date()
@@ -541,13 +539,13 @@ const getDefaultViewingEventDetails =
   };
 
 const initialState: CalendarManagerState = {
-  entities: {} as Record<string, CalendarEvent>,
-  events: {} as Record<string, CalendarEvent[]>,
+  entities: {} as Record<string, AppCalendarEvent>,
+  events: {} as Record<string, AppCalendarEvent[]>,
   milestones: {} as Record<string, CalendarMilestone>,
   notifications: {} as Record<string, NotificationData>,
   loading: false,
-  filteredEvents: {} as CalendarEvent[],
-  sharedEvents: {} as Record<string, CalendarEvent>,
+  filteredEvents: {} as AppCalendarEvent[],
+  sharedEvents: {} as Record<string, AppCalendarEvent>,
   sharedEvent: undefined,
   viewingEventDetails: getDefaultViewingEventDetails(),
   searchedEvents: [],
@@ -555,10 +553,10 @@ const initialState: CalendarManagerState = {
   pendingAction: null,
   isLoading: false,
   error: undefined,
-  exportedEvents: {} as Record<string, CalendarEvent[]>,
+  exportedEvents: {} as Record<string, AppCalendarEvent[]>,
   externalCalendarsOverlays: {} as ExternalCalendarOverlay[],
-  calendarEvent: {} as CalendarEvent,
-  calendarEventEditing: null as CalendarEvent | null,
+  calendarEvent: {} as AppCalendarEvent,
+  calendarEventEditing: null as AppCalendarEvent | null,
   chatRooms: {} as Record<string, ChatRoom>,
   chatRoom: {} as ChatRoom,
   user: null,
@@ -650,7 +648,7 @@ export const exportCalendarEventsToExternalSources = createAsyncThunk(
         const notificationContext = useNotification();
         if (notificationContext) {
           dispatch(
-            notificationContext.actions?.showSuccessNotification(
+            notificationContext.showSuccessNotification(
               "",
               "Calendar events exported to external sources successfully",
               new Date()
@@ -663,7 +661,7 @@ export const exportCalendarEventsToExternalSources = createAsyncThunk(
         // If event data cannot be fetched, dispatch an error notification
         const errorDetails = "Failed to connect to the external API";
         dispatch(
-          useNotification()?.actions?.showErrorNotification(
+          useNotification()?.showErrorNotification(
             "Error exporting calendar events to external sources",
             errorDetails,
             new Date()
@@ -689,7 +687,7 @@ export const useCalendarManagerSlice = createSlice({
     updateState: (
       state,
       action: PayloadAction<
-        Partial<WritableDraft<Record<string, CalendarEvent>>>
+        Partial<WritableDraft<Record<string, AppCalendarEvent>>>
       >
     ) => {
       return { ...state, ...action.payload };
@@ -698,7 +696,7 @@ export const useCalendarManagerSlice = createSlice({
     // For "events" action:
     events: (
       state,
-      action: PayloadAction<WritableDraft<Record<string, CalendarEvent>>>
+      action: PayloadAction<WritableDraft<Record<string, AppCalendarEvent>>>
     ) => {
       state.entities = action.payload;
       dispatchNotification(
@@ -724,7 +722,7 @@ export const useCalendarManagerSlice = createSlice({
 
     calendarEvent: (
       state,
-      action: PayloadAction<WritableDraft<CalendarEvent>>
+      action: PayloadAction<WritableDraft<AppCalendarEvent>>
     ) => {
       const updatedEvent = action.payload;
 
@@ -745,14 +743,14 @@ export const useCalendarManagerSlice = createSlice({
         updatedEvent.phase.name === ProjectPhaseTypeEnum.DataAnalysis &&
         updatedEvent.status === StatusType.Completed
       ) {
-        initiateDataAnalysis(updatedEvent as CalendarEvent);
+        initiateDataAnalysis(updatedEvent as AppCalendarEvent);
       }
     },
 
     // For "addCalendarEvent" action:
     addCalendarEvent: (
       state,
-      action: PayloadAction<WritableDraft<CalendarEvent>>
+      action: PayloadAction<WritableDraft<AppCalendarEvent>>
     ) => {
       if (state.entities) {
         state.entities[action.payload.id] = action.payload;
@@ -782,7 +780,7 @@ export const useCalendarManagerSlice = createSlice({
     },
 
     // For "updateCalendarEvent" action:
-    updateCalendarEvent: (state, action: PayloadAction<CalendarEvent>) => {
+    updateCalendarEvent: (state, action: PayloadAction<AppCalendarEvent>) => {
       const event = state.entities?.[action.payload.id];
       if (event) {
         event.title = action.payload.title;
@@ -899,7 +897,7 @@ export const useCalendarManagerSlice = createSlice({
 
     setEntities: (
       state,
-      action: PayloadAction<Record<string, WritableDraft<CalendarEvent>>>
+      action: PayloadAction<Record<string, WritableDraft<AppCalendarEvent>>>
     ) => {
       state.entities = action.payload;
     },
@@ -992,7 +990,7 @@ export const useCalendarManagerSlice = createSlice({
 
     recommendEventTags: (
       state,
-      action: PayloadAction<WritableDraft<Tag>[]>
+      action: PayloadAction<WritableDraft<Tag<T>>[]>
     ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
       draftState.suggestedTags = action.payload;
@@ -1023,7 +1021,7 @@ export const useCalendarManagerSlice = createSlice({
     analyzeAttendeeAvailability: (
       state,
       action: PayloadAction<
-        WritableDraft<ExtendedAttendeeAvailability & {  event: CalendarEvent | null; analyze: () => void }>
+        WritableDraft<ExtendedAttendeeAvailability & {  event: AppCalendarEvent | null; analyze: () => void }>
       >
     ) => {
       const draftState = state as WritableDraft<CalendarManagerState>;
@@ -1331,7 +1329,7 @@ export const useCalendarManagerSlice = createSlice({
     analyzeEventContent: (
       state,
       action: PayloadAction<{
-        event: CalendarEvent;
+        event: AppCalendarEvent;
         analysis: EventContentAnalysis;
       }>
     ) => {
@@ -1384,7 +1382,7 @@ export const useCalendarManagerSlice = createSlice({
     validateEventContent: (
       state,
       action: PayloadAction<{
-        event: CalendarEvent;
+        event: AppCalendarEvent;
         validationResults: EventContentValidationResults
       }>
     ) => {
@@ -1469,7 +1467,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to share calendar event
     shareCalendarEvent: (
       state, // Specify the correct type for state
-      action: PayloadAction<WritableDraft<CalendarEvent>>
+      action: PayloadAction<WritableDraft<AppCalendarEvent>>
     ) => {
       const event = action.payload;
       state.sharedEvent = event;
@@ -1487,7 +1485,7 @@ export const useCalendarManagerSlice = createSlice({
     // Action to RSVP to calendar event
     rsvpToCalendarEvent: (
       state,
-      action: PayloadAction<WritableDraft<CalendarEvent>>
+      action: PayloadAction<WritableDraft<AppCalendarEvent>>
     ) => {
       const eventId = action.payload.id;
       const event = state.entities?.[eventId];
@@ -1534,7 +1532,7 @@ export const useCalendarManagerSlice = createSlice({
 
     searchCalendarEvents: (state, action: PayloadAction<string>) => {
       const searchCriteria = action.payload;
-      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(
+      const entitiesArray: WritableDraft<AppCalendarEvent>[] = Object.values(
         state.entities || {}
       );
 
@@ -1548,12 +1546,12 @@ export const useCalendarManagerSlice = createSlice({
 
     sortCalendarEvents: (state, action: PayloadAction<string>) => {
       const sortCriteria = action.payload;
-      const entitiesArray: WritableDraft<CalendarEvent>[] = Object.values(
+      const entitiesArray: WritableDraft<AppCalendarEvent>[] = Object.values(
         state.entities || {}
       );
 
       const sortedEvents = entitiesArray.sort(
-        (a: WritableDraft<CalendarEvent>, b: WritableDraft<CalendarEvent>) => {
+        (a: WritableDraft<AppCalendarEvent>, b: WritableDraft<AppCalendarEvent>) => {
           if (a.title < b.title) {
             return -1;
           }
@@ -1813,7 +1811,7 @@ export const useCalendarManagerSlice = createSlice({
     
     realTimeNotificationsForCalendarEventUpdates: (
       state,
-      action: PayloadAction<CalendarEvent>
+      action: PayloadAction<AppCalendarEvent>
     ) => {
       const updatedEvent = action.payload;
       try {
@@ -2118,7 +2116,7 @@ export const useCalendarManagerSlice = createSlice({
       const { eventId, priority } = action.payload;
       const event = state.entities?.[eventId];
       if (event) {
-        event.priority = priority as PriorityStatus; // Update the priority field of the event object
+        event.priority = priority as PriorityTypeEnum; // Update the priority field of the event object
         dispatchNotification(
           "setEventPriority",
           "Event priority set successfully",

@@ -1,3 +1,4 @@
+// teamSnapshot.ts
 import { Snapshot } from '@/app/snapshots/Snapshot'; // Removed snapshotStore import as it's not used
 import useSnapshotManager from '@/app/hooks/useSnapshotManager';
 import { Data } from '@/app/models/data/Data';

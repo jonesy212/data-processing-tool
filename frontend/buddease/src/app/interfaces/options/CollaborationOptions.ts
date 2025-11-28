@@ -1,3 +1,4 @@
+// CollaborationOptions.ts
 interface CollaborationOptions {
   id: string;
   name: string;

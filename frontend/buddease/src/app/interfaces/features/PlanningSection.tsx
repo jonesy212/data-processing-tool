@@ -1,3 +1,4 @@
+// PlanningSection.tsx
 // PlanningSection component
 import React from 'react';
 

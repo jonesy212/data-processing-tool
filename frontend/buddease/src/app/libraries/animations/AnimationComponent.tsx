@@ -1,3 +1,4 @@
+// AnimationComponent.tsx
 // AnimatedComponent.tsx
 import createDynamicHook, { DynamicHookResult } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
 import useIdleTimeout from '@/app/hooks/idleTimeoutHooks';

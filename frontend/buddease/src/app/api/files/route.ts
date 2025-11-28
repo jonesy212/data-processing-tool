@@ -1,3 +1,4 @@
+// route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import isValidAuthToken from "@/app/components/security/AuthValidation";
 import * as fs from 'fs/promises';

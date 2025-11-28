@@ -1,3 +1,4 @@
+// EntityConversionRules.ts
 import {
   ApiEntity,
   AppEntity,

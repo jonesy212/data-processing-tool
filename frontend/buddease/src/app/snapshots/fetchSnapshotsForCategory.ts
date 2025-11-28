@@ -1,6 +1,7 @@
 // fetchSnapshotsForCategory.ts
 import internalApiService from '@/app/api/ApiClient';
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 
@@ -17,7 +18,10 @@ import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 async function fetchSnapshotsForCategory<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   snapshotId: string,
   type: string,

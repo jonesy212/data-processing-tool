@@ -11,7 +11,7 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
+import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
 import configData from "@/config/endpoints/configData";
 import { useAuth } from "@/state/context/AuthContext";
 import {
@@ -19,6 +19,8 @@ import {
   ExtendedDappProps
 } from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
 let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -33,8 +35,8 @@ let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   ExcludedFields extends keyof T = PhaseExcludedFields,
   IncludedFields extends keyof T = PhaseIncludedFields
 > {
-   name: string;
-   progressCallbacks?: (progress: Progress) => void;
+  name: string;
+  progressCallbacks?: (progress: Progress) => void;
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
   canTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
   handleTransitionTo?: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<void>;
@@ -237,7 +239,7 @@ const additionalPhaseNames = [
   "Additional Phase 2",
 ];
 
-const additionalPhaseHooks: { [key: string]: CustomPhaseHooks<T> } = {};
+const additionalPhaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity> } = {};
 
 // First block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {

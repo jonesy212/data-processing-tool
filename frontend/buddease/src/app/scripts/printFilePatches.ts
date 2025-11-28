@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+// printFilePatches.ts
 import fs from 'fs';
 import path from 'path';
 import { createTwoFilesPatch } from 'diff';

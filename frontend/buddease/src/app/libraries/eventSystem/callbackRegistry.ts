@@ -1,3 +1,4 @@
+// callbackRegistry.ts
 import { EventHandler, EventFilter } from '@/app/typings/eventHandlers/eventTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 

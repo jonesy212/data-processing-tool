@@ -1,3 +1,4 @@
+// database.ts
 // In a separate file: src/app/actions/database.ts
 'use server';
 

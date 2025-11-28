@@ -1,3 +1,4 @@
+// isYourSettingsResponseType.ts
 import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { ParsedData } from "@/app/dataIntegration";
 import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';

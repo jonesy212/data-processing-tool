@@ -1,3 +1,4 @@
+// UpdateProjectDetails.tsx
 import React from 'react';
 import { Project, ProjectDetails } from '@/Project';
 import { StatusType } from "@/app/models/data/StatusType";

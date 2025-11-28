@@ -1,3 +1,4 @@
+// DebugBabelAnalyzer.ts
 import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer'
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import fs from 'fs';

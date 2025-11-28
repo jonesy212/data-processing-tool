@@ -1,3 +1,4 @@
+// ConfigurationManagement.ts
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

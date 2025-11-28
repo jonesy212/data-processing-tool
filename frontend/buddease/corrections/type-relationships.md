@@ -1,7 +1,7 @@
 # 🔗 Type Relationships Report
-**Generated:** 2025-11-22T18:55:54.755Z
+**Generated:** 2025-11-28T06:48:30.121Z
 
-## 🔄 Type Dependency Graph (1162 types)
+## 🔄 Type Dependency Graph (1161 types)
 
 *Shows how types relate to each other through inheritance and implementation*
 
@@ -344,7 +344,6 @@
 - **ProfessionalTraderDashboardProps**
 - **ProfessionalTraderProfileProps**
 - **ProjectManagerPersonaProps**
-- **UserJourneyManagerProps**
 - **UserQuestionnaireProps**
 - **PersonaPanelProps**
 - **FilterTasksRequestProps**
@@ -2591,7 +2590,7 @@
 
 ### NotificationManagerServiceProps
 **Metadata:**
-- **File:** src/app/services/NotificationService.tsx
+- **File:** src/app/components/notifications/useNotificationManagerServiceProps.tsx
 - **Type:** interface
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -5792,20 +5791,6 @@
 **Members (1):**
 - **Properties:** 1
   - teams
----
-
-### UserJourneyManagerProps
-**Metadata:**
-- **File:** src/app/pages/personas/UserJourneyManager.tsx
-- **Type:** interface
-- **Role:** 🏛️ Root
-- **Dependencies:** 0
-- **Dependents:** 0
-
-**Members (2):**
-- **Properties:** 2
-  - user
-  - phaseName
 ---
 
 ### UserQuestionnaireProps
@@ -15654,8 +15639,8 @@
 
 ## 📈 Summary
 
-- **Total Types:** 1162
-- **Root Types:** 1162
+- **Total Types:** 1161
+- **Root Types:** 1161
 - **Leaf Types:** 0
 - **Intermediate Types:** 0
 - **Total Relationships:** 0

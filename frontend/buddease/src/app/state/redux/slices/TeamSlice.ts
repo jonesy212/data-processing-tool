@@ -1,3 +1,4 @@
+// TeamSlice.ts
 import { CollaborationPreferences } from "@/app/components/interfaces/settings/CollaborationPreferences";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { Project } from '@/app/models/projects/Project';

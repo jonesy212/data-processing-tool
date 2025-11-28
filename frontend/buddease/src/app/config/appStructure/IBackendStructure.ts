@@ -1,3 +1,4 @@
+// IBackendStructure.ts
 // app/interfaces/IBackendStructure.ts
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";

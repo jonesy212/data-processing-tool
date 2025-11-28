@@ -1,3 +1,4 @@
+// CalendarMonth.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import React, { useEffect } from "react";
 import { CommonCalendarProps } from "./Calendar";

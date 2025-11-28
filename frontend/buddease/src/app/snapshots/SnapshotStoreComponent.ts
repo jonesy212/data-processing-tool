@@ -1,3 +1,4 @@
+// SnapshotStoreComponent.ts
 
 // import { SnapshotStoreOptions } from '@/app/hooks/SnapshotStoreOptions';
 // import { Category } from '@/app/libraries/categories/generateCategoryProperties';

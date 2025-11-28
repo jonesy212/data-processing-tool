@@ -1,17 +1,9 @@
 // endpointConfigurations.ts
-import useFiltering from '@/app/hooks/useFiltering';
-import { BASE_URL } from '@/app/api/baseUrl'
-import { searchOptions } from '@/app/pages/searches/SearchOptions';
-import useSearchOptions from "@/app/pages/searches/useSearchOptions";
-import { uiSettingsConfig } from '@/app/config/endpoints/uiSettingsConfig'
-import { usersConfig } from '@/app/config/endpoints/usersConfig';
 import { apiWebBaseConfig } from '@/app/config/endpoints/apiWebBaseConfig';
 import { commentsConfig } from '@/app/config/endpoints/commentsConfig';
 import { contentConfig } from '@/app/config/endpoints/contentConfig';
 import { dataConfig } from '@/app/config/endpoints/dataConfig';
 import { delegatesConfig } from '@/app/config/endpoints/delegatesConfig';
-import { webConfig } from '@/app/config/endpoints/webConfig';
-import { sortingConfig } from '@/app/config/endpoints/sortingConfig';
 import { filteringConfig } from '@/app/config/endpoints/filteringConfig';
 import { highlightsConfig } from '@/app/config/endpoints/highlightsConfig';
 import { loggingConfig } from '@/app/config/endpoints/loggingConfig';
@@ -20,16 +12,20 @@ import { notesConfig } from '@/app/config/endpoints/notesConfig';
 import { projectsConfig } from '@/app/config/endpoints/projectsConfig';
 import { searchingConfig } from '@/app/config/endpoints/searchingConfig';
 import { snapshotsConfig } from '@/app/config/endpoints/snapshotsConfig';
-import { uiConfig } from '@/app/config/endpoints/uiConfig';
-import { versionConfig } from '@/app/config/endpoints/versionConfig';
+import { sortingConfig } from '@/app/config/endpoints/sortingConfig';
 import { tasksConfig } from '@/app/config/endpoints/tasksConfig';
 import { teamsConfig } from '@/app/config/endpoints/teamsConfig';
 import { todosConfig } from '@/app/config/endpoints/todosConfig';
+import { uiConfig } from '@/app/config/endpoints/uiConfig';
+import { uiSettingsConfig } from '@/app/config/endpoints/uiSettingsConfig';
+import { usersConfig } from '@/app/config/endpoints/usersConfig';
+import { versionConfig } from '@/app/config/endpoints/versionConfig';
+import { webConfig } from '@/app/config/endpoints/webConfig';
 
-import { categoryConfig } from '@/app/config/endpoints/categoryConfig';
 import { authConfig } from '@/app/config/endpoints/authConfig';
 import { blogsConfig } from '@/app/config/endpoints/blogsConfig';
 import { calendarConfig } from '@/app/config/endpoints/calendarConfig';
+import { categoryConfig } from '@/app/config/endpoints/categoryConfig';
 import { chatConfig } from '@/app/config/endpoints/chatConfig';
 import { clientConfig } from '@/app/config/endpoints/clientConfig';
 import { collaborationToolsConfig } from '@/app/config/endpoints/collaborationToolsConfig';
@@ -37,10 +33,19 @@ import { communicationConfig } from '@/app/config/endpoints/communicationConfig'
 import { communityInteractionConfig } from '@/app/config/endpoints/communityInteractionConfig';
 import { cryptoConfig } from '@/app/config/endpoints/cryptoConfig';
 import { dataProvidersConfig } from '@/app/config/endpoints/dataProvidersConfig';
-import { dexConfig } from '@/app/config/endpoints/dexConfig';
 import { detailsConfig } from '@/app/config/endpoints/detailsConfig';
+import { dexConfig } from '@/app/config/endpoints/dexConfig';
 import { donationsConfig } from '@/app/config/endpoints/donationsConfig';
 
+import ApiConfig from '@/app/api/ApiConfigService';
+import { EndpointConfigurations } from '@/app/config/EndpointConfig';
+import { analyticsConfig } from '@/app/config/endpoints/analyticsConfig';
+import { apiEndpointConfig } from '@/app/config/endpoints/apiEndpointConfig';
+import { batchConfig } from '@/app/config/endpoints/batchConfig';
+import { dataAnalysisConfig } from '@/app/config/endpoints/dataAnalysisConfig';
+import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
+import { devConfig } from '@/app/config/endpoints/devConfig';
+import { documentsConfig } from '@/app/config/endpoints/documentsConfig';
 import { drawingConfig } from '@/app/config/endpoints/drawingConfig';
 import { externalAuthConfig } from '@/app/config/endpoints/externalAuthConfig';
 import { feedbackConfig } from '@/app/config/endpoints/feedbackConfig';
@@ -48,18 +53,23 @@ import { filesConfig } from '@/app/config/endpoints/filesConfig';
 import { freelancersConfig } from '@/app/config/endpoints/freelancersConfig';
 import { generatorsConfig } from '@/app/config/endpoints/generatorsConfig';
 import { globalCollaborationConfig } from '@/app/config/endpoints/globalCollaborationConfig';
+import { logsConfig } from '@/app/config/endpoints/logsConfig';
 import { markerConfig } from '@/app/config/endpoints/markerConfig';
+import { messagesConfig } from '@/app/config/endpoints/messagesConfig';
 import { moderatorsConfig } from '@/app/config/endpoints/moderatorsConfig';
 import { monetizationConfig } from '@/app/config/endpoints/monetizationConfig';
 import { parameterCustomizationConfig } from '@/app/config/endpoints/parameterCustomizationConfig';
+import { participantsConfig } from '@/app/config/endpoints/participantsConfig';
 import { paymentConfig } from '@/app/config/endpoints/paymentConfig';
 import { personasConfig } from '@/app/config/endpoints/personasConfig';
 import { phasesConfig } from '@/app/config/endpoints/phasesConfig';
 import { projectManagementConfig } from '@/app/config/endpoints/projectManagementConfig';
 import { projectOwnerConfig } from '@/app/config/endpoints/projectOwnerConfig';
 import { randomWalkConfig } from '@/app/config/endpoints/randomWalkConfig';
+import { realtimeConfig } from '@/app/config/endpoints/realtimeConfig';
 import { registrationConfig } from '@/app/config/endpoints/registrationConfig';
 import { reportsConfig } from '@/app/config/endpoints/reportsConfig';
+import { screenSharingConfig } from '@/app/config/endpoints/screenSharingConfig';
 import { securityConfig } from '@/app/config/endpoints/securityConfig';
 import { stateGovCitiesConfig } from '@/app/config/endpoints/stateGovCitiesConfig';
 import { teamManagementConfig } from '@/app/config/endpoints/teamManagementConfig';
@@ -71,25 +81,7 @@ import { userRolesConfig } from '@/app/config/endpoints/userRolesConfig';
 import { userRolesNFTConfig } from '@/app/config/endpoints/userRolesNFTConfig';
 import { userSettingsConfig } from '@/app/config/endpoints/userSettingsConfig';
 import { videosConfig } from '@/app/config/endpoints/videosConfig';
-import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
-import { apiEndpointConfig } from '@/app/config/endpoints/apiEndpointConfig';
-import { devConfig } from '@/app/config/endpoints/devConfig';
-import { documentsConfig } from '@/app/config/endpoints/documentsConfig';
-import { participantsConfig } from '@/app/config/endpoints/participantsConfig';
-import { messagesConfig } from '@/app/config/endpoints/messagesConfig';
-import { screenSharingConfig } from '@/app/config/endpoints/screenSharingConfig';
-import { dataAnalysisConfig } from '@/app/config/endpoints/dataAnalysisConfig';
-import { logsConfig } from '@/app/config/endpoints/logsConfig';
-import { realtimeConfig } from '@/app/config/endpoints/realtimeConfig';
-import { batchConfig } from '@/app/config/endpoints/batchConfig';
-import { analyticsConfig } from '@/app/config/endpoints/analyticsConfig';
 import { createMergedEndpoints } from '@/utils/endpointMerger';
-import ApiConfig from './ApiConfig';
-import { EndpointConfigurations } from '@/app/config/EndpointConfig';
-
-import { createMergedEndpoints } from '@/utils/endpointMerger';
-import ApiConfig from './ApiConfig';
-import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 import { buildUrl } from '@/utils/urlBuilder'; // Add this import
 
 // Main endpoint configurations
@@ -109,6 +101,7 @@ export const endpointConfigurations: EndpointConfigurations = {
   communication: communicationConfig,
   communityInteraction: communityInteractionConfig,
   content: contentConfig,
+  categoritesEndpoints: categoriesConfig,
   crypto: cryptoConfig,
   data: dataConfig,
   database: databaseConfig,
@@ -179,84 +172,50 @@ export const endpointConfigurations: EndpointConfigurations = {
 
 // Export individual configurations for selective imports
 export {
-  analyticsConfig,
-  apiWebBaseConfig,
-  apiEndpointConfig,
-  authConfig,
-  batchConfig,
-  blogsConfig,
-  calendarConfig,
-  categoryConfig,
-  chatConfig,
-  clientConfig,
-  collaborationToolsConfig,
-  commentsConfig,
-  communicationConfig,
-  communityInteractionConfig,
-  contentConfig,
-  cryptoConfig,
-  dataConfig,
-  databaseConfig,
-  dataAnalysisConfig,
-  dataProvidersConfig,
-  delegatesConfig,
-  detailsConfig,
-  devConfig,
-  dexConfig,
-  documentsConfig,
-  donationsConfig,
-  drawingConfig,
-  externalAuthConfig,
-  feedbackConfig,
-  filesConfig,
-  filteringConfig,
-  freelancersConfig,
-  generatorsConfig,
-  globalCollaborationConfig,
-  highlightsConfig,
-  loggingConfig,
-  markerConfig,
-  messagesConfig,
-  moderatorsConfig,
-  monetizationConfig,
-  newsConfig,
-  notesConfig,
-  paymentConfig,
-  parameterCustomizationConfig,
-  participantsConfig,
-  personasConfig,
-  phasesConfig,
-  projectManagementConfig,
-  projectOwnerConfig,
-  projectsConfig,
-  randomWalkConfig,
-  registrationConfig,
-  reportsConfig,
-  securityConfig,
-  stateGovCitiesConfig,
-  sortingConfig,
-  searchingConfig,
-  snapshotsConfig,
-  realtimeConfig,
-  tasksConfig,
-  teamsConfig,
-  teamManagementConfig,
-  themeConfig,
-  toolbarConfig,
-  tradingConfig,
-  todosConfig,
-  uiConfig,
-  userManagementConfig,
-  userRolesConfig,
-  userRolesNFTConfig,
-  userSettingsConfig,
-  usersConfig,
-  videosConfig,
-  versionConfig,
-  webConfig,
-  screenSharingConfig,
-  logsConfig,
-  uiSettingsConfig
+    analyticsConfig, apiEndpointConfig, apiWebBaseConfig, authConfig,
+    batchConfig,
+    blogsConfig,
+    calendarConfig,
+    categoryConfig,
+    chatConfig,
+    clientConfig,
+    collaborationToolsConfig,
+    commentsConfig,
+    communicationConfig,
+    communityInteractionConfig,
+    contentConfig,
+    cryptoConfig, dataAnalysisConfig, databaseConfig, dataConfig, dataProvidersConfig,
+    delegatesConfig,
+    detailsConfig,
+    devConfig,
+    dexConfig,
+    documentsConfig,
+    donationsConfig,
+    drawingConfig,
+    externalAuthConfig,
+    feedbackConfig,
+    filesConfig,
+    filteringConfig,
+    freelancersConfig,
+    generatorsConfig,
+    globalCollaborationConfig,
+    highlightsConfig,
+    loggingConfig, logsConfig, markerConfig,
+    messagesConfig,
+    moderatorsConfig,
+    monetizationConfig,
+    newsConfig,
+    notesConfig, parameterCustomizationConfig,
+    participantsConfig, paymentConfig, personasConfig,
+    phasesConfig,
+    projectManagementConfig,
+    projectOwnerConfig,
+    projectsConfig,
+    randomWalkConfig, realtimeConfig, registrationConfig,
+    reportsConfig, screenSharingConfig, searchingConfig, securityConfig, snapshotsConfig, sortingConfig, stateGovCitiesConfig, tasksConfig, teamManagementConfig, teamsConfig, themeConfig, todosConfig, toolbarConfig,
+    tradingConfig, uiConfig, uiSettingsConfig, userManagementConfig,
+    userRolesConfig,
+    userRolesNFTConfig, usersConfig, userSettingsConfig, versionConfig, videosConfig, webConfig
 };
 
 // Merge endpoints and keep strong typing

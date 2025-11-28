@@ -1,3 +1,4 @@
+// VideoPlayer.tsx
 // app/features/video/components/VideoPlayer.tsx
 import useVideoPlayer from '@/hooks/useVideoPlayer';
 import React, { useEffect } from 'react';

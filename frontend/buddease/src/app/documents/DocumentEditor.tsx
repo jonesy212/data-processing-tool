@@ -1,39 +1,40 @@
+// DocumentEditor.tsx
 import axiosInstance from '@/app/api/csrfToken';
-import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
+import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { ExcludedFields } from '@/app/components/routing/Fields';
-import DocumentBuilder, { DocumentData } from "@/app/documents/editing/DocumentBuilder"; // Import the DocumentBuilder component
-import { setCurrentPhase } from "@/app/hooks/phaseHooks/EnhancePhase";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { ComponentActions } from "@/app/libraries/ui/components/ComponentActions";
+import DocumentBuilder, { DocumentData } from '@/app/documents/editing/DocumentBuilder'; // Import the DocumentBuilder component
+import { setCurrentPhase } from '@/app/hooks/phaseHooks/EnhancePhase';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { ComponentActions } from '@/app/libraries/ui/components/ComponentActions';
 import {
   BorderStyle,
   DocumentSize,
   ProjectPhaseTypeEnum,
-} from "@/app/models/data/StatusType";
+} from '@/app/models/data/StatusType';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
-import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
-import useEditorState from "@/app/state/useEditorState";
-import { DocumentActions } from "@/app/tokens/DocumentActions";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
+import useEditorState from '@/app/state/useEditorState';
+import { DocumentActions } from '@/app/tokens/DocumentActions';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import AppVersionImpl, {
   AppVersion,
   selectAppVersion,
   selectDatabaseVersion,
-} from "@/app/versions/AppVersion";
-import { VersionImpl } from "@/app/versions/Version";
-import { VersionData } from "@/app/versions/VersionData";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { UserSettings } from "@/app/config/UserSettings";
-import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+} from '@/app/versions/AppVersion';
+import { VersionImpl } from '@/app/versions/Version';
+import { VersionData } from '@/app/versions/VersionData';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { UserSettings } from '@/app/config/UserSettings';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import BackendStructure from '@/app/server/database/BackendStructure';
-import { ContentState, Editor, EditorState } from "draft-js";
-import { IHydrateResult } from "mobx-persist";
-import React, { SetStateAction, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { options } from "sanitize-html";
-import { ModifiedDate } from "./DocType";
-import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
+import { ContentState, Editor, EditorState } from 'draft-js';
+import { IHydrateResult } from 'mobx-persist';
+import React, { SetStateAction, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { options } from 'sanitize-html';
+import { ModifiedDate } from './DocType';
+import { DocumentOptions, getDocumentPhase } from './DocumentOptions';
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"] }) => {
   const dispatch = useDispatch();

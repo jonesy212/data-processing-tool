@@ -1,9 +1,10 @@
+// documentBuilderConfig.ts
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import { LinksType } from "@/app/documents/DocumentOptions";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { VersionData } from "@/app/versions/VersionData";
-import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import { ContentState } from "draft-js";
 import { DocumentSize, Layout } from "./StatusType";
 

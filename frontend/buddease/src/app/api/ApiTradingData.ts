@@ -1,3 +1,4 @@
+// ApiTradingData.ts
 // ApiTradingInfo.ts - News and information trading APIs
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';

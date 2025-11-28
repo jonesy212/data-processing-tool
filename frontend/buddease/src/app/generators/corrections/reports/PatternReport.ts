@@ -1,7 +1,8 @@
+// PatternReport.ts
 // reports/PatternReport.ts
 import fs from 'fs';
 import path from 'path';
-import { Correction } from '@/generators/corrections/CorrectionGenerator';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 
 export interface PatternAnalysis {
   patternType: string;

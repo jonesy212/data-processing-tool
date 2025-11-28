@@ -1,3 +1,4 @@
+// CryptoPortfolio.ts
 import internalApiService from '@/app/api/ApiClient';
 import ExtendedCryptoNotificationMessages from '@/app/api/ApiClient';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';

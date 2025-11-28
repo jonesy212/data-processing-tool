@@ -1,5 +1,5 @@
 // SnapshotStoreConfig.ts
-import { NotificationTypeEnum } from '@/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { SnapshotContextType } from '@/app/state/context/SnapshotContext';
 import fetchCategoryByName from "@/app/api/CategoryApi";
 import { endpoints } from "@/app/api/endpointConfigurations";
@@ -28,7 +28,7 @@ import { RetentionPolicy } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotErrorHandling } from '@/app/snapshots/SnapshotErrorHandling';
 import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
@@ -1287,36 +1287,36 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       // Other required methods for AppSnapshotStoreConfig
       createSnapshotStore: async (
         id: string,
-        currentSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>,
+        currentSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
         snapshotId: string,
         storeId: number,
-        data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>>,
-        events: Record<string, CalendarManagerStoreClass<AppEntity, AppK, AppMeta, AppExcludedField>[]>,
-        dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppExcludedField>[],
-        newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>,
-        payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedField>,
-        store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>,
+        data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>>,
+        events: Record<string, CalendarManagerStoreClass<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>[]>,
+        dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>[],
+        newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
+        payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
+        store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
         categoryProperties: CategoryProperties | undefined,
-        callback: (createdStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>) => void,
+        callback: (createdStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>) => void,
         category?: Category,
-        snapshotDataConfig?: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedField>[]
+        snapshotDataConfig?: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>[]
       ): SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedFields, never> | null => { },
 
       configureSnapshotStore: (
-        currentSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>, // current snapshot
+        currentSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>, // current snapshot
         snapshotId: string,
-        data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>>,
-        events: Record<string, CalendarManagerStoreClass<AppEntity, AppK, AppMeta, AppExcludedField>[]>,
-        dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppExcludedField>[],
-        newSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>,
-        payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedField>,
-        store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>,  // just one
+        data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>>,
+        events: Record<string, CalendarManagerStoreClass<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>[]>,
+        dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>[],
+        newSnapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
+        payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,
+        store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>,  // just one
         callback?: (
-          store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>) => void
+          store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>) => void
       ): Promise<{
-        currentSnapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>;
-        storeConfig: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedField>;
-        updatedStore?: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField> | undefined;
+        currentSnapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>;
+        storeConfig: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields>;
+        updatedStore?: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField, AppIncludedFields> | undefined;
 
       }> => { }, // Function to configure a snapshot store
       createSnapshotSuccess: (): Promise<void> => { }, // Callback for successful snapshot creation

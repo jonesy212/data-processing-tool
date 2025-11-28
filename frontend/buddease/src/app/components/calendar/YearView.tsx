@@ -1,3 +1,4 @@
+// YearView.tsx
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { Project } from '@/app/models/projects/Project';
 import { RootState } from '@/app/state/redux/slices/RootSlice';

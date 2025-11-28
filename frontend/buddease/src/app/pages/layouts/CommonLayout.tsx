@@ -1,3 +1,4 @@
+// CommonLayout.tsx
 // CommonLayout.ts
 
 import React from 'React';

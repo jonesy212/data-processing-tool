@@ -6,6 +6,7 @@ import userSettings from "@/app/config/UserSettings";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
 import dataVersions from "@/app/configs/DataVersionsConfig";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { database } from "@/app/generators/GenerateDatabase";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import Logger from "@/app/libraries/logging/Logger";
@@ -13,7 +14,6 @@ import BackendStructure from "@/app/server/database/BackendStructure";
 import { AppVersion } from "@/app/versions/AppVersion";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import appDetailsConfig from '@/config/endpoints/appDetailsConfig';
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 
 
 

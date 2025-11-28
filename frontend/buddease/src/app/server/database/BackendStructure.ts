@@ -1,3 +1,4 @@
+// BackendStructure.ts
 // app/server/database/BackendStructure.ts
 import getAppPath from "@/app/config/appStructure/appPath";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
@@ -13,7 +14,7 @@ import { sanitizeDatabaseSchema } from '@/app/server/database/sanitizeDatabase';
 import { SecureField, SecureMetadata } from '@/app/server/security/SecureField';
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";

@@ -1,7 +1,7 @@
 // generateNewApiConfig.ts
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { CacheConfig, RetryConfig } from "@/app/services/ConfigurationService";
 import dataLoader from "@/configs/database/dataLoader";
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
 import UniqueIDGenerator from "./GenerateUniqueIds";
 
 

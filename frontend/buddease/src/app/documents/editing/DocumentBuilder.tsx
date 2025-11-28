@@ -26,7 +26,7 @@ import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
 import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
 import { useMetadata } from "@/app/config/useMetadata";
-import { ResearchReport, TechnicalReport } from "@/app/documentation/documents/report/Report";
+import { ResearchReport, TechnicalReport } from "@/app/documents/Report";
 import { ModifiedDate } from "@/app/documents/DocType";
 import {
   getFormattedOptions
@@ -38,7 +38,7 @@ import {
   DocumentAnimationOptions,
   DocumentBuilderProps,
 } from "@/app/documents/SharedDocumentProps";
-import { FinancialReport } from "@/app/documents/documentation/report/Report";
+import { FinancialReport } from "@/app/documents/Report";
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
@@ -70,7 +70,6 @@ import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import Clipboard from "@/app/ts/clipboard";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import AccessHistory, {
   convertAccessRecordToHistory,
 } from "@/app/versions/AccessHistory";
@@ -168,7 +167,7 @@ interface DocumentData<
   accessHistory: AccessHistory[];
   documentPhase: 
     | string
-    | DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    | DocumentPhase<T, K>;
 
   appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
@@ -215,15 +214,21 @@ export interface CustomProjectPhaseType {
   // Add more custom properties as needed
 }
 
-const initialOptions: DocumentOptions = {
+const initialOptions: DocumentOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields> = {
   previousMeta: {
     metadataEntries: {},
     keywords: [],
     version: 'document-options-version',
     isActive: true,
+
+    baseConfig: {} as BaseConfig<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
+    sharedMetadata: {},
+    sharedBaseData: {},
+    taggable: {},
+    
   },
   uniqueIdentifier: "",
-  currentMeta: {} as StructuredMetadata<BaseDataRoot, BaseDataRoot, DefaultMeta<T, K>, Attachment, never, keyof BaseDataRoot>,
+  currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
   documentType: typeof DocumentTypeEnum,
   documentSize: DocumentSize.A4,
   limit: 0,
@@ -364,15 +369,8 @@ const initialOptions: DocumentOptions = {
       ],
     },
   },
-  setDocumentPhase: <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined,
+  setDocumentPhase: (
+    phase: string | Phase<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>| undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     return { phase, phaseType };
@@ -404,6 +402,7 @@ const initialOptions: DocumentOptions = {
     fileHash: "",
     fileMetadata: {},
     customMetadata: {},
+    data: {} as Data<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
     tags: [],
     collaborators: [],
     permissions: [],
@@ -417,11 +416,8 @@ const initialOptions: DocumentOptions = {
     externalLinks: [],
     externalReferences: [],
     externalRelatedItems: [],
-  } as unknown as VersionData<DocumentEntity, DocumentK,
-    DocumentMeta,
-  DocumentAttachment,
-  DocumentExcludedFields,
-  >,
+  } as unknown as VersionData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
+
   currentContent: new ContentState(),
   previousContent: undefined,
   additionalOptionsLabel: "additionalOptionsLabel",
@@ -700,7 +696,7 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
       author: "Test User",
       timestamp: new Date(),
       area: 'document-builder-props-version',
-      metadataEntries: []
+      metadataEntries: {} as MetadataEntry<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>
     },
     versions: {
       frontend: frontendStructure, 
@@ -764,7 +760,7 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
             share: false,
             execute: false,
           },
-          getStructure: function (): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
+          getStructure: function (): Promise<Record<string, AppStructureItem<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>> {
             // Implement the getStructure method here if needed
             return new Promise((resolve, reject) => {
               try {
@@ -781,7 +777,7 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
               }
             })
           },
-          getStructureAsArray: function (): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+          getStructureAsArray: function (): Promise<AppStructureItem<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>[]> {
             throw new Error("Function not implemented.");
           },
           frontendVersions: async () => [],
@@ -1175,7 +1171,7 @@ const documentBuilderProps: DocumentBuilderProps<DocumentEntity, DocumentK, Docu
   createdAt: undefined
 };
 
-const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
+const DocumentBuilder: React.FC<DocumentBuilderProps<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>> = ({
   isDynamic,
   options,
   onOptionsChange,
@@ -1275,11 +1271,13 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
+    const currentMetadata: UnifiedMetaDataOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMetadata<T, K>(area)
+    const currentMeta: UnifiedMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = useMeta<T, K>(area)
 
-    const documentData: DocumentData<T, K, Meta<T, K>, ExcludedFields<T, K>> = {}
+    const documentData: DocumentData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = {} as DocumentData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>
+    
     // Create a document object
-    const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
+    const documentObject: DocumentObject<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = {
       // Document Identification & Versioning
       id: "", // Document unique identifier
       _id: "", // Internal document identifier
@@ -1316,12 +1314,12 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         title: "",
         items: [],
         data: {},
-        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
+        latestVersion: createLatestVersion<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(),
         description: "",
         subscriberId: "",
        
         category: "",
-        categoryProperties: "",
+        categoryProperties: {} as CategoryProperties<DocumentEntity, DocumentK>,
         timestamp: "",
         length: 0,
        

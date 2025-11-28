@@ -1,3 +1,4 @@
+// PostLaunchActivitiesManager.tsx
 // PostLaunchActivitiesPhase.tsx
 import CollaborationSettingsPhase from '@/phases/collaborationPhase/CollaborationSettingsPhase';
 import React, { useState } from 'react';

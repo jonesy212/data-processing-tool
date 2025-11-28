@@ -1,5 +1,5 @@
-// This file should ONLY be imported by server components or API routes
 // ServerDocumentGenerator.ts
+// This file should ONLY be imported by server components or API routes
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import Docxtemplater from "docxtemplater";
 import { BaseData } from '@/app/models/data/Data';

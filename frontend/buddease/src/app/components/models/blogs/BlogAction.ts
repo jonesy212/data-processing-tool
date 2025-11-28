@@ -1,3 +1,4 @@
+// BlogAction.ts
 // blogActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { BlogPost } from "@/app/community/DiscussionForumComponent";

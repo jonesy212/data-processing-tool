@@ -1,3 +1,4 @@
+// AccessDenied.tsx
 // components/AccessDenied.tsx
 import React from 'react';
 import { UserRole } from '@/app/hooks/useAccessControl';

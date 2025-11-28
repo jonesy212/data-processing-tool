@@ -1,5 +1,8 @@
+// Data.tsx
+import { Version } from '@/app/versions/Version';
 import { Label } from '@/app/branding/BrandingSettings';
 import { ScheduledData } from "@/app/calendar/ScheduledData";
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { HighlightColor } from "@/app/components/styling/Palette";
@@ -224,7 +227,7 @@ interface BaseData<
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
-  collaborators?: Collaborator[];
+  collaborators?: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
   attachments?: AttachmentType[];
   subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -270,12 +273,13 @@ interface Data<
   minor?: number;
   patch?: number;
   category?: Category
-   categoryProperties?: CategoryProperties;
+  categoryProperties?: CategoryPropertyBundle<T, K>;
   subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   actions?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   label?: Label | string | Record<string, string> | null;
+  latestVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   toInitializedData?(): InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   [key: string]: any;
@@ -430,6 +434,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
   scheduled: {
     scheduledDate: new Date(),
     createdBy: "user1",
+    latestVersion: createLatestVersion<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>(),
   },
   status: StatusType.Pending,
   isActive: true,
@@ -644,12 +649,18 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
           uploader: file.uploader,
           uploadDate: file.uploadDate,
           scheduledDate: file.scheduledDate,
+          subtasks: file.subtasks,
+          tags: file.tags,
+          status: file.status,
           createdBy: file.createdBy,
           childIds: file.childIds,
           relatedData: file.relatedData,
           major: file.major,
           minor: file.minor,
           patch: file.patch,
+          latestVersion: file.latestVersion,
+          category: file.category,
+          categoryProperties: file.categoryProperties,
         };
       },
       stroke: {
@@ -1759,5 +1770,5 @@ export type {
 // Clean the coreData to replace empty strings with null
 const cleanedCoreData = cleanEmptyStrings(coreData);
 
-export type { SharedPhaseData};
+export type { SharedPhaseData, SharedConfigType};
 export { cleanedCoreData, coreData };

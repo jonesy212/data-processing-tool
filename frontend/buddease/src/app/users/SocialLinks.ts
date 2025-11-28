@@ -1,3 +1,4 @@
+// SocialLinks.ts
 // SocialLinks.tsx
 // Define the social links interface
 interface SocialLinks {

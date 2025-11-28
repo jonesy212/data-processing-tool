@@ -1,6 +1,6 @@
+// CalendarEventFollowUpActionSuggestion.ts
 import { FollowUpAction } from "@/app/models/data/EventPriorityClassification";
 
-// CalendarEventFollowUpActionSuggestion.ts
 interface CalendarEventFollowUpActionSuggestion extends FollowUpAction {
     eventId: string; // ID of the event for which the follow-up action is suggested
     suggestion: string; // Description of the suggested follow-up action

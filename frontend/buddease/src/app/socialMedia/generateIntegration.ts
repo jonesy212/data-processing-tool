@@ -1,3 +1,4 @@
+// generateIntegration.ts
 // Function to generate integration module code based on the specified platform
 function generateIntegrationModule(platform: string): string {
     switch (platform.toLowerCase()) {

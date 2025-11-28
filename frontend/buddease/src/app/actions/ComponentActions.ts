@@ -1,3 +1,4 @@
+// ComponentActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import Component from '@/app/libraries/ui/components/Component'
 

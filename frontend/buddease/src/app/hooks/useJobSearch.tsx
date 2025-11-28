@@ -1,3 +1,4 @@
+// useJobSearch.tsx
 // components/JobSearchComponent.tsx
 import React from 'react';
 

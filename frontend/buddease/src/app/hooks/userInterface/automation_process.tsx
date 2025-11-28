@@ -1,13 +1,15 @@
+// automation_process.tsx
 // AutomatioProcess.ts
 import { ErrorHandlingActions } from '@/app/components/api/ErrorHandlingActions';
 import errorHandlingStore from '@/app/components/state/stores/ErrorHandlingStore';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import RandomWalkSuggestions from '@/RandomWalkSuggestions';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 import { notify } from '@/utils/snapshotUtils';
 import ReactDOM, { useEffect } from 'react';
 

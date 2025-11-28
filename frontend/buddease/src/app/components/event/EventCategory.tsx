@@ -1,3 +1,4 @@
+// EventCategory.tsx
 import React from "react";
 
 // EventCategory.ts

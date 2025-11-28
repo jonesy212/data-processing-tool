@@ -1,5 +1,6 @@
-import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
+// CalendarEvent.ts
 //CalendarEvent.ts
+import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
 import { Label } from '@/app/branding/BrandingSettings';
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

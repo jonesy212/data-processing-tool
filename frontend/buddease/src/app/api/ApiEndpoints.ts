@@ -1,3 +1,4 @@
+// ApiEndpoints.ts
 import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
 
 // apiEndpoints.ts

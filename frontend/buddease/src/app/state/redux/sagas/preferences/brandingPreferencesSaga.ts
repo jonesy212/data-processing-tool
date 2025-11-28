@@ -1,3 +1,4 @@
+// brandingPreferencesSaga.ts
 // Import necessary dependencies and constants
 import { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';

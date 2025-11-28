@@ -1,3 +1,4 @@
+// CryptoManager.tsx
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
 import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/app/community/newsFeedIntegration';
 import { NewsArticle } from "@/app/pages/blog/Blog";

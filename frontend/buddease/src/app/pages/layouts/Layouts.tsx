@@ -1,3 +1,4 @@
+// Layouts.tsx
 // components/Layout.tsx
 import React, { useState } from 'react';
 import DashboardLoader, { DashboardView } from './DashboardLoader';

@@ -1,3 +1,4 @@
+// LayoutControls.tsx
 // LayoutControls.ts
 // app/layout/LayoutControls.tsx
 import React from "react";

@@ -1,3 +1,4 @@
+// getCategoryFromFilePath.ts
 import { FileCategory, fileMapping } from "@/app/documents/FileType";
 import { fileCategoryMapping } from "@/app/components/libraries/categories/fileCategoryMapping";
 import { determineFileCategoryLogger } from "@/app/components/logging/determineFileCategoryLogger";

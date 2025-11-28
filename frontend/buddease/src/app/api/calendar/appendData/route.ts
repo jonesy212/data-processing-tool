@@ -1,3 +1,4 @@
+// route.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { NextRequest, NextResponse } from 'next/server';
 

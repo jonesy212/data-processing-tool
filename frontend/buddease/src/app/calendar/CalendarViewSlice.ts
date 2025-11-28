@@ -1,3 +1,4 @@
+// CalendarViewSlice.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SimpleCalendarEvent } from "@/app/components/calendar/CalendarContext";
@@ -9,7 +10,7 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { NotificationTypeEnum } from "@/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";

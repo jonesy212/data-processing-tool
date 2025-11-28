@@ -1,3 +1,4 @@
+// RootStoreComponent.tsx
 import { create } from "mobx-persist";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";

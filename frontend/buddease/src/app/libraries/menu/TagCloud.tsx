@@ -1,3 +1,4 @@
+// TagCloud.tsx
 import React from "react";
 
 const TagCloud = ({ tags, onSelectTag }) => {
