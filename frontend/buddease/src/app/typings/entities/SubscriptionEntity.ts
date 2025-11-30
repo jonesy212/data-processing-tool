@@ -2,6 +2,11 @@
 import { Data } from '@/app/models/data/Data';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
+import { AppVersion } from '@/app/versions/AppVersion';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { Version } from '@/app/versions/Version';
+import { SubscriptionPayload } from '@/app/actions/SubscriptionActions';
 
 // ------------------------------
 // 1️⃣ Base SubscriptionEntity definition
@@ -111,7 +116,7 @@ const subscriptionData: Data<
   subscriberId: "sub-12345",
   message: "Welcome to premium!",
   type: "success",
-  
+  latestVersion: createLatestVersion<SubscriptionEntity, SubscriptionK, SubscriptionMeta, SubscriptionAttachment, SubscriptionExcludedFields, SubscriptionIncludedFields>(),
   subscription: {
     active: true,
     plan: "premium"
@@ -141,7 +146,16 @@ const subscriptionData: Data<
 };
 
 
+type AppSubscription = SubscriptionPayload<SubscriptionEntity,
+  SubscriptionK,
+  SubscriptionMeta,
+  SubscriptionAttachment,
+  SubscriptionExcludedFields,
+  SubscriptionIncludedFields>
+
+
 export type { 
+  AppSubscription,
   SubscriptionEntity,
   SubscriptionK,
   SubscriptionMeta,
@@ -149,7 +163,6 @@ export type {
   SubscriptionExcludedFields,
   SubscriptionIncludedFields,
   SubscriptionEntityTemplate,
-  SubscriptionPayload,
   SubscriptionStructuredMetadata
 }
 

@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { documentOptions } from '@/app/hooks/userScenarioCreation';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typings/entities/ExtendedDappEntity';
-import { useAuth } from '@/state/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { CustomDAppAdapter } from '@/utils/web3/dAppAdapter/DApp';
 import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { ethers } from 'ethers';

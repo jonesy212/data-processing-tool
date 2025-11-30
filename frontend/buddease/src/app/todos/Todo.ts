@@ -109,7 +109,7 @@ export interface Todo<
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
-  tags?: string[] | TagsRecord<T> | undefined; 
+  tags?: string[] | TagsRecord<T>; 
   parentTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   ideas?: Idea[] 
   videoUrl?: string

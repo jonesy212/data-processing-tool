@@ -1,29 +1,29 @@
 // TodoStore.ts
 // TodoManagerStore.ts
-import { NotificationType } from "@/app/state/context/NotificationContext";
-import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { generateSnapshotId } from '@/utils/snapshotUtils';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { NotificationType } from "@/app/state/context/NotificationContext";
+import { generateSnapshotId } from '@/utils/snapshotUtils';
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from "@/app/state/context/NotificationContext";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/state/context/NotificationContext";
 import { AllStatus } from '@/DetailsListStore';
 import { makeAutoObservable } from "mobx";
-import { MutableRefObject, useRef, useState } from "react";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { useRef, useState } from "react";
 
 const { notify } = useNotification();
 

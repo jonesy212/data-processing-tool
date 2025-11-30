@@ -9,7 +9,7 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { BaseEntity } from "@/app/routing/FuzzyMatch";
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
@@ -43,7 +43,7 @@ interface DatasetModel<
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath<T, K, Meta>;
-  tags?: string[] | TagsRecord<T> | undefined; 
+  tags?: string[] | TagsRecord<T>; 
   createdBy: string | undefined;
   updatedBy: string;
   documents: WritableDraft<DocumentObject<T, K, Meta>>[];

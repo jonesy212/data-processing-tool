@@ -4,6 +4,7 @@
 import { useRef, lazy, Suspense } from "react";
 import LazyLoadedImage from "@/app/components/LazyLoadedImage";
 import styles from "./page.module.css";
+import { ApiConfigService } from "@/app/api/service/ApiConfigService";
 
 // Dynamically import YourComponent with SSR disabled
 const YourComponent = lazy(() => import("@/app/hooks/YourComponent"));

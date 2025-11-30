@@ -1,34 +1,37 @@
 // MetadataHooks.ts
 // config/metadata/MetadataHooks.ts
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { Version } from '@/app/versions/Version';
 
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import { createEventManager } from "@/app/state/stores/DataStore";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
+import {
+    EventAttachment,
+    EventEntity,
+    EventExcludedFields,
+    EventIncludedFields,
+    EventK,
+    EventMeta
+} from '@/app/typings/entities/EventEntity';
+import {
+    VersionHistoryAttachment,
+    VersionHistoryEntity,
+    VersionHistoryExcludedFields,
+    VersionHistoryIncludedFields,
+    VersionHistoryK,
+    VersionHistoryMeta
+} from '@/app/typings/entities/VersionHistoryEntity';
 import { UserData } from "@/app/users/User";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { useState } from 'react';
-import { EventEntity,
-  EventK,
-  EventMeta,
-  EventAttachment,
-  EventExcludedFields,
-  EventIncludedFields } from '@/app/typings/entities/EventEntity'
-import { VersionHistoryEntity, 
-  VersionHistoryK,
-  VersionHistoryMeta,
-  VersionHistoryAttachment,
-  VersionHistoryExcludedFields,
-  VersionHistoryIncludedFields 
-} from '@/app/typings/entities/VersionHistoryEntity'
 
 // Client-side metadata state interfaces
 interface MetaState<
@@ -115,7 +118,7 @@ export const useMetadata = <
 ) => {
   const [options, setOptions] = useState<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(initialOptions);
 
-  const updateOptions = (newOptions: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+  const updateOptions = (newOptions: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
     setOptions((prevOptions) => ({ ...prevOptions, ...newOptions }));
   };
 

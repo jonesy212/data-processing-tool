@@ -3,11 +3,13 @@ import { Correction, CorrectionReport, } from '@/app/generators/corrections/Corr
 import { FileHeaderManager } from '@/utils/fileHeaderManager';
 import { TypeHierarchy } from '@/app/generators/corrections/TypeRelationshipMapper';
 import { SecurityIssue } from '@//app/generators/corrections/SecurityAuditor'
+import { ImportFix } from '@/app/generators/corrections/ImportFixServicies';
 
 import path from 'path';
 import fs from 'fs';
 
 export class ReportGenerators {
+    
     static generateSecurityReport(report: CorrectionReport): string {
         const securityIssues = report.securityIssues || [];
 
@@ -107,7 +109,18 @@ export class ReportGenerators {
         lines.push('');
 
         lines.push('**Fix:**');
-        if (!issue.fix || issue.fix.trim() === '') {
+
+        // Extract fix text - handle both string and ImportFix types
+        let fixText = '';
+        if (issue.fix) {
+            if (typeof issue.fix === 'string') {
+                fixText = issue.fix;
+            } else if (typeof issue.fix === 'object' && 'newLine' in issue.fix) {
+                fixText = (issue.fix as ImportFix).newLine;
+            }
+        }
+
+        if (!fixText || fixText.trim() === '') {
             lines.push('```typescript');
             lines.push('// Security fix required:');
             lines.push('// 1. Remove hardcoded secrets and API keys');
@@ -116,7 +129,7 @@ export class ReportGenerators {
             lines.push('// 4. Use SecureFieldManager for sensitive field handling');
             lines.push('```');
         } else {
-            lines.push(this.formatCodeBlock(issue.fix));
+            lines.push(this.formatCodeBlock(fixText));
         }
 
         // Add hierarchy context if available
@@ -130,7 +143,6 @@ export class ReportGenerators {
         lines.push('---');
         lines.push('');
     }
-
     private static generateSecurityHierarchyIntegration(lines: string[], report: CorrectionReport): void {
         const securityIssues = report.securityIssues || [];
 
@@ -362,6 +374,8 @@ export class ReportGenerators {
             lines.push('');
 
             educationalExamples.forEach((example, index) => {
+                const fixText = this.getFixText(example) || '// Best practice implementation';
+
                 if (example.id === 'educational-header') {
                     return; // Skip header
                 }
@@ -381,7 +395,7 @@ export class ReportGenerators {
 
                 lines.push('**Improved Approach:**');
                 lines.push('```typescript');
-                lines.push(example.fix || '// Best practice implementation');
+                lines.push(fixText);
                 lines.push('```');
                 lines.push('---');
                 lines.push('');
@@ -429,6 +443,79 @@ export class ReportGenerators {
         }
 
         lines.push('');
+
+        return lines.join('\n');
+    }
+
+
+    static async generateComponentReport(
+        componentPath: string,
+        corrections: Correction[]
+    ): Promise<string> {
+        const componentIssues = corrections.filter(c => c.file === componentPath);
+
+        const report: CorrectionReport = {
+            timestamp: new Date().toISOString(),
+            summary: this.createSummary(componentIssues),
+            corrections: componentIssues,
+            securityIssues: [],
+            typeHierarchies: new Map(),
+            fileAssociations: new Map(),
+            circularDependencies: []
+        };
+
+        const lines: string[] = [];
+        lines.push(`# 🎯 Component Analysis: ${path.basename(componentPath)}`);
+        lines.push(`**Generated:** ${report.timestamp}`);
+        lines.push(`**Total Issues:** ${componentIssues.length}`);
+        lines.push('');
+
+        if (componentIssues.length === 0) {
+            lines.push('✅ No issues found in this component!');
+            return lines.join('\n');
+        }
+
+        // Group by severity
+        const bySeverity = {
+            critical: componentIssues.filter(i => i.severity === 'critical'),
+            high: componentIssues.filter(i => i.severity === 'high'),
+            medium: componentIssues.filter(i => i.severity === 'medium'),
+            low: componentIssues.filter(i => i.severity === 'low')
+        };
+
+        // Add issues by severity
+        Object.entries(bySeverity).forEach(([severity, issues]) => {
+            if (issues.length > 0) {
+                lines.push(`## ${this.getSeverityIcon(severity)} ${severity.toUpperCase()} Issues (${issues.length})`);
+                lines.push('');
+
+                issues.forEach((issue, index) => {
+                    lines.push(`### ${index + 1}. ${issue.message}`);
+                    lines.push(`**Type:** ${issue.type} | **Category:** ${issue.category}`);
+                    if (issue.line) lines.push(`**Line:** ${issue.line}`);
+                    lines.push('');
+
+                    if (issue.code) {
+                        lines.push('**Code:**');
+                        lines.push('```typescript');
+                        lines.push(issue.code);
+                        lines.push('```');
+                        lines.push('');
+                    }
+
+                    if (issue.fix) {
+                        lines.push('**Fix:**');
+                        lines.push('```typescript');
+                        const fixText = this.getFixText(issue);
+                        lines.push(fixText);
+                        lines.push('```');
+                    }
+
+                    lines.push('---');
+                    lines.push('');
+                });
+            }
+        });
 
         return lines.join('\n');
     }
@@ -807,7 +894,9 @@ export class ReportGenerators {
                 lines.push('');
                 lines.push('**Fix:**');
                 lines.push('```typescript');
-                lines.push(issue.fix);
+                const fixText = this.getFixText(issue);
+                lines.push(fixText);
+            
                 lines.push('```');
                 lines.push('---');
                 lines.push('');
@@ -823,7 +912,8 @@ export class ReportGenerators {
                 lines.push('');
                 lines.push('**Fix:**');
                 lines.push('```typescript');
-                lines.push(issue.fix);
+                const fixText = this.getFixText(issue);
+                lines.push(fixText);
                 lines.push('```');
                 lines.push('');
             });
@@ -928,6 +1018,34 @@ export class ReportGenerators {
         return lines.join('\n');
     }
 
+
+    private static getFixText(correction: Correction): string {
+        if (typeof correction.fix === 'string') {
+            return correction.fix;
+        }
+
+        // Handle ImportFix object
+        if (correction.fix && typeof correction.fix === 'object' && 'newLine' in correction.fix) {
+            return correction.fix.newLine;
+        }
+
+        // Handle other fix types
+        if (correction.suggestedFix) {
+            return correction.suggestedFix;
+        }
+
+        if (correction.complexFix) {
+            return `[Complex ${correction.complexFix.type} fix]`;
+        }
+
+        return '// Manual fix implementation required';
+    }
+
+    // Helper method to check if it's an ImportFix
+    private static isImportFix(fix: any): fix is ImportFix {
+        return fix && typeof fix === 'object' && 'newLine' in fix && 'filePath' in fix;
+    }
+
     private static formatMetroIssue(issue: Correction): string {
         const lines: string[] = [];
 
@@ -955,10 +1073,11 @@ export class ReportGenerators {
             lines.push('');
         }
 
+        const fixText = this.getFixText(issue);
         if (issue.fix) {
             lines.push('**Recommended Fix:**');
             lines.push('```javascript');
-            lines.push(issue.fix);
+            lines.push(fixText);
             lines.push('```');
             lines.push('');
         }
@@ -984,7 +1103,6 @@ export class ReportGenerators {
         return icons[severity as keyof typeof icons] || '📝';
     }
 
-
     private static formatCodeBlock(code: string | undefined, language: string = 'typescript'): string {
         if (!code || code.trim() === '' || code === 'undefined') {
             return `\`\`\`${language}\n// No code available - check the original file for context\n\`\`\``;
@@ -1004,35 +1122,37 @@ export class ReportGenerators {
         }
         return `// Check file: ${filePath} at line ${lineNumber}`;
     }
-private static generateProblemCodeSection(correction: Correction): string[] {
-    const lines: string[] = [];
+    private static generateProblemCodeSection(correction: Correction): string[] {
+        const lines: string[] = [];
 
-    lines.push('**Problem Code:**');
+        lines.push('**Problem Code:**');
 
-    if (!correction.code || correction.code.trim() === '' || correction.code === 'undefined') {
-        lines.push('```typescript');
-        lines.push(this.getCodeContext(correction.file, correction.line));
-        
-        // Enhanced error message with auto-fix attempt
-        const clearerMessage = this.generateClearExtractionError(correction.file);
-        lines.push(`// ${clearerMessage}`);
-        
-        lines.push('```');
-    } else {
-        lines.push(this.formatCodeBlock(correction.code));
+        const codeContent = typeof correction.code === 'string' ? correction.code : undefined;
+
+        if (!codeContent || codeContent.trim() === '' || codeContent === 'undefined') {
+            lines.push('```typescript');
+            lines.push(this.getCodeContext(correction.file, correction.line));
+
+            const clearerMessage = this.generateClearExtractionError(correction.file);
+            lines.push(`// ${clearerMessage}`);
+
+            lines.push('```');
+        } else {
+            lines.push(this.formatCodeBlock(codeContent));
+        }
+
+        lines.push('');
+        return lines;
     }
 
-    lines.push('');
-    return lines;
-}
 
     private static generateClearExtractionError(filePath: string): string {
         if (!fs.existsSync(filePath)) {
             return `File not found: ${filePath}`;
         }
-        
+
         try {
-        const stat = fs.statSync(filePath);
+            const stat = fs.statSync(filePath);
             if (stat.isDirectory()) {
                 return `Path is a directory, not a file: ${filePath}`;
             }
@@ -1042,7 +1162,7 @@ private static generateProblemCodeSection(correction: Correction): string[] {
 
         // Attempt to fix the file header
         const fixAttempted = FileHeaderManager.ensureFilenameComment(filePath);
-        
+
         return `
     🔍 Analysis Issue: Unable to extract code from ${filePath}
 
@@ -1063,16 +1183,17 @@ private static generateProblemCodeSection(correction: Correction): string[] {
 
         lines.push('**Fix:**');
 
-        if (!correction.fix || correction.fix.trim() === '' || correction.fix === 'undefined') {
+        const fixContent = typeof correction.fix === 'string' ? correction.fix : undefined;
+
+        if (!fixContent || fixContent.trim() === '' || fixContent === 'undefined') {
             lines.push('```typescript');
             lines.push('// Fix recommendation:');
 
-            // Generate context-aware fix suggestions based on error type
             const suggestedFix = this.generateContextualFix(correction);
             lines.push(suggestedFix);
             lines.push('```');
         } else {
-            lines.push(this.formatCodeBlock(correction.fix));
+            lines.push(this.formatCodeBlock(fixContent));
         }
 
         lines.push('');
@@ -1139,5 +1260,208 @@ private static generateProblemCodeSection(correction: Correction): string[] {
 
         lines.push('---');
         lines.push('');
+    }
+    static async generateFromExistingReports(): Promise<void> {
+        console.log('📊 Generating enhanced reports from existing correction data...');
+
+        try {
+            // Read your existing numerical summary
+            const numericalSummary = JSON.parse(
+                await fs.promises.readFile('corrections/numerical-summary.json', 'utf8')
+            );
+
+            // Read your existing full report if available - ADD TYPE ANNOTATIONS
+            let existingCorrections: Correction[] = [];
+            let existingSecurityIssues: Correction[] = [];
+            try {
+                const fullReport = JSON.parse(
+                    await fs.promises.readFile('corrections/full-report.json', 'utf8')
+                );
+                existingCorrections = fullReport.corrections || [];
+                existingSecurityIssues = fullReport.securityIssues || [];
+            } catch {
+                console.log('ℹ️ No full-report.json found, using numerical summary only');
+            }
+
+            // Calculate byCategory from existing corrections
+            const byCategory: Record<string, number> = {};
+            existingCorrections.forEach((issue: Correction) => {
+                byCategory[issue.category] = (byCategory[issue.category] || 0) + 1;
+            });
+
+            // Create comprehensive report with CORRECT summary properties
+            const report: CorrectionReport = {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    totalErrors: numericalSummary.totalIssues || existingCorrections.length,
+                    critical: numericalSummary.criticalIssues || existingCorrections.filter((c: Correction) => c.severity === 'critical').length,
+                    high: numericalSummary.highIssues || existingCorrections.filter((c: Correction) => c.severity === 'high').length,
+                    medium: numericalSummary.mediumIssues || existingCorrections.filter((c: Correction) => c.severity === 'medium').length,
+                    low: numericalSummary.lowIssues || existingCorrections.filter((c: Correction) => c.severity === 'low').length,
+                    byCategory: byCategory
+                },
+                corrections: existingCorrections,
+                securityIssues: existingSecurityIssues,
+                typeHierarchies: new Map(),
+                fileAssociations: new Map(),
+                circularDependencies: []
+            };
+
+            // Generate all report types
+            const reports = {
+                'comprehensive-enhanced.md': this.generateStructuralReport(report),
+                'security-enhanced.md': this.generateSecurityReport(report),
+                'critical-enhanced.md': this.generateCriticalErrorsReport(report),
+                'types-enhanced.md': this.generateTypeRelationshipsReport(report)
+            };
+
+            // Save enhanced reports
+            for (const [filename, content] of Object.entries(reports)) {
+                await fs.promises.writeFile(`corrections/${filename}`, content);
+            }
+
+            console.log('✅ Enhanced reports generated!');
+
+        } catch (error) {
+            console.error('❌ Error generating from existing reports:', error);
+        }
+    }
+    
+    static async analyzeSpecificFolders(folderPaths: string[]): Promise<void> {
+        console.log(`🔍 Analyzing specific folders: ${folderPaths.join(', ')}`);
+
+        for (const folderPath of folderPaths) {
+            const corrections: Correction[] = [
+                {
+                    id: `folder-${folderPath.replace(/\//g, '-')}`,
+                    file: folderPath,
+                    message: `Analysis of ${folderPath} folder`,
+                    severity: 'low' as const,
+                    category: 'structure' as const,
+                    type: 'structural', 
+                    code: `// Folder: ${folderPath}\n// Contains multiple files and components`,
+                    fix: `// Review imports and exports in this folder`
+                }
+            ];
+
+            const report: CorrectionReport = {
+                timestamp: new Date().toISOString(),
+                summary: this.createSummary(corrections),
+                corrections: corrections,
+                securityIssues: [],
+                typeHierarchies: new Map(),
+                fileAssociations: new Map(),
+                circularDependencies: []
+            };
+
+            const folderName = folderPath.split('/').pop() || 'unknown';
+            const reportContent = this.generateStructuralReport(report);
+
+            await fs.promises.mkdir(`corrections/${folderName}`, { recursive: true });
+            await fs.promises.writeFile(
+                `corrections/${folderName}/folder-analysis.md`,
+                reportContent
+            );
+
+            console.log(`✅ ${folderPath} analysis saved`);
+        }
+    }
+
+    // Make sure this helper method is in your ReportGenerators class
+    private static createSummary(corrections: Correction[]): {
+        totalErrors: number;
+        critical: number;
+        high: number;
+        medium: number;
+        low: number;
+        byCategory: Record<string, number>;
+    } {
+        const byCategory: Record<string, number> = {};
+        corrections.forEach(issue => {
+            byCategory[issue.category] = (byCategory[issue.category] || 0) + 1;
+        });
+
+        return {
+            totalErrors: corrections.length,
+            critical: corrections.filter(i => i.severity === 'critical').length,
+            high: corrections.filter(i => i.severity === 'high').length,
+            medium: corrections.filter(i => i.severity === 'medium').length,
+            low: corrections.filter(i => i.severity === 'low').length,
+            byCategory: byCategory
+        };
+    }
+    
+    private static extractFixText(correctable: Correction | SecurityIssue): string {
+        // Handle Correction type
+        if ('category' in correctable) {
+            const correction = correctable as Correction;
+            
+            if (typeof correction.fix === 'string') {
+                return correction.fix;
+            }
+            
+            if (correction.fix && typeof correction.fix === 'object' && 'newLine' in correction.fix) {
+                return (correction.fix as ImportFix).newLine;
+            }
+            
+            if (correction.suggestedFix) {
+                return correction.suggestedFix;
+            }
+            
+            if (correction.complexFix) {
+                return `[Complex ${correction.complexFix.type} fix]`;
+            }
+        }
+        
+        // Handle SecurityIssue type
+        if (typeof correctable.fix === 'string') {
+            return correctable.fix;
+        }
+        
+        if (correctable.fix && typeof correctable.fix === 'object' && 'newLine' in correctable.fix) {
+            return (correctable.fix as ImportFix).newLine;
+        }
+        
+        // Fallback for both types
+        if ('category' in correctable && correctable.category === 'security') {
+            return '// Security fix required - review sensitive data handling';
+        }
+        
+        return '// Manual fix implementation required';
+    }
+
+    private static generateIssueSection(issue: Correction | SecurityIssue, includeCode: boolean = true): string[] {
+        const lines: string[] = [];
+        
+        lines.push(`### ${issue.message}`);
+        lines.push(`**File:** ${issue.file}`);
+        if (issue.line) lines.push(`**Line:** ${issue.line}`);
+        
+        if (includeCode && issue.code) {
+            lines.push('**Problem Code:**');
+            lines.push(this.formatCodeBlock(issue.code));
+        }
+        
+        // Use the centralized fix rendering
+        lines.push(...this.renderFixSection(issue));
+        
+        return lines;
+    }
+
+    // For report sections
+    private static renderFixSection(issue: Correction | SecurityIssue): string[] {
+        const lines: string[] = [];
+        const fixText = this.extractFixText(issue);
+        
+        lines.push('**Fix:**');
+        if (!fixText || fixText.trim() === '') {
+            lines.push('```typescript');
+            lines.push('// Fix recommendation required');
+            lines.push('```');
+        } else {
+            lines.push(this.formatCodeBlock(fixText));
+        }
+        
+        return lines;
     }
 }

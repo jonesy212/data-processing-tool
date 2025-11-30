@@ -3,7 +3,7 @@
 
 import axiosInstance from '@/app/api/csrfToken';
 import { updateFilteredNewsUI } from "@/app/libraries/ui/updateFilteredNewsUI";
-import { NotificationType, useNotification } from "@/state/context/NotificationContext";
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { categorizeNews, identifyTrendingTopics } from "./articleKeywords";
 
 import { useState } from "react";

@@ -1,4 +1,4 @@
-// videosConfig.ts
+  // videosConfig.ts
 import { BASE_URL } from '@/app/api/baseUrl';
 import { VideosEndpoints } from '@/app/typings/categories/VideosEndpoints';
 

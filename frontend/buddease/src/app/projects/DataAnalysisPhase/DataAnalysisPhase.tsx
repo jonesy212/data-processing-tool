@@ -6,7 +6,7 @@ import {
   DataAnalysisAction,
   DataAnalysisState,
 } from "@/app/typings/phases/dataAnalysisTypes";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 import axios from "axios";
 import React, { useEffect, useReducer, useState } from "react";

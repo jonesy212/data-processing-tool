@@ -2,21 +2,25 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { BaseEntity } from "@/app/routing/FuzzyMatch";
+import { BaseEntity } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { DataStore } from "@/app/state/stores/DataStore";
-import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
-interface SnapshotCommonProps<T extends BaseDataEntity,
+interface SnapshotCommonProps<
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
 > extends BaseEntity {
   criteria?: any; // Define a more specific type if needed
   category?:  Category; // Optional category

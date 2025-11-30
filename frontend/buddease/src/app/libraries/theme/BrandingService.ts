@@ -1,6 +1,5 @@
 // BrandingService.ts
-import { DocumentAnimationOptions } from "@/app/components/documents/SharedDocumentProps";
-import { BrandingSettings } from '@/app/branding/BrandingSettings'
+import { BrandingSettings } from '@/app/branding/BrandingSettings';
 
 
 // Define a default branding settings object

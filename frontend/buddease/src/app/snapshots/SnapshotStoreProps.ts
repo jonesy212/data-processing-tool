@@ -46,6 +46,7 @@ import { Version } from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { addToSnapshotList, isSnapshot } from '@/utils/snapshotUtils';
 import { version } from "react";
+
 // Base interface for all snapshot store properties
 
 interface BaseSnapshotStoreProps<

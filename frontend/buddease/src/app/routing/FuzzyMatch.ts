@@ -2,7 +2,7 @@
 import { Entity } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";

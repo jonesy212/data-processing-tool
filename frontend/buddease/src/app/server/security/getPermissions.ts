@@ -3,7 +3,7 @@
 import { UserRoleEnum } from '@/app/models/UserRoles';
 
 // Defining permissions for each role
-interface Permissions {
+interface RolePermissions {
     canViewCryptoDashboard: boolean;
     canTradeCrypto: boolean;
     canAccessAdminPanel: boolean;
@@ -16,7 +16,7 @@ interface Permissions {
   }
   
   // Define a function to get permissions for each role
-  const getPermissions = (role: UserRoleEnum): Permissions => {
+  const getPermissions = (role: UserRoleEnum): RolePermissions => {
     switch (role) {
       case UserRoleEnum.Administrator:
         return {
@@ -117,7 +117,7 @@ interface Permissions {
     }
   };
 
-export type { Permissions }
+export type { RolePermissions }
 
 
 

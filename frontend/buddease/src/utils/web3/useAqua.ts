@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import LoadAquaState from '@/app/dashboards/LoadAquaState';
 
 const useAqua = createDynamicHook({
-  condition: () => {
+  condition: async (idleTimeoutDuration: number) => {
     // Your condition for Aqua activation
     return true; // Example condition, modify as needed
   },

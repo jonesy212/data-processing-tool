@@ -9,31 +9,31 @@ import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { isCategoryProperties } from '@/app/libraries/categories/generateCategoryProperties';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import {
-  AppAttachment,
-  AppEntity,
-  AppExcludedFields,
-  AppK,
-  AppMeta,
+    AppAttachment,
+    AppEntity,
+    AppExcludedFields,
+    AppK,
+    AppMeta,
 } from '@/app/typings/entities/AppEntity';
 
 import { Task, TaskData } from '@/app/components/models/tasks/Task';
 import { Data } from '@/app/models/data/Data';
 import {
-  PriorityTypeEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
+    PriorityTypeEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
 } from '@/app/models/data/StatusType';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 import { EventManager } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { NotificationType } from '@/state/context/NotificationContext';
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
@@ -50,11 +50,11 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { ChatRoom } from '@/app/communications/ChatRoom';
 import { Sender } from '@/app/components/communications/CommunicationPage';
 import {
-  BaseDataEntity,
-  BaseDataRoot,
-  BaseEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
+    BaseDataEntity,
+    BaseDataRoot,
+    BaseEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { SharedSnapshotProperties } from '@/app/documents/RelatedProps';
@@ -65,13 +65,13 @@ import { PhaseData } from '@/app/models/phases/Phase';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import {
-  createCompleteSnapshot,
-  createSnapshot,
+    createCompleteSnapshot,
+    createSnapshot,
 } from '@/app/snapshots/createSnapshot';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
-  snapshotContainer,
-  SnapshotContainer,
+    snapshotContainer,
+    SnapshotContainer,
 } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
@@ -81,17 +81,17 @@ import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { isSnapshotData } from '@/utils/snapshotUtils';
 import {
-  getCommunityEngagement,
-  getMarketUpdates,
-  getTradeExecutions,
+    getCommunityEngagement,
+    getMarketUpdates,
+    getTradeExecutions,
 } from '@/utils/trading/TradingUtils';
 import {
-  logActivity,
-  notifyEventSystem,
-  portfolioUpdates,
-  triggerIncentives,
-  unsubscribe,
-  updateProjectState,
+    logActivity,
+    notifyEventSystem,
+    portfolioUpdates,
+    triggerIncentives,
+    unsubscribe,
+    updateProjectState,
 } from '@/utils/web3/applicationUtils';
 
 
@@ -1503,15 +1503,15 @@ const newTask: AppTask = {
 
 export { snapshotFunction, snapshots };
 export type {
-  CompatibleSnapshotData,
-  CoreSnapshot,
-  Result,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotsObject,
-  SnapshotStoreObject,
-  SnapshotStoreUnion,
-  SnapshotUnion
+    CompatibleSnapshotData,
+    CoreSnapshot,
+    Result,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotsObject,
+    SnapshotStoreObject,
+    SnapshotStoreUnion,
+    SnapshotUnion
 };
 
 const subscriber = new Subscriber<

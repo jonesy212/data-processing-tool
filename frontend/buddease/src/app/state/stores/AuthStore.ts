@@ -1,9 +1,10 @@
 // AuthStore.ts
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { UserRoleEnum } from '@/app/models/UserRoles';
-import { AuthenticationProvider } from '@app/interfaces/provider/AuthenticationProvider';
+import { AuthenticationProvider } from '@/app/interfaces/provider/AuthenticationProvider';
 import { NFT } from '@/app/models/cypto/NFT'
 import { Permission } from "@/app/permissions/Permission";
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity';
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";
 import { UserPreferences } from "@/app/config/UserPreferences";
@@ -31,10 +32,13 @@ interface UserSession {
 }
 
 // Check if user roles include a specific role
-const userHasRole = (user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, role: UserRoleEnum): boolean => {
-  return user.roles.some(userRole => userRole.role === role);
+const userHasRole = (
+  user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, 
+  role: UserRoleEnum
+): boolean => {
+  // Check if roles exists and has some items
+  return user.roles?.some(userRole => userRole === role) ?? false;
 };
-
 
 export class AuthStore {
   isAuthenticated: boolean = false;

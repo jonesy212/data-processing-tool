@@ -9,12 +9,13 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload, Payload } from '@/app/interfaces/payload/payloadTypes'
 import { Snapshots, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum, NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';

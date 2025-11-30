@@ -98,7 +98,7 @@ export type EndpointDefinition = EndpointConfig | EndpointFunction;
 
 // Remove the duplicate EndpointCategory interface and use this:
 export interface EndpointCategoryConfig {
-  [key: string]: EndpointDefinition;
+  [key: string]: EndpointDefinition | EndpointCategoryConfig;
 }
 
 
@@ -108,12 +108,13 @@ export type EndpointKey<T extends EndpointCategory> = keyof EndpointConfiguratio
 
 
 export interface EndpointConfigurations {
-  [category: string]: EndpointCategoryConfig; 
+  [category: string]: EndpointCategoryConfig | any;
   apiConfig: ApiConfigEndpoints;
   apiWebBase: ApiWebBaseEndpoints;
   analytics: AnalyticsEndpoints; 
   categoriesEndpoints: CategoryEndpoints,
   comments: CommentsEndpoints;
+  // conference: ConferenceEndpoints
   content: ContentEndpoints;
   data: DataEndpoints;
   documents: DocumentEndpoints;

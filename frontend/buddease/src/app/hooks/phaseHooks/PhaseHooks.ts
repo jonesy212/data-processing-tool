@@ -13,7 +13,7 @@ import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
 import configData from "@/config/endpoints/configData";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import {
   ExtendedDAppAdapter,
   ExtendedDappProps

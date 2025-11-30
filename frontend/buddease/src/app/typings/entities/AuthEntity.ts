@@ -1,10 +1,11 @@
+import { AuthenticationProvider } from '@/app/auth/AuthService';
 // AuthEntity.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnum'; 
-import { AccessControlEntry } from '@/app/access-control/types'; 
+import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums'; 
+import { AccessControlEntry } from '@/app/permissions/AccessControlEntry'; 
 import { SecurityEvent } from '@/app/state/redux/slices/SecurityEventSlice'
-import { PublicUserInfo } from '@/app/typings/entities/UserEntity'; 
+import { PublicUserProfile } from '@/app/typings/entities/UserEntity'; 
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
@@ -18,7 +19,7 @@ import { DashboardConfig } from '@/app/typings/authTypes';
 import { UserContactInfo, UserNotificationPreferences, UserSession } from '@/app/state/stores/AuthStore';
 import { SubscriptionPlan } from '@/app/subscriptions/SubscriptionPlan';
 import { UserPreferences } from '@/app/typings/userTypes';
-import { AuthenticationProvider } from '@app/interfaces/provider/AuthenticationProvider'
+import { AuthenticationProvider } from '@/app/interfaces/provider/AuthenticationProvider'
 
 
 // Define sensitive fields that should never be exposed
@@ -238,16 +239,6 @@ type SessionAuth = Pick<AuthEntity, "id" | "userId" | "token" | "tokenExpiry" | 
 // Secure auth without sensitive tokens
 type SecureAuth = ApplyFieldFilters<AuthEntity, "token" | "refreshToken" | "mfaSecret">;
 
-// Auth context type (what goes in React context)
-type AuthContextData = {
-  auth: SecureAuth;
-  userPreferences?: UserPreferences;
-  dashboardConfig?: DashboardConfig;
-  userContactInfo?: UserContactInfo;
-  userNotificationPreferences?: UserNotificationPreferences;
-  userSessions?: UserSession[];
-  userSubscriptionPlan?: SubscriptionPlan;
-};
 
 // Core auth types using the pattern
 type AuthDataDefault = AuthData<
@@ -397,7 +388,7 @@ type VisibilityLevelType = VisibilityLevel;
 
 // For API responses - never includes sensitive data
 type ApiAuthResponse = PublicAuthInfo & {
-  user?: PublicUserInfo; // From your UserEntity
+  user?: PublicUserProfile; // From your UserEntity
   session?: {
     id: string;
     expiresAt: Date;
@@ -413,23 +404,61 @@ type InternalAuthData = InternalAuthInfo & {
     requiredActions: string[];
   };
 };
-
-// For authentication context - minimal safe data
+// 🔐 SINGLE COMBINED AUTH CONTEXT DATA TYPE
 type AuthContextData = {
-  auth: PublicAuthInfo;
-  user?: PublicUserInfo;
+  // ========================
+  // 🔐 CORE AUTHENTICATION
+  // ========================
+  auth: SecureAuth & PublicAuthInfo;
+  
+  // ========================
+  // 👤 USER INFORMATION
+  // ========================
+  user?: PublicUserProfile;
+  
+  // ========================
+  // 🕒 SESSION MANAGEMENT
+  // ========================
   session: {
     id: string;
     expiresAt: Date;
     renewAt: Date;
+    device: string;
+    activeSessions?: UserSession[];
   };
+  
+  // ========================
+  // 🛡️ SECURITY & COMPLIANCE
+  // ========================
   security: {
     mfaRequired: boolean;
     riskLevel: 'low' | 'medium' | 'high';
     trustedDevice: boolean;
+    threatLevel?: 'low' | 'medium' | 'high';
+    requiredActions?: string[];
   };
+  
+  // ========================
+  // ⚙️ USER PREFERENCES & CONFIG
+  // ========================
+  userPreferences?: UserPreferences;
+  dashboardConfig?: DashboardConfig;
+  userContactInfo?: UserContactInfo;
+  userNotificationPreferences?: UserNotificationPreferences;
+  userSubscriptionPlan?: SubscriptionPlan;
+  
+  // ========================
+  // 📊 SESSION HISTORY
+  // ========================
+  userSessions?: UserSession[];
+  
+  // ========================
+  // 🔄 LOADING & ERROR STATES
+  // ========================
+  isLoading?: boolean;
+  error?: string;
+  lastActivity?: Date;
 };
-
 // 🛡️ SECURE AUTH OPERATIONS
 
 // For authentication operations only

@@ -63,7 +63,6 @@ export interface ImportCorrection extends Correction {
     importFix: ImportFix;
 }
 
-
 interface CorrectionReport {
     timestamp: string;
     summary: {

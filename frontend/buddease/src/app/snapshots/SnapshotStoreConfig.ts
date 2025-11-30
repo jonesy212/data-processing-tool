@@ -982,7 +982,7 @@ export interface SnapshotStoreConfig<
   expirationDate?: Date;
   isExpired?: (() => boolean) | undefined;
   priority?: AllStatus;
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
   status?: StatusType | undefined
   isCompressed?: boolean;

@@ -1,6 +1,6 @@
 // DirectoryExplorer.tsx
 // DirectoryExplorer.ts
-import { generateAppResponse, getAppContext } from "@/state/context/AppContextHelper";
+import { generateAppResponse, getAppContext } from '@/app/state/context/AppContextHelper';
 
 class DirectoryExplorer {
     directoryData: string; // Assuming directoryData is of type string

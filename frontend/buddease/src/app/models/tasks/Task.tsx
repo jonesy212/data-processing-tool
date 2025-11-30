@@ -74,7 +74,7 @@ interface Task<
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive?: boolean;
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: any[];
   videoThumbnail?: string;

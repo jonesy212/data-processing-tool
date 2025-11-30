@@ -12,7 +12,7 @@ import {
     StudentSender,
 } from '@/app/users/SenderTypes';
 import { User } from '@/app/users/User';
-import { useAuth } from '@/state/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { useEffect, useState } from 'react';
 
 type SenderBase = Pick<

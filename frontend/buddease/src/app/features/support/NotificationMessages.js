@@ -122,7 +122,7 @@ const NOTIFICATION_MESSAGES = {
         DEFAULT: "Error reading crypto configuration file",
         FETCH_CRYPTO_SUCCESS: "Crypto fetched successfully",
         
-        FETCH_CRYPTOS_SUCCESS: 'Fetching cryptos...'
+        FETCH_CRYPTOS_SUCCESS: 'Fetching cryptos...',
         FETCH_CRYPTO_FAILURE: "Error fetching crypto. Please try again",
         FETCH_CRYPTO_REQUEST: "Fetching crypto..",
         UPDATE_CRYPTO_SUCCESS: "Crypto updated successfully",

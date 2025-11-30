@@ -8,36 +8,15 @@ export interface VideosEndpoints extends EndpointCategoryConfig {
   add: EndpointConfig;
   remove: (videoId: string) => EndpointConfig;
   update: (videoId: string) => EndpointConfig;
-  conference: {
-    create: EndpointConfig;
-    join: EndpointConfig;
-    end: EndpointConfig;
-  };
-  messages: {
-    send: EndpointConfig;
-    retrieve: EndpointConfig;
-  };
-  annotations: {
-    add: EndpointConfig;
-    retrieve: EndpointConfig;
-  };
-  playback: {
-    speed: EndpointConfig;
-    frame: EndpointConfig;
-  };
+  conference: EndpointCategoryConfig;
+  messages: EndpointCategoryConfig;
+  annotations: EndpointCategoryConfig;
+  playback: EndpointCategoryConfig;
   analytics: EndpointConfig;
-  live: {
-    start: EndpointConfig;
-    end: EndpointConfig;
-    status: EndpointConfig;
-  };
+  live: EndpointCategoryConfig;
   edit: EndpointConfig;
   transcribe: EndpointConfig;
-  collaboration: {
-    create: EndpointConfig;
-    invite: EndpointConfig;
-    join: EndpointConfig;
-  };
+  collaboration: EndpointCategoryConfig;
   manage: EndpointConfig;
   updateVideoTags: EndpointConfig;
 }

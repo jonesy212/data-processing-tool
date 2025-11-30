@@ -1,7 +1,7 @@
 // TokenUtils.ts
 
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { useNotification } from "@/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 
 // Utility function to check if a user has a certain amount of tokens
 export const hasEnoughTokens = (

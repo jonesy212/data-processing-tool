@@ -3,7 +3,7 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
-import { NotificationType, useNotification } from '@/state/context/NotificationContext';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import axios, { AxiosError } from 'axios';
 
 // Base URL for your API

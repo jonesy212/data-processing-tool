@@ -628,9 +628,8 @@ export type DocumentTree = {
 
 // Define the DocumentNode type
 export interface DocumentNode {
-  [key: string]: string | string[] | DocumentNode;
+  [key: string]: string | string[] | DocumentNode | Date | number | boolean | null | undefined;
 }
-
 // Example usage:
 const userData: UserData<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
   id: 1,

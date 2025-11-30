@@ -899,6 +899,79 @@ export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurat
       update: generateEndpointUrl("web", "update"),
       delete: generateEndpointUrl("web", "delete"),
     }),
+        tasks: mergeConfigurations(endpointConfigurations.tasks, {
+      list: generateEndpointUrl("tasks", "list"),
+      create: generateEndpointUrl("tasks", "create"),
+      get: generateEndpointUrl("tasks", "get"),
+      update: generateEndpointUrl("tasks", "update"),
+      delete: generateEndpointUrl("tasks", "delete"),
+      assign: {
+        user: generateEndpointUrl("tasks", "assign.user"),
+        team: generateEndpointUrl("tasks", "assign.team"),
+      },
+      status: {
+        update: generateEndpointUrl("tasks", "status.update"),
+        history: generateEndpointUrl("tasks", "status.history"),
+      }
+    }),
+
+    dex: mergeConfigurations(endpointConfigurations.dex, {
+      pairs: generateEndpointUrl("dex", "pairs"),
+      liquidity: {
+        add: generateEndpointUrl("dex", "liquidity.add"),
+        remove: generateEndpointUrl("dex", "liquidity.remove"),
+        positions: generateEndpointUrl("dex", "liquidity.positions"),
+      },
+      swap: generateEndpointUrl("dex", "swap"),
+      price: generateEndpointUrl("dex", "price"),
+      trades: {
+        history: generateEndpointUrl("dex", "trades.history"),
+        recent: generateEndpointUrl("dex", "trades.recent"),
+      }
+    }),
+
+    dev: mergeConfigurations(endpointConfigurations.dev, {
+      // Add dev-specific endpoints
+      debug: generateEndpointUrl("dev", "debug"),
+      metrics: generateEndpointUrl("dev", "metrics"),
+      health: generateEndpointUrl("dev", "health"),
+      config: generateEndpointUrl("dev", "config"),
+    }),
+
+    messages: mergeConfigurations(endpointConfigurations.messages, {
+      send: generateEndpointUrl("messages", "send"),
+      list: generateEndpointUrl("messages", "list"),
+      get: generateEndpointUrl("messages", "get"),
+      delete: generateEndpointUrl("messages", "delete"),
+      markRead: generateEndpointUrl("messages", "markRead"),
+      conversations: {
+        list: generateEndpointUrl("messages", "conversations.list"),
+        create: generateEndpointUrl("messages", "conversations.create"),
+        get: generateEndpointUrl("messages", "conversations.get"),
+      }
+    }),
+
+    screenSharing: mergeConfigurations(endpointConfigurations.screenSharing, {
+      start: generateEndpointUrl("screenSharing", "start"),
+      stop: generateEndpointUrl("screenSharing", "stop"),
+      join: generateEndpointUrl("screenSharing", "join"),
+      leave: generateEndpointUrl("screenSharing", "leave"),
+      status: generateEndpointUrl("screenSharing", "status"),
+      permissions: {
+        request: generateEndpointUrl("screenSharing", "permissions.request"),
+        grant: generateEndpointUrl("screenSharing", "permissions.grant"),
+        revoke: generateEndpointUrl("screenSharing", "permissions.revoke"),
+      }
+    }),
+
+    categoriesEndpoints: mergeConfigurations(endpointConfigurations.categoriesEndpoints, {
+      list: generateEndpointUrl("categoriesEndpoints", "list"),
+      create: generateEndpointUrl("categoriesEndpoints", "create"),
+      get: generateEndpointUrl("categoriesEndpoints", "get"),
+      update: generateEndpointUrl("categoriesEndpoints", "update"),
+      delete: generateEndpointUrl("categoriesEndpoints", "delete"),
+    }),
+
     // Add remaining categories here...
   };
 

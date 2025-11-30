@@ -82,7 +82,8 @@ import { userRolesNFTConfig } from '@/app/config/endpoints/userRolesNFTConfig';
 import { userSettingsConfig } from '@/app/config/endpoints/userSettingsConfig';
 import { videosConfig } from '@/app/config/endpoints/videosConfig';
 import { createMergedEndpoints } from '@/utils/endpointMerger';
-import { buildUrl } from '@/utils/urlBuilder'; // Add this import
+import { EndpointDefinition } from '@/app/config/EndpointConfig'
+import { buildUrl } from '@/utils/urlBuilder';
 
 // Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {
@@ -94,6 +95,7 @@ export const endpointConfigurations: EndpointConfigurations = {
   blogs: blogsConfig,
   calendar: calendarConfig,
   categories: categoryConfig,
+  categoriesEndpoints: categoryConfig, 
   chat: chatConfig,
   client: clientConfig,
   collaborationTools: collaborationToolsConfig,
@@ -101,7 +103,6 @@ export const endpointConfigurations: EndpointConfigurations = {
   communication: communicationConfig,
   communityInteraction: communityInteractionConfig,
   content: contentConfig,
-  categoritesEndpoints: categoriesConfig,
   crypto: cryptoConfig,
   data: dataConfig,
   database: databaseConfig,
@@ -115,114 +116,148 @@ export const endpointConfigurations: EndpointConfigurations = {
   donations: donationsConfig,
   drawing: drawingConfig,
   externalAuth: externalAuthConfig,
-  
   feedback: feedbackConfig,
   files: filesConfig,
   filtering: filteringConfig,
-  
   freelancers: freelancersConfig,
   generators: generatorsConfig,
   globalCollaboration: globalCollaborationConfig,
   highlights: highlightsConfig,
   logging: loggingConfig,
+  logs: logsConfig,
   marker: markerConfig,
   messages: messagesConfig,
   moderators: moderatorsConfig,
   monetization: monetizationConfig,
   news: newsConfig,
   notes: notesConfig,
-  payment: paymentConfig,
   parameterCustomization: parameterCustomizationConfig,
   participants: participantsConfig,
+  payment: paymentConfig,
   personas: personasConfig,
-  projects: projectsConfig,
   phases: phasesConfig,
   projectManagement: projectManagementConfig,
   projectOwner: projectOwnerConfig,
+  projects: projectsConfig,
   randomWalk: randomWalkConfig,
+  realtime: realtimeConfig,
   registration: registrationConfig,
   reports: reportsConfig,
-  security: securityConfig,
-  stateGovCities: stateGovCitiesConfig,
-  sorting: sortingConfig,
+  screenSharing: screenSharingConfig,
   searching: searchingConfig,
+  security: securityConfig,
   snapshots: snapshotsConfig,
-  realtime: realtimeConfig,
+  sorting: sortingConfig,
+  stateGovCities: stateGovCitiesConfig,
   tasks: tasksConfig,
-  teams: teamsConfig,
   teamManagement: teamManagementConfig,
+  teams: teamsConfig,
   theme: themeConfig,
   toolbar: toolbarConfig,
-  trading: tradingConfig,
   todos: todosConfig,
+  trading: tradingConfig,
   ui: uiConfig,
+  uiSettings: uiSettingsConfig,
   userManagement: userManagementConfig,
   userRoles: userRolesConfig,
   userRolesNFT: userRolesNFTConfig,
-  userSettings: userSettingsConfig,
-  videos: videosConfig,
   users: usersConfig,
+  userSettings: userSettingsConfig,
   version: versionConfig,
+  videos: videosConfig,
   web: webConfig,
-
-  screenSharing: screenSharingConfig,
-  logs: logsConfig,
-  uiSettings: uiSettingsConfig
 };
 
 // Export individual configurations for selective imports
 export {
-    analyticsConfig, apiEndpointConfig, apiWebBaseConfig, authConfig,
-    batchConfig,
-    blogsConfig,
-    calendarConfig,
-    categoryConfig,
-    chatConfig,
-    clientConfig,
-    collaborationToolsConfig,
-    commentsConfig,
-    communicationConfig,
-    communityInteractionConfig,
-    contentConfig,
-    cryptoConfig, dataAnalysisConfig, databaseConfig, dataConfig, dataProvidersConfig,
-    delegatesConfig,
-    detailsConfig,
-    devConfig,
-    dexConfig,
-    documentsConfig,
-    donationsConfig,
-    drawingConfig,
-    externalAuthConfig,
-    feedbackConfig,
-    filesConfig,
-    filteringConfig,
-    freelancersConfig,
-    generatorsConfig,
-    globalCollaborationConfig,
-    highlightsConfig,
-    loggingConfig, logsConfig, markerConfig,
-    messagesConfig,
-    moderatorsConfig,
-    monetizationConfig,
-    newsConfig,
-    notesConfig, parameterCustomizationConfig,
-    participantsConfig, paymentConfig, personasConfig,
-    phasesConfig,
-    projectManagementConfig,
-    projectOwnerConfig,
-    projectsConfig,
-    randomWalkConfig, realtimeConfig, registrationConfig,
-    reportsConfig, screenSharingConfig, searchingConfig, securityConfig, snapshotsConfig, sortingConfig, stateGovCitiesConfig, tasksConfig, teamManagementConfig, teamsConfig, themeConfig, todosConfig, toolbarConfig,
-    tradingConfig, uiConfig, uiSettingsConfig, userManagementConfig,
-    userRolesConfig,
-    userRolesNFTConfig, usersConfig, userSettingsConfig, versionConfig, videosConfig, webConfig
+  analyticsConfig,
+  apiEndpointConfig,
+  apiWebBaseConfig,
+  authConfig,
+  batchConfig,
+  blogsConfig,
+  calendarConfig,
+  categoryConfig,
+  chatConfig,
+  clientConfig,
+  collaborationToolsConfig,
+  commentsConfig,
+  communicationConfig,
+  communityInteractionConfig,
+  contentConfig,
+  cryptoConfig,
+  dataAnalysisConfig,
+  databaseConfig,
+  dataConfig,
+  dataProvidersConfig,
+  delegatesConfig,
+  detailsConfig,
+  devConfig,
+  dexConfig,
+  documentsConfig,
+  donationsConfig,
+  drawingConfig,
+  externalAuthConfig,
+  feedbackConfig,
+  filesConfig,
+  filteringConfig,
+  freelancersConfig,
+  generatorsConfig,
+  globalCollaborationConfig,
+  highlightsConfig,
+  loggingConfig,
+  logsConfig,
+  markerConfig,
+  messagesConfig,
+  moderatorsConfig,
+  monetizationConfig,
+  newsConfig,
+  notesConfig,
+  parameterCustomizationConfig,
+  participantsConfig,
+  paymentConfig,
+  personasConfig,
+  phasesConfig,
+  projectManagementConfig,
+  projectOwnerConfig,
+  projectsConfig,
+  randomWalkConfig,
+  realtimeConfig,
+  registrationConfig,
+  reportsConfig,
+  screenSharingConfig,
+  searchingConfig,
+  securityConfig,
+  snapshotsConfig,
+  sortingConfig,
+  stateGovCitiesConfig,
+  tasksConfig,
+  teamManagementConfig,
+  teamsConfig,
+  themeConfig,
+  toolbarConfig,
+  todosConfig,
+  tradingConfig,
+  uiConfig,
+  uiSettingsConfig,
+  userManagementConfig,
+  userRolesConfig,
+  userRolesNFTConfig,
+  usersConfig,
+  userSettingsConfig,
+  versionConfig,
+  videosConfig,
+  webConfig
 };
 
 // Merge endpoints and keep strong typing
-export const endpoints: EndpointConfigurations = createMergedEndpoints(endpointConfigurations);
+export const endpoints = createMergedEndpoints(endpointConfigurations);
 
 // Create API config instance with typed endpoints
-export const apiConfig = new ApiConfig(endpointConfigurations, endpoints);
+export const apiConfig = new ApiConfig(
+  endpointConfigurations, 
+  endpoints
+);
 
 // Factory function for custom ApiConfig instances
 export const createApiConfig = (
@@ -232,33 +267,34 @@ export const createApiConfig = (
   return new ApiConfig(configurations, endpoints);
 };
 
-// Helper function to get endpoint info
-export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
-  category: T,
-  endpointKey: keyof EndpointConfigurations[T],
-  ...params: any[]
-) => apiConfig.getEndpointInfo(category, endpointKey, ...params);
 
-// Helper function to get endpoint URL
-export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
+const getValidatedEndpoint = <T extends keyof EndpointConfigurations>(
   category: T,
-  endpointKey: keyof EndpointConfigurations[T],
-  params?: Record<string, any>
-): string => {
-  const endpoint = endpoints[category][endpointKey];
-  return buildUrl(endpoint, params);
+  endpointKey: keyof EndpointConfigurations[T]
+): EndpointDefinition => {
+  // Single type assertion here
+  const typedEndpoints = endpoints as EndpointConfigurations;
+  const categoryEndpoints = typedEndpoints[category];
+  
+  if (!categoryEndpoints) {
+    throw new Error(`Category '${String(category)}' not found in endpoints`);
+  }
+  
+  const endpoint = categoryEndpoints[endpointKey];
+  if (!endpoint) {
+    throw new Error(`Endpoint '${String(endpointKey)}' not found in category '${String(category)}'`);
+  }
+  
+  return endpoint;
 };
 
 
-
-
-// Enhanced helper function to get full endpoint info
 export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T],
   params?: Record<string, any>
 ) => {
-  const endpoint = endpoints[category][endpointKey];
+  const endpoint = getValidatedEndpoint(category, endpointKey);
   const url = buildUrl(endpoint, params);
   
   return {
@@ -268,11 +304,15 @@ export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
   };
 };
 
+// Also update getApiEndpointUrl to use the same helper
+export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
+  category: T,
+  endpointKey: keyof EndpointConfigurations[T],
+  params?: Record<string, any>
+): string => {
+  const endpoint = getValidatedEndpoint(category, endpointKey);
+  return buildUrl(endpoint, params);
+};
+
 // Export default API instance
 export default apiConfig;
-
-// // UI hooks (keep if used)
-// goes in React Components
-
-// const { handleFilterTasks } = useSearchOptions();
-// const { addFilter } = useFiltering(searchOptions);

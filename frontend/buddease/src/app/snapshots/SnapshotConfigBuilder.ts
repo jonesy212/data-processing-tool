@@ -16,7 +16,7 @@ import { initialState } from "../state/redux/slices/FilteredEventsSlice";
 import { SnapshotMeta } from "../typings/entities/SnapshotEntity";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotEvents } from '@/app/typings/eventTypes;
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { generateId } from "./SnapshotIdentity";
 import { InitializedData, SnapshotInstanceProps } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
@@ -87,7 +87,8 @@ export interface SnapshotConfigBuilder<
   getType(): T;
   getKey(): K;
   getMeta(): Meta;
-  getExcluded(): IncludedFields[];
+  getExcluded(): ExcludedFields[];
+  getIncluded(): IncludedFields[];
 //   build(): any; 
   // Core
   buildBaseConfig(): Promise<SnapshotConfig<T, K, Meta, ExcludedFields>>;

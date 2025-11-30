@@ -29,7 +29,7 @@ export interface AnalysisReport {
 interface AddReportBase<T extends BaseDataEntity> extends BaseReport {
   createdBy: string;
   content: string;
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   createdAt: Date;
 }
 

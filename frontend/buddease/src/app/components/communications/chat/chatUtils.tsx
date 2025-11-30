@@ -28,7 +28,7 @@ import { openVideoOptionsMenu } from '@/app/utils/video/openVideoOptionsMenu';
 import {
     NotificationContextProps,
     NotificationType,
-} from '@/state/context/NotificationContext';
+} from '@/app/state/context/NotificationContext';
 
 type SidebarController = {
   close: () => void;

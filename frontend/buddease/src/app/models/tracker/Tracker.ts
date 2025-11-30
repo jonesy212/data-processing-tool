@@ -8,6 +8,7 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { Phase } from '@/app/models/phases/Phase';
+import { useAuth } from "@/app/state/context/AuthContext";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
     fetchUsersSuccess,
@@ -18,7 +19,6 @@ import {
 } from "@/app/state/redux/slices/UserSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";
-import { useAuth } from "@/state/context/AuthContext";
 import path from "path";
 
 export interface SharedFormattingOptions {

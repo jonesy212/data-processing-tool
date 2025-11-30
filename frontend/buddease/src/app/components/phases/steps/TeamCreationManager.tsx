@@ -7,7 +7,7 @@ import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirma
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import TeamBasicInfoStep from "./TeamBasicInfoStep";
 import TeamMembersStep from "./TeamMembersStep";
 import TeamPreferencesStep from "./TeamPreferencesStep";

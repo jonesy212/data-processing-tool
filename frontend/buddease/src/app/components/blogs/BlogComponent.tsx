@@ -12,7 +12,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber, SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typings/entities/BlogEntity';
-import { NotificationType, useNotification } from '@/state/context/NotificationContext';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { snapshotId } from '@/utils/snapshotUtils';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/utils/web3/applicationUtils';
 import React, { useEffect, useState } from 'react';

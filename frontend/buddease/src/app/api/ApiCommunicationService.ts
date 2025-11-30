@@ -1,10 +1,8 @@
 // ApiCommunicationService.ts
-import { AxiosError } from 'axios';
 import { headersConfig } from '@/app/api/headers/HeadersConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
 import internalApiService from '@/app/api/ApiClient';
 import ApiConfig from '@/app/api/ApiConfigService';
-import handleApiError from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';

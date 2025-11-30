@@ -5,7 +5,7 @@ import { Permission } from '@/app/permissions/Permission';
 export interface LoginResult {
   success: boolean;
   accessToken: string;
-  user?: any;
+  user?: UserInfo;
   roles?: string[];
   permissions?: Permission[] | string[];
   error?: string;

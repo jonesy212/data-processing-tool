@@ -1,11 +1,10 @@
 // Payload.tsx
 // Payload.ts
+
 import { SnapshotActions } from "@/app/actions/SnapshotActions";
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import {
-  SnapshotEntity,
-  SnapshotK,
-} from "@/app/typings/entities/SnapshotEntity";
+import { SubscriptionEntityTemplate } from "@/app/typings/entities/SubscriptionEntity";
+import { SnapshotEntity, SnapshotK } from "@/app/typings/entities/SnapshotEntity";
 import addSnapshot from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import useSubscription from "@/app/hooks/useSubscription";
@@ -20,7 +19,7 @@ import {
   triggerIncentives,
   updateProjectState,
 } from "@/utils/web3/applicationUtils";
-
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { LiveEvent } from "@refinedev/core";
 import { AppState } from "@/app/state/redux/slices/AppSlice";
@@ -52,7 +51,7 @@ const { subscribe, unsubscribe } = useSubscription({
 
     // Get current snapshots from Redux store
     const currentSnapshots = useSelector(
-      (state: AppState) => state.snapshots.snapshotsArray
+      (state: AppState<AppEntity>) => state.snapshots.snapshotsArray
     );
 
     const dispatch = useDispatch();
@@ -167,7 +166,35 @@ const payload: SubscriptionPayload<
   email: "user@example.com",
   subscribe: () => console.log("Subscribed"),
   value: 99.99,
-  category: { name: "Premium", id: "cat-premium" },
+  category: {
+    name: "Premium",
+    id: "cat-premium",
+    type: "subscription",
+    description: "Premium subscription category",
+    icon: "premium",
+    color: "#FFD700",
+    iconColor: "#FFD700",
+    isActive: true,
+    isPublic: false,
+    isSystem: true,
+    isDefault: false,
+    isHidden: false,
+    isHiddenInList: false,
+    UserInterface: [],
+    DataVisualization: [],
+    Forms: undefined,
+    Analysis: [],
+    Communication: [],
+    TaskManagement: [],
+    Crypto: [],
+    brandName: "Premium",
+    brandLogo: "",
+    brandColor: "#FFD700",
+    brandMessage: "Premium subscription features",
+    chartType: "bar",
+    dataProperties: [],
+    formFields: []
+  },
   unsubscribe: (subscriberId, unsubscribeDetails, callback) => {
     console.log("Unsubscribed:", {
       subscriberId,

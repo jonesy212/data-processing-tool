@@ -1,0 +1,4 @@
+{
+  "tsconfig": "tsconfig.scripts.json",
+  "require": ["tsconfig-paths/register"]
+}

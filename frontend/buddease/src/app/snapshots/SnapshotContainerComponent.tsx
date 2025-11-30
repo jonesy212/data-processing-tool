@@ -6,7 +6,7 @@ import useErrorHandling from '@/app/hooks/userInterface/automation_process';
 import { Data } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotList from '@/app/snapshots/SnapshotList'; // Use the existing SnapshotList class
-import { useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import React from 'react';
 
 interface SnapshotContainerProps {

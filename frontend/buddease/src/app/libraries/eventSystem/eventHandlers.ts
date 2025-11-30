@@ -6,7 +6,7 @@ import {
   ErrorEvent, 
   SubscriptionEvent,
   EventContext 
-} from '@/typings/eventTypes';
+} from '@/app/typings/eventTypes';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';

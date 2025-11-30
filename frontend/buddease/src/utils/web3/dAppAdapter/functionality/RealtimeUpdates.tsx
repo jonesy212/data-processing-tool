@@ -14,7 +14,7 @@ import ToggleSwitch from "@/app/libraries/menu/ToggleSwitch";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import router from "@/app/projects/projectManagement/ProjectManagementSimulator";
 import { User, UserData } from "@/app/users/User";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import { BaseRouter } from "next/dist/shared/lib/router/router";
 import { Router } from "next/router";
 import React, { useEffect, useState } from "react";

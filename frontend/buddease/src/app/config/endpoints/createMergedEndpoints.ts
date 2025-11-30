@@ -1,9 +1,8 @@
 // createMergedEndpoints.ts
-// createMergedEndpoints.ts - UPDATED VERSION
-import { EndpointConfigurations } from '@/app/config/EndpointConfig';
-import mergeConfigurations from './mergeConfigurations';
-import { generateEndpointUrl } from './urlGenerator';
 
+import { EndpointConfigurations } from '@/app/config/EndpointConfig';
+import mergeConfigurations from '@/utils/mergeConfigurations';
+import { generateEndpointUrl } from '@/utils/urlGenerator'
 // Import ALL your configs (you already have these in endpointConfigurations.ts)
 import { 
   analyticsConfig,
@@ -64,6 +63,7 @@ import {
   sortingConfig,
   searchingConfig,
   snapshotsConfig,
+  screenSharingConfig,
   realtimeConfig,
   tasksConfig,
   teamsConfig,
@@ -81,9 +81,8 @@ import {
   videosConfig,
   versionConfig,
   webConfig,
-  screenSharingConfig,
   logsConfig,
-  uiSettingsConfig
+  uiSettingsConfig,
   // ... import ALL your configs
 } from '@/app/api/endpointConfigurations';
 
@@ -98,6 +97,7 @@ const dynamicConfigMap = {
   blogs: blogsConfig,
   calendar: calendarConfig,
   categories: categoryConfig,
+  categoriesConfg: categoryConfig,
   chat: chatConfig,
   client: clientConfig,
   collaborationTools: collaborationToolsConfig,
@@ -167,14 +167,9 @@ const dynamicConfigMap = {
   web: webConfig,
   screenSharing: screenSharingConfig,
   logs: logsConfig,
-  uiSettings: uiSettingsConfig
+  uiSettings: uiSettingsConfig,
 };
 
-// Complex categories that need custom handling (like functions with parameters)
-const complexCategories = [
-  'client', 'content', 'delegates', 'documents', 'notes', 
-  'realtime', 'snapshots', 'teams', 'todos', 'ui', 'users'
-];
 
 export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurations) => {
   const updatedEndpoints: any = {};

@@ -30,7 +30,7 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { useNotification } from "@/state/context/NotificationContext";
+import { useNotification } from "@/app/state/context/NotificationContext";
 
 import { makeAutoObservable } from "mobx";
 import {
@@ -76,6 +76,7 @@ import {
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
+import { ExchangeDataTypeEnum } from '@/app/models/cypto/exchangeIntegration';
 import { dataStoreMethods, K, T } from '@/app/models/data/dataStoreMethods';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
@@ -89,7 +90,6 @@ import { EventRecord } from "@/app/state/stores/DataStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
-import { ExchangeDataTypeEnum } from '@/app/models/cypto/exchangeIntegration';
 
 const dispatch = useDispatch()
 const { subscriber, tempSubscriber } = createSubscriber();

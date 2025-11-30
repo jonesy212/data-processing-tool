@@ -18,7 +18,7 @@ import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import TradingPreferencesStep from "./TradingPreferencesStep";
 import { TradingPhase } from "./crypto/CryptoTradingPhase";
 import TraderTypesSelection from "./crypto/TraderTypesSelection";

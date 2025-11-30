@@ -8,7 +8,7 @@ import ProofOfConcept from "@/app/users/userJourney/ProofOfConcept";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import { IdeaLifecyclePhase } from "./ideaPhase/IdeaLifecyclePhase";
 
 const IdeaLifecycleProcess: React.FC = () => {

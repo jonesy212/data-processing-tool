@@ -6,7 +6,7 @@ import { databaseService } from "@/app/server/database/DatabaseOperations";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import axios from "axios";
 import React, { useState } from "react";
 

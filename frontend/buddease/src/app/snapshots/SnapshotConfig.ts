@@ -9,17 +9,17 @@ import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import {
-  SnapshotManager
+    SnapshotManager
 } from "@/app/hooks/useSnapshotManager";
 import {
-  fetchFileSnapshotData,
+    fetchFileSnapshotData,
 } from "@/app/libraries/categories/determineFileCategory";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import {
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum
 } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
@@ -31,6 +31,10 @@ import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapsh
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import {
+    NotificationType,
+    NotificationTypeEnum,
+} from "@/app/state/context/NotificationContext";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
@@ -42,18 +46,14 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-} from "@/state/context/NotificationContext";
 import { isSnapshot } from '@/utils/snapshotUtils';
 import {
-  getCommunityEngagement,
-  getMarketUpdates,
-  getTradeExecutions,
+    getCommunityEngagement,
+    getMarketUpdates,
+    getTradeExecutions,
 } from "@/utils/trading/TradingUtils";
 import {
-  triggerIncentives
+    triggerIncentives
 } from "@/utils/web3/applicationUtils";
 import { useParams } from "next/navigation";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
@@ -62,11 +62,11 @@ import { SnapshotCallback } from '@/app/components/event/EventManager';
 import { BaseDatabaseService } from '@/app/config/DatabaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-  Snapshots,
-  SnapshotUnion,
+    Snapshots,
+    SnapshotUnion,
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import {
-  Snapshot
+    Snapshot
 } from '@/app/snapshots/Snapshot';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';

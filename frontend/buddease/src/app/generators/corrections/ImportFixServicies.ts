@@ -7,7 +7,7 @@ import { InteractiveConfirmationService } from '@/app/services/InteractiveConfir
 import { FileConfirmationService } from '@/app/services/FileConfirmationService';
 import { CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/app/typings/correctionTypes';
 import { ConfirmationService } from '@/app/services/ConfirmationService';
-
+import { ImportAnalysis } from '@app/generators/corrections/reports/ImportReport'
 
 export interface ImportFix {
     filePath: string;
@@ -15,13 +15,6 @@ export interface ImportFix {
     newLine: string;
     missingTypes: string[];
     targetImportPath: string;
-}
-
-export interface ImportAnalysis {
-    filePath: string;
-    errors: string[];
-    imports: ParsedImport[];
-    suggestedFixes: ImportFix[];
 }
 
 export interface ParsedImport {
@@ -76,10 +69,16 @@ export class ImportFixerService {
      * Analyze a file for import errors and suggest fixes
      */
     async analyzeFile(filePath: string): Promise<ImportAnalysis> {
+          if (!this.projectTreeBuilt) {
+            await this.buildProjectTree();
+        }
+
         const content = await fs.promises.readFile(filePath, 'utf8');
         const lines = content.split('\n');
         const imports = this.parseImports(lines);
         const errors = this.detectImportErrors(content);
+        const smartFixes = await this.analyzeSmartFixes(content, filePath, imports);
+
 
         const suggestedFixes: ImportFix[] = [];
 
@@ -90,12 +89,86 @@ export class ImportFixerService {
             }
         }
 
+        suggestedFixes.push(...smartFixes);
+
         return {
             filePath,
             errors,
             imports,
             suggestedFixes
         };
+    }
+
+        private async analyzeSmartFixes(content: string, filePath: string, existingImports: ParsedImport[]): Promise<ImportFix[]> {
+        const fixes: ImportFix[] = [];
+        const lines = content.split('\n');
+
+        lines.forEach((line, lineNumber) => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine.startsWith('import')) return;
+
+            // Check for mixed import patterns
+            for (const pattern of this.MIXED_IMPORT_PATTERNS) {
+                if (pattern.pattern.test(trimmedLine)) {
+                    fixes.push({
+                        filePath,
+                        originalLine: trimmedLine,
+                        newLine: pattern.corrections.join('\n'),
+                        missingTypes: [],
+                        targetImportPath: 'multiple',
+                        reason: pattern.reason,
+                        confidence: 'high'
+                    });
+                }
+            }
+
+            // Check for common API import mistakes
+            if (trimmedLine.includes('@/app/api/SnapshotApi') && trimmedLine.includes('handleApiError')) {
+                fixes.push({
+                    filePath,
+                    originalLine: trimmedLine,
+                    newLine: "import { handleApiError } from '@/app/api/ApiLogs'",
+                    missingTypes: ['handleApiError'],
+                    targetImportPath: '@/app/api/ApiLogs',
+                    reason: 'handleApiError should be imported from ApiLogs, not SnapshotApi',
+                    confidence: 'high'
+                });
+            }
+
+            // Check for header config mistakes
+            if (trimmedLine.includes('@/app/api/headers/HeadersConfig') && trimmedLine.includes('headersConfig')) {
+                fixes.push({
+                    filePath,
+                    originalLine: trimmedLine,
+                    newLine: "import { headersConfig } from '@/app/components/shared/SharedHeaders'",
+                    missingTypes: ['headersConfig'],
+                    targetImportPath: '@/app/components/shared/SharedHeaders',
+                    reason: 'headersConfig should be imported from SharedHeaders, not HeadersConfig',
+                    confidence: 'high'
+                });
+            }
+        });
+
+        return fixes;
+    }
+
+    // ENHANCED: Better path resolution
+    private async findCorrectImportPath(missingType: string, currentFile: string): Promise<string | null> {
+        // First check known mappings
+        const knownPath = this.KNOWN_IMPORT_MAPPINGS.get(missingType);
+        if (knownPath) return knownPath;
+
+        // Then search project tree
+        for (const [filePath, fileInfo] of this.projectTree) {
+            if (fileInfo.exports.some(exp => 
+                exp.toLowerCase() === missingType.toLowerCase() ||
+                exp.toLowerCase().includes(missingType.toLowerCase())
+            )) {
+                return `@/${filePath.replace('src/', '')}`;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -183,13 +256,13 @@ export class ImportFixerService {
     /**
      * Suggest fixes for import errors
      */
-    private suggestImportFix(
+    private async suggestImportFix(
         missingType: string,
         existingImports: ParsedImport[],
         filePath: string
-    ): ImportFix | null {
+    ): Promise<ImportFix | null> {
 
-        const targetPath = this.KNOWN_IMPORT_MAPPINGS.get(missingType);
+        const targetPath = await this.findCorrectImportPath(missingType, filePath);
         if (!targetPath) {
             console.warn(`No mapping found for missing type: ${missingType}`);
             return null;
@@ -271,7 +344,9 @@ export class ImportFixerService {
             originalLine: problematicImport.fullLine,
             newLine: newProblematicLine,
             missingTypes: [missingType],
-            targetImportPath: targetPath
+            targetImportPath: targetPath,
+            reason: `Move ${missingType} from ${problematicImport.importPath} to ${targetPath}`,
+            confidence: 'high'
         };
     }
 
@@ -288,7 +363,6 @@ export class ImportFixerService {
         const targetImport = allImports.find(imp => imp.importPath === targetPath);
 
         if (targetImport) {
-            // Add to existing import
             const newImports = [...targetImport.namedImports, missingType].sort();
             let newLine = '';
 
@@ -303,20 +377,49 @@ export class ImportFixerService {
                 originalLine: targetImport.fullLine,
                 newLine,
                 missingTypes: [missingType],
-                targetImportPath: targetPath
+                targetImportPath: targetPath,
+                reason: `Add ${missingType} to existing import from ${targetPath}`,
+                confidence: 'medium'
             };
         } else {
-            // Create new import
             const newLine = `import { ${missingType} } from '${targetPath}';`;
 
             return {
                 filePath,
-                originalLine: '', // No original line to replace
+                originalLine: '',
                 newLine,
                 missingTypes: [missingType],
-                targetImportPath: targetPath
+                targetImportPath: targetPath,
+                reason: `Add new import for ${missingType} from ${targetPath}`,
+                confidence: 'medium'
             };
         }
+    }
+
+        // Smart scan with confidence filtering
+    async scanProjectWithConfidence(rootDir: string = process.cwd()): Promise<{ analyses: ImportAnalysis[], fixesByConfidence: { high: ImportFix[], medium: ImportFix[], low: ImportFix[] } }> {
+        const analyses = await this.scanProject(rootDir);
+        const allFixes = analyses.flatMap(analysis => analysis.suggestedFixes);
+
+        const fixesByConfidence = {
+            high: allFixes.filter(fix => fix.confidence === 'high'),
+            medium: allFixes.filter(fix => fix.confidence === 'medium'),
+            low: allFixes.filter(fix => fix.confidence === 'low')
+        };
+
+        return { analyses, fixesByConfidence };
+    }
+
+    // Apply fixes with confidence-based filtering
+    async applyFixesWithConfidence(fixes: ImportFix[], minConfidence: 'high' | 'medium' | 'low' = 'medium'): Promise<{ success: boolean; applied: number }> {
+        const confidenceLevels = { high: 3, medium: 2, low: 1 };
+        const minLevel = confidenceLevels[minConfidence];
+        
+        const filteredFixes = fixes.filter(fix => 
+            confidenceLevels[fix.confidence || 'medium'] >= minLevel
+        );
+
+        return this.applyFixesWithConfirmation(filteredFixes);
     }
 
     /**
@@ -712,4 +815,29 @@ export function isImportCorrection(correction: Correction): correction is Import
 
 export function hasComplexFix(correction: Correction): correction is Correction & { complexFix: ComplexFix } {
     return !!(correction as any).complexFix;
+}
+
+
+// Smart scanning with confidence levels
+const fixer = new ImportFixerService('interactive');
+
+// Scan with confidence analysis
+const { analyses, fixesByConfidence } = await fixer.scanProjectWithConfidence();
+
+console.log(`High confidence fixes: ${fixesByConfidence.high.length}`);
+console.log(`Medium confidence fixes: ${fixesByConfidence.medium.length}`);
+console.log(`Low confidence fixes: ${fixesByConfidence.low.length}`);
+
+// Apply only high confidence fixes automatically
+await fixer.applyFixesWithConfidence(fixesByConfidence.high, 'high');
+
+// Review medium confidence fixes
+if (fixesByConfidence.medium.length > 0) {
+    console.log('\n🔍 Review medium confidence fixes:');
+    fixesByConfidence.medium.forEach(fix => {
+        console.log(`📁 ${fix.filePath}`);
+        console.log(`   💡 ${fix.reason}`);
+        console.log(`   ❌ ${fix.originalLine}`);
+        console.log(`   ✅ ${fix.newLine}`);
+    });
 }

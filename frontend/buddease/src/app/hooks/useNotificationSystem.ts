@@ -12,9 +12,9 @@ import { Data } from '@/app/models/data/Data';
 import { displayToast, showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import { LogData } from "@/app/models/LogData";
 import ErrorHandler from '@/app/shared/ErrorHandler';
+import { NotificationOptions } from '@/app/state/context/NotificationContext';
 import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { NotificationOptions } from '@/state/context/NotificationContext';
 import { useCallback, useMemo, useRef } from 'react';
 
 export interface NotificationData<

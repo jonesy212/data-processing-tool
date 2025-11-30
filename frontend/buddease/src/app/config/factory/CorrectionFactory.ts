@@ -1,7 +1,7 @@
 // CorrectionFactory.ts
 // factory/CorrectionFactory.ts
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { CorrectionInput } from '@/typings/correctionTypes';
+import { CorrectionInput } from '@/app/typings/correctionTypes';
 
 export class CorrectionFactory {
   static create(input: CorrectionInput): Correction {

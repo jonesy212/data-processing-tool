@@ -1,7 +1,6 @@
 // CalendarSlice.tsx
 import { CalendarActions } from '@/app/actions/CalendarEventActions';
 import { ChatActions } from '@/app/actions/ChatActions';
-import { ChatRoom } from '@/app/communications/ChatRoom';
 import { NotificationActions } from '@/app/actions/NotificationActions';
 import calendarApiService from '@/app/api/ApiCalendar';
 import { fetchEventData } from '@/app/api/ApiEvent';
@@ -26,6 +25,7 @@ import CalendarEventSuccessPrediction from '@/app/calendar/CalendarEventSuccessP
 import CalendarEventTimingOptimization from '@/app/calendar/CalendarEventTimingOptimization';
 import CalendarEventTrendDetectionResult from '@/app/calendar/CalendarEventTrendDetectionResult';
 import ExternalCalendarOverlay from '@/app/calendar/ExternalCalendarOverlay';
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import { AttendancePrediction } from '@/app/components/calendar/AttendancePrediction';
 import { event, ExtendedAttendeeAvailability, useAttendeeAvailabilityAnalysis } from '@/app/components/calendar/Attendee';
 import CalendarEventAgendaItem from '@/app/components/calendar/CalendarEventAgendaItem';
@@ -55,21 +55,20 @@ import {
 } from '@/app/models/data/StatusType';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import { LogData } from '@/app/models/LogData';
-import { Task } from '@/app/models/tasks/Task';
 import { Member } from '@/app/models/members/Members';
+import { Task } from '@/app/models/tasks/Task';
 import { Tag } from '@/app/models/tracker/Tag';
 import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import NotificationData, { dispatchNotification, SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
-import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
-import { CalendarMilestone } from '@/app/typings/milestoneTypes';
-import { Milestone } from '@/app/typings/milestoneTypes';
-import { User } from '@/app/users/User';
 import {
     NotificationTypeEnum,
     useNotification,
-} from '@/state/context/NotificationContext';
+} from '@/app/state/context/NotificationContext';
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import NotificationData, { dispatchNotification, SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
+import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
+import { CalendarMilestone, Milestone } from '@/app/typings/milestoneTypes';
+import { User } from '@/app/users/User';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 import React, { ChangeEvent } from 'react';

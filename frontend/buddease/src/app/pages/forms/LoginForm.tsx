@@ -2,8 +2,8 @@
 "use client";
 
 import { NOTIFICATION_TYPES } from "@/app/features/support/NotificationTypes";
+import { useAuth } from "@/app/state/context/AuthContext";
 import { NotificationContext, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
-import { useAuth } from "@/state/context/AuthContext";
 import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -8,7 +8,7 @@ import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import { AxiosError } from "axios";
 
 const API_BASE_URL = endpoints.crypto;

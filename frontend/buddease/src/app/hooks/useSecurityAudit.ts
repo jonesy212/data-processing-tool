@@ -1,8 +1,8 @@
 // useSecurityAudit.ts
-import { useSecureUserId as fetchSecureUserId } from '@/app/hooks/useSecureUserId';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { useSecureUserId as fetchSecureUserId } from '@/app/hooks/useSecureUserId';
 
 // Type guard for sensitive fields
 const isSensitiveField = (field: any): field is { isSensitive: boolean; value?: any } => {
@@ -20,9 +20,9 @@ export const useSecurityAudit = () => {
       ExcludedFields extends keyof T = DefaultExcludedFields<T>,
       IncludedFields extends keyof T = keyof T
     >(
-      metadata: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-    ): Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-        const sanitized: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
+      metadata: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    ): Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+        const sanitized: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
         for (const key in metadata) {
             if (metadata.hasOwnProperty(key)) {

@@ -2,7 +2,7 @@
 
 // server/metadata/createMetadata.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
@@ -90,8 +90,8 @@ const sanitizeMetadata = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  metadata: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-): Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  metadata: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   // Remove any potentially sensitive fields that shouldn't be exposed
   const sanitized = { ...metadata };
 
@@ -111,7 +111,7 @@ export const createMetadata = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  options: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> & {
+  options: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> & {
     // Security options
     enableEncryption?: boolean;
     enableSanitization?: boolean;

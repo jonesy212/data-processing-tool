@@ -31,7 +31,7 @@ import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
-import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity';
 import { Version, version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";

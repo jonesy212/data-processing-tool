@@ -1,9 +1,9 @@
 // PackageJsonValidator.ts
-import path from 'path';
-import fs from 'fs';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { BaseAnalyzer } from '@/app/analyzers/BaseAnalyzer';
-import { CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/app/typings/correctionTypes';
+import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer';
+import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/app/typings/correctionTypes';
+import fs from 'fs';
+import path from 'path';
 
 export class PackageJsonValidator extends BaseAnalyzer {
   private projectRoot: string;

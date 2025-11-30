@@ -25,7 +25,7 @@ import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { useNotification } from "@/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { IHydrateResult } from "mobx-persist";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {

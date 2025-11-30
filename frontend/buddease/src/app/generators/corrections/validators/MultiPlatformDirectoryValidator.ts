@@ -1,13 +1,13 @@
 // MultiPlatformDirectoryValidator.ts - Dynamic Mapping Version
-import path from 'path';
-import fs from 'fs';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { BaseAnalyzer } from '@/app/analyzers/BaseAnalyzer';
-import { CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/app/typings/correctionTypes';
-import { FileTreeService, FileTreeNode } from '@/app/services/FileTreeService';
-import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
-import { toDatabase, fromDatabase } from '@/app/server/repository/mappers';
+import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer';
+import { fromDatabase, toDatabase } from '@/app/server/repository/mappers';
 import AppTreeService from "@/app/services/AppTreeService";
+import { FileTreeNode, FileTreeService } from '@/app/services/FileTreeService';
+import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
+import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/app/typings/correctionTypes';
+import fs from 'fs';
+import path from 'path';
 
 export class MultiPlatformDirectoryValidator extends BaseAnalyzer {
   private projectRoot: string;

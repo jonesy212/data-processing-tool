@@ -1,12 +1,7 @@
 // MetaDataOptions.ts
-import { TagsRecord } from '@/app/models/tracker/Tag'
-import { StatusType } from '@/app/models/data/StatusType';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/calendar/ScheduledData';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Task } from '@/app/components/models/tasks/Task';
-import { Data } from '@/app/models/data/Data';
-import { taskMetadata } from '@/app/models/data/TaskMetadata';
-import { Permission } from '@/app/permissions/Permission';
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -17,10 +12,14 @@ import { BaseEntityProperties } from "@/app/documents/RelatedProps";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { ChangeLogEntry } from '@/app/logging/ChangeLogEntry';
-import { SharedRelationshipData } from '@/app/models/data/Data';
+import { Data, SharedRelationshipData } from '@/app/models/data/Data';
+import { StatusType } from '@/app/models/data/StatusType';
+import { taskMetadata } from '@/app/models/data/TaskMetadata';
 import { PhaseMeta } from '@/app/models/phases/Phase';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { TransactionData } from '@/app/payment/Transaction';
+import { Permission } from '@/app/permissions/Permission';
 import { CoreMetadata } from '@/app/server/metadata/MetadataStateManager';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
@@ -32,17 +31,16 @@ import { InitializedState } from "@/app/state/stores/DataStore";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/app/typings/entities/TaskEntity";
-import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { FileMetadata } from '@/app/typings/file/fileTypes';
 import { User } from '@/app/users/User';
-import { category } from '@/utils/snapshotUtils';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
-import { VersionData, VersionHistory } from "@/app/versions/VersionData";
+import { SharedVersioning, VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { SharedVersioning } from '@/app/versions/VersionData'
+import { category } from '@/utils/snapshotUtils';
 
 
 export type BaseAudit = AuditEntry<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
@@ -349,7 +347,7 @@ interface UnifiedMetaDataOptions<
   SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   setOptions?: (
-    options: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    options: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => this;
   timestamp?: string | number | Date;
   revisionNotes?: string;
@@ -368,7 +366,6 @@ interface UnifiedMetaDataOptions<
   phaseMetadata?: PhaseMeta
   structuredMetadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-
 }
 
 
@@ -1120,7 +1117,8 @@ const myMetaData: UnifiedMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, M
 
 export { fetchUserAreaDimensions, transformProjectToUnifiedMetadata };
 
-export type {
-  AdditionalMetaDataOptions, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-  SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
-};
+  export type {
+    AdditionalMetaDataOptions, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
+    SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
+  };
+

@@ -1,6 +1,6 @@
 // RouteGuard.tsx
 import { fuzzyMatchEntities } from '@/app/routing/FuzzyMatch';
-import { useAuth } from '@/state/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 

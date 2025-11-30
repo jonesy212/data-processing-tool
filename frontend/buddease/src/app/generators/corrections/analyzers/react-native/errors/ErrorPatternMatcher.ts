@@ -1,6 +1,5 @@
 // ErrorPatternMatcher.ts
 
-import { CorrectionCategory } from '@/app/typings/correctionTypes';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'
 import { CorrectionCategory } from '@/app/typings/correctionTypes'

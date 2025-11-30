@@ -5,8 +5,8 @@ export type CorrectionType =
   | 'types' | 'react' | 'sensitive_data' | 'missing_sanitization'
   | 'role_violation' | 'insecure_pattern' | 'type_error' | 'performance_issue'  
   | 'compilation' | 'runtime' | 'structure' | 'import'
-  | 'compatibility' | 'imports'
-  | 'performance'; 
+  | 'compatibility' | 'imports' | 'import_error' | 'folder_analysis'
+  | 'type_annotation' | 'performance' | 'structural'; 
 
 export type CorrectionSeverity = 'low' | 'medium' | 'high' | 'critical';
 export type CorrectionCategory = 

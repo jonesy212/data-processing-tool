@@ -1,9 +1,7 @@
 // SecurityAudit.ts
+import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/app/config/BaseConfig';
 import { useSecurityAudit } from '@/app/hooks/useSecurityAudit';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import SecureFieldManager from "./SecureFieldManager";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 class SecurityAudit<
@@ -21,7 +19,7 @@ class SecurityAudit<
    * Sanitize the provided metadata.
    */
   sanitizeMetadata(
-    metadata: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    metadata: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     userRole: string,
     isAdmin: boolean
   ): Partial<Meta> {

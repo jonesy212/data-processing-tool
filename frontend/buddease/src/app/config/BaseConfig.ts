@@ -27,7 +27,7 @@ import {
 } from "@/app/typings/entities/ConfigEntity";
 import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { AppMetadata } from '@/app/typings/metadataTypes';
-import { useSnapshot } from '@/state/context/SnapshotContext';
+import { useSnapshot } from '@/app/state/context/SnapshotContext';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";

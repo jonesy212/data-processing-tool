@@ -48,7 +48,7 @@ interface BaseMetadataConfig<
 > {
   enableSnapshot?: boolean;
   eventRecords?: EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | [];
-  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 }
 
 export interface RetryConfig {

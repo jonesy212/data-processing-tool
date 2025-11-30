@@ -177,7 +177,7 @@ export class PhaseImpl<
   documentBackup?: string;
 
   // Flexible tags to satisfy TS
-  tags?: string[] | TagsRecord<T> | undefined = [];
+  tags?: string[] | TagsRecord<T> = [];
 
   constructor(options: {
     id?: string;

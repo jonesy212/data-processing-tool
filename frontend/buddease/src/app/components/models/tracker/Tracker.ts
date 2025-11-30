@@ -10,6 +10,7 @@ import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { Phase } from '@/app/models/phases/Phase';
 import { TrackerProps } from '@/app/models/tracker/Tracker';
+import { useAuth } from "@/app/state/context/AuthContext";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
     fetchUsersSuccess,
@@ -21,7 +22,6 @@ import {
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
-import { useAuth } from "@/state/context/AuthContext";
 import path from "path";
 
 export interface SharedFormattingOptions {

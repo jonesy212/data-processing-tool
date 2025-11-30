@@ -1,5 +1,5 @@
 // ThemeSettings.ts
-import { DocumentAnimationOptions } from "@/app/components/documents/SharedDocumentProps";
+import { DocumentAnimationOptions } from '@/app/documents/SharedDocumentProps';
 
 interface ThemeSettings {
     animations?: DocumentAnimationOptions; // Theme-related animations

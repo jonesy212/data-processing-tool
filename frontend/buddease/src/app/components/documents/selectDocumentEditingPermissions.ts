@@ -2,6 +2,7 @@
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { DocumentEditingPermissions } from "@/app/permissions/Permission";
 import { Permission } from '@/app/permissions/Permission';
+import { DocumentPermissions } from '@/app/documents/DocumentPermissions'
 
 // Define document editing permission levels
 export enum DocumentEditLevel {
@@ -22,8 +23,8 @@ export const selectDocumentEditingPermissions = (
   
   // Base permissions for all roles
   const basePermissions: DocumentEditingPermissions = {
-    canViewDocument: false,
-    canEditContent: false,
+    canView: false,
+    canEdit: false,
     canEditMetadata: false,
     canEditPermissions: false,
     canShareDocument: false,
@@ -41,8 +42,8 @@ export const selectDocumentEditingPermissions = (
   if (isDocumentOwner) {
     return {
       ...basePermissions,
-      canViewDocument: true,
-      canEditContent: true,
+      canView: true,
+      canEdit: true,
       canEditMetadata: true,
       canEditPermissions: true,
       canShareDocument: true,
@@ -62,8 +63,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.Administrator:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: true,
+        canView: true,
+        canEdit: true,
         canEditMetadata: true,
         canEditPermissions: true,
         canShareDocument: true,
@@ -80,8 +81,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.BlockchainAdmin:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: true,
+        canView: true,
+        canEdit: true,
         canEditMetadata: true,
         canEditPermissions: false,
         canShareDocument: true,
@@ -98,8 +99,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.RegionalManager:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: true,
+        canView: true,
+        canEdit: true,
         canEditMetadata: false,
         canEditPermissions: false,
         canShareDocument: true,
@@ -116,8 +117,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.CryptoAnalyst:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: false,
+        canView: true,
+        canEdit: false,
         canEditMetadata: false,
         canEditPermissions: false,
         canShareDocument: false,
@@ -134,8 +135,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.LegalAdvisor:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: false,
+        canView: true,
+        canEdit: false,
         canEditMetadata: false,
         canEditPermissions: false,
         canShareDocument: false,
@@ -152,8 +153,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.CustomerSupport:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: false,
+        canView: true,
+        canEdit: false,
         canEditMetadata: false,
         canEditPermissions: false,
         canShareDocument: false,
@@ -170,8 +171,8 @@ export const selectDocumentEditingPermissions = (
     case UserRoleEnum.CryptoInvestor:
       return {
         ...basePermissions,
-        canViewDocument: true,
-        canEditContent: false,
+        canView: true,
+        canEdit: false,
         canEditMetadata: false,
         canEditPermissions: false,
         canShareDocument: false,
@@ -197,7 +198,7 @@ export const canEditDocumentContent = (
   isDocumentOwner: boolean = false
 ): boolean => {
   const permissions = selectDocumentEditingPermissions(userRole, documentType, isDocumentOwner);
-  return permissions.canEditContent;
+  return permissions.canEdit;
 };
 
 // Helper function to check if user can share document
@@ -207,7 +208,7 @@ export const canShareDocument = (
   isDocumentOwner: boolean = false
 ): boolean => {
   const permissions = selectDocumentEditingPermissions(userRole, documentType, isDocumentOwner);
-  return permissions.canShareDocument;
+  return permissions.canShare;
 };
 
 // Function to convert DocumentEditingPermissions to DocumentPermissions class
@@ -215,8 +216,8 @@ export const convertToDocumentPermissions = (
   editingPermissions: DocumentEditingPermissions
 ): DocumentPermissions => {
   return new DocumentPermissions(
-    editingPermissions.canViewDocument,
-    editingPermissions.canEditContent
+    editingPermissions.canView,
+    editingPermissions.canEdit
   );
 };
 
@@ -229,7 +230,7 @@ export const getTextEditorAccess = (
   const permissions = selectDocumentEditingPermissions(userRole, documentType, isDocumentOwner);
   
   return {
-    canEdit: permissions.canEditContent,
+    canEdit: permissions.canEdit,
     editLevel: permissions.editLevel
   };
 };
@@ -248,11 +249,11 @@ export const assignDocumentPermissions = async (
     // Convert to Permission array for your existing system
     const permissions: Permission[] = [];
     
-    if (editingPermissions.canViewDocument) {
+    if (editingPermissions.canView) {
       permissions.push({ permissionType: 'read', granted: true });
     }
     
-    if (editingPermissions.canEditContent) {
+    if (editingPermissions.canEdit) {
       permissions.push({ permissionType: 'write', granted: true });
     }
     
@@ -283,8 +284,8 @@ export const useDocumentEditingPermissions = (
   
   return {
     permissions,
-    canEdit: permissions.canEditContent,
-    canView: permissions.canViewDocument,
+    canEdit: permissions.canEdit,
+    canView: permissions.canView,
     canShare: permissions.canShareDocument,
     canDelete: permissions.canDeleteDocument,
     editLevel: permissions.editLevel

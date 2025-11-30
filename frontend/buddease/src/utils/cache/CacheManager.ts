@@ -9,7 +9,7 @@ import { UserSettings } from "@/app/config/UserSettings";
 import { BaseData } from '@/app/models/data/Data';
 import { DataAnalysisDispatch } from "@/app/typings/phases/dataAnalysisTypes";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { useNotification } from "@/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import BackendStructure from "@/app/server/database/BackendStructure";
 import fs from 'fs';
 

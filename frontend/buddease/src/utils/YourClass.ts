@@ -290,7 +290,7 @@ const dappProps: DappProps = {
   },
   currentProject: {
     id: "",
-    username: "",
+    name: "",
     description: "",
     tasks: [],
     teamMembers: [],

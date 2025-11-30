@@ -1,10 +1,10 @@
 // Unauthorized.tsx
-import { NotificationPosition } from '@/app/models/data/StatusType';
-import { useAuth } from '@/state/context/AuthContext';
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { useNavigate } from 'react-router-dom';
 import AccessDenied from '@/app/components/AccessDenied';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationPosition } from '@/app/models/data/StatusType';
+import { useAuth } from '@/app/state/context/AuthContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Unauthorized() {
   const navigate = useNavigate();

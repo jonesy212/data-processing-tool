@@ -220,7 +220,7 @@ interface BaseData<
   isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   phase?: PhaseDefault | null;
   phaseType?: ProjectPhaseTypeEnum;
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

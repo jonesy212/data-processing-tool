@@ -2,10 +2,10 @@
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { useNotification } from "@/app/state/context/NotificationContext";
 import { addLog } from "@/app/state/redux/slices/LogSlice";
 import { useArticleStore } from "@/app/state/stores/ArticleStore";
 import { User } from "@/app/users/User";
-import { useNotification } from "@/state/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 

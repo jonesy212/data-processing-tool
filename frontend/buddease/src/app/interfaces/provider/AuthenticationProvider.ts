@@ -7,3 +7,5 @@ interface AuthenticationProvider {
     // Add other properties as needed
   }
   
+
+  export type { AuthenticationProvider }

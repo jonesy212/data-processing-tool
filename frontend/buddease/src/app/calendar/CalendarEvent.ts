@@ -92,7 +92,7 @@ interface CalendarEvent<
   action?: string;
   changes?: string[];
   date: string | Date | undefined;
-  tags?: string[] | TagsRecord<T> | undefined; 
+  tags?: string[] | TagsRecord<T>; 
   meta: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
   options?: {

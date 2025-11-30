@@ -10,7 +10,7 @@ import useErrorHandling from "@/app/useErrorHandling";
 import {
     NotificationType,
     useNotification,
-} from "@/state/context/NotificationContext";
+} from '@/app/state/context/NotificationContext';
 import dotProp from "dot-prop";
 import { ChangeEvent, useState } from "react";
 const { notify } = useNotification();

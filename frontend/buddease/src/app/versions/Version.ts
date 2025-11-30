@@ -1,6 +1,6 @@
 // Version.ts
-import HashGenerator from '@/app/generators/HashGenerator'
-import SharedContent from '@/app/versions/Version'
+import HashGenerator from '@/app/generators/HashGenerator';
+import SharedContent from '@/app/versions/Version';
 
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
@@ -11,9 +11,9 @@ import { SnapshotStoreConfig } from '@/app/snapshots';
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { useAuth } from "@/app/state/context/AuthContext";
 import { InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { useAuth } from "@/state/context/AuthContext";
 import { sha256 } from 'js-sha256';
       
 import getAppPath from "@/app/config/appStructure/appPath";
@@ -21,8 +21,8 @@ import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { dataVersions } from "@/app/config/DocumentBuilderConfig";
-import { sharedMetadata } from "@/app/config/MetadataStateManager";
 import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
+import { sharedMetadata } from "@/app/config/MetadataStateManager";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
@@ -129,7 +129,7 @@ interface Version<
   workspaceMembers: any[];
 
   // Data + structure
-  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionData?: string| number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   structureData: string;
@@ -756,6 +756,12 @@ static createVersion<
       description: "Generated version",
       parentId: null,
       parentType: "document",
+      checksum: 0,
+      currentHash: 0,
+      major: 1,
+      minor: 0,
+      patch: 0,
+
       parentVersion: "1.0.0",
       parentTitle: "Initial Release",
       parentContent: "This is the content of the parent document.",

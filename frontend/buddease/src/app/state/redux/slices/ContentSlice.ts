@@ -4,12 +4,12 @@ import * as ApiTask from "@/app/api/TasksApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-  ContentAttachment,
-  ContentEntity,
-  ContentExcludedFields,
-  ContentIncludedFields,
-  ContentK,
-  ContentMeta
+    ContentAttachment,
+    ContentEntity,
+    ContentExcludedFields,
+    ContentIncludedFields,
+    ContentK,
+    ContentMeta
 } from '@/app/typings/entities/ContentEntity';
 
 import ContentDetails from "@/app/components/models/content/ContentDetails";
@@ -26,15 +26,20 @@ import { SupportedData } from '@/app/models/CommonData';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import { BaseData, Data } from "@/app/models/data/Data";
 import {
-  PriorityTypeEnum,
-  StatusType,
-  TaskStatus,
+    PriorityTypeEnum,
+    StatusType,
+    TaskStatus,
 } from "@/app/models/data/StatusType";
 import { Phase } from "@/app/models/phases/Phase";
 import ExportTasksPayload from "@/app/models/tasks/ExportTasksPayload";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import {
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
+} from "@/app/state/context/NotificationContext";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { ProjectManagerStore } from "@/app/state/stores/ProjectStore";
@@ -42,11 +47,6 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea, IdeationSession } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "@/state/context/NotificationContext";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const { showNotification } = useWebNotifications();

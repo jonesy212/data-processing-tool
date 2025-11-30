@@ -6,9 +6,9 @@ import ProjectManagementToolbar from '@/app/components/documents/ProjectManageme
 import CryptoSectionToolbar from '@/app/components/libraries/toolbar/CryptoSectionToolbar';
 import { Data } from '@/app/models/data/Data';
 import CollaborationToolsToolbar from '@/app/pages/community/CollaborationToolsToolbar';
+import { useAuth } from '@/app/state/context/AuthContext'; // Import auth context
 import { useDashboard } from '@/app/state/context/DashboardContext';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { useAuth } from '@/state/context/AuthContext'; // Import auth context
 import React from 'react';
 
 type DashboardLayoutProps = {

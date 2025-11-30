@@ -264,6 +264,12 @@ export type {
   // State types
   UserSession, UserSnapshotDefault, UserSnapshotsArray,
   // Configuration types
-  UserSnapshotStoreConfig, UserSortOptions
+  UserSnapshotStoreConfig, UserSortOptions,
+  PublicUserProfile,
+
+  UserSnapshotDataDefault,
+UserSnapshotStoreDefault,
+UserRealtimeDataItemDefault,
+UserUnifiedMetadata,
 };
 

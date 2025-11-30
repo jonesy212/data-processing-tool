@@ -8,11 +8,11 @@ import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard"
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
+import { useAuth } from "@/app/state/context/AuthContext";
 import { CollaborationProvider } from "@/app/state/context/CollaborationContext";
 import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
 import { SearchProvider, useSearch } from "@/app/state/context/SearchContext";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
-import { useAuth } from "@/state/context/AuthContext";
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import { useState } from "react";
 import ChatDashboard from "./ChatDashboard";

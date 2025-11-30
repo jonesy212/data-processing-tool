@@ -8,11 +8,11 @@ import HeadersConfig from "@/app/api/headers/HeadersConfig";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { useNotification } from '@/app/state/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { VersionData } from '@/app/versions/VersionData';
-import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_BASE_URL = endpoints.metadata;
@@ -344,7 +344,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     IncludedFields extends keyof T = keyof T
   >(
     metadataId: string,
-    updates: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    updates: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): Promise<AxiosResponse<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return await this.requestHandler(
       () => internalApiService.put(
@@ -406,7 +406,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
   >(
     updates: Array<{
       id: string;
-      updates: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+      updates: Partial<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     }>
   ): Promise<AxiosResponse<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>> {
     return await this.requestHandler(

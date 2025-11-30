@@ -15,10 +15,14 @@ export interface ImportAnalysis {
   absoluteImports: number;
   wildcardImports: number;
   unusedImports: number;
+  
   duplicateImports: number;
+  errors: string[];
   importLines: string[];
   issues: string[];
   bundleImpact: 'low' | 'medium' | 'high'; // estimated impact on bundle size
+  imports: ParsedImport[];
+  suggestedFixes: ImportFix[];
 }
 
 export interface ImportRelationship {
@@ -85,6 +89,9 @@ export class ImportReport {
     const lines = content.split('\n');
     const importLines = lines.filter(line => line.trim().startsWith('import'));
     
+    // Parse individual imports for detailed analysis
+    const parsedImports: ParsedImport[] = this.parseImportLines(importLines);
+    
     const analysis: ImportAnalysis = {
       filePath,
       totalImports: importLines.length,
@@ -98,9 +105,13 @@ export class ImportReport {
       duplicateImports: 0,
       importLines,
       issues: [],
-      bundleImpact: 'low'
+      bundleImpact: 'low',
+      errors: [],
+      imports: parsedImports,
+      suggestedFixes: []
     };
 
+    // KEEP THE ORIGINAL ANALYSIS LOGIC for counting imports
     // Analyze each import line
     importLines.forEach(line => {
       // Count import types
@@ -142,11 +153,103 @@ export class ImportReport {
     // Extract specific issues
     analysis.issues = issues.map(issue => issue.message).filter(Boolean) as string[];
 
+    // Extract errors from issues
+    analysis.errors = issues
+      .filter(issue => issue.severity === 'error')
+      .map(issue => issue.message)
+      .filter(Boolean) as string[];
+
+    // Find suggested fixes for this file
+    analysis.suggestedFixes = this.importFixes.filter(fix => fix.filePath === filePath);
+
     // Calculate bundle impact
     analysis.bundleImpact = this.calculateBundleImpact(analysis);
 
     return analysis;
   }
+
+  private parseImportLines(importLines: string[]): ParsedImport[] {
+    return importLines.map((line, index) => {
+      const importPath = this.extractImportPath(line);
+      const isExternal = this.isExternalImport(importPath);
+      const isRelative = this.isRelativeImport(importPath);
+      const isAbsolute = this.isAbsoluteImport(importPath);
+      const isDeep = this.isDeepImport(importPath);
+
+      // Determine import type
+      let type: ParsedImport['type'] = 'side-effect';
+      let specifiers: string[] = [];
+
+      if (line.includes('from')) {
+        if (line.includes('* as')) {
+          type = 'namespace';
+          const match = line.match(/\*\s+as\s+(\w+)/);
+          if (match) specifiers = [match[1]];
+        } else if (line.includes('{')) {
+          type = 'named';
+          const match = line.match(/{([^}]*)}/);
+          if (match) {
+            specifiers = match[1].split(',').map(s => s.trim()).filter(Boolean);
+          }
+        } else {
+          type = 'default';
+          const match = line.match(/import\s+(\w+)/);
+          if (match) specifiers = [match[1]];
+        }
+      }
+
+      return {
+        path: importPath,
+        type,
+        specifiers,
+        isExternal,
+        isRelative,
+        isAbsolute,
+        isDeep,
+        lineNumber: index + 1,
+        originalLine: line
+      };
+    });
+  }
+
+  private extractImportPath(importLine: string): string {
+    const match = importLine.match(/from\s+['"]([^'"]+)['"]/);
+    return match ? match[1] : '';
+  }
+
+  private isExternalImport(importPath: string): boolean {
+    return !importPath.startsWith('.') && 
+           !importPath.startsWith('@/') && 
+           !importPath.startsWith('~/');
+  }
+
+  private isRelativeImport(importPath: string): boolean {
+    return importPath.startsWith('.');
+  }
+
+  private isAbsoluteImport(importPath: string): boolean {
+    return importPath.startsWith('@/') || importPath.startsWith('~/');
+  }
+
+  private isDeepImport(importPath: string): boolean {
+    // Count ../ segments for depth analysis
+    const depth = (importPath.match(/\.\.\//g) || []).length;
+    return depth >= 3;
+  }
+
+  private calculateBundleImpact(analysis: ImportAnalysis): 'low' | 'medium' | 'high' {
+    let score = 0;
+    
+    if (analysis.externalImports > 10) score += 2;
+    if (analysis.wildcardImports > 5) score += 2;
+    if (analysis.deepImports > 3) score += 1;
+    if (analysis.unusedImports > 5) score += 1;
+
+    if (score >= 4) return 'high';
+    if (score >= 2) return 'medium';
+    return 'low';
+  }
+
 
   private extractImportPath(importLine: string): string {
     const match = importLine.match(/from\s+['"]([^'"]+)['"]/);

@@ -1,11 +1,13 @@
 // Tag.tsx
 import { TagComponent } from '@/app/components/models/tracker/TagComponent';
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseConfig, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { VersionData } from '@/app/versions/VersionData';
+import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
 import { SpecificMetadata } from '@/app/config/StructuredMetadata';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseEntityProperties, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import {  BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { 
   TagEntity, 
   TagK, 
@@ -20,7 +22,7 @@ import React from 'react';
 // Define the Tag interface and TagOptions interface
 // Main Tag interface
 interface Tag<T extends BaseDataEntity> extends TagOptions<T>, SharedTimestamps, SharedStatusFlags {
-  relatedTags: string[];
+  relatedTags?: string[] | Tag<T>[];
   attribs?: Record<string, any>;
 }
 
@@ -34,11 +36,9 @@ interface Taggable<T extends BaseDataEntity> {
 
 
 // Define BaseData interface
-interface TagsRecord<T extends BaseDataEntity> extends SharedTimestamps {
-  [tagName: string]: Tag<T>;
-}
-
-
+type TagsRecord<T extends BaseDataEntity> = SharedTimestamps & {
+  [tagName: string]: Tag<T> | undefined;
+};
 
 interface TagOptions<T extends BaseDataEntity> extends BaseEntityProperties, SharedTimestamps {
   color: string;
@@ -50,39 +50,43 @@ interface TagOptions<T extends BaseDataEntity> extends BaseEntityProperties, Sha
 }
 
 
-
-
-// Example usage of TagComponent
-const tagOptions1: TagOptions<BaseDataEntity> = {
+const tag1: Tag<BaseDataEntity> = {
   id: "1",
   name: "Important",
   color: "red",
-  description: '',
-  enabled: false,
-  type: '',
+  description: "Important items that require attention",
+  enabled: true,
+  type: "priority",
+  relatedTags: [],
+  attribs: {},
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: "system",
+  timestamp: Date.now(),
+  nulltype: {} as AllTypes,
   tags: {
+    createdAt: new Date(),
+    createdBy: "system",
+    updatedAt: new Date(),
+    updatedBy: "system",
     "1": {
       id: "1",
       name: "Important",
       color: "red",
-      description: '',
-      enabled: false,
-      type: '',
+      description: "Important items that require attention",
+      enabled: true,
+      type: "priority",
       relatedTags: [],
       attribs: {},
-      createdAt: undefined,
-      updatedAt: undefined,
-      createdBy: '',
-      timestamp: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: "system",
+      timestamp: Date.now(),
       nulltype: {} as AllTypes
     }
-  } as TagsRecord<BaseDataEntity>, // explicit type
-  createdAt: undefined,
-  updatedAt: undefined,
-  createdBy: '',
-  timestamp: 0,
-  nulltype: {} as AllTypes,
+  } as TagsRecord<BaseDataEntity>
 };
+
 
 const tagOptions2: TagOptions<TagEntity> = {
   id: "2",
@@ -99,16 +103,32 @@ const tagOptions2: TagOptions<TagEntity> = {
   nulltype: {} as AllTypes
 };
 
-const meta1: StructuredMetadata<T, K, Meta> = {
-
+const meta1: StructuredMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> = {
+  baseConfig: {} as BaseConfig<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>,
+  sharedMetadata: {},
+  sharedBaseData: {},
+  taggable: {},
+  metadataEntries: [], 
+  keywords: [],
+  versionData: {} as VersionData<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>,
+  timestamp: new Date(),
 } 
+const createTagElement = (
+  tagOptions: TagOptions<TagEntity>
+): React.ReactElement => {
+  return React.createElement(
+    TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagExcludedFields, TagIncludedFields>,
+    { 
+      tagOptions,
+      excludedFields: [], // Provide default or actual excluded fields
+      meta: undefined, // Provide meta if available, or undefined
+      key: tagOptions.id 
+    }
+  );
+};
 
-const tag1: React.ReactElement = <TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> tagOptions={tagOptions1} />;
-const tag2: React.ReactElement = <TagComponent<TagEntity, TagK, TagMeta, TagAttachment, TagIncludedFields, TagExcludedFields> tagOptions={tagOptions2} />;
-
-// Example usage of functions
-tag1.props.children;
-tag2.props.children;
+const tag1 = createTagElement(tagOptions1);
+const tag2 = createTagElement(tagOptions2)
 
 // Sorting function for TagOptions
 const localeCompare = <T extends BaseDataEntity>(
@@ -129,26 +149,52 @@ export const createTag = <T extends BaseDataEntity>(
   id: string, 
   name: string, 
   color: string,
-  p0: {
-    tags: (string[] | Tag<T>[]) & TagsRecord<T>;
-    description: string; 
-    enabled: boolean;
-  }
-): TagOptions<T> => ({
-  id,
-  name,
-  color,
-  description: p0.description,
-  enabled: p0.enabled,
-  type: '',
-  tags: p0.tags,
-  createdAt: undefined,
-  updatedAt: undefined,
-  createdBy: '',
-  timestamp: 0,
-  nulltype: {} as AllTypes
-});
+  options: {
+    description?: string;
+    enabled?: boolean;
+    type?: string;
+    relatedTags?: string[] | Tag<T>[];
+    attribs?: Record<string, any>;
+    tags?: TagsRecord<T>;
+    createdAt?: Date;
+    updatedAt?: Date;
+    createdBy?: string;
+    timestamp?: number;
+    nulltype?: AllTypes;
+  } = {}
+): Tag<T> & { tags?: TagsRecord<T> } => {
+  
+  const {
+    description = "description",
+    enabled = true,
+    type = "type",
+    relatedTags = [],
+    attribs = {},
+    tags,
+    createdAt,
+    updatedAt,
+    createdBy = "user",
+    timestamp = Date.now(),
+    nulltype = {} as AllTypes
+  } = options;
 
+  return {
+    id,
+    name,
+    color,
+    description,
+    enabled,
+    type,
+    relatedTags,
+    attribs,
+    createdAt,
+    updatedAt,
+    createdBy,
+    timestamp,
+    nulltype,
+    ...(tags && { tags }) // Only include tags if provided
+  };
+};
 
 function processTags<T extends BaseDataEntity>(
   tags: TagsRecord<T>| string[]

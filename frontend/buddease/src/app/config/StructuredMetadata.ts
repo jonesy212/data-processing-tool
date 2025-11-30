@@ -40,7 +40,7 @@ interface SpecificMetadata<
   T extends BaseDataEntity,
   K extends T = T
 > {
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   categories?: Category[];
   categoryProperties?: CategoryProperties<T, K>[];
   priority?: number;
@@ -213,7 +213,7 @@ interface ProjectMetadata<
   contributors: Contributor[]
   links: string[]
   customFields?: Record<string, any>
-  tags?: string[] | TagsRecord<T> | undefined
+  tags?: string[] | TagsRecord<T>
   isActive: boolean;
   permissions?: Permission[] | string[];
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;

@@ -18,7 +18,7 @@ import { openChatSettingsPanel } from '@/utils/ChatSettingsPanelUtils';
 import { initializeGeolocationService } from '@/utils/GeolocationServiceUtils';
 import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
-import { useAuth } from '@/state/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import axios, { AxiosResponse } from 'axios';
 import { EditorState } from 'draft-js';
 import React, { useEffect, useState } from 'react';

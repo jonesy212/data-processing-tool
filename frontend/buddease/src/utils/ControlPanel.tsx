@@ -15,13 +15,13 @@ import SlideUpAnimation from "@/app/libraries/animations/SlideUpAnimation";
 import { themeConfig } from "@/app/pages/_app";
 import { createCustomEvent } from "@/app/services/EventService";
 import {
-    default as useNotificationStore
-} from "@/app/state/stores/NotificationStore";
-import {
     NotificationContextProps,
     NotificationType,
     useNotification
-} from "@/state/context/NotificationContext";
+} from "@/app/state/context/NotificationContext";
+import {
+    default as useNotificationStore
+} from "@/app/state/stores/NotificationStore";
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";

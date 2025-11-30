@@ -15,7 +15,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Todo, UserAssignee } from '@/app/todos/Todo';
 import { todoService } from '@/app/todos/TodoService';
 import { User } from '@/app/users/User';
-import { useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { makeAutoObservable } from 'mobx';

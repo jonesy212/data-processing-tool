@@ -10,7 +10,6 @@ class SecureFieldManager {
     #encryptionKey: Buffer;
     #algorithm: string = 'aes-256-gcm';
 
-
     constructor(apiKey: string, encryptionKey: string) {
         this.#apiKey = apiKey;
         this.#encryptionKey = crypto.scryptSync(encryptionKey, 'salt', 32);
@@ -28,7 +27,7 @@ class SecureFieldManager {
     const authTag = cipher.getAuthTag();
     
     // Combine IV + authTag + encrypted data
-    return Buffer.concat([iv, authTag, Buffer.from(encrypted, 'hex')).toString('base64')]);
+    return Buffer.concat([iv, authTag, Buffer.from(encrypted, 'hex')]).toString('base64'); // FIXED: Removed extra bracket and parenthesis
   }
 
   decrypt(encryptedData: string): string {
@@ -66,8 +65,6 @@ class SecureFieldManager {
         this.#allowUserAccess = allow;
         return this;
     }
-
-
 
   /**
    * Static method to create a SecureField.
@@ -172,21 +169,27 @@ class SecureFieldManager {
 }
 
 
-export default SecureFieldManager
+export default SecureFieldManager;
 
 
 // Example SecureMetadata object with sensitive fields
 const secureMetadata: SecureMetadata = {
     id: {
         value: "12345", isSensitive: false,
-        canView: false
+        allowUserAccess: true,
+        allowedRoles: [],
+        canView: true
     },
     apiKey: {
         value: "secret-api-key", isSensitive: true,
+        allowUserAccess: false,
+        allowedRoles: ['admin'],
         canView: false
     },
     createdBy: {
         value: "admin", isSensitive: true,
+        allowUserAccess: false,
+        allowedRoles: ['admin'],
         canView: false
     },
 };
@@ -200,5 +203,5 @@ const findings = audit.conductAudit(secureMetadata);
 audit.reviewFindings(findings);
 
 // Sanitize metadata for a user with limited permissions
-const sanitizedMetadata = audit.sanitizeMetadata(secureMetadata, "user", false);
+const sanitizedMetadata = SecureFieldManager.sanitizeMetadata(secureMetadata, "user", false);
 console.log("Sanitized Metadata:", sanitizedMetadata);

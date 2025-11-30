@@ -5,10 +5,11 @@ import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { User } from "@/app/users/User";
 import { currentAppName } from "@/app/versions/AppVersion";
 import { RetryConfig, configServiceInstance } from "../services/ConfigurationService";
-import { ApiConfig, CacheConfig } from '@/app/api/ApiConfig';
+import { ApiConfig, CacheConfig } from '@/app/api/ApiConfigService';
 import { AppStructureItem } from "./appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
@@ -84,7 +85,7 @@ interface AppConfig {
   isAuthorized: () => boolean;
   isPrivate: () => boolean;
   updateConfig: (newConfig: Partial<ApiConfig>) => void;
-  getApiKey: () => string;
+  getApiKey: () => Promise<string>; 
 }
 
 // Create a simplified AppVersion instance for AppConfig
@@ -101,30 +102,159 @@ const createAppConfigVersion = (): AppVersion<AppConfigEntity, AppConfigK, AppCo
   });
 };
 
-// Create a default theme that matches the Theme interface
+// Create a default theme that matches the Theme interface and BrandingSettings
 const createDefaultTheme = (): Theme => ({
+  // ===== REQUIRED PROPERTIES FROM BRANDINGSETTINGS =====
   logoUrl: "",
-  themeColor: "",
-  primaryColor: "",
-  secondaryColor: "",
-  fontSize: "",
-  fontFamily: "",
-  headerColor: "",
-  footerColor: "",
-  bodyColor: "",
-  borderColor: "",
-  borderStyle: "",
-  padding: "",
-  margin: "",
-  brandIcon: "",
-  brandName: "",
-  borderWidth: "",
-  borderRadius: {
-    small: '4px',
-    medium: '8px',
-    large: '12px'
+  themeColor: "#3366cc",
+  textColor: "#333333",
+  accentColor: "#ff6b35",
+  successColor: "#28a745",
+  errorColor: "#dc3545", 
+  warningColor: "#ffc107",
+  darkModeBackground: "#1a1a1a",
+  darkModeText: "#ffffff",
+  fontFamily: "Arial, sans-serif",
+  fontPrimary: "Arial, sans-serif",
+  fontSecondary: "Georgia, serif",
+  fontHeading: "'Helvetica Neue', sans-serif",
+  headingFontFamily: "'Helvetica Neue', sans-serif",
+  fontSizeSmall: "12px",
+  fontSizeMedium: "16px", 
+  fontSizeLarge: "24px",
+  headingFontSize: "32px",
+  lineHeightNormal: "1.5",
+  lineHeightMedium: "1.75",
+  lineHeightLarge: "2",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  boxShadowHover: "0 4px 8px rgba(0,0,0,0.15)",
+  spacingSmall: "8px",
+  spacingMedium: "16px",
+  spacingLarge: "24px",
+  breakpoints: {
+    mobile: "768px",
+    tablet: "1024px", 
+    laptop: "1366px",
+    desktop: "1920px"
   },
-  boxShadow: "",
+
+  // ===== PROPERTIES FROM THEME INTERFACE =====
+  primaryColor: "#3366cc",
+  secondaryColor: "#6c757d", 
+  fontSize: "16px",
+  headerColor: "#ffffff",
+  footerColor: "#f8f9fa",
+  bodyColor: "#ffffff",
+  borderColor: "#dee2e6",
+  borderStyle: "solid",
+  padding: "16px",
+  margin: "16px",
+  brandIcon: "",
+  brandName: "Brand Name",
+  borderWidth: "1px",
+  borderRadius: {
+    small: "4px",
+    medium: "8px", 
+    large: "12px"
+  },
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+
+  // ===== OPTIONAL PROPERTIES WITH DEFAULTS =====
+  logoAltText: "Company Logo",
+  secondaryThemeColor: "#6c757d",
+  backgroundColor: "#ffffff",
+  defaultColor: "#cccccc",
+  infoColor: "#17a2b8",
+  borderColorFocus: "#80bdff",
+  shadowColor: "rgba(0,0,0,0.1)",
+  hoverColor: "#0056b3",
+  
+  // Provide defaults for optional nested structures
+  fontStyles: {
+    primary: "Arial, sans-serif",
+    secondary: "Georgia, serif", 
+    heading: "'Helvetica Neue', sans-serif"
+  },
+  
+  fontSizes: {
+    small: "12px",
+    medium: "16px",
+    large: "24px"
+  },
+  
+  lineHeight: {
+    normal: "1.5",
+    medium: "1.75", 
+    large: "2"
+  },
+  
+  spacing: {
+    small: "8px",
+    medium: "16px",
+    large: "24px"
+  },
+  
+  colors: {
+    primary: "#3366cc",
+    accent: "#ff6b35",
+    success: "#28a745",
+    error: "#dc3545",
+    warning: "#ffc107", 
+    info: "#17a2b8",
+    textColor: "#333333",
+    shadowColor: "rgba(0,0,0,0.1)",
+    hoverColor: "#0056b3",
+    darkModeBackground: "#1a1a1a",
+    darkModeText: "#ffffff",
+    borderColor: "#dee2e6",
+    borderColorHover: "#adb5bd",
+    borderColorActive: "#495057",
+    borderColorDisabled: "#e9ecef",
+    borderColorFocus: "#80bdff",
+    button: {
+      color: "#3366cc",
+      colorHover: "#0056b3",
+      colorActive: "#004085",
+      colorDisabled: "#6c757d",
+      colorFocus: "#80bdff",
+      textColor: "#ffffff",
+      textColorHover: "#ffffff",
+      textColorActive: "#ffffff",
+      borderColorHover: "#0056b3",
+      borderColorActive: "#004085",
+      borderColorDisabled: "#6c757d",
+      borderColorFocus: "#80bdff",
+      borderColor: "#3366cc"
+    }
+  },
+
+  // ===== ANIMATION DEFAULTS =====
+  animationDuration: 300,
+  animationDelay: 0,
+  animationIterationCount: 1,
+  animationDirection: "normal",
+  animationFillMode: "none", 
+  animationPlayState: "running",
+  animationTimingFunction: "ease",
+  animationName: "",
+  animationIterationStart: 0,
+  animationIterationEnd: 1,
+  animationDelayStart: 0,
+  animationDelayEnd: 0,
+  animationDirectionStart: "normal",
+  animationDirectionEnd: "normal", 
+  animationSpeed: 1,
+  animationEasing: "ease",
+  animationFillModeStart: "none",
+  animationFillModeEnd: "none",
+  animationPlayStateStart: "running",
+  animationPlayStateEnd: "running",
+  animations: {} as DocumentAnimationOptions,
+
+  // ===== THEME-SPECIFIC OPTIONALS =====
+  language: "en",
+  newThemeName: "Default Theme",
+  isDarkMode: false
 });
 
 // Define the function to retrieve AppConfig

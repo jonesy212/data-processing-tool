@@ -1,6 +1,6 @@
 // useSocialAuthentication.tsx
 import axiosInstance from '@/app/api/csrfToken';
-import { useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { useState } from 'react';
 
 const useSocialAuthentication = () => {

@@ -1,7 +1,7 @@
 // useSecureStoreId.ts
 // useSecureStoreId
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 export const useSecureStoreId = () => {

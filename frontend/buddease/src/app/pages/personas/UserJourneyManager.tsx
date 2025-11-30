@@ -39,7 +39,7 @@ import { TaskManagementPhase } from "@/app/projects/TaskManagementPhase";
 import { User, UserData } from "@/app/users/User";
 import IdeaCreationPhase from "@/app/users/userJourney/IdeaCreationPhase";
 import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import axios from "axios";
 import React, { useState } from "react";
 import UserQuestionnaire from "./UserQuestionnaire";

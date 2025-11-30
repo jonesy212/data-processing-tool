@@ -5,16 +5,16 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
-import { Drawing } from "@/app/libraries/drawing/generateDrawingJSON";
-import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { useAuth } from "@/state/context/AuthContext";
-import { AxiosError, AxiosResponse } from "axios";
-import { databaseConfig } from '@/app/server/database/config'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Drawing } from "@/app/libraries/drawing/generateDrawingJSON";
+import { databaseConfig } from '@/app/server/database/config';
+import { useAuth } from "@/app/state/context/AuthContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
+import { AxiosError, AxiosResponse } from "axios";
 
 const { notify } = useNotification();
 

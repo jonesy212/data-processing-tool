@@ -9,7 +9,7 @@ import { authToken } from "@/app/server/auth/authToken";
 import { rootStores } from "@/app/state/stores/RootStores";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from "@/app/state/context/AuthContext";
 import { create } from "mobx-persist";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

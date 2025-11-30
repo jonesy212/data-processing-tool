@@ -6,7 +6,7 @@ import { UserRole } from "@/app/models/UserRole";
 import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
-import { useAuth } from '@/state/context/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import { useMemo, useState } from "react";
 
 function useMetadata<

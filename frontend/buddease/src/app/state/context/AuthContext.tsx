@@ -1,20 +1,19 @@
 // AuthContext.tsx
-import { DashboardConfig } from '@/app/typings/authTypes'
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta
+} from '@/app/config/BaseConfig';
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NFT } from "@/app/models/cypto/NFT";
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "@/app/state/stores/AuthStore";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
+import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/app/typing/AuthEntity';
+import { DashboardConfig } from '@/app/typings/authTypes';
 import { User } from "@/app/users/User";
-import { UserPreferences } from "@/app/config/UserPreferences";
 import React, { createContext, useContext, useReducer } from "react";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
-} from '@/app/config/BaseConfig';
 
 // Define the types for the context and state
 interface AuthState<
@@ -118,9 +117,9 @@ interface AuthAction<
   }; // Updated payload
 }
 
-const AuthContext = createContext<AuthContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(undefined);
+const AuthContext = createContext<AuthContextProps<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> | undefined>(undefined);
 
-const initialState: AuthState<> = {
+const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> = {
   id: "0",
   isAuthenticated: false,
   user: null,
@@ -151,7 +150,7 @@ const initialState: AuthState<> = {
     this.store = new AuthStore(); // Reinitialize AuthStore if needed
   },
   loginWithRoles: function (
-    user: User,
+    user: User<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields>,
     roles: string[],
     nfts: NFT[],
     authToken: string
@@ -232,7 +231,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
   };
 
   const loginWithRoles = (
-    user: User,
+    user: User<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields>,
     roles: string[],
     nfts: NFT[],
     authToken: string
@@ -302,6 +301,12 @@ const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
         resetAuthState,
         loginWithRoles,
         token,
+        
+        login: state.login,
+        logout: state.logout,
+        register: state.register,
+        hasPermission: state.hasPermission,
+      
         isAuthenticated: state.isAuthenticated,
         isLoading: state.isLoading,
         accessToken: token,
@@ -346,7 +351,7 @@ const fetchDataWithToken = async () => {
   }
 };
 
-const useAuth = (): AuthContextProps => {
+const useAuth = (): AuthContextProps<AppAuth> => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

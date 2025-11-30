@@ -85,7 +85,7 @@ interface SnapshotWithCriteriaContract<
   analysisType?: AnalysisTypeEnum;
   events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStoreArray?: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

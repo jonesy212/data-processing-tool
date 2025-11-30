@@ -15,7 +15,7 @@ import { category } from '@/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 import { LiveEvent } from "@refinedev/core";
-
+import { AppSubscription } from '@/app/typings/entities/SubscriptionEntity'
 
 interface SubscriptionPayload<
   T extends BaseDataEntity = BaseDataRoot,
@@ -136,8 +136,8 @@ export const SubscriptionActions = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T,
-  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  IncludedFields extends keyof T = keyof T
+  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >() => {
   // Define payload types that match the generic structure
   type UnsubscribePayload = {
@@ -155,7 +155,7 @@ export const SubscriptionActions = <
 
   const actions = {
     // Action to add a new subscriber
-    subscribe: createAction<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>("subscribe"),
+    subscribe: createAction<SubscriptionPayload<AppSubscription>>("subscribe"),
 
     // Action to remove a subscriber with proper payload
     unsubscribe: createAction<UnsubscribePayload>("unsubscribe"),
@@ -174,7 +174,7 @@ export const SubscriptionActions = <
   };
 
   return actions as {
-    subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>;
+    subscribe: ActionCreatorWithPayload<AppSubscription>;
     unsubscribe: ActionCreatorWithPayload<UnsubscribePayload>;
     fetchInitialSubscriptions: ActionCreatorWithoutPayload;
     subscriptionSuccess: ActionCreatorWithPayload<string>;
@@ -190,8 +190,8 @@ export const createSubscriptionPayload = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
-  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  IncludedFields extends keyof T = keyof T
+  // S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >(
   overrides: Partial<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ): SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
@@ -204,7 +204,7 @@ export const createSubscriptionPayload = <
     meta: {
       name: "Subscription Notification",
       timestamp: new Date(),
-      type: NotificationTypeEnum.INFO,
+      type: 'INFO',
       startDate: new Date(),
       endDate: new Date(),
       status: "ACTIVE",

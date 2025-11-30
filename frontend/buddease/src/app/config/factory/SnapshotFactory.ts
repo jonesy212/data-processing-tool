@@ -3,8 +3,6 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
 
 // =========================
 // CONFIG FACTORY COMPANION
@@ -18,10 +16,10 @@ export const SnapshotConfigFactory = {
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T,
-    Extras extends unknown[] = []
+    // Extras extends unknown[] = []
   >(
     builder: SnapshotConfigBuilder<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ...params: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, Extras>
+    ...params: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     if (builder.createConfig) {
       return builder.createConfig(params);

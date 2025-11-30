@@ -4,8 +4,8 @@ import {
   EventListener, 
   EventFilter, 
   EventEmitterConfig 
-} from '@/typings/eventTypes';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+} from '@/app/typings/eventTypes';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 export class EventEmitter<T extends Record<string, any>> {
   private listeners: Map<keyof T, EventListener<T[keyof T]>[]> = new Map();

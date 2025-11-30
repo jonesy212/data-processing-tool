@@ -8,6 +8,7 @@ import JSZip from "jszip";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from "@/app/typings/entities/UserEntity";
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity';
 
 // Make the interface generic
 export interface DocxGeneratorOptions<
@@ -106,16 +107,16 @@ fileInput.onchange = async (e) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
-  const options: DocxGeneratorOptions<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
+  const options: DocxGeneratorOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> = {
     templateFile: file,
     fileName: "generated-document.docx",
     data: {
       name: "John Doe",
       date: new Date().toLocaleDateString()
     },
-    user: {} as User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>
+    user: {} as User<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>
   };
 
-  const docxGenerator = new DocxGenerator(options);
+  const docxGenerator = new DocxGenerator<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>(options);
   await docxGenerator.downloadDocument();
 };

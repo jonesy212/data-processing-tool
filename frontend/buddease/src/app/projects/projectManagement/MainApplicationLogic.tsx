@@ -3,7 +3,7 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import ExtendedAppLogic from "@/app/pages/ExtendedAppLogic";
 import OnboardingPage from "@/app/pages/onboarding/OnboardingPage";
 import UserJourneyManager from "@/app/pages/personas/UserJourney";
-import { useAuth } from "@/state/context/AuthContext";
+import { useAuth } from '@/app/state/context/AuthContext';
 import React, { useState } from "react";
 
 const MainApplicationLogic: React.FC = () => {

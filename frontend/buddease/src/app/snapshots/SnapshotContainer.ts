@@ -63,7 +63,7 @@ interface SnapshotBase<
   currentcategory?: Category;
   snapshotId?: string | number | null;
   title?: string;
-  tags?: string[] | TagsRecord<T> | undefined;
+  tags?: string[] | TagsRecord<T>;
   key?: string;
   state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topic?: string;

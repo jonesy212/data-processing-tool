@@ -12,12 +12,12 @@ import CommonDetails, {
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import UserQuestionnaire from "@/app/personas/UserQuestionnaire";
+import { useAuth } from "@/app/state/context/AuthContext";
 import {
     NotificationTypeEnum,
     useNotification,
 } from '@/app/state/context/NotificationContext';
 import { UserData } from "@/app/users/User";
-import { useAuth } from "@/state/context/AuthContext";
 import React, { useState } from "react";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import RegistrationPhase from "./RegistrationPhase";

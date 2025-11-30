@@ -22,6 +22,7 @@ import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
@@ -29,15 +30,14 @@ import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import {
-  SnapshotAttachment,
-  SnapshotEntity,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields,
-  SnapshotK,
-  SnapshotMeta
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/state/context/NotificationContext';
 import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/utils/web3/applicationUtils";
 import { CustomSnapshotData, data, SnapshotItem } from '.';

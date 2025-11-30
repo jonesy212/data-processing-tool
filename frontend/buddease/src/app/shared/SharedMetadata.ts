@@ -9,7 +9,7 @@ import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from
 import { CoreMetadata } from '@/app/confg/MetadataStateManager';
 import { Version } from '../versions/Version';
 import { VersionData, VersionHistory } from '../versions/VersionData';
-import { Permissions } from '@/app/server/security/getPermissions'
+import { Permission } from '@/app/permissions/Permission';
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -32,7 +32,8 @@ interface SharedMetadata<
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 
   appPermissions?: AppStructurePermissions[]; 
-  permissions?: string[] | Permissions[]
+  permissions?: string[] | Permission[]; 
+  rolePermissions?: RolePermissions;
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   category?: Category;

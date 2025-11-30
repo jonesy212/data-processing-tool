@@ -6,7 +6,7 @@ import { Data } from '@/app/models/data/Data';
 import {
     DocumentTypeEnum
 } from "@/app/typings/documents";
-import { useSearch } from "@/state/context/SearchContext";
+import { useSearch } from '@/app/state/context/SearchContext';
 import React, { useEffect, useState } from "react";
 
 type DocumentDataPartial = Partial<DocumentData<Data>>;

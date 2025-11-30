@@ -2,6 +2,7 @@
 // scripts/analyzeDuplicates.ts
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 interface DuplicateReport {
   duplicates: {
@@ -188,7 +189,23 @@ async function main() {
   console.log('📄 Report saved to: duplicate-analysis-report.md');
 }
 
-if (require.main === module) {
+// Check if this is the main module in a cross-platform way
+function isMainModule(importMetaUrl: string): boolean {
+  if (typeof require !== 'undefined' && require.main === module) {
+    return true; // CommonJS
+  }
+  
+  try {
+    const __filename = fileURLToPath(importMetaUrl);
+    const __dirname = path.dirname(__filename);
+    return process.argv[1] === __filename;
+  } catch {
+    return false;
+  }
+}
+
+// Then use:
+if (isMainModule(import.meta.url)) {
   main().catch(console.error);
 }
 

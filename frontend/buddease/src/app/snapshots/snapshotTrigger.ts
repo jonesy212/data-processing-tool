@@ -14,7 +14,7 @@ import {
     processSnapshotData,
     updateSnapshotMetrics
 } from '@/utils/snapshotUtils';
-import { useNotification } from '@/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 
 const { notify } = useNotification()
 
