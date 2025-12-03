@@ -1,5 +1,6 @@
-import { AuthenticationProvider } from '@/app/auth/AuthService';
 // AuthEntity.ts
+
+import { AuthenticationProvider } from '@/app/server/auth/AuthService'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums'; 
@@ -8,6 +9,7 @@ import { SecurityEvent } from '@/app/state/redux/slices/SecurityEventSlice'
 import { PublicUserProfile } from '@/app/typings/entities/UserEntity'; 
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { User } from "@/app/users/User";
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -19,7 +21,6 @@ import { DashboardConfig } from '@/app/typings/authTypes';
 import { UserContactInfo, UserNotificationPreferences, UserSession } from '@/app/state/stores/AuthStore';
 import { SubscriptionPlan } from '@/app/subscriptions/SubscriptionPlan';
 import { UserPreferences } from '@/app/typings/userTypes';
-import { AuthenticationProvider } from '@/app/interfaces/provider/AuthenticationProvider'
 
 
 // Define sensitive fields that should never be exposed
@@ -226,6 +227,14 @@ type AuthData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 
 // Complete auth with all fields (including sensitive ones)
 type CompleteAuth = AuthEntity;
+type AppAuth = User<
+  AuthEntity,
+  AuthK,
+  AuthMeta,
+  AuthAttachment,
+  AuthExcludedFields,
+  AuthIncludedFields
+  >;
 
 // Auth without sensitive fields for public display
 type PublicAuthInfo = Pick<AuthEntity, "id" | "userId" | "isAuthenticated" | "authMethod" | "lastLogin" | "roles" | "mfaEnabled">;
@@ -383,6 +392,7 @@ type SecureAuthInfo = ApplyFieldFilters<AuthEntity, SensitiveAuthField>;
 
 type PermissionLevel = 'read' | 'write' | 'admin' | 'owner'; 
 type VisibilityLevelType = VisibilityLevel; 
+
 
 // 🔒 RESTRICTED AUTH TYPES
 
@@ -588,6 +598,7 @@ export type {
   // ========================
   // 🎯 UTILITY & STATE TYPES
   // ========================
+  AppAuth,
   AuthFilterOptions,                           // 🟢 CLIENT-SAFE
   AuthSortOptions,                             // 🟢 CLIENT-SAFE
   AuthSessionState,                            // 🟡 INTERNAL

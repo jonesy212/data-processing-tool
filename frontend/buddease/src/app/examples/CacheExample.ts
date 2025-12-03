@@ -2,13 +2,15 @@
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { initializeAppData } from '@/app/api/service/ApiService';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
 import { backendConfig } from '@/app/config/BackendConfig';
 import { frontendConfig } from '@/app/config/FrontendConfig';
-import { userSettings } from '@/app/config/UserSettings';
+import userSettings from "@/app/config/UserSettings";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { CustomStyle } from '@/app/api/service/ApiService';
 import { realtimeData } from '@/app/generators/GenerateCache';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import useFilePath from "@/app/hooks/useFilePath";
 import { CacheReadOptions } from '@/app/libraries/cache/CacheResponse';
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
@@ -19,8 +21,8 @@ import { versionHistory } from '@/app/versions/VersionData';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { ContentState } from "draft-js";
 import { useState } from "react";
-
-
+import { defaultMetadata } from '@/app/frontend/buddease/src/app/layout'
+import { DataSharingPreferences } from 'app/settings/PrivacySettings'
 // Usage
 initializeAppData().then(appData => {
   console.log(appData);
@@ -453,8 +455,8 @@ const cacheData: Partial<SupportedData> = {
       } as CustomStyle,
     },
 
-    previousMetadata: {} as UnifiedMetaDataOptions<any, any>,
-    currentMetadata: {} as UnifiedMetaDataOptions<any, any>,
+    previousMetadata: {} as UnifiedMetadata<any, any>,
+    currentMetadata: {} as UnifiedMetadata<any, any>,
     currentContent: {} as ContentState,
     additionalOptionsLabel: "",
     uniqueIdentifier: "",

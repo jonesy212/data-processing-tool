@@ -276,7 +276,7 @@ export function getAllKeys<
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   id: number,
-  snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;, T, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   data: T,
   category?: Category
 ): Promise<string[] | undefined> {

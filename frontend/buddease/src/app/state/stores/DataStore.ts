@@ -2,7 +2,8 @@
 
 import { DataActions } from '@/app/actions/DataActions';
 import * as apiData from "@/app/api/ApiData";
-import fetchSnapshotById, * as snapshotApi from '@/app/api/SnapshotApi';
+
+import { snapshotApi } from '@/app/api/SnapshotApi';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
@@ -11,8 +12,10 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import storeProps from '@/app/hooks/YourComponent';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -23,8 +26,7 @@ import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
-import { DataStoreMethods } from '@/app/projects/DataAnalysis/DataStoreMethods';
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethods, SnapshotStoreProps } from '@/app/snapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
@@ -39,14 +41,13 @@ import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriber
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseSnapshotProps } from "@/app/snapshots/createBaseSnapshot";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { isSnapshotArrayState, isSnapshotsArray } from '@/app/snapshots/createSnapshotOptions';
+import isSnapshotsArray, { isSnapshotArrayState } from '@/app/snapshots/createSnapshotOptions';
 import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';
 import { getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import transformDataToSnapshot from '@/app/snapshots/transformDataToSnapshot';
 import { DataContext } from '@/app/state/context/DataContext';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { store } from '@/app/state/stores/useAppDispatch';
 import { Subscriber } from '@/app/subscribers/Subscriber';
@@ -115,7 +116,23 @@ function createDataStore<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->() {
+>(
+  options: {
+    existingSnapshotStore?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    category?: string;
+    snapshotId?: string;
+    additionalHeaders?: Record<string, string>;
+    storeProps?: any;
+  } = {}
+) {
+  const {
+    existingSnapshotStore,
+    category = 'default',
+    snapshotId,
+    additionalHeaders = {},
+    storeProps = {}
+  } = options;
+
   const config = {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   const container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = 
@@ -123,7 +140,7 @@ function createDataStore<
       {
         id: `temp-${Date.now()}`,
         timestamp: new Date().toISOString(),
-        currentCategory: category || 'default',
+        currentCategory: category,
         items: [],
         data: null as any,
         name: 'Temporary Container',
@@ -133,18 +150,22 @@ function createDataStore<
       storeProps
     );
 
-  // Then populate it if needed
-  if (snapshotId && !existingSnapshotStore) {
-    try {
-      const snapshotData = await snapshotApi.getSnapshotData(snapshotId, additionalHeaders);
-      Object.assign(container, snapshotData);
-    } catch (error) {
-      console.warn('Failed to populate container with snapshot data:', error);
+  // Async function to populate container if needed
+  const populateContainer = async () => {
+    if (snapshotId && !existingSnapshotStore) {
+      try {
+        const snapshotData = await snapshotApi.getSnapshotData(snapshotId, additionalHeaders);
+        Object.assign(container, snapshotData);
+      } catch (error) {
+        console.warn('Failed to populate container with snapshot data:', error);
+      }
     }
-  }
+  };
+
   return {
     container,
     config,
+    populateContainer,
   };
 }
 
@@ -588,12 +609,14 @@ class ConfigurableSnapshotStore<
   IncludedFields extends keyof T = keyof T
 > extends SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 {
+  
+  public configure(config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+    this.setConfig(config); // Now we can call the protected method
+  }
 
-  protected setConfig(config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
-    // Logic to set config specifically for ConfigurableSnapshotStore
-    super.setConfig(config)
-
-    // Custom logic specific to ConfigurableSnapshotStore
+  protected async setConfig(config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
+    await super.setConfig(config);
+    
     if (config.logging) {
       console.log('Logging enabled for ConfigurableSnapshotStore.');
     }
@@ -601,22 +624,38 @@ class ConfigurableSnapshotStore<
     if (config.autoSync) {
       console.log('Auto-sync enabled for ConfigurableSnapshotStore.');
     }
-
-     // Nothing else to return, resolves as void
-    return;
   }
 
-  public configure(config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
-    this.setConfig(config); // Now we can call the protected method
-  }
-
-    // Use existing API function to load snapshot
+  // Type-safe version if you know snapshots is a Map
   public async loadFromApi(id: number): Promise<void> {
     try {
       const snapshotData = await fetchSnapshotById<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(id);
       if (snapshotData) {
-        // Assuming SnapshotStore has a `snapshots` map or array
-        this.snapshots.set(snapshotData.id, snapshotData);
+        // Type assertion - only use if you're sure
+        (this.snapshots as Map<string | number, typeof snapshotData>).set(snapshotData.id, snapshotData);
+      }
+    } catch (err) {
+      console.error('Failed to load snapshot from API', err);
+      throw err;
+    }
+  }
+
+  // Alternative: Add to array if that's what parent uses
+  public async loadFromApiToArray(id: number): Promise<void> {
+    try {
+      const snapshotData = await fetchSnapshotById<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(id);
+      if (snapshotData) {
+        // Check if snapshots is an array
+        if (!Array.isArray(this.snapshots)) {
+          throw new Error('snapshots is not an array');
+        }
+        
+        const existingIndex = this.snapshots.findIndex(s => s.id === snapshotData.id);
+        if (existingIndex >= 0) {
+          this.snapshots[existingIndex] = snapshotData;
+        } else {
+          this.snapshots.push(snapshotData);
+        }
       }
     } catch (err) {
       console.error('Failed to load snapshot from API', err);
@@ -684,19 +723,19 @@ const useDataStore = <
       } = storeConfigProps
 
         // Ensure you’re using the proper class
-    const snapshotData = new ConfigurableSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+      const snapshotData = new ConfigurableSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
 
-    await snapshotData.loadFromApi(id);
-    // Apply config after instantiation
-    snapshotData.setConfig(storeConfigProps);
-    return snapshotData;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error;
+      await snapshotData.loadFromApi(id);
+      // Apply config after instantiation
+      snapshotData.configure(storeConfigProps);
+      return snapshotData;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      throw error;
+    }
   }
-}
  
- 
+
   const addData = (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void => {
     dispatch(DataActions().addData(newData));
   };
@@ -1327,7 +1366,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
         metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
-        storeProps: SnapshotStoreProps<T, K>,
+        storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         subscription: Subscription<T, K>,
         category?: Category,

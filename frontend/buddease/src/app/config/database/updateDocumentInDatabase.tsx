@@ -1,7 +1,7 @@
 // updateDocumentInDatabase.tsx
-import DatabaseClient from "@/api/DatabaseClient";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
+import DatabaseClient from "@/app/api/DatabaseClient";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
@@ -228,10 +228,10 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
 };
 
 export {
-    addDocumentFailure, fetchDocumentFromArchive,
-    loadDrawingFromDatabase, saveDocumentToDatabase,
-    saveTodoToDatabase,
-    saveTradeToDatabase,
-    updateDocumentInDatabase
+  addDocumentFailure, fetchDocumentFromArchive,
+  loadDrawingFromDatabase, saveDocumentToDatabase,
+  saveTodoToDatabase,
+  saveTradeToDatabase,
+  updateDocumentInDatabase
 };
 

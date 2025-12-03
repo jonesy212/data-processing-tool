@@ -1,5 +1,4 @@
 // responseTypes.ts
-import { Data } from '@/app/models/data/Data';
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { SearchNotesResponse } from "@/app/api/ApiNote";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -10,6 +9,7 @@ import { DataWithComment } from "@/app/dataIntegration/SafeParseData";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
 import { Exchange } from "@/app/models/cypto/Exchange";
+import { Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { Phase } from "@/app/models/phases/Phase";
 import { Project } from "@/app/models/projects/Project";
@@ -17,18 +17,17 @@ import { Task } from "@/app/models/tasks/Task";
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
 import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
 import { IconStore } from "@/app/state/stores/IconStore";
-import { Settings } from "@/app/state/stores/SettingsStore";
 import { TaskManagerStore } from "@/app/state/stores/TaskStore ";
 import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { BaseResponseType } from "@/app/typings/baseResponseType";
 import { User } from "@/app/users/User";
+import { Settings } from 'app/state/hybrid/SettingsManagerStore';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo

@@ -1,5 +1,4 @@
 // getCurrentSnapshotConfigOptions.tsx
-// getCurrentSnapshotConfigOptions.ts
 
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
@@ -29,8 +28,6 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-
-
 
 class InitializedDelegateClass<
   T extends BaseDataEntity, 
@@ -95,7 +92,6 @@ export const getCurrentSnapshotConfigOptions = <
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
     dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
@@ -174,35 +170,35 @@ export const getCurrentSnapshotConfigOptions = <
     // Extend baseConfig if needed based on timestamp
   }
 
-  // Return the final configuration, integrating configureSnapshot method and ensuring tempData is accessible
+  // Fixed: Correct syntax for the configureSnapshot method
+  const configureSnapshot = (
+    id: string,
+    storeId: number,
+    snapshotId: string,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
+    categoryProperties?: CategoryProperties | undefined,
+    callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null => {
+    // Ensure snapshotStore exists within snapshotData
+    if (!snapshotData.snapshotStore) {
+      throw new Error("snapshotStore cannot be null");
+    }
+
+    // Link baseConfig to snapshotStore
+    snapshotData.snapshotStore.snapshotStoreConfig = baseConfig;
+
+    // Return configured snapshot and config
+    return snapshotData.snapshotStore;
+  };
+
+  // Return the final configuration
   return {
     ...baseConfig,
-    configureSnapshot: (
-      id: string,
-      storeId: number,
-      snapshotId: string,
-      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,
-      categoryProperties?: CategoryProperties | undefined,
-      callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-      snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ): {
-      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      config: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    } => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null  {
-      // Ensure snapshotStore exists within snapshotData
-      if (!snapshotData.snapshotStore) {
-        throw new Error("snapshotStore cannot be null");
-      }
-
-      // Link baseConfig to snapshotStore
-      snapshotData.snapshotStore.snapshotStoreConfig = baseConfig;
-
-      // Return configured snapshot and config
-      return snapshotData.snapshotStore;
-    },
+    configureSnapshot,
     // Ensure tempData access is part of the configuration
     tempData: baseConfig.tempData
   };

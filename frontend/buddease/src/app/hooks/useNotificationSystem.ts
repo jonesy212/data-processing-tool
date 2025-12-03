@@ -403,7 +403,7 @@ export const useNotificationSystem = <
     attemptNumber: number, 
     options: NotificationOptions = {}
   ): string => {
-    const message: Message = {
+    const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       content: `Recovery attempt ${attemptNumber} in progress...`,
       type: 'info'
     };

@@ -7,6 +7,7 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
@@ -17,7 +18,8 @@ import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
 import { ValidationResult } from '@/app/snapshots/ValidationRule';
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { PhaseMeta } from '@/app/typings/phaseTypes';

@@ -13,7 +13,6 @@ import { Data } from '@/app/models/data/Data';
 
 export const ENDPOINT = endpoints.backend
 
-
 type RealtimeUpdateCallback<
   T extends BaseDataEntity,
   K extends T = T,
@@ -22,11 +21,11 @@ type RealtimeUpdateCallback<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > = (
-  id: string,
-  events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+    id: string,
+    events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ) => void;
 
 const useRealtimeData = <

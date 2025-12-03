@@ -542,8 +542,6 @@ snapshot: async function<
     }
   },
 
-
-
   /**
    * Gets the snapshot container for a given snapshot
    */
@@ -554,34 +552,221 @@ snapshot: async function<
     categoryProperties?: CategoryProperties,
     delegate?: any,
     snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined{};
-  
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    const container = snapshotContainers.get(snapshotId);
+    
+    // If criteria or other filters are provided, ensure the container matches
+    if (container) {
+      if (criteria && container.criteria !== criteria) return undefined;
+      if (category && container.category !== category) return undefined;
+      if (categoryProperties && container.categoryProperties !== categoryProperties) return undefined;
+      if (delegate && container.delegate !== delegate) return undefined;
+      if (snapshotData && container.snapshotData !== snapshotData) return undefined;
+    }
+    
+    return container;
+  },
   /**
    * Sets or updates the snapshot container
    */
   setSnapshotContainer: function (
     container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId?: string
-  ): void;
-  
+  ): void {
+    const id = snapshotId || container.id || container.snapshotId;
+    if (!id) {
+      throw new Error('Snapshot ID is required');
+    }
+    snapshotContainers.set(String(id), container);
+  },
+    
   /**
    * Removes a snapshot container
    */
-  removeSnapshotContainer: function (snapshotId: string) => boolean;
-  
+  removeSnapshotContainer: function (snapshotId: string): boolean {
+    return snapshotContainers.delete(snapshotId);
+  },  
+
   /**
    * Gets all snapshot containers
    */
-  getAllSnapshotContainers: function () => Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-  
+    getAllSnapshotContainers: function (): Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+      return new Map(snapshotContainers);
+  },
+    
   /**
    * Finds snapshot containers by criteria
    */
+
   findSnapshotContainers: function (
     predicate: (container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean
-  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const results: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    snapshotContainers.forEach(container => {
+      if (predicate(container)) {
+        results.push(container);
+      }
+    });
+    return results;
+  },
 
-
-
+  /**
+   * Creates a new snapshot container
+   */
+  createSnapshotContainer: function (
+    snapshotId: string,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    criteria?: CriteriaType,
+    category?: Category,
+    categoryProperties?: CategoryProperties,
+    delegate?: any
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    const container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      id: snapshotId,
+      snapshotId,
+      snapshots: snapshotData,
+      criteria,
+      category,
+      categoryProperties,
+      delegate,
+      metadata: {} as Meta,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      subscribers: [],
+      // Add other required properties based on your SnapshotContainer interface
+    };
+    
+    snapshotContainers.set(snapshotId, container);
+    return container;
+  },
+  
+  /**
+   * Updates an existing snapshot container
+   */
+  updateSnapshotContainer: function (
+    snapshotId: string,
+    updates: Partial<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    const existing = snapshotContainers.get(snapshotId);
+    if (!existing) return undefined;
+    
+    const updated = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    snapshotContainers.set(snapshotId, updated);
+    return updated;
+  },
+  
+  /**
+   * Clears all snapshot containers
+   */
+  clearAllSnapshotContainers: function (): void {
+    snapshotContainers.clear();
+  },
+  
+  /**
+   * Checks if a snapshot container exists
+   */
+  hasSnapshotContainer: function (snapshotId: string): boolean {
+    return snapshotContainers.has(snapshotId);
+  },
+  
+  /**
+   * Gets the count of snapshot containers
+   */
+  getSnapshotContainerCount: function (): number {
+    return snapshotContainers.size;
+  },
+  
+  /**
+   * Gets snapshot containers by category
+   */
+  getSnapshotContainersByCategory: function (
+    category: Category
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    return this.findSnapshotContainers(container => container.category === category);
+  },
+  
+  /**
+   * Gets snapshot containers by criteria
+   */
+  getSnapshotContainersByCriteria: function (
+    criteria: CriteriaType
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    return this.findSnapshotContainers(container => container.criteria === criteria);
+  },
+  
+  /**
+   * Merges multiple snapshot containers
+   */
+  mergeSnapshotContainers: function (
+    containers: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    // Combine all snapshots from all containers
+    const allSnapshots: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
+    let mergedCriteria: CriteriaType | undefined;
+    let mergedCategory: Category | undefined;
+    
+    containers.forEach(container => {
+      if (Array.isArray(container.snapshots)) {
+        allSnapshots.push(...container.snapshots);
+      }
+      // Use criteria/category from first container or create combined logic
+      if (!mergedCriteria && container.criteria) {
+        mergedCriteria = container.criteria;
+      }
+      if (!mergedCategory && container.category) {
+        mergedCategory = container.category;
+      }
+    });
+    
+    const mergedId = `merged-${Date.now()}`;
+    return this.createSnapshotContainer(
+      mergedId,
+      allSnapshots,
+      mergedCriteria,
+      mergedCategory,
+      undefined, // categoryProperties
+      undefined  // delegate
+    );
+  },
+  
+  /**
+   * Filters snapshot containers
+   */
+  filterSnapshotContainers: function (
+    filterFn: (container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    return Array.from(snapshotContainers.values()).filter(filterFn);
+  },
+  
+  /**
+   * Gets snapshot container IDs
+   */
+  getSnapshotContainerIds: function (): string[] {
+    return Array.from(snapshotContainers.keys());
+  },
+  
+  /**
+   * Backs up snapshot containers
+   */
+  backupSnapshotContainers: function (): Record<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    return Object.fromEntries(snapshotContainers);
+  },
+  
+  /**
+   * Restores snapshot containers from backup
+   */
+  restoreSnapshotContainers: function (
+    backup: Record<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): void {
+    snapshotContainers.clear();
+    Object.entries(backup).forEach(([id, container]) => {
+      snapshotContainers.set(id, container);
+    });
+  }
   // ... implement ALL the methods from your list
 };

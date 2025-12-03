@@ -1,28 +1,28 @@
 // realTimePriceComparison.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import DEXData from '@/app/models/data/DEXData';
-import { ExchangeData } from '@/app/models/data/ExchangeData';
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 import useRealtimeDextData from '@/app/hooks/commHooks/useRealtimeDextData';
 import useRealtimeExchangeData from '@/app/hooks/commHooks/useRealtimeExchangeData';
 import { DEX } from '@/app/models/cypto/DEX';
 import { Exchange } from '@/app/models/cypto/Exchange';
+import DEXData from '@/app/models/data/DEXData';
+import { ExchangeData } from '@/app/models/data/ExchangeData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { DEXEnum, ExchangeEnum } from '@/app/models/crypto/exchangeIntegration';
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { StatusType } from "@/app/models/data/StatusType";
-import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
 import { processExchangeData } from '@/app/models/data/fetchExchangeData';
-import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { DEXEnum, ExchangeEnum } from '@/app/models/crypto/exchangeIntegration';
+import { StatusType } from "@/app/models/data/StatusType";
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
-import { AppEntity, AppK, AppSnapshotData } from '@/app/typings/entities/AppEntity';
-
+import { updateSnapshot } from '@/app/snapshots/snapshotHandlers'
+import { AppEntity, AppK } from '@/app/typings/entities/AppEntity';
+import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields } from '@/app/typings/entities/RealtimeDataEntity'
 // Define the price comparison component or function
 interface PriceComparisonProps {
   // Define your component props here
@@ -43,12 +43,12 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   ];
 
   // Define a custom update callback function to process fetched data
-  const updateCallback: RealtimeUpdateCallback<RealtimeData,  BaseData<any>> = async (
+  const updateCallback: RealtimeUpdateCallback<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields> = async (
     id: string,
-    data: SnapshotStore<RealtimeData,  BaseData<any>>,
+    data: SnapshotStore<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>,
     events: Record<string, CalendarEvent<AppEntity, AppK>[]>,
-    snapshotStore: SnapshotStore<RealtimeData,  BaseData<any>>,
-    dataItems: RealtimeData[]
+    snapshotStore: SnapshotStore<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>,
+    dataItems: RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>[]
   ) => {
     // Example: Log received data
     console.log("Received data:", data);
@@ -59,7 +59,7 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
     });
 
     const snapshotId = snapshotStore.getSnapshotId(key);
-    const storeId = snapshotApi.getSnapshotStoreId(String(snapshotId));
+    const storeId = snapshotApi.getSnaopshotStoreId(String(snapshotId));
     const snapshot = snapshotApi.getSnapshot(String(snapshotId), Number(storeId))
     const snapshotObj = await snapshotStore.getSnapshot(snapshot)
     if (snapshotObj === undefined){
@@ -98,7 +98,7 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
       data,
       events,
       snapshotStore,
-      dataItems as RealtimeDataItem[], // Assuming RealtimeData can be safely cast to RealtimeDataItem
+      dataItems as RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], // Assuming RealtimeData can be safely cast to RealtimeDataItem
       newData, // Ensure to provide newData here
       payload // Ensure to provide payload here
     );

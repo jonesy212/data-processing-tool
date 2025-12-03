@@ -20,7 +20,7 @@ export type MessageNotificationStatusType =
   | "confirmed";
 
 
-type SecurityStatus = 'active' | 'success' | 'failure' | 'warning' | 'pending';
+type SecurityStatus = 'active' | 'success' | 'failure' | 'warning' | 'pending' | 'pass';
 
 // Define an enum for sorting types
 enum SortingType {
@@ -350,7 +350,19 @@ enum DocumentPhaseEnum {
   Other = "other"                    // Any other custom phase
 }
 
-
+enum PhaseDocumentEnum {
+  STATUS = "status",           // Status-related phases (draft, published, archived)
+  WORKFLOW = "workflow",       // Workflow/business process phases
+  SECURITY = "security",       // Security-related phases (encryption, access review)
+  REVIEW = "review",           // Review processes (legal, technical, etc.)
+  PROCESSING = "processing",   // Processing phases (formatting, translation)
+  CUSTOM = "custom",           // Custom/user-defined phases
+  SYSTEM = "system",           // System/internal phases
+  EXTERNAL = "external",       // Phases involving external systems/parties
+  QUALITY = "quality",         // Quality assurance phases
+  COMPLIANCE = "compliance",   // Compliance-related phases
+  MAINTENANCE = "maintenance", // Maintenance/update phases
+}
 
 enum SubscriberTypeEnum {
   FREE = "free",
@@ -407,4 +419,5 @@ export {
   PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
   TodoStatus, MeetingStatus,
+  PhaseDocumentEnum
 };

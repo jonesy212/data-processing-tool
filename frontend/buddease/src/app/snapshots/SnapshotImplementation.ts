@@ -1,6 +1,6 @@
 // SnapshotImplementation.ts
 // import { Data } from '@/app/models/data/Data';
-// import { generateSnapshotId } from "@/app/utils/snapshotUtils";
+// import { generateSnapshotId } from "@/utils/snapshotUtils";
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 
 // class SnapshotImplementation<T> {

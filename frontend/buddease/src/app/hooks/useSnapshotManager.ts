@@ -8,34 +8,34 @@ import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category, generateOrVerifySnapshotId } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { processSnapshot, Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { ExtractContextArgs } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import {
-  useNotification
+    useNotification
 } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { isSnapshotWithCriteria } from '@/utils/snapshotUtils';
@@ -59,7 +59,17 @@ interface CombinedEvents<
     event: string | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
-  onSnapshotAdded: (event: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  onSnapshotAdded: (
+      event: string,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+      subscriberId: string,
+      criteria: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      category: Category
+  ) => void;
   onSnapshotRemoved: (
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

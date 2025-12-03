@@ -1,9 +1,9 @@
 // autosave.js
-import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
-import { useDispatch } from "react-redux";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import VersionGenerator from "@/app/versions/VersionGenerator";
 import { AutosaveLogActions } from "@/app/actions/AutosaveLogActions";
+import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
+import VersionGenerator from "@/app/versions/VersionGenerator";
+import { useDispatch } from "react-redux";
 
 const handleError = useErrorHandling(); // Error handling hook
 
@@ -187,11 +187,11 @@ const simulateSessionPersistence = (editorContent) => {
 // Export the function for external use
 export default autosave;
 export {
-  mergeChanges,
-  saveAs,
-  saveCryptoPortfolioData,
-  simulateNetworkConnectivityIssue,
-  simulateSessionPersistence,
-  simulateUserInterruptions
+    mergeChanges,
+    saveAs,
+    saveCryptoPortfolioData,
+    simulateNetworkConnectivityIssue,
+    simulateSessionPersistence,
+    simulateUserInterruptions
 };
 

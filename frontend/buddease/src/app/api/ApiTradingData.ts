@@ -4,7 +4,9 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { AxiosError } from 'axios';
 
 // Define the API base URL for trading operations

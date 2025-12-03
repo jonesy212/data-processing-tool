@@ -1,9 +1,7 @@
 // Persona.tsx
-// PersonaData.ts
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import PersonaTypeEnum from "./PersonaBuilder";
 
-// Persona.ts
 class Persona {
   constructor(public type: PersonaTypeEnum) {
     this.id = UniqueIDGenerator.generateID("persona","", "",);

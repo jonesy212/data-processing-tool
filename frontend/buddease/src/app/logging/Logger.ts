@@ -1,32 +1,29 @@
 // Logger.ts
-import { getFromLocalStorage, saveToLocalStorage } from '@/app/hooks/useLocalStorage'
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { EndpointConfigurations, EndpointConfig } from '@/app/config/EndpointConfig';
-import { getEndpointUrl, getConfiguredEndpoint } from '@/app/api/getConfiguredEndpoint'
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationDataPayload } from '@/app/state/context/NotificationContext'
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { getConfiguredEndpoint, getEndpointUrl } from '@/app/api/getConfiguredEndpoint';
 import { Task } from "@/app/components/models/tasks/Task";
-import { useNotification } from "@/app/state/context/NotificationContext";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { BaseData } from '@/app/models/data/Data';
-import { LogData } from "@/app/models/LogData";
+import { getFromLocalStorage, saveToLocalStorage } from '@/app/hooks/useLocalStorage';
+import { NotificationDataPayload, useNotification } from '@/app/state/context/NotificationContext';
 import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/TeamEntity';
+import { buildUrl } from '@/utils/urlBuilder';
 
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
-import { TeamData } from "@/app/models/teams/TeamData";
 import { team, Team } from "@/app/components/teams/Team";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { DataDetails } from '@/app/models/data/Data';
+import { TeamData } from "@/app/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 
 import { DefaultCalendarEvent } from '@/app/actions/CalendarEventActions';
+import { Theme } from '@/app/libraries/ui/theme/Theme';
 import { encryptData } from "@/app/server/security/encryptedData";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Theme } from '@/libraries/ui/theme/Theme';
 
 const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification() || { notify: () => {} };
@@ -125,10 +122,48 @@ class Logger {
     });
   }
 
-  static logError(errorMessage: string, user: string | null = null) {
-    // Log the error message with user information if available
-    const extraInfo = user ? { user } : {};
-    errorLogger.error(errorMessage, extraInfo);
+
+  static logError(errorMessage: string, error?: Error | string | null, extraInfo?: any) {
+    // Preserve original behavior for backward compatibility
+    let user: string | null = null;
+    let actualError: Error | undefined;
+    
+    // Handle different parameter patterns:
+    if (typeof error === 'string' || error === null) {
+      // Original signature: logError(errorMessage: string, user: string | null = null)
+      user = error as string | null;
+    } else if (error instanceof Error) {
+      // New signature with Error object
+      actualError = error;
+    }
+    
+    // Build log data
+    const logData: any = { errorMessage };
+    
+    // Add user if provided (original behavior)
+    if (user) {
+      logData.user = user;
+    }
+    
+    // Add error object if provided
+    if (actualError) {
+      logData.error = actualError;
+      logData.stack = actualError.stack;
+    }
+    
+    // Add extra info if provided
+    if (extraInfo) {
+      logData.context = extraInfo;
+    }
+    
+    console.error(`[ERROR] ${errorMessage}`, logData);
+    
+    // If errorLogger exists, use it (preserve original behavior)
+    if (errorLogger) {
+      // Original: errorLogger.error(errorMessage, extraInfo);
+      // Updated to include all collected data
+      errorLogger.error(errorMessage, logData);
+    }
   }
 
   static logUserActivity(action: string, userId: string) {
@@ -1153,17 +1188,10 @@ class TaskLogger extends Logger {
     event: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     completionMessage: string,
     type: string,
-    notify: (notification: {
-      id: string;
-      message: string;
-      data: NotificationDataPayload;
-      timestamp: Date;
-      type: NotificationType;
-      level: string;
-    }) => void,
-    meta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    notify: (notification: any) => void,
+    meta?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | Meta // Accept both Map and Meta
   ): void {
-    // Define the completionMessageLog with proper typing
+    // Your existing implementation
     const completionMessageLog = {
       timestamp: new Date(),
       level: "INFO" as const,
@@ -1183,10 +1211,8 @@ class TaskLogger extends Logger {
       topics: [],
       highlights: [],
       files: [],
-      meta: meta
-    } as LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & 
-    Partial<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-
+      meta: meta // This can now be either Map or Meta
+    }  
     if (completionMessageLog.createdAt) {
       const notifyCallback = () => {
         notify({
@@ -1204,11 +1230,11 @@ class TaskLogger extends Logger {
       };
 
       UniqueIDGenerator.generateNotificationID(
-        {} as NotificationData,
+        {} as any, // Use any to break the type recursion
         new Date(),
         NotificationTypeEnum.GENERATED_ID,
-        completionMessageLog as NotificationData,
-        notifyCallback // Pass the function to notify as an argument
+        completionMessageLog as any, // Use any here too
+        notifyCallback
       );
     }
     FileLogger.logToFile(
@@ -1233,7 +1259,7 @@ class TaskLogger extends Logger {
       message: string;
       data: NotificationDataPayload;
       timestamp: Date;
-      type: NotificationTypeEnum;
+      type: NotificationType;
       level: string;
     }) => void,
   ) {
@@ -1244,8 +1270,6 @@ class TaskLogger extends Logger {
     const completionMessage = `Task ${taskID} has been completed.`;
     const event = {} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-    const meta = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
-
     // Log the completion event
     TaskLogger.logTaskEvent(
       taskID,
@@ -1253,7 +1277,6 @@ class TaskLogger extends Logger {
       completionMessage,
       NOTIFICATION_MESSAGES.Tasks.COMPLETED,
       notify,
-      meta
     );
   }
 
@@ -1805,34 +1828,24 @@ class AssignBaseStoreLogger extends Logger {
   }
 
   private static getLogUrl(action: string): string {
-    let logUrl = "";
-
-    if (typeof endpoints.logs.logEvent === "string") {
-      logUrl = endpoints.logs.logEvent;
-    } else if (typeof endpoints.logs.logEvent === "function") {
-      const endpointResult = endpoints.logs.logEvent();
+    try {
+      const logEndpoint = endpoints.logs.logEvent;
       
-      // Handle both string and EndpointConfig return types
-      if (typeof endpointResult === "string") {
-        logUrl = endpointResult;
-      } else if (endpointResult && typeof endpointResult === "object" && "url" in endpointResult) {
-        // If it's an EndpointConfig object, use the url property
-        logUrl = (endpointResult as EndpointConfig).url;
-      } else {
-        throw new Error("Invalid endpoint configuration - expected string or EndpointConfig");
+      if (!logEndpoint) {
+        throw new Error("Log event endpoint not found");
       }
-    } else if (endpoints.logs.logEvent && typeof endpoints.logs.logEvent === "object") {
-      // Handle the case when logEvent is a nested EndpointConfig object
-      if ("url" in endpoints.logs.logEvent) {
-        logUrl = (endpoints.logs.logEvent as EndpointConfig).url;
-      } else {
-        throw new Error("Nested endpoint object missing url property");
-      }
-    } else {
-      throw new Error("Invalid log event endpoint configuration");
-    }
 
-    return logUrl;
+      return buildUrl(logEndpoint, { action });
+      
+    } catch (error) {
+      console.error("Error building log URL:", error);
+      
+      if (error instanceof Error) {
+        throw new Error(`Failed to build log URL: ${error.message}`);
+      } else {
+        throw new Error(`Failed to build log URL: ${String(error)}`);
+      }
+    }
   }
 
   static async logErrorToService(error: Error): Promise<void> {
@@ -1858,6 +1871,10 @@ class AssignBaseStoreLogger extends Logger {
 
 
 class SnapshotLogger extends Logger {
+  private static getLogUrl(action: string): string {
+    return buildUrl(endpoints.logs.logEvent, { action });
+  }
+
   static async logSnapshotCreation(snapshotId: string, snapshotData: any): Promise<void> {
     try {
       await this.logEvent("createSnapshot", "Creating snapshot", snapshotId, snapshotData);
@@ -1875,7 +1892,6 @@ class SnapshotLogger extends Logger {
       throw error;
     }
   }
-
   static async logSnapshotUpdate(snapshotId: string, updatedData: any): Promise<void> {
     try {
       await this.logEvent("updateSnapshot", "Updating snapshot", snapshotId, updatedData);
@@ -1893,7 +1909,6 @@ class SnapshotLogger extends Logger {
       throw error;
     }
   }
-
   private static async logEvent(action: string, message: string, snapshotId: string, data?: any): Promise<void> {
     try {
       const logUrl = this.getLogUrl(action);
@@ -2029,28 +2044,28 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
-  AnalyticsLogger,
-  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
-  BugLogger,
-  CalendarLogger,
-  ChannelLogger,
-  ChatLogger,
-  CollaborationLogger,
-  CommunityLogger,
-  ComponentLogger,
-  ConfigLogger,
-  ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
-  DexLogger,
-  DocumentLogger, errorLogger, ErrorLogger,
-  ExchangeLogger,
-  FileLogger,
-  FormLogger,
-  IntegrationLogger,
-  PaymentLogger,
-  SearchLogger,
-  SecurityLogger, SnapshotLogger, TaskLogger,
-  TeamLogger,
-  TenantLogger, ThemeLogger, UILogger, VideoLogger,
-  WebLogger
+    AnalyticsLogger,
+    AnimationLogger, AssignBaseStoreLogger, AudioLogger,
+    BugLogger,
+    CalendarLogger,
+    ChannelLogger,
+    ChatLogger,
+    CollaborationLogger,
+    CommunityLogger,
+    ComponentLogger,
+    ConfigLogger,
+    ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
+    DexLogger,
+    DocumentLogger, errorLogger, ErrorLogger,
+    ExchangeLogger,
+    FileLogger,
+    FormLogger,
+    IntegrationLogger,
+    PaymentLogger,
+    SearchLogger,
+    SecurityLogger, SnapshotLogger, TaskLogger,
+    TeamLogger,
+    TenantLogger, ThemeLogger, UILogger, VideoLogger,
+    WebLogger
 };
 

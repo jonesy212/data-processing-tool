@@ -1,6 +1,6 @@
 // BasicAuthService.ts
 // BaseAuthService.ts (NO server or client imports)
-type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
+import { AuthenticationProvider } from '@/app/server/auth/AuthService'
 
 abstract class BaseAuthService {
   // Abstract methods that will be implemented differently

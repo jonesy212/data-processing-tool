@@ -38,7 +38,8 @@ import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
 import { InitializedState } from "@/app/state/stores/DataStore";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { IconStore } from "@/app/state/stores/IconStore";
-import useSettingManagerStore, { Settings } from "@/app/state/stores/SettingsStore";
+import useSettingManagerStore from "@/app/state/stores/SettingsStore";
+import { Settings } from 'app/state/hybrid/SettingsManagerStore'
 import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { store } from "@/app/state/stores/useAppDispatch";

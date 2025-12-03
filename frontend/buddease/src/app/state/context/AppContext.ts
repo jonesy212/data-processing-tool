@@ -6,7 +6,7 @@ import { CryptoStore } from '../stores/CryptoStore';
 import { TaskManagerStore } from '@/app/stores/TaskStore';
 import { PhaseStore } from '../stores/PhaseStore';
 import { useDispatch } from 'react-redux';
-import { hydrateSnapshot, persistSnapshot } from '@/app/utils/snapshotUtils'; // <- add your snapshot helpers
+import { hydrateSnapshot, persistSnapshot } from '@/utils/snapshotUtils'; // <- add your snapshot helpers
 import { RootState } from '@/app/state/redux/slices/RootSlice'
 import { useSelector } from 'react-redux';
 

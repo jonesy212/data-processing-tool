@@ -634,6 +634,7 @@ class Subscriber<
   IncludedFields extends keyof T = keyof T
   > {
   public data: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null = {};
+
   // public callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   protected triggerIncentives: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined;
   private _id: string | undefined;
@@ -663,6 +664,7 @@ class Subscriber<
   private tags: string[] = [];
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
+  public timestamp: Date; 
   
   private async fetchSnapshotIds(): Promise<string[]> {
     // Simulate an asynchronous operation to fetch snapshot IDs
@@ -684,7 +686,7 @@ class Subscriber<
       return;
     }
 
-    this.state = data.data as T; // Type assertion to ensure type safety
+    this.state = data.data; // Type assertion to ensure type safety
     
     this.callbackFunction && this.callbackFunction(data);
     this.onSnapshotCallbacks.forEach((subscriber) =>
@@ -941,6 +943,7 @@ class Subscriber<
     logActivity: Function,
     triggerIncentives?: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void,
     optionalData: CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields> | null = null,
+    subscriptionLevel?: SubscriptionLevel,
     // data: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     payload: T | null = null
   ) {
@@ -1467,7 +1470,7 @@ class Subscriber<
   unsubscribe(
     snapshotId: number, 
     unsubscribe: UnsubscribeDetails, 
-    callback: SubscriberCallbackType<T, K, StructuredMetadata<T, >> | null
+    callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ) {
     const index = this.subscribers.indexOf(callback);
     if (index !== -1) {

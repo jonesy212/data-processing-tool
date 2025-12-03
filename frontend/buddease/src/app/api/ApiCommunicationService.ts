@@ -26,7 +26,7 @@ export class ApiCommunicationService<
   IncludedFields extends keyof T = keyof T
 > {
   private config: ApiConfig;
-  private notify: NotificationContainer['notify'];
+  private notify: NotificationContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['notify'];
 
   constructor(
     config: Partial<ApiConfig> = {},
@@ -54,6 +54,11 @@ export class ApiCommunicationService<
         strategy: "memory",
         ttl: 0,
         versioning: { enabled: false, key: 'api-versioning' },
+          invalidation: {
+            onUpdate: boolean;
+            onDelete: boolean;
+            pattern?: string;
+          };
       },
       responseType: { contentType: "application/json", encoding: "utf-8" },
       withCredentials: false,

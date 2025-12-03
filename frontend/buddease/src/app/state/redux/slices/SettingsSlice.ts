@@ -1,6 +1,6 @@
 // SettingsSlice.ts
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { Settings } from "@/app/stores/SettingsStore";
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore'
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SettingsState {

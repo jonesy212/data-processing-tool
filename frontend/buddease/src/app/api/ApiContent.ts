@@ -1,5 +1,4 @@
 // ApiContent.ts
-import { NotificationPosition } from '@/app/models/data/StatusType';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -7,7 +6,8 @@ import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
+import { NotificationPosition } from '@/app/models/data/StatusType';
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
 import { NotificationService } from '@/app/state/stores/NotificationService';
 import { YourResponseType } from '@/app/typings/responseTypes';
@@ -316,8 +316,8 @@ const getContentIdFromURL = (url: string): string => {
   };
 
   export {
-  createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
-  fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
-  getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
+    createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
+    fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
+    getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
 };
 

@@ -11,7 +11,7 @@ import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, DataDetails } from '@/app/models/data/Data';
@@ -820,7 +820,7 @@ SnapshotStorageIncludedFields>,
 				},
 				"child_1": {
 					id: "child_1",
-					data: { id: "2", content: "Child 1 Content" },
+					data: { id: "2", content: "Child 1 Content", latestVersion: latestVersion },
 					parentId: "parent_1",
 				},
 			};
@@ -860,11 +860,11 @@ const snapshotConfigOptions: SnapshotConfigOptions<SnapshotStorageEntity, Snapsh
 			throw new Error("Function not implemented.");
 		},
 		initialState: undefined,
-		id: null,
+		id: undefined,
 		data: null,
 		timestamp: undefined,
 		snapshotId: undefined,
-		snapshotStore: {},
+		snapshotStore: {} as SnapshotStore<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>,
 		category: undefined,
 		criteria: {
 			startDate: undefined,

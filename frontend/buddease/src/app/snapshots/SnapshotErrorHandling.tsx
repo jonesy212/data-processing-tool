@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { createErrorNotificationContent, errorLogger } from "@/app/libraries/logging/Logger";
 import { Payload } from '@/app/server/database/Payload';
 import { useNotification } from '@/app/state/context/NotificationContext';

@@ -24,7 +24,7 @@ import { isRealtimeDataItemArray } from '@/app/utils/dataTypeGuards';
 import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CreateSnapshotsPayload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

@@ -3,7 +3,7 @@ import { NotificationType } from '@/app/features/support/UnifiedNotificationType
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
-import { archiveSnapshot } from '@/ArchiveService';
+import { archiveSnapshot } from '@/app/api/service/ArchiveService';
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { validateSnapshot } from '@/app/snapshots/snapshotOperations';
 import {
@@ -13,8 +13,10 @@ import {
     handleUserActionSnapshot,
     processSnapshotData,
     updateSnapshotMetrics
-} from '@/utils/snapshotUtils';
+} from '@/app/snapshots/snapshotValidationUtils'
 import { useNotification } from '@/app/state/context/NotificationContext';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 const { notify } = useNotification()
 

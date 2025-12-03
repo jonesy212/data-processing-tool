@@ -1,22 +1,22 @@
 // YourComponent.tsx
 import { endpoints } from '@/api/endpointConfigurations';
-import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
  
-import { ComponentMethods } from '@/app/page'
-import { CalendarMeta,CalendarK, CalendarEntity, CalendarAttachment, CalendarIncludedFields, CalendarExcludedFields } from '@/app/typings/entties/CalendarEntity'
+import ApiConfig from '@/app/api/ApiConfig';
 import appTreeApiService from "@/app/api/appTreeApi";
 import getSnapshotId from "@/app/api/SnapshotApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import CalendarManagerStoreClass  from '@/app/state/stores/CalendarManagerStore';
 import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from "@/app/models/data/StatusType";
-import  ApiConfig from '@/app/api/ApiConfig';
+import { ComponentMethods } from '@/app/page';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typings/entties/CalendarEntity';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { storeProps, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotStoreProps, storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
@@ -423,7 +423,7 @@ YourComponent.displayName = 'YourComponent';
 export default YourComponent;
 
 // Example:
-const { callback, payload, endpointCategory } = storeProps as SnapshotStoreProps<T, K>
+const { callback, payload, endpointCategory } = storeProps as SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 const events: Record<string, CalendarEvent<T, K>[]> = {};
 const storeData = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({ storeId, name, initialState, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
 

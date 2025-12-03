@@ -1,15 +1,8 @@
 // DocumentBuilder.tsx
 import {
-  createContentStateFromText,
-  fetchContentIdFromAPI
+    createContentStateFromText,
+    fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DocumentPhase } from '@/app/models/phases/DocumentPhase';
-import VersionImpl from "@/app/versions/Version";
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
-
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
@@ -18,49 +11,53 @@ import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/d
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
 import { Team } from "@/app/components/teams/Team";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
 import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
 import { useMetadata } from "@/app/config/useMetadata";
-import { ResearchReport, TechnicalReport } from "@/app/documents/Report";
 import { ModifiedDate } from "@/app/documents/DocType";
 import {
-  getFormattedOptions
+    getFormattedOptions
 } from "@/app/documents/DocumentCreationUtils";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
+import { FinancialReport, ResearchReport, TechnicalReport } from "@/app/documents/Report";
 import {
-  DocumentAnimationOptions,
-  DocumentBuilderProps,
+    DocumentAnimationOptions,
+    DocumentBuilderProps,
 } from "@/app/documents/SharedDocumentProps";
-import { FinancialReport } from "@/app/documents/Report";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { usePanelContents } from "@/app/generators/usePanelContents";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import { determineDocumentType } from "@/app/libraries/categories/determineDocumentType";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CustomContentState } from "@/app/libraries/ui/CustomContentState";
 import { CommonData } from "@/app/models/CommonData";
+import { PhaseDocumentEnum } from "@/app/models/StatusType";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, Data, TodoSubtasks } from '@/app/models/data/Data';
+import { Data, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { DocumentPhase } from '@/app/models/phases/DocumentPhase';
 import { Phase } from '@/app/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import PromptViewer from "@/app/prompts/PromptViewer";
 import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
-  addDocumentSuccess,
-  DocumentObject
+    addDocumentSuccess,
+    DocumentObject
 } from "@/app/state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
@@ -70,22 +67,25 @@ import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import Clipboard from "@/app/ts/clipboard";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
+import { AppMetadata } from '@/app/typings/metadataTypes';
 import AccessHistory, {
-  convertAccessRecordToHistory,
+    convertAccessRecordToHistory,
 } from "@/app/versions/AccessHistory";
 import AppVersionImpl from "@/app/versions/AppVersion";
-import { Version } from "@/app/versions/Version";
+import VersionImpl, { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { getMetadataFromPlainText } from "@/utils/metadataUtils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
-  ContentState,
-  Editor,
-  EditorState,
-  Modifier,
-  RichUtils,
+    ContentState,
+    Editor,
+    EditorState,
+    Modifier,
+    RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { versions } from "process";
@@ -143,6 +143,8 @@ interface DocumentData<
   keywords?: string[];
   load?(content: any): void;
   subtasks?: TodoSubtasks;
+  phaseType: PhaseDocumentEnum;
+  appMetadata: AppMetadata<T>;
   file?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   files?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   folder?: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -169,7 +171,7 @@ interface DocumentData<
     | string
     | DocumentPhase<T, K>;
 
-  appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
   version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -177,7 +179,7 @@ interface DocumentData<
   url?: string;
   updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentSize: DocumentSize;
-  lastModifiedDate: ModifiedDate | undefined; 
+  lastModifiedDate: ModifiedDate; 
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
@@ -216,6 +218,7 @@ export interface CustomProjectPhaseType {
 
 const initialOptions: DocumentOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields> = {
   previousMeta: {
+    documentId: '0',
     metadataEntries: {},
     keywords: [],
     version: 'document-options-version',
@@ -225,7 +228,8 @@ const initialOptions: DocumentOptions<DocumentEntity, DocumentK, DocumentMeta, D
     sharedMetadata: {},
     sharedBaseData: {},
     taggable: {},
-    
+    versionData: {} as VersionData<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
+    timestamp: new Date()
   },
   uniqueIdentifier: "",
   currentMeta: {} as StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields>,
@@ -575,8 +579,8 @@ const extractMetadata = async <
 };
 
 // Initial state or default values for metadata
- const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
- const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
+ const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(selectedmetadata);
+ const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(selectedmetadata);
 
 
 
@@ -592,8 +596,8 @@ const extractMetadata = async <
 const handleMetadataExtraction = async (
   contentState: ContentState,
   previousContentState: ContentState,
-  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
-  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
+  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
+  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
   contentId?: string 
 ) => {
 

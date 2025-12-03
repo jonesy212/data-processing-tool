@@ -1,7 +1,7 @@
 // scripts/ApplicationSetupScript.ts
 import { ProjectConfig } from '@/app/config/ProjectConfig';
-import { DependencyInstallationScript } from '@/app/scripts/DependencyInstallationScript';
-import { DatabaseSetupScript } from '@/app/scripts/DatabaseSetupScript';
+import { DependencyInstallationScript } from '@/app/scripts/DependencyInstallationScript'
+import { DatabaseSetupScript } from '@/app/scripts/DatabaseSetupScript'
 import { ConfigurationGenerationScript } from './ConfigurationGenerationScript';
 import { CodeScaffoldingScript } from './CodeScaffoldingScript';
 import { QualityChecksScript } from './QualityChecksScript';

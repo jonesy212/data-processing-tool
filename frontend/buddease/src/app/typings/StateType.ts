@@ -6,8 +6,8 @@ import { NotificationState } from "@/app/state/redux/slices/NotificationSlice";
 import { SettingsState } from "@/app/state/redux/slices/SettingsSlice";
 import { TaskState } from "@/app/state/redux/slices/TaskSlice";
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
-import { Settings } from '@/app/state/stores/SettingsStore';
 import { User } from "@/app/users/User";
+import { Settings } from 'app/state/hybrid/SettingsManagerStore';
 // Define the StateType interface
 interface StateType {
     projects: Project[];

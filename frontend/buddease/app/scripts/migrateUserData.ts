@@ -74,12 +74,13 @@ export interface MigrationProgress {
 
 type LMPhase = Phase<
   PhaseEntity,          // T
-  PhaseEntity,          // K
+  PhaseK,          // K
   PhaseMeta,            // Meta
   PhaseAttachment,      // Attachment
   PhaseExcludedFields,  // Excluded
   PhaseIncludedFields   // Included
 >;
+
 class DatabaseMigrationService {
   private lifecycleManager: LifecycleManager;
   private progress: MigrationProgress;

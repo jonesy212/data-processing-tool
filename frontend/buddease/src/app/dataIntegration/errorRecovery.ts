@@ -1,6 +1,11 @@
 // errorRecovery.ts
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import { SnapshotLogger } from '@/app/libraries/logging/Logger';
+import { SnapshotLogger } from '@/app/logging/Logger';
+import { 
+  getFromLocalStorage, 
+  saveToLocalStorage, 
+  saveAppTreeToLocalStorage 
+} from '@/path/to/useLocalStorage';
 
 export interface EmergencyShutdownConfig {
   saveRecoveryState?: boolean;
@@ -103,6 +108,90 @@ export class EmergencyShutdownService {
       SnapshotLogger.logError('State preservation failed', error as Error, context);
       // Don't throw - continue shutdown even if state preservation fails
     }
+  }
+
+  private async backupCriticalData(): Promise<void> {
+    try {
+      // Get critical data from your app state
+      const criticalData = {
+        // Example critical data - customize based on your app's needs
+        authState: this.getAuthState(),
+        userPreferences: this.getUserPreferences(),
+        currentProject: this.getCurrentProject(),
+        unsavedChanges: this.getUnsavedChanges(),
+        timestamp: new Date().toISOString(),
+        appVersion: process.env.APP_VERSION || '1.0.0'
+      };
+
+      // Save to localStorage using your utility
+      saveToLocalStorage('emergency_backup', criticalData);
+      
+      // Also save to a timestamped backup for versioning
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      saveToLocalStorage(`emergency_backup_${timestamp}`, criticalData);
+
+      console.log('Critical data backed up successfully');
+    } catch (error) {
+      console.error('Failed to backup critical data:', error);
+      // Don't throw - continue with shutdown even if backup fails
+    }
+  }
+
+  private async persistOperationLogs(context: ShutdownContext): Promise<void> {
+    try {
+      // Get existing logs or create new array
+      const existingLogs = getFromLocalStorage('emergency_logs', []);
+      
+      // Create log entry
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        context: {
+          reason: context.reason,
+          severity: context.severity,
+          error: context.error?.message
+        },
+        stackTrace: context.error?.stack,
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+
+      // Add new log entry
+      const updatedLogs = [...existingLogs, logEntry];
+      
+      // Keep only last 100 logs to prevent storage bloat
+      const trimmedLogs = updatedLogs.slice(-100);
+      
+      // Save to localStorage
+      saveToLocalStorage('emergency_logs', trimmedLogs);
+
+      console.log('Operation logs persisted successfully');
+    } catch (error) {
+      console.error('Failed to persist operation logs:', error);
+      // Don't throw - continue with shutdown
+    }
+  }
+
+  // Helper methods (you'll need to implement these based on your app)
+  private getAuthState(): any {
+    // Get authentication state from your app
+    // Example: return localStorage.getItem('auth_token');
+    return null;
+  }
+
+  private getUserPreferences(): any {
+    // Get user preferences from your app
+    // Example: return localStorage.getItem('user_preferences');
+    return null;
+  }
+
+  private getCurrentProject(): any {
+    // Get current project state
+    return null;
+  }
+
+  private getUnsavedChanges(): any {
+    // Get any unsaved changes
+    return null;
   }
 
   private async phase3_UserNotification(

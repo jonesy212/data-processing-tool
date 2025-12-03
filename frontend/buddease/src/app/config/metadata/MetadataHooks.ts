@@ -46,7 +46,7 @@ interface MetaState<
   transformToStructureItems: (data: any) => AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   getStructure: () => Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined>;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
+  latestVersion?: Pick<Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   history?: HistoryEntry[];
 }
 
@@ -59,7 +59,7 @@ interface MyMetaState<
   IncludedFields extends keyof T = keyof T
 > extends VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
+  latestVersion?: Pick<Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   timestamp: string | number | Date | undefined;
 }
 

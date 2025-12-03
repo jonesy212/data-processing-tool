@@ -1,5 +1,6 @@
 // EventStore.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { NotificationPosition } from "@/app/models/data/StatusType";
@@ -12,7 +13,6 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { EventRecord, InitializedState } from "@/app/state/stores/DataStore";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
@@ -20,18 +20,18 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { fetchAndCreateSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Content } from '@/models/content/AddContent';
-import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 
 
 export type EventStore<

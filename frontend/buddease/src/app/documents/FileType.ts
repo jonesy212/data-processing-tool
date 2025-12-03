@@ -1,7 +1,7 @@
 // FileType.ts
 // FileTypeEnum.ts
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { CalendarLogger } from "@/app/libraries/logging/Logger";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
+import { CalendarLogger } from "@/app/logging/Logger";
 
 // Define enums for file categories and types
 export enum FileCategory {
@@ -289,4 +289,4 @@ const files: string[] = [
 checkUserFiles(files);
 
 
-export {fileMapping}
+export { fileMapping };

@@ -1,7 +1,8 @@
 // TenantManagementPhase.tsx
 import React, { useEffect } from "react";
 import ConfigureTenantComponent from '@/app/components/tenants/ConfigureTenantComponent'
-import { DocumentManagement } from '@/app/utils/web3/dAppAdapter/functionality/DocumentManagement'
+import { DocumentManagement } from '@/app/documents/DocumentManagement'
+
 export enum TenantManagementPhaseEnum {
   CONFIGURE_TENANT,
   INVITE_USERS,
@@ -11,7 +12,6 @@ export enum TenantManagementPhaseEnum {
   TenantA,
 }
 
-    
 const TenantManagementPhase: React.FC = () => {
   useEffect(() => {
     // Add logic for tenant management

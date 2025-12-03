@@ -2,7 +2,7 @@
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
 import LoadAquaState from "@/app/dashboards/LoadAquaState";
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -11,7 +11,7 @@ import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { DataLogger } from "@/app/libraries/logging/Logger";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
@@ -482,7 +482,7 @@ class CustomDAppAdapter<
       case "ChartComponent":
         return import("@/app/components/charts/ChartComponent");
       case "UserFormComponent":
-        return import("@/pages/forms/UserFormComponent");
+        return import("@/app/pages/forms/UserFormComponent");
       // Add more cases as needed
       default:
         return null;
@@ -497,7 +497,7 @@ class CustomDAppAdapter<
         component = await import("@/app/components/charts/ChartComponent");
         break;
       case "UserFormComponent":
-        component = await import("@/pages/forms/UserFormComponent");
+        component = await import("@/app/pages/forms/UserFormComponent");
         break;
       case "authToken":
         component = await import("@/app/server/auth/authToken");

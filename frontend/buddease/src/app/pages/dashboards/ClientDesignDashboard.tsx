@@ -4,17 +4,17 @@ import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import NotificationManager from "@/app/features/support/NotificationManager";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { ModalGenerator } from "@/app/generators/GenerateModal";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { DesignDashboardBaseProps } from '@/app/pages/dashboards/DesignDashboard';
 import useModalFunctions from '@/app/pages/dashboards/ModalFunctions';
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import PersonaBuilderDashboard from "@/app/personas/recruiter_dashboard/PersonaBuilderDashboard";
 import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { TodoList } from '@/app/todos/lists/TodoList';
 import Clipboard from "@/app/ts/clipboard";
-import { DesignDashboardBaseProps } from '@/pages/dashboards/DesignDashboard';
 import DynamicComponentWrapper from "@/utils/DynamicComponentWrapper";
 import { useEffect, useState } from 'react';
 

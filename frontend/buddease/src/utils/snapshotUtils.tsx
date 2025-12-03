@@ -21,11 +21,11 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { useNotification } from '@/app/state/context/NotificationContext';
 import { IHydrateResult } from "mobx-persist";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
@@ -505,7 +505,7 @@ export const getSnapshotsBySubscriber = async <
   IncludedFields extends keyof T = keyof T
 >(
   subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  storeProps?: SnapshotStoreProps<T, K>
+  storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<T[]> => {
   if (!storeProps) {
     throw new Error("Snapshot properties not available");

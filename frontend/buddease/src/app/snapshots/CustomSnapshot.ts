@@ -5,6 +5,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -33,11 +34,15 @@ interface CustomSnapshot<
   
   // From SnapshotData (take precedence for these)
   id: string;
-  storeId: number;
+  storeId: string | number;
   validate(): boolean;
   serialize(): string;
   get(key: string): any;
-  set(key: string, value: any): void;
+  set(
+    data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    type: string,
+    event: SnapshotEvent
+  ): void;
   processEvent(data: any, type: string, event: Event): void;
   deleteSnapshot: (id: string) => void;
 
@@ -161,7 +166,7 @@ const createCustomSnapshot = <
     sharedMetadata: mergeSharedMetadata(snapshot?.sharedMetadata, snapshotData?.sharedMetadata),
     
     // Operations and base
-    operations: snapshotData?.operations || {},
+    operations: snapshotData?.operations || {} as  SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     base: snapshotData?.base || {} as BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     
     // === CUSTOM-SPECIFIC IMPLEMENTATIONS ===

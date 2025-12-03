@@ -3,27 +3,40 @@ import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
-import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import { Section } from "@/app/components/documents/Section";
-import { UserIdea } from "@/app/components/users/Ideas";
-import { ModifiedDate } from "@/app/documents/DocType";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { MetadataEntry, StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import { ModifiedDate } from '@/app/documents/DocType';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { Section } from '@/app/documents/Section';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Data } from '@/app/models/data/Data';
 import {
   BorderStyle,
   DocumentSize,
   PrivacySettingEnum,
-} from "@/app/models/data/StatusType";
-import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
-import { Settings } from "@/app/state/stores/SettingsStore";
-import { DocumentTypeEnum } from "@/app/typings/documents";
-import { Version } from "@/app/versions/Version";
-import { VersionData } from "@/app/versions/VersionData";
-import BackendStructure from "@/app/server/database/BackendStructure";
-import { IHydrateResult } from "mobx-persist";
-import { StructuredMetadata } from "./StructuredMetadata";
-import { AppStructureItem } from "./appStructure/AppStructure";
-import FrontendStructure from "./appStructure/FrontendStructure";
+} from '@/app/models/data/StatusType';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import BackendStructure from '@/app/server/database/BackendStructure';
+import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
+import { UserIdea } from '@/app/users/Ideas';
+import { Version, Versions } from '@/app/versions/Version';
+import { VersionData } from '@/app/versions/VersionData';
+import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { IHydrateResult } from 'mobx-persist';
 
-export interface DocumentBuilderConfig extends DocumentOptions {
+export interface DocumentBuilderConfig<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   levels: any;
   isDynamic: boolean;
   language: LanguageEnum;
@@ -31,7 +44,7 @@ export interface DocumentBuilderConfig extends DocumentOptions {
   options: {
     // other properties...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
-    additionalDocumentOptions: DocumentOptions | undefined
+    additionalDocumentOptions: DocumentOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
     additionalOptionsLabel: string;
     // other properties...
   };
@@ -42,7 +55,7 @@ export interface DocumentBuilderConfig extends DocumentOptions {
   textColor: string;
   backgroundColor: string;
   lineSpacing: number;
-  structure: BackendStructure | FrontendStructure | undefined;
+  structure: BackendStructure | FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   uniqueIdentifier: string;
   // Advanced options
   enableSpellCheck: boolean;
@@ -62,7 +75,7 @@ export interface DocumentBuilderConfig extends DocumentOptions {
   enableAccessibilityMode: boolean;
   highContrastMode: boolean;
   screenReaderSupport: boolean;
-  metadata: StructuredMetadata | undefined;
+  metadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   // Define sections
   orientation: "portrait" | "landscape";
 
@@ -71,10 +84,259 @@ export interface DocumentBuilderConfig extends DocumentOptions {
 }
 
 // Define the type for the store object
-type StoreType = {
-  // Define your store properties here
-};
+type StoreType = DocumentBuilderConfig<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> & {
+  // Core properties from DocumentBuilderConfig
+  levels: any;
+  isDynamic: boolean;
+  language: LanguageEnum;
+  options: {
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+    additionalDocumentOptions: DocumentOptions<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | undefined;
+    additionalOptionsLabel: string;
+  };
+  documentType: DocumentTypeEnum;
+  fontFamily: string;
+  fontSize: number;
+  textColor: string;
+  backgroundColor: string;
+  lineSpacing: number;
+  structure: BackendStructure | FrontendStructure<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | undefined;
+  uniqueIdentifier: string;
+  
+  // Advanced options
+  enableSpellCheck: boolean;
+  enableAutoSave: boolean;
+  autoSaveInterval: number;
+  showWordCount: boolean;
+  maxWordCount: number;
+  
+  // Integration options
+  enableSyncWithExternalCalendars: boolean;
+  enableThirdPartyIntegration: boolean;
+  thirdPartyAPIKey: string;
+  thirdPartyEndpoint: string;
+  
+  // Accessibility options
+  enableAccessibilityMode: boolean;
+  highContrastMode: boolean;
+  screenReaderSupport: boolean;
+  
+  // Metadata and structure
+  metadata: StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields> | undefined;
+  orientation: "portrait" | "landscape";
+  sections: Section[] | undefined;
+  
+  // User and document management
+  userIdea: string | {
+    id: number;
+    title: string;
+    description: string;
+  } | undefined;
+  
+  // Versioning and history
+  previousMetadata: any;
+  currentMetadata: any;
+  accessHistory: any[];
+  lastModifiedDate: ModifiedDate;
+  
+  // Add other properties from DocumentOptions that DocumentBuilderConfig extends
+  color: string;
+  size: DocumentSize;
+  additionalOptions: string;
+  documents: any[];
+  visibility: PrivacySettingEnum;
+  alignment: AlignmentOptions;
+  indentSize: number;
+  bulletList: boolean;
+  numberedList: boolean;
+  headingLevel: number;
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  strikethrough: boolean;
+  subscript: boolean;
+  superscript: boolean;
+  hyperlink: string;
+  image: string;
+  table: boolean;
+  tableRows: number;
+  tableColumns: number;
+  codeBlock: boolean;
+  blockquote: boolean;
+  codeInline: boolean;
+  quote: string;
+  todoList: boolean;
+  orderedTodoList: boolean;
+  unorderedTodoList: boolean;
+  customSettings: Record<string, any>;
+  animations: {
+    type: string;
+    duration: number;
+  };
+  colorCoding: Record<string, any>;
+  includeType: string;
+  includeTitle: boolean;
+  includeContent: boolean;
+  includeStatus: boolean;
+  includeAdditionalInfo: boolean;
+  font: string;
+  documentPhase: string;
+  version: Version<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>;
+  userSettings: any;
+  dataVersions: {
+    backend: Promise<string>;
+    frontend: Promise<string>;
+  };
+  documentSize: DocumentSize;
+  layout: any;
+  panels: any;
+  pageNumbers: boolean;
+  footer: string;
+  watermark: {
+    enabled: boolean;
+    text: string;
+    color: string;
+    opacity: number;
+    size: string;
+    x: number;
+    y: number;
+    rotation: number;
+    borderStyle: string;
+    fontSize: number;
+  };
+    headerFooterOptions: {
+    enabled: boolean;
+    headerContent?: string;
+    footerContent?: string;
+    showHeader: boolean;
+    showFooter: boolean;
+    dateFormat?: string;
 
+    differentFirstPage: boolean;
+    differentOddEven: boolean;
+    headerOptions:
+    | {
+      height: {
+        type: string;
+        value: number;
+      };
+      fontSize: number;
+      fontFamily: string;
+      fontColor: string;
+      alignment: string;
+      font: string;
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      strikeThrough: boolean;
+      margin: {
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+      };
+    }
+    | undefined;
+    footerOptions:
+    | {
+      alignment: string;
+      font: string;
+      fontSize: number;
+      fontFamily: string;
+      fontColor: string;
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      strikeThrough: boolean;
+      height: {
+        type: string;
+        value: number;
+      };
+      margin: {
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+      };
+    }
+    | undefined;
+  };
+  zoom: number;
+  showRuler: boolean;
+  showDocumentOutline: boolean;
+  showComments: boolean;
+  showRevisions: boolean;
+  spellCheck: boolean;
+  grammarCheck: boolean;
+  toc: boolean;
+  textStyles: Record<string, any>;
+  links: boolean;
+  embeddedContent: boolean;
+  bookmarks: boolean;
+  crossReferences: boolean;
+  footnotes: boolean;
+  endnotes: boolean;
+  comments: boolean;
+  revisions: {
+    enabled: boolean;
+    author: string;
+    dataFormat: string;
+  };
+  embeddedMedia: boolean;
+  embeddedCode: boolean;
+  styles: Record<string, any>;
+  tableCells: {
+    enabled: boolean;
+    padding: number;
+    fontSize: number;
+    alignment: "left";
+    borders:
+    | {
+      top: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      bottom: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      left: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      right: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+    }
+    | undefined;
+  };
+  tableStyles?: {
+    backgroundColor?: string;
+    borderColor?: string;
+    borderWidth?: string;
+    borderStyle?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    color?: string;
+    border?: string; // Added border property
+  };
+  highlight: boolean;
+  highlightColor: string;
+  footnote: boolean;
+  defaultZoomLevel: number;
+  customProperties: Record<string, any> | undefined;
+  value: any;
+  limit: number;
+  page: number;
+  
+  // Generic index signature for any other properties
+  [key: string]: any;
+};
 
 export interface CustomHydrateResult<T> extends IHydrateResult<T> {
   customProperty1: string;
@@ -97,7 +359,7 @@ export interface CustomHydrateResult<T> extends IHydrateResult<T> {
   ): CustomHydrateResult<T | TResult>;
 }
 
-const versionInfo: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+const versionInfo: Version<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
   id: 123456789,
   versionData: undefined,
   buildVersions: undefined,
@@ -141,10 +403,14 @@ const versionInfo: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedF
   workspaceViewers: [],
   workspaceAdmins: [],
   workspaceMembers: [],
-  data: [],
-  _structure: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+  updatedAt, generateChecksum, transformToStructureItems, bumpVersion,
+  data: {} as Data<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
+  _structure: {} as Record<string, AppStructureItem<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>[]>,
   versionHistory: {
-    versionData: {}
+    versionData: {},
+    timestamp: new Date(),
+    currentVersionIndex: 0, 
+    versions: {} as Versions<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
   },
   currentHash: "",
   structureData: "",
@@ -178,7 +444,9 @@ const versionInfo: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedF
   },
 }
 
-const versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+const area = fetchUserAreaDimensions().toString();
+
+const versionData: VersionData<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields> = {
   id: versionInfo.id,
   name: versionInfo.name, 
   url: versionInfo.url,
@@ -187,17 +455,19 @@ const versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, Inclu
   content: versionInfo.content, 
   metadata: versionInfo.metadata || {
     author: "Unknown Author", // Default value for author
+    area: area, 
     timestamp: new Date(),
+    metadataEntries: {} as Record<string, MetadataEntry<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>>,
   },
   isActive: versionInfo.isActive,
-  releaseDate: versionInfo.releaseDate ? versionInfo.releaseDate : undefined,
-  versionData: [], 
+  releaseDate: versionInfo.releaseDate ? versionInfo.releaseDate : null,
+  versionData: versionInfo.versionData ? versionInfo.versionData : undefined, 
   checksum: versionInfo.checksum,
   versionNumber: versionInfo.versionNumber,
   documentId: versionInfo.documentId,
   parentId: versionInfo.parentId || null,
   parentType: versionInfo.parentType,
-  parentVersion: versionInfo.parentVersion,
+  parentVersion: versionInfo.parentVersion ? versionInfo.parentVersion : undefined,
   parentTitle: versionInfo.parentTitle,
   parentContent: versionInfo.parentContent,
   parentName: versionInfo.parentName,
@@ -364,14 +634,21 @@ export const dataVersions = {
   ),
 };
 
-export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
+export const getDefaultDocumentBuilderConfig = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): DocumentBuilderConfig => {
   return {
     levels: [],
     isDynamic: true,
     options: {
       additionalOptions: undefined,
       //todo update props in doc optins
-      additionalDocumentOptions: {}as DocumentOptions,
+      additionalDocumentOptions: {} as DocumentOptions,
       additionalOptionsLabel: "",
     },
     color: "",
@@ -417,7 +694,10 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     // userIdea: "",
     colorCoding: {},
     uniqueIdentifier: "",
-    includeType: "all",
+    includeType: {
+      format: 'none',
+      enabled: false,
+    },
     includeTitle: false,
     includeContent: false,
     includeStatus: false,
@@ -486,6 +766,8 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       allowedFileTypes: [],
       enableGroupManagement: false,
       enableTeamManagement: false,
+      identity, appearance, notifications, security,
+      communication, projects, collaboration, data,
       idleTimeout: undefined,
       startIdleTimeout: function (
         timeoutDuration: number,
@@ -574,8 +856,8 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       idleTimeoutId: null,
     },
     dataVersions: {
-      backend: new Promise<string>(() => ""),
-      frontend: new Promise<string>(() => ""),
+      backend: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+      frontend: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     },
     documentSize: DocumentSize.A4,
     layout: undefined,
@@ -663,9 +945,10 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
     endnotes: false,
     comments: false,
     revisions: {
+      allow: true,
       enabled: false,
       author: "",
-      dataFormat: ""
+      dataFormat: "",
     },
     embeddedMedia: false,
     embeddedCode: false,

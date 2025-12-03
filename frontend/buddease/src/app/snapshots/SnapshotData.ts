@@ -7,12 +7,13 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category, SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
-import { ChildRelationship, Data, SharedRelationshipData } from '@/app/models/data/Data';
+import { ChildRelationship, Data, SharedConfigType, SharedRelationshipData } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -26,6 +27,7 @@ import { AuditRecord } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
 import { SnapshotConfig } from "./SnapshotConfig";
@@ -33,8 +35,6 @@ import { SnapshotMethods } from "./SnapshotMethods";
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { TagsRecord } from '@/app/models/tracker/Tag';
-import { SharedConfigType } from '@/app/models/data/Data'
 
 interface SnapshotBaseProperties<
   T extends BaseDataEntity,
@@ -144,7 +144,7 @@ interface SnapshotCoreBase<
   currentCategory?: string;
   mappedSnapshotData?: any;
   // Identity and metadata
-  storeId: number;
+  storeId?: string | number;
   core: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   security: SnapshotSecurity;
   storage: SnapshotStorage<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -318,7 +318,11 @@ interface SnapshotData<
   validate(): boolean;
   serialize(): string;
   get(key: string): any;
-  set(key: string, value: any): void;
+  set(
+    data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    type: string,
+    event: SnapshotEvent
+  ): void;
   processEvent(data: any, type: string, event: Event): void;
 
   // Methods (keep only unique ones)

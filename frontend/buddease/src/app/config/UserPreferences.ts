@@ -1,7 +1,7 @@
 // UserPreferences.ts
 // userPreferences.ts
 import { apiService } from "@/app/api/ApiDetails";
-import { NotificationPreferences } from "@/app/cards/modal/chat/ChatSettingsModal";
+import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import FileData from "@/app/models/data/FileData";
@@ -11,6 +11,7 @@ import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { User } from "@/app/users/User";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields } from '@/app/typings/entities/FileEntity'
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';
 
@@ -28,11 +29,7 @@ interface CryptoPreferences {
 
 interface UserPreferences<  
   T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > extends Partial<CommonTrackerProps> {
   // General Preferences
   theme?: 'light' | 'dark'; // Example of a theme preference
@@ -549,7 +546,7 @@ export type { CryptoPreferences, UserPreferences };
 
 // Sample usage
 // Tracking file changes
-const file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+const file: FileData<FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields> = {
   name: "sample.txt",
   size: 1024,
   type: "text/plain",

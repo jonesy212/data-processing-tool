@@ -1,46 +1,59 @@
 // applicationUtils.tsx
-import { sendEmail } from "@/api/sendEmail";
-import { sendSMS } from "@/api/sendSMS";
 import * as articleApi from '@/app/api/articleApi';
-import { ApiNotificationsService } from "@/app/api/NotificationsService";
-import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { Content } from "@/app/models/content/AddContent";
-import { BaseData } from '@/app/models/data/Data';
-import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "@/app/models/data/StatusType";
-import { Project, ProjectDetails } from "@/app/models/projects/Project";
-import { Task } from "@/app/models/tasks/Task";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { ApiNotificationsService } from '@/app/api/NotificationsService';
+import { sendEmail } from '@/app/api/sendEmail';
+import { sendSMS } from '@/app/api/sendSMS';
 import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
-import { updateProject } from "@/app/state/redux/slices/ProjectManagerSlice";
-import { AxiosResponse } from "axios";
-import { useDispatch } from "react-redux";
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
+  UnifiedMetaDataOptions,
+} from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { Content } from '@/app/models/content/AddContent';
+import { BaseData } from '@/app/models/data/Data';
+import {
+  ActivityActionEnum,
+  ActivityTypeEnum,
+  ProjectStateEnum,
+  StatusType
+} from '@/app/models/data/StatusType';
+import { Project, ProjectDetails } from '@/app/models/projects/Project';
+import { Task } from '@/app/models/tasks/Task';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { updateProject } from '@/app/state/redux/slices/ProjectManagerSlice';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { AxiosResponse } from 'axios';
+import { useDispatch } from 'react-redux';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/config/BaseConfig";
 
-import NotificationManager from "@/app/components/support/NotificationManager";
-import { useMeta } from '@/app/config/useMeta';
-import { useMetadata } from '@/app/config/useMetadata';
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
+import NotificationManager from "@/app/features/support/NotificationManager";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
-import { CombinedEvents, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
-import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { useDataStore } from '@/app/state/stores/DataStore';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
-import { SnapshotEvents } from '@/app/typings/snapshotTypes';
- const dispatch = useDispatch()
-const { notify } = useNotification()
+import {
+  CombinedEvents,
+  useSnapshotManager,
+} from "@/app/hooks/useSnapshotManager";
+import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
+import { snapshot, SnapshotData, SnapshotStoreProps } from "@/app/snapshots";
+import { createSnapshot } from "@/app/snapshots/createSnapshot";
+import { useDataStore } from "@/app/state/stores/DataStore";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { SnapshotEvents } from "@/app/typings/snapshotTypes";
 
+const dispatch = useDispatch();
+const { notify } = useNotification();
 
 interface LogActivityParams {
   activityType: ActivityTypeEnum;
@@ -55,10 +68,8 @@ interface LogActivityParams {
 interface TriggerIncentivesParams {
   userId: string;
   incentiveType: string;
-  params?:Record<string, unknown>;
-
+  params?: Record<string, unknown>;
 }
-
 
 interface AnalyticsEvent<
   T extends BaseDataEntity,
@@ -68,8 +79,15 @@ interface AnalyticsEvent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Include snapshot in the type definition
+  event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>;
+  snapshot: Snapshot<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >; // Include snapshot in the type definition
   date: string;
 }
 
@@ -84,7 +102,6 @@ const notificationManager = new NotificationManager({
 
 const apiNotificationsService = new ApiNotificationsService(useNotification);
 
-
 function isSnapshotStoreProps<
   T extends BaseDataEntity,
   K extends T = T,
@@ -92,21 +109,21 @@ function isSnapshotStoreProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(obj: any): obj is SnapshotStoreProps<T, K> {
+>(obj: any): obj is SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
     obj &&
-    typeof obj.storeId === 'string' &&
-    typeof obj.name === 'string' &&
-    typeof obj.version === 'number' &&
-    typeof obj.schema !== 'undefined' &&
-    typeof obj.options !== 'undefined' &&
-    typeof obj.category === 'string' &&
-    typeof obj.config !== 'undefined' &&
-    typeof obj.operation !== 'undefined' &&
+    typeof obj.storeId === "string" &&
+    typeof obj.name === "string" &&
+    typeof obj.version === "number" &&
+    typeof obj.schema !== "undefined" &&
+    typeof obj.options !== "undefined" &&
+    typeof obj.category === "string" &&
+    typeof obj.config !== "undefined" &&
+    typeof obj.operation !== "undefined" &&
     (obj.expirationDate === undefined || obj.expirationDate instanceof Date) &&
-    typeof obj.payload !== 'undefined' &&
-    typeof obj.callback === 'function' &&
-    typeof obj.endpointCategory === 'string'
+    typeof obj.payload !== "undefined" &&
+    typeof obj.callback === "function" &&
+    typeof obj.endpointCategory === "string"
   );
 }
 
@@ -122,42 +139,59 @@ const notifyEventSystem = <
   eventData: any,
   source: string,
   event: Event,
-  storeProps?: SnapshotStoreProps<T, K>
+  storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
-  const area = fetchUserAreaDimensions().toString()
-  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
-  const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
+  const area = fetchUserAreaDimensions().toString();
+  const currentMeta: StructuredMetadata<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  > = useMeta<T, K>(area);
+  
+  const currentMetadata: UnifiedMetadata<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+    > = useMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(area);
+  
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
   // Additional logic to trigger any necessary actions based on the event
 
- // Use the type guard to validate storeProps
- if (!isSnapshotStoreProps<T, K>(storeProps)) {
-  throw new Error("Invalid or missing storeProps");
-}
+  // Use the type guard to validate storeProps
+  if (!isSnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeProps)) {
+    throw new Error("Invalid or missing storeProps");
+  }
 
-const {
-  storeId,
-  name,
-  version,
-  schema,
-  options,
-  category,
-  config,
-  operation,
-  expirationDate,
-  payload,
-  callback,
-  endpointCategory
-} = storeProps 
+  const {
+    storeId,
+    name,
+    version,
+    schema,
+    options,
+    category,
+    config,
+    operation,
+    expirationDate,
+    payload,
+    callback,
+    endpointCategory,
+  } = storeProps;
 
-
-
-// Create a NotificationData object based on the eventType and eventData
+  // Create a NotificationData object based on the eventType and eventData
   const notificationData: NotificationData<
     T,
     K,
-    StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
   > = {
     topics: [],
     highlights: [],
@@ -166,10 +200,10 @@ const {
     rsvpStatus: "notResponded",
     participants: [],
     teamMemberId: "",
-   
+
     currentMeta: currentMeta,
     currentMetadata: currentMetadata,
-   
+
     id: UniqueIDGenerator.generateNotificationID(
       {
         message: eventType,
@@ -200,50 +234,101 @@ const {
         participants: [],
         teamMemberId: "",
         currentMeta: currentMeta,
-        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-   
-        getCalendarSnapshotStoreData: function (): Promise<CalendarEventWithCriteria[]> {
-          const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<
+          T,
+          K,
+          Meta,
+          AttachmentType,
+          ExcludedFields,
+          IncludedFields
+        >,
+
+        getCalendarSnapshotStoreData: function (): Promise<
+          CalendarEventWithCriteria[]
+        > {
+          const snapshotStore = new SnapshotStore<
+            T,
+            K,
+            Meta,
+            AttachmentType,
+            ExcludedFields,
+            IncludedFields
+          >({
             storeId,
             name,
             version,
-            schema, 
-            options, 
+            schema,
+            options,
             category,
-            config, 
+            config,
             operation,
             expirationDate,
             payload,
             currentMeta,
             callback,
             storeProps,
-            endpointCategory
+            endpointCategory,
           });
-        
+
           // Return the snapshot store data as CalendarEventWithCriteria[]
-          const calendarSnapshots = snapshotStore.getSnapshotStoreData(snapshotStore,
-            snapshot,
-            snapshotId,
-            snapshotData,
-          ).map((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-          ) => ({
-            ...snapshot, // Spread properties
-            // Add any CalendarEvent-specific fields if necessary
-          })) as CalendarEventWithCriteria[];
-        
+          const calendarSnapshots = snapshotStore
+            .getSnapshotStoreData(
+              snapshotStore,
+              snapshot,
+              snapshotId,
+              snapshotData
+            )
+            .map(
+              (
+                snapshot: Snapshot<
+                  T,
+                  K,
+                  Meta,
+                  AttachmentType,
+                  ExcludedFields,
+                  IncludedFields
+                >
+              ) => ({
+                ...snapshot, // Spread properties
+                // Add any CalendarEvent-specific fields if necessary
+              })
+            ) as CalendarEventWithCriteria[];
+
           return Promise.resolve(calendarSnapshots);
         },
         getData: async function (): Promise<
-          Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+          Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        > {
           // Prepare the necessary inputs
-          const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId);
+          const snapshotManager = await useSnapshotManager<
+            T,
+            K,
+            Meta,
+            AttachmentType,
+            ExcludedFields,
+            IncludedFields
+          >(storeId);
           const snapshotId = await snapshot.store.snapshotId;
-          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = {/* your event data */};
+          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = {
+            /* your event data */
+          };
           const category = "EventSystem"; // Your category
-          const storeProps: SnapshotStoreProps<BaseData<any, any>, BaseData<any, any>> = {/* your store props */};
+          const storeProps: SnapshotStoreProps<
+            BaseData<any, any>,
+            BaseData<any, any>
+          > = {
+            /* your store props */
+          };
 
           // Create a snapshot instance using createSnapshot
-          const newSnapshot = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          const newSnapshot = createSnapshot<
+            T,
+            K,
+            Meta,
+            AttachmentType,
+            ExcludedFields,
+            IncludedFields
+          >(
             eventData, // data
             {
               baseMeta: {
@@ -263,7 +348,7 @@ const {
           );
 
           return newSnapshot; // Return the snapshot directly (not an array)
-        }
+        },
       },
       new Date(),
       NotificationTypeEnum.INFO,
@@ -296,18 +381,51 @@ const {
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-
-          if (!storeProps){
-            return new Error("missing store props ")
+        getSnapshotStoreData: function (): Promise<
+          SnapshotStore<
+            T,
+            K,
+            Meta,
+            AttachmentType,
+            ExcludedFields,
+            IncludedFields
+          >[]
+        > {
+          if (!storeProps) {
+            return new Error("missing store props ");
           }
-          const {  options, config, operation } = storeProps
-          const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({  storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId, initialState });
+          const { options, config, operation } = storeProps;
+          const snapshotStore = new SnapshotStore<
+            T,
+            K,
+            Meta,
+            AttachmentType,
+            ExcludedFields,
+            IncludedFields
+          >({
+            storeId,
+            name,
+            version,
+            schema,
+            options,
+            category,
+            config,
+            operation,
+            expirationDate,
+            payload,
+            callback,
+            storeProps,
+            endpointCategory,
+            storeId,
+            initialState,
+          });
           return Promise.resolve([snapshotStore]);
         },
-        getData: function (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+        getData: function (): Promise<
+          Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+        > {
           throw new Error("Function not implemented.");
-        }
+        },
       }
     ),
     notificationType: NotificationTypeEnum.INFO,
@@ -330,9 +448,9 @@ const {
       responseTime: new Date(),
       eventData: eventData,
       topics: [],
-      highlights: [], 
+      highlights: [],
       files: [],
-      meta: null
+      meta: null,
     },
     sendStatus: "Sent",
   };
@@ -347,7 +465,7 @@ const {
     rsvpStatus: "no",
     participants: [],
     teamMemberId: "",
-    currentMeta: currentMeta, 
+    currentMeta: currentMeta,
     currentMetadata: currentMetadata,
     completionMessageLog: {
       timestamp: new Date(),
@@ -364,14 +482,14 @@ const {
       responseTime: new Date(),
       eventData: eventData,
       topics: [],
-      highlights: [], 
+      highlights: [],
       files: [],
-      meta: null
+      meta: null,
     },
     topics: [],
-    highlights: [], 
+    highlights: [],
     files: [],
-    meta: undefined
+    meta: undefined,
   };
 
   // Example: Notify the event system by adding a notification
@@ -387,9 +505,6 @@ const {
   // Example: Notify the event system by sending a notification to the API
   sendNotification(eventType, eventData, new Date(), NotificationTypeEnum.INFO);
 };
-
-
-
 
 const updateProjectState = (
   stateType: ProjectStateEnum,
@@ -410,24 +525,30 @@ const updateProjectState = (
     dispatch(updateProject(newState));
 
     // Notify user or system about successful state update
-    notify("success", `Project '${projectId}' state updated successfully`, null, new Date(), NotificationTypeEnum.SUCCESS);
-} catch (error: any) {
+    notify(
+      "success",
+      `Project '${projectId}' state updated successfully`,
+      null,
+      new Date(),
+      NotificationTypeEnum.SUCCESS
+    );
+  } catch (error: any) {
     // Handle validation errors or any other errors during state update
     console.error(`Error updating state of project '${projectId}':`, error);
 
     const errorMessage = error.message || "Unknown error";
     // Notify user or system about the error
     notify(
-        "error",
-        `Failed to update state of project '${projectId}': ${errorMessage}`,
-        null,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      "error",
+      `Failed to update state of project '${projectId}': ${errorMessage}`,
+      null,
+      new Date(),
+      NotificationTypeEnum.ERROR
+    );
   }
 };
-  
-  // Function to validate the project state before updating
+
+// Function to validate the project state before updating
 const validateProjectState = (newState: Project) => {
   // Example validation logic:
   if (!newState.name || newState.name.trim() === "") {
@@ -473,121 +594,135 @@ const validateProjectState = (newState: Project) => {
   }
   // Add more validation logic as needed...
 };
-  
-
 
 // Helper function to validate project status
 const isValidStatus = (status: StatusType): boolean => {
-    // List of valid status types
-    const validStatusTypes: StatusType[] = [StatusType.Pending, StatusType.InProgress, StatusType.Completed];
-  
-    // Check if the provided status is included in the valid status types
-    return validStatusTypes.includes(status);
-  };
-  
-  // Helper function to validate tasks array
-  const isValidTasks = (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): boolean => {
-    // Check if tasks array is not empty
-    if (tasks.length === 0) {
-      return false;
-    }
-  
-    // Check if all tasks have valid properties
-    for (const task of tasks) {
-      // Check if task has a title
-      if (!task.title || task.title.trim() === '') {
-        return false;
-      }
-      // Add more validations as needed for other task properties
-    }
-  
-    // All tasks are valid
-    return true;
-  };
-  
-  // Helper function to validate project details
-  const isValidProjectDetails = (projectDetails: Partial<ProjectDetails>): boolean => {
-    // Check if projectDetails object is not null or undefined
-    if (!projectDetails) {
-      return false;
-    }
-  
-    // Check if title and description are provided and not empty
-    if (!projectDetails.title || projectDetails.title.trim() === '' || !projectDetails.description || projectDetails.description.trim() === '') {
-      return false;
-    }
-  
-    // Check if status is valid
-    if (!isValidStatus(projectDetails.status!)) {
-      return false;
-    }
-  
-    // Check if tasks array is valid
-    if (!isValidTasks(projectDetails.tasks || [])) {
-      return false;
-    }
-  
-    // Project details are valid
-    return true;
-  };
-  
-  
-  const logActivity = ({
-    activityType,
-    action,
-    userId,
-    date,
-    snapshotId,
-    description = '',
-    data,
-  }: LogActivityParams) => {
-    // Logic to log the activity
-    console.log(`Activity '${activityType}': ${description}`);
-    console.log(`Action: '${action}' by User: '${userId}' on ${date}`);
-    console.log(`Snapshot ID: '${snapshotId}'`);
-    
-    if (data) {
-      console.log("Additional data:", data);
-    }
-    
-    // Additional logic to handle the logged activity
-  };
-  
-  const triggerIncentives = ({
-    userId,
-    incentiveType,
-    params,
-  }: TriggerIncentivesParams) => {
-    // Logic to trigger incentives for the user with the provided ID
-    console.log(`Triggering '${incentiveType}' incentive for user '${userId}'`);
-  
-    // Check if additional parameters are provided
-    if (params) {
-      console.log("Additional parameters:", params);
-      // Additional logic to handle the triggered incentive with parameters
-      handleIncentiveWithParameters(params);
-    } else {
-      // Additional logic to handle the triggered incentive without parameters
-      handleIncentiveWithoutParameters();
-    }
-  };
+  // List of valid status types
+  const validStatusTypes: StatusType[] = [
+    StatusType.Pending,
+    StatusType.InProgress,
+    StatusType.Completed,
+  ];
 
+  // Check if the provided status is included in the valid status types
+  return validStatusTypes.includes(status);
+};
+
+// Helper function to validate tasks array
+const isValidTasks = (
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+): boolean => {
+  // Check if tasks array is not empty
+  if (tasks.length === 0) {
+    return false;
+  }
+
+  // Check if all tasks have valid properties
+  for (const task of tasks) {
+    // Check if task has a title
+    if (!task.title || task.title.trim() === "") {
+      return false;
+    }
+    // Add more validations as needed for other task properties
+  }
+
+  // All tasks are valid
+  return true;
+};
+
+// Helper function to validate project details
+const isValidProjectDetails = (
+  projectDetails: Partial<ProjectDetails>
+): boolean => {
+  // Check if projectDetails object is not null or undefined
+  if (!projectDetails) {
+    return false;
+  }
+
+  // Check if title and description are provided and not empty
+  if (
+    !projectDetails.title ||
+    projectDetails.title.trim() === "" ||
+    !projectDetails.description ||
+    projectDetails.description.trim() === ""
+  ) {
+    return false;
+  }
+
+  // Check if status is valid
+  if (!isValidStatus(projectDetails.status!)) {
+    return false;
+  }
+
+  // Check if tasks array is valid
+  if (!isValidTasks(projectDetails.tasks || [])) {
+    return false;
+  }
+
+  // Project details are valid
+  return true;
+};
+
+const logActivity = ({
+  activityType,
+  action,
+  userId,
+  date,
+  snapshotId,
+  description = "",
+  data,
+}: LogActivityParams) => {
+  // Logic to log the activity
+  console.log(`Activity '${activityType}': ${description}`);
+  console.log(`Action: '${action}' by User: '${userId}' on ${date}`);
+  console.log(`Snapshot ID: '${snapshotId}'`);
+
+  if (data) {
+    console.log("Additional data:", data);
+  }
+
+  // Additional logic to handle the logged activity
+};
+
+const triggerIncentives = ({
+  userId,
+  incentiveType,
+  params,
+}: TriggerIncentivesParams) => {
+  // Logic to trigger incentives for the user with the provided ID
+  console.log(`Triggering '${incentiveType}' incentive for user '${userId}'`);
+
+  // Check if additional parameters are provided
+  if (params) {
+    console.log("Additional parameters:", params);
+    // Additional logic to handle the triggered incentive with parameters
+    handleIncentiveWithParameters(params);
+  } else {
+    // Additional logic to handle the triggered incentive without parameters
+    handleIncentiveWithoutParameters();
+  }
+};
 
 const portfolioUpdates = ({
   userId,
   snapshotId,
-}:{userId: string, snapshotId: string}) => {
+}: {
+  userId: string;
+  snapshotId: string;
+}) => {
   // Logic to update the user's portfolio snapshot
-  console.log(`Updating portfolio snapshot '${snapshotId}' for user '${userId}'`);
+  console.log(
+    `Updating portfolio snapshot '${snapshotId}' for user '${userId}'`
+  );
 
   // Additional logic to handle the portfolio update
-  if (!userId || userId.trim() === '') {
+  if (!userId || userId.trim() === "") {
     throw new Error("User ID is required for portfolio updates");
   }
-  if (!snapshotId || snapshotId.trim() === '') {
+  if (!snapshotId || snapshotId.trim() === "") {
     throw new Error("Snapshot ID is required for portfolio updates");
   }
-}
+};
 
 const tradeExections = ({
   userId,
@@ -601,50 +736,70 @@ const tradeExections = ({
   tradeExecutionData: any;
 }) => {
   // Logic to execute trades based on the provided data
-  console.log(`Executing trade for user '${userId}' with snapshot '${snapshotId}'`);
+  console.log(
+    `Executing trade for user '${userId}' with snapshot '${snapshotId}'`
+  );
   console.log(`Trade type: '${tradeExecutionType}'`);
   console.log("Trade data:", tradeExecutionData);
   // Additional logic to handle the trade execution
-  if (!userId || userId.trim() === '') {
+  if (!userId || userId.trim() === "") {
     throw new Error("User ID is required for trade execution");
   }
-  if (!snapshotId || snapshotId.trim() === '') {
+  if (!snapshotId || snapshotId.trim() === "") {
     throw new Error("Snapshot ID is required for trade execution");
   }
-  if (!tradeExecutionType || tradeExecutionType.trim() === '') {
+  if (!tradeExecutionType || tradeExecutionType.trim() === "") {
     throw new Error("Trade execution type is required");
   }
-  if (!tradeExecutionData || typeof tradeExecutionData !== 'object') {
+  if (!tradeExecutionData || typeof tradeExecutionData !== "object") {
     throw new Error("Trade execution data is required and should be an object");
   }
-  if (typeof tradeExecutionData !== 'object') {
+  if (typeof tradeExecutionData !== "object") {
     throw new Error("Trade execution data should be an object");
   }
   if (Array.isArray(tradeExecutionData)) {
     throw new Error("Trade execution data should not be an array");
   }
-}
-  
-const userId = useSecureUserId()
+};
+
+const userId = useSecureUserId();
 
 const unsubscribe = (
   snapshotId: number,
   unsubscribeDetails: UnsubscribeDetails,
-  callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  callback: SubscriberCallbackType<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  > | null
 ) => {
   // Log the snapshot unsubscribe action
-  console.log(`Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`);
+  console.log(
+    `Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`
+  );
 
   // Example: Perform actions based on unsubscribeType
   switch (unsubscribeDetails.unsubscribeType) {
-    case 'email':
-      sendEmail(unsubscribeDetails.userId, 'Unsubscribe Notification', 'You have been unsubscribed.');
+    case "email":
+      sendEmail(
+        unsubscribeDetails.userId,
+        "Unsubscribe Notification",
+        "You have been unsubscribed."
+      );
       break;
-    case 'sms':
-      sendSMS(unsubscribeDetails.userId, 'You have been unsubscribed from SMS notifications.');
+    case "sms":
+      sendSMS(
+        unsubscribeDetails.userId,
+        "You have been unsubscribed from SMS notifications."
+      );
       break;
     default:
-      console.warn(`Unknown unsubscribe type: ${unsubscribeDetails.unsubscribeType}`);
+      console.warn(
+        `Unknown unsubscribe type: ${unsubscribeDetails.unsubscribeType}`
+      );
       break;
   }
 
@@ -655,7 +810,10 @@ const unsubscribe = (
 
   // If a callback is provided, call it with a status
   if (callback) {
-    callback('success', `User ${unsubscribeDetails.userId} successfully unsubscribed from snapshot ${snapshotId}`);
+    callback(
+      "success",
+      `User ${unsubscribeDetails.userId} successfully unsubscribed from snapshot ${snapshotId}`
+    );
   }
 };
 
@@ -665,14 +823,46 @@ const triggerEvent = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-  event: string | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  IncludedFields extends keyof T = keyof T
+>(
+  event:
+    | string
+    | CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | SnapshotEvents<
+        T,
+        K,
+        Meta,
+        AttachmentType,
+        ExcludedFields,
+        IncludedFields
+      >,
+  snapshot: Snapshot<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >,
   eventDate: Date,
   snapshotId: string,
-  subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  subscribers: SubscriberCollection<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >,
   type: string,
-  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  snapshotData: SnapshotData<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >
 ) => {
   // Log the event for debugging purposes
   console.log("Event Triggered:");
@@ -686,7 +876,7 @@ const triggerEvent = <
   // Example: Send event data to an analytics service
   sendEventToAnalyticsService({
     type: event,
-    snapshot,                // Include snapshot data
+    snapshot, // Include snapshot data
     date: eventDate.toISOString(), // Format date as an ISO string for consistency
   });
 
@@ -710,8 +900,16 @@ const sendEventToAnalyticsService = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
-  event: AnalyticsEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  IncludedFields extends keyof T = keyof T
+>(
+  event: AnalyticsEvent<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >
 ) => {
   // Replace with actual analytics service logic
   console.log("Sending event to analytics service:", event);
@@ -728,79 +926,84 @@ const handleUserLogout = (data: any) => {
   console.log("User logged out with data:", data);
 };
 
-  
-  // Additional logic to handle the triggered incentive with parameters
-  const handleIncentiveWithParameters = (params: any) => {
-    // Example: Validate parameters
-    if (!isValidParameters(params)) {
-      throw new Error("Invalid parameters for triggering incentives");
-    }
-  
-    // Example: Perform actions based on parameters
-    performActionsWithParameters(params);
-  
-    // Example: Log relevant information
-    console.log("Handling incentive with parameters:", params);
-  };
-  
-  // Additional logic to handle the triggered incentive without parameters
-  const handleIncentiveWithoutParameters = () => {
-    // Example: Perform generic actions
-    performGenericActions();
-  
-    // Example: Log relevant information
-    console.log("Handling incentive without parameters");
-  };
-  
+// Additional logic to handle the triggered incentive with parameters
+const handleIncentiveWithParameters = (params: any) => {
+  // Example: Validate parameters
+  if (!isValidParameters(params)) {
+    throw new Error("Invalid parameters for triggering incentives");
+  }
 
+  // Example: Perform actions based on parameters
+  performActionsWithParameters(params);
+
+  // Example: Log relevant information
+  console.log("Handling incentive with parameters:", params);
+};
+
+// Additional logic to handle the triggered incentive without parameters
+const handleIncentiveWithoutParameters = () => {
+  // Example: Perform generic actions
+  performGenericActions();
+
+  // Example: Log relevant information
+  console.log("Handling incentive without parameters");
+};
 
 // Example: Validate parameters
 const isValidParameters = (params: any): boolean => {
-    // Your validation logic here
-    // For example, checking if params is an object and has required properties for a user registration
-    return typeof params === 'object' && params !== null &&
-      typeof params.username === 'string' &&
-      typeof params.email === 'string' &&
-      typeof params.password === 'string';
-  };
-  
-  // Example: Perform actions based on parameters
-  const performActionsWithParameters = (params: any): void => {
-    // Your actions based on parameters here
-    // For example, performing different actions based on the values of params for sending notifications
-    if (params.type === 'email') {
-      // Send an email notification
-      sendEmail(params.recipient,params.subject, params.message);
-    } else if (params.type === 'sms') {
-      // Send an SMS notification
-      sendSMS(params.phoneNumber, params.message);
-    } else {
-      // Log an error for unknown notification type
-      console.error('Unknown notification type:', params.type);
-    }
-  };
-  
-  // Example: Perform generic actions
-  const performGenericActions = (): void => {
-    // Your generic actions here
-    // For example, fetching and displaying recent articles from a news API
-    articleApi.articleApiService.fetchRecentArticles()
+  // Your validation logic here
+  // For example, checking if params is an object and has required properties for a user registration
+  return (
+    typeof params === "object" &&
+    params !== null &&
+    typeof params.username === "string" &&
+    typeof params.email === "string" &&
+    typeof params.password === "string"
+  );
+};
+
+// Example: Perform actions based on parameters
+const performActionsWithParameters = (params: any): void => {
+  // Your actions based on parameters here
+  // For example, performing different actions based on the values of params for sending notifications
+  if (params.type === "email") {
+    // Send an email notification
+    sendEmail(params.recipient, params.subject, params.message);
+  } else if (params.type === "sms") {
+    // Send an SMS notification
+    sendSMS(params.phoneNumber, params.message);
+  } else {
+    // Log an error for unknown notification type
+    console.error("Unknown notification type:", params.type);
+  }
+};
+
+// Example: Perform generic actions
+const performGenericActions = (): void => {
+  // Your generic actions here
+  // For example, fetching and displaying recent articles from a news API
+  articleApi.articleApiService
+    .fetchRecentArticles()
     .then((response: AxiosResponse<ArticleEntity[]>) => {
       const articles = response.data;
       articleApi.articleApiService.displayArticles(articles);
     })
 
-      .catch((error: any) => {
-        // Log and handle any errors that occur during fetching
-        console.error('Error fetching recent articles:', error);
-      });
-  };
-  
+    .catch((error: any) => {
+      // Log and handle any errors that occur during fetching
+      console.error("Error fetching recent articles:", error);
+    });
+};
 
-
-  
-  export {
-    logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
+export {
+  logActivity,
+  notifyEventSystem,
+  portfolioUpdates,
+  tradeExections,
+  triggerEvent,
+  triggerIncentives,
+  unsubscribe,
+  updateProjectState
 };
 
   export type { LogActivityParams, TriggerIncentivesParams };

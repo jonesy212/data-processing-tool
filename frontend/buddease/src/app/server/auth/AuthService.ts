@@ -1,6 +1,6 @@
 // AuthService.ts
 // import JWT_SECRET from "@/configs/JwtConfig";
-import { databaseConfig } from '@/app/config/DatabaseConfig';
+import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
 import { PostgresDatabaseService } from "@/app/server/database/PostgresDatabaseService";
 import { DatabaseService } from "@/app/config/DatabaseTypes";
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
@@ -17,30 +17,7 @@ class AuthService {
 
       // Can add base initialization logic here if needed later
     }
-  
-  // Private method to save authentication providers
-  // private async saveAuthenticationProvidersInternal(providers: AuthenticationProvider[]): Promise<void> {
-  //   try {
-  //     await this.databaseService.insert(providers, 'authentication_providers');
-  //     console.log('Authentication providers saved successfully.');
-  //   } catch (error) {
-  //     console.error('Error saving authentication providers:', error);
-  //     throw error;
-  //   }
-  // }
 
-
-  // Private method to get authentication providers
-  // private async getAuthenticationProvidersInternal(): Promise<AuthenticationProvider[]> {
-  //   try {
-  //     const providers = await this.databaseService.findAll('authentication_providers');
-  //     console.log('Authentication providers retrieved successfully.');
-  //     return providers;
-  //   } catch (error) {
-  //     console.error('Error retrieving authentication providers:', error);
-  //     throw error;
-  //   }
-  // }
   // Shared authentication provider methods
   public async saveAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
     return this.saveAuthenticationProvidersInternal(providers);

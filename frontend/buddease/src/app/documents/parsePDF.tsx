@@ -1,7 +1,7 @@
 // parsePDF.tsx
 import { ParsedData } from '@/app/dataIntegration/parseData';
 import { YourPDFType } from "@/app/documents/DocType";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { sanitizeData, sanitizeInput } from "@/app/security/SanitizationFunctions";
 import { PDFDocument, PDFPage } from "pdf-lib";
 import { extractTextFromPDF } from "./DocumentGeneratorMethods";

@@ -1,14 +1,12 @@
 // ContentManagementPhase.tsx
-import { ListGeneratorProps } from "@/app/generators/ListGenerator";
-import { EditorState } from "draft-js";
-import React from "react";
-import BlogAndContentEditor from "@/app/models/content/BlogAndContentEditor";
-import ContentList from "@/app/models/content/ContentList";
+import { ListGeneratorProps } from '@/app/generators/ListGenerator';
+import BlogAndContentEditor from '@/app/components/models/content/BlogAndContentEditor';
+import ContentList from '@/app/components/models/content/ContentList';
 import { Data } from '@/app/models/data/Data';
-import useContentManagementStore from "@/app/state/stores/ContentStore";
-import ContentType from "@/app/typings/ContentType";
-
-
+import useContentManagementStore from '@/app/state/stores/ContentStore';
+import ContentType from '@/app/typings/contentTypes';
+import { EditorState } from 'draft-js';
+import React from 'react';
 
 export enum ContentManagementPhaseEnum {
   CONTENT_ITEM_SELECTION = "CONTENT_ITEM_SELECTION",

@@ -15,6 +15,7 @@ export interface ImportFix {
     newLine: string;
     missingTypes: string[];
     targetImportPath: string;
+    reason?: string
 }
 
 export interface ParsedImport {

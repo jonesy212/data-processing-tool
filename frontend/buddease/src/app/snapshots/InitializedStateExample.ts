@@ -1,29 +1,32 @@
 // InitializedStateExample.ts
 
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
+import { ExtendedVersionData } from '@/app/versions/VersionData';
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { T } from "@/app/models/data/dataStoreMethods";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { InitializedState, initializeState } from "@/app/state/stores/DataStore";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { Data } from "@/app/models/data/Data";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { category } from "@/utils/snapshotUtils";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeField, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SnapshotData } from "./SnapshotData";
-import { SnapshotEvents } from '@/app/typings/eventTypes;
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { SnapshotIdentity } from "./SnapshotIdentity";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-;
 
 // Helper function to generate unique IDs
 export function generateId(prefix: string = 'snapshot'): string {
@@ -53,14 +56,14 @@ export function hasValidSnapshotIdentity(obj: any): boolean {
 // Example initial state
 const initialState: InitializedState<AppEntity, AppK> = {};
 
-const snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField> = {
+const snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField> = {
   id: "",
   category: category,
   timestamp: new Date(),
   createdBy: "",
   description: "",
   tags: {},
-  metadata: {},
+  metadata: {} as UnifiedMetadata<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
   deleted: false,
   isCore: false,
   initialConfig: "",
@@ -69,35 +72,38 @@ const snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFi
   taskIdToAssign: "",
   schema: "",
   currentCategory: "",
-  mappedSnapshotData: {} as Map<string, Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>,
+  mappedSnapshotData: {} as Map<string, Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>,
  
   storeId: 0,
-  versionInfo: "",
+  versionInfo: {} as ExtendedVersionData<AppEntity, AppEntity, AppMeta, Attachment, never, AppIncludeField>,
   initializedState: "",
-  criteria: "",
+  criteria: {} as CriteriaType,
  
-  snapshotContainer: {} as SnapshotContainer<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-  config: {} as Promise<SnapshotStoreConfig<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>,
+  snapshotContainer: {} as SnapshotContainer<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+  config: {} as Promise<SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>,
   restoreSnapshot: (
     id: string,
-    snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
     snapshotId: string,
-    snapshotData: SnapshotData<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-    savedState: SnapshotStore<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-    category?: Category,
-    callback: (snapshot: T) => void,
+    snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    savedState: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    callback: (snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>) => void,
     snapshots: SnapshotsArray<AppEntity, AppK, AppMeta>,
     type: string,
-    event: string | SnapshotEvents<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-    subscribers: SubscriberCollection<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-    snapshotContainer?: T,
-    snapshotStoreConfig?: SnapshotStoreConfig<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>
+    event: string | SnapshotEvents<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    subscribers: SubscriberCollection<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    category?: Category,
+    snapshotContainer?: SnapshotContainer<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+    snapshotStoreConfig?: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>
   ): void => { },
  
-  meta: {} as StructuredMetadata<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-  mappedSnapshot: new Map<string, Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>(),
-  data: new Map<string, Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>(),
-  initialState: initializeState(initialState),
+  meta: {} as StructuredMetadata<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+  mappedSnapshot: new Map<string, Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>>(),
+  data: {} as Data<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>, // FIXED: Removed parentheses
+  
+
+  initialState: initializeState(initialState) as Data<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
+  
   events: {
     eventRecords: {},
     subscribers: [], // Assuming this is correctly typed elsewhere
@@ -136,6 +142,7 @@ const snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFi
         subscribers,
         snapshotStore,
         dataItems,
+        subscriberId,
         criteria,
         category
       );

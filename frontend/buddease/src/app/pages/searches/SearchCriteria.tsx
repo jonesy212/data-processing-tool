@@ -30,7 +30,7 @@ import useSearchOptions from "@/app/pages/searches/useSearchOptions";
 import { sanitizeInput } from "@/app/security/SanitizationFunctions";
 import { setLoading, clearError } from "@/app/state/stores/UISlice";
 import SearchResult, { SearchResultWithQuery } from "../../components/routing/SearchResult";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
 import { selectEventLoading } from "@/app/state/redux/slices/EventSlice";
 import { DocumentData } from "@/app/documents/DocumentBuilder";

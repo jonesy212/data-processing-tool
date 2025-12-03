@@ -32,16 +32,16 @@ import {
 
 import { Subscription } from '@/app/subscriptions/Subscription';
 
-import { useEmergencyShutdown } from '@/app//dataIntegration/errorRecovery';
+import { useEmergencyShutdown } from '@/app/dataIntegration/errorRecovery';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useEventSystem } from '@/app/hooks/useEventSystem';
 import { useSnapshotNotifications } from '@/app/hooks/useSnapshotNotifications';
 import { useSnapshotSubscriptions } from '@/app/subscriptions/useSnapshotSubscriptions';
-import { useSnapshotOperations } from '@/operations/useSnapshotOperations';
-import { CustomSnapshotData } from "./SnapshotData";
-import { delegate } from "./snapshotHandlers";
-import SnapshotStore from "./SnapshotStore";
+import { useSnapshotOperations } from '@/app/snapshots/operations/useSnapshotOperations';
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { delegate } from "@/app/snapshots/snapshotHandlers";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 

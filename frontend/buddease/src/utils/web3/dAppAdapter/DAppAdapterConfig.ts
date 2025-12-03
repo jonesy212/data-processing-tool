@@ -18,6 +18,7 @@ import { StorageConfig } from '@/app/config/StorageConfig'
 import { CacheConfig } from '@/app/config/CacheConfig'
 import { LoggingConfig } from '@/app/config/LoggingConfig'
 import { BaseDataRoot } from '@/app/config/BaseConfig'
+
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
 
@@ -423,8 +424,8 @@ export interface DAppAdapterConfig<
   // Add more common properties as needed
 
   // Optional configurations for specific features
-  dynamicComponentsConfig?: DocumentBuilderConfig;
-  documentBuilderConfig?: DocumentBuilderConfig;
+  dynamicComponentsConfig?: DocumentBuilderConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentBuilderConfig?: DocumentBuilderConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Add more feature-specific configurations as needed
   postgresConfig: ClientConfig | undefined;
 

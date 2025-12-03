@@ -1,12 +1,12 @@
 // DocumentBuilderComponent.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import AccessHistory from '@/app/versions/AccessHistory';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DocumentFormattingOptions } from "./DocumentFormattingOptionsComponent";
@@ -97,7 +97,7 @@ const DocumentBuilderComponent = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
+  IncludedFields extends keyof T = keyof T
 >({
   getDefaultMetadata,
 }: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {

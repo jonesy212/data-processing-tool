@@ -270,6 +270,7 @@ export type {
   UserSnapshotDataDefault,
 UserSnapshotStoreDefault,
 UserRealtimeDataItemDefault,
-UserUnifiedMetadata,
+  UserUnifiedMetadata,
+  BasicUserInfo
 };
 

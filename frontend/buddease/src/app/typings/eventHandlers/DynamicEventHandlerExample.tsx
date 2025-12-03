@@ -1,11 +1,10 @@
 // DynamicEventHandlerExample.tsx
 import { TooltipActions } from "@/app/actions/TooltipActions";
 import { UIActions } from "@/app/actions/UIActions";
-import * as ApiAnalysis from "@/app/api/service/ApiAnalysisService";
 import { endpoints } from '@/app/api/endpointConfigurations';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
+import { generateNextPhaseRoute } from '@/app/typings/eventHandlers/factoryHandlers';
 import { UIApi } from "@/app/users/APIUI";
-import { generateNextPhaseRoute } from '@/app/typings/eventHandlers/factoryHandlers'
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";

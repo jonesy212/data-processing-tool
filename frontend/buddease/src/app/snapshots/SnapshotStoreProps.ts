@@ -361,15 +361,8 @@ function isCompleteSnapshotStoreProps<
   );
 }
 
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
-const { latestVersion = createLatestVersion<
-  ExampleEntity,
-  ExampleK,
-  ExampleMeta,
-  ExampleAttachment,
-  ExampleExcludedFields,
-  ExampleIncludedFields
->(), ...rest } = (data as Record<string, any>) || {};
 
 type ExampleEntity = BaseDataEntity & { name: string };
 

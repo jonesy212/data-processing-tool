@@ -5,16 +5,19 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { Data } from '@/app/models/data/Data'
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer'
 // --- Core Snapshot type definitions ---
 
 type SnapshotEntity = BaseDataEntity 
@@ -23,6 +26,8 @@ type SnapshotMeta = DefaultMeta<SnapshotEntity, SnapshotK>;
 type SnapshotAttachment = Attachment;
 type SnapshotExcludedFields = DefaultExcludedFields<SnapshotEntity>;
 type SnapshotIncludedFields = keyof SnapshotEntity;
+
+type AppSnapshotContainer = SnapshotContainer<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
 
 // --- Main parameters container ---
 type SnapshotBaseParams = {
@@ -139,7 +144,14 @@ type SnapshotEntityParams = SnapshotConfigParams<
 
 
 // Create comprehensive helper types
-type SnapshotFullType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+type SnapshotFullType<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
   Snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   SnapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   SnapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -235,7 +247,7 @@ const emptySnapshotData: SnapshotEntityDataInterface<
   metadata: {} as SnapshotUnifiedMetadata,
 
   // Optional additional structure for flexibility
-  data: {} as SnapshotEntityData,
+  data: {} as Data<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   store: {} as SnapshotEntityStore,
 };
 
@@ -254,7 +266,7 @@ export type {
   SnapshotAttachment, SnapshotBaseParams, SnapshotEntity, SnapshotEntityApplyFieldFilters, SnapshotEntityData, SnapshotEntityDataInterface, SnapshotEntityParams, SnapshotEntityRealtimeDataItem, SnapshotEntitySnapshotsArray, SnapshotEntityStore, SnapshotEntityStoreConfig, SnapshotEntitySubscriberCollection, SnapshotEntityType, SnapshotEntityWithCriteria, SnapshotExcludedFields,
   SnapshotIncludedFields, SnapshotK, SnapshotMeta, SnapshotStructuredMetadata, SnapshotUnifiedMetadata, 
   SnapshotFullType,
-DefaultSnapshotTypes
+DefaultSnapshotTypes, AppSnapshotContainer
 };
 
     export {

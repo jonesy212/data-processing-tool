@@ -2,7 +2,7 @@
 // Server-specific types and interfaces
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 
 export interface ServerSnapshotConfig<
   T extends BaseDataEntity = BaseDataRoot,

@@ -25,7 +25,7 @@ import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import {
     SnapshotEquality,
     Snapshots,
@@ -52,7 +52,8 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import { InitializedDataStore } from "./SnapshotStoreOptions";
 import { SnapshotCRUD } from "./SnapshotSubscriberManagement";
-import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
+import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 
 interface CoreSnapshot<
   T extends BaseDataEntity = BaseDataRoot,
@@ -63,15 +64,16 @@ interface CoreSnapshot<
   IncludedFields extends keyof T = keyof T
 > extends Partial<SharedIdentifiers<T, K>>,
           Partial<SnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-          Partial<SnapshotRelationships<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+          // Partial<SnapshotRelationships<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotCRUD<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-          Partial<Omit<SnapshotInitialization<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'onInitialize'>>,
+          // Partial<Omit<SnapshotInitialization<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'onInitialize'>>,
           Partial<SnapshotEquality<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SnapshotBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           Partial<SharedTimestamps>
 {
+  initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   identity?: SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  base?: BaseEntity<T, K, Meta, AttachmentType>;
+  base?: BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   operations?: SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   methods?: Array<{ name: string; execute: (...args: any[]) => any; description?: string }>;
   processEvent?: (data: any, type: string, event: Event) => void;
@@ -79,6 +81,7 @@ interface CoreSnapshot<
   childSnapshots?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   parentSnapshotId?: string;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  attachments?: AttachmentType;
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   configs?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   parentId?: string | null;
@@ -96,7 +99,7 @@ interface CoreSnapshot<
   subscriberId?: string;
   currentSnapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   length?: number;
-  task?: Task<T, K, Meta, AttachmentType>;
+  task?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: Category;
   categoryProperties?: CategoryProperties;
   date?: string | number | Date | null;
@@ -111,7 +114,7 @@ interface CoreSnapshot<
     additionalData?: string, 
     userId?: number,
      sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-     channel?: ChatRoom) => Messag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+     channel?: ChatRoom) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   user?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   type?: string | AllTypes;
   phases?: ProjectPhaseTypeEnum;

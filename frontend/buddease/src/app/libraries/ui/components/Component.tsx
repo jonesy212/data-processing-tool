@@ -3,7 +3,7 @@
 import { ComponentActions } from "@/app/actions/ComponentActions";
 import ProjectService from "@/app/api/ProjectService";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { StatusType } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
@@ -11,8 +11,8 @@ import { NotificationChannelHelper } from '@/app/notifications/NotificationChann
 import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
 import useNotificationManagerService from "@/app/services/NotificationService";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from '@/app/state/context/NotificationContext';
 import { addNotification } from "@/app/state/redux/slices/CalendarSlice";
 import { createSuccessLog } from '@/utils/logDataHelpers';

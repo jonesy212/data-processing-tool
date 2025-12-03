@@ -2,6 +2,7 @@
 import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
 import { Task } from "@/app/components/models/tasks/Task";
 import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import ColorPalette, {
   ColorSwatchProps,
 } from "@/app/components/styling/ColorPalette";

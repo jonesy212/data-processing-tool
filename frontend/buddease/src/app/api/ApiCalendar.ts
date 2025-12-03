@@ -12,7 +12,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosResponse } from "axios";
 
 const API_BASE_URL = endpoints.calendar
@@ -107,7 +108,7 @@ class CalendarApiService <
   }
 
  async addCalendarEvent(
-  newEvent: Omit<SimpleCalendarEvent, "id">): Promise<void> {
+  newEvent: Omit<SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id">): Promise<void> {
     try {
       await this.requestHandler(
         () => internalApiService.post(`${API_BASE_URL}/calendar/events`, newEvent), // ✅ Correct calendar endpoint
@@ -116,7 +117,7 @@ class CalendarApiService <
       );
 
        // Assuming generateId() returns a valid ID
-    const newEventWithId: SimpleCalendarEvent = {
+    const newEventWithId: SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: UniqueIDGenerator.generateID(
         "newCalendarEventSuccess",
         "calendar-event",
@@ -180,7 +181,10 @@ class CalendarApiService <
     }
   }
 
-  async updateCalendarEvent(eventId: string, newTitle: string): Promise<void> {
+  async updateCalendarEvent(
+    eventId: string,
+    newTitle: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void> {
     try {
       await this.requestHandler(
         () => internalApiService.updateCalendarEvent(Number(eventId), newTitle),

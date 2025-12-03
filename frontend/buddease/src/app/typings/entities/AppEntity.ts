@@ -38,7 +38,7 @@ type AppBaseParams = {
   ExcludedFields: AppExcludedFields;
   IncludedFields: AppIncludedFields;
 };
-
+type MainApp = App<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
 type AppSnapshot = Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
 type AppSnapshotData = SnapshotData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
 type AppSnapshotStore = SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
@@ -68,6 +68,7 @@ export type {
   AppAttachment,
   AppExcludedFields,
   AppIncludedFields,
+  
   ApplyFieldFilters,
   AppParams, AppRealtimeDataItem, AppSnapshot,
   AppBaseParams,

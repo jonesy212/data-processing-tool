@@ -3,6 +3,7 @@ import internalApiService from '@/app/api/ApiClient';
 import axiosInstance from '@/app/api/csrfToken';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { environmentAwareEndpointManager } from '@/app/config/endpoints/EnvironmentAwareEndpointManager';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -10,6 +11,8 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -32,9 +35,6 @@ import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { convertSnapshotToMap } from '@/app/typings/YourSpecificSnapshotType';
 import { Version } from '@/app/versions/Version';
-import { environmentAwareEndpointManager } from '@/app/config/endpoints/EnvironmentAwareEndpointManager';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 
 
 // Define the API endpoint for retrieving snapshot data
@@ -510,7 +510,7 @@ const convertSnapshotStore = <
     key: retrievedSnapshot.id,
     state: [snapshot],
     store: null,
-    stores: (storeProps: SnapshotStoreProps<T, K>) => [], // Return an array or null
+    stores: (storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => [], // Return an array or null
     findIndex: () => -1,
     splice: () => [],
     id: retrievedSnapshot.id,

@@ -1,3 +1,4 @@
+
 // Theme.tsx
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
@@ -11,7 +12,7 @@ enum ThemeEnum {
   AUTO = 'auto'
 }
 
-interface Theme extends BrandingSettings {
+interface Theme {
   primaryColor: string;
   secondaryColor: string;
   fontSize: string;
@@ -23,21 +24,28 @@ interface Theme extends BrandingSettings {
   borderStyle: string;
   padding: string;
   margin: string;
+
   brandIcon: string;
   brandName: string;
+
   borderWidth: string;
-  borderRadius: { small: string; medium: string; large: string; };
+  borderRadius: { small: string; medium: string; large: string };
   boxShadow: string;
-  children?: React.ReactNode;
+
+  // Optional wrappers
+  branding?: Partial<BrandingSettings>;
   language?: string;
+  children?: React.ReactNode;
   newThemeName?: string;
   isDarkMode?: boolean;
+
   infoColor?: string;
   notificationState?: React.Dispatch<SetStateAction<NotificationData[]>>;
   setThemeState?: React.Dispatch<SetStateAction<ThemeState>>;
+
   updateTheme?: (newTheme: Partial<Theme>) => void;
-  // Add more theme properties as needed
 }
+
 
 // Define the ThemeContext
 const ThemeContext = React.createContext<Theme | null>(null);

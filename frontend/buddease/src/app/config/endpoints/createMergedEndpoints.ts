@@ -97,7 +97,7 @@ const dynamicConfigMap = {
   blogs: blogsConfig,
   calendar: calendarConfig,
   categories: categoryConfig,
-  categoriesConfg: categoryConfig,
+  categoriesEndpoints: categoryConfig,
   chat: chatConfig,
   client: clientConfig,
   collaborationTools: collaborationToolsConfig,
@@ -170,39 +170,87 @@ const dynamicConfigMap = {
   uiSettings: uiSettingsConfig,
 };
 
-
-export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurations) => {
-  const updatedEndpoints: any = {};
-
-  // Define complex categories that need manual handling (functions with parameters)
-  const complexCategories = [
-    'client', 'content', 'delegates', 'documents', 'notes', 
-    'realtime', 'snapshots', 'teams', 'todos', 'ui', 'users'
-  ];
-
-  // Handle ALL categories dynamically except complex ones
-  Object.entries(dynamicConfigMap).forEach(([category, configDefinition]) => {
-    if (endpointConfigurations[category as keyof EndpointConfigurations]) {
-      if (complexCategories.includes(category)) {
-        // Use existing manual mappings for complex categories
-        updatedEndpoints[category] = getManualComplexMapping(category, endpointConfigurations);
-      } else {
-        // Handle simple categories dynamically
-        updatedEndpoints[category] = mergeConfigurations(
-          endpointConfigurations[category as keyof EndpointConfigurations],
-          Object.fromEntries(
-            Object.keys(configDefinition).map(key => [
-              key,
-              generateEndpointUrl(category as keyof EndpointConfigurations, key)
-            ])
-          )
-        );
-      }
-    }
-  });
-
-  return updatedEndpoints;
-};
+export const createMergedEndpoints = (): EndpointConfigurations => ({
+  analytics: analyticsConfig,
+  apiConfig: apiEndpointConfig,
+  apiWebBase: apiWebBaseConfig,
+  auth: authConfig,
+  batch: batchConfig,
+  blogs: blogsConfig,
+  calendar: calendarConfig,
+  categories: categoryConfig,
+  categoriesEndpoints: categoryConfig,
+  chat: chatConfig,
+  client: clientConfig,
+  collaborationTools: collaborationToolsConfig,
+  comments: commentsConfig,
+  communication: communicationConfig,
+  communityInteraction: communityInteractionConfig,
+  content: contentConfig,
+  crypto: cryptoConfig,
+  data: dataConfig,
+  database: databaseConfig,
+  dataAnalysis: dataAnalysisConfig,
+  dataProviders: dataProvidersConfig,
+  delegates: delegatesConfig,
+  details: detailsConfig,
+  dev: devConfig,
+  dex: dexConfig,
+  documents: documentsConfig,
+  donations: donationsConfig,
+  drawing: drawingConfig,
+  externalAuth: externalAuthConfig,
+  feedback: feedbackConfig,
+  files: filesConfig,
+  filtering: filteringConfig,
+  freelancers: freelancersConfig,
+  generators: generatorsConfig,
+  globalCollaboration: globalCollaborationConfig,
+  highlights: highlightsConfig,
+  logging: loggingConfig,
+  logs: logsConfig,
+  marker: markerConfig,
+  messages: messagesConfig,
+  moderators: moderatorsConfig,
+  monetization: monetizationConfig,
+  news: newsConfig,
+  notes: notesConfig,
+  parameterCustomization: parameterCustomizationConfig,
+  participants: participantsConfig,
+  payment: paymentConfig,
+  personas: personasConfig,
+  phases: phasesConfig,
+  projectManagement: projectManagementConfig,
+  projectOwner: projectOwnerConfig,
+  projects: projectsConfig,
+  randomWalk: randomWalkConfig,
+  realtime: realtimeConfig,
+  registration: registrationConfig,
+  reports: reportsConfig,
+  screenSharing: screenSharingConfig,
+  searching: searchingConfig,
+  security: securityConfig,
+  snapshots: snapshotsConfig,
+  sorting: sortingConfig,
+  stateGovCities: stateGovCitiesConfig,
+  tasks: tasksConfig,
+  teamManagement: teamManagementConfig,
+  teams: teamsConfig,
+  theme: themeConfig,
+  toolbar: toolbarConfig,
+  todos: todosConfig,
+  trading: tradingConfig,
+  ui: uiConfig,
+  uiSettings: uiSettingsConfig,
+  userManagement: userManagementConfig,
+  userRoles: userRolesConfig,
+  userRolesNFT: userRolesNFTConfig,
+  users: usersConfig,
+  userSettings: userSettingsConfig,
+  version: versionConfig,
+  videos: videosConfig,
+  web: webConfig,
+});
 
 
 // Helper function for complex categories (keep your existing manual mappings)

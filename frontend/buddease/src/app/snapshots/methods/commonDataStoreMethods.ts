@@ -1,17 +1,17 @@
 // commonDataStoreMethods.ts
-// commonDataStoreMethods
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder"; import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { FilterCriteria } from '@/app/pages/searches/CriteriaType';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
-
-
+import { AppSnapshotStore, AppSnapshot, AppSnapshotContainer, AppEntity, AppMeta, AppAttachment } from '@/app/typings/entities/AppEntity';
+import { AppSubscriber, AppSubscription } from '@/app/subscribers/Subscriber';
 
 // Helper functions (can be in same file or imported)
 const matchesCriteria = <T extends BaseDataEntity>(
@@ -63,18 +63,13 @@ const removeDuplicates = <T extends BaseDataEntity>(items: T[]): T[] => {
   });
 };
 
-// Main export
+// Now refactor your CommonDataStoreMethods using these aliases
 export const CommonDataStoreMethods = {
-  // Implement getSnapshotByKey
-  getSnapshotByKey<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, key: string): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
-    // Implementation: Search through snapshots or data stores for the key
+  // Much cleaner - no complex generics
+  getSnapshotByKey(
+    this: AppSnapshotStore, 
+    key: string
+  ): AppSnapshot | undefined {
     if (this.snapshots && this.snapshots.length > 0) {
       return this.snapshots.find(snapshot => 
         snapshot.id === key || 
@@ -83,41 +78,33 @@ export const CommonDataStoreMethods = {
       );
     }
     
-    // Check data stores if available
+    // Check if you have a dataStores property (not setDataStores method)
     if (this.dataStores && this.dataStores.length > 0) {
       for (const dataStore of this.dataStores) {
         const snapshot = dataStore.getSnapshotByKey?.(key);
-        if (snapshot) return snapshot;
+        if (snapshot) return snapshot as AppSnapshot;
       }
     }
     
     return undefined;
   },
 
-  // Implement mapSnapshotStore
-  async mapSnapshotStore<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  // Much simpler signature
+  async mapSnapshotStore(
+    this: AppSnapshotStore,
     storeId: number,
     snapshotId: string,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshot: AppSnapshot,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: T,
+    snapshotStore: AppSnapshotStore,
+    data: Data<>,
     category?: Category
-  ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
+  ): Promise<AppSnapshotContainer | undefined> {
     try {
-      // Create or find snapshot container
       let container = this.snapshotContainers.get(snapshotId);
       
       if (!container) {
@@ -132,11 +119,10 @@ export const CommonDataStoreMethods = {
           snapshot,
           snapshotStore: this,
           data
-        };
+        } as AppSnapshotContainer;
         
         this.snapshotContainers.set(snapshotId, container);
       } else {
-        // Update existing container
         container.snapshotData = snapshot;
         container.timestamp = timestamp ? new Date(timestamp) : new Date();
         container.categoryProperties = categoryProperties;
@@ -149,104 +135,74 @@ export const CommonDataStoreMethods = {
     }
   },
 
-  // Implement getSubscribers
-  async getSubscribers<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  // Clean and readable
+  async getSubscribers(
+    this: AppSnapshotStore,
     snapshotId: string,
-    categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshot: AppSnapshot,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: T,
-    category?: Category
-  ): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    // Get subscribers for this specific snapshot
+    snapshotStore: AppSnapshotContainer,
+    data: AppEntity,
+    category?: Category,
+    categoryProperties?: CategoryProperties | undefined,
+  ): Promise<AppSubscriber[]> {
     const snapshotSubscribers = this.subscribers?.get(snapshotId) || [];
-    
-    // Get global subscribers
     const globalSubscribers = this.subscribers?.get('*') || [];
     
-    // Combine and return all relevant subscribers
     return [...snapshotSubscribers, ...globalSubscribers].filter(subscriber => 
       subscriber.isActive && subscriber.filter?.(snapshot, category, event) !== false
-    );
+    ) as AppSubscriber[];
   },
 
-  // Implement getDataWithSearchCriteria with overloads
-  getDataWithSearchCriteria<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+
+  getDataWithSearchCriteria(
+    this: AppSnapshotStore,
     criteria: FilterCriteria | SearchCriteria | MixedCriteria
-  ): T[] {
-    let results: T[] = [];
+  ): AppEntity[] {
+    let results: AppEntity[] = [];
     
-    // Search through snapshots
     if (this.snapshots && this.snapshots.length > 0) {
       results = this.snapshots
         .map(snapshot => snapshot.data)
-        .filter(data => matchesCriteria(data, criteria));
+        .filter(data => matchesCriteria(data, criteria)) as AppEntity[];
     }
     
-    // Search through data stores if available
+    // Change to dataStores (property) instead of setDataStores (method)
     if (this.dataStores && this.dataStores.length > 0) {
       for (const dataStore of this.dataStores) {
         const storeResults = dataStore.getDataWithSearchCriteria?.(criteria) || [];
-        results = [...results, ...storeResults];
+        results = [...results, ...storeResults] as AppEntity[];
       }
     }
     
     return removeDuplicates(results);
   },
 
-  // Implement addData
-  addData<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  // Very clean implementation
+  addData(
+    this: AppSnapshotStore,
     id: string,
-    data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    data: Partial<AppSnapshot>
   ): void {
-    // Create new snapshot from partial data
-    const newSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    const newSnapshot: AppSnapshot = {
       id,
       timestamp: new Date(),
-      data: data.data || {} as T,
-      metadata: data.metadata || {} as Meta,
-      attachments: data.attachments || [] as AttachmentType[],
+      data: data.data || {} as AppEntity,
+      metadata: data.metadata || {} as AppMeta,
+      attachments: data.attachments || [] as AppAttachment[],
       ...data
-    } as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    } as AppSnapshot;
     
-    // Add to snapshots array
     if (!this.snapshots) {
       this.snapshots = [];
     }
     
-    // Remove existing snapshot with same ID if it exists
     this.snapshots = this.snapshots.filter(s => s.id !== id);
     this.snapshots.push(newSnapshot);
     
-    // Notify subscribers
     this.notifySubscribers('dataAdded', newSnapshot);
   }
 };

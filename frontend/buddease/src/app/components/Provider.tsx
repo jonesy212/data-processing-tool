@@ -1,26 +1,37 @@
 // Provider.tsx
 // components/AppProviders.tsx
 'use client';
+import { User } from "@/app/users/User";
+import { DashboardConfig } from '@/app/typings/authTypes';
+import { NFT } from "@/app/service/crypto/NFT";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { useAuthStore } from "@/app/state/stores/AuthStore";
 import { useReducer } from 'react'
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import { AuthContext } from '@/app/state/context/AuthContext'
 
 // In your AuthProvider component file
+
 interface AuthProviderProps {
   children: React.ReactNode;
   token?: string; // Make optional if not always required
   dbStatus?: any; // Add dbStatus prop
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbStatus }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children,  token: initialToken, dbStatus }) => {
+  // Use reducer with optional initial token
   const [state, dispatch] = useReducer(authReducer, {
     ...initialState,
     token: token || initialState.token
   });
   
   const store = useAuthStore();
+  const token = state.token;
+  const user = state.user;
 
   const resetAuthState = () => {
     store.logout();
+    dispatch({ type: "RESET_AUTH_STATE" });
   };
 
   const loginWithRoles = (
@@ -29,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
     nfts: NFT[],
     authToken: string
   ) => {
-    // Your existing loginWithRoles implementation
+    // Verify user's NFTs and add corresponding roles
     const verifiedRoles = roles.filter((role) =>
       nfts.some((nft) => nft.role === role)
     );
@@ -38,7 +49,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
     store.setUser(user);
     store.setRoles(verifiedRoles);
     store.setNFTs(nfts);
-    // ... rest of your store setup
+    
+    // Store setup from first version
+    store.setUserPreferences({
+      theme: "dark", 
+      language: LanguageEnum.English,
+      refreshUI: function (): void {
+        throw new Error("Function not implemented.");
+      }
+    });
+    store.setUserProfilePicture("https://example.com/profile-picture-url");
+    store.setUserEmail("newemail@example.com");
+    store.setUserContactInfo({
+      phone: "+123456789",
+      address: "1234 Main St, Anytown, USA",
+    });
+    store.setUserNotificationPreferences({
+      emailNotifications: true,
+      smsNotifications: false,
+    });
+    store.setAuthenticationProviders([
+      { name: "Google", connected: true, type: '' },
+      { name: "Facebook", connected: false, type: '' },
+    ]);
+    store.setUserSecuritySettings({
+      twoFactorEnabled: true,
+      lastPasswordChange: "2024-01-01",
+    });
+    store.addUserSession({
+      sessionId: "abc123",
+      device: "iPhone",
+      location: "New York, USA",
+      lastAccessed: "2024-06-01T12:34:56Z",
+    });
+    store.removeUserSession("abc123");
+    store.setUserSubscriptionPlan({
+      id: "",
+      planName: "Premium",
+      expiryDate: "2025-06-01",
+      price: 0,
+      features: []
+    });
 
     dispatch({
       type: "LOGIN_WITH_ROLES",
@@ -46,9 +97,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
     });
   };
 
-  // Add other auth methods
+  // Auth methods from second version
   const login = async (email: string, password: string) => {
-    // Implement login logic
+    dispatch({ type: "LOGIN_START" });
+    try {
+      // Implement login logic
+      // const response = await api.login(email, password);
+      // dispatch({ type: "LOGIN_SUCCESS", payload: response });
+    } catch (error) {
+      dispatch({ type: "LOGIN_ERROR", payload: error });
+    }
   };
 
   const logout = () => {
@@ -57,7 +115,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
   };
 
   const register = async (userData: any) => {
-    // Implement registration logic
+    dispatch({ type: "REGISTER_START" });
+    try {
+      // Implement registration logic
+      // const response = await api.register(userData);
+      // dispatch({ type: "REGISTER_SUCCESS", payload: response });
+    } catch (error) {
+      dispatch({ type: "REGISTER_ERROR", payload: error });
+    }
   };
 
   const hasPermission = (permission: string) => {
@@ -69,11 +134,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
   };
 
   const refreshToken = async () => {
-    // Implement token refresh logic
+    dispatch({ type: "REFRESH_TOKEN_START" });
+    try {
+      // Implement token refresh logic
+      // const response = await api.refreshToken(state.token);
+      // dispatch({ type: "REFRESH_TOKEN_SUCCESS", payload: response });
+    } catch (error) {
+      dispatch({ type: "REFRESH_TOKEN_ERROR", payload: error });
+    }
   };
 
   const setDashboardConfig = (config: DashboardConfig | null) => {
     // Implement dashboard config logic
+    dispatch({ type: "SET_DASHBOARD_CONFIG", payload: config });
   };
 
   return (
@@ -83,7 +156,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
         state,
         dispatch,
         
-        // Auth methods
+        // Auth methods - using the actual implementations, not from state
         login,
         logout,
         register,
@@ -118,10 +191,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, token, dbS
         userSubscriptionPlan: store.getUserSubscriptionPlan(),
         
         // Dashboard
-        dashboardConfig: null, // You'll need to implement this
+        dashboardConfig: null, // Will be set by setDashboardConfig
         
-        // Database status (new)
-        dbStatus // Add dbStatus to context value
+        // Database status
+        dbStatus
       }}
     >
       {children}

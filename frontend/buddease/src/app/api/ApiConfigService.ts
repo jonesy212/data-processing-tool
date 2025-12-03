@@ -10,7 +10,7 @@ type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
 
 export interface ApiConfig {
   [x: string]: any;
-  name: any;
+  name?: string;
   baseURL: string;
   timeout: number;
   headers: { [key: string]: string };

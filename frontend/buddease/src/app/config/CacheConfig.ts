@@ -9,7 +9,7 @@ export interface CacheConfig extends BaseCacheConfig {
   enabled: boolean;
   maxAge: number; // Required and specific type
   staleWhileRevalidate: number; // Required and specific type
-  cacheKey: string;
+  cacheKey: string | ((...args: any[]) => string);
   strategy: 'memory' | 'persistent' | 'hybrid';
   ttl: number;
   versioning: {

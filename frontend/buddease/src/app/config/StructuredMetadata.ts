@@ -1,6 +1,7 @@
 // StructuredMetadata.ts
 import { Contributor } from '@/app/collaborators/Collaborator';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
@@ -56,7 +57,8 @@ const metadata: SpecificMetadata<UserEntity, UserK> = {
       relatedTags: [], 
       description: '', 
       enabled: true, 
-      nulltype: '' , timestamp: new Date()
+      nulltype: '',
+      timestamp: new Date()
 
      },
     archived: { 
@@ -93,7 +95,7 @@ type MetadataEntriesType<
     description: string;
     keywords: string[];
     authors: string[];
-    contributors: Contributor[];
+    contributors: Contributor<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     publisher: string;
     copyright: string;
     license: string;
@@ -122,7 +124,7 @@ interface StructuredMetadata<
   fileType?: string;
   alternatePaths?: string[];
   originalPath?: string;
-  metadataEntries: MetadataEntriesType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadataEntries: MetadataEntriesType<T, K>;
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;

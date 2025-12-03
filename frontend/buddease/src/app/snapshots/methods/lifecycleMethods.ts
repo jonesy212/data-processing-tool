@@ -121,7 +121,7 @@ export const LifecycleMethods = {
         reject(error);
       }
     });
-  }
+  },
 
 
 
@@ -303,7 +303,7 @@ export const LifecycleMethods = {
     callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     category?: Category,
-     categoryProperties?: CategoryProperties;
+     categoryProperties?: CategoryProperties
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     const snapshotsArray = Array.isArray(snapshots) ? snapshots : [snapshots];
 
@@ -413,7 +413,9 @@ export const LifecycleMethods = {
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, otherStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<boolean> {
+    >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      otherStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): Promise<boolean> {
     return Promise.resolve(JSON.stringify(this.snapshots) === JSON.stringify(otherStore.snapshots));
   },
 
@@ -426,7 +428,7 @@ export const LifecycleMethods = {
     IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]
+    data: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ): void {
     this.snapshots = data; // initialize snapshots
   },

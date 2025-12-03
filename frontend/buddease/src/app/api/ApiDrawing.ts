@@ -5,7 +5,7 @@ import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import {
     NotificationType,
     NotificationTypeEnum,

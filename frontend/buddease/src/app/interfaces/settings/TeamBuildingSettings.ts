@@ -1,8 +1,8 @@
 // TeamBuildingSettings.ts
-import { Settings } from "@/app/state/stores/SettingsStore";
-import { BrainstormingSettings } from "./BrainstormingSettings";
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore'
 
 interface TeamBuildingSettings extends Settings {
+  id: string
   enableTeamBuilding: boolean;
   teamBuildingMethod: "iceBreakers" | "workshops" | "teamRetreat" | "custom"; // Preferred team-building method
   projectTimeline: "mediumTerm";

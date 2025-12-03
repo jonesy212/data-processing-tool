@@ -127,7 +127,7 @@ interface DocumentBase<
   lastModifiedDate?: ModifiedDate;
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
-  lastModifiedByTeam?: Team | null;;
+  lastModifiedByTeam?: Team | null;
   timestamp?: Date;
 
   // Content
@@ -190,7 +190,7 @@ interface DocumentBase<
   documentOptions?: DocumentWithBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Workflow
-  documentPhase?: DocumentPhaseEnum<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentPhase?: DocumentPhaseEnum;
   subtasks?: TodoSubtasks;
 
   // Browser/document properties
@@ -254,7 +254,7 @@ interface DocumentAdditionalProps <
   all?: string | null;
   anchors?: any;
   applets?: any;
-  body?: HTMLElement;
+  body?: WritableDraft<HTMLElement> | HTMLElement;
   documentElement?: HTMLElement;
   embeds?: any;
   forms?: any;
@@ -334,12 +334,13 @@ export interface DocumentStore<
   addDocument: (document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   updateDocument: (id: number, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  deleteDocument: (id: string) => void;
+  deleteDocument: (id: string) => Promise<void>;
   updateDocumentTags: (id: string, newTags: string[]) => void;
   selectedDocument?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   selectedDocuments?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
+const { error, handleError, clearError, parseDataWithErrorHandling } = useErrorHandling();
 
 const useDocumentStore = <
   T extends BaseDataEntity = BaseDataEntity,
@@ -378,29 +379,60 @@ const useDocumentStore = <
       ...prevDocuments,
       [documentId]: document,
     }));
-    notify(
-      "addDocumentSuccess",
-      "Document added successfully",
-      documentNotificationMessages.ADD_DOCUMENT_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+    notify({
+      id: "addDocumentSuccess",
+      message: "Document added successfully",
+      data: {
+        documentId,
+        documentTitle: document.title || document.name || 'Untitled Document'
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
   };
-
-  const deleteDocument = async (id: number) => {
+    
+  const deleteDocument = async (id: string) => {
+    // Store the document being deleted for potential restoration
+    const documentToDelete = documents[id];
+    
+    // Update local state first (optimistic update)
     setDocuments((prevDocuments) => {
       const updatedDocuments = { ...prevDocuments };
       delete updatedDocuments[id];
       return updatedDocuments;
     });
-    await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
-    notify(
-      "deletedDocumentSuccess",
-      `You have successfully deleted the document ${id}`,
-      NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+
+    try {
+      // Pass string ID directly to API
+      await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
+      
+      notify({
+        id: "deletedDocumentSuccess",
+        message: `You have successfully deleted document ${id}`,
+        data: {
+          documentId: id,
+          documentTitle: documentToDelete?.title || documentToDelete?.name || 'Document'
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+    } catch (error) {
+      // Error handling - restore the document
+      setDocuments((prevDocuments) => ({
+        ...prevDocuments,
+        [id]: documentToDelete,
+      }));
+      
+      // Use handleApiError for consistent error handling
+      handleApiError(
+        error as AxiosError<unknown> | Error,
+        `Failed to delete document ${id}`
+      );
+      
+      throw error;
+    }
   };
 
   const loadCalendarEventsDocumentContent = async (
@@ -409,8 +441,8 @@ const useDocumentStore = <
   ): Promise<DocumentContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     try {
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
-      const meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
-      const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
+      const meta: Meta = useMeta<T, K>(area);
+      const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(area);
 
       return {
         eventId,
@@ -438,38 +470,73 @@ const useDocumentStore = <
 
   const getData = (id: string) => documents[id];
 
-  const updateDocument = (id: number, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+  const updateDocument = async (
+    id: string, 
+    updates: Partial<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ) => {
+    // Store previous state for rollback
+    const previousDocument = documents[id];
+    
+    // Optimistic update
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
-      [id]: updatedDocument,
+      [id]: {
+        ...previousDocument,
+        ...updates,
+      }
     }));
-    notify(
-      "updateDocumentSuccess",
-      "Document updated successfully",
-      NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+
+    try {
+      await axiosInstance.put(
+        `${endpoints.documents.updateDocument}/${id}`,
+        updates
+      );
+      
+      notify({
+        id: "updateDocumentSuccess",
+        message: "Document successfully updated",
+        data: {
+          documentId: id,
+          documentTitle: updates.title || previousDocument?.title || 'Document',
+          changes: Object.keys(updates)
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+    } catch (error) {
+      // Rollback on error
+      setDocuments((prevDocuments) => ({
+        ...prevDocuments,
+        [id]: previousDocument,
+      }));
+      
+      handleApiError(
+        error as AxiosError<unknown> | Error,
+        `Failed to update document ${id}`
+      );
+      
+      throw error;
+    }
   };
 
   const handleError = (error: any, action: string) => {
+    const errorMessage = `Error ${action}: ${error.message || "Unknown error"}`;
     console.error(`Error ${action}:`, error);
-    setError(`Error ${action}: ${error.message || "Unknown error"}`);
-    notify(
-      `Error ${action}`,
-      error.message || "Unknown error",
-      NOTIFICATION_MESSAGES.Document.HANDLE_DOCUMENT_ERROR,
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    
+    // Use the hook's handleError
+    handleErrorHook(errorMessage, { componentStack: error.stack });
+    
+    // Keep your existing notification logic
+    handleApiError(error, action); // Use your existing handleApiError
   };
 
-  const updateDocumentTags = async (id: number, tags: string[]) => {
+  const updateDocumentTags = async (id: number, newTags: string[]) => {
     try {
       const response = await fetch(endpoints.documents.updateDocumentTags.toString(), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, tags }),
+        body: JSON.stringify({ id, newTags }),
       });
       if (!response.ok) throw new Error("Failed to update document tags");
       const data = await response.json();
@@ -538,11 +605,16 @@ const useDocumentStore = <
 
 
 // Helper function to convert Document to DocumentData
-const convertDocumentToDocumentData = <T extends BaseData<any>,
+const convertDocumentToDocumentData = <
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  document: Document<T, K, Meta>
-): Document<T, K, Meta> => {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Implement conversion logic here
   return {
     // Map properties from Document to DocumentData

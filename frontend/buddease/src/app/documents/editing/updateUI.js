@@ -1,15 +1,12 @@
 // updateUI.js
 // Import modules providing relevant information
 import useEditorState from "@/app/state/useEditorState";
-import autosave from "@/app/components/documents/editing/autosave";
-import performFormattingChecks from "@/app/components/documents/editing/formattingChecks";
-import spellCheck from "@/app/components/documents/editing/spellCheck";
-import triggerAutosave from "@/app/components/documents/editing/triggerAutosave";
-import wordCount from "@/app/components/documents/editing/wordCount";
-import wordCountAnalysis from "@/app/components/documents/editing/wordCountAnalysis";
-
-
-
+import autosave from "@/app/documents/editing/autosave";
+import performFormattingChecks from "@/app/documents/editing/formattingChecks";
+import spellCheck from "@/app/documents/editing/spellCheck";
+import triggerAutosave from "@/app/documents/editing/triggerAutosave";
+import wordCount from "@/app/documents/editing/wordCount";
+import wordCountAnalysis from "@/app/documents/editing/wordCountAnalysis";
 
 const updateUIWithCopiedText = (editorState, store) => {
   // Get the content from the editorState

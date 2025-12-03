@@ -134,6 +134,8 @@ export interface SecurityMeasureAudit extends SecurityMeasureBase {
 // Compliance Security Measure
 export interface SecurityMeasureCompliance extends SecurityMeasureBase {
   type: SecurityMeasureType.Compliance;
+  status: SecurityStatus;
+  lastChecked: Date;
   standards: Array<'GDPR' | 'HIPAA' | 'PCI-DSS' | 'SOC2' | 'ISO27001'>;
   requirements: Array<{
     standard: string;

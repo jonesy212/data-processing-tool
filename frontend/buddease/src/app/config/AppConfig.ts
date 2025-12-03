@@ -9,7 +9,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { User } from "@/app/users/User";
 import { currentAppName } from "@/app/versions/AppVersion";
 import { RetryConfig, configServiceInstance } from "../services/ConfigurationService";
-import { ApiConfig, CacheConfig } from '@/app/api/ApiConfigService';
+import { ApiConfig } from '@/app/api/ApiConfigService';
 import { AppStructureItem } from "./appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
@@ -157,7 +157,6 @@ const createDefaultTheme = (): Theme => ({
     medium: "8px", 
     large: "12px"
   },
-  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
 
   // ===== OPTIONAL PROPERTIES WITH DEFAULTS =====
   logoAltText: "Company Logo",

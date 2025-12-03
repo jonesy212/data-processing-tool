@@ -4,12 +4,12 @@ if (typeof window === 'undefined') {
   fs = require('fs');
 }
 
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { version } from '@/app/versions/Version';
 import { K, T } from '@/components/models/data/dataStoreMethods';
-import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import determineFileType from '@/DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from '@/StructuredMetadata';
 import * as path from 'path';

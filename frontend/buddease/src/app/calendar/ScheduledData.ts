@@ -55,8 +55,7 @@ export interface ScheduledData<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>,
-  S = TaskOrTodo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  IncludedFields extends keyof T = keyof T,
 > extends Schedule,
     Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Explicitly define the `createdBy` property to resolve the conflict

@@ -53,7 +53,7 @@ interface NotificationOptions {
   error?: string;
   duration?: number;
   position?: NotificationPosition;
-  type?: NotificationTypeEnum;
+  type?: NotificationType;
   onClose?: () => void;
   persistent?: boolean;
   action?: {
@@ -130,6 +130,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   );
 };
 
+
 const useNotification = <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -140,13 +141,18 @@ const useNotification = <
 >() => {
   const store = useNotificationStore();
 
+
+    type ConcreteType = NotificationContextProps<
+      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
+      >;
+    
   return {
     notify: (options: NotificationOptions) => {
       const {
         id = null,
         message = "",
         timestamp = new Date(),
-        type = NotificationTypeEnum.INFO,
+        type = 'INFO' as NotificationType,
         position = NotificationPosition.TopRight,
         action,
         persistent,
@@ -162,27 +168,13 @@ const useNotification = <
     },
     removeNotification: store.removeNotification,
     clearNotifications: store.clearNotifications,
-    addNotification: store.addNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["addNotification"],
-    showNotification: store.showNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["showNotification"],
-    showSuccessNotification: store.showSuccessNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["showSuccessNotification"],
-    showErrorNotification: store.showErrorNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["showErrorNotification"],
-    showInfoNotification: store.showInfoNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["showInfoNotification"],
-    sendNotification: store.sendNotification as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["sendNotification"],
-    showMessageWithType: store.showMessageWithType as NotificationContextProps<
-      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-    >["showMessageWithType"],
+    addNotification: store.addNotification as any,
+    sendNotification: store.sendNotification as any,
+    showNotification: store.showNotification as ConcreteType["showNotification"],
+    showSuccessNotification: store.showSuccessNotification as ConcreteType["showSuccessNotification"],
+    showErrorNotification: store.showErrorNotification as ConcreteType["showErrorNotification"],
+    showInfoNotification: store.showInfoNotification as ConcreteType["showInfoNotification"],
+    showMessageWithType: store.showMessageWithType as ConcreteType["showMessageWithType"],
   };
 };
 

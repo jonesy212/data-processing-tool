@@ -3,8 +3,10 @@
 import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correctly for API calls
 import { endpoints } from "@/app/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { YourResponseType } from '@/app/typings/responseTypes';
 
 import { handleApiError } from '@/app/api/ApiLogs';

@@ -38,7 +38,7 @@ async function main() {
       console.log('\n🔧 High Confidence Fixes (sample):');
       fixesByConfidence.high.slice(0, 3).forEach((fix, index) => {
         console.log(`\n${index + 1}. 📁 ${fix.filePath}`);
-        console.log(`   💡 ${fix.reason}`);
+        console.log(`   💡 ${fix.reason || 'Auto-detected import issue'}`);
         console.log(`   ❌ ${fix.originalLine || 'MISSING IMPORT'}`);
         console.log(`   ✅ ${fix.newLine}`);
       });

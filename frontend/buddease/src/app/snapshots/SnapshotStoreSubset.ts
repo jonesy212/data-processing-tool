@@ -2,6 +2,7 @@
 import { SnapshotData } from '@/app/snapshots';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
@@ -10,7 +11,6 @@ import {
 } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotOperation } from "../actions/SnapshotActions";
@@ -23,8 +23,8 @@ import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 
 interface SnapshotStoreSubset<
   T extends BaseDataEntity,

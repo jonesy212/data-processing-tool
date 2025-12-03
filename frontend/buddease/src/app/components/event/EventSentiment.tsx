@@ -1,6 +1,6 @@
 // EventSentiment.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { processAutoGPTOutputWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import React, { useEffect, useState } from "react";

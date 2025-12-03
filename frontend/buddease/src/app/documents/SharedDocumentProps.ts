@@ -52,16 +52,16 @@ export interface DocumentBuilderProps<
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   accessHistory: AccessHistory[];
-  lastModifiedDate?: ModifiedDate | undefined; 
+  lastModifiedDate: ModifiedDate; 
   versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   documentPhase: 
     | string
-    | DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    | DocumentPhase<T, K>;
 
   appVersion?: AppVersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   onOptionsChange: (newOptions: DocumentOptions) => void;
-  onConfigChange: (newConfig: DocumentBuilderConfig) => void;
+  onConfigChange: (newConfig: DocumentBuilderConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   setOptions: Dispatch<SetStateAction<DocumentOptions>>; 
   documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   options: DocumentOptions;

@@ -7,9 +7,11 @@ import { AxiosError, AxiosResponse } from 'axios';
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { TaskHistoryEntry } from '@/app/interfaces/history/TaskHistoryEntry';
 import { Task } from '@/app/models/tasks/Task';
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { historyManagerStore } from '@/app/state/stores/HistoryStore';
 import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 

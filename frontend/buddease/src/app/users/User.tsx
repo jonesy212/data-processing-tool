@@ -15,7 +15,7 @@ import { Subscription } from '@/app/subscriptions/Subscription';
 import { AppUnifiedMetadata, AppStructuredMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { UserProfileDetails } from '@/app/typings/userTypes';
-
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
 import { Team } from "@/app/components/teams/Team";
@@ -173,7 +173,7 @@ export interface User<
   
   // Optional Fields (organized by category)
   roles?: UserRole[];
-  type?: string | AllTypes | null;
+  type?: string | AllTypes | Promise<FileType> | null; 
   token?: string | null;
   school?: string;
   grade?: string;

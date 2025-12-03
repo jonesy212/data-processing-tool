@@ -1,14 +1,10 @@
 // ClientInformation.ts
-import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { MediaMetadata } from "@/app/config/MetaDataOptions";
 
 interface MediaSession {
   metadata: MediaMetadata | null;
 }
-
-
-
-
 
 interface CustomMediaSession extends MediaSession {
   sessionId: string;

@@ -1,15 +1,15 @@
 // SearchLibrary.tsx
-import { userService } from '@/app/api/ApiUser';
 import { SearchActions } from '@/app/actions/SearchActions';
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { userService } from '@/app/api/ApiUser';
 import SearchBar from '@/app/components/routing/SearchBar';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { SearchLogger } from '@/app/libraries/logging/Logger';
 import SearchComponent from '@/app/pages/searches/SearchComponent';
 import { SearchProvider } from '@/app/pages/searches/SearchContext';
 import SearchItems from '@/app/pages/searches/SearchItems';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 type Search = string;
 

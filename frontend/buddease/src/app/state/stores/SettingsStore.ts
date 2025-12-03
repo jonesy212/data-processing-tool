@@ -1,13 +1,13 @@
 // SettingsStore.ts
+import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { makeAutoObservable, reaction } from "mobx";
 import { v4 as uuid } from "uuid";
-import { Settings, SettingManagerStore } from '@/app/state/hybrid/SettingsManagerStore';
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { Settings  } from '@/app/state/hybrid/SettingsManagerStore';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import NotificationStore from '@/app/state/stores/NotificationStore';
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
-import { YourSettingsResponseType } from '@/app/typings/typeguards/isYourSettingsResponseType';
+import { YourSettingsResponseType } from '@/app/typings/responseTypes';
 
 /**
  * Main SettingsStore for managing application settings

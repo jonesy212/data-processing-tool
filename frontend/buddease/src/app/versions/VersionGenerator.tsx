@@ -16,6 +16,19 @@ const API_BASE_URL = "/api/details";
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 
+
+export const getCurrentAppInfo = (): { versionNumber: string; appVersion: string } => { 
+  // Retrieve appVersion and versionNumber using UniqueIDGenerator 
+const appVersion = UniqueIDGenerator.generateAppVersion(); 
+const versionNumber = UniqueIDGenerator.generateVersionNumber(); 
+// Return an object containing the current appVersion and versionNumber return 
+  return { versionNumber, 
+    appVersion 
+  }; 
+};
+
+
+
 export const detailsApiService = {
   fetchDetailsItem: async <
   T extends BaseDataEntity = BaseDataEntity,

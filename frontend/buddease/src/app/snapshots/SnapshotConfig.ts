@@ -1,5 +1,5 @@
 // SnapshotConfig.ts
-import { userId } from "@/api/ApiUser";
+import { userId } from "@/app/api/ApiUser";
 import apiNotificationsService from '@/app/api/NotificationsService';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -24,7 +24,7 @@ import {
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes'
 import { SnapshotContainer } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -52,9 +52,8 @@ import {
     getMarketUpdates,
     getTradeExecutions,
 } from "@/utils/trading/TradingUtils";
-import {
-    triggerIncentives
-} from "@/utils/web3/applicationUtils";
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { triggerIncentives } from "@/utils/web3/applicationUtils";
 import { useParams } from "next/navigation";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 

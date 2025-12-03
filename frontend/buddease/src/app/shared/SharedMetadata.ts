@@ -10,6 +10,7 @@ import { CoreMetadata } from '@/app/confg/MetadataStateManager';
 import { Version } from '../versions/Version';
 import { VersionData, VersionHistory } from '../versions/VersionData';
 import { Permission } from '@/app/permissions/Permission';
+import { RolePermissions } from '@/app/server/security/getPermission'
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -25,10 +26,7 @@ interface SharedMetadata<
     SharedRelationshipData<K> {
   version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
   lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
-  latestVersion?: Pick<
-    VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    'id' | 'versionNumber' | 'timestamp' | 'author' | 'schema'
-  >;
+  latestVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 
   appPermissions?: AppStructurePermissions[]; 

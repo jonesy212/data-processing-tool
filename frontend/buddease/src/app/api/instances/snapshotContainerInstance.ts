@@ -12,7 +12,7 @@ import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';

@@ -35,8 +35,8 @@ import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigIn
 import { SnapshotContext } from '@/app/state/context/SnapshotContext';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
+import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
 import { Subscription } from 'react-redux';
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -144,7 +144,7 @@ class YourSpecificSnapshotType<
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
     endpointCategory: string | number,
-    storeProps: SnapshotStoreProps<T, K>,
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K>,
     snapshotId?: string | number | null,
@@ -912,7 +912,7 @@ function convertToDataSnapshot <
       metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
-      storeProps: SnapshotStoreProps<T, K>,
+      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscription: Subscription,
       category?: Category,      
@@ -1384,7 +1384,7 @@ function convertMapToSnapshotStore<
 >(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   timestamp: string | number | Date | undefined,
-  storeProps: SnapshotStoreProps<T, K>
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
 
@@ -2009,7 +2009,7 @@ function convertSnapshotContent<T extends BaseData>(
 
   return content;
 }
-export function convertSnapshotToMap<
+function convertSnapshotToMap<
   T  extends BaseDataEntity,
   K  extends T = T,
   M  extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -2145,7 +2145,7 @@ const convertToSnapshot = <
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
-  storeProps: SnapshotStoreProps<T, K>,
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscription: Subscription<T, K>,
   snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,

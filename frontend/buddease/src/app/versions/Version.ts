@@ -273,6 +273,15 @@ function createVersion<
       
       const newVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...this,
+        computeCurrentHash: this.computeCurrentHash,
+        createDefaultVersionData: this.createDefaultVersionData,
+        initializeStructures: this.initializeStructures,
+        getVersion: this.getVersion,
+        generateStructureHash: this.generateStructureHash,
+        generateStructureHashAsync: this.generateStructureHashAsync,
+        getStructureHash: this.getStructureHash,
+        generateStructureHashSync: this.generateStructureHashSync,
+      
         id: newVersionId,
         major: this.major,
         minor: this.minor,
@@ -541,7 +550,7 @@ class VersionImpl<
 > implements Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
              VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 {
-  id: number = 0;
+  id: string | number = 0;
   major: number = 0;
   minor: number = 0;
   patch: number = 0;

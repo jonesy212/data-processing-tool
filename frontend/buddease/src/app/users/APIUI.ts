@@ -6,9 +6,11 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { UserSettings } from '@/app/config/UserSettings';
 import safeParseData, { DataWithComment } from '@/app/dataIntegration/SafeParseData';
 import { ParsedData } from '@/app/dataIntegration/parseData';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { UserData } from '@/app/users/User';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorInfo } from 'react';

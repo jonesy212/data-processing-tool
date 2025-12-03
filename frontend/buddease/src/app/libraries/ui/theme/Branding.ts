@@ -3,10 +3,8 @@ import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { Theme } from "./Theme";
 import { validateHexColor } from "./ThemeConfig";
 
-// Define your default branding settings
-
-// Define your default branding settings
-const defaultBrandingSettings: BrandingSettings = {
+// Consolidated default branding settings - only one instance
+export const defaultBrandingSettings: BrandingSettings = {
   // ===== LOGO SETTINGS =====
   logoUrl: "https://example.com/logo.png",
   logoAltText: "Company Logo",
@@ -17,7 +15,6 @@ const defaultBrandingSettings: BrandingSettings = {
   backgroundColor: validateHexColor("#ffffff"),
   textColor: validateHexColor("#000000"),
   primaryColor: validateHexColor("#3366cc"),
-  defaultColor: validateHexColor("#cccccc"),
   
   // ===== ACCENT & STATUS COLORS =====
   accentColor: validateHexColor("#ffc107"),
@@ -29,12 +26,6 @@ const defaultBrandingSettings: BrandingSettings = {
   // ===== DARK MODE =====
   darkModeBackground: validateHexColor("#333333"),
   darkModeText: validateHexColor("#ffffff"),
-  
-  // ===== BORDER & SHADOW =====
-  borderColor: validateHexColor("#6c757d"),
-  borderColorFocus: validateHexColor("#007bff"),
-  shadowColor: validateHexColor("#000000"),
-  hoverColor: validateHexColor("#17a2b8"),
   
   // ===== TYPOGRAPHY - FONT FAMILIES =====
   fontFamily: "Arial, sans-serif",
@@ -55,11 +46,6 @@ const defaultBrandingSettings: BrandingSettings = {
   lineHeightMedium: "1.8",
   lineHeightLarge: "2",
   
-  // ===== BORDER RADIUS =====
-  borderRadiusSmall: "4px",
-  borderRadiusMedium: "8px",
-  borderRadiusLarge: "12px",
-  
   // ===== BOX SHADOWS =====
   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   boxShadowHover: "0 4px 8px rgba(0,0,0,0.15)",
@@ -75,86 +61,37 @@ const defaultBrandingSettings: BrandingSettings = {
     tablet: "1024px", 
     laptop: "1280px",
     desktop: "1440px"
-  },
-  
-  // ===== NESTED ORGANIZATIONAL STRUCTURES =====
-  fontStyles: {
-    primary: "Arial, sans-serif",
-    secondary: "Roboto, sans-serif", 
-    heading: "Helvetica, sans-serif"
-  },
-  
-  fontSizes: {
-    small: "12px",
-    medium: "16px",
-    large: "20px"
-  },
-  
-  lineHeight: {
-    normal: "1.5",
-    medium: "1.8",
-    large: "2"
-  },
-  
-  borderRadius: {
-    small: "4px",
-    medium: "8px",
-    large: "12px"
-  },
-  
-  spacing: {
-    small: "8px",
-    medium: "16px",
-    large: "24px"
-  },
-  
-  colors: {
-    primary: validateHexColor("#3366cc"),
-    accent: validateHexColor("#ffc107"),
-    success: validateHexColor("#28a745"),
-    error: validateHexColor("#dc3545"),
-    warning: validateHexColor("#ffc107"),
-    info: validateHexColor("#17a2b8"),
-    textColor: validateHexColor("#000000"),
-    shadowColor: validateHexColor("#000000"),
-    hoverColor: validateHexColor("#17a2b8"),
-    darkModeBackground: validateHexColor("#333333"),
-    darkModeText: validateHexColor("#ffffff"),
-    linkColor: validateHexColor("#007bff"),
-    borderColor: validateHexColor("#6c757d"),
-    borderColorHover: validateHexColor("#17a2b8"),
-    borderColorActive: validateHexColor("#28a745"),
-    borderColorDisabled: validateHexColor("#cccccc"),
-    borderColorFocus: validateHexColor("#007bff"),
-    button: {
-      color: validateHexColor("#28a745"),
-      colorHover: validateHexColor("#218838"),
-      colorActive: validateHexColor("#1e7e34"),
-      colorDisabled: validateHexColor("#6c757d"),
-      colorFocus: validateHexColor("#28a745"),
-      textColor: validateHexColor("#ffffff"),
-      textColorHover: validateHexColor("#ffffff"),
-      textColorActive: validateHexColor("#ffffff"),
-      borderColorHover: validateHexColor("#1e7e34"),
-      borderColorActive: validateHexColor("#1c7430"),
-      borderColorDisabled: validateHexColor("#6c757d"),
-      borderColorFocus: validateHexColor("#28a745"),
-      borderColor: validateHexColor("#28a745")
-    }
-  },
-  
-  // ===== ANIMATION SETTINGS =====
-  animationDuration: 300,
-  animationDelay: 0,
-  animationIterationCount: 1,
-  animationDirection: "normal",
-  animationFillMode: "none",
-  animationPlayState: "running",
-  animationTimingFunction: "ease"
+  }
 };
 
 // Define your theme based on branding settings
-const theme: Theme = {
-    ...defaultBrandingSettings,
-    children: undefined
+export const createThemeFromBranding = (branding?: Partial<BrandingSettings>): Theme => {
+  const mergedBranding = branding ? { ...defaultBrandingSettings, ...branding } : defaultBrandingSettings;
+  
+  return {
+    primaryColor: mergedBranding.themeColor,
+    secondaryColor: mergedBranding.secondaryThemeColor || mergedBranding.accentColor,
+    fontSize: mergedBranding.fontSizeMedium,
+    fontFamily: mergedBranding.fontFamily,
+    headerColor: mergedBranding.backgroundColor || "#f0f0f0",
+    footerColor: mergedBranding.backgroundColor || "#f0f0f0",
+    bodyColor: mergedBranding.backgroundColor || "#ffffff",
+    borderColor: "#ddd",
+    borderStyle: "solid",
+    padding: mergedBranding.spacingMedium,
+    margin: mergedBranding.spacingMedium,
+    brandIcon: "",
+    brandName: "Budde",
+    borderWidth: "1px",
+    borderRadius: { 
+      small: "0.25rem", 
+      medium: "0.5rem", 
+      large: "0.75rem" 
+    },
+    boxShadow: mergedBranding.boxShadow,
+    branding: mergedBranding
+  };
 };
+
+// Default theme instance
+export const defaultTheme: Theme = createThemeFromBranding();

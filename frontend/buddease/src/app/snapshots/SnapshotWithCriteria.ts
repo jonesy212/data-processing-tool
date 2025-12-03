@@ -1,3 +1,5 @@
+import { BaseData } from '@/app/models/data/Data';
+import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 // SnapshotWithCriteria.ts
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
@@ -6,13 +8,13 @@ import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, Defaul
 import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { Data } from '@/app/models/data/Data';
+import { Data, BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
-import { Payload } from '@/app/server/database/Payload';
-import { sharedMetadata } from '@/app/server/metadata/MetadataStateManager';
+import { Payload } from '@/app/interfaces/payload/payloadTypes'
+import { sharedMetadata } from '@/app/config/MetadataStateManager';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
@@ -49,8 +51,8 @@ import {
 } from "@/app/typings/entities/SnapshotEntity";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from '@/app/versions/VersionData';
-import { ExcludedFields } from '@/routing/Fields';
-import { SubscriberCollection } from '@/subscribers/SubscriberCollection';
+import { ExcludedFields } from '@/app/routing/Fields';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
@@ -303,7 +305,7 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
       ctx
     ) => {},
 
-    subscribers: {},
+    subscribers: [],
 
     trigger: (
       event,
@@ -467,7 +469,7 @@ const exampleSnapshotStore: SnapshotStore<
   id: "store1",
   title: "Sample Store",
   description: "This is a sample snapshot store",
-  data: new Map<string, Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>(),
+  data: {} as Data<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   snapshotId: "snapshot1",
   key: "key1",
   topic: "Sample Topic",
@@ -619,9 +621,9 @@ const exampleSnapshotStore: SnapshotStore<
         handleSnapshot: function (
           id: string,
           snapshotId: string | number | null,
-          snapshot: BaseDataEntity,
+          snapshot: Snapshot<  SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedField>,
           categoryProperties: CategoryProperties | undefined,
-          callback: (snapshot: BaseDataEntity) => void,
+          callback: (snapshot: Snapshot<  SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedField>) => void,
           snapshots: SnapshotsArray<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
           type: string,
           event: SnapshotEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
@@ -742,16 +744,17 @@ const exampleSnapshotStore: SnapshotStore<
   setData: undefined,
   getState: undefined,
   setState: undefined,
-  validateSnapshot: undefined,
+  vacidateSnapshot: (snapshotId: string, snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => false,
   handleSnapshot: function (
     id: string,
     snapshotId: string,
     snapshot: Snapshot<T, BaseDataEntity> | null,
     snapshotData: T,
-    category?: Category,    callback: (snapshot: T) => void,
+    callback: (snapshot: T) => void,
     snapshots: Snapshots<T, BaseDataEntity>,
     type: string,
     event: SnapshotEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+    category?: Category,    
     snapshotContainer?: T,
     snapshotStoreConfig?: SnapshotStoreConfig<T, BaseDataEntity>,
   ): void {
@@ -959,153 +962,3 @@ export type { SearchCriteriaBase, SnapshotWithCriteria, SnapshotWithCriteriaConf
 const baseData: BaseDataEntity = exampleSnapshotWithCriteria.data as BaseDataEntity;
 console.log(baseData);
 
-
-
-
-
-const newSnapshot: Snapshot<
-  SnapshotEntity,
-  SnapshotK,
-  SnapshotMeta,
-  SnapshotAttachment,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields> = {
-    data: baseData,
-    meta: exampleSnapshotWithCriteria.meta,
-    events: exampleSnapshotWithCriteria.events,
-    snapshotStore: exampleSnapshotWithCriteria.snapshotStore,
-    // snapshot: undefined,
-    dataItems: [],
-    newData: null,
-    unsubscribe: exampleSnapshotWithCriteria.unsubscribe,
-    fetchSnapshot: exampleSnapshotWithCriteria.fetchSnapshot,
-    handleSnapshot: exampleSnapshotWithCriteria.handleSnapshot,
-    getSnapshotId: exampleSnapshotWithCriteria.getSnapshotId,
-    compareSnapshotState: exampleSnapshotWithCriteria.compareSnapshotState,
-    snapshotStoreConfig: null,
-    getSnapshotItems: undefined,
-    defaultSubscribeToSnapshots: undefined,
-    versionInfo: null,
-    transformSubscriber: undefined,
-    transformDelegate: undefined,
-    initializedState: undefined,
-    getAllKeys: undefined,
-    getAllItems: undefined,
-    addDataStatus: undefined,
-    removeData: undefined,
-    updateData: undefined,
-    updateDataTitle: undefined,
-    updateDataDescription: undefined,
-    updateDataStatus: undefined,
-    addDataSuccess: undefined,
-    getDataVersions: undefined,
-    updateDataVersions: undefined,
-    getBackendVersion: undefined,
-    getFrontendVersion: undefined,
-    fetchData: undefined,
-    defaultSubscribeToSnapshot: undefined,
-    handleSubscribeToSnapshot: undefined,
-    removeItem: undefined,
-    getSnapshot: undefined,
-    getSnapshotSuccess: undefined,
-    setItem: undefined,
-    getDataStore: async () => {},
-    addSnapshotSuccess: undefined,
-    deepCompare: undefined,
-    shallowCompare: undefined,
-    getDataStoreMethods: undefined,
-    getDelegate: undefined,
-    determineCategory: undefined,
-    determinePrefix: function <T extends Data>(snapshot: T | null | undefined, category: string): string {
-        throw new Error("Function not implemented.");
-    },
-    removeSnapshot: undefined,
-    addSnapshotItem: undefined,
-    addNestedStore: undefined,
-    clearSnapshots: undefined,
-    addSnapshot: undefined,
-    createSnapshot: undefined,
-    createInitSnapshot: undefined,
-    setSnapshotSuccess: undefined,
-    setSnapshotFailure: undefined,
-    updateSnapshots: undefined,
-    updateSnapshotsSuccess: undefined,
-    updateSnapshotsFailure: undefined,
-    initSnapshot: undefined,
-    takeSnapshot: undefined,
-    takeSnapshotSuccess: undefined,
-    takeSnapshotsSuccess: undefined,
-    flatMap: function <U extends Iterable<any>>(callback: (value: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, index: number, array: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]) => U): U extends (infer I)[] ? I[] : U[] {
-        throw new Error("Function not implemented.");
-    },
-    getState: undefined,
-    setState: undefined,
-    validateSnapshot: undefined,
-    handleActions: undefined,
-    setSnapshot: undefined,
-    transformSnapshotConfig: function <T extends BaseDataEntity>(config: SnapshotStoreConfig<BaseDataEntity, T>): SnapshotStoreConfig<BaseDataEntity, T> {
-        throw new Error("Function not implemented.");
-    },
-    setSnapshots: undefined,
-    clearSnapshot: undefined,
-    mergeSnapshots: undefined,
-    reduceSnapshots: function <U>(callback: (acc: U, snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => U, initialValue: U): U | undefined {
-        throw new Error("Function not implemented.");
-    },
-    sortSnapshots: undefined,
-    filterSnapshots: undefined,
-    findSnapshot: undefined,
-    getSubscribers: undefined,
-    notify: undefined,
-    notifySubscribers: undefined,
-    getSnapshots: undefined,
-    getAllSnapshots: undefined,
-    generateId: undefined,
-    batchFetchSnapshots: undefined,
-    batchTakeSnapshotsRequest: undefined,
-    batchUpdateSnapshotsRequest: undefined,
-    filterSnapshotsByStatus: undefined,
-    filterSnapshotsByCategory: undefined,
-    filterSnapshotsByTag: undefined,
-    batchFetchSnapshotsSuccess: undefined,
-    batchFetchSnapshotsFailure: undefined,
-    batchUpdateSnapshotsSuccess: undefined,
-    batchUpdateSnapshotsFailure: undefined,
-    batchTakeSnapshot: undefined,
-    handleSnapshotSuccess: undefined,
-    eventRecords: null,
-    getParentId: undefined,
-    getChildIds: undefined,
-    addChild: undefined,
-    removeChild: undefined,
-    getChildren: undefined,
-    hasChildren: undefined,
-    isDescendantOf: undefined,
-    timestamp: undefined,
-    getInitialState: undefined,
-    getConfigOption: undefined,
-    getTimestamp: undefined,
-    getStores: undefined,
-    getData: undefined,
-    setData: undefined,
-    addData: undefined,
-    stores: null,
-    getStore: undefined,
-    addStore: undefined,
-    mapSnapshot: undefined,
-    mapSnapshots: undefined,
-    removeStore: undefined,
-    addSnapshotFailure: undefined,
-    configureSnapshotStore: undefined,
-    updateSnapshotSuccess: undefined,
-    createSnapshotFailure: undefined,
-    createSnapshotSuccess: undefined,
-    createSnapshots: undefined,
-    onSnapshot: undefined,
-    onSnapshots: undefined,
-    label: undefined
-};
-
-
-
-console.log(newSnapshot);

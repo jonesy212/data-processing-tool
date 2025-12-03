@@ -1,5 +1,5 @@
 // stopAnimatedEmoticons.ts
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { AnimationLogger, FileLogger } from "@/app/libraries/logging/Logger";
 import { useNotification } from '@/app/state/context/NotificationContext';
 const { handleError } = useErrorHandling(); // Integrate error handling

@@ -1,11 +1,11 @@
 // SnapshotApi.ts
-import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
-import { headersConfig } from '@/app/api/headers/HeadersConfig';
-import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import createSnapshot from '@/app/api/SnapshotApi';
-import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder'
+import { headersConfig } from '@/app/api/headers/HeadersConfig';
 import { BaseDataRoot } from '@/app/config/BaseConfig';
+import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
 import { AxiosError } from "axios";
 import { useDispatch } from 'react-redux';
 
@@ -38,7 +38,7 @@ import createRequestHeaders from "@/app/api/headers/requestHeaders";
 // Utilities and hooks
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 
@@ -2158,8 +2158,9 @@ function createSnapshotContainer<
         category?: Category,
       ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
         // Fetch logic to get snapshot data based on ID
-        return data.mappedSnapshotData.get(id); // Replace with your data fetching logic
+        return data.mappedSnapshotData.get(id); 
       },
+
       deleteSnapshot: (id: string): boolean => {
         const deleted = data.mappedSnapshotData.delete(id); // Delete snapshot by ID
         return deleted; // Return true if deletion was successful

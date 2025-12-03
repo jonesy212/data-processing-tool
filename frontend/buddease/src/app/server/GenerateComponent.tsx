@@ -1,36 +1,35 @@
 // GenerateComponent.tsx
-import fs from "fs";
-import path from "path";
+import { Label } from '@/app/branding/BrandingSettings';
+import { createMetaState } from '@/app/config/metadata/MetadataHooks';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ModifiedDate } from "@/app/documents/DocType";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { buildDocument } from '@/app/documents/editing/DocumentBuilderComponent';
 import {
     getDefaultDocumentOptions,
     getDocumentPhase,
     mapDocumentToProjectPhase
 } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { buildDocument } from '@/app/documents/editing/DocumentBuilderComponent';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
-import { CategoryProperties, dataVisualizationProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { allCategories, AllCategoryValues } from "@/app/models/data/DataStructureCategories";
+import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
 import { Phase } from '@/app/models/phases/Phase';
-import { Label } from '@/app/branding/BrandingSettings';
+import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
+import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
+import { CategoryProperties, dataVisualizationProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { generateValidationRulesCode } from "@/app/server/security/validationRulesCode";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { UserData } from '@/app/users/User';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
-import { createMetaState } from '@/app/config/metadata/MetadataHooks';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import fs from "fs";
+import path from "path";
 import { useState } from "react";
-import PersonaTypeEnum, { PersonaBuilder } from "@/pages/personas/PersonaBuilder";
-import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
 
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
@@ -554,7 +553,7 @@ generateComponent(componentName, promptingContent);
 
 
 export {
-generateComponent,
+    generateComponent
 };
 
 // Example usage

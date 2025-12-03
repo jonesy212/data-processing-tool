@@ -313,7 +313,7 @@ type UnifiedMetadata<
   fileMetadata?: FileMetadata;
   customMetadata?: Record<string, any>;
   schema?: Record<string, SchemaField>;
-  latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
+  latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
   author?: string;
   timestamp?: string | number | Date;
   revisionNotes?: string;

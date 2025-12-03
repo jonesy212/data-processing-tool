@@ -2,8 +2,10 @@
 // Example function to update state with news feed data
 
 import axiosInstance from '@/app/api/csrfToken';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { updateFilteredNewsUI } from "@/app/libraries/ui/updateFilteredNewsUI";
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { categorizeNews, identifyTrendingTopics } from "./articleKeywords";
 
 import { useState } from "react";

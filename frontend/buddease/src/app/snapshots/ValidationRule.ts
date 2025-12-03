@@ -36,41 +36,81 @@ export interface ValidationMeta<T extends BaseDataEntity, K extends T = T> {
   source?: string;
 }
 
-// Validation Rule Types
-export type ValidationRule<T extends BaseDataEntity = BaseDataEntity, K extends T = T> = {
-  /** Unique identifier for the validation rule */
+// Enhanced ValidationRule Interface
+interface ValidationRule<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T
+> {
+  // Core Identification
   id: string;
-  
-  /** Human-readable name for the rule */
   name: string;
-  
-  /** Description of what this rule validates */
   description?: string;
   
-  /** The field(s) this rule applies to (use '*' for all fields) */
-  field: keyof T | '*';
-  
-  /** Validation function that returns true if valid, false or error message if invalid */
+  // Rule Definition
+  rule: string; // From simple interface - e.g., "required", "email", "minLength:5"
   validate: (value: any, entity: Partial<T>, meta?: ValidationMeta<T, K>) => 
     | boolean 
     | string 
-    | ValidationResult;
+    | ValidationResult; // From comprehensive type
   
-  /** Error message template (can use {field}, {value} placeholders) */
-  errorMessage?: string;
+  // Message Handling
+  message: string; // From simple interface
+  errorMessage?: string; // From comprehensive type (keep both for compatibility)
   
-  /** Severity level of the validation */
+  // Scope & Application
+  field: keyof T | '*'; // Which field(s) this applies to
+  severity: 'error' | 'warning' | 'info'; // Combined from both
+  when: ('create' | 'update' | 'delete')[]; // When to apply
+  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, K>) => boolean; // Conditional application
+  
+  // Execution
+  priority: number; // Order of execution (lower = earlier)
+  async?: boolean; // Whether validation is async
+  
+  // Metadata
+  metadata?: {
+    type: 'regex' | 'function' | 'custom' | 'built-in';
+    category?: string;
+    tags?: string[];
+    version?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+  
+  // Related Rules
+  dependsOn?: string[]; // Rules that must pass before this one
+  excludes?: string[]; // Rules that can't run with this one
+  
+  // Custom Properties
+  customProperties?: Record<string, any>;
+}
+
+// Validation Result Types
+interface ValidationResult {
+  isValid: boolean;
+  message: string;
+  field?: string;
+  value?: any;
   severity?: 'error' | 'warning' | 'info';
-  
-  /** Whether this rule should run on create, update, or both */
-  when?: ('create' | 'update' | 'delete')[];
-  
-  /** Optional condition to determine if this rule should run */
-  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, K>) => boolean;
-  
-  /** Priority order (lower numbers run first) */
-  priority?: number;
-};
+  code?: string; // Error code for programmatic handling
+  metadata?: Record<string, any>;
+}
+
+interface ValidationMeta<T extends BaseDataEntity, K extends T> {
+  operation: 'create' | 'update' | 'delete';
+  previousValue?: any;
+  context?: Record<string, any>;
+  user?: {
+    id: string;
+    role: string;
+    permissions: string[];
+  };
+  validationContext?: {
+    skipRules?: string[];
+    customValidators?: Array<(value: any) => ValidationResult>;
+  };
+}
+
 
 export interface ValidationResult {
   isValid: boolean;

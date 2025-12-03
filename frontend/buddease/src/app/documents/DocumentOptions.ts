@@ -1,5 +1,4 @@
 // DocumentOptions.ts
-// documentOptions.ts
 
 import { CustomStyle } from '@/app/api/service/ApiService';
 import {
@@ -236,7 +235,7 @@ export interface DocumentOptions<
   ) => {
     phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
     phaseType: DocumentPhaseTypeEnum;
-    subPhases?: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    subPhases?: (string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[];
     latestVersion?: string;
     date?: Date;
     createdBy?: string;

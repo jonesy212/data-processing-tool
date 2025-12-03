@@ -4,7 +4,9 @@ import axiosInstance from '@/app/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
 

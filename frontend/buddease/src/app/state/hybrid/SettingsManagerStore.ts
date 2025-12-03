@@ -2,7 +2,9 @@
 // SettingsStore.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
-import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
 import {
@@ -10,12 +12,9 @@ import {
     useNotification,
 } from '@/app/state/context/NotificationContext';
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
-import { YourResponseType,  YourSettingsResponseType } from '@/app/typings/responseTypes'
-import { PayloadAction } from "@reduxjs/toolkit";
+import { YourSettingsResponseType } from '@/app/typings/responseTypes';
 import { makeAutoObservable } from "mobx";
 import { useState } from 'react';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the interface for different types of settings
 export interface Settings  {

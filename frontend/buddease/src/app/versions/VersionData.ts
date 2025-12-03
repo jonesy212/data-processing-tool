@@ -1,6 +1,8 @@
 // VersionData.ts
+
 import { Permission } from '@/app/permissions/Permission';
 import getAppPath from '@/app/config/appStructure/appPath';
+import { BaseData } from '@/app/models/data/Data';
 import { AppStructureItem, AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import FrontendStructure, { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
 import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
@@ -14,6 +16,7 @@ import { createBaseData } from '@/app/hooks/useSnapshotManager';
 import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
 import { Data } from '@/app/models/data/Data';
+
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
@@ -24,16 +27,16 @@ import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, A
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { BuildVersion, Version, version } from '@/app/versions/Version';
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
+import { DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
+import { BackendStructure } from '@/app/server/database/BackendStructure'
 
 const { snapshotData } = storeProps
 
-const baseData: BaseDataEntity = createBaseData({ ...snapshotData });
-
 interface SharedAuditInfo {
-  createdBy?: string;
-  updatedBy?: string;
-  author?: string;
   user?: string;
+  author?: string;
+  updatedBy?: string;
+  createdBy?: string;
 }
 
 interface SharedVersioning {
@@ -52,25 +55,28 @@ interface SharedContent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  description?: string;
   notes: string[];
   changes: string[];
+  description?: string;
+  content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 interface CoreDataItem<
   T extends BaseDataEntity,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SharedIdentifiers<T, K>,
   SharedTimestamps {
-  id?: string | number;
   name?: string;
-
-  type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
   path?: string;
   draft?: boolean;
+  id?: string | number;
   permissions?: Permission[];
   appPermissions?: AppStructurePermissions;
+  type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
 }
 
 interface SharedUpdateHistory<
@@ -84,7 +90,8 @@ interface SharedUpdateHistory<
   changeLogSummary?: string;
 }
 
-export interface LastUpdated<T extends BaseDataEntity = BaseDataEntity,
+export interface LastUpdated<
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T>
   extends SharedUpdateHistory<T, K>, SharedTimestamps, SharedAuditInfo {
 }
@@ -166,7 +173,6 @@ interface ExtendedVersionData<
   checksum: string;
   appPathWithVersion?: string;
 }
-
 
 interface SharedVersionData {
   major?: number,
@@ -281,7 +287,14 @@ const revisionNotes = "Added new section and fixed typos.";
 
 
 
-const transformToStructureItems = (data: Record<string, AppStructureDataItem<  AppEntity, 
+const transformToStructureItems = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(data: Record<string, AppStructureDataItem<AppEntity, 
   AppK,
   AppMeta,
   AppAttachment,
@@ -289,7 +302,7 @@ const transformToStructureItems = (data: Record<string, AppStructureDataItem<  A
   AppIncludedFields>
   >
 ): {
-    [key: string]: AppStructureDataItem<AppEntity,  AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
+    [key: string]: AppStructureDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   } => {
   // Validate input data
   if (!data || typeof data !== "object") {
@@ -311,7 +324,7 @@ const transformToStructureItems = (data: Record<string, AppStructureDataItem<  A
       name: value.name || `Unnamed Item (${key})`, // Provide a default name if none is given
       type: value.type || "unknown", // Default type if none is provided
       path: value.path || `/${key}`, // Default path if none is provided
-      content: value.content || {} as Content<AppEntity,  AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, // Default content if none is provided
+      content: value.content || '', // Default content if none is provided
       draft: value.draft || false, // Default draft status if none is provided
       permissions: value.permissions || undefined, // Use provided permissions or undefined
       versions: value.versions || undefined, // Use provided versions or undefined
@@ -521,7 +534,7 @@ const mobXEntityStore = new MobXEntityStore();
 const { globalState } = mobXEntityStore
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
-const backendStructure = new IBackendStructure(projectPath, globalState);
+const backendStructure = new BackendStructure(projectPath, globalState);
 
 const versionHistory: VersionHistory<BaseDataEntity, BaseDataEntity> = {
   history: [],
@@ -578,6 +591,7 @@ const versionData: Promise<VersionData<VersionEntity, VersionK, VersionMeta, Ver
 
   const latestVersionData = createLatestVersion();
   const lastUpdatedData = createLastUpdated("Version history initialized.");
+  const baseData: BaseData = createBaseData({ ...snapshotData });
 
   // Now update versionHistory with the actual data
   Object.assign(versionHistory, {
@@ -626,14 +640,14 @@ const versionData: Promise<VersionData<VersionEntity, VersionK, VersionMeta, Ver
     major: 1, // Start with major version 1
     minor: 0,
     patch: 0,
-    data: [],
+    data: data,
     user: "system", // Consistent user
     comments: [],
     backend: backendStructure,
     frontend: frontendStructure,
     changes: ["Initial version created"],
     buildVersions: {
-      data: [],
+      data: data,
       backend: backendStructure,
       frontend: frontendStructure,
       baseData: baseData

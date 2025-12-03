@@ -1,13 +1,14 @@
 // SnapshotStore.tsx
-// SnapshotStore.ts
 
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
-import { FilterMethods } from 'app/snapshots/methods/FilterMethods'
+import { FilterMethods } from '@/app/snapshots/methods/FilterMethods'
 import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
 import { U, WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import { MethodBinder, bindAllMethods } from '@/app/snapshots/methods/methodBinder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -29,8 +30,6 @@ import { Subscription } from '@/app/subscriptions/Subscription';
 import {NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { Video } from '@/app/typings/videoTypes/Video';
 
-import getConfig from 'next/config';
-
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -44,7 +43,7 @@ import { NotificationPosition, StatusType } from '@/app/models/data/StatusType';
 import { DebugInfo, TempData } from '@/app/models/data/TempData';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import {
@@ -56,7 +55,7 @@ import {
 import { ConfigMethods, applyStoreConfig } from '@/app/snapshots/methods/configMethods';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/state/stores/DataStore';
+import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/state/stores/DataStore'
 import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
@@ -75,7 +74,9 @@ import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { SnapshotOperations, getSnapshotItems } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteriaContract, TagsRecord, data } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotWithCriteriaContract, data } from '@/app/snapshots/SnapshotWithCriteria';
+import { TagsRecord } from '@/app/models/tracker/Tag';
+
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { SnapshotStoreProps, useSnapshotStore } from './useSnapshotStore';
@@ -1073,6 +1074,13 @@ processSnapshotData = async (
   // Optional: Add a helper property if you need direct access to the data
   private _snapshotDataCache?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
+  /**
+ * Check if data is cached
+ */
+  hasCachedData(id: string): boolean {
+    return this._snapshotDataCache.has(id);
+  }
+
   // Helper method to get the actual snapshot data
   getSnapshotData(params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
     return this._snapshotDataCache.get(params.id);
@@ -1101,7 +1109,6 @@ processSnapshotData = async (
   mapSnapshots!: (
     storeIds: number[],
     snapshotId: string,
-    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     timestamp: string | number | Date | undefined,
@@ -1113,7 +1120,6 @@ processSnapshotData = async (
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       timestamp: string | number | Date | undefined,
@@ -1122,8 +1128,10 @@ processSnapshotData = async (
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       data: K,
-      index: number
-    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      index: number,
+      category?: Category,
+    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
   ) => Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
   mapSnapshotWithDetails!: (
@@ -1219,10 +1227,10 @@ processSnapshotData = async (
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
     subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, K> | undefined,
-    category?: Category
   ) => void;
   
   // Subscription methods
@@ -1231,7 +1239,7 @@ processSnapshotData = async (
     unsubscribe: UnsubscribeDetails,
     subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     data: T,
-    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    event: string | SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: Callback<SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
   ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -1246,6 +1254,7 @@ processSnapshotData = async (
     data: {} as T,
     metadata: {} as Meta,
     deleted, initialState, isCore, initialConfig, 
+    onInitialize, taskIdToAssign, schema, currentCategory,
   } as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Use your existing subscribe method and wrap it to return unsubscribe function
@@ -2885,7 +2894,7 @@ handleActions(action: any): void {
   }
 
   // Helper to notify subscribers about deletion
-  private notifySubscribers(event: {
+  protected notifySubscribers(event: {
     type: 'delete';
     snapshotId: string;
     permanent: boolean;
@@ -3457,25 +3466,23 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     }
   }
 
-  getSnapshotId(key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<string | undefined> {
-    if (this.delegate && this.delegate.length > 0) {
-      for (const delegateConfig of this.delegate) {
-        if (
-          delegateConfig &&
-          typeof delegateConfig.getSnapshotId === "function"
-        ) {
-          // Check if 'key' is of type 'SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>' before passing it to 'getSnapshotId'
-          if (typeof key !== "string") {
-            return Promise.resolve(delegateConfig.getSnapshotId(key));
+  async getSnapshotId(data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<string> {
+      if (this.delegate && this.delegate.length > 0) {
+        for (const delegateConfig of this.delegate) {
+          if (delegateConfig && typeof delegateConfig.getSnapshotId === "function") {
+            const id = await delegateConfig.getSnapshotId(data);
+            if (id) {
+              return id; // Always returns a string
+            }
           }
         }
+        // If no valid ID found, throw an error (better than returning undefined)
+        throw new Error("Unable to generate snapshot ID - no valid delegate found");
+      } else {
+        throw new Error("Delegate is undefined or empty");
       }
-      throw new Error("No valid delegate found for getSnapshotId");
-    } else {
-      throw new Error("Delegate is undefined or empty");
-    }
   }
-
+    
   async getSnapshotArray(): Promise<Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     if (this.delegate && this.delegate.length > 0) {
       for (const delegateConfig of this.delegate) {
@@ -5320,7 +5327,6 @@ private cleanupOldSnapshots(): void {
     });
   }
 
-
     private transformSubscriber<U extends BaseDataEntity<U>, K extends U = U>(
     sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Subscriber<U, K> {
@@ -6013,82 +6019,45 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
     }
   }
 
-  
-  setSnapshotData(
-    id: string,
-    snapshotId: string,
-    snapshot: T | null,
-    snapshotData: T,
-    category?: Category,
-    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: Map<string, T>,
-    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    snapshotData: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    id?: string
-  ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-    // Update the config with the provided snapshot data
-    if (this.config) {
+  setSnapshotData(params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): 
+    Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    
+    // Destructure for easy access
+    const {
+      id,
+      snapshotId,
+      snapshot,
+      snapshotData,
+      category,
+      categoryProperties,
+      configUpdate,
+      callback,
+      snapshots,
+      type,
+      event,
+      snapshotStore,
+      data,
+      subscribers,
+      includeRelations = false,
+      depth = 1,
+      filters,
+      sortBy,
+      limit,
+      offset
+    } = params;
+
+    // Your logic here - much cleaner!
+    if (this.config && configUpdate) {
       this.config = this.config.map((configItem) => ({
         ...configItem,
-        ...snapshotData,
-        initialState:
-          snapshotData.initialState !== undefined
-            ? snapshotData.initialState
-            : configItem.initialState !== undefined
-            ? configItem.initialState
-            : null, // Handle undefined explicitly
+        ...configUpdate,
+        initialState: configUpdate.initialState ?? configItem.initialState ?? null,
+        updatedAt: new Date().toISOString(),
       }));
-    } else {
-      this.config = [
-        {
-          ...snapshotData,
-          initialState:
-            snapshotData.initialState !== null
-              ? snapshotData.initialState
-              : null,
-        },
-      ];
     }
 
-    // Retrieve the current snapshot using the delegate
-    const currentSnapshot = this.handleDelegate((delegate) => delegate);
-
-    if (currentSnapshot) {
-      // Create a new SnapshotStoreConfig object with updated state and snapshot data
-      const updatedSnapshot: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        ...currentSnapshot,
-        ...snapshotData,
-        initialState:
-          snapshotData.initialState !== undefined
-            ? snapshotData.initialState
-            : currentSnapshot.initialState !== undefined
-            ? currentSnapshot.initialState
-            : null, // Handle undefined explicitly
-        state: currentSnapshot.state
-          ? this.filterInvalidSnapshots(currentSnapshot.state)
-          : null,
-      };
-
-      // Transform the updated snapshot to ensure it matches the expected type
-      const transformedSnapshot = this.transformSnapshotConfig(updatedSnapshot);
-
-      // Safely update the first element of the delegate array if it exists
-      if (this.delegate && this.delegate.length > 0) {
-        this.delegate[0] = transformedSnapshot;
-      } else {
-        // If the delegate array is empty, initialize it with the transformed snapshot
-        this.delegate = [transformedSnapshot];
-      }
-
-      // Notify subscribers of the update, passing the relevant snapshot data
-      this.notifySubscribers(subscribers, snapshotData);
-    }
-    return "";
+    // Rest of your logic...
+    return this.data || new Map();
   }
 
 

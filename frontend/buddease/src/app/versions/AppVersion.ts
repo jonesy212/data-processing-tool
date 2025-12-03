@@ -1,11 +1,12 @@
 // AppVersion.ts
 import getAppPath from '@/app/config/appStructure/appPath';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { DocumentTypeEnum } from "@/app/typings/documentTpyes";
+import { DocumentTypeEnum } from "@/app/documents/editing/documentTypes";
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
+import { BackendStructure }  from '@/app/server/database/BackendStructure'
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
-import IBackendStructure from '@/app/appStructure/IBackendStructure';
-import { VersionData } from "./VersionData";
+import IBackendStructure from '@/app/config/appStructure/IBackendStructure';
+import { VersionData } from "@/app/versions/VersionData";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -366,6 +367,7 @@ class AppVersionImpl<
 
   private async getBackendStructure(): Promise<IBackendStructure> {
     const backendStructure = new IBackendStructure("/backend/path", {});
+    
     backendStructure.setStructureHash("exampleHash");
 
     const userRole: UserRole | undefined = getCurrentUserRole();

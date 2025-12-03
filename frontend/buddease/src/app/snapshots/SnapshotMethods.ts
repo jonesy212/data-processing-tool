@@ -821,7 +821,9 @@ interface SnapshotRetrievalMethods<
   ) => SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 
    // For RETRIEVING data (simple lookup)
-  getSnapshotData?: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+  getSnapshotData?: (
+    params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => 
     SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
 }
@@ -891,11 +893,10 @@ interface SnapshotSuccessMethods<
     events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: ConfigureSnapshotStorePayload<BaseDataEntity>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ) => void
+    ) => void,
     payload: ConfigureSnapshotStorePayload<
       T,
       K,

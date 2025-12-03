@@ -7,6 +7,7 @@ import {
 } from '@/app/config/BaseConfig';
 import { UserPreferences } from "@/app/config/UserPreferences";
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import { AuthenticationProvider } from '@/app/server/auth/AuthService'
 import { NFT } from "@/app/models/cypto/NFT";
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "@/app/state/stores/AuthStore";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
@@ -14,6 +15,31 @@ import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, Aut
 import { DashboardConfig } from '@/app/typings/authTypes';
 import { User } from "@/app/users/User";
 import React, { createContext, useContext, useReducer } from "react";
+
+// Keep AuthMethods as the source of truth for all auth methods
+interface AuthMethods<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  register: (userData: any) => Promise<void>;
+  hasPermission: (permission: string) => boolean;
+  hasRole: (role: string) => boolean;
+  refreshToken: () => Promise<void>;
+  setDashboardConfig: (config: DashboardConfig | null) => void;
+  resetAuthState: () => void;
+  loginWithRoles: (
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    roles: string[],
+    nfts: NFT[],
+    authToken: string
+  ) => void;
+}
 
 // Define the types for the context and state
 interface AuthState<
@@ -28,24 +54,22 @@ interface AuthState<
   user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   token: string | null;
   store: AuthStore;
-  resetAuthState: () => void;
-  loginWithRoles: (
-    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    roles: string[],
-    nfts: NFT[],
-    authToken: string
-  ) => void;
-  userRoles: string[]; // New property for user roles
+  userRoles: string[];
   timestamp: number;
-  userNFTs: NFT[]; // New property for user NFTs
-  authToken: string | null; // Add authToken property
+  userNFTs: NFT[];
+  authToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  integrateAuthenticationProviders: (provider: AuthenticationProvider) => void;
-  authenticationProviders: AuthenticationProvider[] | undefined; // Add authenticationProviders property
+  authenticationProviders: AuthenticationProvider<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
+  accessToken: string | null;
+  userId: string | null;
+  
+  // Remove methods from state - they belong in AuthMethods
+  // Only keep pure data accessor methods
   getUserPreferences: () => UserPreferences | null;
 }
 
+// Create a separate interface for AuthContext value that extends AuthMethods
 interface AuthContextProps<
   T extends BaseDataEntity,
   K extends T = T,
@@ -53,44 +77,36 @@ interface AuthContextProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T  
-> {
+> extends AuthMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // State management
   state: AuthState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dispatch: React.Dispatch<AuthAction<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  register: (userData: any) => Promise<void>;
-  hasPermission: (permission: string) => boolean;
-  hasRole: (role: string) => boolean;
-  refreshToken: () => Promise<void>;
-  setDashboardConfig: (config: DashboardConfig | null) => void; // Proper typing
-  resetAuthState: () => void;
-  loginWithRoles: (
-    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    roles: string[],
-    nfts: NFT[],
-    authToken: string
-  ) => void; // Update loginWithRoles method
+  // Data properties (could also be accessed via state, but provided for convenience)
   user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  dashboardConfig: DashboardConfig | null; // Use proper type
-  isAuthenticated: boolean; // Add isAuthenticated property
-  isLoading: boolean; // Add isLoading property
+  dashboardConfig: DashboardConfig | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
   token: string | null;
-
-
   accessToken: string | null;
   userId: string | number | null;
   roles: string[];
   nfts: NFT[];
+  
+  // Store-based properties
   userPreferences: UserPreferences | null;
   userProfilePicture: string | null;
   userEmail: string | null;
   userContactInfo: UserContactInfo | null;
   userNotificationPreferences: UserNotificationPreferences | null;
-  authenticationProviders: AuthenticationProvider[] | undefined;
   userSecuritySettings: any | null;
   userSessions: UserSession[];
   userSubscriptionPlan: SubscriptionPlan | null;
+  
+  // Authentication providers
+  authenticationProviders: AuthenticationProvider<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
+  
+  // Database status
   dbStatus?: any;
 }
 
@@ -119,6 +135,7 @@ interface AuthAction<
 
 const AuthContext = createContext<AuthContextProps<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> | undefined>(undefined);
 
+
 const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> = {
   id: "0",
   isAuthenticated: false,
@@ -127,6 +144,8 @@ const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthE
   timestamp: 0,
   userNFTs: [],
   authToken: null,
+  accessToken: null, // Added from second initialState
+  userId: null, // Added from second initialState
   isLoading: false,
   integrateAuthenticationProviders: function (
     provider: AuthenticationProvider
@@ -144,6 +163,8 @@ const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthE
     this.timestamp = 0;
     this.userNFTs = [];
     this.authToken = null;
+    this.accessToken = null; // Added reset
+    this.userId = null; // Added reset
     this.isLoading = false;
     this.authenticationProviders = undefined;
     this.token = null;
@@ -158,9 +179,11 @@ const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthE
     this.id = user.id?.toString() ?? "0"; // Set user ID as string, default to "0" if undefined
     this.isAuthenticated = true; // Mark user as authenticated
     this.user = user; // Set user details
+    this.userId = user.id?.toString() ?? null; // Also set userId from second interface
     this.userRoles = roles; // Set user roles
     this.userNFTs = nfts; // Set user NFTs
     this.authToken = authToken; // Set authentication token
+    this.accessToken = authToken; // Also set accessToken from second interface
     this.timestamp = Date.now(); // Set current timestamp for the session
     this.isLoading = false; // Ensure loading is finished
   },
@@ -218,116 +241,6 @@ const authReducer = <
   }
 };
 
-const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
-  children,
-}) => {
-  const [state, dispatch] = useReducer(authReducer, initialState);
-  const token = state.token;
-  const user = state.user;
-  const store = useAuthStore();
-
-  const resetAuthState = () => {
-    store.logout();
-  };
-
-  const loginWithRoles = (
-    user: User<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields>,
-    roles: string[],
-    nfts: NFT[],
-    authToken: string
-  ) => {
-    // Verify user's NFTs and add corresponding roles
-    const verifiedRoles = roles.filter((role) =>
-      nfts.some((nft) => nft.role === role)
-    );
-
-    store.loginSuccess(authToken, user.id ? user.id.toString() : "");
-    // Assume you store the user and roles in the store as needed
-
-    store.setUser(user);
-    store.setRoles(verifiedRoles);
-    store.setNFTs(nfts);
-    store.setUserPreferences({
-      theme: "dark", language: LanguageEnum.English,
-      refreshUI: function (): void {
-        // #todo
-        throw new Error("Function not implemented.");
-      }
-    });
-    store.setUserProfilePicture("https://example.com/profile-picture-url");
-    store.setUserEmail("newemail@example.com");
-    store.setUserContactInfo({
-      phone: "+123456789",
-      address: "1234 Main St, Anytown, USA",
-    });
-    store.setUserNotificationPreferences({
-      emailNotifications: true,
-      smsNotifications: false,
-    });
-    store.setAuthenticationProviders([
-      { name: "Google", connected: true },
-      { name: "Facebook", connected: false },
-    ]);
-    store.setUserSecuritySettings({
-      twoFactorEnabled: true,
-      lastPasswordChange: "2024-01-01",
-    });
-    store.addUserSession({
-      sessionId: "abc123",
-      device: "iPhone",
-      location: "New York, USA",
-      lastAccessed: "2024-06-01T12:34:56Z",
-    });
-    store.removeUserSession("abc123");
-    store.setUserSubscriptionPlan({
-      id: "",
-      planName: "Premium",
-      expiryDate: "2025-06-01",
-      price: 0,
-      features: []
-    });
-
-    dispatch({
-      type: "LOGIN_WITH_ROLES",
-      payload: { user, roles: verifiedRoles, nfts, authToken }, // Update payload with verified roles and NFTs
-    });
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        state,
-        dispatch,
-        resetAuthState,
-        loginWithRoles,
-        token,
-        
-        login: state.login,
-        logout: state.logout,
-        register: state.register,
-        hasPermission: state.hasPermission,
-      
-        isAuthenticated: state.isAuthenticated,
-        isLoading: state.isLoading,
-        accessToken: token,
-        userId: user?.id || "",
-        roles: state.userRoles,
-        nfts: state.userNFTs,
-        authenticationProviders: state.authenticationProviders,
-        userPreferences: store.getUserPreferences(),
-        userProfilePicture: store.getUserProfilePicture(),
-        userEmail: store.getUserEmail(),
-        userContactInfo: store.getUserContactInfo(),
-        userNotificationPreferences: store.getUserNotificationPreferences(),
-        userSecuritySettings: store.getUserSecuritySettings(),
-        userSessions: store.getUserSessions(),
-        userSubscriptionPlan: store.getUserSubscriptionPlan(),
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
 
 const fetchDataWithToken = async () => {
   try {
@@ -359,5 +272,5 @@ const useAuth = (): AuthContextProps<AppAuth> => {
   return context;
 };
 
-export { AuthContext, AuthProvider, fetchDataWithToken, useAuth };
+export { AuthContext, fetchDataWithToken, useAuth };
 

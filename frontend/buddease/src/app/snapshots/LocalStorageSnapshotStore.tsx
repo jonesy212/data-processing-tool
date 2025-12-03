@@ -17,6 +17,7 @@ import {
 } from '@/app/typings/entities/AppEntity';
 
 import { Task, TaskData } from '@/app/components/models/tasks/Task';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Data } from '@/app/models/data/Data';
 import {
     PriorityTypeEnum,
@@ -25,7 +26,6 @@ import {
     SubscriberTypeEnum,
 } from '@/app/models/data/StatusType';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { UpdateSnapshotPayload } from '@/app/server/database/Payload';
 import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
@@ -1364,18 +1364,7 @@ export class LocalStorageSnapshotStore<
 
 const area = fetchUserAreaDimensions().toString();
 
-type AppTask = Task<
-  AppEntity,
-  AppK,
-  StructuredMetadata<
-    AppEntity,
-    AppK,
-    AppMeta,
-    AppAttachment,
-    AppExcludedFields,
-    AppIncludeField
-  >
->;
+type AppTask = Task<TaskEntity, TaskK,TaskMeta, TaskAttachment, TaskExcludedFields,TaskIncludedFields>;
 
 // Example usage in a Redux slice or elsewhere
 const newTask: AppTask = {
@@ -1401,35 +1390,18 @@ const newTask: AppTask = {
   source: "user",
   tags: {},
   dependencies: [],
-  storeProps: {} as SnapshotStoreProps<
-    T,
-    K,
-    Meta,
-    AttachmentType,
-    ExcludedFields,
-    IncludedFields
-  >,
+  storeProps: {} as SnapshotStoreProps<AppTask>,
+  core: '',
+  security: '',
+  storage: '',
+  isExpired: '',
   then: async function (
     // ADDED async
     onFulfill: (
-      newData: Snapshot<
-        AppEntity,
-        AppK,
-        AppMeta,
-        AppAttachment,
-        AppExcludedFields,
-        AppIncludeField
-      >
+      newData: Snapshot<AppTask>
     ) => void
   ): Promise<
-    Snapshot<
-      AppEntity,
-      AppK,
-      AppMeta,
-      AppAttachment,
-      AppExcludedFields,
-      AppIncludeField
-    >
+    Snapshot<AppTask>
   > {
     // CHANGED return type to Promise
     const {
@@ -1457,6 +1429,11 @@ const newTask: AppTask = {
     >({
       storeId: storeId,
       name: name,
+      core: core,
+      security: security,
+      storage: storage,
+      isExpired: isExpired,
+    
       version: version,
       schema: schema,
       options: options,

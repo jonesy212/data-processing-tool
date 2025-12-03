@@ -1,12 +1,9 @@
 // PreviewForm.tsx
 import { saveDrawingToDatabase } from "@/app/api/ApiDrawing";
 import React, { useState } from "react";
-import "./PreviewForm.css"; // Import CSS for styling
+import { ValidationRule } from '@/app/snapshots/ValidationRule'
 
-interface ValidationRule {
-  rule: string;
-  message: string;
-}
+import "./PreviewForm.css"; // Import CSS for styling
 
 interface FormData {
   [key: string]: {

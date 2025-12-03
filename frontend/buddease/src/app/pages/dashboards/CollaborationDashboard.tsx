@@ -6,11 +6,13 @@ import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
 import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
 import { useAuth } from "@/app/state/context/AuthContext";
 import { CollaborationProvider } from "@/app/state/context/CollaborationContext";
-import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { SearchProvider, useSearch } from "@/app/state/context/SearchContext";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";

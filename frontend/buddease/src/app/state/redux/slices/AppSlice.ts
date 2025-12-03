@@ -34,8 +34,8 @@ import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { EntityId } from '@reduxjs/toolkit';
 
-interface AppState<AppEntity> {
-    user: UserProfile<AppEntity>,
+interface AppState<BaseDataRoot> {
+    user: UserProfile<BaseDataRoot>,
     currentPage: null,
     currentLayout: null,
     currentTheme: null,
@@ -62,7 +62,7 @@ interface AppState<AppEntity> {
   dataAnalysisManager: DataAnalysisState,
   calendarManager: CalendarManagerState
   todoManager:TodoManagerState,
-  documentManager: DocumentSliceState<AppState>,
+  documentManager: DocumentSliceState<BaseDataRoot>,
 
   // API & Networking
   apiManager: ApiManagerState,
@@ -70,7 +70,7 @@ interface AppState<AppEntity> {
 
   // Event & Collaboration
   eventManager: EventState
-  collaborationManager: CollaborationState<UserProfile<AppState>, ProjectData>;
+  collaborationManager: CollaborationState<UserProfile<BaseDataRoot>, ProjectData>;
 
   // Entity & Notification
   entityManager: EntityState<any, EntityId>
@@ -85,7 +85,7 @@ interface AppState<AppEntity> {
   randomWalkManager: RandomWalkState
   pagingManager: PagingState,
   blogManager: BlogState,
-  drawingManager: DrawingState<DocumentData, UserData>;
+  drawingManager: DrawingState<DocumentData, UserData<BaseDataRoot>>;
   versionManager: VersionState,
   progress: number
   // Add other state properties here if needed
@@ -93,7 +93,8 @@ interface AppState<AppEntity> {
 
 const userId = useSecureUserId()
 const user = await userService.fetchUserProfile(String(userId))
-const initialState: AppState = {
+
+const initialState: AppState<BaseDataRoot> = {
   user: user,
   progress: 0,
   toolbarManager: {
@@ -241,7 +242,7 @@ const initialState: AppState = {
   selectedToolBar: null,
 }
 
-export const useAppManagerSlice = createSlice({
+const useAppManagerSlice = createSlice({
   name: "app",
   initialState,
   reducers: {

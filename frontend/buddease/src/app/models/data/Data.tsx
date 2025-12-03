@@ -1,59 +1,55 @@
 // Data.tsx
-import { Version } from '@/app/versions/Version';
 import { Label } from '@/app/branding/BrandingSettings';
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
 import { Collaborator } from "@/app/collaborators/Collaborator";
-import { TagsRecord } from '@/app/models/tracker/Tag';
+import { CommonDetails } from "@/app/components/models/details/CommonDetails";
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { Team } from "@/app/components/teams/Team";
 import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
+    BaseDataEntity,
+    BaseDataRoot,
+    DefaultExcludedFields,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
 import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata,
+    fetchUserAreaDimensions,
+    UnifiedMetadata,
 } from "@/app/config/MetaDataOptions";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import userSettings from "@/app/config/UserSettings";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
-  SharedIdentifiers,
-  SharedStatusFlags,
-  SharedTimestamps,
+    SharedIdentifiers,
+    SharedStatusFlags,
+    SharedTimestamps,
 } from "@/app/documents/RelatedProps";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
-import { CommonDetails } from "@/app/components/models/details/CommonDetails";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
 import { Member } from "@/app/models/members/Member";
 import { Phase } from "@/app/models/phases/Phase";
 import { Task } from "@/app/models/tasks/Task";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { TrackerProps } from "@/app/models/tracker/Tracker";
 import UserRoles from "@/app/models/UserRoles";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { taskService } from "@/app/services/TaskService";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-  Snapshots,
-  SnapshotsArray,
+    Snapshots,
+    SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
-  SnapshotStoreReference,
+    SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
@@ -78,16 +74,17 @@ import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { Version } from '@/app/versions/Version';
 import { VersionData } from "@/app/versions/VersionData";
 import { cleanEmptyStrings } from "@/utils/web3/cleanEmptyStrings";
 import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
 import FileData from "./FileData";
 import {
-  PriorityTypeEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriptionTypeEnum,
+    PriorityTypeEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriptionTypeEnum,
 } from "./StatusType";
 
 interface SharedRelationshipData<K> {
@@ -132,7 +129,7 @@ interface DataDetails<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
+  IncludedFields extends keyof T = keyof T
 > extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   _id?: string;
   title?: string;
@@ -181,7 +178,7 @@ type TodoSubtasks<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = DefaultIncludedFields<T>
+  IncludedFields extends keyof T = keyof T
 > = Array<
   | Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -253,12 +250,6 @@ interface BaseData<
   userConfig?: any; // Use UserConfigData<T, K, Meta>
   scheduled?: ScheduledData<T>;
   [key: string]: any;
-  // getData?: (id: number) => Promise<Snapshot<
-  //   SnapshotWithCriteria<Data<T>>,
-  //   SnapshotWithCriteria<Data<T>>>>;
-
-  // // Implement the `then` function using the reusable function
-  // then?: <T extends  BaseData<any>, K extends Data<T>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
 interface Data<
@@ -636,7 +627,9 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
       id: "",
       name: "",
       phases: [],
-      trackFileChanges: (file: FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>): FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
+      trackFileChanges: (
+        file: FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
+      ): FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
         return {
           id: file.id,
           title: file.title,
@@ -1756,19 +1749,20 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
 };
 
 export type {
-  BaseData,
-  ChildRelationship,
-  CommonRelationship,
-  Data,
-  DataDetails,
-  DataDetailsComponent,
-  DataDetailsProps, DataWithOmittedFields,
-  SharedRelationshipData,
-  TodoSubtasks
+    BaseData,
+    ChildRelationship,
+    CommonRelationship,
+    Data,
+    DataDetails,
+    DataDetailsComponent,
+    DataDetailsProps, DataWithOmittedFields,
+    SharedRelationshipData,
+    TodoSubtasks
 };
 
 // Clean the coreData to replace empty strings with null
 const cleanedCoreData = cleanEmptyStrings(coreData);
 
-export type { SharedPhaseData, SharedConfigType};
 export { cleanedCoreData, coreData };
+export type { SharedConfigType, SharedPhaseData };
+

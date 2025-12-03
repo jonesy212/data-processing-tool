@@ -5,7 +5,7 @@ import { BaseDataEntity, DefaultMeta } from "@/app/config/BaseConfig";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { processSnapshotStore } from "@/app/hooks/commHooks/processSnapshotStore";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { Data } from "@/app/models/data/Data";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/models/data/fetchExchangeData";

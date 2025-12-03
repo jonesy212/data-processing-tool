@@ -140,7 +140,7 @@ useTeamManagerStore = <
   const assignedTeamMemberStore = useAssignTeamMemberStore();
 
   // Define storeProps
-  const storeProps: SnapshotStoreProps<T, K> = {
+  const storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     storeId: "yourStoreId",
     configureSnapshotStore: async (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

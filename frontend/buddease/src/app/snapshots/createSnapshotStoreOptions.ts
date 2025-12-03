@@ -1,7 +1,7 @@
 // createSnapshotStoreOptions.ts
 
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { isBaseData } from '@/app/utils/snapshotUtils'
+import { isBaseData } from '@/utils/snapshotUtils'
 import { Tag } from '@/app/models/tracker/Tag';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import getCurrentSnapshot from '@/app/api/SnapshotApi';
@@ -28,7 +28,7 @@ import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimens
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotsPayload } from '@/app/server/database/Payload';
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import baseMeta from '@/app/server/database/baseMeta';
 import { createSnapshotConfig, CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/app/snapshots';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
@@ -55,18 +55,17 @@ import { createDefaultVersionData } from '@/app/versions/VersionData';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseDataRoot } from '@/app/config/BaseeConfig';
-import { UnifiedMetaDataOptions } from '@/app/config/database/MetaDataOptions';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
+import { UnifiedMetaDataOptions } from '@/app/config/MetaDataOptions';
 import {
   createBasicSnapshot,
   createCompleteSnapshot
 } from '@/app/snapshots/createSnapshot';
 import { handleSnapshotOperation } from '@/app/snapshots/handleSnapshotOperation';
-import { displayToast } from '@/models/display/ShowToast';
+import { displayToast } from '@/app/models/display/ShowToast';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { convertToSubscriberCollection } from '@/utils/SubscriberUtils';
 import { addToSnapshotList, generateSnapshotId, isSnapshot } from "@/utils/snapshotUtils";
-import { Tag } from 'sanitize-html';
 import SnapshotStore from "./SnapshotStore";
 
 

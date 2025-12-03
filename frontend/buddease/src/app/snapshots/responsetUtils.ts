@@ -310,10 +310,8 @@ const returnsSnapshotStore = async <
 };
 export {
   handleSnapshot,
-  mapResponseToSnapshot,
-  returnsSnapshotStore
-};
-    returnsSnapshotStore
+  returnsSnapshotStore,
+  mapResponseToSnapshot
 };
 
 

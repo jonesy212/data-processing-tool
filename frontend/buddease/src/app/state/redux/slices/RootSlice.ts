@@ -1,31 +1,31 @@
+
 // RootSlice.ts
 import { BaseDataRoot } from '@/app/config/BaseConfig';
-// src/app/state/slices/RootSlice.ts
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BlogState } from '@/app/state/redux/slices/BlogSlice';
-import { PagingState } from './../../../pages/Paging';
+import { PagingState } from '@/app/pages/Paging';
 import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
 import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
-import { NotificationState } from './NotificationSlice';
+import { NotificationState } from '@/app/state/redux/slices/NotificationSlice';
 import EntityId from '@/app/state/redux/slices/RootSlice';
 import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
 import { EventState } from '@/app/state/redux/slices/EventSlice';
 import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
 import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
 import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
-import { TodoManagerState } from './../../../todos/Todo';
+import { TodoManagerState } from '@/app/todos/Todo';
 import { CalendarManagerState } from '@/app/state/redux/slices//CalendarSlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
 import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
-import { TrackerManagerState } from './TrackerSlice';
+import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
 import { TaskState } from '@/app/state/redux/slices/TaskSlice';
 import { ProjectState } from '@/app/state/redux/slices/ProjectSlice';
 import { UIState } from '@/app/state/stores/UISlice';
-import { AlignmentOptions } from './toolbarSlice';
+import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { ToolbarState } from '@/app/state/stores/ToolbarStore';
 import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";

@@ -125,7 +125,7 @@ OptionalSnapshotSubscriberHelpers<T, K, Meta, AttachmentType, ExcludedFields, In
     unsubscribe: UnsubscribeDetails,
     subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     data: T,
-    event: string | Event,
+    event: string | SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: Callback<SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
   ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

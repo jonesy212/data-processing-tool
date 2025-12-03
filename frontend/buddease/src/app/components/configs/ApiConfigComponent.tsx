@@ -4,7 +4,7 @@ import { Button, Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import ApiConfig from "@/app/api/ApiConfig";
+import ApiConfig from "@/app/api/ApiConfigService";
 import axiosInstance from '@/app/api/csrfToken';
 import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
 
@@ -29,7 +29,7 @@ import { frontendConfig } from "@/app/config/FrontendConfig";
 import MainConfig from "@/app/config/MainConfig";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import BackendStructure from '@/app/server/database/BackendStructure';
-import { backendConfig } from "@/configs/BackendConfig";
+import { backendConfig } from "@/app/config/BackendConfig";
 
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
@@ -37,17 +37,17 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import { userPreferences, UserPreferences } from "@/app/config/UserPreferences";
 
 import {
-    TrackerAttachment,
     TrackerEntity,
-    TrackerExcludedFields,
-    TrackerIncludedFields,
     TrackerK,
     TrackerMeta,
+    TrackerAttachment,
+    TrackerExcludedFields,
+    TrackerIncludedFields,
     TrackerProps
-} from "@/app/typings/entities/*";
+} from "@/app/typings/entities/TrackEntity";
 
 // ✅ Plugin & Callback Registry imports
-import { CallbackRegistry } from "@/app/events/CallbackRegistry";
+import { CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry'
 import { PluginManager } from "@/app/plugins/PluginManager";
 
 

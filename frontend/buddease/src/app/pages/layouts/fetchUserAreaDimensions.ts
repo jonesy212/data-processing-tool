@@ -1,6 +1,5 @@
 // fetchUserAreaDimensions.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { UILogger } from '@/app/logging/Logger';
@@ -228,7 +227,7 @@ const initializeArea = async (): Promise<Area> => {
     }
   };
 
-  const areaDimensions = fetchUserAreaDimensions(options);
+  const areaDimensions = fetchUserAreaDimensions<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>(options);
   console.log('Initial dimensions:', areaDimensions);
 
   return area;

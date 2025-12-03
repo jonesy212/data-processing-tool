@@ -8,19 +8,20 @@ import { Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { backendStructure } from '@/app/server/database/BackendStructure';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields, DefaultSnapshotTypes } from '@/app/typings/entities/SnapshotEntity'
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
-import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/VersionEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, default as VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
+import { data } from "@/app/snapshots/SnapshotWithCriteria";
+
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 
 // Default reusable data
 const defaultData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataIncludedFields, DataExcludedFields> = {
@@ -28,6 +29,7 @@ const defaultData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataInclude
   category: 'default-category',
   subtasks: [],
   actions: [],
+  latestVersion: latestVersion
   // Add other required fields as per your `Data` interface
 };
 
@@ -69,7 +71,7 @@ const createVersionInfo = (
     content: '',
     checksum: '',
     versionData: versionData,
-    data: [], // Default to an empty array
+    data: {} as Data<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
     name: 'Default Name',
     url: '',
     metadata: {
@@ -78,7 +80,7 @@ const createVersionInfo = (
       currentMeta: currentMeta,
       metadataEntries: {},
       timestamp: new Date(),
-      latestVersion: createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(),
+      latestVersion: latestVersion,
       schema: {}
     },
     versions: null,

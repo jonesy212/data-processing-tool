@@ -1,11 +1,11 @@
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import {
-  ToolbarOptionsComponent,
-  ToolbarOptionsProps,
+    ToolbarOptionsComponent,
+    ToolbarOptionsProps,
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
@@ -14,11 +14,11 @@ import Clipboard from "@/app/ts/clipboard";
 import { WebEndpoints } from "@/app/typings/categories/WebEndpoints";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import {
-  ContentState,
-  Editor,
-  EditorState,
-  Modifier,
-  RichUtils,
+    ContentState,
+    Editor,
+    EditorState,
+    Modifier,
+    RichUtils,
 } from "draft-js";
 import React, { useState } from "react";
 

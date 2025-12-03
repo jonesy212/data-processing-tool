@@ -1,5 +1,6 @@
 // CourseEntity.ts
 import { Course } from '@/app/documents/editing/CourseBuilder'
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { 
   BaseEntityProperties, 
   SharedIdentifiers, 
@@ -7,7 +8,7 @@ import {
   SharedStatusFlags, 
   SharedTimestamps 
 } from '@/app/documents/RelatedProps';
-
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 
 interface CourseEntity extends 
   BaseDataEntity,

@@ -1,6 +1,6 @@
 // AppStructure.ts
 import { SharedIdentifiers, BaseEntityProperties } from '@/app/documents/RelatedProps';
-import * as apiFile from '@/api/ApiFiles';
+import * as apiFile from '@/app/api/ApiFiles';
 import { Versions } from '@/app/versions/Version'
 import SecurityAPI from '@/app/api/SecurityAPI';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
@@ -13,6 +13,7 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
+import { AllTypes } from '@/app/typings/PropTypes';
 
 const { userId } = useSecureUserId()
 export type UnifiedVersionMap<
@@ -40,7 +41,7 @@ interface AppStructureItem<
   IncludedFields extends keyof T = keyof T
 > extends BaseEntityProperties {
   userId: string | null;
-  type: string | Promise<FileType>;
+  type?: string | AllTypes | Promise<FileType> | null;
   path: string;
 
   /**
@@ -53,7 +54,8 @@ interface AppStructureItem<
 
   draft: boolean;
 
-  permissions?: AppStructurePermissions;
+  permissions?: Permission[];
+  appPermissions?: AppStructurePermissions;
 
   /**
    * Versions for this item (if any).

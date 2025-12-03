@@ -1,11 +1,11 @@
 // Search.tsx
 import { searchDocuments } from "@/app/api/ApiDocument"; // Assuming SearchResult is the type of each item in searchResults
 import { userId } from "@/app/api/ApiUser";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { SearchLogger } from "@/app/libraries/logging/Logger";
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import SearchComponent, {
-  SearchComponentProps,
+    SearchComponentProps,
 } from "@/app/pages/searches/SearchComponent";
 import { sanitizeInput } from "@/app/security/SanitizationFunctions";
 import React, { useEffect, useState } from "react";

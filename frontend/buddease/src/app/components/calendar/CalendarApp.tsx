@@ -807,7 +807,7 @@ function CalendarApp<
         data={{
           id: "1",
           tags: {},
-          metadata: {} as UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         }}
         details={{
           id: "1",

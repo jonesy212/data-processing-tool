@@ -13,9 +13,10 @@ import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/gen
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
+import { BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
+import { BaseCacheConfig } from '@/app/config/CacheConfig'
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
+import { EventManager, InitializedState } from '@/app/state/stores/DataStore';
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import {
     ConfigAttachment,
@@ -24,13 +25,13 @@ import {
     ConfigIncludedFields,
     ConfigK,
     ConfigMeta
-} from "@/app/typings/entities/ConfigEntity";
+} from '@/app/typings/entities/ConfigEntity';
 import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { AppMetadata } from '@/app/typings/metadataTypes';
 import { useSnapshot } from '@/app/state/context/SnapshotContext';
-import { StructuredMetadata } from "./StructuredMetadata";
-import { useMeta } from "./useMeta";
-import { useMetadata } from "./useMetadata";
+import { StructuredMetadata } from './StructuredMetadata';
+import { useMeta } from './useMeta';
+import { useMetadata } from './useMetadata';
 
 type BaseDataEntity = BaseDataRoot;
 
@@ -65,7 +66,7 @@ interface BaseEntity<
   SharedTimestamps, CoreRecordProperties,
   AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
-  appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  appMetadata?: AppMetadata<T>;
   filePathOrUrl?: string;
 }
 

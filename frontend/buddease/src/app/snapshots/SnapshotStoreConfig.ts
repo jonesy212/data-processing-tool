@@ -140,6 +140,31 @@ export interface SnapshotStoreConfig<
   SharedIdentifiers<T, K>,
   Partial<SnapshotCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   Partial<SnapshotStoreCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  
+  expirationDate?: Date;
+  isExpired?: (() => boolean) | undefined;
+  priority?: AllStatus;
+  tags?: string[] | TagsRecord<T>;
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
+  status?: StatusType | undefined
+  isCompressed?: boolean;
+  compress?: () => void;
+  isEncrypted?: boolean;
+  encrypt?: () => void;
+  decrypt?: () => void;
+  ownerId?: string;
+  getOwner?: () => string;
+  version?: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  schema: string | Record<string, SchemaField>; // Schema definition
+  previousVersionId?: string;
+  nextVersionId?: string;
+  auditTrail?: AuditRecord[];
+  addAuditRecord?: (record: AuditRecord) => void;
+  retentionPolicy?: RetentionPolicy;
+  dependencies?: string[];
+  useSimulatedDataSource: boolean;
+  simulatedDataSource: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   forEach<U extends BaseDataEntity, V extends U = U, M extends DefaultMeta<U, V> = DefaultMeta<U, V>, A extends Attachment = Attachment, E extends keyof U = DefaultExcludedFields<U>, I extends keyof U = keyof U>(
     callback: (
       item: SnapshotStoreConfig<U, V, M, A, E, I>,
@@ -251,7 +276,7 @@ export interface SnapshotStoreConfig<
   clearSnapshots?: (() => void) | (() => Promise<void>);
   key?: string;
   topic?: string;
-  dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,> | undefined; // Match the type to the base interface
+  dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined; // Match the type to the base interface
   category: Category
   criteria?: CriteriaType
   length?: number
@@ -485,7 +510,7 @@ export interface SnapshotStoreConfig<
     snapshotId?: string | number | null,
     storeId?: number,
     store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  ) => Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,>
+  ) => Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 
   mapSnapshot: (snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -739,7 +764,7 @@ export interface SnapshotStoreConfig<
       getSnapshotId: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<string>;
       handleSnapshotSuccess: (message: string) => void;
     }> | undefined
-  ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,>;
+  ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 
   getSnapshotVersions: (
@@ -951,7 +976,7 @@ export interface SnapshotStoreConfig<
     }>
   ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 
-  getData: (id: string | number, data: Snapshot<CustomSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | SnapshotStore<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,>) => Promise<{
+  getData: (id: string | number, data: Snapshot<CustomSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | SnapshotStore<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => Promise<{
     id: string | number, data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }>;
 
@@ -978,30 +1003,6 @@ export interface SnapshotStoreConfig<
     categoryProperties?: CategoryProperties;
     snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   }>;
-
-  expirationDate?: Date;
-  isExpired?: (() => boolean) | undefined;
-  priority?: AllStatus;
-  tags?: string[] | TagsRecord<T>;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
-  status?: StatusType | undefined
-  isCompressed?: boolean;
-  compress?: () => void;
-  isEncrypted?: boolean;
-  encrypt?: () => void;
-  decrypt?: () => void;
-  ownerId?: string;
-  getOwner?: () => string;
-  version?: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  schema: string | Record<string, SchemaField>; // Schema definition
-  previousVersionId?: string;
-  nextVersionId?: string;
-  auditTrail?: AuditRecord[];
-  addAuditRecord?: (record: AuditRecord) => void;
-  retentionPolicy?: RetentionPolicy;
-  dependencies?: string[];
-  useSimulatedDataSource: boolean;
-  simulatedDataSource: SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   updateSnapshots: () => void;
   updateSnapshotStore: (
@@ -1062,10 +1063,13 @@ export interface SnapshotStoreConfig<
 type InitializedConfig = SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | SnapshotConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | null
 
 type ConstrainedSnapshotUnion<
-  Base extends BaseDataEntity,
-  Meta extends StructuredMetadata<Base, K>,
-  K extends Base = Base
-  > = SnapshotUnion<Base, K, Meta>;
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > = SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
   {

@@ -1,13 +1,13 @@
 // UpdateSnapshotParams.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 interface UpdateSnapshotParams<
   T extends BaseDataEntity,

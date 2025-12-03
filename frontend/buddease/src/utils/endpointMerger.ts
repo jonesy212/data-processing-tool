@@ -11,6 +11,7 @@ import { generateEndpointUrl } from './urlGenerator';
 
 export const createMergedEndpoints = (endpointConfigurations: EndpointConfigurations) => {
   const updatedEndpoints = {
+    
     apiWebBase: mergeConfigurations(endpointConfigurations.apiWebBase, {
       login: generateEndpointUrl("apiWebBase", "login"),
       logout: generateEndpointUrl("apiWebBase", "logout"),

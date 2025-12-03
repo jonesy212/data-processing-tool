@@ -11,7 +11,7 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-
+import { NotificationContextProps } from '@/app/state/context/NotificationContext'
 // 1. Base entity
 type NotificationEntity = BaseDataEntity;
 
@@ -125,6 +125,13 @@ type NotificationParams = SnapshotConfigParams<
   NotificationIncludedFields
 >;
 
+type AppNotificationProps = NotificationContextProps<NotificationEntity,
+  NotificationK,
+  NotificationMeta,
+  NotificationAttachment,
+  NotificationExcludedFields,
+  NotificationIncludedFields>;
+
 // 7. Utility: Field filters
 type ApplyNotificationFieldFilters<
   T extends BaseDataEntity,
@@ -145,7 +152,7 @@ export type {
   ApplyNotificationFieldFilters, 
   NotificationSnapshotData, NotificationSnapshotsArray, NotificationSnapshotStore,
   NotificationSnapshotStoreConfig,
-  NotificationSnapshotWithCriteria, 
+  NotificationSnapshotWithCriteria, AppNotificationProps,
   NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
 };
 

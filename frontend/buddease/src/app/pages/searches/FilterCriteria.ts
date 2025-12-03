@@ -7,8 +7,8 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
 
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
@@ -23,35 +23,35 @@ import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { CategoryIdentifier } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import {
-    BookmarkStatus,
-    CalendarStatus,
-    DataStatus,
-    DevelopmentPhaseEnum,
-    NotificationStatus,
-    PriorityTypeEnum,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  BookmarkStatus,
+  CalendarStatus,
+  DataStatus,
+  DevelopmentPhaseEnum,
+  NotificationStatus,
+  PriorityTypeEnum,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
+import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { Filter } from "@/app/pages/searches/Filter";
 import { CategoryProperties } from "@/app/personas/ScenarioBuilder";
 import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
-import { Snapshot, SnapshotWithCriteria } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import {
-    DocumentTypeEnum
-} from "@/app/typings/documents";
+  DocumentTypeEnum
+} from "@/app/typings/documentTypes";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { FetchOptions, fetchUserAreaDimensions } from '@/layouts/fetchUserAreaDimensions';
-import { Filter } from "@/pages/searches/Filter";
 import { Pagination } from '@refinedev/core';
 
 

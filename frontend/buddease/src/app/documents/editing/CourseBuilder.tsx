@@ -1,8 +1,8 @@
 // CourseBuilder.tsx
-
+import { BasicUserInfo }  from '@/app/typings/entities/UserEntity'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { VisibilityLevel } from '@/app/permissions/PermissionEnums';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -30,7 +30,7 @@ interface Lesson {
 
 interface Course<
   T extends BaseDataEntity = CourseEntity,
-  K extends T = CourseK,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = CourseMeta,
   AttachmentType extends Attachment = CourseAttachment,
   ExcludedFields extends keyof T = CourseExcludedFields,
@@ -79,7 +79,7 @@ type AdaptedPhaseData = PhaseData<PhaseEntity, PhaseK, PhaseMeta,PhaseAttachment
 // Class generator to create course structure
 class CourseBuilder<
   T extends BaseDataEntity = CourseEntity,
-  K extends T = CourseK,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = CourseMeta,
   AttachmentType extends Attachment = CourseAttachment,
   ExcludedFields extends keyof T = CourseExcludedFields,
@@ -336,4 +336,4 @@ advancedBuilder.addQuizPhase("Assessment", 10);
 const cryptocurrencyCourse = courseBuilder.generateCourse();
 console.log(cryptocurrencyCourse);
 
-export type { Lesson };
+export type { Lesson, Course };

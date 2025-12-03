@@ -1,17 +1,9 @@
 // processSnapshotStore.ts
 // RealtimeDataComponent.tsx
-import { ExchangeActions } from "@/app/actions/ExchangeActions";
-import { ExchangeData } from "@/app/models/data/ExchangeData";
-import useRealtimeData, { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useRealtimeData";
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { fetchDEXData } from "@/app/models/data/fetchExchangeData";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes"; // Adjust path as needed
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import React, { useEffect } from "react";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from "@/app/documents/attachment/Attachment";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes"; // Adjust path as needed
 
 
 

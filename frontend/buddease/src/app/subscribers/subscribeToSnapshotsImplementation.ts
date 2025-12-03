@@ -9,6 +9,7 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 type Callback<T> = (snapshot: T) => void;
+
 type UnifiedCallback<
   T extends BaseDataEntity,
   K extends T = T,

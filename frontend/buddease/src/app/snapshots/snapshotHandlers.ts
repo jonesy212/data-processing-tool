@@ -1,61 +1,61 @@
 // snapshotHandlers.ts
 import axiosInstance from '@/app/api/csrfToken';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer'
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import updateUI from '@/app/documents/editing/updateUI';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 import { SnapshotManager, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
-import {
-  NotificationTypeEnum,
-  useNotification
-} from "@/app/state/context/NotificationContext";
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { T } from '@/app/models/data/dataStoreMethods';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { Payload } from '@/app/server/database/Payload';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotManagerOptions from '@/app/snapshots/SnapshotManagerOptions';
+import {
+    NotificationTypeEnum,
+    useNotification
+} from "@/app/state/context/NotificationContext";
 import useSnapshotSlice from '@/app/state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
+import { SubscriberAttachment, SubscriberEntity, SubscriberExcludedFields, SubscriberIncludedFields, SubscriberK, SubscriberMeta } from '@/app/typings/entities/SubscriberEntity';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { snapshotCache } from '@/utils/cache/InternalCache';
 import { addToSnapshotList, generateSnapshotId } from "@/utils/snapshotUtils";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { T } from '@/app/models/data/dataStoreMethods';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { snapshotCache } from '@/utils/cache/InternalCache';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Payload } from '@/app/server/database/Payload';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { useSnapshotStore } from "./useSnapshotStore";
-import { SubscriberEntity, SubscriberK SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields } from '@/app/typings/entities/SubscriberEntity'
 
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -93,7 +93,7 @@ class SnapshotFetchError extends Error {
 }
 
 
-const snapshotSubscribers: Map<string, Set<Subscriber<SubscriberEntity, SubscriberK SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields>>> = new Map();
+const snapshotSubscribers: Map<string, Set<Subscriber<SubscriberEntity, SubscriberK, SubscriberMeta, SubscriberAttachment, SubscriberExcludedFields, SubscriberIncludedFields>>> = new Map();
 
 export const subscribeToSnapshots = <
   T extends BaseDataEntity = BaseDataRoot,
@@ -1289,7 +1289,7 @@ const updateSnapshot = async <
   snapshotId: string,
   snapshotOrStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   options?: {
-    data?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     events?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
     dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     newData?: Partial<T> | BaseData<any>;

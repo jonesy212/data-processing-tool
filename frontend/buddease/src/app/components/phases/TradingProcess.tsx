@@ -2,7 +2,7 @@
 import axiosInstance from '@/app/api/csrfToken';
 import React, { useState } from "react";
 
-import * as TradingAPI from "@/api/ApiTrading";
+import * as TradingAPI from "@/app/api/ApiTrading";
 import { useStepContext } from "@/app/context/StepContext";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
@@ -16,8 +16,8 @@ import TradingBasicInfoStep from "@/app/phases/steps/trading/TradingBasicInfoSte
 import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
 import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from '@/app/state/context/NotificationContext';
 import TradingPreferencesStep from "./TradingPreferencesStep";
 import { TradingPhase } from "./crypto/CryptoTradingPhase";

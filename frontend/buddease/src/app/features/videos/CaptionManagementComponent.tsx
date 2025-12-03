@@ -1,9 +1,9 @@
 // CaptionManagementComponent.tsx
 
-import CaptionManagementPage from '@/pages/content/CaptionManagementPage';
+import CaptionManagementPage from '@/app/pages/content/CaptionManagementPage';
 import React from 'react';
 
-import { EnhancedCaptionManagementPage } from '@/pages/MyAppWrapper';
+import { EnhancedCaptionManagementPage } from '@/app/pages/MyAppWrapper';
 
 const CaptionManagementComponent: React.FC = () => {
   return (

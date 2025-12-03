@@ -1,7 +1,5 @@
 import { persistenceMiddleware } from '@/app/middleware/core/persistenceMiddleware.';
 import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/core/types'
-import { Logger } from '@/app/logging/Logger';
-
 
 import { PersistenceLayer, createPersistenceAdapter, usePersistenceLayer } from '@/app/dataIntegration/persistenceLayer';
 import { PersistenceConfig, CacheProxyConfig } from '@/app/typings/persistenceTypes';
@@ -35,7 +33,7 @@ class ApiSynchronizationScript<
     persistenceConfig?: PersistenceConfig
   ) {
     this.entityName = entityName;
-    this.changeLogManager = new ChangeLogManager(entityName);
+    this.changeLogManager = new ChangeLogManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(entityName);
        // Initialize your persistence layer
     const adapter = createPersistenceAdapter(
       persistenceConfig?.strategy || 'localStorage', 

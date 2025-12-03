@@ -8,8 +8,19 @@ import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { WorkflowStep } from '@/app/typings/entities/DocumentEntity'
+import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/app/typings/database'
+import { AppTask } from '@/app/typings/entities/AppTask'
 
-interface AppMetadata<AppTaskMetadata extends BaseDataEntity> extends UnifiedMetadata<AppTaskMetadata> {
+// Complete type safety with all App-specific types
+interface AppMetadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends UnifiedMetadata<AppTask> {
   
   // 🎯 Application Identity & Versioning
   appVersion: string;
@@ -51,10 +62,18 @@ interface AppMetadata<AppTaskMetadata extends BaseDataEntity> extends UnifiedMet
     supportedFeatures: string[];
   };
 
-
+  // Full type safety for all App-specific types
   taskMetadata?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
+  
+  // Properly typed related entities
   relatedEntities?: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  
+  // Can use all 6 generic parameters
+  dataEntity?: T;
+  keyEntity?: K;
+  metadata?: Meta;
+  attachments?: AttachmentType[];
+  
   customData?: Record<string, any>;
 }
 

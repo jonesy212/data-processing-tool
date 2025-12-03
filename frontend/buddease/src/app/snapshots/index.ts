@@ -10,8 +10,7 @@ export * from '@/app/snapshots/snapshotHandlers';
 export * from '@/app/snapshots/SnapshotList';
 export * from '@/app/snapshots/SnapshotStore';
 export * from '@/app/snapshots/SnapshotStoreConfig';
-export * from '@/app/snapshots/SnapshotStoreMethod';
+export * from '@/app/snapshots/SnapshotStoreMethods';
 export * from '@/app/snapshots/SnapshotWithCriteria';
-export * from '@/subscribeToSnapshotsImplementation';
-export * from '@/useSnapshotStore';
+export * from '@/app/snapshots/useSnapshotStore';
 
