@@ -114,7 +114,8 @@ interface CoreSnapshot<
     additionalData?: string, 
     userId?: number,
      sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-     channel?: ChatRoom) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    channel?: ChatRoom
+  ) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   user?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   type?: string | AllTypes;
   phases?: ProjectPhaseTypeEnum;

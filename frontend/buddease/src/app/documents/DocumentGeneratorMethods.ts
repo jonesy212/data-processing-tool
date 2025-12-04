@@ -7,20 +7,30 @@ import {
   getDocument,
   loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
-import { loadCryptoWatchlistFromDatabase } from "@/app/models/crypto/CryptoWatchlist";
-import { generateCryptoWatchlistJSON } from "@/app/models/crypto/generateCryptoWatchlistJSON";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { allowedDiagramFormats } from "@/app/components/form/FormatEnum";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
+import { loadDrawingFromDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { parseCSV } from "@/app/documents/parseCSV";
+import { parseDocx } from "@/app/documents/parseDocx";
+import { parseExcel } from "@/app/documents/parseExcel";
+import { extractPDFContent, PDFData, pdfParser } from "@/app/documents/parsePDF";
+import { parseXML } from "@/app/documents/parseXML";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
 import {
   Drawing,
   generateDrawingJSON,
 } from "@/app/libraries/drawing/generateDrawingJSON";
 import { generatePresentationJSON } from "@/app/libraries/presentations/generatePresentationJSON";
+import { loadCryptoWatchlistFromDatabase } from "@/app/models/crypto/CryptoWatchlist";
+import { generateCryptoWatchlistJSON } from "@/app/models/crypto/generateCryptoWatchlistJSON";
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import {
   DocumentSize
 } from "@/app/models/data/StatusType";
-import { sanitizeInput } from "@/app/models/crypto/SanitizationFunctions";
+import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
+import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import {
@@ -30,22 +40,12 @@ import {
   DocumentPath,
   DocumentTypeEnum,
 } from "@/app/typings/documentTypes";
-import { parseCSV } from "@/app/documents/parseCSV";
-import { parseDocx } from "@/app/documents/parseDocx";
-import { parseExcel } from "@/app/documents/parseExcel";
-import { extractPDFContent, PDFData, pdfParser } from "@/app/documents/parsePDF";
-import { parseXML } from "@/app/documents/parseXML";
-import { DatabaseConfig } from "@/app/config/DatabaseConfig";
-import { loadDrawingFromDatabase } from "@/app/config/database/updateDocumentInDatabase";
-import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
-import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
 import Papa from "papaparse";
 import { PDFDocument } from "pdf-lib";
 import { AppType } from "vite";
 import { extractTextFromPage } from "./CustomPDFPage";
 import { ModifiedDate, ParsedData, YourPDFType } from "./DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -57,7 +57,7 @@ async function loadTextDocumentContent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(document: DocumentData<T, K>): Promise<string> {
+  IncludedFields extends keyof T = keyof T>(document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<string> {
   let textContent = "";
 
   // Check if content exists in local storage
@@ -101,12 +101,12 @@ async function loadDiagramDocumentContent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta>>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     // Fetch the document data
-    const document = await fetchDocumentByIdAPI(documentId, dataCallback).then(
-      (document: DocumentData<T, K>) => document
+    const document = await fetchDocumentByIdAiPI(documentId, dataCallback).then(
+      (document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => document
     )
 
     // Validate the document format
@@ -152,7 +152,7 @@ async function loadFinancialReportDocumentContent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     // Fetch the document data using the document ID
@@ -188,8 +188,8 @@ async function loadMarketAnalysisDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  document: DocumentData<T, K>,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a market analysis document
@@ -213,8 +213,8 @@ async function loadClientPortfolioDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  document: DocumentData<T, K>,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a client portfolio document
@@ -239,7 +239,7 @@ async function loadSQLDocumentContent<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     // Assuming the SQL script is stored in the document's content property
@@ -248,7 +248,7 @@ async function loadSQLDocumentContent<
       const sqlScript = document.content;
 
       // Wrap sqlScript in a WritableDraft<DocumentData> object
-      const draft: WritableDraft<DocumentObject<T, K>> = {
+      const draft: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
         id: 0,
         title: "draft title",
         content: sqlScript,
@@ -261,7 +261,7 @@ async function loadSQLDocumentContent<
         options: undefined,
         documentData: undefined,
         previousMetadata: undefined,
-        currentMetadata: undefined,
+        currentMetadata: {} as WritableDraft<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         accessHistory: [],
         lastModifiedDate: {
           value: new Date(),
@@ -279,7 +279,7 @@ async function loadSQLDocumentContent<
         createdDate: undefined,
         documentType: "",
         filePathOrUrl: "",
-        uploadedBy: 0,
+        uploadedBy: '0',
         uploadedAt: "",
         tagsOrCategories: "",
         format: "",
@@ -297,7 +297,7 @@ async function loadSQLDocumentContent<
         contentType: "",
         cookie: "",
         currentScript: null,
-        defaultView: null,
+        defaultView: undefined,
         designMode: "",
         dir: "",
         doctype: null,
@@ -384,8 +384,8 @@ async function loadPDFDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  document: DocumentData<T, K>,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   try {
     const pdfBytes =
@@ -407,7 +407,7 @@ async function loadPDFDocumentContent<
     }
 
     const updatedDocument = { ...document, content: text };
-    dataCallback(updatedDocument as WritableDraft<DocumentObject<T, K>>);
+    dataCallback(updatedDocument as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
 
     return text;
   } catch (error) {
@@ -433,7 +433,7 @@ async function loadDrawingDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  documentId: DocumentData<T, K>
+  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<string> {
   try {
     // Logic to load content for a drawing document
@@ -456,7 +456,7 @@ async function loadPresentationDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  presentationId: DocumentObject<T, K>
+  presentationId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<string> {
   try {
     // Logic to load presentation content
@@ -500,9 +500,9 @@ async function loadGenericDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  documentId: DocumentObject<T, K>,
+  documentId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   let parsedContent: any;
 
@@ -623,7 +623,7 @@ async function loadDocumentContentFromDatabase<
   appType: AppType,
   documentId: number,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentData<T, K>>) => void
+  dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
   let parsedContent: any;
 
@@ -905,7 +905,7 @@ async function loadOtherDocumentContent(
 }
 
 async function loadCryptoWatchDocumentContent(
-  documentId: DocumentData<T, K>,
+  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   userId: string
 ): Promise<string> {
   try {
@@ -932,8 +932,8 @@ async function loadCryptoWatchDocumentContent(
 // Update the return type in loadDocumentContent to handle Promise
 async function loadDocumentContent(
   documentId: number,
-  document: DocumentObject<T, K>,
-  dataCallback: (data: WritableDraft<DocumentData<T, K>>) => void,
+  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void,
   docx: CustomDocxtemplater<any>
 ): Promise<string | undefined> {
   switch (document.type) {
@@ -956,7 +956,7 @@ async function loadDocumentContent(
   return undefined; // Return undefined for unsupported document types
 }
 
-function loadSpreadsheetDocumentContent(document: DocumentData<T, K>): string {
+function loadSpreadsheetDocumentContent(document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): string {
   // Logic to load content for a spreadsheet document
   // For example, if the content is stored in a database:
   const workbook = new xl.Workbook();

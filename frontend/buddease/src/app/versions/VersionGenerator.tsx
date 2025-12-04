@@ -10,6 +10,7 @@ import internalApiService from '@/app/api/ApiClient';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNotification } from "@/app/state/context/NotificationContext";
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from 'axios';
 
 const API_BASE_URL = "/api/details";

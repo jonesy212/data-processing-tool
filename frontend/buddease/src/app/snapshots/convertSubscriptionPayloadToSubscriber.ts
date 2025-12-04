@@ -21,8 +21,8 @@ const convertSubscriptionPayloadToSubscriber = <
   IncludedFields extends keyof T = keyof T
 >(
   payload: SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>> => {
-  const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>>(
+): Subscriber<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, CustomPayload<T, K, Meta>> => {
+  const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, CustomPayload<T, K, Meta>>(
     payload.id,
     // Assuming payload.name is a string, replace with your actual data structure
     payload.name,

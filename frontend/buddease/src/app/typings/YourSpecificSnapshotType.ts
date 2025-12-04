@@ -1,7 +1,8 @@
 // YourSpecificSnapshotType.ts
 import getSnapshotId from "@/app/api/SnapshotApi";
-import { snapshotApi } from './../api/SnapshotApi';
-
+import { snapshotApi } from '@/app/api/SnapshotApi';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { SampleSnapshot } from '@/app/snapshots/SampleSnapshot'
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
@@ -12,8 +13,12 @@ import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { InitializedConfig, snapshot, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots';
-import { CustomSnapshotData } from '@/app/snapshots/CustomSnapshotData';
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { snapshot, Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots';
+import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData'
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
@@ -34,10 +39,10 @@ import { convertBaseDataToK } from '@/app/snapshots/convertSnapshot';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { SnapshotContext } from '@/app/state/context/SnapshotContext';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { generateSnapshotId, isSnapshot } from '@/utils/snapshotUtils';
-import { Subscription } from 'react-redux';
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 
@@ -55,7 +60,7 @@ class YourSpecificSnapshotType<
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  
+  config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   // Additional required properties from Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   dataObject: any = {};
   deleted: boolean = false;
@@ -75,7 +80,7 @@ class YourSpecificSnapshotType<
     id: "", 
     name: "", 
     description: "",
-    properties: {} as CategoryProperties,
+    properties: {} as CategoryProperties<T, K>,
     relationships: {},
     icon: "",
     color: "",
@@ -89,7 +94,7 @@ class YourSpecificSnapshotType<
    };
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   storeId: number = 0;
-  versionInfo: ExtendedVersionData | null = null;
+  versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   initializedState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {} = {};
   criteria: CriteriaType | undefined;
   relationships?: Map<string, K>;
@@ -109,6 +114,7 @@ class YourSpecificSnapshotType<
     this.id = id;
     this.data = data;
     this.meta = meta;
+    this.config = config;
     this.mappedData = mappedData
     this.events = {
       callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
@@ -137,7 +143,7 @@ class YourSpecificSnapshotType<
   snapshot(
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
+    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
@@ -146,7 +152,8 @@ class YourSpecificSnapshotType<
     endpointCategory: string | number,
     storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    subscription: Subscription<T, K>,
+    subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
@@ -184,9 +191,21 @@ class YourSpecificSnapshotType<
 
 
 
-function flatMapImplementation<T extends  BaseData<any>, K extends Data, U extends Iterable<any>>(
+function flatMapImplementation<
+  T extends BaseDataEntity,
+  K extends T,
+  Meta extends DefaultMeta<T, K>,
+  AttachmentType extends Attachment,
+  ExcludedFields extends keyof T,
+  IncludedFields extends keyof T,
+  U extends Iterable<any>
+>(
   array: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  callback: (value: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => U
+  callback: (
+    value: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    index: number, 
+    array: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ) => U
 ): U extends Iterable<infer I> ? I[] : never {
   const result: any[] = [];
   array.forEach((value, index) => {
@@ -198,14 +217,14 @@ function flatMapImplementation<T extends  BaseData<any>, K extends Data, U exten
   return result as U extends Iterable<infer I> ? I[] : never;
 }
 
-
 // Create specific snapshot with SampleSnapshot
-const specificSnapshot = new YourSpecificSnapshotType<T, BaseData>(
+const specificSnapshot = new YourSpecificSnapshotType(
   "123",
   new Map([
     ["key", new SampleSnapshot("keyId", new Map(), new Map(), {})],
   ]),
-  new Map()
+  new Map(),
+  {}  // Provide empty object for meta
 );
 
 // Update data
@@ -914,7 +933,7 @@ function convertToDataSnapshot <
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscription: Subscription,
+      subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category?: Category,      
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
@@ -2206,10 +2225,10 @@ function isCoreSnapshot<
 
 
 export {
-    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-    convertSnapshotStoreItemToT,
-    convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
+  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+  convertSnapshotStoreItemToT,
+  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

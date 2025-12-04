@@ -1,13 +1,17 @@
 // persistSnapshot.ts
 // app/state/snapshots/persistSnapshot.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
-import { SnapshotDataType } from "@/app/snapshots";
-import { DatabaseConfig } from "@/app/DatabaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { DatabaseConfig } from "@/app/config/DatabaseConfig";
+import { DatabaseClient } from "@/app/api/DatabaseClient";
 import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DatabaseClient } from "@/app/database/DatabaseClient";
-import { sanitizeInput } from "@/app/utils/sanitizeInput";
-import { notify } from "@/app/utils/notify";
-import { handleApiError } from "@/app/utils/handleApiError";
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { handleApiError } from '@/app/api/ApiLogs';
+import { notify } from "@/utils/snapshotUtils";
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
+
+const { notify } = useNotification(); 
+
 
 export async function persistSnapshotDB<
   T extends BaseDataEntity,
@@ -25,7 +29,7 @@ export async function persistSnapshotDB<
   const dbClient = new DatabaseClient(config);
   const sanitizedData = sanitizeInput(snapshotData);
 
-  try {
+  try {  // <- ADD THIS OPENING BRACE
     await dbClient.connect();
     if (operationType === "upsert") {
       await dbClient.upsertData("snapshots", sanitizedData);
@@ -34,11 +38,15 @@ export async function persistSnapshotDB<
     }
 
     notify("snapshotSaveSuccess", "Snapshot saved successfully", `Snapshot ID ${snapshotId} saved`, new Date(), "SUCCESS");
-  } catch (error) {
-    handleApiError(error, "persistSnapshotDB");
+  } catch (error: unknown) {  // <- Use 'unknown' or 'any' instead of instanceof in catch clause
+    if (error instanceof Error) {
+      handleApiError(error, "persistSnapshotDB");
+    } else {
+      handleApiError(new Error(String(error)), "persistSnapshotDB");
+    }
     notify("snapshotSaveError", "Error saving snapshot", `Failed to save Snapshot ID ${snapshotId}`, new Date(), "ERROR");
     throw error;
   } finally {
     await dbClient.close();
   }
-}
+} 

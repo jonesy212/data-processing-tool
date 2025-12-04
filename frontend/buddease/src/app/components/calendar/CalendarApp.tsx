@@ -588,7 +588,7 @@ function CalendarApp<
     },
 
     getData: async (
-      input: number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta>>
+      input: number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     ): Promise<{ data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> => {
       try {
         if (typeof input === 'number') {

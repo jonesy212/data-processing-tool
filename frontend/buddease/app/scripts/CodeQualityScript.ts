@@ -556,7 +556,16 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
   }
 
   // Correction creation methods
-  private createMagicNumberCorrection(issue: {file: string, line: number, number: string, context: string}): Correction {
+  private createMagicNumberCorrection(issue: {
+    file: string,
+    line: number,
+    number: string,
+    context: string,
+    message: string,
+    code: string,
+    fix: string
+    
+  }): Correction {
     const constantName = this.numberToConstantName(issue.number);
     
     return {
@@ -568,7 +577,7 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
       codeSnippet: issue.context,
       suggestion: `Replace with named constant: const ${constantName} = ${issue.number};`,
       category: 'maintainability',
-      line: issue.line
+      line: issue.line,
       message: issue.message,
       code: issue.code,
       fix: issue.fix,
@@ -576,7 +585,15 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
     };
   }
 
-  private createLongMethodCorrection(issue: {file: string, method: string, lines: number, startLine: number}): Correction {
+  private createLongMethodCorrection(issue: {
+    file: string,
+    method: string,
+    lines: number,
+    startLine: number,
+    message: string,
+    code: string,
+    fix: string
+  }): Correction {
     return {
       id: `long-method-${issue.method}-${issue.startLine}-${this.hashCode(issue.file)}`,
       type: 'suggestion',
@@ -588,12 +605,21 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
       category: 'maintainability',
       line: issue.startLine,
       message: issue.message,
-      code: issue.code 
+      code: issue.code,
       fix: issue.fix 
     };
   }
 
-  private createDuplicateCorrections(issue: {file: string, duplicates: Array<{lines: string[], count: number, startLine: number}>}): Correction[] {
+  private createDuplicateCorrections(issue: {
+    file: string,
+    duplicates: Array<{
+      lines: string[],
+      count: number, startLine: number
+    }>,
+    message: string,
+    code: string,
+    fix: string
+  }): Correction[] {
     return issue.duplicates.map((dup, index) => ({
       id: `duplicate-code-${index}-${this.hashCode(issue.file)}`,
       type: 'suggestion',
@@ -610,7 +636,15 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
     }));
   }
 
-  private createComplexConditionalCorrection(issue: {file: string, line: number, type: string, context: string}): Correction {
+  private createComplexConditionalCorrection(issue: {
+    file: string,
+    line: number,
+    type: string,
+    context: string,
+    message: string,
+    code: string,
+    fix: string
+  }): Correction {
     const suggestion = this.getConditionalSuggestion(issue.type, issue.context);
     
     return {
@@ -629,7 +663,14 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
     };
   }
 
-  private createImportCorrection(issue: {file: string, issue: string, line?: number, context: string}): Correction {
+  private createImportCorrection(issue: {
+    file: string,
+    issue: string,
+    line?: number,
+    context: string,
+    message: string,
+    code: string,
+    fix: string}): Correction {
     const suggestion = this.getImportSuggestion(issue.issue);
     
     return {
@@ -642,9 +683,9 @@ private extractCodeBlocks(content: string, filePath: string): Array<{file: strin
       suggestion,
       category: 'maintainability',
       line: issue.line,
-      message: .message,
-      code: .code, 
-      fix: .fix
+      message: issue.message,
+      code: issue.code, 
+      fix: issue.fix
     };
   }
 

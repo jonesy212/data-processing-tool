@@ -1,13 +1,13 @@
 // ImportFixerService.ts
+import { ComplexFix, Correction, ImportCorrection } from '@/app/generators/corrections/CorrectionGenerator';
+import { ImportAnalysis } from '@/app/generators/corrections/reports/ImportReport';
+import { ConfirmationService } from '@/app/services/ConfirmationService';
+import { ConsoleConfirmationService } from '@/app/services/ConsoleConfirmationService';
+import { FileConfirmationService } from '@/app/services/FileConfirmationService';
+import { InteractiveConfirmationService } from '@/app/services/InteractiveConfirmationService';
+import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/app/typings/correctionTypes';
 import fs from 'fs';
 import path from 'path';
-import { Correction, ComplexFix, ImportCorrection } from '@/app/generators/corrections/CorrectionGenerator';
-import { ConsoleConfirmationService } from '@/app/services/ConsoleConfirmationService';
-import { InteractiveConfirmationService } from '@/app/services/InteractiveConfirmationService';
-import { FileConfirmationService } from '@/app/services/FileConfirmationService';
-import { CorrectionType, CorrectionSeverity, CorrectionCategory } from '@/app/typings/correctionTypes';
-import { ConfirmationService } from '@/app/services/ConfirmationService';
-import { ImportAnalysis } from '@app/generators/corrections/reports/ImportReport'
 
 export interface ImportFix {
     filePath: string;
@@ -15,7 +15,8 @@ export interface ImportFix {
     newLine: string;
     missingTypes: string[];
     targetImportPath: string;
-    reason?: string
+    reason?: string;
+    confidence?: 'high' | 'medium' | 'low';
 }
 
 export interface ParsedImport {
@@ -27,6 +28,11 @@ export interface ParsedImport {
     lineNumber: number;
 }
 
+interface FileInfo {
+    exports: string[];
+    path: string;
+}
+
 
 export class ImportFixerService {
     private readonly KNOWN_IMPORT_MAPPINGS: Map<string, string> = new Map([
@@ -34,6 +40,46 @@ export class ImportFixerService {
         ['NotificationTypeEnum', '@/app/features/support/UnifiedNotificationTypes'],
         ['UnifiedMetaDataOptions', '@/app/config/MetadataOptions'],
         ['ChecklistItemProps', '@/app/models/ChecklistItem'],
+        ['getConfigsApi', '@/app/api/getConfigsApi'],
+        ['BaseConfig', '@/app/config/BaseConfig'],
+        ['ipfsConfig', '@/app/config/ipfsConfig'],
+        ['Attachment', '@/app/documents/attachment/Attachment'],
+        ['userScenarioCreation', '@/app/hooks/userScenarioCreation'],
+        ['StatusType', '@/app/models/data/StatusType'],
+        ['ExtendedDappEntity', '@/app/typings/entities/ExtendedDappEntity'],
+        ['AuthContext', '@/app/state/context/AuthContext'],
+        ['DApp', '@/utils/web3/dAppAdapter/DApp'],
+        ['DAppAdapterConfig', '@/utils/web3/dAppAdapter/DAppAdapterConfig'],
+        ['csrfToken', '@/app/api/csrfToken'],
+        ['HeadersConfig', '@/app/api/headers/HeadersConfig'],
+        ['BrandingSettings', '@/app/branding/BrandingSettings'],
+        ['DatePicker', '@/app/calendar/DatePicker'],
+        ['ActivityFeedComponent', '@/app/community/ActivityFeedComponent'],
+        ['Checkbox', '@/app/libraries/menu/Checkbox'],
+        ['ClearFiltersButton', '@/app/libraries/menu/ClearFiltersButton'],
+        ['Dropdown', '@/app/libraries/menu/Dropdown'],
+        ['SortableTableHeaders', '@/app/libraries/menu/SortableTableHeaders'],
+        ['TagCloud', '@/app/libraries/menu/TagCloud'],
+        ['ToggleSwitch', '@/app/libraries/menu/ToggleSwitch'],
+        ['PersonaBuilderData', '@/app/pages/onboarding/PersonaBuilderData'],
+        ['ProjectManagementSimulator', '@/app/projects/projectManagement/ProjectManagementSimulator'],
+        ['User', '@/app/users/User'],
+        ['dataAnalysisTypes', '@/app/typings/dataAnalysisTypes'],
+        ['endpointConfigurations', '@/app/api/endpointConfigurations'],
+        ['GenerateUniqueIds', '@/app/generators/GenerateUniqueIds'],
+        ['SnapshotStoreConfig', '@/app/snapshots/SnapshotStoreConfig'],
+        ['FileManager', '@/app/typings/file/FileManager'],
+        ['LoadFluenceState', '@/app/dashboards/LoadFluenceState'],
+        ['dynamicHookGenerator', '@/app/hooks/dynamicHooks/dynamicHookGenerator'],
+        ['SanitizationFunctions', '@/app/models/cypto/SanitizationFunctions'],
+        ['Subscriber', '@/app/subscribers/Subscriber'],
+        ['AquaChat', '@/app/components/communications/chat/AquaChat'],
+        ['FluenceConnection', '@/utils/web3/fluenceProtocoIntegration/FluenceConnection'],
+        ['AquaConfig', '@/utils/web3/webConfigs/aqua/AquaConfig'],
+        ['YourClass', '@/utils/YourClass'],
+        ['LoadAquaState', '@/app/dashboards/LoadAquaState'],
+        ['ReportGenerators', '@/app/generators/corrections/ReportGenerators'],
+        ['CorrectionGenerator', '@/app/generators/corrections/CorrectionGenerator'],
         // Add more mappings as needed
     ]);
 
@@ -51,6 +97,16 @@ export class ImportFixerService {
         TYPE_IMPORT: /import\s+type\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"];?/,
     };
 
+    private readonly MIXED_IMPORT_PATTERNS = [
+        {
+            pattern: /import\s+\w+,\s*{\s*\w+\s*,?\s*}\s+from\s+(?!['"]react['"]|['"]react-dom['"]|['"]draft-js['"])/,
+            corrections: ['import { allNamedImports } from'],
+            reason: 'Mixed default and named imports should be separated'
+        }
+    ];
+
+    private projectTree: Map<string, FileInfo> = new Map();
+    private projectTreeBuilt: boolean = false;
     private confirmationService: ConfirmationService;
 
     constructor(confirmationType: 'console' | 'interactive' | 'file' = 'console') {
@@ -66,41 +122,211 @@ export class ImportFixerService {
         }
     }
 
+
+
+    
+
+
     /**
-     * Analyze a file for import errors and suggest fixes
-     */
-    async analyzeFile(filePath: string): Promise<ImportAnalysis> {
-          if (!this.projectTreeBuilt) {
-            await this.buildProjectTree();
+ * Build project tree for better import resolution
+ */
+    private async buildProjectTree(): Promise<void> {
+        console.log('🌳 Building project tree for import resolution...');
+
+        // Start from current working directory
+        await this.scanDirectoryForExports(process.cwd());
+
+        this.projectTreeBuilt = true;
+        console.log(`✅ Project tree built with ${this.projectTree.size} files`);
+    }
+
+    private async scanDirectoryForExports(dir: string): Promise<void> {
+        try {
+            const items = fs.readdirSync(dir, { withFileTypes: true });
+
+            for (const item of items) {
+                const fullPath = path.join(dir, item.name);
+
+                // Skip hidden files, node_modules, and build directories
+                if (item.name.startsWith('.') ||
+                    item.name === 'node_modules' ||
+                    item.name === 'dist' ||
+                    item.name === 'build') {
+                    continue;
+                }
+
+                if (item.isDirectory()) {
+                    await this.scanDirectoryForExports(fullPath);
+                } else if (item.isFile() &&
+                    (item.name.endsWith('.ts') ||
+                        item.name.endsWith('.tsx') ||
+                        item.name.endsWith('.js') ||
+                        item.name.endsWith('.jsx'))) {
+                    await this.analyzeFileForExports(fullPath);
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ Could not scan directory: ${dir}`, error);
         }
+    }
 
-        const content = await fs.promises.readFile(filePath, 'utf8');
+
+    private async analyzeFileForExports(filePath: string): Promise<void> {
+        try {
+            const content = await fs.promises.readFile(filePath, 'utf8');
+            const exports = this.extractExports(content);
+
+            if (exports.length > 0) {
+                this.projectTree.set(filePath, {
+                    exports,
+                    path: filePath
+                });
+            }
+        } catch (error) {
+            console.warn(`⚠️ Could not analyze file for exports: ${filePath}`, error);
+        }
+    }
+
+
+    private extractExports(content: string): string[] {
+        const exports: string[] = [];
         const lines = content.split('\n');
-        const imports = this.parseImports(lines);
-        const errors = this.detectImportErrors(content);
-        const smartFixes = await this.analyzeSmartFixes(content, filePath, imports);
 
+        const exportPatterns = [
+            /export\s+(?:const|let|var|function|class|interface|type)\s+(\w+)/g,
+            /export\s+default\s+(\w+)/g,
+            /export\s+{\s*([^}]+)\s*}/g
+        ];
 
-        const suggestedFixes: ImportFix[] = [];
-
-        for (const error of errors) {
-            const fix = this.suggestImportFix(error, imports, filePath);
-            if (fix) {
-                suggestedFixes.push(fix);
+        for (const pattern of exportPatterns) {
+            let match;
+            while ((match = pattern.exec(content)) !== null) {
+                if (match[1]) {
+                    // Handle multiple exports in one line: export { A, B, C }
+                    const exportsList = match[1].split(',').map(e => e.trim());
+                    exports.push(...exportsList);
+                }
             }
         }
 
-        suggestedFixes.push(...smartFixes);
-
-        return {
-            filePath,
-            errors,
-            imports,
-            suggestedFixes
-        };
+        return [...new Set(exports)]; // Remove duplicates
     }
 
-        private async analyzeSmartFixes(content: string, filePath: string, existingImports: ParsedImport[]): Promise<ImportFix[]> {
+    /**
+     * Calculate number of unused imports
+     */
+    private calculateUnusedImports(content: string, imports: ParsedImport[]): string[] {
+        const unusedImports: string[] = [];
+        
+        // Extract all named imports (with safety check)
+        const allImportedNames: string[] = [];
+        
+        imports.forEach(imp => {
+            // Check if namedImports exists and is an array
+            if (imp.namedImports && Array.isArray(imp.namedImports)) {
+                allImportedNames.push(...imp.namedImports);
+            } else {
+                // Log warning for debugging
+                console.warn(`⚠️ namedImports is not an array in import:`, {
+                    importPath: imp.importPath,
+                    hasNamedImports: !!imp.namedImports,
+                    typeOfNamedImports: typeof imp.namedImports,
+                    defaultImport: imp.defaultImport
+                });
+            }
+            
+            if (imp.defaultImport) {
+                allImportedNames.push(imp.defaultImport);
+            }
+        });
+
+        // If no imports, return empty array
+        if (allImportedNames.length === 0) {
+            return [];
+        }
+
+        // Check if each imported name is used in the file (excluding imports themselves)
+        const importSectionEnd = this.findImportSectionEnd(content);
+        const codeContent = content.slice(importSectionEnd);
+        
+        allImportedNames.forEach(name => {
+            // Skip empty names
+            if (!name || name.trim() === '') {
+                return;
+            }
+            
+            // Skip common patterns that might be used in different ways
+            const commonImports = [
+                'React', 'FC', 'FunctionComponent', 'Component', 
+                'useState', 'useEffect', 'useContext', 'useRef',
+                'useMemo', 'useCallback', 'useReducer', 'useLayoutEffect',
+                'useDebugValue', 'useImperativeHandle', 'useTransition',
+                'useDeferredValue', 'useId', 'useSyncExternalStore'
+            ];
+            
+            if (commonImports.includes(name)) {
+                return; // These are often implicitly used or type-only
+            }
+            
+            // Skip type-only imports (they won't appear in runtime code)
+            if (name.startsWith('type ') || name.includes('<')) {
+                return;
+            }
+            
+            // Create a regex to find the import usage
+            // Escape special regex characters in the name
+            const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const usageRegex = new RegExp(`\\b${escapedName}\\b`, 'g');
+            const matches = codeContent.match(usageRegex);
+            
+            if (!matches || matches.length === 0) {
+                unusedImports.push(name);
+            }
+        });
+
+        return unusedImports;
+    }
+
+    /**
+     * Find where the import section ends in the file
+     */
+    private findImportSectionEnd(content: string): number {
+        const lines = content.split('\n');
+        let lastImportLine = -1;
+        
+        for (let i = 0; i < lines.length; i++) {
+            const trimmedLine = lines[i].trim();
+            
+            if (trimmedLine.startsWith('import')) {
+                lastImportLine = i;
+            } else if (lastImportLine !== -1 && 
+                    trimmedLine.length > 0 && 
+                    !trimmedLine.startsWith('import') &&
+                    !trimmedLine.startsWith('//') &&
+                    !trimmedLine.startsWith('/*') &&
+                    !trimmedLine.startsWith('*')) {
+                // Found non-import, non-comment line after imports
+                break;
+            }
+        }
+        
+        // Return the position after the last import line
+        if (lastImportLine === -1) return 0;
+        
+        // Get the text up to and including the last import line
+        const linesUpToLastImport = lines.slice(0, lastImportLine + 1);
+        return linesUpToLastImport.join('\n').length;
+    }
+    
+    /**
+     * Fix the calculateDuplicateImports to return string[]
+     */
+    private calculateDuplicateImports(imports: ParsedImport[]): string[] {
+        const duplicates: string[] = [];
+        // ... implementation returns array of strings
+        return duplicates;
+    }
+    private async analyzeSmartFixes(content: string, filePath: string, existingImports: ParsedImport[]): Promise<ImportFix[]> {
         const fixes: ImportFix[] = [];
         const lines = content.split('\n');
 
@@ -153,25 +379,296 @@ export class ImportFixerService {
         return fixes;
     }
 
+    /**
+     * Check for circular imports (simplified check)
+     */
+    private checkCircularImports(filePath: string, imports: ParsedImport[]): string[] {
+        const circularImports: string[] = [];
+        const currentDir = path.dirname(filePath);
+        
+        imports.forEach(imp => {
+            if (imp.importPath.startsWith('.')) {
+                // This is a relative import
+                try {
+                    const importedPath = path.resolve(currentDir, imp.importPath);
+                    const importedDir = path.dirname(importedPath);
+                    
+                    // Check if this import path would import back to the current file
+                    // This is a simplified check - actual circular detection is more complex
+                    const relativeBack = path.relative(importedDir, filePath);
+                    
+                    if (!relativeBack.startsWith('..') && relativeBack !== '') {
+                        // Potential circular import
+                        circularImports.push(imp.importPath);
+                    }
+                } catch (error) {
+                    // Path resolution failed
+                    console.warn(`Could not resolve import path: ${imp.importPath}`, error);
+                }
+            }
+        });
+        
+        return circularImports;
+    }
+
+    /**
+     * Check for invalid import paths
+     */
+    private checkInvalidImportPaths(imports: ParsedImport[], currentFilePath: string): string[] {
+        const invalidPaths: string[] = [];
+        const currentDir = path.dirname(currentFilePath);
+        
+        imports.forEach(imp => {
+            try {
+                if (imp.importPath.startsWith('.')) {
+                    // Relative path - check if file exists
+                    const resolvedPath = path.resolve(currentDir, imp.importPath);
+                    
+                    // Check for common extensions
+                    const possibleExtensions = ['.ts', '.tsx', '.js', '.jsx', '.json', ''];
+                    let found = false;
+                    
+                    for (const ext of possibleExtensions) {
+                        const testPath = ext ? `${resolvedPath}${ext}` : resolvedPath;
+                        if (fs.existsSync(testPath) || fs.existsSync(`${testPath}/index.ts`) || fs.existsSync(`${testPath}/index.tsx`)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!found) {
+                        invalidPaths.push(imp.importPath);
+                    }
+                }
+            } catch (error) {
+                // Path resolution failed
+                invalidPaths.push(imp.importPath);
+            }
+        });
+        
+        return invalidPaths;
+    }
+
+async analyzeFile(filePath: string): Promise<ImportAnalysis> {
+    if (!this.projectTreeBuilt) {
+        await this.buildProjectTree();
+    }
+
+    const content = await fs.promises.readFile(filePath, 'utf8');
+    const lines = content.split('\n');
+    const imports = this.parseImports(lines);
+    
+    // 🎯 STEP 1: Get ACTUAL TypeScript errors for this file
+    const tsErrors = await this.getTypeScriptErrorsForFile(filePath);
+    const realMissingModules = this.extractMissingModulesFromTSErrors(tsErrors);
+    
+    // 🎯 STEP 2: Get heuristic errors from your original method
+    const heuristicErrors = this.detectImportErrors(content);
+    
+    // 🎯 STEP 3: Prioritize real TypeScript errors over heuristic detection
+    // Combine but remove duplicates, with TypeScript errors first
+    const allErrors = [
+        ...realMissingModules,
+        ...heuristicErrors.filter(err => !realMissingModules.includes(err))
+    ];
+    
+    // 🎯 STEP 4: Get smart fixes
+    const smartFixes = await this.analyzeSmartFixes(content, filePath, imports);
+
+    // Get fixes
+    const fixPromises = allErrors.map(error => 
+        this.suggestImportFix(error, imports, filePath)
+    );
+    const fixResults = await Promise.all(fixPromises);
+    const suggestedFixes: ImportFix[] = fixResults.filter((fix): fix is ImportFix => fix !== null);
+    
+    // Add smart fixes after
+    suggestedFixes.push(...smartFixes);
+    
+    // Boost confidence for fixes that address real TypeScript errors
+    suggestedFixes.forEach(fix => {
+        if (realMissingModules.some(missing => fix.missingTypes.includes(missing))) {
+            fix.confidence = 'high';
+            if (!fix.reason) {
+                fix.reason = 'Fixes TypeScript compilation error';
+            }
+        }
+    });
+
+    // Calculate all metrics
+    const totalImports = imports.length;
+    const externalImports = imports.filter(imp => 
+        !imp.importPath.startsWith('@/') && !imp.importPath.startsWith('.')
+    ).length;
+    const internalImports = imports.filter(imp => 
+        imp.importPath.startsWith('@/')
+    ).length;
+    const deepImports = imports.filter(imp => 
+        imp.importPath.includes('..')
+    ).length;
+    const relativeImports = imports.filter(imp => 
+        imp.importPath.startsWith('.')
+    ).length;
+    const absoluteImports = imports.filter(imp => 
+        imp.importPath.startsWith('/') || imp.importPath.startsWith('@/')
+    ).length;
+    const wildcardImports = imports.filter(imp => 
+        imp.namedImports?.some(name => name === '*')
+    ).length;
+    
+    const unusedImports = this.calculateUnusedImports(content, imports);
+    const duplicateImports = this.calculateDuplicateImports(imports);
+    const circularImports = this.checkCircularImports(filePath, imports);
+    const invalidPaths = this.checkInvalidImportPaths(imports, filePath);
+    
+    // Calculate bundle impact
+    const bundleImpact = this.calculateBundleImpact(imports);
+    
+    // Get import lines
+    const importLines = imports.map(imp => imp.fullLine);
+
+    // Calculate total issues
+    const totalIssues = allErrors.length + 
+                    unusedImports.length + 
+                    duplicateImports.length + 
+                    circularImports.length + 
+                    invalidPaths.length;
+    
+    const errorCount = allErrors.length;
+    const unusedCount = unusedImports.length;
+    const duplicateCount = duplicateImports.length;
+    const invalidPathCount = invalidPaths.length;
+
+    return {
+        filePath,
+        totalImports,
+        externalImports,
+        internalImports,
+        deepImports,
+        relativeImports,
+        absoluteImports,
+        wildcardImports,
+        unusedImports,
+        duplicateImports,
+        circularImports,
+        invalidPaths,
+        importLines,
+        imports,
+        suggestedFixes,
+        errors: allErrors, // Now includes both TypeScript and heuristic errors
+        issues: [
+            // TypeScript errors marked clearly
+            ...realMissingModules.map(e => `[TypeScript] ${e}`),
+            // Heuristic errors
+            ...heuristicErrors.filter(e => !realMissingModules.includes(e))
+                .map(e => `[Heuristic] ${e}`),
+            ...unusedImports.map(u => `Unused: ${u}`),
+            ...duplicateImports.map(d => `Duplicate: ${d}`),
+            ...circularImports.map(c => `Circular: ${c}`),
+            ...invalidPaths.map(i => `Invalid: ${i}`)
+        ],
+        bundleImpact,
+        summary: {
+            total: totalImports,
+            external: externalImports,
+            internal: internalImports,
+            deep: deepImports,
+            issues: totalIssues,
+            errorCount: errorCount,
+            unusedCount: unusedCount,
+            duplicateCount: duplicateCount,
+            invalidPathCount: invalidPathCount,
+            // Add new metrics for better insight
+            typeScriptErrorCount: realMissingModules.length,
+            heuristicErrorCount: heuristicErrors.length - realMissingModules.length,
+            fixableCount: suggestedFixes.length
+        }
+    };
+}
+    /**
+     * Calculate bundle impact based on imports
+     */
+    private calculateBundleImpact(imports: ParsedImport[]): 'low' | 'medium' | 'high' {
+        const total = imports.length;
+        const externalCount = imports.filter(imp => 
+            !imp.importPath.startsWith('@/') && !imp.importPath.startsWith('.')
+        ).length;
+        const deepCount = imports.filter(imp => imp.importPath.includes('..')).length;
+        
+        if (total > 20 || externalCount > 10 || deepCount > 5) return 'high';
+        if (total > 10 || externalCount > 5 || deepCount > 2) return 'medium';
+        return 'low';
+    }
+
+
     // ENHANCED: Better path resolution
     private async findCorrectImportPath(missingType: string, currentFile: string): Promise<string | null> {
         // First check known mappings
         const knownPath = this.KNOWN_IMPORT_MAPPINGS.get(missingType);
         if (knownPath) return knownPath;
 
-        // Then search project tree
-        for (const [filePath, fileInfo] of this.projectTree) {
-            if (fileInfo.exports.some(exp => 
-                exp.toLowerCase() === missingType.toLowerCase() ||
-                exp.toLowerCase().includes(missingType.toLowerCase())
-            )) {
-                return `@/${filePath.replace('src/', '')}`;
+        // Special handling for headersConfig based on actual usage patterns
+        if (missingType === 'headersConfig') {
+            // Check if it's being used in API files (should come from HeadersConfig)
+            if (currentFile.includes('/api/') || currentFile.includes('/services/')) {
+                return '@/app/api/headers/HeadersConfig';
+            }
+            // Check if it's being used in components (should come from SharedHeaders)
+            if (currentFile.includes('/components/')) {
+                return '@/app/components/shared/SharedHeaders';
             }
         }
 
+        // Search project tree with smarter matching
+        for (const [filePath, fileInfo] of this.projectTree) {
+            if (fileInfo.exports.some(exp => 
+                exp.toLowerCase() === missingType.toLowerCase() ||
+                exp.toLowerCase() === `${missingType.toLowerCase()}config` ||
+                exp.toLowerCase() === `${missingType.toLowerCase()}configs`
+            )) {
+                // Calculate relative path
+                const relativePath = path.relative(path.dirname(currentFile), filePath)
+                    .replace(/\\/g, '/')
+                    .replace(/\.(ts|tsx|js|jsx)$/, '');
+                
+                // Ensure path starts with ./
+                const finalPath = relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
+                
+                // Check for circular dependencies
+                if (this.isCircularImport(finalPath, currentFile, missingType)) {
+                    console.warn(`⚠️ Skipping circular import for ${missingType} from ${finalPath}`);
+                    return null;
+                }
+                
+                return finalPath;
+            }
+        }
+
+        console.warn(`No mapping found for missing type: ${missingType}`);
         return null;
     }
 
+    private isCircularImport(importPath: string, currentFile: string, missingType: string): boolean {
+        // Check if this would create a circular dependency
+        // Example: If current file exports the same thing it's trying to import
+        try {
+            const currentFileExports = this.projectTree.get(currentFile)?.exports || [];
+            if (currentFileExports.includes(missingType)) {
+                return true; // Circular: file exports what it's trying to import
+            }
+            
+            // Check if import path is the same as or imports from current file
+            const resolvedImportPath = path.resolve(path.dirname(currentFile), importPath);
+            if (resolvedImportPath === currentFile.replace(/\.(ts|tsx|js|jsx)$/, '')) {
+                return true;
+            }
+            
+        } catch (error) {
+            // If we can't check, assume it's not circular
+        }
+        
+        return false;
+    }
     /**
      * Parse all imports from file content
      */
@@ -241,17 +738,42 @@ export class ImportFixerService {
      */
     private detectImportErrors(content: string): string[] {
         const errors: string[] = [];
+        
+        // Add more comprehensive import error detection
+        const importErrorPatterns = [
+            // Cannot find module errors
+            /Cannot find module ['"]([^'"]+)['"]/g,
+            /Module not found: Can't resolve ['"]([^'"]+)['"]/g,
+            
+            // Import path errors - check for @/ paths
+            /from ['"]@\/([^'"]+)['"]/g,
+            
+            // Export errors
+            /has no exported member ['"]([^'"]+)['"]/g,
+            /is not exported/g,
+            
+            // Common TypeScript import errors
+            /error TS2307/g, // Cannot find module
+            /error TS2305/g, // Module has no exported member
+            /error TS1192/g, // Module has no default export
+            
+            // Check for suspicious import patterns
+            /@\/path/g, // Literal @/path that looks wrong
+            /@\/undefined/g,
+            /@\/null/g,
+        ];
 
-        // This would typically come from TypeScript compiler output
-        // For now, we'll simulate with a simple pattern
-        const errorPattern = /Cannot find name '([^']+)'/g;
-        let match: RegExpMatchArray | null;
-
-        while ((match = errorPattern.exec(content)) !== null) {
-            errors.push(match[1]);
+        for (const pattern of importErrorPatterns) {
+            let match: RegExpMatchArray | null;
+            while ((match = pattern.exec(content)) !== null) {
+                const error = match[1] || match[0];
+                if (error && !errors.includes(error)) {
+                    errors.push(error);
+                }
+            }
         }
 
-        return errors;
+        return [...new Set(errors)]; // Remove duplicates
     }
 
     /**
@@ -397,7 +919,7 @@ export class ImportFixerService {
         }
     }
 
-        // Smart scan with confidence filtering
+    // Smart scan with confidence filtering
     async scanProjectWithConfidence(rootDir: string = process.cwd()): Promise<{ analyses: ImportAnalysis[], fixesByConfidence: { high: ImportFix[], medium: ImportFix[], low: ImportFix[] } }> {
         const analyses = await this.scanProject(rootDir);
         const allFixes = analyses.flatMap(analysis => analysis.suggestedFixes);
@@ -415,8 +937,8 @@ export class ImportFixerService {
     async applyFixesWithConfidence(fixes: ImportFix[], minConfidence: 'high' | 'medium' | 'low' = 'medium'): Promise<{ success: boolean; applied: number }> {
         const confidenceLevels = { high: 3, medium: 2, low: 1 };
         const minLevel = confidenceLevels[minConfidence];
-        
-        const filteredFixes = fixes.filter(fix => 
+
+        const filteredFixes = fixes.filter(fix =>
             confidenceLevels[fix.confidence || 'medium'] >= minLevel
         );
 
@@ -794,6 +1316,203 @@ export class ImportFixerService {
             applied
         };
     }
+
+   
+    /**
+     * Get actual TypeScript errors for a file (the real source of truth)
+     */
+    private async getTypeScriptErrorsForFile(filePath: string): Promise<string[]> {
+        try {
+            const { execSync } = require('child_process');
+            
+            // Run TypeScript check only for this file
+            const command = `npx tsc --noEmit --pretty false ${filePath} 2>&1 || true`;
+            
+            const result = execSync(command, {
+                encoding: 'utf8',
+                stdio: ['pipe', 'pipe', 'pipe'],
+                cwd: process.cwd(),
+                timeout: 30000 // 30 second timeout
+            });
+            
+            return result
+                .split('\n')
+                .filter((line: string) => line.trim().length > 0)
+                .filter((line: string) => !line.includes('warning')); // Optional: filter out warnings
+        } catch (error: any) {
+            // TypeScript found errors (this is what we want!)
+            const output = error.stdout?.toString() || error.stderr?.toString() || error.message || '';
+            return output
+                .split('\n')
+                .filter((line: string) => line.trim().length > 0);
+        }
+    }
+
+
+    /**
+     * Extract missing modules from TypeScript errors
+     */
+    private extractMissingModulesFromTSErrors(tsErrors: string[]): string[] {
+        const missingModules: string[] = [];
+        
+        for (const errorLine of tsErrors) {
+            // Look for "Cannot find module" errors
+            const match = errorLine.match(/Cannot find module ['"]([^'"]+)['"]/);
+            if (match && match[1]) {
+                const modulePath = match[1];
+                
+                // Filter out node_modules errors
+                if (!modulePath.includes('node_modules')) {
+                    missingModules.push(modulePath);
+                }
+            }
+            
+            // Also check for "has no exported member" errors
+            const exportMatch = errorLine.match(/has no exported member ['"]([^'"]+)['"]/);
+            if (exportMatch && exportMatch[1]) {
+                missingModules.push(exportMatch[1]);
+            }
+        }
+        
+        return [...new Set(missingModules)]; // Remove duplicates
+    }
+
+    /**
+     * Get ALL TypeScript errors from the project
+     */
+    private async getAllTypeScriptErrors(): Promise<Map<string, string[]>> {
+        const errorsByFile = new Map<string, string[]>();
+        
+        try {
+            const { execSync } = require('child_process');
+            
+            // Run TypeScript check for the whole project
+            console.log('🔍 Running TypeScript compiler to detect import errors...');
+            
+            // DEBUG: Show the actual command being run
+            const command = `npx tsc --noEmit --pretty false 2>&1`;
+            console.log(`📝 Command: ${command}`);
+            
+            const result = execSync(command, {
+                encoding: 'utf8',
+                stdio: ['pipe', 'pipe', 'pipe'],
+                cwd: process.cwd()
+            });
+            
+            console.log(`📊 Raw output length: ${result.length} characters`);
+            
+            // DEBUG: Show first 500 chars of output
+            if (result.length > 0) {
+                console.log('📄 First 500 chars of output:');
+                console.log(result.substring(0, 500));
+                
+                // Also check if there are errors but we're filtering them out
+                const allLines = result.split('\n');
+                console.log(`📈 Total lines: ${allLines.length}`);
+                
+                // Show lines that contain "error" or "cannot find" - ADD TYPE ANNOTATION
+                const errorLines = allLines.filter((line: string) => 
+                    line.toLowerCase().includes('error') || 
+                    line.toLowerCase().includes('cannot find')
+                );
+                console.log(`⚠️ Lines with errors: ${errorLines.length}`);
+                errorLines.slice(0, 5).forEach((line: string) => console.log(`   ${line}`));
+            }
+            
+            const allErrors = result.split('\n').filter((line: string) => line.trim());
+            
+            // Group errors by file
+            for (const errorLine of allErrors) {
+                // Find file path in error line (e.g., "src/app/actions/ActionScheduler.tsx:4:54")
+                const fileMatch = errorLine.match(/^(.*?\.(?:ts|tsx|js|jsx)):\d+/);
+                if (fileMatch) {
+                    const filePath = path.resolve(process.cwd(), fileMatch[1]);
+                    if (!errorsByFile.has(filePath)) {
+                        errorsByFile.set(filePath, []);
+                    }
+                    errorsByFile.get(filePath)!.push(errorLine);
+                }
+            }
+            
+            console.log(`📋 Found ${errorsByFile.size} files with TypeScript errors`);
+            
+        } catch (error: any) {
+            console.error('❌ Error running TypeScript:', error.message);
+            
+            // When TypeScript finds errors, it exits with code 2
+            // The errors are in stderr
+            if (error.stderr) {
+                console.log('📄 TypeScript stderr output:');
+                console.log(error.stderr.toString().substring(0, 1000));
+            }
+            if (error.stdout) {
+                console.log('📄 TypeScript stdout output:');
+                console.log(error.stdout.toString().substring(0, 1000));
+            }
+        }
+        
+        return errorsByFile;
+    }
+    /**
+     * Fix only the real TypeScript errors first
+     */
+    async fixRealTypeScriptErrors(rootDir: string = process.cwd()): Promise<{ success: boolean; fixed: number }> {
+        console.log('🔍 Fixing real TypeScript import errors...');
+        
+        // Get all TypeScript errors
+        const tsErrorsByFile = await this.getAllTypeScriptErrors();
+        
+        if (tsErrorsByFile.size === 0) {
+            console.log('✅ No TypeScript import errors found!');
+            return { success: true, fixed: 0 };
+        }
+        
+        console.log(`📋 Found ${tsErrorsByFile.size} files with TypeScript errors`);
+        
+        let totalFixed = 0;
+        
+        // Process each file with errors
+        for (const [filePath, errors] of tsErrorsByFile) {
+            const missingModules = this.extractMissingModulesFromTSErrors(errors);
+            
+            if (missingModules.length === 0) {
+                continue; // No import errors in this file
+            }
+            
+            console.log(`\n📄 ${path.relative(process.cwd(), filePath)}:`);
+            console.log(`   Missing modules: ${missingModules.join(', ')}`);
+            
+            try {
+                const content = await fs.promises.readFile(filePath, 'utf8');
+                const imports = this.parseImports(content.split('\n'));
+                
+                // Get fixes for each missing module
+                const fixes: ImportFix[] = [];
+                for (const missingModule of missingModules) {
+                    const fix = await this.suggestImportFix(missingModule, imports, filePath);
+                    if (fix) {
+                        fixes.push(fix);
+                    }
+                }
+                
+                // Apply fixes if any
+                if (fixes.length > 0) {
+                    const result = await this.applyFixes(fixes, true);
+                    if (result.success) {
+                        totalFixed += fixes.length;
+                        console.log(`   ✅ Fixed ${fixes.length} import(s)`);
+                    }
+                } else {
+                    console.log(`   ⚠️ Could not find fixes for: ${missingModules.join(', ')}`);
+                }
+                
+            } catch (error) {
+                console.warn(`   ❌ Failed to fix ${filePath}:`, error);
+            }
+        }
+        
+        return { success: totalFixed > 0, fixed: totalFixed };
+    }
 }
 
 // Usage examples:
@@ -818,27 +1537,3 @@ export function hasComplexFix(correction: Correction): correction is Correction 
     return !!(correction as any).complexFix;
 }
 
-
-// Smart scanning with confidence levels
-const fixer = new ImportFixerService('interactive');
-
-// Scan with confidence analysis
-const { analyses, fixesByConfidence } = await fixer.scanProjectWithConfidence();
-
-console.log(`High confidence fixes: ${fixesByConfidence.high.length}`);
-console.log(`Medium confidence fixes: ${fixesByConfidence.medium.length}`);
-console.log(`Low confidence fixes: ${fixesByConfidence.low.length}`);
-
-// Apply only high confidence fixes automatically
-await fixer.applyFixesWithConfidence(fixesByConfidence.high, 'high');
-
-// Review medium confidence fixes
-if (fixesByConfidence.medium.length > 0) {
-    console.log('\n🔍 Review medium confidence fixes:');
-    fixesByConfidence.medium.forEach(fix => {
-        console.log(`📁 ${fix.filePath}`);
-        console.log(`   💡 ${fix.reason}`);
-        console.log(`   ❌ ${fix.originalLine}`);
-        console.log(`   ✅ ${fix.newLine}`);
-    });
-}

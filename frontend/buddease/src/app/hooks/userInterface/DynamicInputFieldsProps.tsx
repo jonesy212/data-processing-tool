@@ -1,6 +1,6 @@
 // DynamicInputFieldsProps.tsx
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import React, { useState } from 'react';
-import { sanitizeInput } from '@/app/models/crypto/SanitizationFunctions';
 
 interface DynamicInputFieldsProps {
   fields: { label: string; type: string }[];

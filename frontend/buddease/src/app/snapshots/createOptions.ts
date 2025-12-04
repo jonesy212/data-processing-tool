@@ -35,9 +35,9 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import {
-  InitializedDelegate,
-  MetaDataOptions,
-  SnapshotStoreOptions
+    InitializedDelegate,
+    MetaDataOptions,
+    SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
 
 
@@ -373,7 +373,7 @@ function createOptions<
 			},
 			getData: async (
 				id: number,
-				data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta> & T>
+				data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & T>
 			) => {
 				// Default implementation
 				return defaultDataStoreMethods.data?.get(id.toString());

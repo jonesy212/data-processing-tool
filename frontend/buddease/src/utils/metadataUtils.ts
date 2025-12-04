@@ -125,7 +125,7 @@ function isUnifiedMetaDataOptions<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(snapshotStore: SnapshotStore<T, K, Meta>): snapshotStore is SnapshotStore<T, K, Meta> {
+>(snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): snapshotStore is SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (!snapshotStore || !snapshotStore.metadata) return false;
   return 'metadataEntries' in snapshotStore.metadata || 'startDate' in snapshotStore.metadata;
 }

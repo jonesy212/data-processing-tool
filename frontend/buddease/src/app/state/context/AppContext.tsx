@@ -1,14 +1,17 @@
 // AppContext.ts
 // app/state/context/AppContext.tsx
 import React, { createContext, useContext, useEffect, useRef } from 'react';
-import { ProjectStore } from '../stores/ProjectStore';
-import { CryptoStore } from '../stores/CryptoStore';
-import { TaskManagerStore } from '@/app/stores/TaskStore';
+import { ProjectStore } from '@/app/state/stores/ProjectStore';
+import { CryptoStore } from '@/app/state/stores/CryptoStore';
+import { TaskManagerStore } from '@/app/state/stores/TaskStore';
 import { PhaseStore } from '../stores/PhaseStore';
 import { useDispatch } from 'react-redux';
-import { hydrateSnapshot, persistSnapshot } from '@/utils/snapshotUtils'; // <- add your snapshot helpers
+import { hydrateSnapshot, persistSnapshot } from '@/app/api/persistSnapshot/route'; // <- add your snapshot helpers
 import { RootState } from '@/app/state/redux/slices/RootSlice'
 import { useSelector } from 'react-redux';
+
+
+type PersistenceStrategy = "localStorage" | "indexedDB" | "hybrid" | "remote";
 
 /**
  * --------------------------------------
@@ -25,10 +28,18 @@ import { useSelector } from 'react-redux';
  */
 export interface AppStores {
   projectStore: ProjectStore;
-  taskStore: TaskStore;
+  taskStore: TaskManagerStore;  // Fixed: Changed from TaskStore to TaskManagerStore
   phaseStore: PhaseStore;
   cryptoStore: CryptoStore;
 }
+
+// Define initial value for stores
+const initialValue: AppStores = {
+  projectStore: null as any,
+  taskStore: null as any,
+  phaseStore: null as any,
+  cryptoStore: null as any
+};
 
 /**
  * Lazy-initialize stores so they are instantiated only once.
@@ -37,13 +48,19 @@ export interface AppStores {
 const useInitializeStores = (): AppStores => {
   const storesRef = useRef<AppStores>(initialValue);
 
-  if (!storesRef.current) {
-    const taskStore = new TaskStore();
+  // Initialize only once
+  if (!storesRef.current.projectStore) {
+    const taskStore = new TaskManagerStore();
     const phaseStore = new PhaseStore();
     const projectStore = new ProjectStore(taskStore, phaseStore);
     const cryptoStore = new CryptoStore();
 
-    storesRef.current = { projectStore, taskStore, phaseStore, cryptoStore };
+    storesRef.current = { 
+      projectStore, 
+      taskStore, 
+      phaseStore, 
+      cryptoStore 
+    };
   }
 
   return storesRef.current;
@@ -67,9 +84,15 @@ export const AppStoresProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     const hydrateStores = async () => {
       try {
+        console.log('[AppStoresProvider] Hydrating stores from snapshots...');
+        
         // Rehydrate state from snapshot system
         await hydrateSnapshot(stores.projectStore, "projectStore");
         await hydrateSnapshot(stores.cryptoStore, "cryptoStore");
+        await hydrateSnapshot(stores.taskStore, "taskStore");
+        await hydrateSnapshot(stores.phaseStore, "phaseStore");
+        
+        console.log('[AppStoresProvider] Stores hydrated successfully');
       } catch (error) {
         console.error("[AppStoresProvider] Snapshot hydration failed:", error);
       }
@@ -79,8 +102,14 @@ export const AppStoresProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     // Persist snapshots on state changes or interval
     const persistInterval = setInterval(() => {
-      persistSnapshot(stores.projectStore, "projectStore");
-      persistSnapshot(stores.cryptoStore, "cryptoStore");
+      try {
+        persistSnapshot(stores.projectStore, "projectStore");
+        persistSnapshot(stores.cryptoStore, "cryptoStore");
+        persistSnapshot(stores.taskStore, "taskStore");
+        persistSnapshot(stores.phaseStore, "phaseStore");
+      } catch (error) {
+        console.error('[AppStoresProvider] Error persisting snapshots:', error);
+      }
     }, 10000); // every 10s
 
     return () => clearInterval(persistInterval);
@@ -105,5 +134,25 @@ export const useStores = (): AppStores => {
   return context;
 };
 
+/**
+ * Individual store hooks for convenience
+ */
+export const useProjectStore = (): ProjectStore => {
+  const stores = useStores();
+  return stores.projectStore;
+};
 
+export const useTaskStore = (): TaskManagerStore => {
+  const stores = useStores();
+  return stores.taskStore;
+};
 
+export const usePhaseStore = (): PhaseStore => {
+  const stores = useStores();
+  return stores.phaseStore;
+};
+
+export const useCryptoStore = (): CryptoStore => {
+  const stores = useStores();
+  return stores.cryptoStore;
+};

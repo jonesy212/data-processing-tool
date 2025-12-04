@@ -1,6 +1,6 @@
 // ProjectManagerStore.ts
-import { internalApiService } from '@/app/api/ApiClient';
-import { IdeationPhase } from '@/app/users/userJourney/IdeationPhase';
+import internalApiService from '@/app/api/ApiClient';
+import IdeationPhase from '@/app/users/userJourney/IdeationPhase';
 import { 
   ProjectEntity,
   ProjectK, 
@@ -8,24 +8,7 @@ import {
   ProjectAttachment, 
   ProjectExcludedFields, 
   ProjectIncludedFields 
-} from '@/app/types/ProjectEntity';
-
-// state/hybrid/ProjectManagerStore.ts
-/**
- * Project Manager Store
- * ---------------------
- * This store is designed as a hybrid pattern using:
- * - MobX (makeAutoObservable) for reactive, component-level state
- * - React state hooks for local temporary state (projects, project, loading, error)
- * - Redux action payloads (PayloadAction) for interoperability with global state
- *
- * Why this pattern:
- * 1. MobX makes `projects` and `currentProject` reactive so UI updates automatically.
- * 2. Redux actions are still used for complex state updates that may cross components or stores.
- * 3. React state hooks allow easy async updates during API calls without dispatching Redux every time.
- *
- * Developers should reference `project-structure-redux-and-mobx.md` for full architecture context.
- */
+} from '@/app/typings/entities/ProjectEntity';
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import { ApiProject } from "@/app/api/ApiProject";
 import Milestone from "@/app/typings/milestoneTypes";
@@ -44,7 +27,24 @@ import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { YourSettingsResponseType } from '@/app/typings/typeguards/isYourSettingsResponseType';
+import { YourSettingsResponseType } from '@/app/typings/responseTypes';
+
+// state/hybrid/ProjectManagerStore.ts
+/**
+ * Project Manager Store
+ * ---------------------
+ * This store is designed as a hybrid pattern using:
+ * - MobX (makeAutoObservable) for reactive, component-level state
+ * - React state hooks for local temporary state (projects, project, loading, error)
+ * - Redux action payloads (PayloadAction) for interoperability with global state
+ *
+ * Why this pattern:
+ * 1. MobX makes `projects` and `currentProject` reactive so UI updates automatically.
+ * 2. Redux actions are still used for complex state updates that may cross components or stores.
+ * 3. React state hooks allow easy async updates during API calls without dispatching Redux every time.
+ *
+ * Developers should reference `project-structure-redux-and-mobx.md` for full architecture context.
+ */
 
 const dispatch = useDispatch();
 

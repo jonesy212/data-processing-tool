@@ -1,5 +1,51 @@
 // scripts/fix-imports.ts
 import { ImportFixerService } from '@/app/generators/corrections/ImportFixServicies';
+import { execSync } from 'child_process';
+
+async function runTypeScriptCheck(): Promise<string[]> {
+  console.log('🔍 Running TypeScript compiler to detect import errors...');
+  
+  try {
+    const result = execSync('npx tsc --noEmit --pretty false 2>&1', { 
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    
+    // Parse TypeScript errors
+    const errors: string[] = [];
+    const lines = result.split('\n');
+    
+    for (const line of lines) {
+      if (line.includes('error TS2307') || line.includes('Cannot find module')) {
+        // Extract module name from error
+        const match = line.match(/Cannot find module ['"]([^'"]+)['"]/);
+        if (match && match[1]) {
+          errors.push(match[1]);
+        }
+      }
+    }
+    
+    console.log(`📋 Found ${errors.length} TypeScript import errors`);
+    return errors;
+  } catch (error: any) {
+    // TypeScript found errors (which is what we want)
+    const output = error.stdout || error.stderr || '';
+    const errors: string[] = [];
+    const lines = output.split('\n');
+    
+    for (const line of lines) {
+      if (line.includes('error TS2307') || line.includes('Cannot find module')) {
+        const match = line.match(/Cannot find module ['"]([^'"]+)['"]/);
+        if (match && match[1]) {
+          errors.push(match[1]);
+        }
+      }
+    }
+    
+    console.log(`📋 Found ${errors.length} TypeScript import errors`);
+    return errors;
+  }
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -8,8 +54,27 @@ async function main() {
   const minConfidence = args.includes('--high') ? 'high' : 
                        args.includes('--medium') ? 'medium' : 'low';
 
-  console.log('🎯 Import Fixer - Smart Import Analysis\n');
+  console.log('🎯 Import Fixer - Fixing ACTUAL TypeScript Errors\n');
   
+  // Run TypeScript to get actual errors
+  console.log('🔍 Running TypeScript to find real import errors...');
+  const tsErrors = await runTypeScriptCheck();
+  
+  if (tsErrors.length === 0) {
+    console.log('✅ No TypeScript import errors found!');
+    return;
+  }
+  
+  console.log(`🚨 Found ${tsErrors.length} ACTUAL TypeScript import errors:`);
+  tsErrors.slice(0, 10).forEach((error, index) => {
+    console.log(`  ${index + 1}. ${error}`);
+  });
+  
+  if (tsErrors.length > 10) {
+    console.log(`  ... and ${tsErrors.length - 10} more`);
+  }
+  
+  // Now run the import fixer with focus on these errors
   const confirmationType = interactive ? 'interactive' : 'console';
   const fixer = new ImportFixerService(confirmationType);
 
@@ -21,17 +86,29 @@ async function main() {
                       fixesByConfidence.medium.length + 
                       fixesByConfidence.low.length;
 
-    if (totalFixes === 0) {
-      console.log('✅ No import issues found!');
+    // Display TypeScript errors alongside scanner results
+    console.log('\n📊 Import Issues Summary:');
+    console.log(`   TypeScript compilation errors: ${tsErrors.length}`);
+    console.log(`   High confidence fixes: ${fixesByConfidence.high.length}`);
+    console.log(`   Medium confidence fixes: ${fixesByConfidence.medium.length}`);
+    console.log(`   Low confidence fixes: ${fixesByConfidence.low.length}`);
+    console.log(`   Total files analyzed: ${analyses.length}`);
+
+    // If no fixes found but we have TypeScript errors, warn the user
+    if (totalFixes === 0 && tsErrors.length > 0) {
+      console.log('\n⚠️  IMPORTANT: TypeScript found import errors but scanner couldn\'t detect them.');
+      console.log('   This might be because:');
+      console.log('   1. The import paths are too complex for automatic detection');
+      console.log('   2. The errors are in node_modules or external packages');
+      console.log('   3. The project tree wasn\'t built correctly');
+      console.log('\n💡 Try running: pnpm analyze:corrections:all');
       return;
     }
 
-    // Display summary
-    console.log('📊 Import Issues Summary:');
-    console.log(`   High confidence: ${fixesByConfidence.high.length} fixes`);
-    console.log(`   Medium confidence: ${fixesByConfidence.medium.length} fixes`);
-    console.log(`   Low confidence: ${fixesByConfidence.low.length} fixes`);
-    console.log(`   Total files analyzed: ${analyses.length}`);
+    if (totalFixes === 0 && tsErrors.length === 0) {
+      console.log('✅ No import issues found!');
+      return;
+    }
 
     // Show sample of issues
     if (fixesByConfidence.high.length > 0) {
@@ -105,6 +182,9 @@ Options:
   --high           Only apply high confidence fixes
   --medium         Apply high & medium confidence fixes
   --help, -h       Show this help message
+
+Note: This tool runs TypeScript compilation first to detect actual errors,
+      then uses smart analysis to suggest fixes.
   `);
   process.exit(0);
 }

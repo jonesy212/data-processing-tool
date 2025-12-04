@@ -1,33 +1,33 @@
 // responseTypes.ts
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { SearchNotesResponse } from "@/app/api/ApiNote";
+import { SearchNotesResponse } from '@/app/api/ApiNote';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Attendee } from "@/app/components/calendar/Attendee";
-import { Team } from "@/app/components/teams/Team";
+import { Attendee } from '@/app/components/calendar/Attendee';
+import { Team } from '@/app/components/teams/Team';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DataWithComment } from "@/app/dataIntegration/SafeParseData";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
-import { Exchange } from "@/app/models/cypto/Exchange";
+import { DataWithComment } from '@/app/dataIntegration/SafeParseData';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
+import { Exchange } from '@/app/models/cypto/Exchange';
 import { Data } from '@/app/models/data/Data';
-import { ExchangeData } from "@/app/models/data/ExchangeData";
-import { Phase } from "@/app/models/phases/Phase";
-import { Project } from "@/app/models/projects/Project";
-import { Task } from "@/app/models/tasks/Task";
+import { ExchangeData } from '@/app/models/data/ExchangeData';
+import { Phase } from '@/app/models/phases/Phase';
+import { Project } from '@/app/models/projects/Project';
+import { Task } from '@/app/models/tasks/Task';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
-import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
-import { IconStore } from "@/app/state/stores/IconStore";
-import { TaskManagerStore } from "@/app/state/stores/TaskStore ";
-import { TodoManagerStore } from "@/app/state/stores/TodoStore";
-import { TrackerStore } from "@/app/state/stores/TrackerStore";
-import { Todo } from "@/app/todos/Todo";
-import { BaseResponseType } from "@/app/typings/baseResponseType";
-import { User } from "@/app/users/User";
-import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
+import { CalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
+import { IconStore } from '@/app/state/stores/IconStore';
+import { TaskManagerStore } from '@/app/state/stores/TaskStore ';
+import { TodoManagerStore } from '@/app/state/stores/TodoStore';
+import { TrackerStore } from '@/app/state/stores/TrackerStore';
+import { Todo } from '@/app/todos/Todo';
+import { BaseResponseType } from '@/app/typings/baseResponseTypes';
+import { User } from '@/app/users/User';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -112,13 +112,13 @@ type UserDataResponseType<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-
 > = User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
+
 interface YourResponseType<
   T extends BaseDataEntity,
   K extends T = T,
@@ -137,6 +137,8 @@ interface YourResponseType<
   todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   snapshotStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  pageNumber: number,
+  
   currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   comment: string;
   excludedData?: ExcludedFields;

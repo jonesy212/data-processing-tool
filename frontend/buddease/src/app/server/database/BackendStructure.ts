@@ -29,7 +29,7 @@ export default class BackendStructure <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> implements IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> {
   protected structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
   #structureHash: string | undefined;
   public globalState: any; // Add globalState property
@@ -51,7 +51,7 @@ export default class BackendStructure <
 
     this.traverseDirectory!(projectPath).then((items) => {
       items.forEach((item) => {
-        if (this.structure) {
+        if (this.structure && item.id !== undefined) {
           this.structure[item.id] = item;
         }
       });

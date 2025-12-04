@@ -127,7 +127,7 @@ type SnapshotWithCriteria<
   tags?: TagsRecord<T>| string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  snapshotStores?: Map<number, SnapshotStoreReference<T, K, Meta>>; // not a Map
+  snapshotStores?: Map<number, SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // not a Map
 }
 
 export class SnapshotStoreWithCriteria<

@@ -5,7 +5,7 @@ import {
   getFromLocalStorage, 
   saveToLocalStorage, 
   saveAppTreeToLocalStorage 
-} from '@/path/to/useLocalStorage';
+} from '@/app/hooks/useLocalStorage'
 
 export interface EmergencyShutdownConfig {
   saveRecoveryState?: boolean;

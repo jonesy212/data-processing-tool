@@ -1,8 +1,8 @@
 // ProjectExplorer.tsx
 
 // Example usage in your app
-import EnhancedTreeView from "./EnhancedTreeView";
-
+import EnhancedTreeView from "@/pages/dashboards/EnhancedTreeView";
+import { FileTreeNode } from '@/app/services/FileTreeService'
 const ProjectExplorer: React.FC = () => {
   const handleFileSelect = (file: FileTreeNode) => {
     console.log('Selected file:', file);

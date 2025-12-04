@@ -27,7 +27,6 @@ import ChatSettings from "@/app/hooks/userInterface/ChatSettings";
 import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import { NFT } from "@/app/models/cypto/NFT";
 import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
-import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { Task } from "@/app/models/tasks/Task";
@@ -80,42 +79,6 @@ export interface BaseUser<
   email: string;
 }
 
-export const DataTypeEnums = {
-  ...NotificationTypeEnum,
-  ...DocumentTypeEnum,
-  ...PriorityTypeEnum,
-  ...ActivityActionEnum,
-  ...ActivityTypeEnum, 
-  ...BookmarkStatus,
-  ...BorderStyle,
-  ...CalendarStatus, 
-  ...CalendarViewType, 
-  ...ChatType,
-  ...CollaborationOptionType,
-  ...ComponentStatus,
-  ...DataStatus, 
-  ...DocumentPhaseEnum, 
-  ...DocumentSize,
-  ...IncludeType,
-  ...Layout, 
-  ...NotificationPosition, 
-  ...NotificationStatus,
-  ...Orientation,
-  ...OutcomeType,
-  ...PrivacySettingEnum, 
-  ...ProductStatus, 
-  ...ProjectStateEnum, 
-  ...SortingType,
-  ...StatusType, 
-  ...SubscriberTypeEnum, 
-  ...SubscriptionTypeEnum, 
-  ...TaskStatus, 
-  ...TeamStatus,
-  ...TodoStatus, 
-  ...MeetingStatus,
-  // Add all your other 330+ enums here
-  DEFAULT: "Default" as const,
-} as const;
 
 export interface User<
   T extends BaseDataEntity,

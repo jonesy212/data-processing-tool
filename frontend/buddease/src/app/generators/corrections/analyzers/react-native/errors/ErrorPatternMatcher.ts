@@ -482,7 +482,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
           'build-logs',
           uniqueMatches.join('\n'),
           patternConfig.suggestion,
-          patternConfig.category
+          patternConfig.correctionCategory
         ));
       }
     });
@@ -744,7 +744,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
             logFile,
             line.trim(),
             meta.fix,
-            meta.category
+            meta.correctionCategory
           ));
         }
       }
@@ -843,7 +843,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
       }
     ];
 
-    errorPatterns.forEach(({ pattern, id, type, severity, title, suggestion, category }) => {
+    errorPatterns.forEach(({ pattern, id, type, severity, title, suggestion, correctionCategory }) => {
       let m;
       while ((m = pattern.exec(logContent)) !== null) {
         corrections.push(this.createCorrection(
@@ -854,7 +854,7 @@ export class ErrorPatternMatcher extends BaseAnalyzer {
           logFile,
           this.extractErrorContext(logContent, m[0]),
           suggestion,
-          category
+          correctionCategory
         ));
       }
     });

@@ -4,21 +4,25 @@ import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from '@/app/models/content/AddContent';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { T } from '@/app/models/data/dataStoreMethods';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import type {
-  Category,
-  CategoryProperties,
-  CreateSnapshotsPayload,
-  Snapshot,
   SnapshotManager,
   SnapshotStoreProps,
   SnapshotUnion,
   Subscriber,
 } from "@/app/types";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
+
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { isSnapshot } from '@/utils/snapshotUtils';
@@ -28,8 +32,6 @@ import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
 
 export const LifecycleMethods = {
-
-
 
     initSnapshot(
       snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
@@ -51,17 +53,17 @@ export const LifecycleMethods = {
     },
   
 
-/**
- * Deletes a snapshot from the store with proper type safety
- * 
- * @template T - Base data type
- * @template K - Extended data type (defaults to T)
- * @template Meta - Metadata type
- * @template ExcludedFields - Fields to exclude
- * @param {string} snapshotId - ID of snapshot to delete
- * @param {boolean} [permanent=false] - Whether to permanently delete
- * @returns {Promise<boolean>} - True if deletion was successful
- */
+  /**
+   * Deletes a snapshot from the store with proper type safety
+   * 
+   * @template T - Base data type
+   * @template K - Extended data type (defaults to T)
+   * @template Meta - Metadata type
+   * @template ExcludedFields - Fields to exclude
+   * @param {string} snapshotId - ID of snapshot to delete
+   * @param {boolean} [permanent=false] - Whether to permanently delete
+   * @returns {Promise<boolean>} - True if deletion was successful
+   */
   deleteSnapshot(
     snapshotId: string,
     permanent: boolean = false
@@ -669,13 +671,13 @@ export const LifecycleMethods = {
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
-    snapshotStore: SnapshotStore<T, K, Meta> | null,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotId: string | null,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type?: string,
     event?: Event
-  ): SnapshotStore<T, K, Meta> | null {
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     if (snapshotId) {
       const existingSnapshot = this.snapshots.find((s: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(s) && s.id === snapshotId;
@@ -715,7 +717,6 @@ export const LifecycleMethods = {
   },
  
   getStores: function <
-  
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -723,18 +724,18 @@ export const LifecycleMethods = {
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
-    snapshotStores?: SnapshotStoreReference<T, K, Meta>[] | Map<number, SnapshotStore<T, K, Meta>>,
-    snapshotStoreConfigs?: SnapshotStoreConfig<T, K, Meta>[]
-  ): Array<SnapshotStore<T, K, Meta>> {
-    const results: Array<SnapshotStore<T, K, Meta>> = [];
+    snapshotStores?: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    snapshotStoreConfigs?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): Array<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    const results: Array<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
 
-    const processReference = (ref: SnapshotStoreReference<T, K, Meta>): SnapshotStore<T, K, Meta> | null => {
+    const processReference = (ref: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
       try {
         if (ref instanceof SnapshotStore) return ref;
-        if (typeof ref === 'string' || typeof ref === 'number') return this.#snapshotStores.get(Number(ref)) || null;
-        if (ref?.storeId) return this.#snapshotStores.get(ref.storeId) || null;
+        if (typeof ref === 'string' || typeof ref === 'number') return this.snapshotStores.get(Number(ref)) || null; // ✅ Use public getter
+        if (ref?.storeId) return this.snapshotStores.get(ref.storeId) || null; // ✅ Use public getter
         return null;
       } catch (error) {
         console.error('Error processing store reference:', error);
@@ -758,7 +759,7 @@ export const LifecycleMethods = {
     if (snapshotStoreConfigs?.length) {
       for (const config of snapshotStoreConfigs) {
         if (config.storeId) {
-          const store = this.#snapshotStores.get(config.storeId);
+          const store = this.snapshotStores.get(config.storeId); // ✅ Use public getter
           if (store) results.push(store);
         }
       }
@@ -766,10 +767,10 @@ export const LifecycleMethods = {
 
     if (!snapshotStores && !snapshotStoreConfigs) {
       if (storeId) {
-        const store = this.#snapshotStores.get(storeId);
+        const store = this.snapshotStores.get(storeId); // ✅ Use public getter
         if (store) results.push(store);
       } else {
-        for (const [, store] of this.#snapshotStores) {
+        for (const [, store] of this.snapshotStores) { // ✅ Use public getter
           results.push(store);
         }
       }
@@ -1120,8 +1121,6 @@ export const LifecycleMethods = {
       subscribers?.forEach(cb => cb(snapshot));
     }
   },
-
-
 
   initializeStore: function <
     T extends BaseDataEntity,

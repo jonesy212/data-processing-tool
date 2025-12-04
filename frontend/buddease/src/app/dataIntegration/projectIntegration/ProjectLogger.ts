@@ -1,6 +1,6 @@
 // ProjectLogger.ts
 import { Logger } from "./activityLogger";
-import { ProjectPhase } from "./projectManagement";
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 
 export class ProjectLogger extends Logger {
   // Project Lifecycle Events

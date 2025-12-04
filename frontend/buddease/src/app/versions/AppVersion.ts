@@ -5,10 +5,8 @@ import { DocumentTypeEnum } from "@/app/documents/editing/documentTypes";
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
 import { BackendStructure }  from '@/app/server/database/BackendStructure'
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
-import IBackendStructure from '@/app/config/appStructure/IBackendStructure';
 import { VersionData } from "@/app/versions/VersionData";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 interface Versionable {
@@ -71,7 +69,7 @@ class AppVersionImpl<
   appVersion?: string;
 
   frontendStructure: Promise<FrontendStructure<any, any, any, any, any, any>>;
-  backendStructure: Promise<IBackendStructure>;
+  backendStructure: Promise<BackendStructure>;
 
   constructor(versionInfo: {
     appName: string;
@@ -365,8 +363,8 @@ class AppVersionImpl<
   }
 
 
-  private async getBackendStructure(): Promise<IBackendStructure> {
-    const backendStructure = new IBackendStructure("/backend/path", {});
+  private async getBackendStructure(): Promise<BackendStructure> {
+    const backendStructure = new BackendStructure("/backend/path", {});
     
     backendStructure.setStructureHash("exampleHash");
 
@@ -388,8 +386,8 @@ class AppVersionImpl<
       getServices: () => ["UserService", "AuthService"],
       validateStructure: () => true,
       serializeStructure: () => "{}",
-      compareStructures: (other: IBackendStructure) => true,
-      migrateStructure: async (newStructure: IBackendStructure) => {},
+      compareStructures: (other: BackendStructure) => true,
+      migrateStructure: async (newStructure: BackendStructure) => {},
     });
   }
 
@@ -526,7 +524,7 @@ const appVersion: AppVersion = new AppVersionImpl({
   versions: {
     data: {} as VersionData<AppVersion>,
     frontend: {} as FrontendStructure<AppVersion>,
-    backend: {} as IBackendStructure,
+    backend: {} as BackendStructure,
   },
 });
 

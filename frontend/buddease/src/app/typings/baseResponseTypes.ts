@@ -3,7 +3,11 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { ApiPagination } from '@/app/typings/apiTypes';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ChatRoom } from '@/app/communications/ChatRoom'
+import { Sender } from '@/app/components/communications/CommunicationPage';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 // Base response structure that all API responses should extend
 export interface BaseResponseType<
@@ -17,15 +21,22 @@ export interface BaseResponseType<
   // Core response metadata
   success: boolean;
   status: number;
-  message: string;
+  message?: (
+    type: NotificationType,
+    content: string,
+    additionalData?: string,
+    userId?: number,
+    sender?: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    channel?: ChatRoom
+  ) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   timestamp: Date;
-  
+
   // Pagination support (optional)
   pagination?: ApiPagination;
-  
+
   // Data payload - the main content of the response
   data?: T | T[] | K | K[] | null;
-  
+
   // Error handling
   error?: {
     code: string;
@@ -35,10 +46,10 @@ export interface BaseResponseType<
       message: string;
     }>;
   };
-  
+
   // Metadata about the response data  
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
+
   // Links for HATEOAS-style APIs
   links?: {
     self: string;
@@ -48,25 +59,25 @@ export interface BaseResponseType<
     last?: string;
     related?: string[];
   };
-  
+
   // Cache information
   cache?: {
     cached: boolean;
     expiresAt?: Date;
     etag?: string;
   };
-  
+
   // Rate limiting information
   rateLimit?: {
     limit: number;
     remaining: number;
     resetTime: Date;
   };
-  
+
   // Request context
   requestId: string;
   correlationId?: string;
-  
+
   // Generic metadata that can be extended
   customMetadata?: Record<string, any>;
 }
@@ -78,7 +89,7 @@ export const createSuccessResponse = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T  
+  IncludedFields extends keyof T = keyof T
 >(
   data: T | T[] | K | K[],
   message: string = "Success",
@@ -137,7 +148,7 @@ export const createPaginatedResponse = <
   message: string = "Success"
 ): BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const totalPages = Math.ceil(totalItems / pageSize);
-  
+
   return {
     success: true,
     status: 200,

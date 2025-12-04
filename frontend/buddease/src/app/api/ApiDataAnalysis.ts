@@ -109,36 +109,36 @@ export function fetchDataAnalysis<
     params: text ? { text } : undefined,
   };
 
-  return axiosInstance
-    .get<InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
-      fetchDataAnalysisEndpoint, 
-      config
-    )
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-      | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
-      const result = convertResponseToSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(response.data);
-      
-      // Explicit type narrowing
-      if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
-        return result as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      } else if (isSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
-        return result as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      } else if (isYourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
-        return result as YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      }
-      
-      throw new Error("Unexpected response type");
-    })
-    .catch((error) => {
-      console.error("Error fetching data analysis:", error);
-      const errorMessage = "Failed to fetch data analysis";
-      handleDataAnalysisApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        "FETCH_ANALYSIS_RESULTS_ERROR"
-      );
-      throw error;
-    });
+  return internalApiService
+  .get<InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+    fetchDataAnalysisEndpoint, 
+    config
+  )
+  .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+    const result = convertResponseToSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(response.data);
+    
+    // Explicit type narrowing
+    if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
+      return result as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    } else if (isSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
+      return result as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    } else if (isYourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
+      return result as YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }
+    
+    throw new Error("Unexpected response type");
+  })
+  .catch((error) => {
+    console.error("Error fetching data analysis:", error);
+    const errorMessage = "Failed to fetch data analysis";
+    handleDataAnalysisApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      "FETCH_ANALYSIS_RESULTS_ERROR"
+    );
+    throw error;
+  });
 }
 
 
@@ -686,7 +686,7 @@ export const storeAnalyticsData = async (analyticsData: any): Promise<void> => {
 
 export const sendAnalyticsDataToBackend = async (analyticsData: any): Promise<void> => {
   try {
-    const response = await axiosInstance.post('/analytics', analyticsData);
+    const response = await internalApiService.post('/analytics', analyticsData);
     console.log('Analytics data sent to backend successfully:', response.data);
   } catch (error) {
     console.error('Failed to send analytics data to backend:', error);

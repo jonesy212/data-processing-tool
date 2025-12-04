@@ -80,13 +80,11 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ActivityStatus } from "@/app/pages/profile/Profile";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import baseMeta from "@/app/server/database/baseMeta";
-import {
-    CreateSnapshotStoresPayload,
-    payload
-} from "@/app/server/database/Payload";
+import { payload } from "@/app/server/database/Payload";
+import { CreateSnapshotStoresPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { HighlightColor } from "@/app/styling/Palette";
+import { HighlightColor } from "@/app/components/styling/Palette";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Todo } from "@/app/todos/Todo";
@@ -141,7 +139,7 @@ SharedTimestamps
   deleted: boolean;
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   isCore: boolean;
-
+  latestVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   customProperties?: Record<string, unknown>;
   childIds?: K[] | undefined;
   snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

@@ -12,10 +12,8 @@ import NotificationStore from '@/app/state/stores/NotificationStore';
 import { NotificationAttachment, NotificationEntity, NotificationExcludedFields, NotificationIncludedFields, NotificationK, NotificationMeta } from '@/app/typings/entities/NotificationEntity';
 import { LogData } from '@/app/models/LogData'
 import { createContext, useContext, ReactNode } from 'react';
-import { 
-  NotificationTypeEnum, 
-  NotificationType 
-} from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+
 // Define missing Notification type
 interface Notification {
   id: string;

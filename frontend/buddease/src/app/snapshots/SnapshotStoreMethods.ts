@@ -1,20 +1,20 @@
 // SnapshotStoreMethods.ts
 // SnapshotSttoreMethods.ts
-import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { Subscription } from 'react-redux';
-import { SnapshotConfig } from '@/app/snapshots/Snapshot';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { DataStore } from '@/app/state/stores/DataStore';
 import { CategoryProperties } from '@/app/personas/ScenarioBuilder';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from '@/app/snapshots';
+import { SnapshotConfig } from '@/app/snapshots/Snapshot';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { DataStore } from '@/app/state/stores/DataStore';
+import { Subscription } from '@/app/subscriptions/Subscription';
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot, SnapshotStoreConfig } from ".";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Separate interface for store operations
 interface SnapshotStoreMethods<

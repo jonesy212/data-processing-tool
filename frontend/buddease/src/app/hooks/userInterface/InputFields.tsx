@@ -1,6 +1,6 @@
 // InputFields.tsx
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import React from "react";
-import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 
 interface InputProps {
   id: string;

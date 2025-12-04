@@ -581,7 +581,7 @@ SnapshotStorageIncludedFields>,
 		getSnapshotCategory: function (id: string): Category | undefined {
 			throw new Error("Function not implemented.");
 		},
-		getSnapshotData(params: SnapshotDataParams<T, K, Meta>): SnapshotData<T, K, Meta> | undefined {
+		getSnapshotData(params: SnapshotDataParams<T, K, Meta>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
 			throw new Error("Function not implemented.");
 		},
 		deleteSnapshot: function (id: string): void {

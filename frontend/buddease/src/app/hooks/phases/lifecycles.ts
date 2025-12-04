@@ -1,19 +1,18 @@
 // lifecycles.ts
 
-import { getLastActivityTimeForPhase } from '@app/hooks/phases/PhaseActivity'
-import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntiity';
+import {
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
+} from "@/app/config/BaseConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
-import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/hooks/phases/lifecycle'
 import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { getLastActivityTimeForPhase } from '@/app/hooks/phases/PhaseActivity';
 import { CustomPhaseHooks, Phase } from "@/app/models/phases/Phase";
 import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from "@/app/config/BaseConfig";
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntiity';
 
 export interface PhaseOptions<
   T extends BaseDataEntity,
@@ -308,10 +307,10 @@ const allLifecyclePhases = [
 
 
 export {
-  allLifecyclePhases,
-  appPlanningLifecyclePhases,
-  genericLifecyclePhases,
-  ideaLifecyclePhases,
-  projectLifecycleManagementPhases
+    allLifecyclePhases,
+    appPlanningLifecyclePhases,
+    genericLifecyclePhases,
+    ideaLifecyclePhases,
+    projectLifecycleManagementPhases
 };
 // Rest of the code remains unchanged

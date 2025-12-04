@@ -18,9 +18,9 @@ import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { internalCache } from '@/utils/cache/InternalCache';
 import { deepEqual } from 'assert';
-import { Subscription } from 'react-redux';
 
 export const createBasicSnapshot = <
   T extends BaseDataEntity,

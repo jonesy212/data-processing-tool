@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import { ImportFix } from '@/app/generators/corrections/ImportFixServicies';
+import { ParsedImport } from '@/app/generators/corrections/ImportFixServicies'
 
 export interface ImportAnalysis {
   filePath: string;
@@ -14,15 +15,37 @@ export interface ImportAnalysis {
   relativeImports: number;
   absoluteImports: number;
   wildcardImports: number;
-  unusedImports: number;
+  unusedImports: string[];
   
-  duplicateImports: number;
+  invalidPaths: string[];  // Array of strings
+  summary: ImportSummary;
+  duplicateImports: string[];
   errors: string[];
   importLines: string[];
   issues: string[];
   bundleImpact: 'low' | 'medium' | 'high'; // estimated impact on bundle size
   imports: ParsedImport[];
   suggestedFixes: ImportFix[];
+  circularImports: string[]
+}
+
+
+interface ImportSummary {
+  total: number;
+  external: number;
+  internal: number;
+  deep: number;
+  issues: number;
+  errorCount: number;
+  unusedCount: number;
+  duplicateCount: number;
+  invalidPathCount: number;
+  typeScriptErrorCount: number;
+  healthScore?: number; // Optional if not always needed
+  typeOnlyImports?: number; // Optional if not always needed
+  sideEffectImports?: number; // Optional if not always needed
+  heuristicErrorCount?: number;
+  fixableCount?: number
 }
 
 export interface ImportRelationship {
@@ -101,14 +124,30 @@ export class ImportReport {
       relativeImports: 0,
       absoluteImports: 0,
       wildcardImports: 0,
-      unusedImports: 0,
-      duplicateImports: 0,
+      unusedImports: [],
+      duplicateImports: [],
       importLines,
       issues: [],
       bundleImpact: 'low',
       errors: [],
       imports: parsedImports,
-      suggestedFixes: []
+      suggestedFixes: [],
+      invalidPaths: [],
+      summary: {
+        total: 0,
+        external: 0,
+        internal: 0,
+        deep: 0,
+        issues: 0,
+        errorCount: 0,
+        unusedCount: 0,
+        duplicateCount: 0,
+        invalidPathCount: 0,
+        typeScriptErrorCount: 0,
+        heuristicErrorCount: 0,
+        fixableCount: 0
+      },
+      circularImports: []
     };
 
     // KEEP THE ORIGINAL ANALYSIS LOGIC for counting imports
@@ -139,26 +178,36 @@ export class ImportReport {
       }
     });
 
-    // Count issues from corrections
-    analysis.unusedImports = issues.filter(issue => 
+    // FIX 1: Convert number counts to string arrays
+    const unusedImportCount = issues.filter(issue => 
       issue.message?.includes('unused import') || 
       issue.message?.includes('never used')
     ).length;
+    analysis.unusedImports = unusedImportCount > 0 
+      ? [`${unusedImportCount} unused imports detected`] 
+      : [];
 
-    analysis.duplicateImports = issues.filter(issue => 
+    const duplicateImportCount = issues.filter(issue => 
       issue.message?.includes('duplicate import') || 
       issue.message?.includes('already imported')
     ).length;
+    analysis.duplicateImports = duplicateImportCount > 0
+      ? [`${duplicateImportCount} duplicate imports detected`]
+      : [];
 
     // Extract specific issues
     analysis.issues = issues.map(issue => issue.message).filter(Boolean) as string[];
 
-    // Extract errors from issues
+    // FIX 2: Handle severity comparison properly
     analysis.errors = issues
-      .filter(issue => issue.severity === 'error')
+      .filter(issue => 
+        issue.severity === 'high' || 
+        issue.message?.toLowerCase().includes('error') ||
+        issue.message?.toLowerCase().includes('cannot find')
+      )
       .map(issue => issue.message)
       .filter(Boolean) as string[];
-
+    
     // Find suggested fixes for this file
     analysis.suggestedFixes = this.importFixes.filter(fix => fix.filePath === filePath);
 
@@ -171,44 +220,33 @@ export class ImportReport {
   private parseImportLines(importLines: string[]): ParsedImport[] {
     return importLines.map((line, index) => {
       const importPath = this.extractImportPath(line);
-      const isExternal = this.isExternalImport(importPath);
-      const isRelative = this.isRelativeImport(importPath);
-      const isAbsolute = this.isAbsoluteImport(importPath);
-      const isDeep = this.isDeepImport(importPath);
+      
+      // Parse imports using existing logic from ImportFixerService
+      const parsedImport: ParsedImport = {
+        fullLine: line,
+        importPath: importPath,
+        namedImports: [],
+        defaultImport: undefined,
+        isTypeOnly: line.includes('import type'),
+        lineNumber: index + 1
+      };
 
-      // Determine import type
-      let type: ParsedImport['type'] = 'side-effect';
-      let specifiers: string[] = [];
-
-      if (line.includes('from')) {
-        if (line.includes('* as')) {
-          type = 'namespace';
-          const match = line.match(/\*\s+as\s+(\w+)/);
-          if (match) specifiers = [match[1]];
-        } else if (line.includes('{')) {
-          type = 'named';
-          const match = line.match(/{([^}]*)}/);
-          if (match) {
-            specifiers = match[1].split(',').map(s => s.trim()).filter(Boolean);
-          }
-        } else {
-          type = 'default';
-          const match = line.match(/import\s+(\w+)/);
-          if (match) specifiers = [match[1]];
-        }
+      // Extract named imports
+      const namedMatch = line.match(/{([^}]*)}/);
+      if (namedMatch) {
+        parsedImport.namedImports = namedMatch[1]
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
       }
 
-      return {
-        path: importPath,
-        type,
-        specifiers,
-        isExternal,
-        isRelative,
-        isAbsolute,
-        isDeep,
-        lineNumber: index + 1,
-        originalLine: line
-      };
+      // Extract default import
+      const defaultMatch = line.match(/import\s+([^{}\s]+)(?:\s+from|\s*,|\s*;)/);
+      if (defaultMatch && !line.includes('{')) {
+        parsedImport.defaultImport = defaultMatch[1];
+      }
+
+      return parsedImport;
     });
   }
 
@@ -238,55 +276,16 @@ export class ImportReport {
   }
 
   private calculateBundleImpact(analysis: ImportAnalysis): 'low' | 'medium' | 'high' {
-    let score = 0;
-    
-    if (analysis.externalImports > 10) score += 2;
-    if (analysis.wildcardImports > 5) score += 2;
-    if (analysis.deepImports > 3) score += 1;
-    if (analysis.unusedImports > 5) score += 1;
+      let score = 0;
+      
+      if (analysis.externalImports > 10) score += 2;
+      if (analysis.wildcardImports > 5) score += 2;
+      if (analysis.deepImports > 3) score += 1;
+      if (analysis.unusedImports.length > 5) score += 1; // Use .length
 
-    if (score >= 4) return 'high';
-    if (score >= 2) return 'medium';
-    return 'low';
-  }
-
-
-  private extractImportPath(importLine: string): string {
-    const match = importLine.match(/from\s+['"]([^'"]+)['"]/);
-    return match ? match[1] : '';
-  }
-
-  private isExternalImport(importPath: string): boolean {
-    return !importPath.startsWith('.') && 
-           !importPath.startsWith('@/') && 
-           !importPath.startsWith('~/');
-  }
-
-  private isRelativeImport(importPath: string): boolean {
-    return importPath.startsWith('.');
-  }
-
-  private isAbsoluteImport(importPath: string): boolean {
-    return importPath.startsWith('@/') || importPath.startsWith('~/');
-  }
-
-  private isDeepImport(importPath: string): boolean {
-    // Count ../ segments for depth analysis
-    const depth = (importPath.match(/\.\.\//g) || []).length;
-    return depth >= 3;
-  }
-
-  private calculateBundleImpact(analysis: ImportAnalysis): 'low' | 'medium' | 'high' {
-    let score = 0;
-    
-    if (analysis.externalImports > 10) score += 2;
-    if (analysis.wildcardImports > 5) score += 2;
-    if (analysis.deepImports > 3) score += 1;
-    if (analysis.unusedImports > 5) score += 1;
-
-    if (score >= 4) return 'high';
-    if (score >= 2) return 'medium';
-    return 'low';
+      if (score >= 4) return 'high';
+      if (score >= 2) return 'medium';
+      return 'low';
   }
 
   private buildRelationshipGraph(): void {
@@ -325,69 +324,73 @@ export class ImportReport {
   }
 
   async generateImportReport(outputPath?: string): Promise<string> {
-    const analysisArray = Array.from(this.importAnalysis.values());
-    const totalFiles = analysisArray.length;
-    const totalImports = analysisArray.reduce((sum, analysis) => sum + analysis.totalImports, 0);
+      const analysisArray = Array.from(this.importAnalysis.values());
+      const totalFiles = analysisArray.length;
+      const totalImports = analysisArray.reduce((sum, analysis) => sum + analysis.totalImports, 0);
 
-    const report = [
-      '# 📦 Import Analysis Report',
-      '',
-      `**Generated:** ${new Date().toISOString()}`,
-      `**Files Analyzed:** ${totalFiles}`,
-      `**Total Imports:** ${totalImports}`,
-      `**Import Fixes Needed:** ${this.importFixes.length}`,
-      '',
-      '## 📊 Import Summary',
-      '',
-      '### Import Distribution',
-      `- **External Imports:** ${analysisArray.reduce((sum, a) => sum + a.externalImports, 0)}`,
-      `- **Internal Imports:** ${analysisArray.reduce((sum, a) => sum + a.internalImports, 0)}`,
-      `- **Relative Imports:** ${analysisArray.reduce((sum, a) => sum + a.relativeImports, 0)}`,
-      `- **Absolute Imports:** ${analysisArray.reduce((sum, a) => sum + a.absoluteImports, 0)}`,
-      `- **Wildcard Imports:** ${analysisArray.reduce((sum, a) => sum + a.wildcardImports, 0)}`,
-      `- **Deep Imports (3+ levels):** ${analysisArray.reduce((sum, a) => sum + a.deepImports, 0)}`,
-      '',
-      '### Issues Summary',
-      `- **Unused Imports:** ${analysisArray.reduce((sum, a) => sum + a.unusedImports, 0)}`,
-      `- **Duplicate Imports:** ${analysisArray.reduce((sum, a) => sum + a.duplicateImports, 0)}`,
-      `- **Files with High Bundle Impact:** ${analysisArray.filter(a => a.bundleImpact === 'high').length}`,
-      '',
-      '## 🚨 Import Issues by File',
-      '',
-      '| File | Total Imports | Issues | Bundle Impact |',
-      '|------|---------------|--------|---------------|',
-      ...analysisArray
-        .filter(analysis => analysis.issues.length > 0 || analysis.unusedImports > 0)
-        .sort((a, b) => b.issues.length - a.issues.length)
-        .map(analysis => 
-          `| ${path.relative(process.cwd(), analysis.filePath)} | ${analysis.totalImports} | ${analysis.issues.length} | ${analysis.bundleImpact} |`
-        ),
-      '',
-      '## 🔧 Recommended Import Fixes',
-      '',
-      ...this.generateImportFixRecommendations(),
-      '',
-      '## 📈 Bundle Impact Analysis',
-      '',
-      ...this.generateBundleImpactAnalysis(),
-      '',
-      '## 🔗 Import Relationships',
-      '',
-      ...this.generateRelationshipAnalysis(),
-      '',
-      '## 🛠️ Quick Import Fixes',
-      '',
-      ...this.generateQuickImportFixes()
-    ].join('\n');
+      // Calculate unused and duplicate import counts using .length
+      const totalUnusedImports = analysisArray.reduce((sum, a) => sum + a.unusedImports.length, 0);
+      const totalDuplicateImports = analysisArray.reduce((sum, a) => sum + a.duplicateImports.length, 0);
 
-    if (outputPath) {
-      const fullPath = path.resolve(process.cwd(), outputPath);
-      await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-      await fs.promises.writeFile(fullPath, report, 'utf8');
-      console.log(`📦 Import report saved to: ${fullPath}`);
-    }
+      const report = [
+        '# 📦 Import Analysis Report',
+        '',
+        `**Generated:** ${new Date().toISOString()}`,
+        `**Files Analyzed:** ${totalFiles}`,
+        `**Total Imports:** ${totalImports}`,
+        `**Import Fixes Needed:** ${this.importFixes.length}`,
+        '',
+        '## 📊 Import Summary',
+        '',
+        '### Import Distribution',
+        `- **External Imports:** ${analysisArray.reduce((sum, a) => sum + a.externalImports, 0)}`,
+        `- **Internal Imports:** ${analysisArray.reduce((sum, a) => sum + a.internalImports, 0)}`,
+        `- **Relative Imports:** ${analysisArray.reduce((sum, a) => sum + a.relativeImports, 0)}`,
+        `- **Absolute Imports:** ${analysisArray.reduce((sum, a) => sum + a.absoluteImports, 0)}`,
+        `- **Wildcard Imports:** ${analysisArray.reduce((sum, a) => sum + a.wildcardImports, 0)}`,
+        `- **Deep Imports (3+ levels):** ${analysisArray.reduce((sum, a) => sum + a.deepImports, 0)}`,
+        '',
+        '### Issues Summary',
+        `- **Unused Imports:** ${totalUnusedImports}`, // Use calculated total
+        `- **Duplicate Imports:** ${totalDuplicateImports}`, // Use calculated total
+        `- **Files with High Bundle Impact:** ${analysisArray.filter(a => a.bundleImpact === 'high').length}`,
+        '',
+        '## 🚨 Import Issues by File',
+        '',
+        '| File | Total Imports | Issues | Bundle Impact |',
+        '|------|---------------|--------|---------------|',
+        ...analysisArray
+          .filter(analysis => analysis.issues.length > 0 || analysis.unusedImports.length > 0) // Use .length
+          .sort((a, b) => b.issues.length - a.issues.length)
+          .map(analysis => 
+            `| ${path.relative(process.cwd(), analysis.filePath)} | ${analysis.totalImports} | ${analysis.issues.length} | ${analysis.bundleImpact} |`
+          ),
+        '',
+        '## 🔧 Recommended Import Fixes',
+        '',
+        ...this.generateImportFixRecommendations(),
+        '',
+        '## 📈 Bundle Impact Analysis',
+        '',
+        ...this.generateBundleImpactAnalysis(),
+        '',
+        '## 🔗 Import Relationships',
+        '',
+        ...this.generateRelationshipAnalysis(),
+        '',
+        '## 🛠️ Quick Import Fixes',
+        '',
+        ...this.generateQuickImportFixes()
+      ].join('\n');
 
-    return report;
+      if (outputPath) {
+        const fullPath = path.resolve(process.cwd(), outputPath);
+        await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+        await fs.promises.writeFile(fullPath, report, 'utf8');
+        console.log(`📦 Import report saved to: ${fullPath}`);
+      }
+
+      return report;
   }
 
   private generateImportFixRecommendations(): string[] {
@@ -433,11 +436,12 @@ export class ImportReport {
     }
 
     // Unused imports recommendation
-    const unusedImportFiles = analysisArray.filter(a => a.unusedImports > 0);
+    const unusedImportFiles = analysisArray.filter(a => a.unusedImports.length > 0); // Use .length
     if (unusedImportFiles.length > 0) {
+      const totalUnusedCount = unusedImportFiles.reduce((sum, a) => sum + a.unusedImports.length, 0); // Use .length
       recommendations.push(
         '### Unused Imports',
-        `Found ${unusedImportFiles.reduce((sum, a) => sum + a.unusedImports, 0)} unused imports across ${unusedImportFiles.length} files`,
+        `Found ${totalUnusedCount} unused imports across ${unusedImportFiles.length} files`,
         '**Recommendation:** Run ESLint with --fix or use IDE auto-import features',
         '```bash',
         'npx eslint --fix src/',

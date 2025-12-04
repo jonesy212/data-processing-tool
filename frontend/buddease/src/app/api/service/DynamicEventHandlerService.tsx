@@ -1,11 +1,14 @@
 // DynamicEventHandlerService.tsx
-// DynamicEventHandlerService.ts
+
+import { CalendarActions } from '@/app/actions/CalendarEventActions';
+import { HighlightActions } from '@/app/highlighting/screenFunctionality/HighlightActions'
 import { CustomMouseEvent } from '@/app/services/EventService'
 import SnapshotList from "@/app/snapshots/SnapshotList";
 import { SyntheticEvent } from "react";
 import { Router, useRouter } from "next/router";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes'
+import { useState } from "react";
 
 const DynamicEventHandlerService = ({
   handleSorting,

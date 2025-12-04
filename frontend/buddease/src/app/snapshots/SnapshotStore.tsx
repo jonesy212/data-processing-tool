@@ -2598,8 +2598,9 @@ handleActions(action: any): void {
     // Add any validation/cleanup logic here
   }
 
-  #snapshotStores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();
-    // Define defaultConfigs property
+  protected snapshotStores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map(); 
+  
+  // Define defaultConfigs property
   private items: K[] = [];
   private unsubscribeEvents: Map<string, UnsubscribeEvent<T, K>> = new Map();
   private assignUtilMethods(): void {
@@ -3824,7 +3825,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
       config: this.config,
       configs: this.configs,
       items: this.items,
-      snapshotStores: this.#snapshotStores,
+      snapshotStores: this.snapshotStores,
       defaultConfigs: this.defaultConfigs,
       name: this.name,
       version: this.version,
@@ -4092,7 +4093,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   private findSnapshotStoreById(storeId: number): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     console.log(`Looking for snapshot store with ID: ${storeId}`);
 
-    const store = this.#snapshotStores.get(storeId);
+    const store = this.snapshotStores.get(storeId);
 
     if (store) {
       console.log(`Snapshot store found:`, store);
@@ -4107,13 +4108,13 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     this.dataStores = stores;
   }
   
-  // Public getter for #snapshotStores
-  public get snapshotStores(): Map<number, SnapshotStore<T, K, Meta>> {
-    return this.#snapshotStores;
+  // Public getter for snapshotStores
+  public get snapshotStores(): Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    return this.snapshotStores;
   }
 
   protected setSnapshotStores(stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
-    this.#snapshotStores = stores;
+    this.snapshotStores = stores;
   }
 
   // Initialize options based on the config
@@ -4285,7 +4286,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
       console.log(
         `Saving snapshot store with ID: ${store.storeId} (default method)`
       );
-      this.#snapshotStores.set(store.storeId, store);
+      this.snapshotStores.set(store.storeId, store);
       console.log(`Snapshot store saved successfully using default method.`);
     } catch (error) {
       console.error(
@@ -4298,7 +4299,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   private async saveSnapshotStore(store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
     try {
       console.log(`Saving snapshot store with ID: ${store.storeId}`);
-      this.#snapshotStores.set(store.storeId, store);
+      this.snapshotStores.set(store.storeId, store);
       console.log(`Snapshot store saved successfully.`);
     } catch (error) {
       console.error(`Failed to save snapshot store:`, error);
@@ -4591,7 +4592,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
         subscribeToSnapshot, 
         
         initializeWithData: this.initializeWithData, 
-        snapshotStores: this.#snapshotStores,
+        snapshotStores: this.snapshotStores,
         schema: this.schema,
         dataStores: this.dataStores, 
         snapshotItems: this.snapshotItems, 
@@ -4649,7 +4650,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   }
 
   public getSnapshotStores(): Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-    return this.#snapshotStores
+    return this.snapshotStores
   }
 
   public getItems( items: K[]): void {

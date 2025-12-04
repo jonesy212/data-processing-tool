@@ -1,6 +1,6 @@
 // SnapshotApi.ts
 import createSnapshot from '@/app/api/SnapshotApi';
-import { headersConfig } from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
@@ -27,8 +27,8 @@ import { constructTarget, Target } from "@/app/api/EndpointConstructor";
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import {
-    AuthenticationHeaders,
-    createAuthenticationHeaders,
+  AuthenticationHeaders,
+  createAuthenticationHeaders,
 } from "@/app/api/headers/authenticationHeaders";
 import createCacheHeaders from "@/app/api/headers/cacheHeaders";
 import createContentHeaders from "@/app/api/headers/contentHeaders";
@@ -62,8 +62,8 @@ import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 
 // Subscribers and notifications
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from '@/app/state/context/NotificationContext';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
@@ -95,13 +95,13 @@ import { addToSnapshotList, isSnapshot } from "@/utils/snapshotUtils";
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
 
 import {
-    createMockSnapshot,
-    getSnapshot,
-    getSnapshots,
-    removeSnapshot,
-    takeSnapshot,
-    updateSnapshot,
-    validateSnapshot
+  createMockSnapshot,
+  getSnapshot,
+  getSnapshots,
+  removeSnapshot,
+  takeSnapshot,
+  updateSnapshot,
+  validateSnapshot
 } from '@/app/snapshots/snapshotOperations';
 
 

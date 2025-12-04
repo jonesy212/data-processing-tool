@@ -1,5 +1,5 @@
 // ForgotPasswordForm.tsx
-import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions"; // Import sanitizeInput function
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'; // Import sanitizeInput function
 import React, { useState } from 'react';
 
 const ForgotPasswordForm: React.FC = () => {

@@ -1,4 +1,5 @@
 // EntityConversionRules.ts
+
 import {
   ApiEntity,
   AppEntity,
@@ -41,15 +42,16 @@ import {
   TaskEntity,
   TeamEntity,
   TrackerEntity,
-  UserEntity,
   VersionEntity,
   VersionHistoryEntity,
   VideoEntity
-} from '@/app/typings/entities';
+} from '@/app/typings/entities/';
 
-import { SupportedData, CommonData } from '@/app/typings/commonData';
-import { ParsedData } from '@/app/typings/parsedData';
-import { Attachment, DefaultExcludedFields, DefaultMeta } from '@/app/typings/base';
+import { UserEntity } from '@/app/typings/entities/UserEntity';
+import { SupportedData, CommonData } from "@/app/models/CommonData";
+import { ParsedData } from '@/app/dataIntegration/parseData';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // --------------------
 // Step 1: Define all entities as a const tuple

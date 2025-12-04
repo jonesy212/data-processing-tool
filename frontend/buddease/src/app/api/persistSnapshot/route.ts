@@ -2,9 +2,9 @@
 // app/state/snapshots/persistSnapshot.ts
 
 import { runInAction, toJS } from 'mobx';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/BaseConfig';
-import { SnapshotDataType } from '@/app/snapshots';
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { handleApiError } from '@/app/api/ApiLogs';
 import { DatabaseConfig } from '@/app/config/DatabaseConfig';
 
 
@@ -141,60 +141,3 @@ async function persistSnapshot<
   }
 }
 
-
-🧩 How It Works
-1. Flexible Store Handling
-
-Works seamlessly for:
-
-MobX stores with hydrate() or setState()
-
-Plain JS or Redux-compatible stores (via Object.assign)
-
-2. Type Safety
-
-HydratableStore interface enforces known methods.
-
-Generic T ensures correct typing for returned hydrated store.
-
-3. MobX-Safe Hydration
-
-Uses runInAction() to batch updates within MobX’s reactive context, preventing redundant observer reactions.
-
-4. Self-Contained Storage I/O
-
-Reads and writes from localStorage by default.
-
-You can later extend it to use IndexedDB or a hybrid cache (CacheManager) without modifying the hydration logic.
-
-⚙️ Example Integration
-
-In your AppStoresProvider:
-
-import { hydrateSnapshot, persistSnapshot } from "@/app/state/snapshots/snapshotUtils";
-
-useEffect(() => {
-  const hydrate = async () => {
-    await hydrateSnapshot(stores.projectStore, "projectStore");
-    await hydrateSnapshot(stores.cryptoStore, "cryptoStore");
-  };
-  hydrate();
-
-  const interval = setInterval(() => {
-    persistSnapshot(stores.projectStore, "projectStore");
-    persistSnapshot(stores.cryptoStore, "cryptoStore");
-  }, 10000);
-
-  return () => clearInterval(interval);
-}, [stores]);
-
-🧠 Optional Enhancements
-
-Later, you can extend this to support:
-
-type PersistenceStrategy = "localStorage" | "indexedDB" | "hybrid" | "remote";
-
-
-and then dynamically route reads/writes depending on your CacheConfig.strategy.
-
-Would you like me to show the IndexedDB + hybrid extension for this hydrateSnapshot (so it aligns with your CacheConfig.strategy: 'memory' | 'persistent' | 'hybrid')?

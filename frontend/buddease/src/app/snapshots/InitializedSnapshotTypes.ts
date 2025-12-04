@@ -38,8 +38,8 @@ function convertToIntermediateType<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   data: unknown
-): YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta> {
-  if (isSnapshotStore<T, K, Meta>(data)) {
+): YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  if (isSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(data)) {
     return enrichSnapshotStore(data);
   } else if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(data)) {
     return normalizeSnapshot(data);
@@ -60,7 +60,7 @@ function enrichAsInitializedSnapshot<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  data: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
+  data: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const baseSnapshot = isSnapshotStore(data) 
     ? data.getLatestSnapshot() 

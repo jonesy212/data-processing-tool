@@ -32,7 +32,7 @@ import { ExtendedVersionData } from "@/app/versions/VersionData";
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
-import { Subscription } from 'react-redux';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";

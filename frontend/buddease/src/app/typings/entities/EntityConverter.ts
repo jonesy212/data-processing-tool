@@ -1,11 +1,67 @@
 // EntityConverter.ts
 import { conversionRules } from './EntityConversionRules';
+import { ApiEntity } from '@/app/typings/entities/ApiEntity'
+import { AppEntity } from '@/app/typings/entities/AppEntity'
+import { AppMetadataEntity } from '@/app/typings/entities/AppMetadataEntity'
+import { AuthEntity } from '@/app/typings/entities/AuthEntity'
+import { ArticleEntity } from '@/app/typings/entities/ArticleEntity'
+import { CalendarEntity } from '@/app/typings/entities/CalendarEntity'
+import { BlogEntity } from '@/app/typings/entities/BlogEntity'
+import { ChatEntity } from '@/app/typings/entities/ChatEntity'
+import { ChatRoomEntity } from '@/app/typings/entities/ChatRoomEntity'
+import { CommonEntities } from '@/app/typings/entities/CommonEntities'
+import { ConfigEntity } from '@/app/typings/entities/ConfigEntity'
+import { DataEntity } from '@/app/typings/entities/DataEntity'
+import { ContentEntity } from '@/app/typings/entities/ContentEntity'
+import { DocumentEntity } from '@/app/typings/entities/DocumentEntity'
+import { DrawingEntity } from '@/app/typings/entities/DrawingEntity'
+import { EventEntity } from '@/app/typings/entities/EventEntity'
+import { ExampleEntity } from '@/app/typings/entities/ExampleEntity'
+import { FileEntity } from '@/app/typings/entities/FileEntity'
+import { FilterEntity } from '@/app/typings/entities/FilterEntity'
+import { ExtendedDappEntity } from '@/app/typings/entities/ExtendedDappEntity'
+import { LogEntity } from '@/app/typings/entities/LogEntity'
+import { MeetingEntity } from '@/app/typings/entities/MeetingEntity'
+import { NotificationEntity } from '@/app/typings/entities/NotificationEntity'
+import { MemberEntity } from '@/app/typings/entities/MemberEntity'
+import { MessageEntity } from '@/app/typings/entities/MessageEntity'
+import { MetaEntity } from '@/app/typings/entities/MetaEntity'
+import { NoteEntity } from '@/app/typings/entities/NoteEntity'
+import { PhaseEntity } from '@/app/typings/entities/PhaseEntity'
+import { ProductEntity } from '@/app/typings/entities/ProductEntity'
+import { ProjectManagementEntity } from '@/app/typings/entities/ProjectManagementEntity'
+import { ProjectEntity } from '@/app/typings/entities/ProjectEntity'
+import { ProjectManagerEntity } from '@/app/typings/entities/ProjectManagerEntity'
+import { SenderEntity } from '@/app/typings/entities/SenderEntity'
+import { SnapshotContainerEntity } from '@/app/typings/entities/SnapshotContainerEntity'
+import { SnapshotEntity } from '@/app/typings/entities/SnapshotEntity'
+import { SnapshotStorageEntity } from '@/app/typings/entities/SnapshotStorageOptionsEntity'
+import { TaskEntity } from '@/app/typings/entities/TaskEntity'
+import { StorePropEntity } from '@/app/typings/entities/StorePropEntity'
+import { TrackerEntity } from '@/app/typings/entities/TrackerEntity'
+import { UserEntity } from '@/app/typings/entities/UserEntity'
+import { VersionEntity } from '@/app/typings/entities/VersionEntity'
+import { VideoEntity } from '@/app/typings/entities/VideoEntity'
+import { VersionHistoryEntity } from '@/app/typings/entities/VersionHistoryEntity'
+import { TagEntity } from '@/app/typings/entities/TagEntity'
+import { TeamEntity } from '@/app/typings/entities/TeamEntity'
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
 // --------------------
 // Step 1: Define entity mapping
 // --------------------
 
 // Map source entity type name to target type (for type-safe conversions)
-export type EntityConversionMap = {
+type EntityConversionMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
   ApiEntity: ApiEntity;
   AppEntity: AppEntity;
   AppMetadataEntity: AppMetadataEntity;
@@ -23,7 +79,6 @@ export type EntityConversionMap = {
   DrawingEntity: DrawingEntity;
   EventEntity: EventEntity;
   ExampleEntity: ExampleEntity;
-  FileEntity: FileEntity;
   FilterEntity: FilterEntity;
   ExtendedDappEntity: ExtendedDappEntity;
   FileEntity: FileEntity;
@@ -40,9 +95,9 @@ export type EntityConversionMap = {
   ProjectManagementEntity: ProjectManagementEntity;
   ProjectManagerEntity: ProjectManagerEntity;
   SenderEntity: SenderEntity;
-  SnapshotContainerEntity: SnapshotContainerEntity;
+  SnapshotContainerEntity: SnapshotContainerEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   SnapshotEntity: SnapshotEntity;
-  SnapshotStorageOptionsEntity: SnapshotStorageOptionsEntity;
+  SnapshotStorageEntity: SnapshotStorageEntity;
   StorePropEntity: StorePropEntity;
   TaskEntity: TaskEntity;
   TrackerEntity: TrackerEntity;
@@ -52,15 +107,10 @@ export type EntityConversionMap = {
   VideoEntity: VideoEntity;
   TagEntity: TagEntity;
   TeamEntity: TeamEntity;
-};
+}& {
+  [RuleKey in keyof typeof conversionRules]: ReturnType<typeof conversionRules[RuleKey]>;
+};;
 
-// --------------------
-// Step 2: Conversion rules (optional per entity)
-// --------------------
-
-type EntityConversionMap = {
-  [K in keyof typeof conversionRules]: ReturnType<typeof conversionRules[K]>
-};
 
 export const entityConversionRules: EntityConversionRules = {
   UserEntity: (source: UserEntity) => ({
@@ -88,7 +138,7 @@ export const entityConversionRules: EntityConversionRules = {
   PhaseEntity: (source: PhaseEntity) => ({ ...source }),
   ProductEntity: (source: ProductEntity) => ({ ...source }),
   SenderEntity: (source: SenderEntity) => ({ ...source }),
-  SnapshotContainerEntity: (source: SnapshotContainerEntity) => ({ ...source }),
+  SnapshotContainerEntity: (source: SnapshotContainerEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({ ...source }),
   SnapshotEntity: (source: SnapshotEntity) => ({ ...source }),
   SnapshotStorageOptionsEntity: (source: SnapshotStorageOptionsEntity) => ({ ...source }),
   StorePropEntity: (source: StorePropEntity) => ({ ...source }),
@@ -134,11 +184,11 @@ export class EntityConverter {
 // --------------------
 
 // Convert single UserEntity to MemberEntity
-const userEntity: UserEntity = { username: "user123", email: "user123@example.com", teams: [] };
+const userEntity: UserEntity = { id, name, password, role, username: "user123", email: "user123@example.com", teams: [] };
 const memberEntity = EntityConverter.convertEntity<'UserEntity'>(userEntity);
 
 // Convert array of TaskEntities (identity conversion)
-const taskEntities: TaskEntity[] = [{ id: 1, name: "Task1" }, { id: 2, name: "Task2" }];
+const taskEntities: TaskEntity[] = [{ id: 1, name: "Task1", path, draft }, { id: 2, name: "Task2", path, draft }];
 const convertedTasks = EntityConverter.convertEntitiesArray<'TaskEntity'>(taskEntities);
 
 // Convert multiple types dynamically

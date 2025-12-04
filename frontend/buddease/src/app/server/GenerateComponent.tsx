@@ -23,14 +23,18 @@ import { generateValidationRulesCode } from "@/app/server/security/validationRul
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { UserData } from '@/app/users/User';
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entties/AppEntity";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import fs from "fs";
 import path from "path";
 import { useState } from "react";
-
+import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity'
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { useMeta } from "@/app/config/useMeta";
+import { NestedCategoryKeys } from '@/app/pages/personas/ScenarioBuilder'
+import { useMetadata } from "@/app/config/useMetadata";
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
 const currentMeta: AppStructuredMetadata = useMeta(area)
@@ -249,6 +253,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       supportedLanguages: [],
       bgColor: '',
       documentURI: '',
+      eta: new Date(), 
+      userId: '', 
+      path: '', 
+      draft: '',
       phaseType: ProgressPhase.Ideation,
       DocumentData: {},
       currentScript: null,

@@ -11,7 +11,8 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { VersionData } from '@/app/versions/VersionData';
-import { NotificationType, useNotification  } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 
@@ -33,7 +34,7 @@ export const createHeaders = (): typeof HeadersConfig => {
 interface ClientNotificationMessages {
   // Existing messages
   [key: string]: string;
-  
+
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
@@ -97,7 +98,7 @@ interface ClientNotificationMessages {
 const getNotificationMessage = (key: keyof ClientNotificationMessages): string => {
   const message = NOTIFICATION_MESSAGES.Client[key as keyof typeof NOTIFICATION_MESSAGES.Client];
   if (message) return message;
-  
+
   // Fallback messages for any missing ones
   const fallbackMessages: Partial<ClientNotificationMessages> = {
     // Existing client messages
@@ -159,7 +160,7 @@ const getNotificationMessage = (key: keyof ClientNotificationMessages): string =
     IMPORT_FILE_SUCCESS: "File imported successfully",
     IMPORT_FILE_ERROR: "Failed to import file",
   };
-  
+
   return fallbackMessages[key] || `${key} message not configured`;
 };
 
@@ -224,6 +225,12 @@ const clientNotificationMessages: ClientNotificationMessages = {
   IMPORT_FILE_ERROR: getNotificationMessage('IMPORT_FILE_ERROR'),
 };
 
+interface ApiRequestOptions<TMessages extends Record<string, string>> {
+  successMessageId?: keyof TMessages;
+  errorMessageId?: keyof TMessages;
+  notificationData?: any;
+  config?: AxiosRequestConfig;
+}
 
 export class ClientApiService<TMessages extends Record<string, string>> {
   notify: (
@@ -234,6 +241,12 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     type: NotificationType
   ) => void;
 
+  private readonly defaultErrorKeys = {
+    GENERIC_GET_ERROR: "GENERIC_GET_ERROR",
+    GENERIC_POST_ERROR: "GENERIC_POST_ERROR", 
+    GENERIC_PUT_ERROR: "GENERIC_PUT_ERROR",
+    GENERIC_DELETE_ERROR: "GENERIC_DELETE_ERROR",
+  } as const;
 
   constructor(
     notify: (
@@ -243,7 +256,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
       date: Date,
       type: NotificationType
     ) => void,
-    private notificationMessages: TMessages
+    private notificationMessages: TMessages & typeof this.defaultErrorKeys 
   ) {
     this.notify = notify;
   }
@@ -252,17 +265,17 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
     successMessageId: keyof TMessages,
-    errorMessageId: keyof TMessages, // Use the enum key
+    errorMessageId: keyof TMessages,
     notificationData: any = null
   ): Promise<AxiosResponse> {
-      try {
+    try {
       const response: AxiosResponse = await request();
-      
+
       if (successMessageId) {
         const successMessage = this.notificationMessages[successMessageId];
         this.notify(String(successMessageId), successMessage, notificationData, new Date(), "success" as NotificationType);
       }
-      
+
       return response;
     } catch (error: any) {
       handleApiError(error as AxiosError<unknown>, errorMessage);
@@ -274,19 +287,16 @@ export class ClientApiService<TMessages extends Record<string, string>> {
       throw error;
     }
   }
-
-
   async get<T = any>(
     url: string,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages
+    options: ApiRequestOptions<TMessages> = {}
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => axiosInstance.get<T>(url, config),
+      () => axiosInstance.get<T>(url, options.config),
       "GET request failed",
-      successMessageId || "GENERIC_GET_ERROR" as keyof TMessages,
-      errorMessageId || "GENERIC_GET_ERROR" as keyof TMessages
+      options.successMessageId,
+      options.errorMessageId || this.defaultErrorKeys.GENERIC_GET_ERROR as keyof TMessages,
+      options.notificationData
     );
   }
 
@@ -294,48 +304,44 @@ export class ClientApiService<TMessages extends Record<string, string>> {
   async post<T = any>(
     url: string,
     data?: any,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages
+    options: ApiRequestOptions<TMessages> = {}
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => axiosInstance.post<T>(url, data, config),
+      () => axiosInstance.post<T>(url, data, options.config),
       "POST request failed",
-      successMessageId || "GENERIC_POST_ERROR" as keyof TMessages,
-      errorMessageId || "GENERIC_POST_ERROR" as keyof TMessages
+      options.successMessageId,
+      options.errorMessageId || this.defaultErrorKeys.GENERIC_POST_ERROR as keyof TMessages,
+      options.notificationData
     );
   }
 
-  // You might also want to add other HTTP methods for completeness
   async put<T = any>(
     url: string,
     data?: any,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages
+    options: ApiRequestOptions<TMessages> = {}
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => axiosInstance.put<T>(url, data, config),
+      () => axiosInstance.put<T>(url, data, options.config),
       "PUT request failed",
-      successMessageId || "GENERIC_PUT_ERROR" as keyof TMessages,
-      errorMessageId || "GENERIC_PUT_ERROR" as keyof TMessages
+      options.successMessageId,
+      options.errorMessageId || this.defaultErrorKeys.GENERIC_PUT_ERROR as keyof TMessages,
+      options.notificationData
     );
   }
 
   async delete<T = any>(
     url: string,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages
+    options: ApiRequestOptions<TMessages> = {}
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
-      () => axiosInstance.delete<T>(url, config),
+      () => axiosInstance.delete<T>(url, options.config),
       "DELETE request failed",
-      successMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages,
-      errorMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages
+      options.successMessageId,
+      options.errorMessageId || this.defaultErrorKeys.GENERIC_DELETE_ERROR as keyof TMessages,
+      options.notificationData
     );
   }
-
+  
   async getRequestHandeler() {
     return async (
       request: () => Promise<AxiosResponse>,
@@ -351,7 +357,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
       return undefined;
     }
   }
-    
+
   async fetchClientDetails(clientId: number): Promise<any> {
     return await this.requestHandler(
       () => axiosInstance.get(
@@ -497,22 +503,22 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     );
   }
 
-async updateCalendarEvent<
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T,
->(eventId: number, updatedEvent: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<AxiosResponse> {
-  return await this.requestHandler(
-    () => axiosInstance.put(`/api/calendar/events/${eventId}`, updatedEvent),
-    "Failed to update calendar event",
-    "UPDATE_CALENDAR_EVENT_SUCCESS" as keyof TMessages,
-    "UPDATE_CALENDAR_EVENT_ERROR" as keyof TMessages,
-    { eventId }
-  );
-}
+  async updateCalendarEvent<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T,
+  >(eventId: number, updatedEvent: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<AxiosResponse> {
+    return await this.requestHandler(
+      () => axiosInstance.put(`/api/calendar/events/${eventId}`, updatedEvent),
+      "Failed to update calendar event",
+      "UPDATE_CALENDAR_EVENT_SUCCESS" as keyof TMessages,
+      "UPDATE_CALENDAR_EVENT_ERROR" as keyof TMessages,
+      { eventId }
+    );
+  }
 
   async startCollaborativeEdit(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
@@ -522,7 +528,7 @@ async updateCalendarEvent<
       "START_COLLABORATIVE_EDIT_ERROR" as keyof TMessages
     );
   }
-    
+
   async createFileVersion<
     T extends BaseDataEntity,
     K extends T,
@@ -579,7 +585,7 @@ async updateCalendarEvent<
   async requestAccessToFile(
     fileId: string,
     accessData: any
-  ): Promise<AxiosResponse> { 
+  ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/access`, accessData),
       "Failed to request access to file",
@@ -589,7 +595,7 @@ async updateCalendarEvent<
     );
   }
 
-  async exportFile(fileId: string): Promise<AxiosResponse> { 
+  async exportFile(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/export`),
       "Failed to export file",
@@ -609,7 +615,7 @@ async updateCalendarEvent<
     );
   }
 
-  async determineFileType(fileId: string): Promise<AxiosResponse> { 
+  async determineFileType(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/type`),
       "Failed to determine file type",
@@ -619,7 +625,7 @@ async updateCalendarEvent<
     );
   }
 
-  async importFile(fileData: typeof FileImportData): Promise<AxiosResponse> { 
+  async importFile(fileData: typeof FileImportData): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/import`, fileData),
       "Failed to import file",

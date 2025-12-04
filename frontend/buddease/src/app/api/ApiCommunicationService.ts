@@ -1,5 +1,5 @@
 // ApiCommunicationService.ts
-import { headersConfig } from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { handleApiError } from '@/app/api/ApiLogs';
 import internalApiService from '@/app/api/ApiClient';
 import ApiConfig from '@/app/api/ApiConfigService';
@@ -9,8 +9,8 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import { NotificationContainer } from '@/app/services/NotificationService';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { NotificationManagerService } from "@/app/state/notifications/NotificationManagerService";
-import { NotificationService } from '@/app/service/NotificationService';
+import { NotificationManagerService } from '@/app/components/notifications/useNotificationManagerServiceProps'
+import { NotificationService } from '@/app/services/NotificationService';
 import { AxiosResponse, AxiosError } from 'axios';
 
 // API Configuration
@@ -55,9 +55,9 @@ export class ApiCommunicationService<
         ttl: 0,
         versioning: { enabled: false, key: 'api-versioning' },
           invalidation: {
-            onUpdate: boolean;
-            onDelete: boolean;
-            pattern?: string;
+            onUpdate: true,
+            onDelete: true,
+            pattern?: 'string'
           };
       },
       responseType: { contentType: "application/json", encoding: "utf-8" },
@@ -72,78 +72,87 @@ export class ApiCommunicationService<
 
   // === SNAPSHOT API OPERATIONS ===
 
-  async saveSnapshotToDatabase<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    snapshotData: SnapshotData<
-      T,
-      K,
-      Meta,
-      AttachmentType,
-      ExcludedFields,
-      IncludedFields
-    >
-  ): Promise<boolean> {
-    try {
-      const saveSnapshotEndpoint = `${this.config.baseURL}/save`;
+async saveSnapshotToDatabase<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshotData: SnapshotData<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    ExcludedFields,
+    IncludedFields
+  >
+): Promise<boolean> {
+  try {
+    const saveSnapshotEndpoint = `${this.config.baseURL}/save`;
 
-      // Build headers from instance helper
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-      const userId =
-        typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-      const appVersion = "1.0.0";
+    // Build headers from instance helper
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const userId =
+      typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+    const appVersion = "1.0.0";
 
-      const headers = (this.createHeaders
-        ? this.createHeaders(token, userId, appVersion)
-        : this.config.headers) as Record<string, string>;
+    const headers = (this.createHeaders
+      ? this.createHeaders(token, userId, appVersion)
+      : this.config.headers) as Record<string, string>;
 
-      // Send snapshot
-      await internalApiService.post(saveSnapshotEndpoint, snapshotData, {
+    // Send snapshot
+    await internalApiService.post(saveSnapshotEndpoint, snapshotData, {
+      // ApiRequestOptions
+      successMessageId: 'SaveSnapshotSuccessId' as keyof ClientNotificationMessages,
+      errorMessageId: 'SaveSnapshotErrorId' as keyof ClientNotificationMessages,
+      notificationData: {
+        ...snapshotData,
+        timestamp: new Date().toISOString(),
+      },
+      // Axios config
+      config: {
         headers,
         timeout: this.config.timeout,
-      });
+      },
+    });
 
-      // ✅ Notify on success
-      this.notify?.(
-        "SaveSnapshotSuccessId",
-        "Snapshot saved successfully",
-        snapshotData,
-        new Date(),
-        NotificationTypeEnum.SUCCESS
-      );
+    // ✅ Notify on success
+    this.notify?.(
+      "SaveSnapshotSuccessId",
+      "Snapshot saved successfully",
+      snapshotData,
+      new Date(),
+      NotificationTypeEnum.SUCCESS
+    );
 
-      return true;
-    } catch (error: any) {
-      console.error("Error saving snapshot to database:", error);
+    return true;
+  } catch (error: any) {
+    console.error("Error saving snapshot to database:", error);
 
-      // ✅ Notify on failure (via injected notify function)
-      this.notify?.(
-        "SaveSnapshotErrorId",
-        "Failed to save snapshot to database",
-        error,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+    // ✅ Notify on failure (via injected notify function)
+    this.notify?.(
+      "SaveSnapshotErrorId",
+      "Failed to save snapshot to database",
+      error,
+      new Date(),
+      NotificationTypeEnum.ERROR
+    );
 
-      // ✅ Also use the global NotificationService (fallback)
-      NotificationService.notify({
-        id: "SaveSnapshotError",
-        message: "Failed to save snapshot to database",
-        timestamp: new Date(),
-        type: NotificationTypeEnum.ERROR,
-        data: { error: String(error) },
-      });
+    // ✅ Also use the global NotificationService (fallback)
+    NotificationService.notify({
+      id: "SaveSnapshotError",
+      message: "Failed to save snapshot to database",
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      data: { error: String(error) },
+    });
 
-      return false;
-    }
+    return false;
   }
-
+}
   
 async fetchSnapshotById(
   snapshotId: string
@@ -197,36 +206,54 @@ async takeSnapshot(
     };
 
     const response = await internalApiService.post(`${this.config.baseURL}/snapshots`, snapshotData, {
-      headers: headersConfig,
-      timeout: this.config.timeout,
+      // These are ApiRequestOptions properties
+      successMessageId: 'snapshotSaveSuccess' as keyof ClientNotificationMessages,
+      errorMessageId: 'snapshotSaveError' as keyof ClientNotificationMessages,
+      notificationData: {
+        projectId,
+        timestamp: date.toISOString(),
+      },
+      // Axios config goes inside 'config'
+      config: {
+        headers: headersConfig,
+        timeout: this.config.timeout,
+      },
     });
 
-    // ✅ Ensure correct return type
     return Promise.resolve(response.data);
   } catch (error) {
     handleApiError(error as AxiosError<unknown>, "Failed to take snapshot");
     throw error;
   }
 }
+  
 
-  async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
-    try {
-      const response = await internalApiService.post(
-        `${this.config.baseURL}/snapshots/batch`,
-        { snapshots },
-        {
+async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
+  try {
+    const response = await internalApiService.post(
+      `${this.config.baseURL}/snapshots/batch`,
+      { snapshots },
+      {
+        // ApiRequestOptions
+        successMessageId: 'batchSaveSuccess' as keyof ClientNotificationMessages,
+        errorMessageId: 'batchSaveError' as keyof ClientNotificationMessages,
+        notificationData: {
+          snapshotCount: snapshots.length,
+        },
+        // Axios config
+        config: {
           headers: headersConfig,
           timeout: this.config.timeout,
-        }
-      );
+        },
+      }
+    );
 
-      // ✅ return boolean safely
-      return response.status === 200;
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to batch save snapshots");
-      return false;
-    }
+    return response.status === 200;
+  } catch (error) {
+    handleApiError(error as AxiosError<unknown>, "Failed to batch save snapshots");
+    return false;
   }
+}
 
 
   // === DATASET OPERATIONS ===

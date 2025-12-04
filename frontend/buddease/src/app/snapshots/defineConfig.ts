@@ -45,7 +45,7 @@ export default defineConfig({
 } as UserConfigExport);
 
 // Example usage
-const johnSubscriber = new Subscriber<T, CustomSnapshotData<T, K, Meta>>(
+const johnSubscriber = new Subscriber<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
   payload.meta?.id ?? 'default-id', // Fallback to 'default-id' if meta or id is undefined
   payload.meta?.name ?? 'default-name', // Fallback to 'default-name'
   {
