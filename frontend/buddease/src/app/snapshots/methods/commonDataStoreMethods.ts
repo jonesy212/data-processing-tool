@@ -1,17 +1,13 @@
 // commonDataStoreMethods.ts
 
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder"; import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { Subscriber } from '@/app/subscribers/Subscriber';
-import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
+import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
-import { AppSnapshotStore, AppSnapshot, AppSnapshotContainer, AppEntity, AppMeta, AppAttachment } from '@/app/typings/entities/AppEntity';
-import { AppSubscriber, AppSubscription } from '@/app/subscribers/Subscriber';
+import { AppSubscriber } from '@/app/subscribers/Subscriber';
+import { AppAttachment, AppEntity, AppMeta, AppSnapshot, AppSnapshotContainer, AppSnapshotStore } from '@/app/typings/entities/AppEntity';
 
 // Helper functions (can be in same file or imported)
 const matchesCriteria = <T extends BaseDataEntity>(

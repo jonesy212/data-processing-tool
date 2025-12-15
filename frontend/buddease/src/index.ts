@@ -1,8 +1,11 @@
 // index.ts
 // Import your main application component or logic here
 // Additional imports as needed
-import '@/styles/main.css'; // Import your global styles
 
+
+if (typeof window !== 'undefined') {
+  import('@/styles/main.css'); // Import your global styles
+}
 // Optionally, register the service worker (if applicable)
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')

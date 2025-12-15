@@ -268,7 +268,7 @@ export const createApiConfig = (
 };
 
 
-const getValidatedEndpoint = <T extends keyof EndpointConfigurations>(
+export const getValidatedEndpoint = <T extends keyof EndpointConfigurations>(
   category: T,
   endpointKey: keyof EndpointConfigurations[T]
 ): EndpointDefinition => {

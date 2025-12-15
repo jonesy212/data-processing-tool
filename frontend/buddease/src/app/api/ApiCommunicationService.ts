@@ -9,9 +9,10 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import { NotificationContainer } from '@/app/services/NotificationService';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { NotificationManagerService } from '@/app/components/notifications/useNotificationManagerServiceProps'
-import { NotificationService } from '@/app/services/NotificationService';
+import { NotificationManagerService } from '@/app/services/NotificationManagerService'
+import NotificationService from '@/app/services/NotificationService';
 import { AxiosResponse, AxiosError } from 'axios';
+import { ClientNotificationMessages } from '@/app/api/ApiClient';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';
@@ -45,7 +46,11 @@ export class ApiCommunicationService<
       baseURL: API_BASE_URL,
       timeout: 10000,
       headers: { "Content-Type": "application/json" },
-      retry: { attempts: 3, delay: 1000 },
+      retry: { 
+        enabled: true,
+        maxRetries: 3, // Use maxRetries instead of attempts
+        retryDelay: 1000 // Use retryDelay instead of delay
+      },
       cache: {
         enabled: false,
         maxAge: 0,
@@ -154,36 +159,39 @@ async saveSnapshotToDatabase<
   }
 }
   
-async fetchSnapshotById(
-  snapshotId: string
-): Promise<
-  SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-> {
-  try {
-    const token = localStorage.getItem("accessToken");
-    const userId = localStorage.getItem("userId");
-    const appVersion = "1.0.0";
+  async fetchSnapshotById(
+    snapshotId: string
+  ): Promise<
+    SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
+  > {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const userId = localStorage.getItem("userId");
+      const appVersion = "1.0.0";
 
-    const headers = this.createHeaders(token, userId, appVersion);
+      const headers = this.createHeaders(token, userId, appVersion);
 
-    const response = await internalApiService.get<
-      SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    >(`/snapshots/${snapshotId}`, {
-      headers: headers as Record<string, string>,
-      timeout: this.config.timeout,
-    });
+      // Wrap headers in config object
+      const response = await internalApiService.get<
+        SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      >(`/snapshots/${snapshotId}`, {
+        config: {
+          headers: headers as Record<string, string>,
+          timeout: this.config.timeout,
+        }
+      });
 
-    if (response.status === 200) {
-      // ✅ Clarify type to avoid “thenable” confusion
-      return Promise.resolve(response.data);
-    } else {
-      throw new Error("Failed to fetch snapshot by ID");
+      if (response.status === 200) {
+        // ✅ Remove Promise.resolve() - async functions already return Promises
+        return response.data;
+      } else {
+        throw new Error("Failed to fetch snapshot by ID");
+      }
+    } catch (error) {
+      handleApiError(error as AxiosError<unknown>, "Failed to fetch snapshot by ID");
+      return undefined;
     }
-  } catch (error) {
-    handleApiError(error as AxiosError<unknown>, "Failed to fetch snapshot by ID");
-    return undefined;
   }
-}
 
 async takeSnapshot(
   content: any,
@@ -257,17 +265,18 @@ async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
 
 
   // === DATASET OPERATIONS ===
-
   async uploadDataset(formData: FormData): Promise<any> {
     try {
       const response: AxiosResponse<any> = await internalApiService.post(
         `${this.config.baseURL}/upload`,
         formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          timeout: this.config.timeout,
+          config: {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            timeout: this.config.timeout,
+          }
         }
       );
       return response.data;
@@ -283,8 +292,10 @@ async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
         `${this.config.baseURL}/hypothesis-test`,
         { datasetId, testType },
         {
-          headers: headersConfig,
-          timeout: this.config.timeout,
+          config: {
+            headers: headersConfig,
+            timeout: this.config.timeout,
+          }
         }
       );
       console.log("Hypothesis test executed successfully:", response.data);
@@ -292,7 +303,6 @@ async batchSaveSnapshots(snapshots: any[]): Promise<boolean> {
       console.error("Error running hypothesis test:", error);
     }
   }
-
   // === UTILITY METHODS ===
 
   private createHeaders(token: string | null, userId: string | null, appVersion: string): Record<string, string> {

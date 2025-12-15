@@ -3,7 +3,7 @@ import { AppProps } from "next/app";
 import { NextRouter, Router, useRouter } from "next/router";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { useTheme } from "@/app/libraries/ui/useTheme";
-import { EnhancedThemeProvider } from '@/app/libraries/ui/theme/EnhancedThemeContextType';
+import { EnhancedThemeProvider } from '@/app/platform/styles/EnhancedThemeContextType'
 import CaptionManagementPageComponent from "@/app/features/videos/CaptionManagementComponent";
 import {
   PhaseHookConfig,

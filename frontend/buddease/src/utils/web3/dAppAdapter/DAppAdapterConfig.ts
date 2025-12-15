@@ -1,23 +1,21 @@
 import ApiConfig from '@/app/api/ApiConfigService';
 import { ClientConfig } from "@/app/client/Client";
 import { Team } from "@/app/components/teams/Team";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CacheConfig } from '@/app/config/CacheConfig';
 import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { LocalizationConfig } from '@/app/config/LocalizationConfig';
+import { LoggingConfig } from '@/app/config/LoggingConfig';
+import { PluginConfig } from '@/app/config/PluginConfig';
+import { StorageConfig } from '@/app/config/StorageConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { ThemeConfig } from '@/app/libraries/ui/theme/ThemeConfig';
-import { BaseData } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { UserRole } from "@/app/models/UserRole";
-import { PluginConfig } from '@/app/config/PluginConfig';
-import { LocalizationConfig } from '@/app/config/LocalizationConfig'
-import { StorageConfig } from '@/app/config/StorageConfig'
-import { CacheConfig } from '@/app/config/CacheConfig'
-import { LoggingConfig } from '@/app/config/LoggingConfig'
-import { BaseDataRoot } from '@/app/config/BaseConfig'
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;

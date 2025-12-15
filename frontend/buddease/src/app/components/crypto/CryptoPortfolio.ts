@@ -1,23 +1,18 @@
 // CryptoPortfolio.ts
-import internalApiService from '@/app/api/ApiClient';
-import ExtendedCryptoNotificationMessages from '@/app/api/ApiClient';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { default as ExtendedCryptoNotificationMessages, default as internalApiService } from '@/app/api/ApiClient';
 import { getMarketPrice } from '@/app/api/service/PriceApiService';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { TradeLogger } from "@/app/libraries/logging/TradeLogger";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 
-import { 
-  cryptoNotificationMessages, 
-  fetchCryptoData,
-  addCrypto,
-  removeCrypto,
-  updateCrypto
+import {
+  cryptoNotificationMessages
 } from '@/app/api/ApiCrypto';
 
 // Portfolio management in crypto

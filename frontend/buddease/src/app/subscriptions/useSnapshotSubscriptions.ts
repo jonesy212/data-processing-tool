@@ -1,9 +1,9 @@
 // useSnapshotSubscriptions.ts
 // hooks/subscriptions/useSnapshotSubscriptions.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback, useEffect, useRef } from 'react';
 
 interface SubscriptionManager<  

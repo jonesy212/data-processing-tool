@@ -4,11 +4,8 @@ import internalApiService from '@/app/api/ApiClient'; // Import the internal ser
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
-import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from "axios";
 
 const API_BASE_URL = endpoints.crypto;
@@ -148,9 +145,11 @@ export const fetchCryptoData = async (): Promise<any> => {
     // Using internalApiService for consistent error handling
     const response = await internalApiService.get(
       `${API_BASE_URL}/fetchCryptoData`,
-      { headers: headersConfig },
-      "FETCH_CRYPTO_DETAILS_SUCCESS" as keyof CryptoNotificationMessages,
-      "FETCH_CRYPTO_DATA_ERROR" as keyof CryptoNotificationMessages
+      {
+        config: { headers: headersConfig },
+        successMessageId: "FETCH_CRYPTO_DETAILS_SUCCESS" as keyof CryptoNotificationMessages,
+        errorMessageId: "FETCH_CRYPTO_DATA_ERROR" as keyof CryptoNotificationMessages
+      }
     );
     return response.data;
   } catch (error) {
@@ -170,10 +169,11 @@ export const addCrypto = async (newCrypto: any): Promise<void> => {
     await internalApiService.post(
       `${API_BASE_URL}/api/crypto`,
       newCrypto,
-      undefined, // config (optional)
-      "ADD_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
-      "ADD_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
-      { crypto: newCrypto }
+      {
+        successMessageId: "ADD_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
+        errorMessageId: "ADD_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
+        notificationData: { crypto: newCrypto }
+      }
     );
   } catch (error) {
     handleCryptoApiErrorAndNotify(
@@ -189,10 +189,11 @@ export const removeCrypto = async (cryptoId: string): Promise<void> => {
   try {
     await internalApiService.delete(
       `${API_BASE_URL}/api/crypto/${cryptoId}`,
-      undefined, // config (optional)
-      "REMOVE_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
-      "REMOVE_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
-      { cryptoId }
+      {
+        successMessageId: "REMOVE_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
+        errorMessageId: "REMOVE_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
+        notificationData: { cryptoId }
+      }
     );
   } catch (error) {
     handleCryptoApiErrorAndNotify(
@@ -212,10 +213,11 @@ export const updateCrypto = async (
     await internalApiService.put(
       `${API_BASE_URL}/api/crypto/${cryptoId}`,
       updatedCryptoData,
-      undefined, // config (optional)
-      "UPDATE_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
-      "UPDATE_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
-      { cryptoId, updatedData: updatedCryptoData }
+      {
+        successMessageId: "UPDATE_CRYPTO_SUCCESS" as keyof CryptoNotificationMessages,
+        errorMessageId: "UPDATE_CRYPTO_ERROR" as keyof CryptoNotificationMessages,
+        notificationData: { cryptoId, updatedData: updatedCryptoData }
+      }
     );
   } catch (error) {
     handleCryptoApiErrorAndNotify(
@@ -404,7 +406,6 @@ export const fetchTechnicalAnalysis = async (cryptoId: string): Promise<any> => 
 };
 
 // Function to fetch market trend for a crypto
-export const fetchMarketTrend // Function to fetch market trend for a crypto
 export const fetchMarketTrend = async (cryptoId: string): Promise<any> => {
   try {
     const response = await axiosInstance.get(

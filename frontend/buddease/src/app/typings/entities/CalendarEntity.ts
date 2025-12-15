@@ -1,19 +1,19 @@
 // CalendarEntity.ts
-import { Reminder } from '@/app/settings/Reminder'
-import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder'
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attendee } from "@/app/components/calendar/Attendee";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Reminder } from '@/app/settings/Reminder';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 
 // Combined Calendar Entity System
 
@@ -68,7 +68,7 @@ export type CalendarBaseParams = {
   IncludedFields: CalendarIncludedFields;
 };
 
-// 7. Snapshot types (MISSING FROM ORIGINAL)
+// 7. Snapshot types 
 export type CalendarSnapshot = Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 export type CalendarSnapshotData = SnapshotData<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 export type CalendarSnapshotStore = SnapshotStore<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
@@ -76,14 +76,14 @@ export type CalendarSnapshotWithCriteria = SnapshotWithCriteria<CalendarEntity, 
 export type CalendarSubscriberCollection = SubscriberCollection<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 export type CalendarRealtimeDataItem = RealtimeDataItem<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 
-// 8. Configuration types (MISSING FROM ORIGINAL)
+// 8. Configuration types 
 export type CalendarSnapshotStoreConfig = SnapshotStoreConfig<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 export type CalendarSnapshotsArray = SnapshotsArray<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 
-// 9. PARAMS type (MISSING FROM ORIGINAL)
+// 9. PARAMS type 
 export type CalendarParams = SnapshotConfigParams<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 
-// 10. Utility to pick or omit fields dynamically (MISSING FROM ORIGINAL)
+// 10. Utility to pick or omit fields dynamically 
 export type ApplyCalendarFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,

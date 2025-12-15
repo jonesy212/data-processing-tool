@@ -1,6 +1,5 @@
 // convertToSnapshotStoreConfig.ts
-import { Subscriber } from '@/app/subscribers/Subscriber';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

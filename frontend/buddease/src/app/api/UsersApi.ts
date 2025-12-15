@@ -1,13 +1,11 @@
 // UsersApi.ts
-import Logger from '@/app/libraries/logging/Logger';
-import { databaseConfig } from '@/app/config/endponts/databaseConfig';
+import UserService from '@/app/api/ApiUser';
+import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
+import Logger from '@/app/logging/Logger';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { User } from '@/app/users/User';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { User } from '@/app/users/User';
-import UserService from '@/app/api/ApiUser';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 // Function to log API errors
 const handleApiError = (error: any) => {
   console.error('API Error: ', error);

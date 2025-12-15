@@ -9,7 +9,7 @@ import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import FormatEnum from "@/app/form/FormatEnum";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
-import { SearchLogger } from "@/app/libraries/logging/Logger";
+import { SearchLogger } from '@/app/logging/Logger';
 import  { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, DocumentSize, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
 import { ContentManagementPhaseEnum } from "@/app/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/phases/FeedbackPhase";
@@ -19,7 +19,7 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/security/SecurityFeatureEnum";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { userService } from "@/app/api/ApiUserr";
+import { userService } from "@/app/api/ApiUser";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "../../routing/FuzzyMatch";
 import { BaseData, Data } from '@/app/models/data/Data';

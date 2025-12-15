@@ -2,7 +2,7 @@
 import axiosInstance from '@/app/api/csrfToken'
 import { ThemeCustomizationProps } from "@/app/hooks/userInterface/ThemeCustomization";
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
-import { ThemeLogger } from "@/app/libraries/logging/Logger";
+import { ThemeLogger } from '@/app/logging/Logger';
 import ThemeValidator from "@/app/components/security/validateTheme";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import React, { SetStateAction } from "react";

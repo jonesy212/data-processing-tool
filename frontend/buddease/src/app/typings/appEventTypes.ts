@@ -1,10 +1,10 @@
 // appEventTypes.ts
 import { SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
-import { BaseEvent, CustomEventType, SystemEvent } from '@/app/events/BaseEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseCustomEvent, CustomEventExtension } from '@/app/events/BaseCustomEvent';
+import { BaseEvent, CustomEventType, SystemEvent } from '@/app/events/BaseEvent';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";

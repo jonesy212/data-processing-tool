@@ -1,8 +1,8 @@
 // useTaskManagement.ts
 import { addTask, fetchTask, fetchTasks } from '@/app/api/TasksApi';
-import { useEffect } from 'react';
-import { Task } from '@/models/tasks/Task';
+import { Task } from '@/app/models/tasks/Task';
 import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
+import { useEffect } from 'react';
 
 const useTaskManagement = (newTask: Task) => {
   const taskManagerStore = useTaskManagerStore();

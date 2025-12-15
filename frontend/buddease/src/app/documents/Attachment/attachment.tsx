@@ -1,5 +1,5 @@
 // Attachment.tsx
-import FileMetadata from '@/app/components/models/file/FileManager';
+import { FileMetadata } from '@/app/typings/file/fileTypes'
 
 interface Attachment {
   id: string;

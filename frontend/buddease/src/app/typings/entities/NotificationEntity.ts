@@ -1,5 +1,8 @@
 // NotificationEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -7,11 +10,8 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { NotificationContextProps } from '@/app/state/context/NotificationContext';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { NotificationContextProps } from '@/app/state/context/NotificationContext'
 // 1. Base entity
 type NotificationEntity = BaseDataEntity;
 
@@ -140,19 +140,11 @@ type ApplyNotificationFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  NotificationEntity,
-  NotificationK,
-  NotificationMeta,
-  NotificationAttachment, 
-  NotificationExcludedFields,
-  NotificationIncludedFields, 
-  NotificationBaseParams, 
-  NotificationParams, 
-  NotificationSnapshot,
-  ApplyNotificationFieldFilters, 
-  NotificationSnapshotData, NotificationSnapshotsArray, NotificationSnapshotStore,
+  ApplyNotificationFieldFilters, AppNotificationProps, NotificationAttachment, NotificationBaseParams, NotificationEntity, NotificationExcludedFields,
+  NotificationIncludedFields, NotificationK,
+  NotificationMeta, NotificationParams,
+  NotificationSnapshot, NotificationSnapshotData, NotificationSnapshotsArray, NotificationSnapshotStore,
   NotificationSnapshotStoreConfig,
-  NotificationSnapshotWithCriteria, AppNotificationProps,
-  NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
+  NotificationSnapshotWithCriteria, NotificationStructuredMetadata, NotificationSubscriberCollection, NotificationUnifiedMetadata
 };
 

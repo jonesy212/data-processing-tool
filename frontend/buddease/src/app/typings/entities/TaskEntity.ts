@@ -1,9 +1,12 @@
 // TaskEntity.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
+import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Task } from '@/app/models/tasks/Task';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -11,14 +14,10 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { AppMetadata } from '@/app/typings/metadataTypes'
-import { BaseEntity } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { AppMetadata } from '@/app/typings/metadataTypes';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 interface TaskEntity extends BaseEntity<AppMetadata<AppTaskMetadata>> {
   name: string;
@@ -113,24 +112,17 @@ type ApplyTaskFieldFilters<
 export type AppTask = Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 
 export type {
-  TaskEntity, 
-  TaskK,
-  TaskMeta, 
-  TaskAttachment, 
-  TaskExcludedFields,
-  TaskIncludedFields,
-  TaskParams,
-  ApplyTaskFieldFilters, 
-  AppTaskMetadata, 
-  TaskBaseParams, 
-  TaskCollection, 
-  TaskRealtimeDataItem, 
-  TaskSnapshot, TaskSnapshotData, 
-  TaskSnapshotsArray, TaskSnapshotStore, 
-  TaskSnapshotStoreConfig, 
-  TaskSnapshotWithCriteria, 
-  TaskStructuredMetadata, 
-  TaskSubscriberCollection, 
+  ApplyTaskFieldFilters,
+  AppTaskMetadata, TaskAttachment, TaskBaseParams,
+  TaskCollection, TaskEntity, TaskExcludedFields,
+  TaskIncludedFields, TaskK,
+  TaskMeta, TaskParams, TaskRealtimeDataItem,
+  TaskSnapshot, TaskSnapshotData,
+  TaskSnapshotsArray, TaskSnapshotStore,
+  TaskSnapshotStoreConfig,
+  TaskSnapshotWithCriteria,
+  TaskStructuredMetadata,
+  TaskSubscriberCollection,
   TaskUnifiedMetadata
 };
 

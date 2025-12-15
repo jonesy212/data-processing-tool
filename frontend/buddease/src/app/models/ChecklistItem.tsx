@@ -1,17 +1,16 @@
 // ChecklistItem.tsx
-import ListGenerator from "@/app/generators/ListGenerator";
-import React from "react";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { 
-  DetailsEntity, 
-  DetailsK, 
-  DetailsMeta, 
-  DetailsAttachment, 
-  DetailsExcludedFields, 
-  DetailsIncludedFields 
-} from "@/app/typings/entities/DetailsEntity";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/config/BaseConfig";
+import { BaseDataEntity, DefaultMeta } from "@/app/config/BaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import ListGenerator from "@/app/generators/ListGenerator";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import {
+  DetailsAttachment,
+  DetailsEntity,
+  DetailsExcludedFields,
+  DetailsIncludedFields,
+  DetailsK,
+  DetailsMeta
+} from "@/app/typings/entities/DetailsEntity";
 
 // Use the specific DetailsEntity types
 interface ChecklistItemProps<

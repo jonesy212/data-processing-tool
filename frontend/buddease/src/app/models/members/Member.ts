@@ -2,7 +2,7 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserRole } from "@/app/models/UserRole";
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { Task } from '@/app/models/tasks/Task';

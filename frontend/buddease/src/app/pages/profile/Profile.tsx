@@ -1,9 +1,9 @@
 // Profile.tsx
-import React from 'react';
-import UserDetails, { User } from '@/app/users/User';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/app/pages/personas/PersonaBuilder';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import UserDetails, { User } from '@/app/users/User';
+import React from 'react';
 
 interface ProfileProps<
   T extends BaseDataEntity = BaseDataRoot,

@@ -1,5 +1,6 @@
 // VersionHistoryEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -9,7 +10,6 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Core VersionHistory type definitions
 type VersionHistoryEntity = BaseDataEntity & {
@@ -98,21 +98,15 @@ type VersionHistoryApplyFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  VersionHistoryEntity, 
-  VersionHistoryK,
-  VersionHistoryMeta,
-  VersionHistoryAttachment,
-  VersionHistoryExcludedFields,
-  VersionHistoryIncludedFields,
-  VersionHistoryApplyFieldFilters,
-  VersionHistoryParams, 
-  VersionHistoryRealtimeDataItem, 
-  VersionHistorySnapshot,
-  VersionHistoryBaseParams,
-  VersionHistorySnapshotData, 
-  VersionHistorySnapshotsArray, 
-  VersionHistorySnapshotStore, 
-  VersionHistorySnapshotStoreConfig, 
-  VersionHistorySnapshotWithCriteria, 
+  VersionHistoryApplyFieldFilters, VersionHistoryAttachment, VersionHistoryBaseParams, VersionHistoryEntity, VersionHistoryExcludedFields,
+  VersionHistoryIncludedFields, VersionHistoryK,
+  VersionHistoryMeta, VersionHistoryParams,
+  VersionHistoryRealtimeDataItem,
+  VersionHistorySnapshot, VersionHistorySnapshotData,
+  VersionHistorySnapshotsArray,
+  VersionHistorySnapshotStore,
+  VersionHistorySnapshotStoreConfig,
+  VersionHistorySnapshotWithCriteria,
   VersionHistorySubscriberCollection
 };
+

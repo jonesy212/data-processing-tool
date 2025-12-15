@@ -1,7 +1,10 @@
 
 import React, { useState } from "react";
 import { Picker } from "emoji-mart/react"; // Import Picker from emoji-mart/react
-import "emoji-mart/css/emoji-mart.css";
+
+if (typeof window !== 'undefined') {
+  import("emoji-mart/css/emoji-mart.css"); // Import CSS for styling
+}
 
 interface EmojiPicker {
   onSelect: (emoji: string) => void;

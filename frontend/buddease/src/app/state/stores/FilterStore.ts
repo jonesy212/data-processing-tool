@@ -1,18 +1,17 @@
 // FilterStore.ts
-import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { FilterActions } from "@/app/actions/FilterActions";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
 import {
-  clearFilteredEvents as clearFilteredEventsAction,
-  selectFilteredEvents,
+  clearFilteredEvents as clearFilteredEventsAction
 } from "@/app/state/redux/slices/FilteredEventsSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch
-import { FilterActions } from "@/app/actions/FilterActions";
-import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
-import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 interface FilteredEventsState<
@@ -93,4 +92,5 @@ const useFilterStore = () => {
 };
 
 export { useFilterStore };
-export type { FilteredEventsState }
+export type { FilteredEventsState };
+

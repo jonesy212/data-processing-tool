@@ -2,8 +2,8 @@
 import { ScheduledData } from '@/app/calendar/ScheduledData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
   
-import { User } from '@/app/users/User';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { User } from '@/app/users/User';
 
 interface FolderData<
   T extends BaseDataEntity,

@@ -1,41 +1,39 @@
 // DetailsListStore.ts
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { DetailsEntity,
-DetailsK,
-DetailsMeta,
-DetailsAttachment,
-DetailsExcludedFields,
-DetailsIncludedFields } from '@/app/typings/entities/DetailsEntity'
 import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+  DetailsAttachment,
+  DetailsEntity,
+  DetailsExcludedFields,
+  DetailsIncludedFields,
+  DetailsK,
+  DetailsMeta
+} from '@/app/typings/entities/DetailsEntity';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 
 import { CommunicationActionTypes } from "@/app/actions/CommunicationActions";
 import { DocumentStatus } from "@/app/components/documents/types";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DataDetails } from '@/app/models/data/Data';
 import {
-    DataStatus,
-    MeetingStatus,
-    PriorityTypeEnum,
-    ProductStatus,
-    SecurityStatus,
-    StatusType,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus
+  DataStatus,
+  MeetingStatus,
+  PriorityTypeEnum,
+  ProductStatus,
+  SecurityStatus,
+  StatusType,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus
 } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/members/Member";
 import { Project } from "@/app/models/projects/Project";
@@ -49,13 +47,10 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
 
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 import { useMetadata } from "@/app/config/useMetadata";
 
@@ -323,7 +318,7 @@ class DetailsListStoreClass <
       expirationDate: snapshotStoreProps.expirationDate,
       payload: snapshotStoreProps.payload,
       callback: snapshotStoreProps.callback,
-     
+      storeProps: snapshotStoreProps.storeProps
 
     });
 
@@ -835,14 +830,43 @@ class DetailsListStoreClass <
       };
 
       const category = this.determineCategory(delegateSnapshot);
+      await notify({
+        id: `snapshot_store_init_${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS || "Setting up snapshot details",
+        data: {
+          entityType: 'snapshot_store',
+          action: 'init',
+          category: category,
+          storeProps: {
+            entityType: storeProps.entityType,
+            storeName: storeProps.storeName,
+            // Add other relevant properties
+          },
+          snapConfig: {
+            configType: snapConfig.type,
+            // Add other relevant properties
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_INFO, // Changed from InvalidCredentials to appropriate type
+        level: 'info' as const,
+        metadata: {
+          operation: 'snapshot_store_init',
+          category: category,
+          isInternal: true,
+          hasGenerics: true,
+          genericTypes: {
+            T: 'BaseDataEntity',
+            K: 'T',
+            Meta: 'DefaultMeta',
+            AttachmentType: 'Attachment',
+            ExcludedFields: 'DefaultExcludedFields',
+            IncludedFields: 'keyof T'
+          }
+        }
+      });
 
-      await notify(
-        "internal snapshot notifications",
-        "Setting up snapshot details",
-        NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.InvalidCredentials
-      );
 
       const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
         initialState,

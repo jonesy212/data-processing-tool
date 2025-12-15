@@ -1,10 +1,9 @@
 // SubscriberUtils.ts
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { SubscriberCallback } from '@/app/subscribers/Subscriber';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Subscriber, SubscriberCallback } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Subscriber } from "@/app/subscribers/Subscriber";
 
 // Example converter function to map SubscriberCallback<T, K>[] to SubscriberCollection<T, K>[]
 function convertToSubscriberCollection<
@@ -28,4 +27,4 @@ function convertToSubscriberCollection<
     });
   }
 
-  export { convertToSubscriberCollection }
+  export { convertToSubscriberCollection };

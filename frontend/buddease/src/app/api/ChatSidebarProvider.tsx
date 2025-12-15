@@ -1,5 +1,5 @@
 // ChatSidebarProvider.tsx
-import { openChatSidebar } from '@/components/communications/chat/chatUtils';
+import { openChatSidebar } from '@/app/components/communications/chat/chatUtils';
 import React, { createContext, useContext, useState } from 'react';
 
 // Define the type for the props of ChatSidebarProvider

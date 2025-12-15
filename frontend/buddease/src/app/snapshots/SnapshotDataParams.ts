@@ -5,10 +5,9 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { DataStore } from '@/app/state/stores/DataStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
 import { BaseDataRoot } from '@/app/config/BaseConfig';

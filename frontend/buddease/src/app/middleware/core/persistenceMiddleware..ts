@@ -1,8 +1,8 @@
 // persistenceMiddleware..ts
-import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/types';
-import { Logger } from '@/app/logger/Logger';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import Logger from "@/app/logging/Logger";
+import { MiddlewareContext, MiddlewareFunction, MiddlewareNext } from '@/app/middleware/core/types';
 
 /**
  * Persistence Middleware

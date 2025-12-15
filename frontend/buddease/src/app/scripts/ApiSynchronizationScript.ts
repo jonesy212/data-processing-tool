@@ -1,14 +1,14 @@
 import { persistenceMiddleware } from '@/app/middleware/core/persistenceMiddleware.';
-import { MiddlewareFunction, MiddlewareContext, MiddlewareNext } from '@/app/middleware/core/types'
+import { MiddlewareContext, MiddlewareFunction, MiddlewareNext } from '@/app/middleware/core/types';
 
-import { PersistenceLayer, createPersistenceAdapter, usePersistenceLayer } from '@/app/dataIntegration/persistenceLayer';
-import { PersistenceConfig, CacheProxyConfig } from '@/app/typings/persistenceTypes';
+import { PersistenceLayer, createPersistenceAdapter } from '@/app/dataIntegration/persistenceLayer';
+import { CacheProxyConfig, PersistenceConfig } from '@/app/typings/persistenceTypes';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ChangeLogEntry, ChangeLogManager } from '@/app/logging/ChangeLogEntry';
 import { Version } from '@/app/versions/Version';
-import { ChangeLogManager, ChangeLogEntry } from '@/app/logging/ChangeLogEntry'
 
 
 class ApiSynchronizationScript<
@@ -104,63 +104,91 @@ class ApiSynchronizationScript<
     }
   }
 
-  // Enhanced change detection with persistence caching
-  private async detectChanges(): Promise<ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    try {
-      console.log('Detecting changes since last sync...');
-      
-      // Check cache first using your persistence layer
-      const cachedChanges = await this.persistenceLayer.loadSnapshot('last-detected-changes');
-      if (cachedChanges && this.isCacheValid(cachedChanges)) {
-        console.log('Using cached changes');
-        return cachedChanges.data; // Your cached changes
-      }
 
-      // Get changes from external API
-      const response = await fetch(`${this.apiBaseUrl}/changes?since=${this.lastSyncTimestamp?.toISOString() || ''}`, {
-        headers: {
-          'Authorization': `Bearer ${this.authToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch changes: ${response.statusText}`);
-      }
-
-      const changesData = await response.json();
-      
-      // Transform API response to ChangeLogEntry format
-      const changes: ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = 
-        changesData.changes.map((change: any) => 
-          this.createChangeLogEntry(
-            'system',
-            change.type as 'created' | 'updated' | 'deleted',
-            change.data,
-            change.previousState,
-            change.version,
-            change.metadata
-          )
-        );
-
-      // Cache the changes using your persistence layer
-      await this.persistenceLayer.saveSnapshot({
-        id: 'last-detected-changes',
-        timestamp: new Date(),
-        data: changes,
-        metadata: {
-          cache: true,
-          changeCount: changes.length
-        }
-      } as any);
-
-      console.log(`Detected ${changes.length} changes to sync`);
-      return changes;
-    } catch (error) {
-      console.error('Change detection error:', error);
-      throw new Error(`Failed to detect changes: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  private isChangeLogEntryArray(
+    data: any
+  ): data is ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    if (!Array.isArray(data)) return false;
+    
+    // Check first item if array is not empty
+    if (data.length > 0) {
+      const firstItem = data[0];
+      return (
+        typeof firstItem === 'object' &&
+        firstItem !== null &&
+        'id' in firstItem &&
+        'timestamp' in firstItem &&
+        'author' in firstItem &&
+        'changeType' in firstItem &&
+        'changes' in firstItem
+      );
     }
+    
+    return true; // Empty array is valid
   }
+
+  // Enhanced change detection with persistence caching
+    private async detectChanges(): Promise<ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+      try {
+        console.log('Detecting changes since last sync...');
+        
+        // Check cache first using your persistence layer
+        const cachedChanges = await this.persistenceLayer.loadSnapshot('last-detected-changes');
+        if (cachedChanges && this.isCacheValid(cachedChanges) && cachedChanges.data) {
+          // Use type guard to check if data is the correct type
+          if (this.isChangeLogEntryArray(cachedChanges.data)) {
+            console.log('Using cached changes');
+            return cachedChanges.data;
+          } else {
+            console.warn('Cached changes format invalid, fetching fresh changes');
+          }
+        }
+
+        // Get changes from external API
+        const response = await fetch(`${this.apiBaseUrl}/changes?since=${this.lastSyncTimestamp?.toISOString() || ''}`, {
+          headers: {
+            'Authorization': `Bearer ${this.authToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch changes: ${response.statusText}`);
+        }
+
+        const changesData = await response.json();
+        
+        // Transform API response to ChangeLogEntry format
+        const changes: ChangeLogEntry<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = 
+          changesData.changes.map((change: any) => 
+            this.createChangeLogEntry(
+              'system',
+              change.type as 'created' | 'updated' | 'deleted',
+              change.data,
+              change.previousState,
+              change.version,
+              change.metadata
+            )
+          );
+
+        // Cache the changes using your persistence layer
+        await this.persistenceLayer.saveSnapshot({
+          id: 'last-detected-changes',
+          timestamp: new Date(),
+          data: changes,
+          metadata: {
+            cache: true,
+            changeCount: changes.length
+          }
+        } as any);
+
+        console.log(`Detected ${changes.length} changes to sync`);
+        return changes;
+      } catch (error) {
+        console.error('Change detection error:', error);
+        throw new Error(`Failed to detect changes: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
 
   // Enhanced error handling with persistence logging
   private async handleSyncError(error: any): Promise<void> {
@@ -204,7 +232,9 @@ class ApiSynchronizationScript<
       payload,
       store: null, // You might want to pass your store here
       userId: 'sync-system',
-      metadata: {}
+      metadata: {},
+      timestamp: new Date(),
+      plugins: []
     };
 
     return await next(context);
@@ -507,26 +537,18 @@ class ApiSynchronizationScript<
   }
 
   public clearChangeLog(): void {
-    // Clear the logs array directly
-    this.logs = [];
+    // Clear through the change log manager instead
+    this.changeLogManager.clearLogs(); // Assuming this method exists
     
     // Optional: Also clear from persistent storage if needed
     this.clearPersistedLogs();
   }
 
-    // 2. tiny helper (or inline it)
+  // 2. tiny helper (or inline it)
   private persistLogs(logs: any[]): void {
     localStorage.setItem(`${this.entityName}_change_log`, JSON.stringify(logs));
   }
 
-  private clearPersistedLogs(): void {
-    try {
-      localStorage.removeItem(`${this.entityName}_change_log`);
-      this.persistLogs([]); // clear
-    } catch (error) {
-      console.warn('Failed to clear persisted logs:', error);
-    }
-  }
 
   private clearPersistedLogs(): void {
     try {

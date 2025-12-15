@@ -22,6 +22,7 @@ export interface FeatureToggleStore {
   fetchFeatureTogglesFailure: (error: string) => void;
 }
 
+
 class FeatureToggleStoreClass implements FeatureToggleStore {
   featureToggles: FeatureToggle[] = [];
 
@@ -40,16 +41,23 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       ? NOTIFICATION_MESSAGES.FeatureToggle.ENABLE_SUCCESS
       : NOTIFICATION_MESSAGES.FeatureToggle.DISABLE_SUCCESS;
 
-    notify(
-      "Feature toggled: " + feature,
-      "Admin login successful",
-      NOTIFICATION_MESSAGES.Login.LOGIN_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+    notify({
+      id: `toggleFeature${feature.replace(/\s+/g, '')}${isEnabled ? 'Enable' : 'Disable'}Success`,
+      message: notificationMessage,
+      data: {
+        extra: {
+          feature,
+          isEnabled,
+          operation: isEnabled ? "Enable feature" : "Disable feature"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
 
     // Use FocusManager to manage focusable elements
-    const focusManager = focusManagerInstance
+    const focusManager = focusManagerInstance;
     // Assuming you have some focusable elements, you can add or remove them as needed
     // For example:
     const elementToFocus = document.getElementById("elementId");
@@ -88,24 +96,37 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
 
   fetchFeatureTogglesSuccess(featureToggles: FeatureToggle[]): void {
     this.featureToggles = featureToggles;
-    notify(
-      "Features imported",
-      "Success importing features",
-      NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+    notify({
+      id: "fetchFeatureTogglesSuccess",
+      message: NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_SUCCESS,
+      data: {
+        extra: {
+          operation: "Fetch feature toggles",
+          count: featureToggles.length
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
   }
 
   fetchFeatureTogglesFailure(error: string): void {
     console.error("Error fetching feature toggles:", error);
-    notify(
-      "Error importing features",
-      "Error import feature",
-      NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_FAILURE,
-      new Date(),
-      NotificationTypeEnum.OPERATION_ERROR
-    );
+    notify({
+      id: "fetchFeatureTogglesError",
+      message: NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_FAILURE,
+      data: {
+        originalError: error,
+        extra: {
+          errorMessage: "Error fetching feature toggles",
+          operation: "Fetch feature toggles"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error'
+    });
   }
 }
 

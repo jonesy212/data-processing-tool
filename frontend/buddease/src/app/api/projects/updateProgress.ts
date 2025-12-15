@@ -1,8 +1,8 @@
 // updateProgress.ts
 // /src/app/api/teams/update-progress/route.ts
+import DatabaseClient from '@/app/api/DatabaseClient';
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/DatabaseClient';
-import databaseConfig from '@/app/lib/server/database/config';
+import { databaseConnection } from '@/app/config/databaseConnection';  // Import the renamed config
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const dbClient = new DatabaseClient(databaseConfig);
+    const dbClient = new DatabaseClient(databaseConnection);
     await dbClient.connect();
 
     try {
@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const dbClient = new DatabaseClient(databaseConfig);
+    const dbClient = new DatabaseClient(databaseConnection);
     await dbClient.connect();
 
     try {

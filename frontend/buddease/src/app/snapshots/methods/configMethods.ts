@@ -1,12 +1,12 @@
 // configMethods.ts
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/app/snapshots/snapshotstoreConfig";
 import { InitializedState } from "@/app/state/stores/DataStore";
-import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
 
 
 interface ConfigMethodsInterface<
@@ -70,7 +70,7 @@ export class ConfigMethods<
   }
 
   // ✅ Add this method
-  protected async initializeOptions(): Promise<void> {
+  public async initializeOptions(): Promise<void> {
     const cfg = await this.getConfig();
     if (cfg) {
       // perform any initialization logic with cfg.options

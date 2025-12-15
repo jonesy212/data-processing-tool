@@ -1,19 +1,19 @@
 // AppStructure.ts
-import { SharedIdentifiers, BaseEntityProperties } from '@/app/documents/RelatedProps';
 import * as apiFile from '@/app/api/ApiFiles';
-import { Versions } from '@/app/versions/Version'
 import SecurityAPI from '@/app/api/SecurityAPI';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties } from '@/app/documents/RelatedProps';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { Content } from '@/app/models/content/AddContent';
 import { Permission } from "@/app/permissions/Permission";
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
+import { AllTypes } from '@/app/typings/PropTypes';
+import { Versions } from '@/app/versions/Version';
 import { VersionData } from '@/app/versions/VersionData';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
-import { AllTypes } from '@/app/typings/PropTypes';
 
 const { userId } = useSecureUserId()
 export type UnifiedVersionMap<
@@ -55,7 +55,7 @@ interface AppStructureItem<
   draft: boolean;
 
   permissions?: Permission[];
-  appPermissions?: AppStructurePermissions;
+  appPermissions?: AppStructurePermissions[];
 
   /**
    * Versions for this item (if any).
@@ -84,6 +84,26 @@ interface AppStructureItem<
 }
 
 interface AppStructurePermissions extends Permission {
+    // Permission type/scope
+  type: 'read' | 'write' | 'delete' | 'admin' | 'share' | string;
+  
+  // Who has this permission
+  users?: string[]; // Array of user IDs
+  groups?: string[]; // Array of group IDs
+  roles?: string[]; // Array of role names
+  
+  // Conditions/restrictions
+  conditions?: {
+    expiresAt?: Date;
+    startDate?: Date;
+    ipRestriction?: string[];
+    // etc.
+  };
+  
+  // Metadata
+  grantedBy?: string;
+  grantedAt?: Date;
+  reason?: string;
   customPermission?: boolean;
 }
 

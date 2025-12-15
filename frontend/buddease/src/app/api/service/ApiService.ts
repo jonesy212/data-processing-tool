@@ -1,20 +1,20 @@
 // ApiService.ts
 import { endpoints } from "@/app/api/endpointConfigurations";
-import FileData from "@/app/components/models/data/FileData";
-import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import FileData from "@/app/models/data/FileData";
+import { BaseApiService } from '@/app/api/service/BaseApiService';
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { ConfigurationService } from "@/app/services/ConfigurationService";
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { getBackendStructureFilePath, STORE_KEYS } from "@/utils/cache/CacheManager";
+import { getBackendStructureFilePath } from "@/utils/cache/CacheManager";
+import { STORE_KEYS } from '@/app/libraries/cache/client/constants';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { currentAppName } from "@/app/versions/AppVersion";
 import { AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 
-// Define the API base URL
-const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL
-const { notify } = useNotification();
-
+// Define the API base URL - fix this based on your actual endpoint structure
+// Assuming endpoints.data.baseUrl or similar structure
+const API_BASE_URL = typeof endpoints.data === 'string' ? endpoints.data : 
+                     (endpoints.data as any)?.baseUrl || 'http://localhost:3000/api';
 
 interface CustomStyle extends DocxStyle {
   fontSize?: string;
@@ -24,73 +24,144 @@ interface CustomStyle extends DocxStyle {
   // Add other custom properties as needed
 }
 
-const storeId = useSecureStoreId()
-if (!storeId){
-  throw new Error("storeId already exists")
-}
+// Remove hooks from module level - these can't be used here
+// const { notify } = useNotification(); // ERROR: Can't use hooks outside components
+// const storeId = useSecureStoreId(); // ERROR: Can't use hooks outside components
 
-const authToken = getAuthToken()
+// Helper function to get storeId when needed (call from React components)
+export const getStoreId = async (): Promise<string> => {
+  // You'll need to implement this differently
+  // Could be from localStorage, context, or API
+  const storeId = localStorage.getItem('storeId') || sessionStorage.getItem('storeId');
+  if (!storeId) {
+    throw new Error("Store ID not found");
+  }
+  return storeId;
+};
 
-// Usage example:
-const cacheKey = STORE_KEYS.USER_PREFERENCES; // Replace with the actual key you want to use
+// Usage example - make this a function, not module-level code
+export const getCacheFilePath = async (): Promise<string> => {
+  try {
+    const storeId = await getStoreId();
+    const cacheKey = STORE_KEYS.USER_PREFERENCES;
+    return getBackendStructureFilePath(cacheKey);
+  } catch (error) {
+    console.error('Error getting cache file path:', error);
+    return '';
+  }
+};
 
-// Get the file path dynamically based on the cache key
-const filePath = getBackendStructureFilePath(cacheKey);
+// Make authToken a function, not module-level
+export const getAuthTokenAsync = async (): Promise<string> => {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Authentication token not found");
+  }
+  return token;
+};
 
-async function initializeAppData() {
-  const configServiceInstance = ConfigurationService.getInstance();
+export async function initializeAppData(): Promise<CustomApp> {
+  try {
+    const configServiceInstance = ConfigurationService.getInstance();
 
-  // Await all configuration values
-  const apiKey = await configServiceInstance.getApiKey();
-  const appId = await configServiceInstance.getAppId();
-  const appDescription = await configServiceInstance.getAppDescription();
-  const username = await configServiceInstance.getUsername(); // assuming you added this
+    // Await all configuration values
+    const apiKey = await configServiceInstance.getApiKey();
+    const appId = await configServiceInstance.getAppId();
+    const appDescription = await configServiceInstance.getAppDescription();
+    const username = await configServiceInstance.getUsername() || 'anonymous';
+    const authToken = await getAuthTokenAsync();
 
-  // Create AppSettings instance
-  const appSettings = new AppSettings(apiKey, appId, appDescription, username);
+    // Import AppSettings if needed
+    // Assuming AppSettings is available from somewhere
+    const { AppSettings } = await import('@/app/settings/AppSettings');
+    
+    // Create AppSettings instance
+    const appSettings = new AppSettings(apiKey, appId, appDescription, username);
 
-  // Create the appData object
-  const appData: CustomApp = {
-    id: appSettings.getAppId(),
-    username: appSettings.getUsername(),
-    name: currentAppName,
-    description: appSettings.getAppDescription(),
-    authToken: authToken,
-    apiKey: appSettings.getApiKey(),
-    relatedData: [],
-    sharedRelationships: {
-      childIds: [],
+    // Create the appData object
+    const appData: CustomApp = {
+      id: appSettings.getAppId(),
+      username: appSettings.getUsername(),
+      name: currentAppName,
+      description: appSettings.getAppDescription(),
+      authToken: authToken,
+      apiKey: appSettings.getApiKey(),
       relatedData: [],
-    },
-  };
+      sharedRelationships: {
+        childIds: [],
+        relatedData: [],
+      },
+    };
 
-  return appData;
+    return appData;
+  } catch (error) {
+    console.error('Error initializing app data:', error);
+    throw error;
+  }
 }
 
 class ApiService extends BaseApiService {
-  constructor(API_BASE_URL: string) {
-    super(API_BASE_URL);
+  private notificationHandler?: (message: string) => void;
+
+  constructor(baseURL?: string) {
+    // Use provided baseURL or fallback
+    super(baseURL || API_BASE_URL);
   }
 
-  // Define the post method (now simplified)
-  public async post<T>(endpointPath: string, requestData: any, config?: AxiosRequestConfig): Promise<T> {
-    return super.post<T>(endpointPath, requestData, config);
+  // Optionally set notification handler
+  setNotificationHandler(handler: (message: string) => void) {
+    this.notificationHandler = handler;
   }
 
-  // Define the get method (now simplified)
+  // GET method
   public async get<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
     return super.get<T>(endpointPath, config);
   }
 
-  // Define the callApi method (can be removed or kept for backward compatibility)
+  // POST method
+  public async post<T>(endpointPath: string, requestData: any, config?: AxiosRequestConfig): Promise<T> {
+    return super.post<T>(endpointPath, requestData, config);
+  }
+
+  // PUT method (full update)
+  public async put<T>(endpointPath: string, requestData: any, config?: AxiosRequestConfig): Promise<T> {
+    return super.put<T>(endpointPath, requestData, config);
+  }
+
+  // PATCH method (partial update)
+  public async patch<T>(endpointPath: string, requestData: any, config?: AxiosRequestConfig): Promise<T> {
+    return super.patch<T>(endpointPath, requestData, config);
+  }
+
+  // DELETE method
+  public async delete<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
+    return super.delete<T>(endpointPath, config);
+  }
+
+  // HEAD method
+  public async head<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
+    return super.head<T>(endpointPath, config);
+  }
+
+  // OPTIONS method
+  public async options<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
+    return super.options<T>(endpointPath, config);
+  }
+
+  // Common API methods
   public async callApi<T>(endpointPath: string, requestData: any): Promise<T> {
     return this.post<T>(endpointPath, requestData);
   }
 
-  // Define sendFileChangeEvent method to send file change data
   public async sendFileChangeEvent(file: FileData): Promise<void> {
     try {
-      const endpointPath = '/file/change-event';
+      // FIX: Check if endpoints.files exists and has sendFileChangeEvent
+      if (!endpoints.files || !(endpoints.files as any).sendFileChangeEvent) {
+        throw new Error('sendFileChangeEvent endpoint not configured');
+      }
+      
+      const endpointConfig = (endpoints.files as any).sendFileChangeEvent;
+      
       const requestData = {
         fileName: file.fileName,
         fileSize: file.fileSize,
@@ -102,14 +173,18 @@ class ApiService extends BaseApiService {
         imageData: file.imageData,
       };
 
-      await this.post<void>(endpointPath, requestData);
+      await this.post<void>(endpointConfig.path, requestData);
+      
+      // Optional: Send notification
+      if (this.notificationHandler) {
+        this.notificationHandler(`File change event sent for ${file.fileName}`);
+      }
     } catch (error) {
       console.error('Error in sendFileChangeEvent:', error);
       throw error;
     }
   }
 
-  // Add other API-specific methods here
   public async getUserProfile(userId: string): Promise<any> {
     return this.get<any>(`/users/${userId}/profile`);
   }
@@ -117,10 +192,50 @@ class ApiService extends BaseApiService {
   public async updateUserSettings(userId: string, settings: any): Promise<any> {
     return this.put<any>(`/users/${userId}/settings`, settings);
   }
+
+  public async partiallyUpdateUserSettings(userId: string, settings: Partial<any>): Promise<any> {
+    return this.patch<any>(`/users/${userId}/settings`, settings);
+  }
+
+  public async deleteUserAccount(userId: string): Promise<void> {
+    return this.delete<void>(`/users/${userId}`);
+  }
+
+  // Add method using getApiEndpoint helper if available
+  public async sendFileChangeEventUsingHelper(file: FileData): Promise<void> {
+    try {
+      // If you have the getApiEndpoint utility
+      const { getApiEndpoint } = await import('@/app/api/endpointConfigurations');
+      const { url } = getApiEndpoint('files', 'sendFileChangeEvent');
+      
+      const requestData = {
+        fileName: file.fileName,
+        fileSize: file.fileSize,
+        fileType: file.fileType,
+        filePath: file.filePath,
+        uploader: file.uploader,
+        uploadDate: file.uploadDate,
+        attachments: file.attachments,
+        imageData: file.imageData,
+      };
+
+      await this.post<void>(url, requestData);
+    } catch (error) {
+      console.error('Error in sendFileChangeEvent:', error);
+      throw error;
+    }
+  }
 }
 
+// Create singleton instance
+let apiServiceInstance: ApiService | null = null;
+
+export const getApiService = (baseURL?: string): ApiService => {
+  if (!apiServiceInstance) {
+    apiServiceInstance = new ApiService(baseURL);
+  }
+  return apiServiceInstance;
+};
 
 export default ApiService;
-export { initializeAppData };
 export type { CustomStyle };
-

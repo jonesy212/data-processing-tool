@@ -1,6 +1,6 @@
 // DummyCardLoader.tsx
 import React from "react";
-import { ContentItem } from "@/app/models/content/ContentItem";
+import { ContentItem } from "@/app/components/models/content/ContentItem";
 import DummyCard from "./DummyCard";
  
 

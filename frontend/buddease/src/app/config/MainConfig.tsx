@@ -1,17 +1,17 @@
 // MainConfig.tsx
-import { Button, Card, Divider, Tabs, Typography } from "antd";
-import React, { useState } from "react";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import {
   ButtonGenerator,
   useButtonGeneratorProps,
 } from "@/app/generators/GenerateButtons";
+import BackendStructure from "@/app/server/database/BackendStructure";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { Button, Card, Divider, Tabs, Typography } from "antd";
+import React, { useState } from "react";
 import { BackendConfig } from "./BackendConfig";
 import { FrontendConfig } from "./FrontendConfig";
-import BackendStructure from "@/app/server/database/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
 import getAppPath from "./appStructure/appPath";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

@@ -1,8 +1,8 @@
 // CommonDocumentPropertiesAndMethods.ts
-import { Task } from "@/app/models/tasks/Task";
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Task } from "@/app/models/tasks/Task";
 
 interface CommonDocumentPropertiesAndMethods<  
 T extends BaseDataEntity,

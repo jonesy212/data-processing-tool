@@ -1,17 +1,13 @@
 // TaskDataSource.ts
 // TaskEntitySource.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseData } from "@/app/models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
+import { Task } from "@/app/models/tasks/Task";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
-import { PhaseMeta } from "@/app/typings/phaseTypes";
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/app/typings/entities/TaskEntity";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea } from "@/app/users/Ideas";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Task } from "@/app/models/tasks/Task";
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
 // Define the tasks data source with proper generic parameters
@@ -69,7 +65,7 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
     
     // Complex type properties (properly typed)
     phase: {} as Phase<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
-    videoData: {} as VideoData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
+    videoData: {} as VideoData<TaskEntity, TaskK>,
     ideas: [] as Idea[],
     details: {} as DetailsItem<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
     
@@ -232,4 +228,4 @@ const tasksDataSource: Record<string, Task<TaskEntity, TaskK, TaskMeta, TaskAtta
   }
 };
 
-export { tasksDataSource }
+export { tasksDataSource };

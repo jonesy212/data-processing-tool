@@ -1,46 +1,45 @@
 // Project.tsx
 // projects/Project.ts (CLIENT-SIDE ONLY)
-import { Exchange } from '@/app/models/cypto/Exchange';
-import { TeamService } from '@/app/services/teamService'
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { implementThen } from '@/app/state/stores/CommonEvent';
 import { Collaborator } from "@/app/collaborators/Collaborator";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { BaseDataRoot } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { sharedBaseData } from '@/app/config/metadata/MetadataHooks';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SharedTimestamps } from '@/app/documents/RelatedProps';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { Exchange } from '@/app/models/cypto/Exchange';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { StatusType } from "@/app/models/data/StatusType";
+import { Member } from "@/app/models/members/Member";
 import {
-    CustomPhaseHooks, Phase,
-    PhaseData,
+  CustomPhaseHooks, Phase,
+  PhaseData,
 } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/components/teams/Team";
-import {
-    PhaseEntity,
-    PhaseExcludedFields,
-    PhaseK,
-    PhaseMeta
-} from '@/app/typings/phaseTypes';
-import { ProjectAttachment, ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { sharedBaseData } from '@/app/config/metadata/MetadataHooks';
-import { SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Member } from "@/app/models/members/Member";
+import { Progress } from "@/app/models/tracker/ProgressBar";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { UpdatedProjectDetailsProps } from "@/app/projects/UpdateProjectDetails";
+import { TeamService } from '@/app/services/teamService';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
+import { implementThen } from '@/app/state/stores/CommonEvent';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
+import {
+  PhaseEntity,
+  PhaseExcludedFields,
+  PhaseK,
+  PhaseMeta
+} from '@/app/typings/phaseTypes';
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import React, { ReactNode, useEffect, useState } from "react";
-import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { UpdatedProjectDetailsProps } from "@/app/projects/UpdateProjectDetails";
 
 
 
@@ -645,7 +644,7 @@ export interface ProjectData<
       fileSharing: boolean;
       realTimeEditing: boolean;
     };
-    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     exchangeData: ExchangeData[];
     averagePrice: number;
 

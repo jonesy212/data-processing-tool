@@ -1,19 +1,16 @@
 // CollaborationSlice.ts
 import UserService, {
-    userId,
-    userService,
+  userId,
+  userService,
 } from "@/app/api/ApiUser";
-import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Communication } from "@/app/components/communications/CommunicationPage";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import CommunityContribution from "@/app/components/crypto/CommunityContribution";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Whiteboard } from "@/app/components/whiteboard/Whiteboard";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { DocumentBuilderOptions } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { Change } from "@/app/documents/NoteData";
@@ -22,20 +19,29 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { mergeChanges } from "@/app/documents/editing/autosave";
 import { Feedback } from "@/app/features/support/Feedback";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
-import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { Member } from '@/app/models/members/Member';
 import { Project } from '@/app/models/projects/Project';
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import CollaborationSettings from "@/app/pages/community/CollaborationSettings";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
-import { SecurityMeasure } from "@/app/server/security/SecurityMeasures";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import Milestone from '@/app/state/redux/slices/CalendarSlice';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { useUIManager } from "@/app/state/stores/UISlice";
 import { Document } from "@/app/state/stores/DocumentStore";
+import { useUIManager } from "@/app/state/stores/UISlice";
 import { Todo } from "@/app/todos/Todo";
+import {
+  CollaboratorAttachment,
+  CollaboratorEntity,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields,
+  CollaboratorK,
+  CollaboratorMeta
+} from '@/app/typings/entities/CollaboratorEntity';
+import { SecurityMeasure } from '@/app/typings/securityMeasureTypes';
 import { Idea } from "@/app/users/Ideas";
 import { VersionData } from "@/app/versions/VersionData";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -55,6 +61,7 @@ enum ResourceType {
   Link,
   Other,
 }
+
 interface CollaborationState<
   T extends BaseDataEntity,
   K extends T = T,
@@ -104,9 +111,12 @@ interface CollaborationState<
   // Add other collaboration-related state properties here
 }
 
-const initialState: CollaborationState<
-  Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  >, UnifiedMetaDataOptions
+const initialState: CollaborationState<CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields
 > = {
   sharedProjects: [],
   sharedMeetings: [],

@@ -1,17 +1,7 @@
 // securityMeasureTypes.ts
-// SecurityMeasureTypes.ts
 import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import { SecurityStatus } from "@/app/models/data/StatusType";
-
-// SecurityMeasures.ts
-interface SecurityMeasure {
-  id: string;
-  description: string;
-  type: SecurityMeasureType;
-  // Add more fields as needed
-}
-
-
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
 
 export enum SecurityMeasureType {
   Header = 'header',
@@ -24,38 +14,31 @@ export enum SecurityMeasureType {
   Custom = 'custom'
 }
 
-
-
-// Define the structure for different security measures
-export interface SecurityMeasureHeader extends SecurityMeasure {
-  type: SecurityMeasureType.Header;
-  name: string;
-  description: string;
-  value: string;
-}
-
-export interface SecurityMeasureLogger extends SecurityMeasure {
-  type: SecurityMeasureType.Logger;
-  logFilePath: string;
-  description: string
-}
-
-// Base Security Measure Interface
+// Define the base properties that ALL security measures should have
 export interface SecurityMeasureBase {
+  // Core identification
   id: string;
   type: SecurityMeasureType;
   name: string;
-  description?: string;
+  
+  // Status and lifecycle
   enabled: boolean;
+  status: AllStatus | 'active' | 'inactive' | 'error';
+  lastChecked: Date;
   priority: 'low' | 'medium' | 'high' | 'critical';
+  
+  // Metadata
+  description?: string;
   implementationDate?: Date;
   lastUpdated?: Date;
+  tags?: string[];
+  category?: string;
+  owner?: string;
 }
 
 // Header Security Measure
 export interface SecurityMeasureHeader extends SecurityMeasureBase {
   type: SecurityMeasureType.Header;
-  name: string;
   value: string;
   appliesTo: 'request' | 'response' | 'both';
   conditions?: {
@@ -134,8 +117,6 @@ export interface SecurityMeasureAudit extends SecurityMeasureBase {
 // Compliance Security Measure
 export interface SecurityMeasureCompliance extends SecurityMeasureBase {
   type: SecurityMeasureType.Compliance;
-  status: SecurityStatus;
-  lastChecked: Date;
   standards: Array<'GDPR' | 'HIPAA' | 'PCI-DSS' | 'SOC2' | 'ISO27001'>;
   requirements: Array<{
     standard: string;
@@ -150,6 +131,13 @@ export interface SecurityMeasureCompliance extends SecurityMeasureBase {
   };
 }
 
+// Custom Security Measure
+export interface SecurityMeasureCustom extends SecurityMeasureBase {
+  type: SecurityMeasureType.Custom;
+  customType: string;
+  configuration: Record<string, any>;
+}
+
 // Security Measure Union Type
 export type SecurityMeasureUnion =
   | SecurityMeasureHeader
@@ -158,7 +146,8 @@ export type SecurityMeasureUnion =
   | SecurityMeasureValidation
   | SecurityMeasureAccessControl
   | SecurityMeasureAudit
-  | SecurityMeasureCompliance;
+  | SecurityMeasureCompliance
+  | SecurityMeasureCustom;
 
 // Additional types needed for the SnapshotSecurity interface
 export interface SecurityScanResult {
@@ -205,11 +194,6 @@ export interface SecurityReport {
   recommendations: string[];
 }
 
-
-
-
-
-
 // Example of creating security measures
 const securityMeasures: SecurityMeasureUnion[] = [
   {
@@ -220,26 +204,40 @@ const securityMeasures: SecurityMeasureUnion[] = [
     appliesTo: 'response',
     enabled: true,
     priority: 'high',
-    description: 'security measures'
+    description: 'security measures',
+    status: 'active', // FIXED: Changed from 'sever' to 'active'
+    lastChecked: new Date()
   },
   {
+    // All required base properties
     id: 'encryption-aes256',
     type: SecurityMeasureType.Encryption,
     name: 'AES-256 Encryption',
+    enabled: true,
+    status: 'active',
+    lastChecked: new Date(),
+    priority: 'critical',
+    
+    // Encryption-specific properties
     algorithm: 'AES-256',
     keyManagement: {
       type: 'kms',
       rotationPeriod: 90
     },
     encryptionScope: 'data-at-rest',
-    integrityCheck: true,
-    enabled: true,
-    priority: 'critical'
+    integrityCheck: true
   },
   {
+    // All required base properties
     id: 'audit-logging',
     type: SecurityMeasureType.Audit,
     name: 'Comprehensive Audit Logging',
+    enabled: true,
+    status: 'active',
+    lastChecked: new Date(),
+    priority: 'high',
+    
+    // Audit-specific properties
     auditEvents: ['access', 'modification', 'deletion', 'security-events'],
     retentionPeriod: 365,
     alertOn: {
@@ -251,11 +249,10 @@ const securityMeasures: SecurityMeasureUnion[] = [
     reporting: {
       frequency: 'daily',
       recipients: ['security-team@company.com']
-    },
-    enabled: true,
-    priority: 'high'
+    }
   }
-];
+]
+
 const snapshotSecurity: SnapshotSecurity = {
   // --- Core security properties ---
   isEncrypted: false,
@@ -524,5 +521,5 @@ checkPermissions: (userId: string, action: string): boolean => {
   }),
 };
 
-
-export type { SecurityMeasure };
+export type { SecurityMeasureBase as SecurityMeasure };
+export { securityMeasures }

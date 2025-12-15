@@ -1,6 +1,7 @@
 // batchMethods.ts
 import { SnapshotActions } from "@/app/actions/SnapshotActions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
@@ -9,7 +10,6 @@ import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export const BatchMethods = {
   /**

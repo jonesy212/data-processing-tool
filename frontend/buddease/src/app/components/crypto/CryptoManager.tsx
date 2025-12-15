@@ -1,9 +1,9 @@
 // CryptoManager.tsx
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
 import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/app/community/newsFeedIntegration';
+import updateAnalyticsUI from '@/app/components/libraries/ui/updateAnalyticsUI';
 import { NewsArticle } from "@/app/pages/blog/Blog";
 import calculateMetrics from '@/app/projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
-import updateAnalyticsUI from '@/components/libraries/ui/updateAnalyticsUI';
 import { CryptoHolding } from '@/CryptoHolding';
 import CryptoTransaction from '@/CryptoTransaction';
 import * as crypto from 'crypto';

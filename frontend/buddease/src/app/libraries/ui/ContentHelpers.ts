@@ -1,12 +1,11 @@
 // ContentHelpers.ts
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Task } from "@/app/models/tasks/Task";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
+import { Task } from "@/app/models/tasks/Task";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { Todo } from "@/app/todos/Todo";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export function isTask<
   T extends BaseDataEntity,

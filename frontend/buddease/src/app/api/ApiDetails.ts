@@ -3,11 +3,12 @@
 
 import { detailsApiService } from '@/app/api/service/DetailsService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
+import { ApiService } from '@/app/api/service/ApiService';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useDetailsContext } from '@/app/models/data/DetailsContext';
 import { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 
 // Define notification messages for details API
@@ -32,6 +33,9 @@ const detailsNotificationMessages: DetailsNotificationMessages = {
   REMOVE_DETAILS_SUCCESS: 'Details removed successfully',
   REMOVE_DETAILS_ERROR: 'Failed to remove details',
 };
+
+
+export const apiService = new ApiService('YOUR_API_BASE_URL_HERE'); // Initialize your ApiService with the base URL
 
 // Function to handle API errors and notify
 const handleDetailsApiErrorAndNotify = (

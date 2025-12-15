@@ -1,14 +1,13 @@
 // ContentEntity.ts
+import { ContentItem } from '@/app/components/models/content/ContentItem';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { CommonData } from '@/app/models/CommonData';
+import { Content } from '@/app/models/content/AddContent';
+import { Task } from "@/app/models/tasks/Task";
 import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
-import { ContentItem } from '@/app/components/models/content/ContentItem'
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Content } from '@/app/models/content/AddContent';
-import { CommonData } from '@/app/models/CommonData'
-import { Task } from "@/app/models/tasks/Task";
 
 export interface ContentEntity extends BaseDataEntity {
   // Core content properties

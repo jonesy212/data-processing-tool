@@ -1,5 +1,5 @@
 // analyticsMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '@/app/middleware/types'
+import { MiddlewareFunction } from '@/app/middleware/core/types';
 
 export interface AnalyticsConfig {
   enabled: boolean;

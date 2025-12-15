@@ -1,7 +1,7 @@
 // DocumentBuilder.tsx
 import {
-    createContentStateFromText,
-    fetchContentIdFromAPI
+  createContentStateFromText,
+  fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
@@ -22,15 +22,15 @@ import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDa
 import { useMetadata } from "@/app/config/useMetadata";
 import { ModifiedDate } from "@/app/documents/DocType";
 import {
-    getFormattedOptions
+  getFormattedOptions
 } from "@/app/documents/DocumentCreationUtils";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { FinancialReport, ResearchReport, TechnicalReport } from "@/app/documents/Report";
 import {
-    DocumentAnimationOptions,
-    DocumentBuilderProps,
+  DocumentAnimationOptions,
+  DocumentBuilderProps,
 } from "@/app/documents/SharedDocumentProps";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
@@ -56,8 +56,8 @@ import PromptViewer from "@/app/prompts/PromptViewer";
 import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
-    addDocumentSuccess,
-    DocumentObject
+  addDocumentSuccess,
+  DocumentObject
 } from "@/app/state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
@@ -70,7 +70,7 @@ import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { AppMetadata } from '@/app/typings/metadataTypes';
 import AccessHistory, {
-    convertAccessRecordToHistory,
+  convertAccessRecordToHistory,
 } from "@/app/versions/AccessHistory";
 import AppVersionImpl from "@/app/versions/AppVersion";
 import VersionImpl, { Version } from "@/app/versions/Version";
@@ -81,17 +81,19 @@ import { getMetadataFromPlainText } from "@/utils/metadataUtils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
-    ContentState,
-    Editor,
-    EditorState,
-    Modifier,
-    RichUtils,
+  ContentState,
+  Editor,
+  EditorState,
+  Modifier,
+  RichUtils,
 } from "draft-js";
-import "draft-js/dist/Draft.css";
 import { versions } from "process";
 import React, { useState } from "react";
-import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-  
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+
+if (typeof window !== 'undefined') {
+  import("draft-js/dist/Draft.css");
+}
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 

@@ -1,13 +1,14 @@
 // AppSlice.ts
 import { UserData } from '@/app/users/User';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { ProjectData } from '@/app/models/projects/Project';
 import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { AppActions } from '@/app/actions/AppActions';
 import { UserProfile, userService } from '@/app/api/ApiUser';
 import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
-import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice'
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
@@ -33,6 +34,7 @@ import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
 import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { EntityId } from '@reduxjs/toolkit';
+import { BaseDataRoot } from '@/app/config/BaseConfig';
 
 interface AppState<BaseDataRoot> {
     user: UserProfile<BaseDataRoot>,
@@ -175,7 +177,7 @@ const initialState: AppState<BaseDataRoot> = {
   // Event & Collaboration
   eventManager: {} as EventState,
   // Event & Collaboration
-  collaborationManager: {} as CollaborationState<UserData, ProjectData>,
+  collaborationManager: {} as CollaborationState<UserData, ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 
   // Entity & Notification
   entityManager: {} as EntityState<any, EntityId>,

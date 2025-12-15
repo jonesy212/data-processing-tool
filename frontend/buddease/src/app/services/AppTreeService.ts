@@ -106,62 +106,62 @@ export class AppTreeService {
   }
 
   private searchInAnalysis(analysis: any, query: string): any[] {
-    const results = [];
-    const searchTerm = query.toLowerCase();
+      const results: any[] = []; // Add explicit type
+      const searchTerm = query.toLowerCase();
 
-    // Search in interfaces
-    analysis.interfaces.forEach(([name, interfaceInfo]: [string, any]) => {
-      if (name.toLowerCase().includes(searchTerm) || 
-          interfaceInfo.file.toLowerCase().includes(searchTerm)) {
-        results.push({ type: 'interface', data: interfaceInfo });
-      }
-    });
+      // Search in interfaces
+      analysis.interfaces.forEach(([name, interfaceInfo]: [string, any]) => {
+          if (name.toLowerCase().includes(searchTerm) || 
+              interfaceInfo.file.toLowerCase().includes(searchTerm)) {
+              results.push({ type: 'interface', data: interfaceInfo });
+          }
+      });
 
-    // Search in components
-    analysis.components.forEach(([name, component]: [string, any]) => {
-      if (name.toLowerCase().includes(searchTerm) || 
-          component.file.toLowerCase().includes(searchTerm)) {
-        results.push({ type: 'component', data: component });
-      }
-    });
+      // Search in components
+      analysis.components.forEach(([name, component]: [string, any]) => {
+          if (name.toLowerCase().includes(searchTerm) || 
+              component.file.toLowerCase().includes(searchTerm)) {
+              results.push({ type: 'component', data: component });
+          }
+      });
 
-    // Search in APIs
-    analysis.apis.forEach(([filePath, apiInfo]: [string, any]) => {
-      if (filePath.toLowerCase().includes(searchTerm) || 
-          apiInfo.methods.some((method: any) => 
-            method.name.toLowerCase().includes(searchTerm))) {
-        results.push({ type: 'api', data: apiInfo });
-      }
-    });
+      // Search in APIs
+      analysis.apis.forEach(([filePath, apiInfo]: [string, any]) => {
+          if (filePath.toLowerCase().includes(searchTerm) || 
+              apiInfo.methods.some((method: any) => 
+                  method.name.toLowerCase().includes(searchTerm))) {
+              results.push({ type: 'api', data: apiInfo });
+          }
+      });
 
-    return results;
+      return results;
   }
 
   private searchInAppTree(appTreeData: any, query: string): any[] {
-    const results = [];
-    const searchTerm = query.toLowerCase();
+      const results: any[] = []; // Add explicit type
+      const searchTerm = query.toLowerCase();
 
-    // Recursive search function
-    const searchRecursive = (obj: any, path: string = '') => {
-      if (typeof obj === 'object' && obj !== null) {
-        Object.entries(obj).forEach(([key, value]) => {
-          const currentPath = path ? `${path}.${key}` : key;
-          
-          if (key.toLowerCase().includes(searchTerm)) {
-            results.push({ path: currentPath, value });
+      // Recursive search function
+      const searchRecursive = (obj: any, path: string = '') => {
+          if (typeof obj === 'object' && obj !== null) {
+              Object.entries(obj).forEach(([key, value]) => {
+                  const currentPath = path ? `${path}.${key}` : key;
+                  
+                  if (key.toLowerCase().includes(searchTerm)) {
+                      results.push({ path: currentPath, value });
+                  }
+                  
+                  if (typeof value === 'object' && value !== null) {
+                      searchRecursive(value, currentPath);
+                  } else if (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) {
+                      results.push({ path: currentPath, value });
+                  }
+              });
           }
-          
-          if (typeof value === 'object' && value !== null) {
-            searchRecursive(value, currentPath);
-          } else if (typeof value === 'string' && value.toLowerCase().includes(searchTerm)) {
-            results.push({ path: currentPath, value });
-          }
-        });
-      }
-    };
+      };
 
-    searchRecursive(appTreeData);
-    return results;
+      searchRecursive(appTreeData);
+      return results;
   }
 
   // Generate reports combining all data sources

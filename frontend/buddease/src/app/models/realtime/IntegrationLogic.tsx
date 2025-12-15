@@ -1,12 +1,12 @@
 // IntegrationLogic.tsx
 import { Label } from "@/app/branding/BrandingSettings";
 import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
-import Milestone from "@/app/components/calendar/CalendarSlice";
+import Milestone from '@/app/typings/milestoneTypes'
 import { YearInfo } from "@/app/components/calendar/CalendarYear";
 import { Month, MonthInfo } from "@/app/components/calendar/Month";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { BaseData } from '@/app/models/data/Data';
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { NotificationContextProps } from '@/app/state/context/NotificationContext';
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 

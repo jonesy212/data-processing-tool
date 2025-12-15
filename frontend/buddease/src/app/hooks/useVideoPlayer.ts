@@ -72,23 +72,38 @@ export const useVideoPlayer = (videoUrl?: string) => {
         .then(stream => {
           // Handle screen sharing stream
           console.log('Screen sharing started');
-          notify(
-            "Screen Sharing",
-            "Screen sharing activated",
-            NOTIFICATION_MESSAGES.Video.SCREEN_SHARE_STARTED,
-            new Date(),
-            NotificationTypeEnum.INFO
-          );
+          notify({
+            id: "screenShareStarted",
+            message: NOTIFICATION_MESSAGES.Video.SCREEN_SHARE_STARTED,
+            data: {
+              extra: {
+                operation: "Screen sharing",
+                status: "started",
+                timestamp: new Date().toISOString()
+              }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.INFO,
+            level: 'info'
+          });
         })
         .catch(error => {
           console.error('Error sharing screen:', error);
-          notify(
-            "Screen Share Error",
-            error.message,
-            NOTIFICATION_MESSAGES.Video.SCREEN_SHARE_ERROR,
-            new Date(),
-            NotificationTypeEnum.ERROR
-          );
+          notify({
+            id: "screenShareError",
+            message: NOTIFICATION_MESSAGES.Video.SCREEN_SHARE_ERROR,
+            data: {
+              originalError: error.message,
+              extra: {
+                errorMessage: "Failed to start screen sharing",
+                operation: "Screen sharing",
+                status: "error"
+              }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.ERROR,
+            level: 'error'
+          });
         });
     }
   }, [notify]);
@@ -96,67 +111,110 @@ export const useVideoPlayer = (videoUrl?: string) => {
   const selectScreen = useCallback((screenId: string) => {
     setPlayerState(prev => ({ ...prev, selectedScreenId: screenId }));
     console.log('Selected screen:', screenId);
-    notify(
-      "Screen Selected",
-      `Screen ${screenId} selected`,
-      NOTIFICATION_MESSAGES.Video.SCREEN_SELECTED,
-      new Date(),
-      NotificationTypeEnum.INFO
-    );
+    notify({
+      id: "screenSelected",
+      message: NOTIFICATION_MESSAGES.Video.SCREEN_SELECTED,
+      data: {
+        extra: {
+          operation: "Screen selection",
+          screenId,
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info'
+    });
   }, [notify]);
 
   const toggleDualScreen = useCallback(() => {
+    const newDualScreenState = !playerState.isDualScreen;
     setPlayerState(prev => ({ 
       ...prev, 
-      isDualScreen: !prev.isDualScreen 
+      isDualScreen: newDualScreenState 
     }));
-    notify(
-      "Dual Screen",
-      `Dual screen ${!playerState.isDualScreen ? 'enabled' : 'disabled'}`,
-      NOTIFICATION_MESSAGES.Video.DUAL_SCREEN_TOGGLED,
-      new Date(),
-      NotificationTypeEnum.INFO
-    );
+    notify({
+      id: "dualScreenToggled",
+      message: NOTIFICATION_MESSAGES.Video.DUAL_SCREEN_TOGGLED,
+      data: {
+        extra: {
+          operation: "Toggle dual screen",
+          isDualScreen: newDualScreenState,
+          status: newDualScreenState ? 'enabled' : 'disabled',
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info'
+    });
   }, [playerState.isDualScreen, notify]);
 
   const toggleNotes = useCallback(() => {
+    const newNotesVisibleState = !playerState.areNotesVisible;
     setPlayerState(prev => ({ 
       ...prev, 
-      areNotesVisible: !prev.areNotesVisible 
+      areNotesVisible: newNotesVisibleState 
     }));
-    notify(
-      "Notes",
-      `Notes ${!playerState.areNotesVisible ? 'shown' : 'hidden'}`,
-      NOTIFICATION_MESSAGES.Video.NOTES_TOGGLED,
-      new Date(),
-      NotificationTypeEnum.INFO
-    );
+    notify({
+      id: "notesToggled",
+      message: NOTIFICATION_MESSAGES.Video.NOTES_TOGGLED,
+      data: {
+        extra: {
+          operation: "Toggle notes",
+          areNotesVisible: newNotesVisibleState,
+          status: newNotesVisibleState ? 'shown' : 'hidden',
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info'
+    });
   }, [playerState.areNotesVisible, notify]);
 
   const tagRevisionPoint = useCallback((tag: string) => {
+    const timestamp = Math.floor(playerState.currentTime);
     setPlayerState(prev => ({
       ...prev,
-      revisionTags: [...prev.revisionTags, `${tag}-${Math.floor(prev.currentTime)}`]
+      revisionTags: [...prev.revisionTags, `${tag}-${timestamp}`]
     }));
-    notify(
-      "Revision Tag",
-      `Tagged at ${Math.floor(playerState.currentTime)}s: ${tag}`,
-      NOTIFICATION_MESSAGES.Video.REVISION_TAGGED,
-      new Date(),
-      NotificationTypeEnum.INFO
-    );
+    notify({
+      id: "revisionTagged",
+      message: NOTIFICATION_MESSAGES.Video.REVISION_TAGGED,
+      data: {
+        extra: {
+          operation: "Tag revision point",
+          tag,
+          timestampSeconds: timestamp,
+          formattedTime: `${timestamp}s`,
+          fullTag: `${tag}-${timestamp}`,
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info'
+    });
   }, [playerState.currentTime, notify]);
 
   const alertSpaCy = useCallback(() => {
     // Integration with spaCy for NLP processing
     console.log('Alerting spaCy for NLP processing');
-    notify(
-      "spaCy Alert",
-      "NLP processing triggered",
-      NOTIFICATION_MESSAGES.Video.SPACY_ALERTED,
-      new Date(),
-      NotificationTypeEnum.INFO
-    );
+    notify({
+      id: "spacyAlerted",
+      message: NOTIFICATION_MESSAGES.Video.SPACY_ALERTED,
+      data: {
+        extra: {
+          operation: "SpaCy NLP processing",
+          action: "triggered",
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info'
+    });
     
     // You can add actual spaCy integration here
     // Example: processVideoTranscriptWithSpacy(videoRef.current);

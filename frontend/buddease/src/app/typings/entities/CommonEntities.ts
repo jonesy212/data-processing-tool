@@ -1,5 +1,5 @@
 // CommonEntities.ts
-import { BackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import BackendStructure from '@/app/server/database/BackendStructure'
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Document } from '@/app/state/stores/DocumentStore';

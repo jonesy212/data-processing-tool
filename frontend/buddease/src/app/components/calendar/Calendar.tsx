@@ -1,27 +1,27 @@
 // Calendar.tsx
 import { Label } from '@/app/branding/BrandingSettings';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import YourCalendarLibrary from '@/app/calendar/YourCalendarLibrary';
 import MonthView from '@/app/components/calendar/CalendarMonthView';
-import Milestone, { CalendarManagerState } from '@/app/state/redux/slices/calendar/CalendarSlice';
-import WeekView from '@/app/components/calendar/CalendarWeek';
 import { YearInfo } from '@/app/components/calendar/CalendarYear';
 import YearView from '@/app/components/calendar/CalendarYearView';
 import DayView from '@/app/components/calendar/DayOfWeek';
 import { MonthInfo } from '@/app/components/calendar/Month';
-import YourCalendarLibrary from '@/app/calendar/YourCalendarLibrary';
 import { CryptoHolding } from '@/app/components/crypto/CryptoHolding';
 import CryptoTransaction from '@/app/components/crypto/CryptoTransaction';
-import { ContentPost } from '@/app/typings/categories/ContentPost';
 import { Task } from '@/app/components/models/tasks/Task';
-import { Progress } from '@/app/components/models/tracker/ProgressBar';
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from '@/app/models/projects/Project';
+import { Progress } from "@/app/models/tracker/ProgressBar";
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
+import { Milestone } from '@/app/typings/milestoneTypes'
 import { Resource } from '@/app/state/redux/slices/CollaborationSlice';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { ContentPost } from '@/app/typings/contentTypes';
+import WeekView from '@/app/components/calendar/WeekView';
 import React from 'react';
 import DatePickerComponent from 'react-datepicker';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
 
 interface CommonCalendarProps<
   T extends BaseDataEntity,
@@ -103,7 +103,7 @@ interface CalendarProps<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >
-  extends CommonCalendarProps {
+  extends CommonCalendarProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   view: string | CalendarManagerState;
   container: any;
   speed: number;

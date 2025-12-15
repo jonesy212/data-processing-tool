@@ -4,8 +4,7 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { sendNotification } from "./UserSlice";
-
+import { sendNotification } from '@/app/state/redux/slices/UserSlice'
 export const useExternalApiAuth = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);

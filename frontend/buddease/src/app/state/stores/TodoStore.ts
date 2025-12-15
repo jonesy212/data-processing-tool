@@ -14,10 +14,8 @@ import { generateSnapshotId } from '@/utils/snapshotUtils';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";

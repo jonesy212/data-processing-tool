@@ -7,8 +7,8 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import metadata from '@/app/layout';
 import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotStoreConfig } from '@/app/snapshots';
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { useAuth } from "@/app/state/context/AuthContext";
@@ -24,7 +24,7 @@ import { dataVersions } from "@/app/config/DocumentBuilderConfig";
 import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
 import { sharedMetadata } from "@/app/config/MetadataStateManager";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -33,7 +33,6 @@ import { Member } from "@/app/models/members/Member";
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
-import { backendStructure } from '@/app/server/database/BackendStructure';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { EventManager } from "@/app/state/stores/DataStore";
@@ -558,7 +557,7 @@ class VersionImpl<
   appVersion: string = "1.0.0";
   draft: boolean = false
   buildNumber: number | string = 0;
-  versionNumber: string = "";
+  versionNumber: string | number = "";
   description: string = "";
   isPublished: boolean = false;
   publishedAt: Date | null = null;
@@ -571,7 +570,7 @@ class VersionImpl<
   url: string = "";
   documentId: string | number = 0;
   userId: string = "";
-  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versions?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   
   // If you want to use Versions interface, add it as a separate property:
@@ -869,6 +868,34 @@ static createVersion<
   }
 
   private createDefaultVersionData(): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    const documentId = this.documentId !== undefined ? String(this.documentId) : undefined;
+
+    // Ensure versionData matches the expected type
+    const versionDataValue = (() => {
+      if (this.versionData === undefined || this.versionData === null) {
+        return undefined;
+      }
+      
+      // If it's a number, convert to string (since number is not allowed)
+      if (typeof this.versionData === 'number') {
+        return String(this.versionData);
+      }
+      
+      // If it's already string or VersionData object, return as-is
+      return this.versionData as string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    })();
+
+    // Create the version object (you need to define id, buildNumber, versionNumber, name)
+    const versionObj = {
+      id: this.id || '', // You need to define where these come from
+      buildNumber: this.buildNumber || 0,
+      versionNumber: this.versionNumber || '',
+      name: this.name || '',
+      major: this.major ?? 0,
+      minor: this.minor ?? 0,
+      patch: this.patch ?? 0
+    };
+
     return {
       id: this.id,
       parentId: this.parentId ?? null,
@@ -878,7 +905,7 @@ static createVersion<
       isActive: this.isActive ?? true,
       releaseDate: this.releaseDate ? (this.releaseDate instanceof Date ? this.releaseDate.toISOString() : this.releaseDate) : '',
       buildVersions: this.buildVersions,
-      documentId: this.documentId ?? this.documentId.toString(),
+      documentId: documentId,
       draft: this.draft ?? false,
       userId: this.userId ?? '',
       content: this.content ?? '',
@@ -903,12 +930,7 @@ static createVersion<
       publishedAt: this.publishedAt ?? null,
       source: this.source ?? 'initial',
       status: this.status ?? 'active',
-      version: {
-        id, buildNumber, versionNumber, name,
-        major: this.major,
-        minor: this.minor,
-        patch: this.patch
-      },
+      version: versionObj,
       timestamp: new Date().toString(),
       user: 'unknown',
       changes: this.changes ?? [],

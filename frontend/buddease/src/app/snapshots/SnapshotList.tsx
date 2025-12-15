@@ -3,17 +3,20 @@
 import { Label } from "@/app/branding/BrandingSettings";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { ChatRoom } from "@/app/communications/ChatRoom";
-import { Sender } from "@/app/communications/CommunicationPage";
+import { Sender } from "@/app/components/communications/CommunicationPage";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
+
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Data } from "@/app/models/data/Data";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -21,7 +24,6 @@ import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/utils/web3/createMessage";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-
 
 interface SnapshotItem<
   T extends BaseDataEntity,
@@ -40,16 +42,17 @@ interface SnapshotItem<
     userId?: number, 
     sender?: Sender, 
     channel?: ChatRoom
-  ) => Message
+  ) => Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   itemContent?: ContentItem; 
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
-  user?: User;
+  user?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   categories?: Category[];
   label?: string | Label | Record<string, string> | null
   key: string 
 }
 
 
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
 type LabelLike = string | Label | Record<string, string>;
 
@@ -260,10 +263,10 @@ const createSnapshotItem = <
 >(
   snapshotId: string | null,
   data: T,
-  category?: Category,  
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,  // Add snapshotManager as a parameter
+  category?: Category,  
   storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & MessageProps // Combine store and message props
 ): SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   
@@ -304,27 +307,28 @@ const createSnapshotItem = <
  )
   
  
-  // Extend baseSnapshot with additional properties for SnapshotItem
-  const snapshotItem: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-    ...baseSnapshot, // must already have deleted, initialState, etc.
-    ...snapshotStoreConfig,
-    // required SnapshotItem props
-    // Provide proper required fields
-      id: baseSnapshot.id ?? UniqueIDGenerator.generateID("snapshot", "base", NotificationTypeEnum.Default),
-      key: baseSnapshot.key ?? `key-${Date.now()}`,
+    // Extend baseSnapshot with additional properties for SnapshotItem
+    const snapshotItem: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      ...baseSnapshot, // must already have deleted, initialState, etc.
+      ...snapshotStoreConfig,
+      // required SnapshotItem props
+      // Provide proper required fields
+        id: baseSnapshot.id ?? UniqueIDGenerator.generateID("snapshot", "base", NotificationTypeEnum.Default),
+        key: baseSnapshot.key ?? `key-${Date.now()}`,
 
-    message: (type, content, additionalData, userId, sender, channel) =>
-    createMessage(type, content, additionalData, userId, sender, channel),
+      message: (type, content, additionalData, userId, sender, channel) =>
+      createMessage(type, content, additionalData, userId, sender, channel),
 
-    itemContent: undefined,
-    data, // ensure `data` matches InitializedData<T,K,Meta,ExcludedFields>
+      itemContent: undefined,
+      data, // ensure `data` matches InitializedData<T,K,Meta,ExcludedFields>
 
-    user: undefined,
-    categories: [],
-    label: undefined,
-    
-};
-
+      user: undefined,
+      categories: [],
+      label: undefined,
+      latestVersion,
+      initialConfig,
+      mappedSnapshotData,
+    }
 
   return snapshotItem;
 };

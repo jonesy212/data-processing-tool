@@ -1,13 +1,13 @@
 // route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import isValidAuthToken from "@/app/components/security/AuthValidation";
+import isValidAuthToken from "@/app/server/security/AuthValidation";
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { 
   implementSecurityMeasures, 
   SecurityMeasureType,
   SecurityMeasureHeader 
-} from '@/app/components/security/SecurityMeasures'; // Adjust import path
+} from '@/app/server/security/SecurityMeasures'; // Adjust import path
 
 // Security headers for file operations
 const fileSecurityMeasures = [

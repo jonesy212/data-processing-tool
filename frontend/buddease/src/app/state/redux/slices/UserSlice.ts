@@ -1,43 +1,42 @@
 // UserSlice.ts
-import { AllTypes } from '@/app/typings/PropTypes';
-import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { SecuritySettings } from '@/app/settings/SecuritySettings';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
-import { CustomTransaction, SmartContractInteraction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserSettings } from "@/app/config/UserSettings";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
-import { BaseData, Data } from '@/app/models/data/Data';
-import { TagsRecord } from '@/app/models/tracker/Tag';
+import { BaseData } from '@/app/models/data/Data';
+import { Member } from "@/app/models/members/Member";
 import { Phase } from "@/app/models/phases/Phase";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
-import { TaskEntity } from "@/app/typings/entities/TaskEntity";
-import { Member } from "@/app/models/members/Member";
-import { NFT } from "@/app/service/crypto/NFT";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
-import { InitializedState } from "@/app/state/stores/DataStore";
+import { NFT } from "@/app/service/crypto/NFT";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import { AppTask, TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity'
+import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import {  SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 import { Deadline } from "@/app/state/redux/slices/ProjectSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { InitializedState } from "@/app/state/stores/DataStore";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import TodoImpl, { Todo } from "@/app/todos/Todo";
-import { BaseResponseType } from '@/app/typings/responseTypes'
+import TodoImpl from "@/app/todos/Todo";
+import { AllTypes } from '@/app/typings/PropTypes';
 import { BlockchainAsset } from "@/app/typings/cryptoTypes/BlockchainAsset";
-import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
+import { CustomTransaction, SmartContractInteraction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
+import { TaskEntity } from "@/app/typings/entities/TaskEntity";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { BaseResponseType } from '@/app/typings/responseTypes';
 import { VideoData } from "@/app/typings/videoTypes/Video";
-import { UserSettings } from "@/app/config/UserSettings";
+import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 

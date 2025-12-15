@@ -1,4 +1,5 @@
 // ComponentsConfig.ts
+// For UI component styling / theming
 export interface ComponentsConfig {
   button: {
     textColor?: string;

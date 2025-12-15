@@ -2,9 +2,9 @@
 import { handleApiError } from "@/app/api/ApiLogs";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from "@/app/models/data/StatusType";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { useNotification, NotificationDataPayload } from "@/app/state/context/NotificationContext";
+import { NotificationDataPayload, useNotification } from "@/app/state/context/NotificationContext";
 import { User } from "@/app/users/User";
 import { AxiosError } from "axios";
 
@@ -174,9 +174,9 @@ const createUserInDatabase = async <
 
 // Exporting the function to use in other parts of the application
 export {
-    createUserInDatabase,
-    fetchUserFromDatabase,
-    fetchUserIdsFromDatabase, handleUserApiErrorAndNotify, notifyError, notifySuccess
+  createUserInDatabase,
+  fetchUserFromDatabase,
+  fetchUserIdsFromDatabase, handleUserApiErrorAndNotify, notifyError, notifySuccess
 };
 
 // Export types for use elsewhere

@@ -1,12 +1,9 @@
 // createLatestVersion.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import VersionImpl from "@/app/versions/Version";
-import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
-import { VersionData, VersionHistory } from "./VersionData";
-import { Version } from "@/app/versions/Version";
-import { VersionEntity, VersionK,VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
+import VersionImpl, { Version } from "@/app/versions/Version";
+import { VersionHistory } from "./VersionData";
 
 // ✅ Clean, type-safe default version generator
 export function createLatestVersion<

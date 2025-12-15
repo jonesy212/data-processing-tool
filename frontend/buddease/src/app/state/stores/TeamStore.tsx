@@ -1,9 +1,9 @@
 // TeamStore.tsx
 // TeamManagerStore.tsx
-import userService from "@/app/api/ApiUser";
+import { SnapshotOperationType } from "@/app/actions/SnapshotActions";
+import { userService } from "@/app/api/ApiUser";
 import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
-import { useAssignBaseStore } from "@/app/AssignBaseStore";
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -14,18 +14,24 @@ import { Meta } from '@/app/models/data/dataStoreMethods';
 import { Phase } from '@/app/models/phases/Phase';
 import { Project } from "@/app/models/projects/Project";
 import { TeamData } from "@/app/models/teams/TeamData";
-import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig, SnapshotStoreProps, TagsRecord } from '@/app/snapshots';
+import { TagsRecord } from '@/app/models/tracker/Tag';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
+
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import SnapshotStoreConfigComponent from "@/app/snapshots/SnapshotStoreConfigComponent";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { VideoData } from "@/app/video/Video";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import {
-    AssignTeamMemberStore,
-    useAssignTeamMemberStore,
+  AssignTeamMemberStore,
+  useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 
@@ -38,7 +44,7 @@ interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
   tags: TagsRecord<T>;
-  phase: CustomPhasea<T, K> | null;
+  phase: CustomPhase<T, K> | null;
   // Add other properties as needed to match the structure of Data
 }
 
@@ -46,7 +52,7 @@ interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
 export interface TeamManagerStore<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = TeamMeta,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> ,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -107,10 +113,10 @@ export interface TeamManagerStore<
 const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 
-useTeamManagerStore = <
+const useTeamManagerStore = <
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = TeamMeta,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -134,8 +140,7 @@ useTeamManagerStore = <
   >("active");
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(""); // Initialize it with an empty string
 
-  const storeId = useSnapshotManager(initialStoreId)
-  
+ 
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
 
@@ -147,9 +152,9 @@ useTeamManagerStore = <
       snapshotId: string,
       data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       events: Record<string, any>,
-      dataItems: RealtimeDataItem[],
+      dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      payload: ConfigureSnapshotStorePayload<T, Meta<T, K>>,
+      payload: ConfigureSnapshotStorePayloade<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
     ) => {
@@ -166,12 +171,13 @@ useTeamManagerStore = <
       };
     }
   };
-
+  const storeId = useSnapshotManager(initialStoreId, storeProps)
+  
   const { name, version, schema, options, category, config, expirationDate, payload, callback, endpointCategory, initialConfig } = storeProps
 
   // Initialize SnapshotStore
-  const initSnapshot = {} as SnapshotStoreConfig<T, K>;
-  let operation: SnapshotOperation<T, K>= {
+  const initSnapshot = {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  let operation: SnapshotOperations<T, K>= {
     operationType: SnapshotOperationType.TeamManagerSnapshot
   }
 
@@ -290,10 +296,10 @@ useTeamManagerStore = <
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<T, K> = {} as SnapshotStoreConfig<T, K>;
+    const snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId, options, category, config, operation);
+    const teamSnapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({storeId, options, category, config, operation});
 
     const teamData = getTeamData(teamId, team, team.color);
     const teamSnapshot = createSnapshot(teamData);

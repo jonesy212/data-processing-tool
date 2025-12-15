@@ -1,30 +1,28 @@
 // DocumentStore.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { FinancialReport } from '@/app/documents/Report';
 import { ClientInformation } from '@/app/client/ClientInformation';
-import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { Team } from '@/app/components/teams/Team';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, Entity } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
-import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { DocumentOptions, DocumentSize } from '@/app/documents/DocumentOptions';
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { ResearchReport, TechnicalReport } from '@/app/documents/Report';
+import { FinancialReport, ResearchReport, TechnicalReport } from '@/app/documents/Report';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { DocumentWithBuilderProps } from '@/app/hooks/userScenarioCreation';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, TodoSubtasks } from '@/app/models/data/Data';
+import { TodoSubtasks } from '@/app/models/data/Data';
 import FileData from '@/app/models/data/FileData';
 import FolderData from '@/app/models/data/FolderData';
 import { DocumentPhaseEnum, ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
@@ -33,18 +31,16 @@ import { UserRoleEnum } from '@/app/models/UserRoles';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AllTypes } from "@/app/typings/PropTypes";
 import AccessHistory from '@/app/versions/AccessHistory';
 import { Version } from '@/app/versions/Version';
 import { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { DocumentSize } from '@/app/documents/DocumentOptions';
-import { DocumentWithBuilderProps } from '@/app/hooks/userScenarioCreation';
 import { VersionData } from './../../versions/VersionData';
 import { WritableDraft } from './../redux/ReducerGenerator';
 import { AllStatus } from './DetailsListStore';
-import { Entity } from '@/app/config/BaseConfig';
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -78,13 +74,9 @@ interface DocumentContent<
   eventId: string;
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   meta: Meta; 
-  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; 
   // Add more properties as needed
 }
-
-// ---------------------------
-// Base Document Interfaces
-// ---------------------------
 
 // ---------------------------
 // Base Document Interfaces

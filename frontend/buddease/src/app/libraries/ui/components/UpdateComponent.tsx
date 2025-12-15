@@ -1,7 +1,7 @@
 // UpdateComponent.tsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComponentActions } from '@/ComponentActions';
+import { ComponentActions } from '@/app/actions/ComponentActions';
 
 const UpdateComponent = () => {
   const dispatch = useDispatch();

@@ -1,18 +1,16 @@
 // FilteredEventsSlice.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
-import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent'
-import { Tag } from '@/app/models/tracker/Tag';
-import { BaseData, Data } from '@/app/models/data/Data';
-import { T } from '@/app/models/data/dataStoreMethods';
+import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEvent';
 import { Member } from '@/app/models/members/Member';
+import { Tag } from '@/app/models/tracker/Tag';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams } from '@/app/typiings/entities/FilterEntity';
+import { FilterAttachment, FilterBaseParams, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/app/typiings/entities/FilterEntity';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

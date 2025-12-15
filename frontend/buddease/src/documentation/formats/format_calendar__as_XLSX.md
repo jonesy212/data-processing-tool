@@ -13,7 +13,7 @@ Sarah decides to export the calendar data to an XLSX file using the `formatCalen
 ```javascript
 import * as XLSX from 'xlsx';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SimpleCalendarEvent } from "./CalendarContext";
 
 // Function to format calendar data as XLSX binary string

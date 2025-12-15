@@ -1,14 +1,11 @@
 // CommonEvent.ts
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity';
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
+import { useMetadata } from '@/app/config/useMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -16,17 +13,19 @@ import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { VideoData } from '@/app/typings/videoTypes';
 import { convertToDataSnapshot } from '@/app/typings/YourSpecificSnapshotType';
-import { isSnapshot } from '@/utils/snapshotUtils';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { useMetadata } from '@/app/config/useMetadata';
+import { isSnapshot } from '@/utils/snapshotUtils';
 
 interface CommonEvent<
   T extends BaseDataEntity,
@@ -275,7 +274,7 @@ export function implementThen<
       callback(newSnapshot as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
     
       // Return an appropriate SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> value.
-      return [newSnapshot as unknown as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;];
+      return [newSnapshot as unknown as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>];
     }
   }
   callback(snapshot);

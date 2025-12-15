@@ -1,10 +1,12 @@
 // convertSubscriptionPayloadToSubscriber.ts
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { determineCategory } from "@/app/libraries/categories/determineCategory";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-import { Payload } from "@/app/server/database/Payload";
+import { CustomPayload } from '@/app/snapshots/CustomPayload';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/utils/web3/applicationUtils";

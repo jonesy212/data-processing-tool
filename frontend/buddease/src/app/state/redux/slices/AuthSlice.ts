@@ -1,14 +1,51 @@
 // AuthSlice.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserPreferences } from "@/app/config/UserPreferences";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NFT } from "@/app/models/cypto/NFT";
+import { AuthenticationProvider } from '@/app/server/auth/AuthService';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { AuthStore } from "@/app/state/stores/AuthStore";
+import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/app/typings/entities/AuthEntity';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface AuthState {
+interface AuthState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
+  id: string;
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  token: string | null;
+  store: AuthStore;
+  userRoles: string[];
+  timestamp: number;
+  userNFTs: NFT[];
+  authToken: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  authenticationProviders: AuthenticationProvider[] | undefined;
   accessToken: string | null;
-  userId: string | null; // Added userId property
+  userId: string | null;
+  
+  // Add the missing method
+  integrateAuthenticationProviders: (provider: AuthenticationProvider) => Promise<void>;
+  
+  // Other methods
+  getUserPreferences: () => UserPreferences | null;
+  resetAuthState: () => void;
+  loginWithRoles: (
+    user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    roles: string[],
+    nfts: NFT[],
+    authToken: string
+  ) => void;
 }
 
-const initialState: AuthState = {
+const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> = {
   isAuthenticated: false,
   accessToken: null,
   userId: null,

@@ -1,5 +1,6 @@
 // ChatSlice.ts
 // chat/ChatSlice.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
@@ -10,7 +11,6 @@ import {
   AppUser,
   User, UserData
 } from "@/app/user/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 

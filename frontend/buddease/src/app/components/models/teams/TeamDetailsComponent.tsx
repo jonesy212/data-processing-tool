@@ -1,28 +1,22 @@
 // TeamDetailsComponent.tsx
 "use client";
 
-import { BaseData } from '@/app/models/data/Data';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import useFiltering from "@/app/hooks/useFiltering";
-import { Project, reassignProject } from "@/app/models/projects/Project";
+import { CommonData } from "@/app/models/CommonData";
+import { BaseData } from '@/app/models/data/Data';
+import { Project } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
-import { Progress } from "@/app/tracker/ProgressBar";
 import dynamic from 'next/dynamic';
 import React from "react";
-import { TeamData } from "./TeamData";
-import { CommonData } from "@/app/models/CommonData";
 
 import {
-  LanguageEnum
+    LanguageEnum
 } from "@/app/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { SortCriteria } from "@/app/settings/SortCriteria";
-import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/teamTypes';
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CommonData } from '@/app'
+import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/teamTypes';
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode

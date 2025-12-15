@@ -1,6 +1,6 @@
 // CacheConfig.ts
 
-interface BaseCacheConfig {
+export interface BaseCacheConfig {
   maxAge?: string | number;
   staleWhileRevalidate?: number;
 }

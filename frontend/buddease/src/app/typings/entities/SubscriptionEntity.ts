@@ -1,12 +1,9 @@
 // SubscriptionEntity.ts
-import { Data } from '@/app/models/data/Data';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
-import { AppVersion } from '@/app/versions/AppVersion';
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { Version } from '@/app/versions/Version';
 import { SubscriptionPayload } from '@/app/actions/SubscriptionActions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Data } from '@/app/models/data/Data';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 // ------------------------------
 // 1️⃣ Base SubscriptionEntity definition
@@ -154,16 +151,11 @@ type AppSubscription = SubscriptionPayload<SubscriptionEntity,
   SubscriptionIncludedFields>
 
 
-export type { 
-  AppSubscription,
-  SubscriptionEntity,
-  SubscriptionK,
-  SubscriptionMeta,
-  SubscriptionAttachment,
-  SubscriptionExcludedFields,
-  SubscriptionIncludedFields,
-  SubscriptionEntityTemplate,
-  SubscriptionStructuredMetadata
-}
+export type {
+  AppSubscription, SubscriptionAttachment, SubscriptionEntity, SubscriptionEntityTemplate, SubscriptionExcludedFields,
+  SubscriptionIncludedFields, SubscriptionK,
+  SubscriptionMeta, SubscriptionStructuredMetadata
+};
 
-export { subscriptionData };
+  export { subscriptionData };
+

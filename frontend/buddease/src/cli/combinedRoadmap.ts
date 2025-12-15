@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import readline from 'readline';
 import { RoadmapAudience, RoadmapNode } from '@/app/typings/roadmap';
-import { generateOutline } from './roadmapOutline';
+import { generateOutline } from '@/cli/roadmapOutline';
 
 const rl = readline.createInterface({
   input: process.stdin,

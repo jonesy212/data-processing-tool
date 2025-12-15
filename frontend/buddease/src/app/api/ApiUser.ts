@@ -1,17 +1,15 @@
 // ApiUser.ts
+import { UserActions } from "@/app/actions/UserActions";
 import { UserRoleActions } from "@/app/actions/UserRoleActions";
-import { createHeaders } from "@/app/api/ApiClient";
 import internalApiService from '@/app/api/ApiClient'; // Use internalApiService instead
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { UserActions } from "@/app/actions/UserActions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import Logger from "@/app/logging/Logger";
 import { UserRole } from "@/app/models/UserRole";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
-import { useDispatch } from "react-redux";
+import { buildUrl } from '@/utils/urlBuilder';
 import { useParams } from "react-router-dom";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { buildUrl } from '@/utils/urlBuilder'; 
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

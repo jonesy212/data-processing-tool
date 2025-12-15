@@ -1,49 +1,65 @@
+import { transformYourResponseToExchangeData } from '@/app/api/ApiExchange';
 import UserService, { userId, userService } from "@/app/api/ApiUser";
+import extractCriteria from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
-import { CustomPhaseHooks } from "@/app/components/phases/Phase";
-import { VideoData } from "@/app/components/video/Video";
-import { CacheData, realtimeData } from "@/app/generators/GenerateCache";
-import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
 import {
   frontendStructure,
 } from "@/app/config/appStructure/FrontendStructure";
 import { BackendConfig, backendConfig } from "@/app/config/BackendConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { FrontendConfig, frontendConfig } from "@/app/config/FrontendConfig";
 import userSettings, { UserSettings } from "@/app/config/UserSettings";
-import BackendStructure, {
-  backendStructure,
-} from "@/configs/appStructure/BackendStructure";
 import { DataVersions, dataVersions } from "@/app/configs/DataVersionsConfig";
-import { authToken } from "@/server/authToken";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CacheData, realtimeData } from "@/app/generators/GenerateCache";
+import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
+import { useErrorHandling } from "@/app/hooks/useErrorHandling";
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import { CustomPhaseHooks } from '@/app/models/phases/Phase';
+import { authToken } from "@/app/server/auth/authToken";
+import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { RealtimeData } from '@/app/typings/realtimeTypes';
+import { VideoData } from '@/app/typings/videoTypes/Video';
+import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
 
 // Define the structure of the response data
-interface CacheResponse {
-  lastUpdated: VersionHistory; // Define the type of userSettings
-  dataVersions: DataVersions; // Define the type of dataVersions
+interface CacheResponse<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   frontendStructure: typeof frontendStructure; // Define the type of frontendStructure
   backendStructure: BackendStructure; // Define the type of backendStructure
   backendConfig: BackendConfig;
   frontendConfig: FrontendConfig;
   realtimeData: RealtimeData;
   userSettings: UserSettings;
-  notificationBarPhaseHook: CustomPhaseHooks
-  teamBuildingPhaseHook: AsyncHook<T>
-  brainstormingPhaseHook: AsyncHook<T>
-  projectManagementPhaseHook: AsyncHook<T>
-  meetingsPhaseHook: AsyncHook<T>
-  darkModeTogglePhaseHook: AsyncHook<T>; // Define the type of darkModeTogglePhaseHook
-  authenticationPhaseHook: AsyncHook<T>
-  // notificationBarPhaseHook: 
+  teamBuildingPhaseHook: AsyncHook<T>;
+  brainstormingPhaseHook: AsyncHook<T>;
+  projectManagementPhaseHook: AsyncHook<T>;
+  meetingsPhaseHook: AsyncHook<T>;
+  darkModeTogglePhaseHook: AsyncHook<T>;
+  authenticationPhaseHook: AsyncHook<T>;
+  notificationBarPhaseHook: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Add other properties as needed
 }
 
 // Function to construct the CacheData object
-const constructCacheData = (
-  data: CacheResponse,
+const constructCacheData = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: CacheResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 ): CacheData => {
   if (!data) {
     throw new Error("Data is required");
@@ -84,7 +100,7 @@ const constructCacheData = (
     phase: null,
     analysisResults: [],
     analysisType: {} as AnalysisTypeEnum,
-    videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    videoData: {} as VideoData<T, K>,
     // Construct other properties here
   };
   return constructedData;
@@ -205,22 +221,22 @@ UserService.fetchUser(userId,authToken).then((user) => {
         realtimeData: realtimeData,
         notificationBarPhaseHook: {} as AsyncHook<T>,
         darkModeTogglePhaseHook: {} as AsyncHook<T>,
-        authenticationPhaseHook: {} as CustomPhaseHooks,
+        authenticationPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         jobSearchPhaseHook: {} as AsyncHook<T>,
-        recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
+        recruiterDashboardPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         teamBuildingPhaseHook: {} as AsyncHook<T>,
         brainstormingPhaseHook: {} as AsyncHook<T>,
         projectManagementPhaseHook: {} as AsyncHook<T>,
         meetingsPhaseHook: {} as AsyncHook<T>,
-        ideationPhaseHook: {} as CustomPhaseHooks,
-        teamCreationPhaseHook: {} as CustomPhaseHooks,
-        productBrainstormingPhaseHook: {} as CustomPhaseHooks,
-        productLaunchPhase: {} as CustomPhaseHooks,
-        productLaunchPhaseHook: {} as CustomPhaseHooks,
-        dataAnalysisPhaseHook: {} as CustomPhaseHooks,
-        generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks,
+        ideationPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        teamCreationPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        productBrainstormingPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        productLaunchPhase: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        productLaunchPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        dataAnalysisPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        generalCommunicationFeaturesPhaseHook: {} as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         fileType: "json",
-        calendarEvent: {} as CalendarEvent,
+        calendarEvent: {} as CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       }
     );
     writeCache(userId, userDataPromise);

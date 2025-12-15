@@ -1,5 +1,6 @@
 // cacheMiddleware.ts
-import { MiddlewareContext, MiddlewareFunction } from '@/types';
+
+import { MiddlewareContext, MiddlewareFunction } from '@/app/middleware/core/types';
 
 import { ConfigurationService } from '@/app/services/ConfigurationService';
 

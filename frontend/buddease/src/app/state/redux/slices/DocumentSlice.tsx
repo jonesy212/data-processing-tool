@@ -12,26 +12,25 @@ import { AppThunk } from "@/app/configs/appThunk";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import DocumentBuilder, {
-    DocumentData, WritableTodoSubtasks
+  DocumentData, WritableTodoSubtasks
 } from "@/app/documents/editing/DocumentBuilder";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import useDataExport from "@/app/hooks/dataHooks/useDataExport";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { performSearch } from "@/app/pages/searches/SearchComponent";
 import { backend, backendStructure } from '@/app/server/database/BackendStructure';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity';
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
+import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
 import { Version, version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
@@ -152,12 +151,12 @@ const initialState: DocumentObject<DocumentEntity, DocumentK, DocumentMeta, Docu
     subscriberId: "",
     
     category: "",
-    categoryProperties: "",
+    categoryProperties: {} as CategoryProperties<DocumentEntity, DocumentK>,
     timestamp: "",
     length: 0,
     
     items: [],
-    data: {},
+    data: {} as DocumentEntity | SnapshotWithCriteria<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>,
     contentItems: [],
   },
   topics: [],
@@ -479,15 +478,27 @@ function createNewDocument<
     // _id: uuidv4(),
     id: documentId,
     title: "New Document",
+    baseURI: "",
+    childNodes: undefined,
+    firstChild: null,
+    isConnected: false,
+    lastChild: null,
+    nextSibling: null,
+    nodeName: "",
+    nodeType: 0,
+    nodeValue: null,
+    parentElement: null,
+    parentNode: null,
+    previousSibling: null,
+    textContent: null,
     content: {
       id: "doc-123", // Required by Content interface
       title: "New Document",
       description: "This is a new document", // Moved here from root level
       subscriberId: "user-123",
       category: undefined,
-
-       apiEndpoint, apiKey, timeout, retryAttempts,
-
+      apiEndpoint, apiKey, timeout, retryAttempts,
+      name, initialState, events, meta, metadata,
       categoryProperties: undefined,
       timestamp: now,
       length: 0,
@@ -512,8 +523,8 @@ function createNewDocument<
     keywords: [],
     options: {} as DocumentOptions,
     folderPath: "",
-    previousMetadata: {} as WritableDraft<StructuredMetadata>,
-    currentMetadata: {} as WritableDraft<StructuredMetadata>,
+    previousMetadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    currentMetadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     accessHistory: [],
     folders: [],
     lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -556,7 +567,7 @@ function createNewDocument<
       workspaceMembers: ["user1", "user2", "admin1"],
       frontendStructure: Promise.resolve([]),
       backendStructure: Promise.resolve([]),
-      data: [],
+      data: {} as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       draft: false,
       versions: {
         data: data,
@@ -575,10 +586,15 @@ function createNewDocument<
       metadata: {
         author: "Author Name",
         timestamp: new Date(),
+        area,
+        metadataEntriests: []
       },
       getVersion: async () => "1.0",
       versionHistory: {
-        versionData: []
+        versionData: [],
+        versions: [],
+        currentVersionIndex: 0,
+        timestamp: new Date()
         // draft: false,
         // frontendStructure: Promise.resolve([]),
         // backendStructure: Promise.resolve([]),
@@ -590,7 +606,7 @@ function createNewDocument<
       updateVersionNumber: (newVersionNumber: string) => {
         console.log(`Updating version number to ${newVersionNumber}`);
       },
-      getVersionData: (): VersionData => {
+      getVersionData: (): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
         return {
           id: 0,
           name: "Initial Version",
@@ -654,7 +670,7 @@ function createNewDocument<
       documentId: "doc123",
       draft: false,
       userId: "user123",
-      data: [],
+      data: {} as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       parentId: '', // Provide appropriate values based on your application logic
       parentType: '', // Provide appropriate values based on your application logic
       parentVersion: '', // Provide appropriate values based on your application logic
@@ -683,6 +699,8 @@ function createNewDocument<
         author: "Author Name",
         timestamp: new Date(),
         revisionNotes: undefined, // Adjust as per your application logic
+        area,
+        metadataEntries: []
       },
       versions: {
         data: {
@@ -713,7 +731,9 @@ function createNewDocument<
           getStructureAsArray: async () => [],
           traverseDirectoryPublic: async () => [],
           getStructure:  async () => ({} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
-          getStructureChecksum: async () => ""
+          getStructureChecksum: async () => "",
+          versions, versionData, userId, structureHash,
+
         } as FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       },
     },
@@ -729,7 +749,7 @@ function createNewDocument<
     contentType: "",
     cookie: "",
     currentScript: null,
-    defaultView: null,
+    defaultView: undefined,
     designMode: "",
     dir: "",
     doctype: null,
@@ -898,19 +918,7 @@ function createNewDocument<
     startViewTransition: function (cb: () => void | Promise<void>): ViewTransition {
       throw new Error("Function not implemented.");
     },
-    baseURI: "",
-    childNodes: undefined,
-    firstChild: null,
-    isConnected: false,
-    lastChild: null,
-    nextSibling: null,
-    nodeName: "",
-    nodeType: 0,
-    nodeValue: null,
-    parentElement: null,
-    parentNode: null,
-    previousSibling: null,
-    textContent: null,
+ 
     appendChild: function <T extends Node>(node: T): T {
       throw new Error("Function not implemented.");
     },
@@ -1164,6 +1172,35 @@ function createNewDocument<
 }
 
 
+  // Helper function for export notifications (keep this if you need it elsewhere)
+  const notifyExport = (type: 'success' | 'error', documentId?: number, documentIds?: number[], error?: Error) => {
+    const notificationData = {
+      id: `export${documentIds ? 'Documents' : 'Document'}${type === 'success' ? 'Success' : 'Error'}`,
+      message: type === 'success' 
+        ? (documentIds 
+            ? NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS 
+            : NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_SUCCESS)
+        : (documentIds
+            ? NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR
+            : NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR),
+      data: {
+        originalError: error?.message,
+        extra: {
+          errorMessage: `Error exporting ${documentIds ? 'documents' : 'document'}`,
+          documentId,
+          documentIds
+        }
+      },
+      timestamp: new Date(),
+      type: type === 'success' ? NotificationTypeEnum.OPERATION_SUCCESS : NotificationTypeEnum.ERROR,
+      level: type
+    };
+
+    // Use your notification system
+    if (typeof window !== 'undefined' && window.notificationSystem) {
+      window.notificationSystem.notify(notificationData);
+    }
+  };
 
 export const restoreDocument = <
   T extends BaseDataEntity,
@@ -1172,7 +1209,9 @@ export const restoreDocument = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(state: WritableDraft<DocumentSliceState>, action: PayloadAction<number>) => {
+  >(state: WritableDraft<DocumentSliceState>, action: PayloadAction<number>) => {
+  
+
   try {
     const documentId = action.payload;
     const newDocument = createNewDocument(String(documentId));
@@ -1182,25 +1221,39 @@ export const restoreDocument = <
     state.loading = false;  // Update loading state
     state.error = null;  // Clear error state
 
-    useNotification().notify(
-      "restoreDocumentSuccess",
-      `Restoring document with ID: ${documentId} success`,
-      NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
-      new Date(),
-      NotificationTypeEnum.OPERATION_SUCCESS
-    );
+    useNotification().notify({
+      id: `restoreDocumentSuccess${documentId}`,
+      message: NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
+      data: {
+        extra: {
+          documentId,
+          operation: "Restore document"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
   } catch (error) {
     console.error("Error restoring document:", error);
     state.loading = false;  // Update loading state
     state.error = error as Error;  // Set error state
 
-    useNotification().notify(
-      "restoreDocumentError",
-      "Error restoring document",
-      NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_ERROR,
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    useNotification().notify({
+      id: `restoreDocumentError${action.payload}`,
+      message: NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_ERROR,
+      data: {
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+        extra: {
+          errorMessage: "Error restoring document",
+          documentId: action.payload,
+          operation: "Restore document"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      level: 'error'
+    });
   }
 };
 
@@ -1213,19 +1266,27 @@ interface ExtendedDocumentData<
   IncludedFields extends keyof T = keyof T
 > extends DocumentData {
   mergeStructures?: (
-    baseStructure: StructuredMetadata,
-    additionalStructure: StructuredMetadata
-  ) => StructuredMetadata;
+    baseStructure: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    additionalStructure: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-// Define mergeStructures function
-const mergeStructures = (
-  baseStructure: StructuredMetadata,
-  additionalStructure: StructuredMetadata
-): StructuredMetadata => {
+
+// Define mergeStructures function with proper generic type parameters
+const mergeStructures = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>(
+  baseStructure: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  additionalStructure: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Implement mergeStructures logic here
   // Return the merged structure
-  const mergedStructure: StructuredMetadata = {
+  const mergedStructure: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     ...baseStructure,
     ...additionalStructure,
   };
@@ -1294,124 +1355,143 @@ export const downloadDocument = createAsyncThunk(
 // Define thunk action creator for downloading document asynchronously
 export const downloadDocumentAsync = createAsyncThunk(
   "document/downloadDocumentAsync",
-  async (documentId: number, { dispatch }) => {
+  async (documentId: number, { dispatch, extra }) => {
     try {
       // Fetch document data based on the document ID
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
         (data: WritableDraft<DocumentObject<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>>) => {
-          // Call the dispatch function to update the state with the fetched document data
           dispatch(setDownloadedDocument(data));
         }
       );
 
-      // Dispatch the action to update the state with the fetched document data
       dispatch(setDownloadedDocument(fetchedDocument));
 
-      // Return fetched document as the result
+      // Access notify from extra argument
+      const { notify } = extra as { notify: (notification: any) => void };
+      
+      notify({
+        id: "downloadDocumentSuccess",
+        message: NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
+        data: {
+          extra: {
+            documentId,
+            operation: "Download document"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+
       return fetchedDocument;
     } catch (error) {
       console.error("Error downloading document:", error);
-      // Handle error and notify
-      useNotification().notify(
-        "downloadDocumentError",
-        "Error downloading document",
-        NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      
+      // Access notify from extra argument
+      const { notify } = extra as { notify: (notification: any) => void };
+      
+      notify({
+        id: "downloadDocumentError",
+        message: NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_ERROR,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error downloading document",
+            documentId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error'
+      });
+      
       throw error;
     }
   }
 );
 
+
 export const exportDocumentAsync =
-  async (document: number): Promise<AppThunk> =>
+  async (documentId: number): Promise<AppThunk> =>
   async (dispatch) => {
     try {
       // Implement document export functionality
-
       // Simulate export with a delay of 1 second
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      
       // Dispatch the action to update the state with the exported document
-      dispatch(await exportDocument(document));
+      dispatch(exportDocumentSuccess(documentId));
 
-      // Return the exported document as the result
+      // Show success notification
+      notifyExport('success', documentId);
+      
       console.log("Document exported successfully");
-
-      return document;
+      return documentId;
     } catch (error) {
       console.error("Error exporting document:", error);
-      // Handle error and notify
-      useNotification().notify(
-        "exportDocumentError",
-        "Error exporting document",
-        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
-
+      
+      // Show error notification
+      notifyExport('error', documentId, undefined, error as Error);
+      
+      // Dispatch error action
+      dispatch(exportDocumentFailure(error as Error));
+      
       throw error;
     }
   };
 
+
 export const exportDocument =
-  async (document: number): Promise<AppThunk> =>
+  async (documentId: number): Promise<AppThunk> =>
   async (dispatch) => {
     try {
       // Implement document export functionality
       // Simulate export with a delay of 1 second
-      await new Promise(async (resolve) => setTimeout(resolve, 1000));
-      // Dispatch the action to update the state with the exported document
-      dispatch(await exportDocument(document));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // Dispatch success action - NOT calling itself recursively
+      dispatch(exportDocumentSuccess(documentId));
+      
+      // Show success notification
+      notifyExport('success', documentId);
+      
     } catch (error) {
       console.error("Error exporting document:", error);
-      // Handle error and notify
-      useNotification().notify(
-        "exportDocumentError",
-        "Error exporting document",
-        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
-      throw error; // Rethrow the error to be caught by the caller
+      
+      // Show error notification
+      notifyExport('error', documentId, undefined, error as Error);
+      
+      // Dispatch error action
+      dispatch(exportDocumentFailure(error as Error));
+      
+      throw error;
     }
-  };
-
-export const exportDocuments =
-  async (documents: {
-    payload: typeof documents;
-    type: "exportDocuments";
-  }): Promise<AppThunk> =>
-  async (dispatch) => {
-    try {
-      // Implement document export functionality
-      const { exportedData, exportData } = useDataExport(); // Initialize useDataExport hook
-
-      // Simulate export with a delay of 1 second
-      setTimeout(async () => {
-        try {
-          const exportResult = await exportData(documents); // Export documents using the hook
-          console.log("Exported documents:", exportResult);
-          dispatch({ type: "exportDocuments", payload: exportedData });
-        } catch (error) {
-          console.error("Error exporting documents:", error);
-          throw error; // Rethrow the error to be caught by the caller
-        }
-      }, 1000);
-    } catch (error) {
-      console.error("Error exporting documents:", error);
-      // Handle error and notify
-      useNotification().notify(
-        "exportDocumentsError",
-        "Error exporting documents",
-        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
-      throw error; // Rethrow the error to be caught by the caller
-    }
-  };
+    };
+    
+  export const exportDocuments = (documents: number[]): AppThunk =>
+    async (dispatch) => {
+      try {
+        // Don't use hooks in Redux thunks
+        const exportedDocuments = await exportDocumentsAPI(documents);
+        
+        dispatch({ 
+          type: "exportDocuments", 
+          payload: exportedDocuments 
+        });
+        
+        // Use standalone notification utility
+        notifyExport('success', undefined, documents);
+        
+      } catch (error) {
+        console.error("Error exporting documents:", error);
+        
+        // Use standalone notification utility
+        notifyExport('error', undefined, documents, error as Error);
+        
+        throw error;
+      }
+    };
 
 // Define the async thunk using createAsyncThunk
 export const exportDocumentsAsync = createAsyncThunk(
@@ -1421,27 +1501,19 @@ export const exportDocumentsAsync = createAsyncThunk(
       // Fetch multiple documents based on their IDs
       const documents = await fetchDocumentsByIds(documentIds);
 
-      // Dispatch the action with the entire array of documents as the payload
-      dispatch(
-        exportDocumentsAsync.fulfilled(
-          documents,
-          "exportDocuments",
-          documentIds,
-          undefined
-        )
-      );
+      // Dispatch success action
+      dispatch(exportDocumentsSuccess(documents));
 
+      // Show success notification
+      notifyExport('success', undefined, documentIds);
+      
       return documents; // Return the fetched documents as the result
     } catch (error) {
       console.error("Error exporting documents:", error);
-      // Handle error and notify
-      useNotification().notify(
-        "exportDocumentsError",
-        "Error exporting documents",
-        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+      
+      // Show error notification
+      notifyExport('error', undefined, documentIds, error as Error);
+      
       throw error; // Rethrow the error to be caught by the caller
     }
   }
@@ -2039,12 +2111,12 @@ const transformations = <
 // };
 
 // Create a slice for managing document-related data
-export const useDocumentManagerSlice = createSlice({
+const useDocumentManagerSlice = createSlice({
   name: "document",
   initialState,
   reducers: {
     createDocument: {
-      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>>) => {
+      reducer: (state, action: PayloadAction<DocumentObject<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>) => {
         state.selectedDocument = action.payload;
         state.documentList?.push(action.payload);
       },
@@ -2054,13 +2126,13 @@ export const useDocumentManagerSlice = createSlice({
           _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
-          content:{}, // Add default content if needed
+          content:{} as WritableDraft<Content<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>, // Add default content if needed
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
           createdAt: new Date(), 
           updatedBy: "Mattt Smooth", 
-          documentPhase: "",
+          documentPhase: undefined,
           createdByRenamed: "",
           document: {} as WritableDraft<DocumentObject<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
           documentList: [],
@@ -2069,8 +2141,8 @@ export const useDocumentManagerSlice = createSlice({
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
           folderPath: "",
-          previousMetadata: {} as WritableDraft<StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
-          currentMetadata: {} as WritableDraft<StructuredMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
+          previousMetadata: {} as WritableDraft<UnifiedMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
+          currentMetadata: {} as WritableDraft<UnifiedMetadata<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
           accessHistory: [],
           folders: [],
           lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -2744,34 +2816,29 @@ export const useDocumentManagerSlice = createSlice({
       console.log("Document update functionality enabled");
       // Additional logic...
     },
-
     deleteDocument: (state, action: PayloadAction<string>) => {
       const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload
       );
       if (documentIndex !== -1) {
         state.documentList?.splice(documentIndex!, 1);
-        useNotification().notify(
-          "deleteDocumentSuccess",
-          "Document deleted successfully",
-          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Set notification in state instead of calling useNotification()
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
+          id: action.payload
+        };
       } else {
-        useNotification().notify(
-          "deleteDocumentError",
-          `There was an error deleting the document with ID ${action.payload}, try again later`,
-          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
+          id: action.payload
+        };
       }
     },
 
     filterDocuments: (state, action: PayloadAction<string>) => {
       try {
-        // Implement document filtering functionality
         const filterKeyword = action.payload.toLowerCase();
         state.filteredDocuments = state.documentList?.filter(
           (doc) =>
@@ -2780,50 +2847,41 @@ export const useDocumentManagerSlice = createSlice({
             (typeof doc.description === "string" &&
               doc.description.toLowerCase().includes(filterKeyword))
         );
-        useNotification().notify(
-          "filterDocumentsSuccess",
-          `Filtering documents by keyword: ${filterKeyword} success`,
-          NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_SUCCESS,
+          id: 'filter'
+        };
       } catch (error) {
         console.error("Error filtering documents:", error);
-        useNotification().notify(
-          "filterDocumentsError",
-          "Error filtering documents",
-          NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_ERROR,
+          id: 'filter'
+        };
       }
     },
 
     sortDocuments: (state, action: PayloadAction<string>) => {
       try {
-        // Implement document sorting functionality
-        const sortKey = action.payload as keyof DocumentData; // Type assertion
+        const sortKey = action.payload as keyof DocumentData;
         state.documentList?.sort((a, b) => {
-          if (a[sortKey]! < b[sortKey]!) return -1; // Use optional chaining (!) to handle possible null or undefined values
-          if (a[sortKey]! > b[sortKey]!) return 1; // Use optional chaining (!) to handle possible null or undefined values
+          if (a[sortKey]! < b[sortKey]!) return -1;
+          if (a[sortKey]! > b[sortKey]!) return 1;
           return 0;
         });
-        useNotification().notify(
-          "sortDocumentsSuccess",
-          `Sorting documents by sort key: ${String(sortKey)} success`,
-          NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_SUCCESS,
+          id: 'sort'
+        };
       } catch (error) {
         console.error("Error sorting documents:", error);
-        useNotification().notify(
-          "sortDocumentsError",
-          "Error sorting documents",
-          NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_ERROR,
+          id: 'sort'
+        };
       }
     },
 
@@ -2832,173 +2890,149 @@ export const useDocumentManagerSlice = createSlice({
       action: PayloadAction<{ documentId: number; recipients: string[] }>
     ) => {
       try {
-        // Implement document sharing functionality
         const { documentId, recipients } = action.payload;
         const documentToShare = state.documentList?.find(
           (doc) => doc.id === documentId.toString()
         );
+        
         if (documentToShare) {
-          useNotification().notify(
-            "shareDocumentSuccess",
-            NOTIFICATION_MESSAGES.Document.SHARE_DOCUMENT_SUCCESS,
-            `Sharing document "${
-              documentToShare.title
-            }" with recipients: ${recipients.join(", ")}`,
-            new Date(),
-            NotificationTypeEnum.DOCUMENT_EDIT_ID
-          );
+          // Set notification in state instead of calling useNotification()
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.Document.SHARE_DOCUMENT_SUCCESS,
+            id: `share-${documentId}`,
+            data: {
+              documentId,
+              recipients,
+              documentTitle: documentToShare.title
+            }
+          };
           // Additional logic for sharing document with recipients...
         } else {
-          useNotification().notify(
-            "shareDocumentError",
-            "Document not found",
-            NOTIFICATION_MESSAGES.Document.DOCUMENT_NOT_FOUND,
-            new Date(),
-            NotificationTypeEnum.ERROR
-          );
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.Document.DOCUMENT_NOT_FOUND,
+            id: `share-error-${documentId}`,
+            data: { documentId }
+          };
         }
       } catch (error) {
         console.error("Error sharing document:", error);
-        useNotification().notify(
-          "shareDocumentError",
-          "Error sharing document",
-          NOTIFICATION_MESSAGES.Document.SHARE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.SHARE_DOCUMENT_ERROR,
+          id: 'share-error',
+          data: { error: error instanceof Error ? error.message : 'Unknown error' }
+        };
       }
     },
 
     downloadDocument: (state, action: PayloadAction<number>) => {
-      // Implement document download functionality
       const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
+      
       if (documentIndex !== -1) {
-        useNotification().notify(
-          "downloadDocumentSuccess",
-          "Document downloaded successfully",
-          NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
+          id: `download-${action.payload}`,
+          data: { documentId: action.payload }
+        };
         // Additional logic for downloading document...
       } else {
-        useNotification().notify(
-          "downloadDocumentError",
-          `There was an error downloading the document with ID ${action.payload}, try again later`,
-          NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_ERROR,
+          id: `download-error-${action.payload}`,
+          data: { documentId: action.payload }
+        };
       }
       return state;
     },
 
     exportDocument: (state, action: PayloadAction<number>) => {
-      // Implement document export functionality
       const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload.toString()
       );
+      
       if (documentIndex !== -1) {
-        useNotification().notify(
-          "exportDocumentSuccess",
-          "Document exported successfully",
-          NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_SUCCESS,
+          id: `export-${action.payload}`,
+          data: { documentId: action.payload }
+        };
         // Additional logic for exporting document...
       } else {
-        useNotification().notify(
-          "exportDocumentError",
-          `There was an error exporting the document with ID ${action.payload}, try again later`,
-          NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_ERROR,
+          id: `export-error-${action.payload}`,
+          data: { documentId: action.payload }
+        };
       }
     },
 
+    // Add a reducer to clear notifications
+    clearNotification: (state) => {
+      state.notification = null;
+    },
+    
     exportDocuments: (
-      state: WritableDraft<DocumentSliceState>,
+      state: WritableDraft<DocumentObject<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields>>,
       action: PayloadAction<{ payload: any; type: string }>
     ) => {
       try {
-        // Implement document export functionality
         const { documentList, selectedDocument } = state;
-        const { payload } = action; // Destructure payload from action
+        const { payload } = action;
+
+        let exportId: number | undefined;
+        let success = false;
 
         if (typeof payload === "number") {
+          exportId = payload;
           const documentIndex = documentList.findIndex(
-            (doc) => doc.id === payload
+            (doc) => doc.id === payload.toString()
           );
-
-          if (documentIndex !== -1) {
-            useNotification().notify(
-              "exportDocumentsSuccess",
-              "Exporting documents success",
-              NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
-              new Date(),
-              NotificationTypeEnum.OPERATION_SUCCESS
-            );
-            // Additional logic for exporting documentList...
-            return;
-          } else {
-            useNotification().notify(
-              "exportDocumentsError",
-              `There was an error exporting the document with ID ${payload}, try again later`,
-              NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-              new Date(),
-              NotificationTypeEnum.ERROR
-            );
-          }
-        }
-        // If selectedDocument is a number, export the document with that ID
-        if (typeof selectedDocument === "number") {
+          success = documentIndex !== -1;
+        } else if (typeof selectedDocument === "number") {
+          exportId = selectedDocument;
           const documentIndex = documentList.findIndex(
-            (doc) => doc.id === selectedDocument
+            (doc) => doc.id === selectedDocument.toString()
           );
-
-          if (documentIndex !== -1) {
-            useNotification().notify(
-              "exportDocumentsSuccess",
-              "Exporting documents success",
-              NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
-              new Date(),
-              NotificationTypeEnum.OPERATION_SUCCESS
-            );
-            // Additional logic for exporting documentList...
-            return;
-          } else {
-            useNotification().notify(
-              "exportDocumentsError",
-              `There was an error exporting the document with ID ${selectedDocument}, try again later`,
-              NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-              new Date(),
-              NotificationTypeEnum.ERROR
-            );
-          }
-          // Additional logic for exporting documentList...
+          success = documentIndex !== -1;
+        } else {
+          // Bulk export case
+          success = true;
         }
 
-        // Assuming implementation here...
-        useNotification().notify(
-          "exportDocumentsSuccess",
-          "Exporting documents success",
-          NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        if (success) {
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
+            id: exportId ? `export-success-${exportId}` : 'export-bulk-success',
+            data: { exportId }
+          };
+        } else {
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
+            id: exportId ? `export-error-${exportId}` : 'export-error',
+            data: { 
+              exportId,
+              errorMessage: `Error exporting document with ID ${exportId}`
+            }
+          };
+        }
       } catch (error) {
         console.error("Error exporting documents:", error);
-        useNotification().notify(
-          "exportDocumentsError",
-          "Error exporting documents",
-          NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_ERROR,
+          id: 'export-error-catch',
+          data: { error: error instanceof Error ? error.message : 'Unknown error' }
+        };
       }
     },
 
@@ -3006,23 +3040,24 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const importedFile = action.payload;
         // Implement document import functionality
-        // Assuming implementation here...
-        useNotification().notify(
-          "importDocumentsSuccess",
-          "Importing documents success",
-          NOTIFICATION_MESSAGES.Document.IMPORT_DOCUMENTS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.IMPORT_DOCUMENTS_SUCCESS,
+          id: `import-success-${Date.now()}`,
+          data: { 
+            fileName: importedFile.name,
+            fileSize: importedFile.size,
+            fileType: importedFile.type
+          }
+        };
       } catch (error) {
         console.error("Error importing documents:", error);
-        useNotification().notify(
-          "importDocumentsError",
-          "Error importing documents",
-          NOTIFICATION_MESSAGES.Document.IMPORT_DOCUMENTS_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.IMPORT_DOCUMENTS_ERROR,
+          id: `import-error-${Date.now()}`,
+          data: { error: error instanceof Error ? error.message : 'Unknown error' }
+        };
       }
     },
 
@@ -3030,26 +3065,25 @@ export const useDocumentManagerSlice = createSlice({
       try {
         const documentId = action.payload;
         // Implement document archiving functionality
-        // Assuming implementation here...
-        useNotification().notify(
-          "archiveDocumentSuccess",
-          `Archiving document with ID: ${documentId} success`,
-          NOTIFICATION_MESSAGES.Document.ARCHIVE_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.ARCHIVE_DOCUMENT_SUCCESS,
+          id: `archive-success-${documentId}`,
+          data: { documentId }
+        };
       } catch (error) {
         console.error("Error archiving document:", error);
-        useNotification().notify(
-          "archiveDocumentError",
-          "Error archiving document",
-          NOTIFICATION_MESSAGES.Document.ARCHIVE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.ARCHIVE_DOCUMENT_ERROR,
+          id: `archive-error-${documentId}`,
+          data: { 
+            documentId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
-
     fetchDocumentFromArchive: (state, action: PayloadAction<number>) => {
       try {
         const documentId = action.payload;
@@ -3527,23 +3561,27 @@ export const useDocumentManagerSlice = createSlice({
           loading: false,
           error: null
         });
-        // Assuming implementation here...
-        useNotification().notify(
-          "fetchDocumentFromArchiveSuccess",
-          `Fetching document with ID: ${documentId} success`,
-          NOTIFICATION_MESSAGES.Document.FETCH_DOCUMENT_FROM_ARCHIVE_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Assuming implementation here...    
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.FETCH_DOCUMENT_FROM_ARCHIVE_SUCCESS,
+          id: `fetch-archive-success-${documentId}`,
+          data: { 
+            documentId,
+            operation: "Fetch document from archive"
+          }
+        };
       } catch (error) {
         console.error("Error fetching document from archive:", error);
-        useNotification().notify(
-          "fetchDocumentFromArchiveError",
-          "Error fetching document from archive",
-          NOTIFICATION_MESSAGES.Document.FETCH_DOCUMENT_FROM_ARCHIVE_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.FETCH_DOCUMENT_FROM_ARCHIVE_ERROR,
+          id: `fetch-archive-error-${documentId}`,
+          data: { 
+            documentId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
@@ -3553,58 +3591,71 @@ export const useDocumentManagerSlice = createSlice({
     ) => {
       try {
         const { documentId, destinationId } = action.payload;
-        // Implement document moving functionality
+        
         const documentIndex = state.documentList?.findIndex(
           (doc) => doc.id === documentId.toString()
         );
-        if (documentIndex !== -1) {
-          const movedDocument = state.documentList?.splice(documentIndex!, 1)[0];
-          const destinationIndex = state.documentList?.findIndex(
-            (doc) => doc.id === destinationId.toString()
-          );
-          if (destinationIndex !== -1) {
-            state.documentList?.splice(destinationIndex!, 0, movedDocument!);
-            // Notify success
-            useNotification().notify(
-              "moveDocumentSuccess",
-              `Moving document with ID: ${documentId} to destination with ID: ${destinationId} success`,
-              NOTIFICATION_MESSAGES.Document.MOVE_DOCUMENT_SUCCESS,
-              new Date(),
-              NotificationTypeEnum.OPERATION_SUCCESS
-            );
-          } else {
-            throw new Error(
-              `Destination document with ID ${destinationId} not found.`
-            );
-          }
-        } else {
+        
+        if (documentIndex === -1 || documentIndex === undefined) {
           throw new Error(`Document with ID ${documentId} not found.`);
         }
-      } catch (error: any) {
-        console.error("Error moving document:", error);
-        // Notify error
-        useNotification().notify(
-          "moveDocumentError",
-          `Error moving document: ${error.message}`,
-          NOTIFICATION_MESSAGES.Document.MOVE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
+        
+        const movedDocument = state.documentList?.splice(documentIndex, 1)[0];
+        const destinationIndex = state.documentList?.findIndex(
+          (doc) => doc.id === destinationId.toString()
         );
+        
+        if (destinationIndex === -1 || destinationIndex === undefined) {
+          throw new Error(`Destination document with ID ${destinationId} not found.`);
+        }
+        
+        state.documentList?.splice(destinationIndex, 0, movedDocument!);
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.MOVE_DOCUMENT_SUCCESS,
+          id: `move-success-${documentId}-${destinationId}`,
+          data: {
+            documentId,
+            destinationId,
+            operation: "Move document"
+          }
+        };
+      } catch (error) {
+        console.error("Error moving document:", error);
+        
+        const { documentId, destinationId } = action.payload;
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.MOVE_DOCUMENT_ERROR,
+          id: `move-error-${documentId}-${destinationId}`,
+          data: {
+            documentId,
+            destinationId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
     copyDocument: (state, action: PayloadAction<number>) => {
       // Implement document copying functionality
       // Assuming implementation here...
-      useNotification().notify(
-        "copyDocumentSuccess",
-        `Copying document with ID: ${action.payload} success`,
-        NOTIFICATION_MESSAGES.Document.COPY_DOCUMENT_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: `copyDocumentSuccess${action.payload}`,
+        message: NOTIFICATION_MESSAGES.Document.COPY_DOCUMENT_SUCCESS,
+        data: { 
+          extra: {
+            documentId: action.payload,
+            operation: "Copy document"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     },
-
+      
     mergeDocuments: (
       state,
       action: PayloadAction<{ sourceId: number; destinationId: number }>
@@ -3614,14 +3665,14 @@ export const useDocumentManagerSlice = createSlice({
 
         // Find the source document and destination document in the state
         const sourceDocumentIndex = state.documentList?.findIndex(
-          (doc) => doc.id === sourceId
+          (doc) => doc.id === sourceId.toString()
         );
         const destinationDocumentIndex = state.documentList?.findIndex(
-          (doc) => doc.id === destinationId
+          (doc) => doc.id === destinationId.toString()
         );
 
         if (sourceDocumentIndex === -1 || destinationDocumentIndex === -1) {
-          throw new Error("Source document or destination document not found.");
+          throw new Error(`Source document (${sourceId}) or destination document (${destinationId}) not found.`);
         }
 
         // Merge the content of the source document into the destination document
@@ -3631,24 +3682,30 @@ export const useDocumentManagerSlice = createSlice({
         // Remove the source document from the state
         state.documentList?.splice(sourceDocumentIndex!, 1);
 
-        // Notify success
-        useNotification().notify(
-          "mergeDocumentsSuccess",
-          `Merging document with ID: ${sourceId} to destination with ID: ${destinationId} success`,
-          NOTIFICATION_MESSAGES.Document.MERGE_DOCUMENTS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.MERGE_DOCUMENTS_SUCCESS,
+          id: `merge-success-${sourceId}-${destinationId}`,
+          data: {
+            sourceId,
+            destinationId,
+            operation: "Merge documents"
+          }
+        };
       } catch (error) {
         console.error("Error merging documents:", error);
-        // Notify error
-        useNotification().notify(
-          "mergeDocumentsError",
-          "Error merging documents",
-          NOTIFICATION_MESSAGES.Document.MERGE_DOCUMENTS_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        
+        const { sourceId, destinationId } = action.payload;
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.MERGE_DOCUMENTS_ERROR,
+          id: `merge-error-${sourceId}-${destinationId}`,
+          data: {
+            sourceId,
+            destinationId,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
@@ -3678,8 +3735,8 @@ export const useDocumentManagerSlice = createSlice({
           keywords: [],
           options: {} as WritableDraft<DocumentOptions>,
           folderPath: "New Folder",
-          previousMetadata: {} as WritableDraft<StructuredMetadata>,
-          currentMetadata: {} as WritableDraft<StructuredMetadata>,
+          previousMetadata: {} as WritableDraft<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+          currentMetadata: {} as WritableDraft<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           accessHistory: [],
           folders: [],
           lastModifiedDate: {
@@ -3745,7 +3802,7 @@ export const useDocumentManagerSlice = createSlice({
           contentType: "",
           cookie: "",
           currentScript: null,
-          defaultView: null,
+          defaultView: undefined,
           designMode: "",
           dir: "",
           doctype: null,
@@ -4807,47 +4864,51 @@ export const useDocumentManagerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(deleteDocumentAsync.pending, (state) => {
-      // Handle pending state if needed
-      state.loading = true; // Set loading state to true while the deletion is pending
-      state.error = null; // Clear any previous errors
+      state.loading = true;
+      state.error = null;
     });
 
     builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
-      // Handle fulfilled state
+      state.loading = false;
+    
       const documentIndex = state.documentList?.findIndex(
         (doc) => doc.id === action.payload
       );
+    
       if (documentIndex !== -1) {
         state.documentList?.splice(documentIndex, 1);
-        useNotification().notify(
-          "deleteDocumentSuccess",
-          "Document deleted",
-          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.SUCCESS
-        );
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
+          id: `delete-async-success-${action.payload}`,
+          data: { documentId: action.payload }
+        };
       } else {
-        useNotification().notify(
-          "deleteDocumentError",
-          "Document not found",
-          NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
-          new Date(),
-          NotificationTypeEnum.ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
+          id: `delete-async-notfound-${action.payload}`,
+          data: {
+            documentId: action.payload,
+            errorMessage: "Document not found"
+          }
+        };
       }
     });
 
     builder.addCase(deleteDocumentAsync.rejected, (state, action) => {
-      // Handle rejected state if needed
-      state.loading = false; // Set loading state to false if the deletion failed
+      state.loading = false;
       console.error("Error deleting document:", action.payload);
-      useNotification().notify(
-        "deleteDocumentError",
-        "Error deleting document",
-        NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
+    
+      state.notification = {
+        type: 'error',
+        message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_ERROR,
+        id: `delete-async-error-${Date.now()}`,
+        data: {
+          error: action.error?.message || 'Unknown error',
+          errorPayload: action.payload
+        }
+      };
     });
 
     builder
@@ -4856,71 +4917,104 @@ export const useDocumentManagerSlice = createSlice({
         state.error = null;
       })
 
-      builder.addCase(fetchDocumentById.fulfilled, (
-        state,
-        action
-      ) => {
-        state.loading = false;
-        state.selectedDocument = action.payload as WritableDraft<DocumentData>;
-      })
+    builder.addCase(fetchDocumentById.fulfilled, (
+      state,
+      action
+    ) => {
+      state.loading = false;
+      state.selectedDocument = action.payload as WritableDraft<DocumentData>;
+    })
 
-      builder.addCase(fetchDocumentById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as WritableDraft<Error>;
-      });
+    builder.addCase(fetchDocumentById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as WritableDraft<Error>;
+    });
 
     // Add a case to handle the fulfilled action
     builder.addCase(fetchDocumentById.fulfilled, (
-        state, 
-        action
-      ) => {
-        // Handle successful document fetch
-        state.selectedDocument = action.payload as WritableDraft<DocumentData>;
-      })
-
-    
+      state,
+      action
+    ) => {
+      // Handle successful document fetch
+      state.selectedDocument = action.payload as WritableDraft<DocumentData>;
+    })
+  
     builder.addCase(deleteDocumentAsync.fulfilled, (state, action) => {
-        // Handle successful document deletion
-        state.documentList = state.documentList?.filter(
-          (doc) => doc.id !== action.payload
-        );
+      // Handle successful document deletion
+      state.documentList = state.documentList?.filter(
+        (doc) => doc.id !== action.payload
+      );
+      // Add success notification for deletion
+      useNotification().notify({
+        id: `deleteDocumentSuccess${action.payload}`,
+        message: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
+        data: {
+          extra: {
+            documentId: action.payload,
+            operation: "Delete document"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
       });
+    });
 
     builder.addCase(downloadDocumentAsync.fulfilled, (state, action) => {
       // Update state with downloaded document (action.payload)
       state.selectedDocument = action.payload;
-      useNotification().notify(
-        "downloadDocumentSuccess",
-        `Downloading document with ID: ${action.payload.id} success`,
-        NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: `downloadDocumentSuccess${action.payload.id}`,
+        message: `Downloading document with ID: ${action.payload.id} success`,
+        data: {
+          extra: {
+            documentId: action.payload.id,
+            documentName: action.payload.name,
+            operation: "Download document"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     });
 
     builder.addCase(exportDocumentsAsync.fulfilled, (state, action) => {
       // Update state with exported documents (action.payload)
       state.filteredDocuments = action.payload;
-      useNotification().notify(
-        "exportDocumentsSuccess",
-        "Exporting documents success",
-        NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "exportDocumentsSuccess",
+        message: NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
+        data: {
+          extra: {
+            documentCount: action.payload?.length || 0,
+            operation: "Export documents"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     });
 
     builder.addCase(downloadDocument.fulfilled, (state, action) => {
       state.selectedDocument = action.payload;
-      useNotification().notify(
-        "downloadDocumentSuccess",
-        `Downloading document with ID: ${action.payload.id} success`,
-        NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: `downloadDocumentSuccess${action.payload.id}`,
+        message: `Downloading document with ID: ${action.payload.id} success`,
+        data: {
+          extra: {
+            documentId: action.payload.id,
+            documentName: action.payload.name,
+            operation: "Download document"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     });
-  },
+  }
 });
 
 // Export action creators
@@ -5035,7 +5129,7 @@ export type { DocumentObject, DocumentSliceState };
 
 // Example usage
   
-const baseStructure: StructuredMetadata = {
+const baseStructure: StructuredMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields> = {
   metadataEntries: {
     document1: {
       author: 'Author 1',

@@ -1,5 +1,8 @@
 // ProjectEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
 import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -10,9 +13,6 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 // -------------------
 // Project Entity Type
@@ -132,3 +132,4 @@ export type {
   ProjectIncludedFields, ProjectK,
   ProjectMeta
 };
+

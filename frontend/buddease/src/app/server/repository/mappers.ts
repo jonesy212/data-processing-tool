@@ -1,12 +1,11 @@
 // mappers.ts
 // /app/server/repository/mappers.ts
 
-import { fileURLToPath } from 'url';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CacheData } from '@/app/models/CacheData';
 import fs from 'fs';
 import path from 'path';
-import { CacheData } from '@/app/models/CacheData';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { fileURLToPath } from 'url';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);

@@ -1,11 +1,14 @@
 // phaseTypes.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { PhaseData } from "@/app/models/phases/Phase";
-import { Phase, CustomPhaseHooks } from '@/app/models/phases/Phase';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { CustomPhaseHooks, Phase, PhaseData } from "@/app/models/phases/Phase";
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+import { ProgressPhase } from '@/app/models/tracker/ProgressBar'
+
 
 // Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
@@ -96,7 +99,7 @@ const phaseName = "default phase";
 const generatePhaseId = UniqueIDGenerator.generatePhaseID(phaseName);
 // Helper for creating phase instances
 const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault => ({
-  id: options.id || generatePhaseId(),
+  id: options.id || generatePhaseId,
   name: options.name || '',
   description: options.description || '',
   startDate: options.startDate,
@@ -111,6 +114,29 @@ const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault =
 const emptyPhase: PhaseDefault = createDefaultPhase();
 
 
+
+export enum PhaseType {
+  Ideation = 'ideation',
+  Planning = 'planning',
+  Execution = 'execution',
+  Review = 'review',
+  Completion = 'completion',
+  Development = 'development',
+  Testing = 'testing',
+  Deployment = 'deployment',
+  Maintenance = 'maintenance'
+}
+
+// Unified PhaseType type
+export type UnifiedPhaseType = 
+  | ProjectPhaseTypeEnum 
+  | ProgressPhase 
+  | DocumentPhaseTypeEnum 
+  | string; // Allow string for flexibility
+
+// Default phase type
+export type PhaseDefaultEnum = UnifiedPhaseType | undefined;
+
 export type {
   AppPhase,
   AppPhaseData,
@@ -118,5 +144,6 @@ export type {
   CustomAppPhaseHooks, PhaseAttachment, PhaseBaseParams, PhaseDefault, PhaseEntity, PhaseExcludedFields,
   PhaseIncludedFields, PhaseK,
   PhaseMeta,
-  PhaseStructuredMetadata
+  PhaseStructuredMetadata,
 };
+

@@ -1,15 +1,15 @@
 // GenerateInterfaces.ts
 import { readCache, writeCache } from '@/utils/ReadAndWriteCache';
-import { generateUniqueApiId } from '@/generateNewApiConfig';
-import { CacheData } from '@/generators/GenerateCache'; // Import CacheData type
+import { generateUniqueApiId } from '@/app/generators/generateNewApiConfig';
+import { CacheData } from '@/app/generators/GenerateCache'; // Import CacheData type
 
 export async function generateInterfaces(backendModelPaths: string[]): Promise<void> {
   backendModelPaths.forEach(async (backendModelPath) => {
     const modelName = extractModelName(backendModelPath);
-
+    const userId = useSecuredUserID()
     try {
       // Check if the interface is already in the cache
-      let cache: CacheData = await readCache();
+      let cache: CacheData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = await readCache(userId);
 
       if (!cache[modelName]) {
         // If not, generate the interface code

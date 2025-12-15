@@ -1,8 +1,8 @@
 // subscriberApi.ts 
 import axiosInstance from "@/app/api/csrfToken";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Server-side API with ALL 6 generic parameters
 export const getSubscriberId = <

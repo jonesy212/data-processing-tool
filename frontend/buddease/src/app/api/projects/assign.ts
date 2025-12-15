@@ -1,12 +1,13 @@
 // assign.ts
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/DatabaseClient';
+import DatabaseClient from '@/app/api/DatabaseClient'
+import { databaseConnection } from '@/app/config/databaseConnection';  // Import the renamed config
 
 export async function POST(request: NextRequest) {
   try {
     const { teamId, projectId, assignedDate } = await request.json();
     
-    const dbClient = new DatabaseClient(databaseConfig);
+    const dbClient = new DatabaseClient(databaseConnection);  // Use databaseConnection
     await dbClient.connect();
     
     // Database logic for assigning project

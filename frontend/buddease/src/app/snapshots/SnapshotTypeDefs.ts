@@ -2,22 +2,22 @@
 import { ExtractEntityTypes } from '@/app/typings/BaseTypes';
 
 
-import { 
-  BaseDataEntity, 
-  DefaultExcludedFields, 
-  DefaultMeta 
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-    SnapshotsArray, 
-  SnapshotsObject,
-    Snapshots
-} from '@/app/snapshots/LocalStorageSnapshotStore'
-import {  SnapshotBase } from '@/app/snapshots/SnapshotContainer'; // Your existing file
+  Snapshots,
+  SnapshotsArray,
+  SnapshotsObject
+} from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotBase } from '@/app/snapshots/SnapshotContainer'; // Your existing file
 
-import SnapshotStore from '@/app/snapshots/SnapshotStore'
-import { SnapshotConfig as ExistingSnapshotConfig } from '@/app/snapshots/SnapshotConfig'
-import { isSnapshotsArray } from '@/app/snapshots/createSnapshotStoreOptions'
+import { SnapshotConfig as ExistingSnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { isSnapshotsArray } from '@/app/snapshots/createSnapshotStoreOptions';
 
 // Utility types that maintain 6 parameters
 export type SnapshotTypeName = 'array' | 'object' | 'store' | 'union';

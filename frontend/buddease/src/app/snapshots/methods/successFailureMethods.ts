@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Payload } from "@/app/server/database/Payload";
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';

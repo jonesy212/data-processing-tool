@@ -6423,7 +6423,7 @@
 
 ### DAppAdapterProps
 **Metadata:**
-- **File:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+- **File:** src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 - **Type:** interface
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -9826,7 +9826,7 @@
 
 ### ThemeProvider
 **Metadata:**
-- **File:** src/app/platform/styles/theme-provider.tsx
+- **File:** src/app/platform/styles/ThemeProvider.tsx
 - **Type:** component
 - **Role:** 🏛️ Root
 - **Dependencies:** 0
@@ -11465,7 +11465,7 @@
 
 ### DAppAdapter
 **Metadata:**
-- **File:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+- **File:** src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 - **Type:** component
 - **Role:** 🏛️ Root
 - **Dependencies:** 0

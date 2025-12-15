@@ -1,34 +1,32 @@
 // BaseConfig.ts
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
-import { SharedTimestamps } from '@/app/models/CommonData';
-import { AllTypes } from '@/app/typings/PropTypes';
-import { DebugEntry, TempDataStorage } from '@/app/snapshots/methods/debugMethods'
+import { BaseCacheConfig } from '@/app/config/CacheConfig';
 import { BaseMetaInfo } from '@/app/config/metadata/BaseMetaInfo';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { BaseMetadata } from '@/app/config/MetaDataOptions';
+import { BaseMetadata, UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseEntityProperties, SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
+import { SharedTimestamps } from '@/app/models/CommonData';
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { BaseMetadataConfig, BaseRetryConfig, } from "@/app/services/ConfigurationService";
-import { BaseCacheConfig } from '@/app/config/CacheConfig'
+import { DebugEntry, TempDataStorage } from '@/app/snapshots/methods/debugMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { useSnapshot } from '@/app/state/context/SnapshotContext';
 import { EventManager, InitializedState } from '@/app/state/stores/DataStore';
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import {
-    ConfigAttachment,
-    ConfigEntity,
-    ConfigExcludedFields,
-    ConfigIncludedFields,
-    ConfigK,
-    ConfigMeta
+  ConfigAttachment,
+  ConfigEntity,
+  ConfigExcludedFields,
+  ConfigIncludedFields,
+  ConfigK,
+  ConfigMeta
 } from '@/app/typings/entities/ConfigEntity';
 import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { AppMetadata } from '@/app/typings/metadataTypes';
-import { useSnapshot } from '@/app/state/context/SnapshotContext';
+import { AllTypes } from '@/app/typings/PropTypes';
 import { StructuredMetadata } from './StructuredMetadata';
 import { useMeta } from './useMeta';
 import { useMetadata } from './useMetadata';
@@ -237,7 +235,7 @@ const baseConfig: BaseConfig<
 export { baseConfig, mappedSnapshot };
 
     export type {
-        BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
-        DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, SharedConfig, RootCategories
-    };
+    BaseConfig, BaseDataEntity, BaseDataRoot, BaseEntity, CryptoConfig,
+    DefaultExcludedFields, DefaultIncludedFields, DefaultMeta, Entity, ProjectManagementConfig, RootCategories, SharedConfig
+  };
 

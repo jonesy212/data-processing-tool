@@ -1,6 +1,6 @@
 // PDFDocument.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface PDFDocument<
   T extends BaseDataEntity,

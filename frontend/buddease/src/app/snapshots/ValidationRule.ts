@@ -1,9 +1,13 @@
 // ValidationRule.ts
 
 // Base types for context
+import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
+import { StorePropEntityTemplate } from '@/app/typings/entities/StorePropEntity'
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import {
   StorePropAttachment,
   StorePropEntity,
@@ -20,54 +24,43 @@ export interface BaseDataEntity {
   id?: string | number;
   createdAt?: string | Date;
   updatedAt?: string | Date;
-  tempData?: { 
+  tempData?: {
     tempResults: any[];
     cacheTime: Date;
   };
   [key: string]: any;
 }
-
-export interface ValidationMeta<T extends BaseDataEntity, K extends T = T> {
-  timestamp: Date;
-  operation: 'create' | 'update' | 'delete' | 'restore';
-  previousState?: Partial<K>;
-  currentState: Partial<K>;
-  userId?: string;
-  source?: string;
-}
-
-// Enhanced ValidationRule Interface
-interface ValidationRule<
+export interface ValidationRule<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 > {
-  // Core Identification
+  // Core Identification (required)
   id: string;
   name: string;
+
+  // Rule Definition (rule is now optional since we have validate function)
+  rule?: string; // Make optional - e.g., "required", "email", "minLength:5"
+  validate: (value: any, entity: Partial<T>, meta?: ValidationMeta<T, K>) =>
+    | boolean
+    | string
+    | ValidationResult;
+
+  // Message Handling (make message optional if we have validate returning string)
+  message?: string; // Simple static message
+  errorMessage?: string; // Alternative name for message
+
+  // Scope & Application (required)
+  field: keyof T | '*';
+  severity: 'error' | 'warning' | 'info';
+  when: ('create' | 'update' | 'delete')[];
+
+  // Optional properties
   description?: string;
-  
-  // Rule Definition
-  rule: string; // From simple interface - e.g., "required", "email", "minLength:5"
-  validate: (value: any, entity: Partial<T>, meta?: ValidationMeta<T, K>) => 
-    | boolean 
-    | string 
-    | ValidationResult; // From comprehensive type
-  
-  // Message Handling
-  message: string; // From simple interface
-  errorMessage?: string; // From comprehensive type (keep both for compatibility)
-  
-  // Scope & Application
-  field: keyof T | '*'; // Which field(s) this applies to
-  severity: 'error' | 'warning' | 'info'; // Combined from both
-  when: ('create' | 'update' | 'delete')[]; // When to apply
-  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, K>) => boolean; // Conditional application
-  
-  // Execution
-  priority: number; // Order of execution (lower = earlier)
-  async?: boolean; // Whether validation is async
-  
-  // Metadata
+  condition?: (entity: Partial<T>, meta?: ValidationMeta<T, K>) => boolean;
+  priority?: number; // Make optional with default
+  async?: boolean;
+
+  // Optional metadata
   metadata?: {
     type: 'regex' | 'function' | 'custom' | 'built-in';
     category?: string;
@@ -76,28 +69,38 @@ interface ValidationRule<
     createdAt?: Date;
     updatedAt?: Date;
   };
-  
-  // Related Rules
-  dependsOn?: string[]; // Rules that must pass before this one
-  excludes?: string[]; // Rules that can't run with this one
-  
-  // Custom Properties
+
+  // Optional related rules
+  dependsOn?: string[];
+  excludes?: string[];
+
+  // Optional custom properties
   customProperties?: Record<string, any>;
 }
 
-// Validation Result Types
-interface ValidationResult {
-  isValid: boolean;
-  message: string;
-  field?: string;
-  value?: any;
-  severity?: 'error' | 'warning' | 'info';
-  code?: string; // Error code for programmatic handling
-  metadata?: Record<string, any>;
+// Factory function to create validation rules with defaults
+function createValidationRule<T extends BaseDataEntity, K extends T = T>(
+  rule: Omit<ValidationRule<T, K>, 'priority' | 'async' | 'severity' | 'when'> &
+    Partial<Pick<ValidationRule<T, K>, 'priority' | 'async' | 'severity' | 'when'>>
+): ValidationRule<T, K> {
+  return {
+    priority: 0,
+    async: false,
+    severity: 'error',
+    when: ['create', 'update'],
+    ...rule
+  };
 }
 
-interface ValidationMeta<T extends BaseDataEntity, K extends T> {
-  operation: 'create' | 'update' | 'delete';
+// Validation Result Types
+interface ValidationMeta<T extends BaseDataEntity, K extends T = T> {
+  timestamp: Date;
+  operation: 'create' | 'update' | 'delete' | 'restore';
+  previousState?: Partial<K>;
+  currentState: Partial<K>;
+  userId?: string;
+  source?: string;
+  // Fields from the second interface
   previousValue?: any;
   context?: Record<string, any>;
   user?: {
@@ -111,49 +114,62 @@ interface ValidationMeta<T extends BaseDataEntity, K extends T> {
   };
 }
 
-
-export interface ValidationResult {
+// ValidationResult interface
+interface ValidationResult {
   isValid: boolean;
-  errors: Array<{
+  message: string;
+  details?: Record<string, any>;
+
+  // Combined error structure
+  errors?: Array<{
     field: string;
     message: string;
     rule: string;
-  }>;  message?: string;
-  details?: Record<string, any>;
+  }>;
+
+  // Additional properties from first interface
+  field?: string;
+  value?: any;
+  severity?: 'error' | 'warning' | 'info';
+  code?: string; // Error code for programmatic handling
+  metadata?: Record<string, any>;
 }
 
 // Common validation rule examples
+// Common validation rule examples using the factory
 export const CommonValidationRules = {
   /** Requires field to not be null/undefined/empty */
-  required: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> => ({
-    id: `required_${String(field)}`,
-    name: `Required ${String(field)}`,
-    field,
-    validate: (value) => {
-      const isValid = value !== null && value !== undefined && value !== '';
-      return isValid || (message ?? `${String(field)} is required`);
-    },
-    severity: 'error',
-    when: ['create', 'update']
-  }),
+  required: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      id: `required_${String(field)}`,
+      name: `Required ${String(field)}`,
+      rule: 'required',
+      field,
+      validate: (value) => {
+        const isValid = value !== null && value !== undefined && value !== '';
+        return isValid || (message ?? `${String(field)} is required`);
+      },
+      message: message ?? `${String(field)} is required`,
+    }),
 
   /** String length validation */
   minLength: <T extends BaseDataEntity, K extends T = T>(
-    field: keyof T, 
-    min: number, 
+    field: keyof T,
+    min: number,
     message?: string
-  ): ValidationRule<T, K> => ({
-    id: `min_length_${String(field)}_${min}`,
-    name: `Minimum length for ${String(field)}`,
-    field,
-    validate: (value) => {
-      if (value === null || value === undefined) return true; // Let required rule handle this
-      const isValid = typeof value === 'string' && value.length >= min;
-      return isValid || (message ?? `${String(field)} must be at least ${min} characters`);
-    },
-    severity: 'error',
-    when: ['create', 'update']
-  }),
+  ): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      id: `min_length_${String(field)}_${min}`,
+      name: `Minimum length for ${String(field)}`,
+      rule: `minLength:${min}`,
+      field,
+      validate: (value) => {
+        if (value === null || value === undefined) return true;
+        const isValid = typeof value === 'string' && value.length >= min;
+        return isValid || (message ?? `${String(field)} must be at least ${min} characters`);
+      },
+      message: message ?? `${String(field)} must be at least ${min} characters`,
+    }),
 
   /** Numeric range validation */
   numberRange: <T extends BaseDataEntity, K extends T = T>(
@@ -161,59 +177,96 @@ export const CommonValidationRules = {
     min: number,
     max: number,
     message?: string
-  ): ValidationRule<T, K> => ({
-    id: `number_range_${String(field)}_${min}_${max}`,
-    name: `Number range for ${String(field)}`,
-    field,
-    validate: (value) => {
-      if (value === null || value === undefined) return true;
-      const num = Number(value);
-      const isValid = !isNaN(num) && num >= min && num <= max;
-      return isValid || (message ?? `${String(field)} must be between ${min} and ${max}`);
-    },
-    severity: 'error',
-    when: ['create', 'update']
-  }),
+  ): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      id: `number_range_${String(field)}_${min}_${max}`,
+      name: `Number range for ${String(field)}`,
+      rule: `range:${min},${max}`,
+      field,
+      validate: (value) => {
+        if (value === null || value === undefined) return true;
+        const num = Number(value);
+        const isValid = !isNaN(num) && num >= min && num <= max;
+        return isValid || (message ?? `${String(field)} must be between ${min} and ${max}`);
+      },
+      message: message ?? `${String(field)} must be between ${min} and ${max}`,
+    }),
 
   /** Email format validation */
-  email: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> => ({
-    id: `email_${String(field)}`,
-    name: `Email format for ${String(field)}`,
-    field,
-    validate: (value) => {
-      if (value === null || value === undefined) return true;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const isValid = typeof value === 'string' && emailRegex.test(value);
-      return isValid || (message ?? `${String(field)} must be a valid email address`);
-    },
-    severity: 'error',
-    when: ['create', 'update']
-  }),
+  email: <T extends BaseDataEntity, K extends T = T>(field: keyof T, message?: string): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      id: `email_${String(field)}`,
+      name: `Email format for ${String(field)}`,
+      rule: 'email',
+      field,
+      validate: (value) => {
+        if (value === null || value === undefined) return true;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = typeof value === 'string' && emailRegex.test(value);
+        return isValid || (message ?? `${String(field)} must be a valid email address`);
+      },
+      message: message ?? `${String(field)} must be a valid email address`,
+    }),
 
   /** Custom regex pattern validation */
   pattern: <T extends BaseDataEntity, K extends T = T>(
     field: keyof T,
     pattern: RegExp,
     message?: string
-  ): ValidationRule<T, K> => ({
-    id: `pattern_${String(field)}_${pattern.toString()}`,
-    name: `Pattern validation for ${String(field)}`,
-    field,
-    validate: (value) => {
-      if (value === null || value === undefined) return true;
-      const isValid = typeof value === 'string' && pattern.test(value);
-      return isValid || (message ?? `${String(field)} does not match the required pattern`);
-    },
-    severity: 'error',
-    when: ['create', 'update']
-  })
+  ): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      id: `pattern_${String(field)}_${pattern.toString()}`,
+      name: `Pattern validation for ${String(field)}`,
+      rule: `pattern:${pattern}`,
+      field,
+      validate: (value) => {
+        if (value === null || value === undefined) return true;
+        const isValid = typeof value === 'string' && pattern.test(value);
+        return isValid || (message ?? `${String(field)} does not match the required pattern`);
+      },
+      message: message ?? `${String(field)} does not match the required pattern`,
+      metadata: {
+        type: 'regex',
+      },
+    }),
+
+  /** Conditional validation example */
+  conditional: <T extends BaseDataEntity, K extends T = T>(
+    field: keyof T,
+    condition: (entity: Partial<T>) => boolean,
+    rule: ValidationRule<T, K>,
+    message?: string
+  ): ValidationRule<T, K> =>
+    createValidationRule<T, K>({
+      ...rule,
+      id: `conditional_${rule.id}`,
+      name: `Conditional: ${rule.name}`,
+      condition: condition,
+      message: message ?? rule.message,
+    }),
 };
 
+// First, let's fix the ValidationResult interface to include all needed properties
+interface ValidationResult {
+  isValid: boolean;
+  message: string; // Make this required, not optional
+  details?: Record<string, any>;
+  errors?: Array<{
+    field: string;
+    message: string;
+    rule: string;
+  }>;
+  field?: string;
+  value?: any;
+  severity?: 'error' | 'warning' | 'info';
+  code?: string;
+  metadata?: Record<string, any>;
+}
 
+// Now fix the ValidationEngine class
 export class ValidationEngine {
-
   static validateEntity<
-    T extends BaseDataEntity, 
+    T extends BaseDataEntity,
     K extends T = T
   >(
     entity: Partial<T>,
@@ -221,23 +274,23 @@ export class ValidationEngine {
     meta?: ValidationMeta<T, K>
   ): ValidationResult[] {
     const results: ValidationResult[] = [];
-    
+
     // Sort rules by priority (lower first)
     const sortedRules = [...rules].sort((a, b) => (a.priority || 100) - (b.priority || 100));
-    
+
     for (const rule of sortedRules) {
       // Check if rule should run based on operation type
       if (meta && rule.when && !rule.when.includes(meta.operation as any)) {
         continue;
       }
-      
+
       // Check conditional execution
       if (rule.condition && !rule.condition(entity, meta)) {
         continue;
       }
-      
+
       let value: any;
-      
+
       if (rule.field === '*') {
         // Apply to entire entity
         value = entity;
@@ -245,57 +298,86 @@ export class ValidationEngine {
         // Apply to specific field
         value = entity[rule.field as keyof T];
       }
-      
+
       const validationResult = rule.validate(value, entity, meta);
-      
+
+      // Create base result object
+      const baseResult: Partial<ValidationResult> = {
+        field: typeof rule.field === 'string' ? rule.field : '*',
+        details: { ruleId: rule.id, field: rule.field },
+        severity: rule.severity || 'error'
+      };
+
       if (typeof validationResult === 'boolean') {
+        const message = validationResult
+          ? `Validation passed for rule: ${rule.name || rule.id}`
+          : rule.errorMessage || rule.message || `Validation failed for rule: ${rule.name || rule.id}`;
+
         results.push({
           isValid: validationResult,
-          message: validationResult ? undefined : rule.errorMessage,
-          details: { ruleId: rule.id, field: rule.field },
-          errors: []
+          message,
+          ...baseResult,
+          errors: validationResult ? undefined : [{
+            field: String(rule.field),
+            message: rule.errorMessage || rule.message || 'Validation failed',
+            rule: rule.rule || rule.id
+          }]
         });
       } else if (typeof validationResult === 'string') {
         results.push({
           isValid: false,
           message: validationResult,
-          details: { ruleId: rule.id, field: rule.field },
-          errors: []
+          ...baseResult,
+          errors: [{
+            field: String(rule.field),
+            message: validationResult,
+            rule: rule.rule || rule.id
+          }]
         });
       } else {
+        // validationResult is a ValidationResult object
+        const result = validationResult as ValidationResult;
         results.push({
-          ...validationResult,
-          details: { ...validationResult.details, ruleId: rule.id, field: rule.field }
+          ...result,
+          ...baseResult,
+          details: { ...result.details, ...baseResult.details },
+          errors: result.errors || (result.isValid ? undefined : [{
+            field: String(rule.field),
+            message: result.message || 'Validation failed',
+            rule: rule.rule || rule.id
+          }])
         });
       }
     }
-    
+
     return results;
   }
-  
+
   static hasErrors(results: ValidationResult[]): boolean {
-    return results.some(result => !result.isValid && result.message);
+    return results.some(result => !result.isValid);
   }
-  
+
   static getErrorMessages(results: ValidationResult[]): string[] {
     return results
-      .filter(result => !result.isValid && result.message)
-      .map(result => result.message!);
+      .filter(result => !result.isValid)
+      .map(result => result.message);
   }
 }
+
 
 
 const snapshotStoreConfig = useDataStore().snapshotStoreConfig
 
 
 // Usage example with SnapshotStoreConfig
-const exampleConfig: SnapshotStoreConfig<  
-  StorePropEntity,
-  StorePropK,
-  StorePropMeta,
-  StorePropAttachment,
-  StorePropExcludedFields,
-  StorePropIncludedFields> = {
+const exampleConfig: SnapshotStoreConfig<
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+> = {
   ...snapshotStoreConfig,
 
   validationRules: [
@@ -315,19 +397,57 @@ const exampleConfig: SnapshotStoreConfig<
       when: ['update']
     }
   ],
-
-  getOrCreateSnapshot: async(
+ 
+  getOrCreateSnapshot: async (
     id: string,
     baseData: StorePropEntity,
-    storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>
+    storeProps: SnapshotStoreProps<
+      StorePropEntity, 
+      StorePropK, 
+      StorePropMeta, 
+      StorePropAttachment, 
+      StorePropExcludedFields, 
+      StorePropIncludedFields
+    >
   ) => {
     const existing = internalCache.get(id);
     if (existing) {
-      return existing; // return cached snapshot
+      return existing;
     }
-
-    // if not found, create a new one
-    return await createSnapshot(baseData, new Map(), id, null, null, null, null, false, storeProps);
+    return await createSnapshot(
+      baseData, 
+      new Map(), 
+      id, 
+      null, 
+      null, 
+      null, 
+      undefined, 
+      false, 
+      storeProps
+    );
   }
-  // ... other SnapshotStoreConfig properties
+};
+
+// Then use it in storeProps
+const storeProps: SnapshotStoreProps<
+  StorePropEntityTemplate['T'],
+  StorePropEntityTemplate['K'],
+  StorePropEntityTemplate['Meta'],
+  StorePropEntityTemplate['AttachmentType'],
+  StorePropEntityTemplate['ExcludedFields'],
+  StorePropEntityTemplate['IncludedFields']
+> = {
+  storeId: "store-prop-store-001",
+  name: "StoreProp Snapshot Store",
+  endpointCategory: "store-props",
+  expirationDate: new Date(Date.now() + 86400000),
+  category: "store-props",
+  timestamp: new Date(),
+  criteria: {},
+  snapshotStoreConfig: snapshotStoreConfig, // Use the typed config
+  schema: {},
+  options: {} as SnapshotStoreOptions<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>,
+  callback: (snapshotStore: SnapshotStore<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields>) => {
+    console.log("Initialized StorePropSnapshotStore:", snapshotStore);
+  },
 };

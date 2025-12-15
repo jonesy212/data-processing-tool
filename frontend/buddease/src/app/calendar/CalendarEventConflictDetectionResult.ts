@@ -1,5 +1,5 @@
 // CalendarEventConflictDetectionResult.ts
-import { EventConflictDetectionResult } from "@/app/components/models/data/EventPriorityClassification";
+import { EventConflictDetectionResult } from "@/app/models/data/EventPriorityClassification";
 
 interface CalendarEventConflictDetectionResult extends EventConflictDetectionResult {
     eventId: string; // ID of the event being checked for conflicts

@@ -1,7 +1,7 @@
 // actionMethods.ts
-import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
 export const ActionMethods = {

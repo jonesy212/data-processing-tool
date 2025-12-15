@@ -1,10 +1,10 @@
 // SnapshotContext.tsx
 // // SnapshotContext.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import {
-    createCompleteSnapshot
+  createCompleteSnapshot
 } from '@/app/snapshots/createSnapshotStoreOptions';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';

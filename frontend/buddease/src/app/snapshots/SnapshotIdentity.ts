@@ -1,12 +1,12 @@
 // SnapshotIdentity.ts
 import { Task } from "@/app/components/models/tasks/Task";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 export interface SnapshotIdentity<
   T extends BaseDataEntity,
@@ -28,7 +28,7 @@ export interface SnapshotIdentity<
   currentCategory?: Category;
   createdBy?: string | undefined;
   ownerId?: string;
-  user?: User;
+  user?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subscriberId?: string;
   timestamp?: string | number | Date | undefined;
   date?: string | number | Date | null;

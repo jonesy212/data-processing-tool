@@ -1,22 +1,38 @@
 // VersionGenerator.tsx
-// api/ApiDetails.ts
-import { handleApiError } from '@/app/api/ApiLogs';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { BaseData, Data } from '@/app/models/data/Data';
-import internalApiService from '@/app/api/ApiClient';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { useNotification } from "@/app/state/context/NotificationContext";
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { AxiosError } from 'axios';
 
-const API_BASE_URL = "/api/details";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+
+import { useNotification } from '@/app/state/context/NotificationContext';
+
+import { TaskLogger } from "@/app/logging/Logger";
+import { AxiosError } from "axios";
+import getAppPath from "@/app/config/appStructure/appPath";
+import { handleApiErrorAndNotify } from "@/app/api/ApiData";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { Version } from '@/app/versions/Version';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 
+
+interface VersionGeneratorConfig {
+  
+  getData: () => Promise<any>; // Callback to retrieve real-time data
+  determineChanges: (data: any) => Record<string, any>; // Callback to determine changes based on data
+  additionalProperties: Record<string, any>; // Additional properties for the version object
+  // Add parameters for dynamic information
+  file: string;
+  folder: string;
+  componentName: string;
+  properties: Record<string, any>;
+}
+
+interface VersionResult {
+  version: Version;
+  info: any; // Replace 'any' with the type of versionInfo object if available
+}
+
+// Define the getCurrentAppInfo function outside the VersionGenerator class
 
 export const getCurrentAppInfo = (): { versionNumber: string; appVersion: string } => { 
   // Retrieve appVersion and versionNumber using UniqueIDGenerator 
@@ -29,237 +45,204 @@ const versionNumber = UniqueIDGenerator.generateVersionNumber();
 };
 
 
-
-export const detailsApiService = {
-  fetchDetailsItem: async <
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-  >(
-      detailsItemId: string
-    ): Promise<{ detailsItem: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => {
+class VersionGenerator {
+  static async generateVersion(
+    config: VersionGeneratorConfig
+  ): Promise<VersionResult> {
     try {
-      const response = await internalApiService.get(`${API_BASE_URL}/${detailsItemId}`);
-      notify({
-        id: "detailsSuccess",
-        message: NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_SUCCESS,
-        data: {
-          extra: {
-            detailsItemId,
-            operation: "fetchDetailsItem"
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.OPERATION_START,
-        level: 'info'
-      });
-      return { detailsItem: response.data };
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to fetch details item');
-      notify({
-        id: "fetchDetailsItemError",
-        message: NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_ERROR,
-        data: {
-          extra: {
-            detailsItemId,
-            operation: "fetchDetailsItem",
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_ERROR,
-        level: 'error'
-      });
-      throw error;
-    }
-  },
+      const { notify } = useNotification();
+      
+      // Retrieve real-time data
+      const data = await config.getData();
 
-  updateDetailsItem: async <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T ,
-  >(
-    detailsItemId: string,
-    updatedDetailsItemData: any
-  ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => {
-    try {
-      const response = await internalApiService.put(`${API_BASE_URL}/${detailsItemId}`, updatedDetailsItemData);
+      // Use dynamic information provided in the config
+      const {
+        file,
+        folder,
+        componentName,
+        properties,
+        determineChanges,
+        additionalProperties,
+      } = config;
+
+      // Determine changes based on the retrieved data
+      const changes = determineChanges(data);
+
+      // Generate a unique version ID
+      const versionID = `version_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 10)}`;
+
+      // Success notification using object format
       notify({
-        id: "updateDetailsItemSuccess",
-        message: NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
+        id: `version_generated_${versionID}_${Date.now()}`,
+        message: `Generated version ID: ${versionID}`,
         data: {
-          extra: {
-            detailsItemId,
-            operation: "updateDetailsItem",
-            updatedData: updatedDetailsItemData
-          }
+          entityType: 'version',
+          entityId: versionID,
+          action: 'generate',
+          versionInfo: {
+            id: versionID,
+            file: file,
+            folder: folder,
+            componentName: componentName,
+            changeCount: Object.keys(changes).length,
+            additionalPropertiesCount: Object.keys(additionalProperties).length
+          },
+          timestamp: new Date().toISOString()
         },
         timestamp: new Date(),
-        type: NotificationTypeEnum.API_SUCCESS,
-        level: 'success'
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const,
+        metadata: {
+          generatorType: 'version',
+          operation: 'version_generation',
+          component: componentName
+        }
       });
-      return {
-        detailsItemId: response.data.id,
-        detailsItem: response.data
+
+      // Generate appVersion and versionNumber using the provided generators
+      const { versionNumber, appVersion } = getCurrentAppInfo();
+
+      // Use getAppPath to get the app path with version information
+      const appPathWithVersion = getAppPath(versionNumber, appVersion);
+
+      // Generate version object with standard and additional properties
+      const versionInfo = {
+        appPathWithVersion,
+        ...changes,
+        ...additionalProperties,
+        generatedAt: new Date().toISOString(),
+        versionId: versionID,
+        source: {
+          file,
+          folder,
+          componentName
+        }
       };
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to update details item');
-      notify({
-        id: "updateDetailsItemError",
-        message: NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_ERROR,
-        data: {
-          extra: {
-            detailsItemId,
-            operation: "updateDetailsItem",
-            updatedData: updatedDetailsItemData,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_ERROR,
-        level: 'error'
-      });
-      throw error;
-    }
-  },
 
-  fetchDetailsItems: async <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-  
-  ): Promise<{ 
-    detailsItems: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-  }> => {
-    try {
-      const response = await internalApiService.get(API_BASE_URL);
-      notify({
-        id: "fetchDetailsItemsSuccess",
-        message: NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_SUCCESS,
-        data: {
-          extra: {
-            operation: "fetchDetailsItems",
-            itemsCount: response.data?.length || 0
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_SUCCESS,
-        level: 'success'
-      });
-      return { detailsItems: response.data as DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] };
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to fetch details items');
-      notify({
-        id: "fetchDetailsItemsError",
-        message: NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_ERROR,
-        data: {
-          extra: {
-            operation: "fetchDetailsItems",
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_ERROR,
-        level: 'error'
-      });
-      throw error;
-    }
-  },
-
-  updateDetailsItems: async <  
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }> => {
-    try {
-      const response = await internalApiService.put(API_BASE_URL, updatedDetailsItemsData);
-      notify({
-        id: "updateDetailsItemsSuccess",
-        message: NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_SUCCESS,
-        data: {
-          extra: {
-            operation: "updateDetailsItems",
-            itemsCount: updatedDetailsItemsData?.length || 0,
-            updatedData: updatedDetailsItemsData
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_SUCCESS,
-        level: 'success'
-      });
-      return { detailsItems: response.data as DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] };
-    } catch (error) {
-      handleApiError(error as AxiosError<unknown>, 'Failed to update details items');
-      notify({
-        id: "updateDetailsItemsError",
-        message: NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_ERROR,
-        data: {
-          extra: {
-            operation: "updateDetailsItems",
-            itemsCount: updatedDetailsItemsData?.length || 0,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_ERROR,
-        level: 'error'
-      });
-      throw error;
-    }
-  },
-
-  deleteDetailsItems: async (detailsItemIds: string[]): Promise<void> => {
-    try {
-      await internalApiService.delete(`${API_BASE_URL}`, {
-        data: { detailsItemIds },
-      });
-      notify({
-        id: "deleteDetailsItemsSuccess",
-        message: NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_SUCCESS,
-        data: {
-          extra: {
-            operation: "deleteDetailsItems",
-            deletedItemsCount: detailsItemIds.length,
-            deletedItemIds: detailsItemIds
-          }
-        },
-        timestamp: new Date(),
-        type: NotificationTypeEnum.API_SUCCESS,
-        level: 'success'
-      });
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to delete details items"
+      // Log task completion event with updated notification format
+      TaskLogger.logTaskCompleted(
+        "existingTaskId",
+        "Version Generation Task",
+        (message: string, type: string, date: Date, id: string) => {
+          notify({
+            id: `task_completed_${id}_${Date.now()}`,
+            message: message,
+            data: {
+              entityType: 'task',
+              entityId: id,
+              action: 'complete',
+              taskType: 'version_generation',
+              timestamp: new Date().toISOString()
+            },
+            timestamp: date,
+            type: NotificationTypeEnum.OPERATION_SUCCESS,
+            level: 'success' as const
+          });
+        }
       );
+
+      const version = new Version({
+        versionNumber: versionNumber || "1.0.0",
+        appVersion: appVersion || "1.0.0",
+        id: versionID,
+        metadata: {
+          generatedFrom: {
+            file,
+            folder,
+            component: componentName
+          },
+          changes: changes,
+          properties: properties
+        }
+      });
+
+      // Final success notification
       notify({
-        id: "deleteDetailsItemsError",
-        message: NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_ERROR,
+        id: `version_generation_complete_${versionID}_${Date.now()}`,
+        message: "Version generation completed successfully",
         data: {
-          extra: {
-            operation: "deleteDetailsItems",
-            deletedItemsCount: detailsItemIds.length,
-            error: error instanceof Error ? error.message : 'Unknown error'
+          entityType: 'version',
+          entityId: versionID,
+          action: 'generation_complete',
+          versionData: {
+            versionNumber: version.versionNumber,
+            appVersion: version.appVersion,
+            appPath: appPathWithVersion
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const,
+        metadata: {
+          generatorType: 'version',
+          status: 'complete',
+          hasChanges: Object.keys(changes).length > 0
+        }
+      });
+
+      return { version, info: versionInfo };
+    } catch (error) {
+      console.error("Error generating version:", error);
+
+      // Enhanced error notification
+      const { notify } = useNotification();
+      const errorMessage = 'Failed to generate version';
+      const axiosError = error as AxiosError;
+      
+      let userMessage = errorMessage;
+      if (axiosError.response) {
+        switch (axiosError.response.status) {
+          case 400:
+            userMessage = "Invalid version generation data";
+            break;
+          case 500:
+            userMessage = "Server error during version generation";
+            break;
+        }
+      }
+
+      notify({
+        id: `version_generation_error_${Date.now()}`,
+        message: userMessage,
+        data: {
+          entityType: 'version',
+          action: 'generation',
+          config: {
+            file: config.file,
+            folder: config.folder,
+            componentName: config.componentName
+          },
+          errorDetails: {
+            originalError: axiosError.message,
+            errorType: 'VERSION_GENERATION_ERROR',
+            statusCode: axiosError.response?.status,
+            timestamp: new Date().toISOString()
           }
         },
         timestamp: new Date(),
-        type: NotificationTypeEnum.API_ERROR,
-        level: 'error'
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const,
+        metadata: {
+          generatorType: 'version',
+          operation: 'generation',
+          isError: true
+        }
       });
+
+      // Also call the existing error handler
+      handleApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        errorMessage,
+        'GENERATE_VERSION_ERROR_ID'  // Using the correct message key
+      );
+
+      // Rethrow the error for handling at a higher level
       throw error;
     }
-  },
-};
+  }
+}
+
+export default VersionGenerator;

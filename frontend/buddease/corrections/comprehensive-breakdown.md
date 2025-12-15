@@ -5436,7 +5436,7 @@
 **Critical:** 0 | **High:** 0 | **Medium:** 1 | **Low:** 1
 
 ### DAppAdapter
-**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+**File:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 **Total Issues:** 5
 **Critical:** 1 | **High:** 1 | **Medium:** 2 | **Low:** 1
 
@@ -11595,7 +11595,7 @@
 **Implementations:** 0
 
 ### DAppAdapterProps
-**File:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+**File:** src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 **Issues:** 1
 **Implementations:** 0
 

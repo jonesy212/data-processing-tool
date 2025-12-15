@@ -17,7 +17,6 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { team, Team } from "@/app/components/teams/Team";
 import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { DataDetails } from '@/app/models/data/Data';
-import { TeamData } from "@/app/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 
 import { DefaultCalendarEvent } from '@/app/actions/CalendarEventActions';
@@ -584,7 +583,7 @@ class TeamLogger extends Logger {
   ): Promise<void> {
     try {
       if (storeId !== undefined && color !== undefined) {
-        const teamData: TeamData<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> | null =
+        const teamData: Team<TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields> | null =
         (await useTeamManagerStore(storeId)).getTeamData(
           teamId,
           team,
@@ -1465,6 +1464,33 @@ class ContentLogger extends Logger {
   private static LOG_KEY = "contentLogBuffer";
   private static logBuffer: string[] = getFromLocalStorage<string[]>(ContentLogger.LOG_KEY, []);
   
+
+    static logEventToFile(logType: string, message: string, fileName: string) {
+    const timestamp = new Date().toISOString();
+    const entry = `[${timestamp}] [${logType}] ${message}`;
+    
+    // Store in browser buffer
+    this.logBuffer.push(entry);
+    saveToLocalStorage(this.LOG_KEY, this.logBuffer);
+    
+    console.log(`Logged to ${fileName}:`, entry);
+    
+    // If running in Node.js/backend context, also write to actual file
+    if (typeof window === 'undefined') {
+      // This would be for server-side logging
+      const fs = require('fs');
+      const path = require('path');
+      const logDir = path.join(process.cwd(), 'logs');
+      
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      
+      const logPath = path.join(logDir, fileName);
+      fs.appendFileSync(logPath, entry + '\n');
+    }
+  }
+  
   // Shared logging method for content-related events
   static logContentCreated(title: string, contentId: string, userId: string) {
     this.logEvent("Content", `${title} created (Content ID: ${contentId}, User ID: ${userId})`, userId);
@@ -2044,28 +2070,28 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
-    AnalyticsLogger,
-    AnimationLogger, AssignBaseStoreLogger, AudioLogger,
-    BugLogger,
-    CalendarLogger,
-    ChannelLogger,
-    ChatLogger,
-    CollaborationLogger,
-    CommunityLogger,
-    ComponentLogger,
-    ConfigLogger,
-    ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
-    DexLogger,
-    DocumentLogger, errorLogger, ErrorLogger,
-    ExchangeLogger,
-    FileLogger,
-    FormLogger,
-    IntegrationLogger,
-    PaymentLogger,
-    SearchLogger,
-    SecurityLogger, SnapshotLogger, TaskLogger,
-    TeamLogger,
-    TenantLogger, ThemeLogger, UILogger, VideoLogger,
-    WebLogger
+  AnalyticsLogger,
+  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
+  BugLogger,
+  CalendarLogger,
+  ChannelLogger,
+  ChatLogger,
+  CollaborationLogger,
+  CommunityLogger,
+  ComponentLogger,
+  ConfigLogger,
+  ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
+  DexLogger,
+  DocumentLogger, errorLogger, ErrorLogger,
+  ExchangeLogger,
+  FileLogger,
+  FormLogger,
+  IntegrationLogger,
+  PaymentLogger,
+  SearchLogger,
+  SecurityLogger, SnapshotLogger, TaskLogger,
+  TeamLogger,
+  TenantLogger, ThemeLogger, UILogger, VideoLogger,
+  WebLogger
 };
 

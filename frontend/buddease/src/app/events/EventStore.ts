@@ -21,6 +21,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Content } from '@/app/models/content/AddContent';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
@@ -31,7 +32,6 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType, Subscription } from '@/app/subscriptions/Subscription';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { Content } from '@/models/content/AddContent';
 
 
 export type EventStore<

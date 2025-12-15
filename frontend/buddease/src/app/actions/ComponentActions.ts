@@ -2,8 +2,10 @@
 import { createAction } from "@reduxjs/toolkit";
 import Component from '@/app/libraries/ui/components/Component'
 
+
+
 export const ComponentActions = {
-  addComponent: createAction<{ name: string }>("addComponent"),
+  addComponent: createAction<{ name: string; type: string }>("addComponent"),
   removeComponent: createAction<number>("removeComponent"),
   updateComponent: createAction<{ id: number; updatedComponent: Partial<typeof Component> }>("updateComponent"),
   fetchComponentRequest: createAction<{ id: number }>("fetchComponentRequest"),

@@ -3,10 +3,10 @@
 import { useDispatch } from "react-redux";
 import UserService from "@/app/api/ApiUser";
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
-import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
-import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { resetState } from "@/app/state/redux/slices/AppSlice";
-import useSettingManagerStore from "@/app/state/stores/SettingsStore";
+import useSettingManagerStore from '@/app/state/hybrid/SettingsManagerStore'
 import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
 
 

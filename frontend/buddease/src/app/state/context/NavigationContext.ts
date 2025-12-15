@@ -1,6 +1,7 @@
 // NavigationContext.ts
 import React, { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Step } from '@/app/hooks/useStepNavigation'
 
 /**
  * NavigationView - extend with your app's views

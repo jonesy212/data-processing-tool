@@ -1,9 +1,9 @@
 // ExtendedBackendStructure.ts
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 import { backendConfig } from "@/app/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import BackendStructure from '@/app/server/database/BackendStructure';
 import getAppPath from "./appPath";
 

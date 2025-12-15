@@ -1,9 +1,7 @@
 // ConfigurationManagement.ts
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotStoreConfig } from '@/app/snapshots';
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 interface ConfigurationManagement<
   T extends BaseDataEntity,

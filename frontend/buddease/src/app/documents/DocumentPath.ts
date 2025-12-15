@@ -1,15 +1,16 @@
 // DocumentPath.ts
-import { Permission } from '@/app/permissions/Permission';
+import { AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
+import { Permission } from '@/app/permissions/Permission';
 import { DocumentBase } from "@/app/state/stores/DocumentStore";
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
-import { AppStructurePermissions } from "@/app/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface DocumentPath<
@@ -29,7 +30,7 @@ interface DocumentPath<
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   permissions?: Permission[];
-  appPermissions?: AppStructurePermissions;
+  appPermissions?: AppStructurePermissions[];
   folders: string[];
   folderPath: string;
   previousContent?: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -49,7 +50,9 @@ interface DocumentPath<
   documentType: string;
   documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   document?: any;
-  
+  hasPermission?(userId: string, permissionType: string): boolean;
+  getUsersWithPermission?(permissionType: string): string[];
+
   // CouchDB/Elasticsearch fields
   _rev: string;
   _attachments: Record<string, any>;

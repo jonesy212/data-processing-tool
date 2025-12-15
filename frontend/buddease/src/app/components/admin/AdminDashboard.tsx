@@ -1,6 +1,6 @@
 // AdminDashboard.tsx
-import { useDynamicComponents } from "@/app/DynamicComponentsContext";
-import DynamicNamingConventions from "@/app/DynamicNamingConventions";
+import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
+import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
 import { AppConfig } from "@/app/config/AppConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -19,7 +19,7 @@ import { User } from "@/app/users/User";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import ApiConfig from '@/app/api/ApiConfigServce';
+import { ApiConfig } from '@/app/api/ApiConfigService'
 import SecurityAudit from "@/app/server/security/SecurityAudit";
 
 import NotificationManager from '@/app/features/support/NotificationManager';
@@ -37,7 +37,7 @@ interface AdminDashboardProps<
 > extends YourComponentProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
-  users: User[];
+  users: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   deleteUser: (userId: string) => void;
   updateUserRole: (userId: string, newRole: UserRole) => void;
   notifications: NotificationData[];

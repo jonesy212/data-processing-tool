@@ -1,22 +1,22 @@
 // AuthContext.tsx
-import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { UserPreferences } from "@/app/config/UserPreferences";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AuthenticationProvider } from '@/app/server/auth/AuthService'
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NFT } from "@/app/models/cypto/NFT";
-import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "@/app/state/stores/AuthStore";
+import { AuthenticationProvider } from '@/app/server/auth/AuthService';
+import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession } from "@/app/state/stores/AuthStore";
 import { SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
-import { AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/app/typing/AuthEntity';
 import { DashboardConfig } from '@/app/typings/authTypes';
+import { AppAuth, AuthAttachment, AuthEntity, AuthExcludedFields, AuthIncludedFields, AuthK, AuthMeta } from '@/app/typings/entities/AuthEntity';
 import { User } from "@/app/users/User";
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext } from "react";
 
 // Keep AuthMethods as the source of truth for all auth methods
+
 interface AuthMethods<
   T extends BaseDataEntity,
   K extends T = T,
@@ -39,34 +39,6 @@ interface AuthMethods<
     nfts: NFT[],
     authToken: string
   ) => void;
-}
-
-// Define the types for the context and state
-interface AuthState<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T  
-> {
-  id: string;
-  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  token: string | null;
-  store: AuthStore;
-  userRoles: string[];
-  timestamp: number;
-  userNFTs: NFT[];
-  authToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  authenticationProviders: AuthenticationProvider<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
-  accessToken: string | null;
-  userId: string | null;
-  
-  // Remove methods from state - they belong in AuthMethods
-  // Only keep pure data accessor methods
-  getUserPreferences: () => UserPreferences | null;
 }
 
 // Create a separate interface for AuthContext value that extends AuthMethods
@@ -104,7 +76,7 @@ interface AuthContextProps<
   userSubscriptionPlan: SubscriptionPlan | null;
   
   // Authentication providers
-  authenticationProviders: AuthenticationProvider<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
+  authenticationProviders: AuthenticationProvider[] | undefined;
   
   // Database status
   dbStatus?: any;
@@ -147,10 +119,20 @@ const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthE
   accessToken: null, // Added from second initialState
   userId: null, // Added from second initialState
   isLoading: false,
-  integrateAuthenticationProviders: function (
-    provider: AuthenticationProvider
-  ): void {
-    throw new Error("Function not implemented.");
+  
+  integrateAuthenticationProviders: async function (
+    providers: AuthenticationProvider[]
+  ): Promise<void> {
+    try {
+      // Use the singleton authService
+      await authService.integrateAuthenticationProviders(providers);
+      
+      // Update local state if needed
+      this.authenticationProviders = providers;
+    } catch (error) {
+      console.error('Error integrating authentication providers:', error);
+      throw error;
+    }
   },
   authenticationProviders: undefined,
   token: null,

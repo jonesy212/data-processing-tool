@@ -1,16 +1,17 @@
 // metadataTypes.ts
 // AppMetadata.ts
 
-import { ValidationRule } from './../snapshots/ValidationRule';
-import { TaskMetadata,  } from '@/app/config/MetaDataOptions';
+import { Constraint, IndexDefinition } from '@/app/components/database/SchemaEvolutionManager';
+import { ValidationRule } from '@/app/snapshots/ValidationRule';
+
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TaskMetadata, UnifiedMetadata, } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { WorkflowStep } from '@/app/typings/entities/DocumentEntity'
-import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/app/typings/database'
-import { AppTask } from '@/app/typings/entities/AppTask'
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/app/typings/database';
+import { AppTask } from '@/app/typings/entities/AppEntity';
+import { WorkflowStep } from '@/app/typings/entities/DocumentEntity';
 
 // Complete type safety with all App-specific types
 interface AppMetadata<
@@ -160,4 +161,4 @@ interface EntityMetadata<
 }
 
 
-export type { AppMetadata }
+export type { AppMetadata };

@@ -1,6 +1,6 @@
 // PhaseActivityContext.ts
 import React, { createContext, useContext } from "react";
-import { usePhaseActivity } from '@/app/state/stores/hooks/usePhaseActivity';
+import { usePhaseActivity } from '@/app/hooks/usePhaseActivity';
 
 interface PhaseActivityContextType {
   getLastActivityTime: (phaseName: string) => number;

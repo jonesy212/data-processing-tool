@@ -7,7 +7,6 @@ import { AxiosError, AxiosResponse } from 'axios';
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { TaskHistoryEntry } from '@/app/interfaces/history/TaskHistoryEntry';
 import { Task } from '@/app/models/tasks/Task';
 import { useNotification } from '@/app/state/context/NotificationContext';
@@ -92,16 +91,29 @@ const handleTaskApiErrorAndNotify = (
  
   if (errorMessageId && taskAPINotificationMessages.hasOwnProperty(errorMessageId)) {
     const errorMessageText = taskAPINotificationMessages[errorMessageId];
-    // Notify the error message
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      null,
-      new Date(),
-      "APIClientError" as NotificationType
-    );
-  };
-}
+    
+    // Prepare notification data
+    const notificationData = {
+      originalError: error.message,
+      extra: {
+        errorMessage,
+        errorMessageId: String(errorMessageId),
+        responseData: error.response?.data,
+        status: error.response?.status
+      }
+    };
+
+    // Notify the error message using object format
+    useNotification().notify({
+      id: `taskApiError${String(errorMessageId).replace(/\s+/g, '')}`,
+      message: errorMessageText,
+      data: notificationData,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_ERROR,
+      level: 'error'
+    });
+  }
+};
 
 
 
@@ -179,14 +191,22 @@ const updateTaskPositionAPI = async <
     // Dispatch an action to update the task's position in the Redux state
     dispatch(updateTaskPositionSuccess(updatedTask));
 
-    // Notify the success message
-    useNotification().notify(
-      'UPDATE_TASK_SUCCESS',
-      taskAPINotificationMessages.UPDATE_TASK_SUCCESS,
-      null,
-      new Date(),
-      "APIClientSuccess" as NotificationType
-    );
+    // Notify the success message using object format
+    useNotification().notify({
+      id: 'updateTaskPositionSuccess',
+      message: taskAPINotificationMessages.UPDATE_TASK_SUCCESS,
+      data: { 
+        extra: {
+          taskId,
+          newPosition,
+          operation: "Update task position",
+          task: updatedTask
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_SUCCESS,
+      level: 'success'
+    });
 
     // Notify the caller (if needed)
     notify();
@@ -200,6 +220,7 @@ const updateTaskPositionAPI = async <
     throw error; // Rethrow the error for further handling
   }
 };
+
 
 const addTaskAPI = async <
   T extends BaseDataEntity,
@@ -557,8 +578,8 @@ const fetchUsersByTaskAPI = async (taskId: string): Promise<string[]> => {
 };
 
 export {
-    addTaskAPI, assignTaskToTeamAPI, bulkAssignTasksAPI, bulkAssignTodosAPI, bulkUnassignTasksAPI, bulkUnassignTodosAPI, completeAllTasksAPI, createTaskAPI,
-    deleteTaskAPI, fetchTaskDataAPI, fetchTasksAPI, fetchUsersByTaskAPI, getTaskHistoryAPI, getTaskHistoryFromDatabaseAPI, getTasksByUserIdAPI, handleTaskApiErrorAndNotify, removeTaskAPI,
-    toggleTaskAPI, unassignTaskAPI, updateTaskAPI, updateTaskPositionAPI, updateTaskPositionSuccessAPI
+  addTaskAPI, assignTaskToTeamAPI, bulkAssignTasksAPI, bulkAssignTodosAPI, bulkUnassignTasksAPI, bulkUnassignTodosAPI, completeAllTasksAPI, createTaskAPI,
+  deleteTaskAPI, fetchTaskDataAPI, fetchTasksAPI, fetchUsersByTaskAPI, getTaskHistoryAPI, getTaskHistoryFromDatabaseAPI, getTasksByUserIdAPI, handleTaskApiErrorAndNotify, removeTaskAPI,
+  toggleTaskAPI, unassignTaskAPI, updateTaskAPI, updateTaskPositionAPI, updateTaskPositionSuccessAPI
 };
 

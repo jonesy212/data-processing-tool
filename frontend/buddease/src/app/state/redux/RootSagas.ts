@@ -1,7 +1,8 @@
 // RootSagas.ts
 // RootSaga.ts
 import { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { apiSagas } from '@/app/state/redux/sagas/apiSagas'

@@ -1,10 +1,10 @@
 // SearchItems.tsx
 import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import useAsyncHookLinker, {
-    AsyncHookLinkerConfig,
+  AsyncHookLinkerConfig,
 } from "@/app/hooks/useAsyncHookLinker";
 import { useErrorHandling } from "@/app/hooks/useErrorHandling";
-import { SearchLogger } from "@/app/libraries/logging/Logger";
+import { SearchLogger } from '@/app/logging/Logger';
 import React, { useEffect, useState } from "react";
 import { debounce } from "./Debounce";
 

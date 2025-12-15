@@ -5,6 +5,7 @@ import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
 import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard";
+import { ChatRoom } from '@/app/communications/ChatRoom'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
@@ -14,11 +15,13 @@ import { CollaborationProvider } from "@/app/state/context/CollaborationContext"
 import { useNotification } from '@/app/state/context/NotificationContext';
 
 import { SearchProvider, useSearch } from "@/app/state/context/SearchContext";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import { useState } from "react";
 import ChatDashboard from "./ChatDashboard";
 import CollaborationPanel from "./CollaborationPanel";
+
 const CollaborationDashboard = () => {
   const { searchQuery, updateSearchQuery } = useSearch();
   const { isDarkMode, primaryColor, fontSize } = useThemeConfig();
@@ -27,32 +30,67 @@ const CollaborationDashboard = () => {
   const {notify} = useNotification();
   const auth = useAuth();
 
-  const startBrainstorming = () => {
-    const startBrainstorming = () => {
-      // Check if the user is authenticated before starting brainstorming
-      if (auth.state.isAuthenticated) {
-        // Example: Notify users about the start of brainstorming activity
-        notify(
-          "startBrainstorming",
-          "Brainstorming session started!",
-          NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED,
-          new Date(),
-          "BrainStormingSession" as NotificationType
-        );
-        // You can also start the Stopwatch or perform other actions related to brainstorming
-      } else {
-        // Notify users about the need to log in before starting the activity
-        notify(
-          "startBrainstormingErrorpa",
-          "Please log in to start the brainstorming session.",
-          NOTIFICATION_MESSAGES.Brainstorming.SESSION_STARTED,
-          new Date(),
-          "AuthenticationError" as NotificationType);
+const startBrainstorming = () => {
+  // Check if the user is authenticated before starting brainstorming
+  if (auth.state.isAuthenticated) {
+    // Success notification using object format
+    notify({
+      id: `brainstorming_start_success_${Date.now()}`,
+      message: "Brainstorming session started!",
+      data: {
+        entityType: 'brainstorming_session',
+        action: 'start_session',
+        userId: auth.state.userId,
+        userEmail: auth.state.email,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const,
+      metadata: {
+        sessionType: 'brainstorming',
+        feature: 'collaboration',
+        isCollaborative: true,
+        authMethod: auth.state.authMethod
       }
-      // You can also start the Stopwatch or perform other actions related to brainstorming
-    };
-    return startBrainstorming;
-  };
+    });
+    // You can also start the Stopwatch or perform other actions related to brainstorming
+  } else {
+    // Error notification using object format
+    notify({
+      id: `brainstorming_auth_error_${Date.now()}`,
+      message: "Authentication required",
+      data: {
+        entityType: 'brainstorming_session',
+        action: 'start_session',
+        authState: {
+          isAuthenticated: auth.state.isAuthenticated,
+          userId: auth.state.userId,
+          userEmail: auth.state.email
+        },
+        errorType: 'AUTHENTICATION_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        feature: 'brainstorming',
+        requiresLogin: true,
+        sessionType: 'collaboration'
+      },
+      action: {
+        label: "Login Now",
+        onClick: () => {
+          // Navigate to login page or open login modal
+          console.log("Navigate to login");
+          // auth.login(); // If you have a login function
+        }
+      }
+    });
+  }
+  // You can also start the Stopwatch or perform other actions related to brainstorming
+};
 
   const openCollaborationPanel = () => {
     setShowCollaborationPanel(true);
@@ -150,7 +188,11 @@ const CollaborationDashboard = () => {
           <ChatDashboard aquaConfig={{} as AquaConfig} />
           <h1>Collaboration Dashboard</h1>
           {/* ChatRoom component to display chat */}
-          <ChatRoom roomId="" limit={10} /> {/*Stopwatch */}
+            <ChatRoom
+              roomId=""
+              limit={10}
+            />
+            {/*Stopwatch */}
             <Stopwatch
               startTime={new Date()}
               endTime={new Date()}

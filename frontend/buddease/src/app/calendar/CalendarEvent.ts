@@ -1,6 +1,5 @@
 // CalendarEvent.ts
 //CalendarEvent.ts
-import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
 import { Label } from '@/app/branding/BrandingSettings';
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -9,6 +8,7 @@ import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CommonData } from "@/app/models/CommonData";
 import { Member } from '@/app/models/members/Member';
@@ -18,7 +18,7 @@ import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
 import { ReminderSettings } from '@/app/settings/Reminder';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { data } from "@/app/snapshots/SnapshotWithCriteria";
-import { NotificationType } from '@/app/state/context/NotificationContext';
+import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
 
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";

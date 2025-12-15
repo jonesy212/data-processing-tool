@@ -1,9 +1,8 @@
 // File.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { AllTypes } from "@/app/typings/PropTypes";
-import { AppFile } from '@/app/typings/file/fileTypes'
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { AppFile } from '@/app/typings/file/fileTypes';
 
 // File interface representing a file
 interface CustomFile<T extends BaseDataEntity> extends AppFile {

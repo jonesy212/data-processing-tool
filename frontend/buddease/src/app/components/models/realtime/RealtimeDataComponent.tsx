@@ -2,7 +2,7 @@
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { BaseDataEntity, DefaultMeta } from "@/app/config/BaseConfig";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { processSnapshotStore } from "@/app/hooks/commHooks/processSnapshotStore";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import { useErrorHandling } from "@/app/hooks/useErrorHandling";

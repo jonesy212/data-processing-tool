@@ -1,22 +1,19 @@
 // SnapshotStoreProps.ts
-import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/documents/RelatedProps';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '@/app/models/data/Data';
-import { StatusType } from "@/app/models/data/StatusType";
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { NotificationTypeEnum } from '@/app/state/context/NotificationContext';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-
 import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from "@/app/config/metadata/SchemaField";
+import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/documents/RelatedProps';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
+import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from '@/app/models/display/ShowToast';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { Payload } from "@/app/server/database/Payload";
 import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
 import {
   Snapshots,
@@ -25,6 +22,7 @@ import {
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -39,7 +37,8 @@ import { BrowserBehaviorConfig } from "@/app/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { createDataStore, DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { StorePropAttachment, StorePropEntity, StorePropExcludedFields, StorePropIncludedFields, StorePropK, StorePropMeta, StorePropStructuredMetadata } from '@/app/typings/entities/StorePropEntity';
+import { StorePropAttachment, StorePropEntity, StorePropExcludedFields, StorePropIncludedFields, StorePropK, StorePropMeta } from '@/app/typings/entities/StorePropEntity';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from "@/app/versions/Version";
@@ -77,7 +76,7 @@ interface BaseSnapshotStoreProps<
 
   // Configuration
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   options?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   browserBehaviorConfig?: BrowserBehaviorConfig;
   dataStoreConfig?: Record<string, any>;
@@ -117,7 +116,7 @@ interface BaseSnapshotStoreProps<
   storeProps: Partial<SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
-// Enhanced SnapshotStoreProps type that extends all interfaces
+
 type SnapshotStoreProps<
   T extends BaseDataEntity,
   K extends T = T,
@@ -368,13 +367,12 @@ type ExampleEntity = BaseDataEntity & { name: string };
 
 // Initialize storeProps with meaningful values
 const storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta, StorePropAttachment, StorePropExcludedFields, StorePropIncludedFields> = {
+   ...baseStoreProps,
   category: "storeProp-category",  // Assuming category can be a string
   initialState: {} as InitializedState<StorePropEntity, StorePropEntity, StorePropMeta, Attachment, never, keyof StorePropEntity>,
-  callback: (snapshotStore: SnapshotStore<
-    StorePropEntity, StorePropK,
-    StorePropMeta, StorePropAttachment,
-    StorePropExcludedFields, StorePropIncludedFields>
-  ) => { },
+  callback: (snapshotStore) => {
+    console.log("Store props:", storeProps); // Now this works
+  },
   storeProps: [],
   endpointCategory: "",
   expirationDate: new Date(),
@@ -453,12 +451,16 @@ const storeProps: SnapshotStoreProps<StorePropEntity, StorePropK, StorePropMeta,
     workspaceViewers: ['viewer1', 'viewer2'],
     workspaceAdmins: ['admin1'],
     workspaceMembers: ['member1', 'member2'],
-    data: [],
+    data: {
+      latestVersion: latestVersion
+    },
     versionHistory: {
       versionData: {},
       latestVersion: latestVersion,
       history: [],
-      timestamp: new Date()
+      timestamp: new Date(),
+      versions: [],
+      currentVersionIndex: 0
     },
     _structure: {}, // Structure of the version
     versionData: {

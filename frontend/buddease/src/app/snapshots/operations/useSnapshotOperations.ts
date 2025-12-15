@@ -1,29 +1,28 @@
 // useSnapshotOperations.ts
 // hooks/useSnapshotOperations.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useCallback, useRef } from 'react';
 
-import {
-    clearSnapshotFailure,
-    configureSnapshot,
-    createMockSnapshot,
-    getChildIds,
-    getParentId,
-    getSnapshot,
-    getSnapshotById,
-    getSnapshotContainer,
-    getSnapshotItems,
-    getSnapshots,
-    handleSnapshot,
-    mapSnapshots,
-    removeSnapshot,
-    SnapshotOperations,
-    takeSnapshot,
-    updateSnapshot,
-    validateSnapshot
-} from '@/app//components/snapshots/snapshotOperations';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import {
+  clearSnapshotFailure,
+  configureSnapshot,
+  createMockSnapshot,
+  getChildIds,
+  getParentId,
+  getSnapshot,
+  getSnapshotById,
+  getSnapshotItems,
+  getSnapshots,
+  handleSnapshot,
+  mapSnapshots,
+  removeSnapshot,
+  SnapshotOperations,
+  takeSnapshot,
+  updateSnapshot,
+  validateSnapshot
+} from '@/app/snapshots/snapshotOperations';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
@@ -36,8 +35,25 @@ const useSnapshotOperations = <
   IncludedFields extends keyof T = keyof T
 >(): SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   
+
+  // Add this before the useSnapshotOperations function
+  const initialValue: SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    mapSnapshot: () => ({} as any),
+    mapSnapshotWithDetails: () => ({} as any),
+    removeStore: () => {},
+    fetchSnapshot: async () => ({} as any),
+    fetchSnapshotSuccess: () => {},
+    updateSnapshotFailure: () => {},
+    fetchSnapshotFailure: () => {},
+    configureSnapshotStore: () => {},
+    onSnapshot: () => {},
+    onSnapshots: () => {},
+    events: [],
+    parentId: '',
+    // ... all other required methods with default implementations
+  };
   // Use ref to maintain stable operations across re-renders
-  const operationsRef = useRef<SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
+  const operationsRef = useRef<SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(initialValue);
 
   if (!operationsRef.current) {
     operationsRef.current = {

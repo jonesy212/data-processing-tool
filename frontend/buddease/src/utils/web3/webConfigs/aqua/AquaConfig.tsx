@@ -34,7 +34,7 @@ export interface AquaConfig {
 
 
 
-const roomId: string = UniqueIDGenerator.generateRoomId();
+const roomId: string = UniqueIDGenerator.generateRoomID();
 // Example usage with expanded configuration options:
 const aquaConfig: AquaConfig = {
   apiUrl: "https://example.com/aqua-api",

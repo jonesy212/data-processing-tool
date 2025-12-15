@@ -1,6 +1,6 @@
 # Development Roadmap - Structured by Domain
-📋 User Prompt: Project roadmap
-🕒 Generated: 2025-11-11T06:18:54.142Z
+📋 User Prompt: Project structure analysis
+🕒 Generated: 2025-12-10T02:55:19.756Z
 
 ## 🎨 Frontend Development
 
@@ -66,174 +66,179 @@
 **Props Type:** MeetingSchedulerViewerToolbarProps
 **Exports:** 
 
-#### 13. ExtendedAppLogic
+#### 13. AccessDenied
+**Defined in:** src/app/pages/AccessDenied.tsx
+**Props Type:** AccessDeniedProps
+**Exports:** 
+
+#### 14. ExtendedAppLogic
 **Defined in:** src/app/pages/ExtendedAppLogic.tsx
 **Props Type:** ExtendedAppProps
 **Exports:** 
 
-#### 14. BlogGenerator
+#### 15. BlogGenerator
 **Defined in:** src/app/pages/blog/BlogGenerator.tsx
 **Props Type:** BlogGeneratorProps
 **Exports:** 
 
-#### 15. BlogGroup
+#### 16. BlogGroup
 **Defined in:** src/app/pages/blog/BlogGroup.tsx
 **Props Type:** BlogGroupProps
 **Exports:** 
 
-#### 16. BlogManager
+#### 17. BlogManager
 **Defined in:** src/app/pages/blog/BlogManager.tsx
 **Props Type:** BlogManagerProps
 **Exports:** 
 
-#### 17. BlogOverview
+#### 18. BlogOverview
 **Defined in:** src/app/pages/blog/BlogOverview.tsx
 **Props Type:** BlogOverviewProps
 **Exports:** 
 
-#### 18. BlogPostComponent
+#### 19. BlogPostComponent
 **Defined in:** src/app/pages/blog/BlogPost.tsx
 **Props Type:** BlogPost
 **Exports:** BlogPost
 
-#### 19. BlogPostList
+#### 20. BlogPostList
 **Defined in:** src/app/pages/blog/BlogPosts.tsx
 **Props Type:** BlogPostsProps
 **Exports:** 
 
-#### 20. BlogShare
+#### 21. BlogShare
 **Defined in:** src/app/pages/blog/BlogShare.tsx
 **Props Type:** BlogShareProps
 **Exports:** 
 
-#### 21. GroupRenderer
+#### 22. GroupRenderer
 **Defined in:** src/app/pages/blog/GroupRenderer.tsx
 **Props Type:** GroupRendererProps
 **Exports:** 
 
-#### 22. NotificationDisplay
+#### 23. NotificationDisplay
 **Defined in:** src/app/pages/blog/NotificationDisplay.tsx
 **Props Type:** NotificationDisplayProps
 **Exports:** 
 
-#### 23. ChatPage
+#### 24. ChatPage
 **Defined in:** src/app/pages/chat/ChatPage.tsx
 **Props Type:** ChatPageProps
 **Exports:** 
 
-#### 24. CollaborationPage
+#### 25. CollaborationPage
 **Defined in:** src/app/pages/community/CollaborationPage.tsx
 **Props Type:** CollaborationPageProps
 **Exports:** 
 
-#### 25. CollaborationSettings
+#### 26. CollaborationSettings
 **Defined in:** src/app/pages/community/CollaborationSettings.tsx
 **Props Type:** CollaborationSettingsProps
 **Exports:** 
 
-#### 26. CollaborationToolsToolbar
+#### 27. CollaborationToolsToolbar
 **Defined in:** src/app/pages/community/CollaborationToolsToolbar.tsx
 **Props Type:** CollaborationToolsToolbarProps
 **Exports:** 
 
-#### 27. CommunityProjectsPage
+#### 28. CommunityProjectsPage
 **Defined in:** src/app/pages/community/CommunityProjectsPage.tsx
 **Props Type:** CommunityProjectsPageProps
 **Exports:** 
 
-#### 28. ConfirmationPage
+#### 29. ConfirmationPage
 **Defined in:** src/app/pages/confirmation/ConfirmationPage.tsx
 **Props Type:** ConfirmationPageProps
 **Exports:** 
 
-#### 29. TradingConfirmationPage
+#### 30. TradingConfirmationPage
 **Defined in:** src/app/pages/confirmation/TradingConfirmationPage.tsx
 **Props Type:** TradingConfirmationPageProps
 **Exports:** 
 
-#### 30. ContentCreationPage
+#### 31. ContentCreationPage
 **Defined in:** src/app/pages/content/ContentCreationPage.tsx
-**Props Type:** ContentCreateionPageProps
+**Props Type:** ContentCreationPageProps
 **Exports:** 
 
-#### 31. CourseLearningPhase
+#### 32. CourseLearningPhase
 **Defined in:** src/app/pages/course/CourseLearningPhase.tsx
 **Props Type:** CourseLearningPhaseProps
 **Exports:** 
 
-#### 32. CoursePlanningPhase
+#### 33. CoursePlanningPhase
 **Defined in:** src/app/pages/course/CoursePlanningPhase.tsx
 **Props Type:** CoursePlanningPhasePros
 **Exports:** 
 
-#### 33. CourseSetupPhase
+#### 34. CourseSetupPhase
 **Defined in:** src/app/pages/course/CourseSetupPhase.tsx
 **Props Type:** CourseSetupPhaseProps
 **Exports:** 
 
-#### 34. RiskAssessmentPage
+#### 35. RiskAssessmentPage
 **Defined in:** src/app/pages/crypto/RiskAssessmentPage.tsx
 **Props Type:** RiskAssessmentProps
 **Exports:** 
 
-#### 35. BugComments
+#### 36. BugComments
 **Defined in:** src/app/pages/dashboards/BugComments.tsx
 **Props Type:** BugCommentProps
 **Exports:** 
 
-#### 36. BugFilter
+#### 37. BugFilter
 **Defined in:** src/app/pages/dashboards/BugFilter.tsx
 **Props Type:** BugFilterProps
 **Exports:** 
 
-#### 37. BugList
+#### 38. BugList
 **Defined in:** src/app/pages/dashboards/BugList.tsx
 **Props Type:** BugListProps
 **Exports:** 
 
-#### 38. BugSort
+#### 39. BugSort
 **Defined in:** src/app/pages/dashboards/BugSort.tsx
 **Props Type:** BugSortProps
 **Exports:** 
 
-#### 39. ChatDashboard
+#### 40. ChatDashboard
 **Defined in:** src/app/pages/dashboards/ChatDashboard.tsx
 **Props Type:** ChatDashboardProps
 **Exports:** 
 
-#### 40. ClientDesignDashboard
+#### 41. ClientDesignDashboard
 **Defined in:** src/app/pages/dashboards/ClientDesignDashboard.tsx
 **Props Type:** ClientDesignDashboardProps
 **Exports:** 
 
-#### 41. CollaborationPanel
+#### 42. CollaborationPanel
 **Defined in:** src/app/pages/dashboards/CollaborationPanel.tsx
 **Props Type:** CollaborationPanelProps
 **Exports:** 
 
-#### 42. DashboardLoader
+#### 43. DashboardLoader
 **Defined in:** src/app/pages/dashboards/DashboardLoader.tsx
 **Props Type:** DashboardLoaderProps
-**Exports:** 
+**Exports:** DashboardView
 
-#### 43. DesignDashboard
+#### 44. DesignDashboard
 **Defined in:** src/app/pages/dashboards/DesignDashboard.tsx
 **Props Type:** DesignDashboardBaseProps
 **Exports:** 
 
-#### 44. EnhancedTreeView
+#### 45. EnhancedTreeView
 **Defined in:** src/app/pages/dashboards/EnhancedTreeView.tsx
 **Props Type:** EnhancedTreeViewProps
 **Exports:** 
 
-#### 45. EnhancedTreeNode
+#### 46. EnhancedTreeNode
 **Defined in:** src/app/pages/dashboards/EnhancedTreeView.tsx
 **Props Type:** {
   node: FileTreeNode;
   onClick: (node: FileTreeNode) =
 **Exports:** 
 
-#### 46. FileContentViewer
+#### 47. FileContentViewer
 **Defined in:** src/app/pages/dashboards/EnhancedTreeView.tsx
 **Props Type:** {
   file: FileTreeNode;
@@ -241,283 +246,288 @@
 }
 **Exports:** 
 
-#### 47. RealTimeDashboardPage
+#### 48. RealTimeDashboardPage
 **Defined in:** src/app/pages/dashboards/RealTimeDashboardPage.tsx
 **Props Type:** RealTimeDashboardPageProps
 **Exports:** 
 
-#### 48. ServerDesignDashboard
+#### 49. ServerDesignDashboard
 **Defined in:** src/app/pages/dashboards/ServerDesignDashboard.tsx
 **Props Type:** ServerDesignDashboardProps
 **Exports:** 
 
-#### 49. VisualFlowDashboard
+#### 50. VisualFlowDashboard
 **Defined in:** src/app/pages/dashboards/VisualFlowDashboard.tsx
 **Props Type:** VisualFlowDashboardProps
 **Exports:** 
 
-#### 50. EmailConfirmationPhaseComponent
+#### 51. EmailConfirmationPhaseComponent
 **Defined in:** src/app/pages/development/EmailConfirmationPhaseComponent.tsx
 **Props Type:** EmailConfirmationPhaseComponentProps
 **Exports:** 
 
-#### 51. PlanningPhase
+#### 52. PlanningPhase
 **Defined in:** src/app/pages/development/PlanningPhase.tsx
 **Props Type:** PlanningPhaseProps
 **Exports:** PlanningPhase
 
-#### 52. ChangePasswordForm
+#### 53. ChangePasswordForm
 **Defined in:** src/app/pages/forms/ChangePasswordForm.tsx
 **Props Type:** ChangePasswordFormProps
 **Exports:** 
 
-#### 53. DynamicForm
+#### 54. DynamicForm
 **Defined in:** src/app/pages/forms/DynamicForm.tsx
 **Props Type:** DynamicFormProps
 **Exports:** 
 
-#### 54. FeedbackForm
+#### 55. FeedbackForm
 **Defined in:** src/app/pages/forms/FeedbackForm.tsx
 **Props Type:** { onSubmit: (feedback: Feedback) =
 **Exports:** 
 
-#### 55. FormControl
+#### 56. FormControl
 **Defined in:** src/app/pages/forms/FormControl.tsx
 **Props Type:** FormControlProps
 **Exports:** 
 
-#### 56. FormInputComponent
+#### 57. FormInputComponent
 **Defined in:** src/app/pages/forms/FormInputComponent.tsx
 **Props Type:** FormInputProps
 **Exports:** 
 
-#### 57. FormUI
+#### 58. FormUI
 **Defined in:** src/app/pages/forms/FormUI.tsx
 **Props Type:** FormUIProps
 **Exports:** 
 
-#### 58. LoginForm
+#### 59. LoginForm
 **Defined in:** src/app/pages/forms/LoginForm.tsx
 **Props Type:** LoginFormProps
 **Exports:** 
 
-#### 59. PreviewForm
+#### 60. PreviewForm
 **Defined in:** src/app/pages/forms/PreviewForm.tsx
 **Props Type:** PreviewFormProps
 **Exports:** 
 
-#### 60. ProjectCreationForm
+#### 61. ProjectCreationForm
 **Defined in:** src/app/pages/forms/ProjectCreationForm.tsx
 **Props Type:** ProjectCreationFormProps
 **Exports:** 
 
-#### 61. FormInput
+#### 62. FormInput
 **Defined in:** src/app/pages/forms/formBuilder/FormInput.tsx
 **Props Type:** FormInputProps
 **Exports:** 
 
-#### 62. DropdownMenu
+#### 63. DropdownMenu
 **Defined in:** src/app/pages/forms/formElement/DropdownMenu.tsx
 **Props Type:** DropdownMenuProps
 **Exports:** 
 
-#### 63. TextInput
+#### 64. TextInput
 **Defined in:** src/app/pages/forms/formElement/TextInput.tsx
 **Props Type:** TextInputProps
 **Exports:** 
 
-#### 64. Index
+#### 65. Index
 **Defined in:** src/app/pages/index.tsx
 **Props Type:** {}
 **Exports:** 
 
-#### 65. AnimatedDashboard
+#### 66. AnimatedDashboard
 **Defined in:** src/app/pages/layouts/AnimatedDashboard.tsx
 **Props Type:** ClickableListItem
 **Exports:** 
 
-#### 66. CommonLayout
+#### 67. CommonLayout
 **Defined in:** src/app/pages/layouts/CommonLayout.tsx
 **Props Type:** CommonLayoutProps
 **Exports:** performLogin
 
-#### 67. DashboardLayout
+#### 68. DashboardLayout
 **Defined in:** src/app/pages/layouts/DashboardLayout.tsx
 **Props Type:** DashboardLayoutProps
 **Exports:** 
 
-#### 68. LayoutProvider
+#### 69. LayoutProvider
 **Defined in:** src/app/pages/layouts/LayoutContext.tsx
 **Props Type:** LayoutContextProps
 **Exports:** LayoutProvider, useLayout
 
-#### 69. Layout
+#### 70. Layout
 **Defined in:** src/app/pages/layouts/Layouts.tsx
 **Props Type:** LayoutProps
 **Exports:** 
 
-#### 70. FeatureImplementationSubPhase
+#### 71. FeatureImplementationSubPhase
 **Defined in:** src/app/pages/onboarding/FeatureImplementationSubPhase.tsx
 **Props Type:** FeatureImplementationSubPhaseProps
 **Exports:** 
 
-#### 71. InitialSetupSubPhase
+#### 72. InitialSetupSubPhase
 **Defined in:** src/app/pages/onboarding/InitialSetupSubPhase.tsx
 **Props Type:** InitialSetupSubPhaseProps
 **Exports:** 
 
-#### 72. QuestionnairePage
+#### 73. QuestionnairePage
 **Defined in:** src/app/pages/onboarding/QuestionnairePage.tsx
 **Props Type:** QuestionnairePageProps
 **Exports:** 
 
-#### 73. RegistrationPhaseComponent
+#### 74. RegistrationPhaseComponent
 **Defined in:** src/app/pages/onboarding/RegistrationPhaseComponent.tsx
 **Props Type:** RegistrationPhaseComponentProps
 **Exports:** 
 
-#### 74. AccountInfoStep
+#### 75. AccountInfoStep
 **Defined in:** src/app/pages/onboarding/RegistrationPhaseComponent.tsx
 **Props Type:** StepProps
 **Exports:** 
 
-#### 75. PersonalDetailsStep
+#### 76. PersonalDetailsStep
 **Defined in:** src/app/pages/onboarding/RegistrationPhaseComponent.tsx
 **Props Type:** StepProps
 **Exports:** 
 
-#### 76. ConfirmationStep
+#### 77. ConfirmationStep
 **Defined in:** src/app/pages/onboarding/RegistrationPhaseComponent.tsx
 **Props Type:** StepProps
 **Exports:** 
 
-#### 77. CryptoEnthusiastCalendar
+#### 78. CryptoEnthusiastCalendar
 **Defined in:** src/app/pages/personas/CryptoEnthusiastCalendar.tsx
 **Props Type:** CryptoEnthusiastCalendarProps
 **Exports:** 
 
-#### 78. CryptoEnthusiastDocuments
+#### 79. CryptoEnthusiastDocuments
 **Defined in:** src/app/pages/personas/CryptoEnthusiastDocuments.tsx
 **Props Type:** CryptoEnthusiastDocumentsProps
 **Exports:** 
 
-#### 79. CryptoEnthusiastTraderInfo
+#### 80. CryptoEnthusiastTraderInfo
 **Defined in:** src/app/pages/personas/CryptoEnthusiastTraderInfo.tsx
 **Props Type:** { traderInfo: TraderInfo }
 **Exports:** 
 
-#### 80. ProfessionalTraderAlerts
+#### 81. ProfessionalTraderAlerts
 **Defined in:** src/app/pages/personas/ProfessionalTraderAlerts.tsx
 **Props Type:** ProfessionalTraderAlertsProps
 **Exports:** 
 
-#### 81. ProfessionalTraderCalendar
+#### 82. ProfessionalTraderCalendar
 **Defined in:** src/app/pages/personas/ProfessionalTraderCalendar.tsx
 **Props Type:** ProfessionalTraderCalendarProps
 **Exports:** 
 
-#### 82. ProfessionalTraderCalls
+#### 83. ProfessionalTraderCalls
 **Defined in:** src/app/pages/personas/ProfessionalTraderCalls.tsx
 **Props Type:** ProfessionalTraderCallsProps
 **Exports:** 
 
-#### 83. ProfessionalTraderCollaboration
+#### 84. ProfessionalTraderCollaboration
 **Defined in:** src/app/pages/personas/ProfessionalTraderCollaboration.tsx
 **Props Type:** ProfessionalTraderCollaborationProps
 **Exports:** 
 
-#### 84. ProfessionalTraderContentManagement
+#### 85. ProfessionalTraderContentManagement
 **Defined in:** src/app/pages/personas/ProfessionalTraderContentManagement.tsx
 **Props Type:** ProfessionalTraderContentManagementProps
 **Exports:** 
 
-#### 85. ProfessionalTraderDashboard
+#### 86. ProfessionalTraderDashboard
 **Defined in:** src/app/pages/personas/ProfessionalTraderDashboard.tsx
 **Props Type:** ProfessionalTraderDashboardProps
 **Exports:** 
 
-#### 86. ProfessionalTraderProfile
+#### 87. ProfessionalTraderProfile
 **Defined in:** src/app/pages/personas/ProfessionalTraderProfile.tsx
 **Props Type:** ProfessionalTraderProfileProps
 **Exports:** 
 
-#### 87. ProjectManagerPersona
+#### 88. ProjectManagerPersona
 **Defined in:** src/app/pages/personas/ProjectManagerPersona.tsx
 **Props Type:** ProjectManagerPersonaProps
 **Exports:** 
 
-#### 88. UserQuestionnaire
+#### 89. UserQuestionnaire
 **Defined in:** src/app/pages/personas/UserQuestionnaire.tsx
 **Props Type:** UserQuestionnaireProps
 **Exports:** 
 
-#### 89. PersonaPanel
+#### 90. PersonaPanel
 **Defined in:** src/app/pages/personas/recruiterDashboard/PersonaPanel.tsx
 **Props Type:** PersonaPanelProps
 **Exports:** 
 
-#### 90. Profile
+#### 91. Profile
 **Defined in:** src/app/pages/profile/Profile.tsx
 **Props Type:** ProfileProps
 **Exports:** 
 
-#### 91. FilterComponent
+#### 92. FilterComponent
 **Defined in:** src/app/pages/searches/Filter.tsx
 **Props Type:** Filter
 **Exports:** 
 
-#### 92. FilterTasksRequest
+#### 93. FilterTasksRequest
 **Defined in:** src/app/pages/searches/FilterTasksRequest.tsx
 **Props Type:** FilterTasksRequestProps
 **Exports:** 
 
-#### 93. SearchComponent
+#### 94. SearchComponent
 **Defined in:** src/app/pages/searches/SearchComponent.tsx
 **Props Type:** SearchComponentProps
 **Exports:** SearchComponentProps, performSearch
 
-#### 94. SearchCriteriaComponent
+#### 95. SearchCriteriaComponent
 **Defined in:** src/app/pages/searches/SearchCriteria.tsx
 **Props Type:** {
   onUpdateCriteria: (criteria: string) =
 **Exports:** 
 
-#### 95. SearchItems
+#### 96. SearchItems
 **Defined in:** src/app/pages/searches/SearchItems.tsx
 **Props Type:** SearchItemProps
 **Exports:** SearchItemProps
 
-#### 96. TaskFilterComponent
+#### 97. TaskFilterComponent
 **Defined in:** src/app/pages/searches/TaskFilter.tsx
 **Props Type:** TaskFilter
 **Exports:** 
 
-#### 97. TeamCreationConfirmationPage
+#### 98. TeamCreationConfirmationPage
 **Defined in:** src/app/prompts/TeamCreationConfirmationPage.tsx
 **Props Type:** TeamCreationConfirmationPageProps
 **Exports:** 
 
-#### 98. TeamCreationQuestionnaire
+#### 99. TeamCreationQuestionnaire
 **Defined in:** src/app/pages/teams/TeamCreationQuestionnaire.tsx
 **Props Type:** TeamCreationQuestionnaireProps
 **Exports:** 
 
-#### 99. PromptPage
+#### 100. PromptPage
 **Defined in:** src/app/prompts/PromptPage.tsx
 **Props Type:** PromptPageProps
 **Exports:** 
 
-#### 100. PromptViewer
+#### 101. PromptViewer
 **Defined in:** src/app/prompts/PromptViewer.tsx
 **Props Type:** PromptViewerProps
 **Exports:** 
 
-#### 101. MarketplacePage
+#### 102. AnalysisView
+**Defined in:** src/app/services/AppTreeExplorer.tsx
+**Props Type:** { report: any }
+**Exports:** 
+
+#### 103. MarketplacePage
 **Defined in:** src/app/shoppingCenter/Shop.tsx
 **Props Type:** { shoppingCenterConfig: ShoppingCenterConfig }
 **Exports:** 
 
-#### 102. VideoViewer
+#### 104. VideoViewer
 **Defined in:** src/app/state/redux/sagas/VideoViewer.tsx
 **Props Type:** VideoViewerProps
 **Exports:** 
@@ -561,7 +571,7 @@
 
 #### 8. BroswerCheck
 **Defined in:** src/app/BrowserCheck.tsx
-**Props Type:** BrowswerCheckProps
+**Props Type:** BrowserCheckProps
 **Exports:** 
 
 #### 9. DynamicIntroTooltip
@@ -570,7 +580,7 @@
 **Exports:** 
 
 #### 10. RootLayout
-**Defined in:** src/app/layout/RootLayoutContent.tsx
+**Defined in:** src/app/RootLayout.tsx
 **Props Type:** RootLayoutProps
 **Exports:** 
 
@@ -675,524 +685,540 @@
 **Props Type:** FileUploadModalLauncherProps
 **Exports:** 
 
-#### 30. DynamicComponentsProvider
+#### 30. AppProviders
+**Defined in:** src/app/components/AppProviders.tsx
+**Props Type:** AppProvidersProps
+**Exports:** AppProviders
+
+#### 31. DynamicComponentsProvider
 **Defined in:** src/app/components/DynamicComponentsContext.tsx
 **Props Type:** DynamicComponentContextProps
 **Exports:** useDynamicComponents, DynamicComponentsProvider
 
-#### 31. LazyIcon
+#### 32. LazyIcon
 **Defined in:** src/app/components/LazyIconProps.tsx
 **Props Type:** LazyIconProps
 **Exports:** 
 
-#### 32. LazyLoadedImage
+#### 33. LazyLoadedImage
 **Defined in:** src/app/components/LazyLoadedImage.tsx
 **Props Type:** LazyLoadedImageProps
 **Exports:** 
 
-#### 33. AuthProvider
-**Defined in:** src/app/state/context/AuthContext.tsx
-**Props Type:** { children: React.ReactNode; token: string }
-**Exports:** 
+#### 34. AuthProvider
+**Defined in:** src/app/components/Provider.tsx
+**Props Type:** AuthProviderProps
+**Exports:** AuthProvider
 
-#### 34. AdminDashboard
+#### 35. AdminDashboard
 **Defined in:** src/app/components/admin/AdminDashboard.tsx
 **Props Type:** AdminDashboardProps
 **Exports:** 
 
-#### 35. AdminDashboardWithDynamicNaming
+#### 36. AdminDashboardWithDynamicNaming
 **Defined in:** src/app/components/admin/AdminDashboard.tsx
 **Props Type:** AdminDashboardWithDynamicNamingProps
 **Exports:** 
 
-#### 36. BlogComponent
+#### 37. BlogComponent
 **Defined in:** src/app/components/blogs/BlogComponent.tsx
 **Props Type:** BlogProps<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields
 **Exports:** 
 
-#### 37. AttachmentsAndLinks
+#### 38. AttachmentsAndLinks
 **Defined in:** src/app/components/calendar/AttachmentsAndLinks.tsx
 **Props Type:** AttachmentsAndLinksProps
 **Exports:** 
 
-#### 38. CalendarProvider
+#### 39. CalendarProvider
 **Defined in:** src/app/components/calendar/CalendarContext.tsx
 **Props Type:** CalendarContextProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
 **Exports:** useCalendarContext, CalendarProvider
 
-#### 39. CalendarMonth
+#### 40. CalendarMonth
 **Defined in:** src/app/components/calendar/CalendarMonth.tsx
 **Props Type:** CalendarMonthProps
 **Exports:** month
 
-#### 40. DatePicker
+#### 41. DatePicker
 **Defined in:** src/app/components/calendar/DatePicker.tsx
 **Props Type:** DatePickerProps
 **Exports:** 
 
-#### 41. DayOfWeek
+#### 42. DayOfWeek
 **Defined in:** src/app/components/calendar/DayOfWeek.tsx
 **Props Type:** DayOfWeekProps
 **Exports:** 
 
-#### 42. EventDetailsComponent
+#### 43. EventDetailsComponent
 **Defined in:** src/app/components/calendar/EventDetailsComponent.tsx
 **Props Type:** CalendarEventViewingDetailsProps
 **Exports:** 
 
-#### 43. GuestInvitations
+#### 44. GuestInvitations
 **Defined in:** src/app/components/calendar/GuestInvitations.tsx
 **Props Type:** GuestInvitationsProps
 **Exports:** 
 
-#### 44. SyncWithExternalCalendars
+#### 45. SyncWithExternalCalendars
 **Defined in:** src/app/components/calendar/SyncWithExternalCalendars.tsx
 **Props Type:** SyncWithExternalCalendarsProps
 **Exports:** 
 
-#### 45. ChatCard
+#### 46. ChatCard
 **Defined in:** src/app/components/cards/ChatCard.tsx
 **Props Type:** ChatCardProps
 **Exports:** ChatCardProps
 
-#### 46. ChartComponent
+#### 47. ChartComponent
 **Defined in:** src/app/components/charts/ChartComponent.tsx
 **Props Type:** ChartComponentProps
 **Exports:** 
 
-#### 47. ConfirmationModal
+#### 48. ConfirmationModal
 **Defined in:** src/app/components/communications/ConfirmationModal.tsx
 **Props Type:** ConfirmationModalProps
 **Exports:** 
 
-#### 48. ChatComponent
+#### 49. ChatComponent
 **Defined in:** src/app/components/communications/chat/ChatComponent.tsx
 **Props Type:** { dappProps: DappProps }
 **Exports:** 
 
-#### 49. ChatMessage
+#### 50. ChatMessage
 **Defined in:** src/app/components/communications/chat/ChatMessage.tsx
 **Props Type:** ChatMessageProps
 **Exports:** ChatMessageProps
 
-#### 50. ChatNotification
+#### 51. ChatNotification
 **Defined in:** src/app/components/communications/chat/ChatNotification.tsx
 **Props Type:** ChatNotificationProps
 **Exports:** 
 
-#### 51. ChatRoomComponent
+#### 52. ChatRoomComponent
 **Defined in:** src/app/components/communications/chat/ChatRoomComponent.tsx
 **Props Type:** ChatRoomProps
 **Exports:** 
 
-#### 52. ChatRoomProvider
+#### 53. ChatRoomProvider
 **Defined in:** src/app/components/communications/chat/ChatRoomContext.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** ChatRoomContext, ChatRoomProvider, useChatRoom
 
-#### 53. ChatRoom
+#### 54. ChatRoom
 **Defined in:** src/app/components/communications/chat/ChatRoomDashboard.tsx
 **Props Type:** ChatRoomMessageProps
 **Exports:** ChatRoom
 
-#### 54. ChatUserList
+#### 55. ChatUserList
 **Defined in:** src/app/components/communications/chat/ChatUserList.tsx
 **Props Type:** ChatUserListProps
 **Exports:** 
 
-#### 55. ChatWithFeedback
+#### 56. ChatWithFeedback
 **Defined in:** src/app/components/communications/chat/ChatWithFeedback.tsx
 **Props Type:** ChatWithFeedbackProps
 **Exports:** 
 
-#### 56. EnhancedGroupChatDashboard
+#### 57. EnhancedGroupChatDashboard
 **Defined in:** src/app/components/communications/chat/EnhancedGroupChatDashboard.tsx
 **Props Type:** EnhancedGroupChatDashboardProps
 **Exports:** 
 
-#### 57. GroupChatMessage
+#### 58. GroupChatMessage
 **Defined in:** src/app/components/communications/chat/GroupChatMessage.tsx
 **Props Type:** GroupChatMessageProps
 **Exports:** 
 
-#### 58. EmailSetupForm
+#### 59. EmailSetupForm
 **Defined in:** src/app/components/communications/email/EmailSetUpForm.tsx
 **Props Type:** EmailSetupFormProps
 **Exports:** 
 
-#### 59. ActivityFeedComponent
+#### 60. ActivityFeedComponent
 **Defined in:** src/app/components/community/ActivityFeedComponent.tsx
 **Props Type:** RealtimeUpdates
 **Exports:** RealtimeUpdates
 
-#### 60. CommunityDetails
+#### 61. CommunityDetails
 **Defined in:** src/app/components/community/CommunityDetails.tsx
 **Props Type:** CommunityDetailsProps
 **Exports:** 
 
-#### 61. BackendConfigComponent
+#### 62. BackendConfigComponent
 **Defined in:** src/app/components/configs/BackendConfigComponent.tsx
 **Props Type:** BackendConfigComponentProps
 **Exports:** 
 
-#### 62. ConfigurationServiceComponent
+#### 63. ConfigurationServiceComponent
 **Defined in:** src/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent.tsx
 **Props Type:** ConfigurationServiceComponentProps
 **Exports:** 
 
-#### 63. DetermineFileType
+#### 64. DetermineFileType
 **Defined in:** src/app/components/configs/DetermineFileType.tsx
 **Props Type:** DetermineFileTypeProps
 **Exports:** 
 
-#### 64. FrontendConfigComponent
+#### 65. FrontendConfigComponent
 **Defined in:** src/app/components/configs/FrontendConfigComponent.tsx
 **Props Type:** FrontendConfigComponentProps
 **Exports:** 
 
-#### 65. LayoutCustomization
+#### 66. LayoutCustomization
 **Defined in:** src/app/components/configs/LayoutCustomization.tsx
 **Props Type:** LayoutCustomizationProps
 **Exports:** 
 
-#### 66. CustomBox
+#### 67. CustomBox
 **Defined in:** src/app/components/containers/CustomBox.tsx
 **Props Type:** CustomBoxProps
 **Exports:** 
 
-#### 67. TextBox
+#### 68. TextBox
 **Defined in:** src/app/components/containers/TextBox.tsx
 **Props Type:** TextBoxProps
 **Exports:** 
 
-#### 68. ToggleSwitchContainer
+#### 69. ToggleSwitchContainer
 **Defined in:** src/app/components/containers/ToggleSwitchContainer.tsx
 **Props Type:** { taskId: string }
 **Exports:** 
 
-#### 69. TeamProvider
+#### 70. TeamProvider
 **Defined in:** src/app/components/context/TeamContext.tsx
 **Props Type:** TeamContextProps
 **Exports:** useTeamContext, TeamProvider
 
-#### 70. ContributionItem
+#### 71. ContributionItem
 **Defined in:** src/app/components/crypto/CommunityContribution.tsx
 **Props Type:** { contribution: ContributionItem }
 **Exports:** 
 
-#### 71. CryptoSectionToolbar
+#### 72. CryptoSectionToolbar
 **Defined in:** src/app/components/crypto/CryptoSectionToolbar.tsx
 **Props Type:** CryptoSectionToolbarProps
 **Exports:** 
 
-#### 72. CryptoTransaction
+#### 73. CryptoTransaction
 **Defined in:** src/app/components/crypto/CryptoTransaction.tsx
 **Props Type:** { transaction: CryptoTransaction }
 **Exports:** 
 
-#### 73. OrderBook
+#### 74. OrderBook
 **Defined in:** src/app/components/crypto/OrderBook.tsx
 **Props Type:** OrderBookProps
 **Exports:** 
 
-#### 74. DocumentBuilderConfigComponent
+#### 75. DatabaseMigrationUI
+**Defined in:** src/app/components/database/DatabaseMigrationUI.tsx
+**Props Type:** DatabaseMigrationUIProps
+**Exports:** DatabaseMigrationUI
+
+#### 76. DocumentBuilderConfigComponent
 **Defined in:** src/app/components/documents/DocumentBuilderConfigComponent.tsx
 **Props Type:** DocumentBuilderConfigProps
 **Exports:** 
 
-#### 75. DocumentFormattingOptionsComponent
+#### 77. DocumentFormattingOptionsComponent
 **Defined in:** src/app/documents/DocumentFormattingOptions.tsx
 **Props Type:** DocumentFormattingOptionsProps
 **Exports:** 
 
-#### 76. EditorWithPrompt
+#### 78. EditorWithPrompt
 **Defined in:** src/app/components/documents/EditorWithPrompt.tsx
 **Props Type:** EditorWithPromptProps
 **Exports:** 
 
-#### 77. ProjectManagementToolbar
+#### 79. ProjectManagementToolbar
 **Defined in:** src/app/components/documents/ProjectManagementToolbar.tsx
 **Props Type:** { 
-    task: Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields
+    task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields
 **Exports:** 
 
-#### 78. VideoToolbar
+#### 80. VideoToolbar
 **Defined in:** src/app/components/video/VideoToolbar.tsx
 **Props Type:** VideoToolbarProps
 **Exports:** 
 
-#### 79. Toolbar
+#### 81. Toolbar
 **Defined in:** src/app/components/documents/Toolbar.tsx
 **Props Type:** ToolbarProps
 **Exports:** toolbarOptions
 
-#### 80. ToolbarList
+#### 82. ToolbarList
 **Defined in:** src/app/components/documents/Toolbar.tsx
 **Props Type:** ToolbarProps
 **Exports:** toolbarOptions
 
-#### 81. ToolbarItem
+#### 83. ToolbarItem
 **Defined in:** src/app/components/documents/ToolbarItem.tsx
 **Props Type:** ToolbarItemProps
 **Exports:** 
 
-#### 82. ToolbarOptionsComponent
+#### 84. ToolbarOptionsComponent
 **Defined in:** src/app/components/documents/ToolbarOptions.tsx
 **Props Type:** ToolbarOptionsProps
 **Exports:** 
 
-#### 83. EventCategory
+#### 85. EventCategory
 **Defined in:** src/app/components/event/EventCategory.tsx
 **Props Type:** EventCategoryProps
 **Exports:** 
 
-#### 84. EventManager
+#### 86. EventManager
 **Defined in:** src/app/components/event/EventManager.tsx
 **Props Type:** EventManagerProps
 **Exports:** 
 
-#### 85. EventSentiment
+#### 87. EventSentiment
 **Defined in:** src/app/components/event/EventSentiment.tsx
 **Props Type:** { event: CalendarEvent }
 **Exports:** 
 
-#### 86. FormElementStyles
+#### 88. FormElementStyles
 **Defined in:** src/app/components/form/FormElementStyles.tsx
 **Props Type:** FormElementStylesProps
 **Exports:** 
 
-#### 87. WebIcon
+#### 89. WebIcon
 **Defined in:** src/app/components/icons/WebIcon.tsx
 **Props Type:** WebIconProps
 **Exports:** 
 
-#### 88. BlogList
+#### 90. BlogList
 **Defined in:** src/app/components/lists/BlogList.tsx
 **Props Type:** BlogListProps
 **Exports:** 
 
-#### 89. DetailsList
+#### 91. DetailsList
 **Defined in:** src/app/components/lists/DetailsList.tsx
 **Props Type:** DetailsListInterface
 **Exports:** 
 
-#### 90. PhaseList
+#### 92. PhaseList
 **Defined in:** src/app/components/lists/PhaseList.tsx
 **Props Type:** PhaseListProps
 **Exports:** 
 
-#### 91. ProjectList
+#### 93. ProjectList
 **Defined in:** src/app/components/lists/ProjectList.tsx
 **Props Type:** ProjectListProps
 **Exports:** 
 
-#### 92. TaskList
+#### 94. TaskList
 **Defined in:** src/app/components/lists/TaskList.tsx
 **Props Type:** TaskListProps
 **Exports:** 
 
-#### 93. TaskProjectListings
+#### 95. TaskProjectListings
 **Defined in:** src/app/components/lists/TaskProjectListings.tsx
 **Props Type:** TaskProjectListingsProps
 **Exports:** 
 
-#### 94. TeamList
+#### 96. TeamList
 **Defined in:** src/app/components/lists/TeamList.tsx
 **Props Type:** TeamListProps
 **Exports:** 
 
-#### 95. TodoList
+#### 97. TodoList
 **Defined in:** src/app/components/lists/TodoList.tsx
 **Props Type:** TodoListProps
 **Exports:** 
 
-#### 96. UserList
+#### 98. UserList
 **Defined in:** src/app/components/lists/UserList.tsx
 **Props Type:** UserListProps
 **Exports:** 
 
-#### 97. BlogAndContentEditor
+#### 99. BlogAndContentEditor
 **Defined in:** src/app/components/models/content/BlogAndContentEditor.tsx
 **Props Type:** BlogAndContentEditorProps
 **Exports:** ActiveDashboardType
 
-#### 98. ContentDetails
+#### 100. ContentDetails
 **Defined in:** src/app/components/models/content/ContentDetails.tsx
 **Props Type:** ContentDetailsProps
 **Exports:** 
 
-#### 99. ContentDetailsListItem
+#### 101. ContentDetailsListItem
 **Defined in:** src/app/components/models/content/ContentDetailsListItem.tsx
 **Props Type:** ContentDetailsListItemProps
 **Exports:** 
 
-#### 100. ContentItemComponent
+#### 102. ContentItemComponent
 **Defined in:** src/app/components/models/content/ContentItem.tsx
 **Props Type:** ContentItemProps
 **Exports:** 
 
-#### 101. ContentList
+#### 103. ContentList
 **Defined in:** src/app/components/models/content/ContentList.tsx
 **Props Type:** ContentListProps
 **Exports:** 
 
-#### 102. ContentToolbar
+#### 104. ContentToolbar
 **Defined in:** src/app/components/models/content/ContentToolbar.tsx
 **Props Type:** ContentToolbarProps
 **Exports:** 
 
-#### 103. SharedDashboardContent
+#### 105. SharedDashboardContent
 **Defined in:** src/app/models/content/SharedDashboardContent.tsx
 **Props Type:** SharedDashboardContentProps
 **Exports:** SharedDashboardContent
 
-#### 104. BugDetails
+#### 106. BugDetails
 **Defined in:** src/app/components/models/data/BugDetails.tsx
 **Props Type:** BugDetailsProps
 **Exports:** 
 
-#### 105. CalendarDetails
+#### 107. CalendarDetails
 **Defined in:** src/app/components/models/data/CalendarDetails.tsx
 **Props Type:** CalendarDetailsProps<CalendarDataAndEventDetails
 **Exports:** 
 
-#### 106. DataFilterForm
+#### 108. DataFilterForm
 **Defined in:** src/app/components/models/data/DataFilterForm.tsx
 **Props Type:** DataFilterFormProps
 **Exports:** 
 
-#### 107. DataProcessingComponent
+#### 109. DataProcessingComponent
 **Defined in:** src/app/components/models/data/DataProcessingComponent.tsx
 **Props Type:** DataProcessingProps
 **Exports:** 
 
-#### 108. Details
+#### 110. Details
 **Defined in:** src/app/components/models/data/Details.tsx
 **Props Type:** DetailsProps<DataAndEventDetails
 **Exports:** DataAndEventDetails
 
-#### 109. ProgressDataComponent
+#### 111. ProgressDataComponent
 **Defined in:** src/app/components/models/data/ProgressData.tsx
 **Props Type:** ProgressDataProps
 **Exports:** 
 
-#### 110. SearchResultItem
+#### 112. SearchResultItem
 **Defined in:** src/app/components/models/data/SearchResultItem.tsx
 **Props Type:** SearchResultItemProps
 **Exports:** 
 
-#### 111. SentimentAnalysis
+#### 113. SentimentAnalysis
 **Defined in:** src/app/components/models/data/SentimentAnalysis.tsx
 **Props Type:** { text: string }
 **Exports:** 
 
-#### 112. UpdatedEventDetailsComponent
+#### 114. UpdatedEventDetailsComponent
 **Defined in:** src/app/state/redux/slices/CalendarSlice.tsx
 **Props Type:** CalendarEventViewingDetailsProps
 **Exports:** CalendarManagerState, exportCalendarEvents, simulateSendReminder, sendMessageToChatRoom, sendReminderToExternalService, sendCalendarEventReminder, removeCalendarEventFromService, removeCalendarEventAsync, syncCalendarWithExternalCalendars, inviteTeamMembersToCalendarEvent, commentOnCalendarEvent, assignTasksWithinCalendarEvent, exportCalendarEventsToExternalSources, useCalendarManagerSlice, selectCalendarEvents, selectMilestones, selectNotifications
 
-#### 113. VideoDetails
+#### 115. VideoDetails
 **Defined in:** src/app/components/models/data/VideoDetails.tsx
 **Props Type:** VideoDetailsProps
 **Exports:** 
 
-#### 114. ECommerceIntegration
+#### 116. ECommerceIntegration
 **Defined in:** src/app/models/ecommerce/ECommerceIntegration.tsx
 **Props Type:** ECommerceIntegrationProps
 **Exports:** 
 
-#### 115. FileManager
+#### 117. FileManager
 **Defined in:** src/app/components/models/file/FileManager.tsx
 **Props Type:** FileManagerProps
 **Exports:** 
 
-#### 116. integrateComponents
+#### 118. integrateComponents
 **Defined in:** src/app/components/models/realtime/IntegrationLogicComponent.tsx
 **Props Type:** IntegrateComponentsProps
 **Exports:** 
 
-#### 117. RealTimeChart
+#### 119. RealTimeChart
 **Defined in:** src/app/models/realtime/RealTimeChart.tsx
 **Props Type:** RealTimeChartProps
 **Exports:** 
 
-#### 118. RealTimeDataCollection
+#### 120. RealTimeDataCollection
 **Defined in:** src/app/models/realtime/RealTimeDataCollection.tsx
 **Props Type:** {}
 **Exports:** 
 
-#### 119. RealTimeVisualization
+#### 121. RealTimeVisualization
 **Defined in:** src/app/models/realtime/RealTimeVisualization.tsx
 **Props Type:** RealTimeVisualizationProps
 **Exports:** 
 
-#### 120. RealtimeDataComponent
+#### 122. RealtimeDataComponent
 **Defined in:** src/app/components/models/realtime/RealtimeDataComponent.tsx
 **Props Type:** RealtimeDataProps
 **Exports:** 
 
-#### 121. TaskForm
+#### 123. TaskForm
 **Defined in:** src/app/components/tasks/TaskForm.tsx
 **Props Type:** TaskFormProps
 **Exports:** 
 
-#### 122. TeamComponent
+#### 124. TeamComponent
 **Defined in:** src/app/components/teams/TeamComponent.tsx
 **Props Type:** TeamComponentProps
 **Exports:** 
 
-#### 123. TeamDetails
+#### 125. TeamDetails
 **Defined in:** src/app/components/teams/Team.tsx
-**Props Type:** { 
-  team: Team<AppTeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+**Props Type:** {
+  team: Team<
+    AppTeamEntity,
+    TeamK,
+    TeamMeta,
+    TeamAttachment,
+    TeamExcludedFields,
+    TeamIncludedFields
 **Exports:** 
 
-#### 124. DraggableIndicator
+#### 126. DraggableIndicator
 **Defined in:** src/app/models/tracker/DraggableIndicator.tsx
 **Props Type:** DraggableIndicatorProps
 **Exports:** 
 
-#### 125. LoadingIndicator
+#### 127. LoadingIndicator
 **Defined in:** src/app/models/tracker/LoadingIndicator.tsx
 **Props Type:** LoadingIndicatorProps
 **Exports:** 
 
-#### 126. LoadingSpinner
+#### 128. LoadingSpinner
 **Defined in:** src/app/models/tracker/LoadingSpinner.tsx
 **Props Type:** LoadingSpinnerProps
 **Exports:** 
 
-#### 127. ProgressBar
+#### 129. ProgressBar
 **Defined in:** src/app/components/models/tracker/ProgressBar.tsx
 **Props Type:** ProgressBarProps
 **Exports:** ProgressBarAnimationType
 
-#### 128. TaskTrackingComponent
+#### 130. TaskTrackingComponent
 **Defined in:** src/app/models/tracker/TaskTrackingComponent.tsx
 **Props Type:** TaskTrackingComponentProps
 **Exports:** 
 
-#### 129. LiveStream
+#### 131. LiveStream
 **Defined in:** src/app/models/video/LiveStream.tsx
 **Props Type:** LiveStreamProps
 **Exports:** 
 
-#### 130. Notification
+#### 132. Notification
 **Defined in:** src/app/components/notifications/Notification.tsx
 **Props Type:** NotificationStyleProps
 **Exports:** 
 
-#### 131. CustomNotification
+#### 133. CustomNotification
 **Defined in:** src/app/components/notifications/NotificationComponent.tsx
 **Props Type:** CustomNotificationProps
 **Exports:** 
 
-#### 132. NotificationComponent
+#### 134. NotificationComponent
 **Defined in:** src/app/components/notifications/NotificationComponent.tsx
 **Props Type:** NotificationComponentProps & CustomNotificationProps & ThemeConfigProps
 **Exports:** 
 
-#### 133. FeedbackManagementProvider
+#### 135. FeedbackManagementProvider
 **Defined in:** src/app/components/phases/FeedbackManagementContext.tsx
 **Props Type:** {
   value: any;
@@ -1200,107 +1226,112 @@
 }
 **Exports:** useFeedbackManagement, FeedbackManagementProvider
 
-#### 134. IdeationPhaseComponent
+#### 136. IdeationPhaseComponent
 **Defined in:** src/app/components/phases/IdeationPhaseComponent.tsx
 **Props Type:** IdeationPhaseComponentProps
 **Exports:** 
 
-#### 135. ScenarioBuilderPhase
+#### 137. ScenarioBuilderPhase
 **Defined in:** src/app/components/phases/ScenarioBuilderPhase.tsx
 **Props Type:** ScenarioBuilderPhaseProps
 **Exports:** 
 
-#### 136. TaskLoop
+#### 138. TaskLoop
 **Defined in:** src/app/components/phases/TaskLoop.tsx
 **Props Type:** TaskLoopProps
 **Exports:** 
 
-#### 137. TradingPreferencesStep
+#### 139. TradingPreferencesStep
 **Defined in:** src/app/components/phases/TradingPreferencesStep.tsx
 **Props Type:** { onSubmit: (preferences: any) =
 **Exports:** 
 
-#### 138. TwoFactorSetupPhase
+#### 140. TwoFactorSetupPhase
 **Defined in:** src/app/components/phases/TwoFactorSetupPhase.tsx
 **Props Type:** { onSetupComplete: () =
 **Exports:** 
 
-#### 139. CollaborationDisplay
+#### 141. CollaborationDisplay
 **Defined in:** src/app/components/phases/collaborationPhase/CollaborationDisplay.tsx
 **Props Type:** CollaborationDisplayProps
 **Exports:** 
 
-#### 140. CollaborationSettingsPhase
+#### 142. CollaborationSettingsPhase
 **Defined in:** src/app/components/phases/collaborationPhase/CollaborationSettingsPhase.tsx
 **Props Type:** CollaborationSettingsPhaseProps
 **Exports:** 
 
-#### 141. CallsConferences
+#### 143. CallsConferences
 **Defined in:** src/app/components/phases/crypto/CallsConferences.tsx
 **Props Type:** ConferenceProps
 **Exports:** 
 
-#### 142. CryptoEnthusiastCalls
+#### 144. CryptoEnthusiastCalls
 **Defined in:** src/app/components/phases/crypto/CryptoEnthusiastCalls.tsx
 **Props Type:** CryptoEnthusiastCallsProps
 **Exports:** 
 
-#### 143. CryptoTradingPhase
+#### 145. CryptoTradingPhase
 **Defined in:** src/app/components/phases/crypto/CryptoTradingPhase.tsx
 **Props Type:** TraderCallsProps
 **Exports:** 
 
-#### 144. DoYourOwnResearch
+#### 146. DoYourOwnResearch
 **Defined in:** src/app/components/phases/crypto/DoYourOwnResearch.tsx
 **Props Type:** ResearchProps
 **Exports:** 
 
-#### 145. EnthusiastProfile
+#### 147. EnthusiastProfile
 **Defined in:** src/app/components/phases/crypto/EnthusiastProfile.tsx
 **Props Type:** EnthusiastProfileProps
 **Exports:** 
 
-#### 146. FollowTraders
+#### 148. FollowTraders
 **Defined in:** src/app/components/phases/crypto/FollowTraders.tsx
 **Props Type:** TraderProps
 **Exports:** 
 
-#### 147. RiskAssessment
+#### 149. RiskAssessment
 **Defined in:** src/app/components/phases/crypto/RiskAssessment.tsx
 **Props Type:** RiskAssessmentProps
 **Exports:** 
 
-#### 148. TraderTypesSelection
+#### 150. TraderTypesSelection
 **Defined in:** src/app/components/phases/crypto/TraderTypesSelection.tsx
 **Props Type:** TraderTypesSelectionProps
 **Exports:** 
 
-#### 149. VerificationProcess
+#### 151. VerificationProcess
 **Defined in:** src/app/components/phases/crypto/VerificationProcess.tsx
 **Props Type:** VerificationProcessProps
 **Exports:** 
 
-#### 150. LaunchPhase
+#### 152. LaunchPhase
 **Defined in:** src/app/components/phases/onboarding/LaunchPhase.tsx
 **Props Type:** LaunchPhaseProps
 **Exports:** 
 
-#### 151. ProfileSetupPhase
+#### 153. ProfileSetupPhase
 **Defined in:** src/app/components/phases/onboarding/ProfileSetupPhase.tsx
 **Props Type:** ProfileSetupPhaseProps
 **Exports:** 
 
-#### 152. WelcomePhase
+#### 154. WelcomePhase
 **Defined in:** src/app/components/phases/onboarding/WelcomePhase.tsx
 **Props Type:** { onNextPhase: () =
 **Exports:** 
 
-#### 153. PostLaunchActivitiesPhase
+#### 155. PostLaunchActivitiesPhase
 **Defined in:** src/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase.tsx
 **Props Type:** PostLaunchActivitiesPhaseProps
 **Exports:** 
 
-#### 154. PreferencesStep
+#### 156. AnalysisStep
+**Defined in:** src/app/components/phases/steps/AnalysisStep.tsx
+**Props Type:** AnalysisStepProps
+**Exports:** AnalysisStep
+
+#### 157. PreferencesStep
 **Defined in:** src/app/components/phases/steps/PreferencesStep.tsx
 **Props Type:** {
   title: string;
@@ -1310,3231 +1341,907 @@
   onSubmit: (preferences: any) =
 **Exports:** 
 
-#### 155. TeamBasicInfoStep
+#### 158. TeamBasicInfoStep
 **Defined in:** src/app/components/phases/steps/TeamBasicInfoStep.tsx
 **Props Type:** { onSubmit: (basicInfo: any) =
 **Exports:** 
 
-#### 156. TeamMembersStep
+#### 159. TeamMembersStep
 **Defined in:** src/app/components/phases/steps/TeamReviewStep.tsx
 **Props Type:** { onSubmit: (members: any) =
 **Exports:** 
 
-#### 157. TeamPreferencesStep
+#### 160. TeamPreferencesStep
 **Defined in:** src/app/components/phases/steps/TeamPreferencesStep.tsx
 **Props Type:** { onSubmit: (preferences: any) =
 **Exports:** 
 
-#### 158. TeamSummaryStep
+#### 161. TeamSummaryStep
 **Defined in:** src/app/components/phases/steps/TeamSummaryStep.tsx
 **Props Type:** { teamData: any }
 **Exports:** 
 
-#### 159. ProductLaunchDetails
+#### 162. ProductLaunchDetails
 **Defined in:** src/app/components/products/ProductLaunchDetails.tsx
 **Props Type:** { productData: ProductLaunchData }
 **Exports:** ProductLaunchData
 
-#### 160. PromptComponent
+#### 163. PromptComponent
 **Defined in:** src/app/components/prompts/PromptComponent.tsx
 **Props Type:** PromptComponentProps
 **Exports:** 
 
-#### 161. Link
+#### 164. Link
 **Defined in:** src/app/components/routing/Link.tsx
 **Props Type:** LinkProps
 **Exports:** HATEOASLinks
 
-#### 162. HATEOASLinks
+#### 165. HATEOASLinks
 **Defined in:** src/app/components/routing/Link.tsx
 **Props Type:** HATEOASLinksProps
 **Exports:** HATEOASLinks
 
-#### 163. ProtectedRoute
+#### 166. ProtectedRoute
 **Defined in:** src/app/components/routing/ProtectedRoute.tsx
 **Props Type:** ProtectedRouteProps
 **Exports:** 
 
-#### 164. renderContent
+#### 167. renderContent
 **Defined in:** src/app/components/routing/ProtectedRoute.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 165. RouteGuard
+#### 168. RouteGuard
 **Defined in:** src/app/components/routing/RouteGuard.tsx
 **Props Type:** RouteGuardProps
 **Exports:** RouteGuard, withRouteGuard
 
-#### 166. SearchBar
+#### 169. SearchBar
 **Defined in:** src/app/components/routing/SearchBar.tsx
 **Props Type:** SearchBarProps
 **Exports:** 
 
-#### 167. SearchResultComponent
+#### 170. SearchResultComponent
 **Defined in:** src/app/components/routing/SearchResult.tsx
 **Props Type:** SearchResultProps<any
 **Exports:** 
 
-#### 168. Share
+#### 171. Share
 **Defined in:** src/app/components/shared/Share.tsx
 **Props Type:** ShareProps
 **Exports:** 
 
-#### 169. SharingOptions
+#### 172. SharingOptions
 **Defined in:** src/app/components/shared/SharingOptions.tsx
 **Props Type:** SharingOptionsProps
 **Exports:** 
 
-#### 170. BasicInfoStep
+#### 173. BasicInfoStep
 **Defined in:** src/app/components/shared/steps/BasicInfoStep.tsx
 **Props Type:** BasicInfoStepProps
 **Exports:** BasicInfoStep
 
-#### 171. GenericStepContainer
+#### 174. GenericStepContainer
 **Defined in:** src/app/components/shared/steps/GenericStepContainer.tsx
 **Props Type:** GenericStepContainerProps
 **Exports:** GenericStepContainer
 
-#### 172. TaskSortComponent
+#### 175. TaskSortComponent
 **Defined in:** src/app/components/sort/TaskSort.tsx
 **Props Type:** TaskSort
 **Exports:** 
 
-#### 173. BasicStopwatchComponent
+#### 176. BasicStopwatchComponent
 **Defined in:** src/app/components/stopwatches/BasicStopwatchComponent.tsx
 **Props Type:** StopwatchProps
 **Exports:** 
 
-#### 174. CustomizableTimersComponent
+#### 177. CustomizableTimersComponent
 **Defined in:** src/app/components/stopwatches/CustomizableTimersComponent.tsx
 **Props Type:** CustomizableTimersProps
 **Exports:** 
 
-#### 175. MultiPhaseTimerComponent
+#### 178. MultiPhaseTimerComponent
 **Defined in:** src/app/components/stopwatches/MultiPhaseTimerComponent.tsx
 **Props Type:** MultiPhaseTimerProps
 **Exports:** 
 
-#### 176. PomodoroTechniqueComponent
+#### 179. PomodoroTechniqueComponent
 **Defined in:** src/app/components/stopwatches/PomodoroTechniqueComponent.tsx
 **Props Type:** PomodoroTechniqueProps
 **Exports:** 
 
-#### 177. ProgressiveTimerComponent
+#### 180. ProgressiveTimerComponent
 **Defined in:** src/app/components/stopwatches/ProgressiveTimerComponent.tsx
 **Props Type:** ProgressiveTimerProps
 **Exports:** 
 
-#### 178. ScheduledTimersComponent
+#### 181. ScheduledTimersComponent
 **Defined in:** src/app/components/stopwatches/ScheduledTimersComponent.tsx
 **Props Type:** ScheduledTimersProps
 **Exports:** 
 
-#### 179. TeamCollaborationTimerComponent
+#### 182. TeamCollaborationTimerComponent
 **Defined in:** src/app/components/stopwatches/TeamCollaborationTimerComponent.tsx
 **Props Type:** TeamCollaborationTimerProps
 **Exports:** 
 
-#### 180. Accessibility
+#### 183. Accessibility
 **Defined in:** src/app/components/styling/Accessibility.tsx
 **Props Type:** AccessibilityProps
 **Exports:** 
 
-#### 181. StaticAccessibleComponent
+#### 184. StaticAccessibleComponent
 **Defined in:** src/app/components/styling/Accessibility.tsx
 **Props Type:** StaticAccessibleComponentProps
 **Exports:** 
 
-#### 182. DynamicAccessibleComponent
+#### 185. DynamicAccessibleComponent
 **Defined in:** src/app/components/styling/Accessibility.tsx
 **Props Type:** AccessibleComponentProps
 **Exports:** 
 
-#### 183. AccessibleComponent
+#### 186. AccessibleComponent
 **Defined in:** src/app/components/styling/Accessibility.tsx
 **Props Type:** AccessibleComponentProps
 **Exports:** 
 
-#### 184. AnimationsAndTransitions
+#### 187. AnimationsAndTransitions
 **Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
 **Props Type:** AnimationsAndTransitionsProps
 **Exports:** AnimatedComponentProps
 
-#### 185. StaticComponent
+#### 188. StaticComponent
 **Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
 **Props Type:** StaticComponentProps
 **Exports:** AnimatedComponentProps
 
-#### 186. DynamicComponent
+#### 189. DynamicComponent
 **Defined in:** src/app/components/styling/DynamicComponents.tsx
 **Props Type:** DynamicComponentProps & (ButtonProps | CardProps)
 **Exports:** 
 
-#### 187. AnimatedContent
+#### 190. AnimatedContent
 **Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
 **Props Type:** AnimatedComponentProps
 **Exports:** AnimatedComponentProps
 
-#### 188. ColorPalette
+#### 191. ColorPalette
 **Defined in:** src/app/components/styling/ColorPalette.tsx
 **Props Type:** ColorPaletteProps
 **Exports:** ColorSwatchProps
 
-#### 189. ColorPicker
+#### 192. ColorPicker
 **Defined in:** src/app/components/styling/ColorPicker.tsx
 **Props Type:** ColorPickerProps
 **Exports:** 
 
-#### 190. DynamicDocumentedComponent
+#### 193. DynamicDocumentedComponent
 **Defined in:** src/app/components/styling/Documentation.tsx
 **Props Type:** DocumentedComponentProps
 **Exports:** 
 
-#### 191. StaticDocumentedComponent
+#### 194. StaticDocumentedComponent
 **Defined in:** src/app/components/styling/Documentation.tsx
 **Props Type:** DocumentedComponentProps
 **Exports:** 
 
-#### 192. Documentation
+#### 195. Documentation
 **Defined in:** src/app/components/styling/Documentation.tsx
 **Props Type:** DocumentationProps
 **Exports:** 
 
-#### 193. DynamicColorPalette
+#### 196. DynamicColorPalette
 **Defined in:** src/app/components/styling/DynamicColorPalette.tsx
 **Props Type:** DynamicColorPaletteProps
 **Exports:** 
 
-#### 194. DynamicIconsAndImages
+#### 197. DynamicIconsAndImages
 **Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
 **Props Type:** DynamicIconsAndImagesProps
 **Exports:** 
 
-#### 195. StaticIcon
+#### 198. StaticIcon
 **Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
 **Props Type:** IconProps
 **Exports:** 
 
-#### 196. StaticImage
+#### 199. StaticImage
 **Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
 **Props Type:** ImageProps
 **Exports:** 
 
-#### 197. Icon
+#### 200. Icon
 **Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
 **Props Type:** IconProps
 **Exports:** 
 
-#### 198. Image
+#### 201. Image
 **Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
 **Props Type:** ImageProps
 **Exports:** 
 
-#### 199. DynamicSpacingAndLayout
+#### 202. DynamicSpacingAndLayout
 **Defined in:** src/app/components/styling/DynamicSpacingAndLayout.tsx
 **Props Type:** DynamicSpacingAndLayoutProps
 **Exports:** 
 
-#### 200. DynamicTypography
+#### 203. DynamicTypography
 **Defined in:** src/app/components/styling/DynamicTypography.tsx
 **Props Type:** DynamicTypographyProps & (BodyTextProps | HeadingProps)
 **Exports:** HeadingProps
 
-#### 201. Palette
+#### 204. Palette
 **Defined in:** src/app/components/styling/Palette.tsx
 **Props Type:** PaletteProps
 **Exports:** Palette
 
-#### 202. ResponsiveDesign
+#### 205. ResponsiveDesign
 **Defined in:** src/app/components/styling/ResponsiveDesign.tsx
 **Props Type:** ResponsiveDesignProps
 **Exports:** ResponsiveDesignProps, ResponsiveExample
 
-#### 203. UsageExamplesBox
+#### 206. UsageExamplesBox
 **Defined in:** src/app/components/styling/UsageExamplesBox.tsx
 **Props Type:** UsageExamplesBoxProps
 **Exports:** 
 
-#### 204. SubscriptionComponent
+#### 207. SubscriptionComponent
 **Defined in:** src/app/components/subscriptions/SubscriptionComponent.tsx
 **Props Type:** Props
 **Exports:** 
 
-#### 205. TeamManagerComponent
+#### 208. TeamManagerComponent
 **Defined in:** src/app/components/teams/TeamManagerComponent.tsx
 **Props Type:** TeamAssignmentSnapshotProps
 **Exports:** 
 
-#### 206. ConfigureTenantComponent
+#### 209. ConfigureTenantComponent
 **Defined in:** src/app/components/tenants/ConfigureTenantComponent.tsx
 **Props Type:** ConfigureTenantComponentProps
 **Exports:** 
 
-#### 207. TradeDataComponent
+#### 210. TradeDataComponent
 **Defined in:** src/app/components/trading/TradeData.tsx
 **Props Type:** TradeDataProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
 **Exports:** 
 
-#### 208. UserRolesEditor
+#### 211. UserRolesEditor
 **Defined in:** src/app/components/users/UserRolesEditor.tsx
 **Props Type:** UserRoleEditorProps
 **Exports:** 
 
-#### 209. PlaybackControls
+#### 212. PlaybackControls
 **Defined in:** src/app/components/video/PlaybackControls.tsx
 **Props Type:** PlaybackControlsProps
 **Exports:** 
 
-#### 210. VideoEditingPanel
+#### 213. VideoEditingPanel
 **Defined in:** src/app/components/video/VideoEditingPanel.tsx
 **Props Type:** VideoEditingPanelProps
 **Exports:** 
 
-#### 211. VideoPlayer
+#### 214. VideoPlayer
 **Defined in:** src/app/components/video/VideoPlayer.tsx
 **Props Type:** VideoPlayerProps
 **Exports:** 
 
-#### 212. VideoPlayerToolbar
-**Defined in:** src/app/components/video/VideoPlayerToolbar.ts
+#### 215. VideoPlayerToolbar
+**Defined in:** src/app/components/video/VideoPlayerToolbar.tsx
 **Props Type:** VideoPlayerToolbarProps
 **Exports:** 
 
-#### 213. WhiteboardCanvas
+#### 216. WhiteboardCanvas
 **Defined in:** src/app/components/whiteboard/Whiteboard.tsx
 **Props Type:** CanvasProps
 **Exports:** 
 
-#### 214. ComponentConfigProvider
+#### 217. ComponentConfigProvider
 **Defined in:** src/app/config/ComponentConfigProvider.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** ComponentConfigProvider, useComponentConfig
 
-#### 215. MainConfig
+#### 218. MainConfig
 **Defined in:** src/app/config/MainConfig.tsx
 **Props Type:** MainConfigProps
 **Exports:** 
 
-#### 216. FrontendStructureComponent
+#### 219. FrontendStructureComponent
 **Defined in:** src/app/config/appStructure/FrontendStructureComponent.tsx
 **Props Type:** FrontendStructureProps
 **Exports:** 
 
-#### 217. RenderContent
+#### 220. RenderContent
 **Defined in:** src/app/config/appStructure/FrontendStructureComponent.tsx
 **Props Type:** { content: string }
 **Exports:** 
 
-#### 218. DataVersionsComponent
+#### 221. DataVersionsComponent
 **Defined in:** src/app/configs/DataVersionsConfig.tsx
 **Props Type:** DataVersionsProps
 **Exports:** dataVersions
 
-#### 219. ContentItemSelection
+#### 222. ContentItemSelection
 **Defined in:** src/app/content/ContentMaintenance.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 220. ContentEditing
+#### 223. ContentEditing
 **Defined in:** src/app/content/ContentMaintenance.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 221. ContentCreation
+#### 224. ContentCreation
 **Defined in:** src/app/content/ContentMaintenance.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 222. ContentOrganization
+#### 225. ContentOrganization
 **Defined in:** src/app/content/ContentMaintenance.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 223. ContentPublishing
+#### 226. ContentPublishing
 **Defined in:** src/app/content/ContentMaintenance.tsx
 **Props Type:** any
 **Exports:** 
 
-#### 224. DashboardComponent
+#### 227. DashboardComponent
 **Defined in:** src/app/dashboards/DashboardComponent.tsx
 **Props Type:** Props
 **Exports:** 
 
-#### 225. DashboardFramework
+#### 228. DashboardFramework
 **Defined in:** src/app/dashboards/DashboardFramework.tsx
 **Props Type:** DashboardFrameworkProps
 **Exports:** 
 
-#### 226. LoadAquaState
+#### 229. LoadAquaState
 **Defined in:** src/app/dashboards/LoadAquaState.tsx
 **Props Type:** LoadAquaStateProps
 **Exports:** 
 
-#### 227. LoadFluenceState
+#### 230. LoadFluenceState
 **Defined in:** src/app/dashboards/LoadFluenceState.tsx
 **Props Type:** LoadFluenceStateProps
 **Exports:** 
 
-#### 228. DraggablePhaseCard
+#### 231. DraggablePhaseCard
 **Defined in:** src/app/dashboards/PhaseDashboard.tsx
 **Props Type:** { phase: OnboardingPhase }
 **Exports:** dragRef
 
-#### 229. PricingDashboard
+#### 232. PricingDashboard
 **Defined in:** src/app/dashboards/PricingDashboard.tsx
 **Props Type:** PricingDashboardProps
 **Exports:** 
 
-#### 230. RecruiterSeekerDashboard
+#### 233. RecruiterSeekerDashboard
 **Defined in:** src/app/dashboards/RecruiterSeekerDashboard.tsx
 **Props Type:** RecruiterSeekerDashboardProps
 **Exports:** 
 
-#### 231. DocumentSnapshotStore
+#### 234. DocumentSnapshotStore
 **Defined in:** src/app/documents/DocumentSnapshotStore.tsx
 **Props Type:** DocumentSnapshotStoreProps
 **Exports:** 
 
-#### 232. DynamicContent
+#### 235. DynamicContent
 **Defined in:** src/app/documents/DynamicContent.tsx
 **Props Type:** DynamicContentProps
 **Exports:** 
 
-#### 233. DynamicTable
+#### 236. DynamicTable
 **Defined in:** src/app/documents/DynamicTable.tsx
 **Props Type:** DynamicTableProps
 **Exports:** 
 
-#### 234. DocumentBuilder
+#### 237. DocumentBuilder
 **Defined in:** src/app/documents/editing/DocumentBuilder.tsx
-**Props Type:** DocumentBuilderProps
+**Props Type:** DocumentBuilderProps<DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields
 **Exports:** CustomProjectPhaseType, saveDocument
 
-#### 235. FeedbackLoop
+#### 238. FeedbackLoop
 **Defined in:** src/app/features/feedback/FeedbackLoop.tsx
 **Props Type:** FeedbackLoopProps
 **Exports:** 
 
-#### 236. NotificationProvider
-**Defined in:** src/app/features/support/NotificationProvider.tsx
+#### 239. NotificationProvider
+**Defined in:** src/app/state/context/NotificationContext.tsx
 **Props Type:** NotificationProviderProps
-**Exports:** notificationStore, notificationData, NotificationContext, NotificationProvider
+**Exports:** NotificationContext, NotificationProvider, useNotificationStore
 
-#### 237. SupportTicketComponent
+#### 240. SupportTicketComponent
 **Defined in:** src/app/features/support/SupportTicketComponent.tsx
 **Props Type:** SupportTicketComponentProps
 **Exports:** SupportTicket, SupportMessage
 
-#### 238. UserSupportPhaseComponent
+#### 241. UserSupportPhaseComponent
 **Defined in:** src/app/features/support/UserSupportPhaseComponent.tsx
 **Props Type:** UserSupportPhaseProps
 **Exports:** 
 
-#### 239. Tools
+#### 242. Tools
 **Defined in:** src/app/features/tools/Tools.tsx
 **Props Type:** ToolsProps
 **Exports:** 
 
-#### 240. ButtonGenerator
-**Defined in:** src/app/generators/GenerateButtons.tsx
-**Props Type:** ButtonGeneratorProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
-**Exports:** 
-
-#### 241. ChatSettingsModal
+#### 243. ChatSettingsModal
 **Defined in:** src/app/generators/GenerateModal.tsx
 **Props Type:** ChatSettingsModalProps
 **Exports:** 
 
-#### 242. OtherModal
+#### 244. OtherModal
 **Defined in:** src/app/generators/GenerateModal.tsx
 **Props Type:** OtherModalProps
 **Exports:** 
 
-#### 243. ModalGenerator
+#### 245. ModalGenerator
 **Defined in:** src/app/generators/GenerateModal.tsx
 **Props Type:** ModalProps
 **Exports:** 
 
-#### 244. NavigationMenu
+#### 246. NavigationManager
+**Defined in:** src/app/interfaces/NavigationManager.tsx
+**Props Type:** NavigationManagerProps
+**Exports:** NavigationView
+
+#### 247. NavigationMenu
 **Defined in:** src/app/interfaces/NavigationMenu.tsx
 **Props Type:** NavigationMenuProps
 **Exports:** 
 
-#### 245. YourComponentUI
+#### 248. YourComponentUI
 **Defined in:** src/app/interfaces/UserIdeaComponentUI.tsx
 **Props Type:** UserUserIdeaComponentUIProps
 **Exports:** 
 
-#### 246. CustomizationOptions
+#### 249. CustomizationOptions
 **Defined in:** src/app/interfaces/options/CustomizationOptions.tsx
 **Props Type:** CustomizationOptionsProps
 **Exports:** 
 
-#### 247. FullscreenControls
+#### 250. FullscreenControls
 **Defined in:** src/app/layout/FullscreenControls.tsx
 **Props Type:** FullscreenControlsProps
 **Exports:** FullscreenControls
 
-#### 248. LayoutControls
+#### 251. LayoutControls
 **Defined in:** src/app/layout/LayoutControls.tsx
 **Props Type:** LayoutControlsProps
 **Exports:** LayoutControls
 
-#### 249. AnimationDial
+#### 252. RootLayoutContent
+**Defined in:** src/app/layout/RootLayoutContent.tsx
+**Props Type:** RootLayoutContentProps
+**Exports:** RootLayoutContentProps
+
+#### 253. AnimationDial
 **Defined in:** src/app/libraries/animations/AnimationDial.tsx
 **Props Type:** DialProps
 **Exports:** 
 
-#### 250. DraggableAnimation
+#### 254. DraggableAnimation
 **Defined in:** src/app/libraries/animations/DraggableAnimation.tsx
 **Props Type:** DraggableAnimationProps
 **Exports:** 
 
-#### 251. DynamicSelectionControls
+#### 255. DynamicSelectionControls
 **Defined in:** src/app/libraries/animations/DynamicSelectionControls.tsx
 **Props Type:** DynamicSelectionControlsProps
 **Exports:** 
 
-#### 252. FadeInAnimation
+#### 256. FadeInAnimation
 **Defined in:** src/app/libraries/animations/FadeInAnimation.tsx
 **Props Type:** FadeInProps
 **Exports:** 
 
-#### 253. RotateAnimation
+#### 257. RotateAnimation
 **Defined in:** src/app/libraries/animations/RotateAnimation.tsx
 **Props Type:** RotateProps
 **Exports:** 
 
-#### 254. SlideUpAnimation
+#### 258. SlideUpAnimation
 **Defined in:** src/app/libraries/animations/SlideUpAnimation.tsx
 **Props Type:** SlideUpProps
 **Exports:** 
 
-#### 255. AnimatedComponent
+#### 259. AnimatedComponent
 **Defined in:** src/app/libraries/animations/text/TypingAnimation.tsx
 **Props Type:** AnimatedComponentProps
 **Exports:** 
 
-#### 256. Checkbox
+#### 260. Checkbox
 **Defined in:** src/app/libraries/menu/Checkbox.tsx
 **Props Type:** CheckBoxProps
 **Exports:** 
 
-#### 257. ClearFiltersButton
+#### 261. ClearFiltersButton
 **Defined in:** src/app/libraries/menu/ClearFiltersButton.tsx
 **Props Type:** ClearFiltersButtonProps
 **Exports:** 
 
-#### 258. Dropdown
+#### 262. Dropdown
 **Defined in:** src/app/libraries/menu/Dropdown.tsx
 **Props Type:** DropDownProps
 **Exports:** 
 
-#### 259. RadioButton
+#### 263. RadioButton
 **Defined in:** src/app/libraries/menu/RadioButton.tsx
 **Props Type:** RadioButtonProps
 **Exports:** 
 
-#### 260. SortableTableHeaders
+#### 264. SortableTableHeaders
 **Defined in:** src/app/libraries/menu/SortableTableHeaders.tsx
 **Props Type:** TableHeaders
 **Exports:** 
 
-#### 261. ToggleSwitch
+#### 265. ToggleSwitch
 **Defined in:** src/app/libraries/menu/ToggleSwitch.tsx
 **Props Type:** ToggleSwitchProps
 **Exports:** 
 
-#### 262. ThemeManagerServiceProvider
+#### 266. ThemeManagerServiceProvider
 **Defined in:** src/app/libraries/theme/ThemeManagerServiceContext.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** useThemeManagerService, ThemeManagerServiceProvider
 
-#### 263. Sidebar
+#### 267. Sidebar
 **Defined in:** src/app/libraries/toolbar/Sidebar.tsx
 **Props Type:** SidebarProps
 **Exports:** 
 
-#### 264. ToolbarItemsProvider
+#### 268. ToolbarItemsProvider
 **Defined in:** src/app/libraries/toolbar/ToolbarItemsProvider.tsx
 **Props Type:** { children: ReactNode }
 **Exports:** useToolbarItems, ToolbarItemsProvider
 
-#### 265. ContentRenderer
+#### 269. ContentRenderer
 **Defined in:** src/app/libraries/ui/ContentRenderer.tsx
 **Props Type:** ContentRendererProps
 **Exports:** 
 
-#### 266. DynamicRenderer
+#### 270. DynamicRenderer
 **Defined in:** src/app/libraries/ui/DynamicRenderer.tsx
 **Props Type:** DynamicRendererProps
 **Exports:** 
 
-#### 267. CustomSlider
+#### 271. UIComponentRenderer
+**Defined in:** src/app/libraries/ui/UILibrary.tsx
+**Props Type:** UIComponentRendererProps
+**Exports:** useUIComponent, UIComponentRenderer, ExampleUsage, useEnhancedUIComponent, EnhancedUIComponentRenderer
+
+#### 272. EnhancedUIComponentRenderer
+**Defined in:** src/app/libraries/ui/UILibrary.tsx
+**Props Type:** UIComponentRendererProps & {
+  onComponentLoad?: (componentType: string) =
+**Exports:** useUIComponent, UIComponentRenderer, ExampleUsage, useEnhancedUIComponent, EnhancedUIComponentRenderer
+
+#### 273. CustomSlider
 **Defined in:** src/app/libraries/ui/buttons/CustomSlider.tsx
 **Props Type:** CustomSliderProps
 **Exports:** 
 
-#### 268. ReusableButton
+#### 274. ReusableButton
 **Defined in:** src/app/libraries/ui/buttons/ReusableButton.tsx
 **Props Type:** WebButtonProps
 **Exports:** 
 
-#### 269. onCancel
+#### 275. onCancel
 **Defined in:** src/app/libraries/ui/buttons/onCancel.tsx
 **Props Type:** ButtonProps
 **Exports:** 
 
-#### 270. onLogicalAnd
+#### 276. onLogicalAnd
 **Defined in:** src/app/libraries/ui/buttons/onLogicalAnd.tsx
 **Props Type:** ButtonProps
 **Exports:** 
 
-#### 271. SubmitButton
+#### 277. SubmitButton
 **Defined in:** src/app/libraries/ui/buttons/onSubmit.tsx
 **Props Type:** ButtonProps
 **Exports:** 
 
-#### 272. onSubmit
+#### 278. onSubmit
 **Defined in:** src/app/libraries/ui/buttons/onSubmit.tsx
 **Props Type:** ButtonProps
 **Exports:** 
 
-#### 273. DynamicRouteComponent
+#### 279. DynamicRouteComponent
 **Defined in:** src/app/libraries/ui/components/DynamicRouteComponent.tsx
 **Props Type:** DynamicRouteComponentProps
 **Exports:** 
 
-#### 274. ThemeProvider
-**Defined in:** src/app/platform/styles/theme-provider.tsx
+#### 280. ThemeProvider
+**Defined in:** src/app/platform/styles/ThemeProvider.tsx
 **Props Type:** {
   children: React.ReactNode;
   userRole: string;
 }
 **Exports:** ThemeProvider, useTheme
 
-#### 275. ChecklistItem
-**Defined in:** src/app/models/ChecklistItem.tsx
-**Props Type:** ChecklistItemProps
-**Exports:** 
-
-#### 276. AddContent
+#### 281. AddContent
 **Defined in:** src/app/models/content/AddContent.tsx
 **Props Type:** {
   onComplete: (content: DefaultContent) =
 **Exports:** 
 
-#### 277. DetailsProvider
+#### 282. DetailsProvider
 **Defined in:** src/app/models/data/DetailsContext.tsx
 **Props Type:** DetailsProviderProps
 **Exports:** DetailsProvider, useDetailsContext
 
-#### 278. PhaseManager
+#### 283. PhaseManager
 **Defined in:** src/app/models/phases/PhaseManager.tsx
-**Props Type:** { phases: Phase[] }
+**Props Type:** { phases: Phase<AppPhaseEntity
 **Exports:** IdeaLifecyclePhase
 
-#### 279. ProjectDetailsComponents
+#### 284. ProjectDetailsComponents
 **Defined in:** src/app/models/projects/Project.tsx
 **Props Type:** UpdatedProjectDetailsProps
 **Exports:** ClientProjectEntity, SimpleClientProject, ProjectDetails, isProjectInSpecialPhase, ProjectData
 
-#### 280. PaymentProcess
+#### 285. PaymentProcess
 **Defined in:** src/app/payment/PaymentProcess.tsx
 **Props Type:** PaymentProcessProps
 **Exports:** 
 
-#### 281. ReviewStep
+#### 286. ReviewStep
 **Defined in:** src/app/phases/steps/ReviewSteps.tsx
 **Props Type:** ReviewStepProps
 **Exports:** 
 
-#### 282. SummaryStep
+#### 287. SummaryStep
 **Defined in:** src/app/phases/steps/SummaryStep.tsx
 **Props Type:** {
   onSubmit: (event: React.MouseEvent<HTMLButtonElement
 **Exports:** 
 
-#### 283. TradingAssetsStep
+#### 288. TradingAssetsStep
 **Defined in:** src/app/phases/steps/trading/TradingAssetsStep.tsx
 **Props Type:** { onSubmit: (assets: BlockchainAsset[]) =
 **Exports:** 
 
-#### 284. TradingBasicInfoStep
+#### 289. TradingBasicInfoStep
 **Defined in:** src/app/phases/steps/trading/TradingBasicInfoStep.tsx
 **Props Type:** { onSubmit: (basicInfo: any) =
 **Exports:** 
 
-#### 285. TradingReviewStep
+#### 290. TradingReviewStep
 **Defined in:** src/app/phases/steps/trading/TradingReviewStep.tsx
 **Props Type:** TradingReviewStep
 **Exports:** 
 
-#### 286. TradingSummaryStep
+#### 291. TradingSummaryStep
 **Defined in:** src/app/phases/steps/trading/TradingSummaryStep.tsx
 **Props Type:** TradingSummaryStep
 **Exports:** 
 
-#### 287. EnhancedThemeProvider
+#### 292. EnhancedThemeProvider
 **Defined in:** src/app/platform/styles/EnhancedThemeContextType.tsx
 **Props Type:** EnhancedThemeProviderProps
 **Exports:** EnhancedThemeProvider, useEnhancedTheme
 
-#### 288. AnalyzeData
+#### 293. AnalyzeData
 **Defined in:** src/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData.tsx
 **Props Type:** AnalyzeDataProps
 **Exports:** 
 
-#### 289. DataAnalysisPhase
+#### 294. DataAnalysisPhase
 **Defined in:** src/app/projects/DataAnalysisPhase/DataAnalysisPhase.tsx
 **Props Type:** DataAnalysisPhaseProps
 **Exports:** 
 
-#### 290. HypothesisTesting
+#### 295. HypothesisTesting
 **Defined in:** src/app/projects/DataAnalysisPhase/HypothesisTesting/HypothesisTesting.tsx
 **Props Type:** { onTestRun: (selectedTest: string) =
 **Exports:** 
 
-#### 291. EpidemiologicalModeling
+#### 296. EpidemiologicalModeling
 **Defined in:** src/app/projects/EpidemiologicalModeling.tsx
 **Props Type:** EpidemiologicalModelingProps
 **Exports:** 
 
-#### 292. PopulationDynamicsSimulation
+#### 297. PopulationDynamicsSimulation
 **Defined in:** src/app/projects/PopulationDynamicsSimulation.tsx
 **Props Type:** PopulationDynamicsSimulationProps
 **Exports:** 
 
-#### 293. RefactoringRebrandingPhase
+#### 298. RefactoringRebrandingPhase
 **Defined in:** src/app/projects/RefactoringRebrandingPhase.tsx
 **Props Type:** RefactoringRebrandingPhaseProps
 **Exports:** 
 
-#### 294. TaskManagementManager
+#### 299. TaskManagementManager
 **Defined in:** src/app/projects/TaskManagementPhase.tsx
 **Props Type:** TaskManagementManagerProps
 **Exports:** 
 
-#### 295. TeamBuildingPhase
+#### 300. TeamBuildingPhase
 **Defined in:** src/app/projects/TeamBuildingPhase.tsx
 **Props Type:** TeamBuildingPhaseProps
 **Exports:** 
 
-#### 296. UpdatedProjectDetails
+#### 301. UpdatedProjectDetails
 **Defined in:** src/app/projects/UpdateProjectDetails.tsx
 **Props Type:** UpdatedProjectDetailsProps
 **Exports:** 
 
-#### 297. ProjectManagementSimulation
+#### 302. ProjectManagementSimulation
 **Defined in:** src/app/projects/projectManagement/ProjectManagementSimulation.tsx
 **Props Type:** ProjectManagementSimulationProps
 **Exports:** 
 
-#### 298. ProjectManagerComponent
+#### 303. ProjectManagerComponent
 **Defined in:** src/app/projects/projectManagement/ProjectManager.tsx
 **Props Type:** ProjectManagerProps
 **Exports:** 
 
-#### 299. ProjectProgress
+#### 304. ProjectProgress
 **Defined in:** src/app/projects/projectManagement/ProjectProgress.tsx
 **Props Type:** ProjectProgressProps
 **Exports:** projectProgressData
 
-#### 300. ProjectProgressBar
+#### 305. ProjectProgressBar
 **Defined in:** src/app/projects/projectManagement/ProjectProgressBar.tsx
 **Props Type:** ProjectProgressBarProps
 **Exports:** 
 
-#### 301. EventListenerComponent
+#### 306. EventListenerComponent
 **Defined in:** src/app/projects/projectManagement/RemovingEventListeners.tsx
 **Props Type:** { documentOptions: DocumentOptions }
 **Exports:** 
 
-#### 302. TaskProgress
+#### 307. TaskProgress
 **Defined in:** src/app/projects/projectManagement/TaskProgress.tsx
 **Props Type:** TaskProgressProps
 **Exports:** 
 
-#### 303. TaskProgressBar
+#### 308. TaskProgressBar
 **Defined in:** src/app/projects/projectManagement/TaskProgressBar.tsx
 **Props Type:** TaskProgressBarProps
 **Exports:** 
 
-#### 304. TodoProgress
+#### 309. TodoProgress
 **Defined in:** src/app/projects/projectManagement/TodoProgress.tsx
 **Props Type:** TodoProgressProps
 **Exports:** 
 
-#### 305. TodoProgressBar
+#### 310. TodoProgressBar
 **Defined in:** src/app/projects/projectManagement/TodoProgressBar.tsx
 **Props Type:** TodoProgressBarProps
 **Exports:** 
 
-#### 306. PromptSystem
+#### 311. PromptSystem
 **Defined in:** src/app/prompts/PromptSystem.tsx
 **Props Type:** PromptSystemProps
 **Exports:** 
 
-#### 307. AuthComponent
+#### 312. AuthComponent
 **Defined in:** src/app/server/auth/AuthComponent.tsx
 **Props Type:** AuthComponentProps
 **Exports:** 
 
-#### 308. ErrorBoundaryProvider
+#### 313. SearchResultsPanel
+**Defined in:** src/app/services/AppTreeExplorer.tsx
+**Props Type:** { results: any }
+**Exports:** 
+
+#### 314. ErrorBoundaryProvider
 **Defined in:** src/app/shared/ErrorBoundaryProvider.tsx
 **Props Type:** ErrorBoundaryProviderProps
 **Exports:** ErrorBoundaryContext
 
-#### 309. SnapshotContainerComponent
+#### 315. SnapshotContainerComponent
 **Defined in:** src/app/snapshots/SnapshotContainerComponent.tsx
 **Props Type:** SnapshotContainerProps
 **Exports:** 
 
-#### 310. SnapshotHandler
+#### 316. SnapshotHandler
 **Defined in:** src/app/snapshots/SnapshotErrorHandling.tsx
 **Props Type:** { 
     onError?: (error: Payload) =
 **Exports:** 
 
-#### 311. CollaborationProvider
+#### 317. AppStoresProvider
+**Defined in:** src/app/state/context/AppContext.tsx
+**Props Type:** { children: React.ReactNode }
+**Exports:** AppStores, AppStoresProvider, useStores, useProjectStore, useTaskStore, usePhaseStore, useCryptoStore
+
+#### 318. CollaborationProvider
 **Defined in:** src/app/state/context/CollaborationContext.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** CollaborationProvider, useCollaboration
 
-#### 312. ContentProvider
+#### 319. ContentProvider
 **Defined in:** src/app/state/context/ContentContext.tsx
 **Props Type:** { children: React.ReactNode, url: string }
 **Exports:** ContentProvider, useContent
 
-#### 313. DashboardProvider
+#### 320. DashboardProvider
 **Defined in:** src/app/state/context/DashboardContext.tsx
 **Props Type:** { children: React.ReactNode }
 **Exports:** DashboardProvider, useDashboard
 
-#### 314. DynamicPromptProvider
+#### 321. DynamicPromptProvider
 **Defined in:** src/app/state/context/DynamicPromptContext.tsx
 **Props Type:** DynamicPromptProviderProps
 **Exports:** DynamicPromptProvider, useDynamicPrompt
 
-#### 315. SearchProvider
+#### 322. PhaseActivityProvider
+**Defined in:** src/app/state/context/PhaseActivityContext.tsx
+**Props Type:** { children: React.ReactNode }
+**Exports:** PhaseActivityProvider, usePhaseActivityContext
+
+#### 323. SearchProvider
 **Defined in:** src/app/state/context/SearchContext.tsx
 **Props Type:** { children: ReactNode }
 **Exports:** SearchProvider, useSearch
 
-#### 316. StepProvider
+#### 324. StepProvider
 **Defined in:** src/app/state/context/StepContext.tsx
 **Props Type:** { initialStep: number; steps: React.ReactNode[], children: React.ReactNode }
 **Exports:** useStepContext
 
-#### 317. StoreProvider
+#### 325. StoreProvider
 **Defined in:** src/app/state/stores/StoreProvider.tsx
 **Props Type:** StoreProviderProp
 **Exports:** StoreContext, StoreProvider, useStore
 
-#### 318. UserProvider
+#### 326. UserProvider
 **Defined in:** src/app/state/context/UserContext.tsx
 **Props Type:** UserContextType
 **Exports:** UserProvider, useUser
 
-#### 319. TodoItem
+#### 327. TodoItem
 **Defined in:** src/app/todos/TodoItem.tsx
 **Props Type:** TodoItemProps
 **Exports:** 
 
-#### 320. DynamicTextArea
+#### 328. DynamicTextArea
 **Defined in:** src/app/ts/DynamicTextArea.tsx
 **Props Type:** DynamicTextAreaProps
 **Exports:** 
 
-#### 321. ScheduleEventModal
+#### 329. ScheduleEventModal
 **Defined in:** src/app/ts/ScheduleEventModal.tsx
 **Props Type:** ScheduleEventModalProps
 **Exports:** 
 
-#### 322. Clipboard
+#### 330. Clipboard
 **Defined in:** src/app/ts/clipboard.tsx
 **Props Type:** ClipboardProps
 **Exports:** 
 
-#### 323. DataPreview
+#### 331. AppStepRenderer
+**Defined in:** src/app/typings/stepTypes.tsx
+**Props Type:** AppStepProps
+**Exports:** AppStepType, ProjectData, Task, CryptoAsset, TradeData, CommunicationData, Message, CommonStepProps, NavigationProps, ProjectProps, TaskProps, CryptoProps, CommunicationProps, CommunityProps, FormProps, ActionProps, OnboardingStepProps, IdeationStepProps, ProductLaunchStepProps, DataAnalysisStepProps, CryptoTradingStepProps, CryptoManagementStepProps, CommunicationStepProps, AppStepProps, ComposableAppStepProps, RequiredPropsFor, isOnboardingStep, isIdeationStep, isCryptoTradingStep, createStepProps, StepFactory, AppStepRenderer, useStep, getNextPhase, FlexibleStep
+
+#### 332. FlexibleStep
+**Defined in:** src/app/typings/stepTypes.tsx
+**Props Type:** ComposableAppStepProps
+**Exports:** AppStepType, ProjectData, Task, CryptoAsset, TradeData, CommunicationData, Message, CommonStepProps, NavigationProps, ProjectProps, TaskProps, CryptoProps, CommunicationProps, CommunityProps, FormProps, ActionProps, OnboardingStepProps, IdeationStepProps, ProductLaunchStepProps, DataAnalysisStepProps, CryptoTradingStepProps, CryptoManagementStepProps, CommunicationStepProps, AppStepProps, ComposableAppStepProps, RequiredPropsFor, isOnboardingStep, isIdeationStep, isCryptoTradingStep, createStepProps, StepFactory, AppStepRenderer, useStep, getNextPhase, FlexibleStep
+
+#### 333. DataPreview
 **Defined in:** src/app/users/DataPreview.tsx
 **Props Type:** DataPreviewProps
 **Exports:** 
 
-#### 324. UserDetails
+#### 334. UserDetails
 **Defined in:** src/app/users/User.tsx
 **Props Type:** { user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields
-**Exports:** UserDataEntity, UserDataK, UserDataMeta, UserDataExcludedFields, AppUser, BaseUser, DataTypeEnums, User, UserData, VisualizationData, DocumentTree, DocumentNode, usersDataSource
+**Exports:** UserDataEntity, UserDataK, UserDataMeta, UserDataExcludedFields, AppUser, BaseUser, User, SocialAccount, UserNotification, NotificationAction, UserAnalytics, Milestone, Achievement, TimeSeriesAnalytics, UserBehaviorPatterns, UserData, VisualizationData, DocumentTree, DocumentNode, usersDataSource
 
-#### 325. IdeaCreationPhaseManager
+#### 335. IdeaCreationPhaseManager
 **Defined in:** src/app/users/userJourney/IdeaCreationPhase.tsx
 **Props Type:** IdeaFormProps
 **Exports:** 
 
-#### 326. IdeaLifecycle
+#### 336. IdeaLifecycle
 **Defined in:** src/app/users/userJourney/IdeaLifecycle.tsx
 **Props Type:** IdeaLifecyclePhaseProps
 **Exports:** 
-
-### Frontend Types & Props
-
-#### 1. DatePickerProps (props)
-**Defined in:** platform/shared/DatePickerComponent.tsx
-**Properties:**
-- selectedDate: Date
-- onChange: (date: Date) => void
-
-#### 2. BaseButtonProps (props)
-**Defined in:** platform/shared/SharedButton.tsx
-**Properties:**
-- label?: string
-- variant?: string
-- disabled?: boolean
-- style?: React.CSSProperties
-- onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
-- onEvent?: (clickEvent: React.MouseEvent<HTMLButtonElement>) => void
-- onCancel?: () => void
-- onSubmit?: () => void
-- children?: React.ReactNode
-
-#### 3. TemplateDataProps (props)
-**Defined in:** platform/web/CustomTemplateBuilder.tsx
-**Properties:**
-- id: number
-- title: string
-- content: string
-
-#### 4. UploaderProps (props)
-**Defined in:** platform/web/ImageUploader.tsx
-**Properties:**
-- onUpload: (file: File) => void
-
-#### 5. DocumentProps (props)
-**Defined in:** platform/web/WebpageBuilder.tsx
-**Properties:**
-- title: string
-- content: string
-- author: string
-- createdAt: Date
-
-#### 6. WebpageBuilderProps (props)
-**Defined in:** platform/web/WebpageBuilder.tsx
-**Properties:**
-- document: DocumentProps
-- onSave: (document: DocumentProps) => void
-- onError: (error: string) => void
-
-#### 7. LazyLoadScriptProps (props)
-**Defined in:** src/LazyLoadScript.tsx
-**Properties:**
-- loadScript: () => Promise<ReactNode>
-
-#### 8. BrowserCheckProps (props)
-**Defined in:** src/app/BrowserCheck.tsx
-**Properties:**
-- browsers: string[]
-
-#### 9. DynamicIntroTooltipProps (props)
-**Defined in:** src/app/DynamicIntroTooltip.tsx
-**Properties:**
-- steps: Partial<IntroStep>[]
-
-#### 10. SchedulerProps (props)
-**Defined in:** src/app/actions/ActionScheduler.tsx
-**Properties:**
-- actionsToSchedule: LibraryAsyncHook[]
-
-#### 11. ClickableListProps (props)
-**Defined in:** src/app/actions/ClickableList.tsx
-**Properties:**
-- items: { id: number
-- label: string
-- imageSrc: string
-- onClick: () => void
-
-#### 12. TaskAssignmentSnapshotProps (props)
-**Defined in:** src/app/actions/TaskAssignmentSnapshot.tsx
-**Properties:**
-- taskId: string
-
-#### 13. CardFrameProps (props)
-**Defined in:** src/app/cards/CardFrame.tsx
-**Properties:**
-- borderColor: string
-- backgroundColor: string
-- borderRadius: string
-- content: React.ReactNode
-- onDragStart: () => void
-- onDragEnd: () => void
-- group: string
-- size: string
-- overflow: "hidden" | "ellipsis" | "modal"
-
-#### 14. DashboardConfigCardProps (props)
-**Defined in:** src/app/components/admin/DashboardConfigCard.tsx
-**Properties:**
-- apiConfig: ApiConfig
-- updateApiConfig: (config: ApiConfig) => void
-- onConfigUpdate?: () => void
-
-#### 15. DummyCardProps (props)
-**Defined in:** src/app/cards/DummyCard.tsx
-**Properties:**
-- content: React.ReactNode
-- onDragStart: () => void
-- onDragEnd: () => void
-
-#### 16. DummyCardLoaderProps (interface)
-**Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
-**Properties:**
-- items: DummyCardItemType[]
-
-#### 17. OrganizedCardLoaderProps (interface)
-**Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
-**Properties:**
-- items: OrganizedCardItemType[]
-
-#### 18. EmailCardProps (props)
-**Defined in:** src/app/cards/EmailCard.tsx
-**Properties:**
-- sender: string
-- subject: string
-- content: string
-
-#### 19. ImageCardProps (props)
-**Defined in:** src/app/cards/ImageCard.tsx
-**Properties:**
-- id: number
-- label: string
-- imageSrc: string
-- onClick: () => void
-
-#### 20. LoginCardProps (props)
-**Defined in:** src/app/cards/LoginCard.tsx
-**Properties:**
-- onSubmit: (username: string, password: string) => void
-
-#### 21. PersonaCardProps (props)
-**Defined in:** src/app/cards/PersonaCard.tsx
-**Properties:**
-- persona: string
-- data: any
-- title: any
-- fontSize: ThemeConfigProps['fontSize']
-- fontFamily: ThemeConfigProps['fontFamily']
-- children: React.ReactNode
-
-#### 22. TextCardProps (props)
-**Defined in:** src/app/cards/TextCard.tsx
-**Properties:**
-- onSave: (text: string) => Promise<void>
-
-#### 23. SwingCardProps (props)
-**Defined in:** src/app/cards/animation/SwingCard.tsx
-**Properties:**
-- onDragStart: () => void
-- onDragEnd: () => void
-- draggableId: string
-- index: number
-- children: React.ReactNode
-- useDragPreview?: boolean
-
-#### 24. FileUploadModalProps (props)
-**Defined in:** src/app/cards/modal/FileUploadModal.tsx
-**Properties:**
-- onFileUpload: (files: FileList) => void
-- close?: () => void
-
-#### 25. FileUploadModalLauncherProps (props)
-**Defined in:** src/app/cards/modal/FileUploadModalLauncher.tsx
-**Properties:**
-- onCloseFileUploadModal: () => void
-
-#### 26. LazyIconProps (props)
-**Defined in:** src/app/components/LazyIconProps.tsx
-**Properties:**
-- loadIcon: () => Promise<ReactNode>
-
-#### 27. LazyLoadedImageProps (props)
-**Defined in:** src/app/components/LazyLoadedImage.tsx
-**Properties:**
-- src: string
-- alt: string
-
-#### 28. AuthProviderProps (props)
-**Defined in:** src/app/components/Provider.tsx
-**Properties:**
-- children: React.ReactNode
-- token?: string
-- dbStatus?: any
-
-#### 29. AdminDashboardWithDynamicNamingProps (props)
-**Defined in:** src/app/components/admin/AdminDashboard.tsx
-**Properties:**
-
-#### 30. AttachmentsAndLinksProps (props)
-**Defined in:** src/app/components/calendar/AttachmentsAndLinks.tsx
-**Properties:**
-
-#### 31. CalendarEventViewingDetailsProps (props)
-**Defined in:** src/app/components/calendar/CalendarEventViewingDetails.tsx
-**Properties:**
-- eventId: string
-- title?: string
-- None?: () => JSX.Element
-- date?: string
-- productId?: string
-- eventDetails: React.FunctionComponent<CalendarEventViewingDetailsProps>
-
-#### 32. GuestInvitationsProps (props)
-**Defined in:** src/app/components/calendar/GuestInvitations.tsx
-**Properties:**
-
-#### 33. SyncWithExternalCalendarsProps (props)
-**Defined in:** src/app/components/calendar/SyncWithExternalCalendars.tsx
-**Properties:**
-- onConnectToGoogleCalendar: (accessToken: string) => void
-- onDisconnectFromGoogleCalendar: () => void
-- onSanitizeTrackers: (trackers: string[]) => string[]
-
-#### 34. ChatCardProps (props)
-**Defined in:** src/app/components/cards/ChatCard.tsx
-**Properties:**
-- sender: string
-- message: string
-- timestamp: string
-- isSentByUser?: boolean
-- chatType?: 'public' | 'private' | 'group'
-- isAdmin?: boolean
-- isModerator?: boolean
-
-#### 35. ChartComponentProps (props)
-**Defined in:** src/app/components/charts/ChartComponent.tsx
-**Properties:**
-- type: 'line' | 'bar'
-- data: any
-- options?: ChartOptions
-
-#### 36. ConfirmationModalProps (props)
-**Defined in:** src/app/components/communications/ConfirmationModal.tsx
-**Properties:**
-- isOpen: boolean
-- onConfirm: () => void
-- onCancel: () => void
-
-#### 37. ChatInputProps (props)
-**Defined in:** src/app/components/communications/chat/ChatInput.tsx
-**Properties:**
-- controlled?: boolean
-- value?: string
-- onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-- onSubmit?: () => void
-
-#### 38. EditorComponentProps (props)
-**Defined in:** src/app/components/communications/chat/ChatMessage.tsx
-**Properties:**
-- editorState: EditorState
-
-#### 39. ChatNotificationProps (props)
-**Defined in:** src/app/components/communications/chat/ChatNotification.tsx
-**Properties:**
-- content: string
-
-#### 40. ChatRoomProps (props)
-**Defined in:** src/app/components/communications/chat/ChatRoomComponent.tsx
-**Properties:**
-- roomId: string
-- onSendMessage: (message: ChatMessageData) => void
-- topics: string[]
-- chatEvent: ChatMessage | null
-
-#### 41. ChatRoomContextProps (props)
-**Defined in:** src/app/components/communications/chat/ChatRoomContext.tsx
-**Properties:**
-- roomId: string
-- setRoomId: React.Dispatch<React.SetStateAction<string>>
-
-#### 42. ChatRoomMessageProps (props)
-**Defined in:** src/app/components/communications/chat/ChatRoomDashboard.tsx
-**Properties:**
-- roomId: string
-- limit: number
-
-#### 43. ChatUserListProps (props)
-**Defined in:** src/app/components/communications/chat/ChatUserList.tsx
-**Properties:**
-- users: string[]
-
-#### 44. ChatWithFeedbackProps (props)
-**Defined in:** src/app/components/communications/chat/ChatWithFeedback.tsx
-**Properties:**
-- roomId: string
-
-#### 45. EnhancedGroupChatDashboardProps (props)
-**Defined in:** src/app/components/communications/chat/EnhancedGroupChatDashboard.tsx
-**Properties:**
-
-#### 46. GroupChatMessageProps (props)
-**Defined in:** src/app/components/communications/chat/GroupChatMessage.tsx
-**Properties:**
-- groupId: string
-
-#### 47. EmailSetupFormProps (props)
-**Defined in:** src/app/components/communications/email/EmailSetUpForm.tsx
-**Properties:**
-- handleRegisterEmail: () => void
-
-#### 48. CommunityDetailsProps (props)
-**Defined in:** src/app/components/community/CommunityDetails.tsx
-**Properties:**
-- community: CommunityData
-
-#### 49. BackendConfigComponentProps (props)
-**Defined in:** src/app/components/configs/BackendConfigComponent.tsx
-**Properties:**
-- backendConfig: BackendConfig
-- showAdvanced?: boolean
-- onConfigUpdate?: (config: Partial<BackendConfig>) => void
-
-#### 50. ConfigurationServiceComponentProps (props)
-**Defined in:** src/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent.tsx
-**Properties:**
-- apiConfigs: ApiConfig[]
-
-#### 51. DetermineFileTypeProps (props)
-**Defined in:** src/app/components/configs/DetermineFileType.tsx
-**Properties:**
-- filePath: string
-
-#### 52. FrontendConfigComponentProps (props)
-**Defined in:** src/app/components/configs/FrontendConfigComponent.tsx
-**Properties:**
-- config: FrontendConfig
-
-#### 53. LayoutCustomizationProps (props)
-**Defined in:** src/app/components/configs/LayoutCustomization.tsx
-**Properties:**
-
-#### 54. TextBoxProps (props)
-**Defined in:** src/app/components/containers/TextBox.tsx
-**Properties:**
-- value: string
-- onChange: (value: string) => void
-
-#### 55. CrpytoCallsSystemProps (props)
-**Defined in:** src/app/components/crypto/CryptoCallsSystem.tsx
-**Properties:**
-- onSelectPlatform: (platform: string | null) => void
-
-#### 56. CryptoSectionToolbarProps (props)
-**Defined in:** src/app/components/crypto/CryptoSectionToolbar.tsx
-**Properties:**
-- onTradeClick: () => void
-- onMarketAnalysisClick: () => void
-- onCommunityClick: () => void
-
-#### 57. OrderBookProps (props)
-**Defined in:** src/app/components/crypto/OrderBook.tsx
-**Properties:**
-
-#### 58. FrontendStructureViewerProps (props)
-**Defined in:** src/app/components/development/FrontendStructureViewer.tsx
-**Properties:**
-- frontendStructure: FrontendStructure
-
-#### 59. DocumentBuilderConfigProps (props)
-**Defined in:** src/app/components/documents/DocumentBuilderConfigComponent.tsx
-**Properties:**
-- config: DocumentBuilderConfig
-
-#### 60. DocumentFormattingOptionsComponentProps (props)
-**Defined in:** src/app/components/documents/DocumentFormattingOptionsComponent.tsx
-**Properties:**
-- onChange: (options: DocumentFormattingOptions) => void
-
-#### 61. EditorWithPromptProps (props)
-**Defined in:** src/app/components/documents/EditorWithPrompt.tsx
-**Properties:**
-- userId: string
-- teamId: string
-- project: string
-
-#### 62. VideoToolbarProps (props)
-**Defined in:** src/app/components/video/VideoToolbar.tsx
-**Properties:**
-- onRecord: () => void
-- onUpload: () => void
-- onEdit: () => void
-- onManage: () => void
-- onProductManagement: () => void
-- onAdManagement: () => void
-- onScheduleManagement: () => void
-- handleSpeechToText: () => void
-- handleTextToSpeech: () => void
-- handleAIVideoAnalysis: () => void
-
-#### 63. ToolbarProps (props)
-**Defined in:** src/app/components/documents/Toolbar.tsx
-**Properties:**
-- editorState: EditorState
-- activeDashboard: keyof typeof toolbarOptions
-- progress: Progress
-- onEditorStateChange: (state: EditorState) => void
-- toolbarOptions: ToolbarOptions
-
-#### 64. ToolbarItemProps (props)
-**Defined in:** src/app/components/documents/ToolbarItem.tsx
-**Properties:**
-- id: string
-- label: string
-- onClick: () => void
-
-#### 65. DocumentStatus (type)
-**Defined in:** src/app/components/documents/types.d.ts
-**Definition:** `'draft' | 'submitted' | 'approved' | 'rejected' | 'published' | 'restored' | string`
-
-#### 66. DocumentId (type)
-**Defined in:** src/app/components/documents/types.d.ts
-**Definition:** `DocumentData`
-
-#### 67. EventCategoryProps (props)
-**Defined in:** src/app/components/event/EventCategory.tsx
-**Properties:**
-- category: string
-- icon?: string
-- color?: string
-- onClick?: (category: string) => void
-
-#### 68. EventManagerProps (props)
-**Defined in:** src/app/components/event/EventManager.tsx
-**Properties:**
-- onEventAdded?: (event: CustomEventExtension) => void
-- onEventRemoved?: (eventId: string) => void
-
-#### 69. FormElementStylesProps (props)
-**Defined in:** src/app/components/form/FormElementStyles.tsx
-**Properties:**
-- animationType: AnimationType
-
-#### 70. WebIconProps (props)
-**Defined in:** src/app/components/icons/WebIcon.tsx
-**Properties:**
-- src: string
-
-#### 71. BlogListProps (props)
-**Defined in:** src/app/components/lists/BlogList.tsx
-**Properties:**
-- blogPosts: BlogData<BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields>[]
-
-#### 72. PhaseListProps (props)
-**Defined in:** src/app/components/lists/PhaseList.tsx
-**Properties:**
-- phases?: Phase[]
-- Optional: allows fallback to store or other source
-
-#### 73. ProjectListProps (props)
-**Defined in:** src/app/components/lists/ProjectList.tsx
-**Properties:**
-- tasks?: AppTask[]
-
-#### 74. TaskListProps (props)
-**Defined in:** src/app/components/lists/TaskList.tsx
-**Properties:**
-- tasks?: AppTask[]
-- onRemoveTask?: (task: string) => void
-- onCompleteTask?: (task: string) => void
-- onUpdateTaskTitle?: (taskId: string, updatedTitle: string) => void
-- onUpdateTaskDescription?: (task: string, updatedDescription: string) => void
-- onUpdateTaskStatus?: (task: string, updatedStatus: string) => void
-- onSortTasks?: (field: string, order: "asc" | "desc") => void
-
-#### 75. TaskProjectListingsProps (props)
-**Defined in:** src/app/components/lists/TaskProjectListings.tsx
-**Properties:**
-- tasks: AppTask[]
-
-#### 76. TeamListProps (props)
-**Defined in:** src/app/components/lists/TeamList.tsx
-**Properties:**
-- teams?: Team[]
-
-#### 77. TodoListProps (props)
-**Defined in:** src/app/components/lists/TodoList.tsx
-**Properties:**
-- todoists?: TodoList[]
-- onRemoveTodoList?: (todoist: TodoList) => void
-- onCompleteTodoList?: (todoist: TodoList) => void
-- onUpdateTodoListTitle?: (todoistId: string, updatedTitle: string) => void
-- onUpdateTodoListDescription?: (todoist: TodoList) => void
-- onUpdateTodoListStatus?: (todoist: TodoList) => void
-
-#### 78. UserListProps (props)
-**Defined in:** src/app/components/lists/UserList.tsx
-**Properties:**
-- users?: User[]
-
-#### 79. BlogAndContentEditorProps (props)
-**Defined in:** src/app/components/models/content/BlogAndContentEditor.tsx
-**Properties:**
-- contentItemId: string | DetailsItemCommon<Data>
-- editorState: EditorState
-- initialContent: string
-- activeDashboard: ActiveDashboardType
-- onContentChange: (newContent: ContentType) => void
-- contentType: {
-- label: string
-- value: string
-
-#### 80. ContentDetailsProps (props)
-**Defined in:** src/app/components/models/content/ContentDetails.tsx
-**Properties:**
-- details: ContentDetails
-
-#### 81. ContentDetailsListItemProps (props)
-**Defined in:** src/app/components/models/content/ContentDetailsListItem.tsx
-**Properties:**
-- item: DetailsItemExtended
-
-#### 82. ContentListProps (props)
-**Defined in:** src/app/components/models/content/ContentList.tsx
-**Properties:**
-- contentItems: DetailsItem<ContentItem>[]
-- onContentItemClick: (item: DetailsItemCommon<Data>) => void
-
-#### 83. ContentToolbarProps (props)
-**Defined in:** src/app/components/models/content/ContentToolbar.tsx
-**Properties:**
-- onBoldClick: () => void
-- onItalicClick: () => void
-- onUnderlineClick: () => void
-- onStrikeThroughClick: () => void
-- New: Callback for strike-through option
-- onHighlightClick: () => void
-- New: Callback for highlighting text
-- onAlignLeftClick: () => void
-- New: Callback for left alignment
-- onAlignCenterClick: () => void
-- New: Callback for center alignment
-- onAlignRightClick: () => void
-- New: Callback for right alignment
-- onJustifyClick: () => void
-- New: Callback for justify alignment
-- onBulletListClick: () => void
-- New: Callback for bullet list
-- onNumberedListClick: () => void
-- New: Callback for numbered list
-- onIndentClick: () => void
-- New: Callback for increasing indentation
-- onOutdentClick: () => void
-- New: Callback for decreasing indentation
-- onFontColorChange: (color: string) => void
-- New: Callback for changing font color
-- onHighlightColorChange: (color: string) => void
-- New: Callback for changing highlight color
-- onFontSizeChange: (fontSize: number) => void
-- New: Callback for changing font size
-- onFontFamilyChange: (fontFamily: string) => void
-- New: Callback for changing font family
-- onImageInsert: () => void
-- New: Callback for inserting images
-- onLinkInsert: () => void
-- New: Callback for inserting links
-- onUndoClick: () => void
-- New: Callback for undo action
-- onRedoClick: () => void
-- New: Callback for redo action
-
-#### 84. SharedDashboardContentProps (props)
-**Defined in:** src/app/models/content/SharedDashboardContent.tsx
-**Properties:**
-- onlineStatus: boolean
-- activeCalls: number
-- toggleOnlineStatus: () => void
-- increaseActiveCalls: () => void
-- decreaseActiveCalls: () => void
-
-#### 85. BugDetailsProps (props)
-**Defined in:** src/app/components/models/data/BugDetails.tsx
-**Properties:**
-- bugDetails: {
-- bug: string
-- bug_type: string
-- bug_description: string
-- bug_severity: string
-- bug_impact: string
-- bug_status: string
-- type: {
-- fields: {
-- id: string
-- name: string
-- title: string
-- type: string
-- required: boolean
-- updatedAt: Date
-
-#### 86. DataFilterFormProps (props)
-**Defined in:** src/app/components/models/data/DataFilterForm.tsx
-**Properties:**
-- onSubmit: (
-- filters: Record<string, { operation: string
-- value: string | number
-
-#### 87. DataProcessingProps (props)
-**Defined in:** src/app/components/models/data/DataProcessingComponent.tsx
-**Properties:**
-- datasetPath: string
-- onDataProcessed: (datasetPath: string, result: DataProcessingResult) => void
-
-#### 88. ProgressDataProps (props)
-**Defined in:** src/app/components/models/data/ProgressData.tsx
-**Properties:**
-- progress: number
-- value: string
-
-#### 89. VideoDetailsProps (props)
-**Defined in:** src/app/components/models/data/VideoDetails.tsx
-**Properties:**
-- videoData: VideoData
-
-#### 90. ECommerceIntegrationProps (props)
-**Defined in:** src/app/models/ecommerce/ECommerceIntegration.tsx
-**Properties:**
-
-#### 91. FileManagerProps (props)
-**Defined in:** src/app/components/models/file/FileManager.tsx
-**Properties:**
-- initialFiles: AppFile[]
-- initialFolders: Folder[]
-- payload: any
-
-#### 92. RealTimeChartProps (props)
-**Defined in:** src/app/models/realtime/RealTimeChart.tsx
-**Properties:**
-- user: string
-- searchQuery: string
-- selectedFilters: string[]
-
-#### 93. RealtimeDataProps (props)
-**Defined in:** src/app/components/models/realtime/RealtimeDataComponent.tsx
-**Properties:**
-- id: string
-- name: string
-- date?: Date
-- userId: string
-- value?: string | number
-
-#### 94. TaskFormProps (props)
-**Defined in:** src/app/components/tasks/TaskForm.tsx
-**Properties:**
-- onSubmit: (task: Task) => void
-
-#### 95. TeamComponentProps (props)
-**Defined in:** src/app/components/teams/TeamComponent.tsx
-**Properties:**
-- teamId: string
-
-#### 96. DraggableIndicatorProps (props)
-**Defined in:** src/app/models/tracker/DraggableIndicator.tsx
-**Properties:**
-- dragging: boolean
-
-#### 97. LoadingIndicatorProps (props)
-**Defined in:** src/app/models/tracker/LoadingIndicator.tsx
-**Properties:**
-- loading: boolean
-
-#### 98. LoadingSpinnerProps (props)
-**Defined in:** src/app/models/tracker/LoadingSpinner.tsx
-**Properties:**
-- loading: boolean
-
-#### 99. TaskTrackingComponentProps (props)
-**Defined in:** src/app/models/tracker/TaskTrackingComponent.tsx
-**Properties:**
-- tracker: Tracker
-
-#### 100. LiveStreamProps (props)
-**Defined in:** src/app/models/video/LiveStream.tsx
-**Properties:**
-- isOwner: boolean
-
-#### 101. CustomNotificationProps (props)
-**Defined in:** src/app/components/notifications/NotificationComponent.tsx
-**Properties:**
-- type: NotificationType
-- message: string
-
-#### 102. NotificationComponentProps (props)
-**Defined in:** src/app/components/notifications/NotificationComponent.tsx
-**Properties:**
-- notifications: NotificationData[]
-- id: NotificationData['id']
-- fontColor: string
-- fontSize: string
-
-#### 103. NotificationManagerServiceProps (props)
-**Defined in:** src/app/services/NotificationService.tsx
-**Properties:**
-- notify: (message: string) => void
-- clearNotifications: () => void
-- notifications: string[]
-
-#### 104. InitialSetupSubPhaseProps (props)
-**Defined in:** src/app/pages/onboarding/InitialSetupSubPhase.tsx
-**Properties:**
-- onSubmit: (data: any) => void
-- userData: TempUserData
-- setCurrentSubPhase: React.Dispatch<React.SetStateAction<AppDevelopmentPhase>>
-- notify: React.FC<(props: AppDevelopmentPhase, state: AppDevelopmentPhase, userData: TempUserData) => void>
-- appName: string
-
-#### 105. IdeationPhaseComponentProps (props)
-**Defined in:** src/app/components/phases/IdeationPhaseComponent.tsx
-**Properties:**
-- phaseName: string
-- phaseDescription: string
-- onPhaseComplete: () => void
-
-#### 106. ScenarioBuilderPhaseProps (props)
-**Defined in:** src/app/components/phases/ScenarioBuilderPhase.tsx
-**Properties:**
-- startPhase: () => void
-- endPhase: () => void
-
-#### 107. TaskLoopProps (props)
-**Defined in:** src/app/components/phases/TaskLoop.tsx
-**Properties:**
-- task: DefaultTask
-- taskType: string
-- attachmentUrls?: string[]
-
-#### 108. CollaborationDisplayProps (props)
-**Defined in:** src/app/components/phases/collaborationPhase/CollaborationDisplay.tsx
-**Properties:**
-
-#### 109. CollaborationSettingsPhaseProps (props)
-**Defined in:** src/app/components/phases/collaborationPhase/CollaborationSettingsPhase.tsx
-**Properties:**
-
-#### 110. ConferenceProps (props)
-**Defined in:** src/app/components/phases/crypto/CallsConferences.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 111. ResearchProps (props)
-**Defined in:** src/app/components/phases/crypto/DoYourOwnResearch.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 112. EnthusiastProfileProps (props)
-**Defined in:** src/app/components/phases/crypto/EnthusiastProfile.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 113. TraderProps (props)
-**Defined in:** src/app/components/phases/crypto/FollowTraders.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 114. RiskAssessmentProps (props)
-**Defined in:** src/app/components/phases/crypto/RiskAssessment.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 115. TraderTypesSelectionProps (props)
-**Defined in:** src/app/components/phases/crypto/TraderTypesSelection.tsx
-**Properties:**
-- onSelect: (type: string) => void
-
-#### 116. VerificationProcessProps (props)
-**Defined in:** src/app/components/phases/crypto/VerificationProcess.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 117. LaunchPhaseProps (props)
-**Defined in:** src/app/components/phases/onboarding/LaunchPhase.tsx
-**Properties:**
-
-#### 118. ProfileSetupPhaseProps (props)
-**Defined in:** src/app/components/phases/onboarding/ProfileSetupPhase.tsx
-**Properties:**
-- onSubmit: (profileData: any, personaType: PersonaTypeEnum) => void
-
-#### 119. PostLaunchActivitiesPhaseProps (props)
-**Defined in:** src/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase.tsx
-**Properties:**
-
-#### 120. PromptComponentProps (props)
-**Defined in:** src/app/components/prompts/PromptComponent.tsx
-**Properties:**
-- prompts: Prompt[]
-- currentPage: PromptPageProps
-- onNextPage: () => void
-- onPreviousPage: () => void
-- title: string
-- description: string
-- userIdea: string
-- userIdea: 
-
-#### 121. LinkProps (props)
-**Defined in:** src/app/components/routing/Link.tsx
-**Properties:**
-- link: HATEOASLink
-- className?: string
-- children?: React.ReactNode
-- onClick?: (link: HATEOASLink) => void
-
-#### 122. HATEOASLinksProps (props)
-**Defined in:** src/app/components/routing/Link.tsx
-**Properties:**
-- links: HATEOASLink[]
-- linkClassName?: string
-- onLinkClick?: (link: HATEOASLink) => void
-
-#### 123. RouteGuardProps (props)
-**Defined in:** src/app/components/routing/RouteGuard.tsx
-**Properties:**
-- children: React.ReactNode
-- requiredPermissions?: string[]
-- requiredRoles?: string[]
-- fallbackPath?: string
-- enableFuzzyAuth?: boolean
-
-#### 124. SearchBarProps (props)
-**Defined in:** src/app/components/routing/SearchBar.tsx
-**Properties:**
-- onSearch: (userId:  string, query:  string) => Promise<void>
-
-#### 125. ShareProps (props)
-**Defined in:** src/app/components/shared/Share.tsx
-**Properties:**
-- projectId: string
-- title: string
-
-#### 126. SharingOptionsProps (props)
-**Defined in:** src/app/components/shared/SharingOptions.tsx
-**Properties:**
-- onShareEmail: () => void
-- onShareLink: () => void
-- onShareSocialMedia: () => void
-
-#### 127. CustomizableTimersProps (props)
-**Defined in:** src/app/components/stopwatches/CustomizableTimersComponent.tsx
-**Properties:**
-- initialTime: number
-
-#### 128. MultiPhaseTimerProps (props)
-**Defined in:** src/app/components/stopwatches/MultiPhaseTimerComponent.tsx
-**Properties:**
-- phases: PhaseHookConfig[]
-
-#### 129. PomodoroTechniqueProps (props)
-**Defined in:** src/app/components/stopwatches/PomodoroTechniqueComponent.tsx
-**Properties:**
-- pomodoroTime: number
-- breakTime: number
-
-#### 130. ProgressiveTimerProps (props)
-**Defined in:** src/app/components/stopwatches/ProgressiveTimerComponent.tsx
-**Properties:**
-- initialTime: number
-
-#### 131. ScheduledTimersProps (props)
-**Defined in:** src/app/components/stopwatches/ScheduledTimersComponent.tsx
-**Properties:**
-- scheduledTimes: number[]
-
-#### 132. TeamCollaborationTimerProps (props)
-**Defined in:** src/app/components/stopwatches/TeamCollaborationTimerComponent.tsx
-**Properties:**
-- initialTime: number
-
-#### 133. AccessibleComponentProps (props)
-**Defined in:** src/app/components/styling/Accessibility.tsx
-**Properties:**
-- label: string
-
-#### 134. StaticAccessibleComponentProps (props)
-**Defined in:** src/app/components/styling/Accessibility.tsx
-**Properties:**
-- label: string
-
-#### 135. AccessibilityProps (props)
-**Defined in:** src/app/components/styling/Accessibility.tsx
-**Properties:**
-- examples: ReactNode[]
-- dynamicContent?: boolean
-
-#### 136. AnimatedComponentProps (props)
-**Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
-**Properties:**
-- animationClass: string
-- children?: ReactNode
-- loopDuration?: number
-- loopLength?: number
-- repeat?: boolean
-- animationType?: string
-- duration?: number
-
-#### 137. StaticComponentProps (props)
-**Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
-**Properties:**
-- content: ReactNode
-
-#### 138. AnimationsAndTransitionsProps (props)
-**Defined in:** src/app/components/styling/AnimationsAndTansitions.tsx
-**Properties:**
-- examples: ReactNode[]
-- dynamicContent?: boolean
-
-#### 139. ColorSwatchProps (props)
-**Defined in:** src/app/components/styling/ColorPalette.tsx
-**Properties:**
-- key: number
-- color: string
-- style: React.CSSProperties
-
-#### 140. ColorPaletteProps (props)
-**Defined in:** src/app/components/styling/ColorPalette.tsx
-**Properties:**
-- swatches: ColorSwatchProps[]
-- colorCodingEnabled: boolean
-- brandingSwatches: ColorSwatchProps[]
-
-#### 141. ColorPickerProps (props)
-**Defined in:** src/app/components/styling/ColorPicker.tsx
-**Properties:**
-- color: string
-- onChange: (newColor: string) => void
-- colorCodingEnabled: boolean
-
-#### 142. DocumentedComponentProps (props)
-**Defined in:** src/app/components/styling/Documentation.tsx
-**Properties:**
-- name: string
-- description: string
-
-#### 143. DocumentationProps (props)
-**Defined in:** src/app/components/styling/Documentation.tsx
-**Properties:**
-- dynamicContent?: boolean
-
-#### 144. DynamicColorPaletteProps (props)
-**Defined in:** src/app/components/styling/DynamicColorPalette.tsx
-**Properties:**
-- dynamicContent?: boolean
-- colorCodingEnabled: boolean
-- brandingSwatches: ColorSwatchProps[]
-- colors: ColorSwatchProps[]
-
-#### 145. ButtonProps (props)
-**Defined in:** src/app/libraries/ui/buttons/onSubmit.tsx
-**Properties:**
-- onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-
-#### 146. CardProps (props)
-**Defined in:** src/app/libraries/ui/ContentRenderer.tsx
-**Properties:**
-- title: string
-- content: string
-
-#### 147. EntityProps (props)
-**Defined in:** src/app/libraries/ui/ContentRenderer.tsx
-**Properties:**
-- id: string
-- name: string
-- type: string
-
-#### 148. DynamicComponentProps (props)
-**Defined in:** src/utils/DynamicComponentWrapper.tsx
-**Properties:**
-- component: React.ReactNode
-
-#### 149. IconProps (props)
-**Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
-**Properties:**
-- name: string
-
-#### 150. ImageProps (props)
-**Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
-**Properties:**
-- src: string
-- alt: string
-
-#### 151. DynamicIconsAndImagesProps (props)
-**Defined in:** src/app/components/styling/DynamicIconsAndImages.tsx
-**Properties:**
-- dynamicContent?: boolean
-
-#### 152. SpacingAndLayoutProps (props)
-**Defined in:** src/app/components/styling/DynamicSpacingAndLayout.tsx
-**Properties:**
-- margin?: string
-- padding?: string
-- border?: string
-
-#### 153. BodyTextProps (props)
-**Defined in:** src/app/components/styling/DynamicTypography.tsx
-**Properties:**
-- fontSize?: string
-- fontFamily: string
-- children: React.ReactNode
-
-#### 154. HeadingProps (props)
-**Defined in:** src/app/components/styling/DynamicTypography.tsx
-**Properties:**
-- fontSize: string
-- fontFamily: string
-- dynamicFont: string
-
-#### 155. DynamicTypographyProps (props)
-**Defined in:** src/app/components/styling/DynamicTypography.tsx
-**Properties:**
-- dynamicContent?: boolean
-- dynamicFont: "Aria, sans-serif"
-- dynamicColor: "#000000"
-- children?: React.ReactNode
-- variant?: "body1" | "body2" | "caption" | "button" | "h5"
-- items?: { type: 'file' | 'folder'
-- name: string
-- content: ContentItem
-
-#### 156. PaletteProps (props)
-**Defined in:** src/app/components/styling/Palette.tsx
-**Properties:**
-- colors: string[]
-- swatches: ColorSwatchProps[]
-- highlights: Highlight[]
-- highlightColor: HighlightColor
-- onColorChange: (colorIndex: number, newColor: string) => void
-- onAddColor: () => void
-- onRemoveColor: (colorIndex: number) => void
-
-#### 157. ResponsiveDesignProps (props)
-**Defined in:** src/app/components/styling/ResponsiveDesign.tsx
-**Properties:**
-- examples: ResponsiveExample[]
-- breakpoints: Record<string, number>
-- mediaQueries: Record<string, string>
-- typography: Record<string, Record<string, number>>
-- imageSizes: Record<string, Record<string, number>>
-- viewportConfig: Record<string, number>
-- navigationStyles: Record<string, Record<string, any>>
-- animationSettings: Record<string, Record<string, any>>
-- formElementStyling: Record<string, Record<string, any>>
-- touchGestures: Record<string, Record<string, any>>
-- deviceOrientation: Record<string, Record<string, any>>
-- responsiveImages: Record<string, Record<string, string>>
-- progressiveEnhancement: Record<string, boolean>
-- accessibilityAdjustments: Record<string, Record<string, string>>
-- performanceConsiderations: Record<string, boolean>
-- viewportMetaTagSettings: Record<string, string>
-- touchFeedbackStyles: Record<string, string>
-- cssGridFlexboxSettings: {
-- small: {
-- container: string
-- gap: string | number
-- columnGap: string | number
-- rowGap: string | number
-
-#### 158. ResponsiveDesignStoreProps (props)
-**Defined in:** src/app/components/styling/ResponsiveDesign.tsx
-**Properties:**
-- breakpoints: Record<string, number>
-- mediaQueries: Record<string, string>
-- typography: Record<string, Record<string, number>>
-- imageSizes: Record<string, Record<string, number>>
-- viewportConfig: Record<string, number>
-- navigationStyles: Record<string, Record<string, any>>
-- animationSettings: Record<string, Record<string, any>>
-- formElementStyling: Record<string, Record<string, any>>
-- touchGestures: Record<string, Record<string, any>>
-- deviceOrientation: Record<string, Record<string, any>>
-- responsiveImages: Record<string, Record<string, string>>
-- progressiveEnhancement: Record<string, boolean>
-- accessibilityAdjustments: Record<string, Record<string, string>>
-- performanceConsiderations: Record<string, boolean>
-- viewportMetaTagSettings: Record<string, string>
-- touchFeedbackStyles: Record<string, string>
-- collaborationBoardStore: CollaborationBoardStore
-- cssGridFlexboxSettings: {
-- small: {
-- container: string
-- gap: string | number
-- columnGap: string | number
-- rowGap: string | number
-
-#### 159. UsageExamplesBoxProps (props)
-**Defined in:** src/app/components/styling/UsageExamplesBox.tsx
-**Properties:**
-
-#### 160. TeamAssignmentSnapshotProps (props)
-**Defined in:** src/app/components/teams/TeamManagerComponent.tsx
-**Properties:**
-- teamId: string
-
-#### 161. ConfigureTenantComponentProps (props)
-**Defined in:** src/app/components/tenants/ConfigureTenantComponent.tsx
-**Properties:**
-- onTenantConfigured?: (tenant: Tenant) => void
-- initialTenant?: Tenant | null
-
-#### 162. PermissionsEditorProps (props)
-**Defined in:** src/app/components/users/UserRolesEditor.tsx
-**Properties:**
-- permissions: string[]
-
-#### 163. PlaybackControlsProps (props)
-**Defined in:** src/app/components/video/PlaybackControls.tsx
-**Properties:**
-
-#### 164. VideoEditingPanelProps (props)
-**Defined in:** src/app/components/video/VideoEditingPanel.tsx
-**Properties:**
-
-#### 165. VideoPlayerProps (props)
-**Defined in:** src/app/components/video/VideoPlayer.tsx
-**Properties:**
-- videoUrl: string
-- autoPlay?: boolean
-- onShareScreen?: () => void
-- onSelectScreen?: (screenId: string) => void
-- onToggleDualScreen?: () => void
-- onToggleNotes?: () => void
-- onTagRevisionPoint?: (tag: string) => void
-- onAlertSpaCy?: () => void
-
-#### 166. VideoPlayerToolbarProps (props)
-**Defined in:** src/app/components/video/VideoPlayerToolbar.ts
-**Properties:**
-- onPlay: () => void
-- onPause: () => void
-- onRewind: () => void
-- onFastForward: () => void
-- onVolumeChange: (volume: number) => void
-- onFullScreen: () => void
-- onShareScreen: () => void
-- onSelectScreen: (screenId: string) => void
-- onToggleDualScreen: () => void
-- onToggleNotes: () => void
-- onTagRevisionPoint: (tag: string) => void
-- onAlertSpaCy: () => void
-
-#### 167. FrontendStructureProps (props)
-**Defined in:** src/app/config/appStructure/FrontendStructureComponent.tsx
-**Properties:**
-- projectPath: string
-- frontendStructure: { [key: string]: { path: string
-- content: string
-
-#### 168. DataVersionsProps (props)
-**Defined in:** src/app/configs/DataVersionsConfig.tsx
-**Properties:**
-- dataPath: string
-
-#### 169. DashboardFrameworkProps (props)
-**Defined in:** src/app/dashboards/DashboardFramework.tsx
-**Properties:**
-- children: React.ReactNode
-- activeDashboard: string
-
-#### 170. DynamicDashboardProps (props)
-**Defined in:** src/app/hooks/userInterface/DynamicDashboard.tsx
-**Properties:**
-- title: string
-- content: React.ReactNode
-
-#### 171. LoadAquaStateProps (props)
-**Defined in:** src/app/dashboards/LoadAquaState.tsx
-**Properties:**
-- userId?: string
-- projectId?: string
-- autoInitialize?: boolean
-- onStateLoaded?: (state: AquaState) => void
-- onError?: (error: Error) => void
-
-#### 172. LoadFluenceStateProps (props)
-**Defined in:** src/app/dashboards/LoadFluenceState.tsx
-**Properties:**
-
-#### 173. PricingDashboardProps (props)
-**Defined in:** src/app/dashboards/PricingDashboard.tsx
-**Properties:**
-- context: any
-- setState: (state: any) => void
-- forceUpdate: () => void
-- render: () => React.ReactNode
-
-#### 174. RecruiterSeekerDashboardProps (props)
-**Defined in:** src/app/dashboards/RecruiterSeekerDashboard.tsx
-**Properties:**
-- recruiterData: any
-- seekerData: any
-- onRecruiterAction: (id: string) => void
-- onSeekerAction: (id: string) => void
-
-#### 175. DocumentFormattingOptionsProps (props)
-**Defined in:** src/app/documents/DocumentFormattingOptions.tsx
-**Properties:**
-- onChange: (options: DocumentFormattingOptions) => void
-- options: DocumentFormattingOptions
-
-#### 176. DocumentSnapshotStoreProps (props)
-**Defined in:** src/app/documents/DocumentSnapshotStore.tsx
-**Properties:**
-- initialState?: Snapshot<Document, any> | null
-- initialStates?: Snapshots<Document>
-
-#### 177. DynamicContentProps (props)
-**Defined in:** src/app/documents/DynamicContent.tsx
-**Properties:**
-- fontSize?: string
-- fontFamily?: string
-- content: React.ReactNode
-
-#### 178. DynamicTableProps (props)
-**Defined in:** src/app/documents/DynamicTable.tsx
-**Properties:**
-- data: any[]
-
-#### 179. FileSelectProps (props)
-**Defined in:** src/app/documents/FileSelect.tsx
-**Properties:**
-- onChange: (files: FileList | null) => void
-
-#### 180. FeedbackLoopProps (props)
-**Defined in:** src/app/features/feedback/FeedbackLoop.tsx
-**Properties:**
-- feedback: Feedback[]
-- feedbackType: string
-- audioUrl?: string
-- videoUrl?: string
-
-#### 181. MeetingSchedulerViewerToolbarProps (props)
-**Defined in:** src/app/features/meetings/viewer/MeetingSchedulerViewerToolbar.tsx
-**Properties:**
-- title: string
-- onRefresh: () => void
-
-#### 182. NotificationProviderProps (props)
-**Defined in:** src/app/features/support/NotificationProvider.tsx
-**Properties:**
-- children: React.ReactNode
-
-#### 183. SupportTicketComponentProps (props)
-**Defined in:** src/app/features/support/SupportTicketComponent.tsx
-**Properties:**
-- ticket?: SupportTicket
-- mode?: 'create' | 'view' | 'edit'
-- onTicketUpdate?: (ticket: SupportTicket) => void
-- onTicketClose?: (ticketId: string) => void
-
-#### 184. UserSupportPhaseProps (props)
-**Defined in:** src/app/features/support/UserSupportPhaseComponent.tsx
-**Properties:**
-- initialPhase: UserSupportPhase
-- onPhaseChange?: (phase: UserSupportPhase, data?: any) => void
-
-#### 185. ToolsProps (props)
-**Defined in:** src/app/features/tools/Tools.tsx
-**Properties:**
-- tools: string[]
-
-#### 186. ChatSettingsModalProps (props)
-**Defined in:** src/app/generators/GenerateModal.tsx
-**Properties:**
-
-#### 187. OtherModalProps (props)
-**Defined in:** src/app/generators/GenerateModal.tsx
-**Properties:**
-
-#### 188. ModalProps (props)
-**Defined in:** src/app/generators/GenerateModal.tsx
-**Properties:**
-- children: React.ReactNode
-- isOpen?: { isModalOpen: boolean
-
-#### 189. ChildComponentProps (props)
-**Defined in:** src/app/hooks/ChildComponent.tsx
-**Properties:**
-- router: Router // Update with the appropriate type for router
-- brandingSettings: BrandingSettings
-
-#### 190. VersioningComponentProps (props)
-**Defined in:** src/app/hooks/VersioningComponent.tsx
-**Properties:**
-- version: string
-
-#### 191. YourComponentProps (props)
-**Defined in:** src/app/hooks/YourComponent.tsx
-**Properties:**
-- children: React.ReactNode
-- apiConfig: ApiConfig
-- description?: string
-- updateSnapshot: (
-- snapshotId: string,
-- data: any,
-- events: any,
-- snapshotStore: any,
-- dataItems: any,
-- newData: any,
-- updatedPayload: any
-
-#### 192. FileUploadProps (props)
-**Defined in:** src/app/hooks/commHooks/useFileUpload.tsx
-**Properties:**
-- inputValue: string
-- handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-- handleFileChanges?: (e: React.ChangeEvent<HTMLInputElement>) => void
-
-#### 193. IdleTimeoutProps (props)
-**Defined in:** src/app/hooks/commHooks/useIdleTimeout.tsx
-**Properties:**
-- IDLE_TIMEOUT_DURATION: number
-- accessToken: string
-- router: typeof Router
-- extendedRouter: ExtendedRouter
-- setLastUserInteractionTime: (lastUserInteractionTime: number) => void
-- ideleTimeoutEffect: IdleTimeoutEffectFunction
-- idleTimeoutConditionFunction: IdleTimeoutConditionFunction
-- fetchLastUserInteractionTime: FetchLastUserInteractionTimeFunction
-- showModalOrNotification: ShowModalOrNotificationFunction
-- clearUserData: ClearUserDataFunction
-- resetIdleTimeout: ResetIdleTimeoutFunction
-
-#### 194. ExportTasksToCSVProps (props)
-**Defined in:** src/app/hooks/dataHooks/exportTasksToCSV.tsx
-**Properties:**
-- tasksDataSource: Task<any>[]
-
-#### 195. ScreenElementProps (props)
-**Defined in:** src/utils/web3/dAppAdapter/AdapterContent.tsx
-**Properties:**
-- id: string
-
-#### 196. RecruitingPhaseStepProps (props)
-**Defined in:** src/app/hooks/phaseHooks/RecruitingPhaseStep.tsx
-**Properties:**
-- candidates: Candidate[]
-- onCandidateSearch: (criteria: any) => void
-- onCandidateManagement: (action: string, candidateId: string) => void
-- onInterviewScheduling: (candidateId: string, interviewDate: Date) => void
-
-#### 197. JobSearchComponentProps (props)
-**Defined in:** src/app/hooks/useJobSearch.tsx
-**Properties:**
-
-#### 198. ActionListProps (props)
-**Defined in:** src/app/hooks/userInterface/ActionList.tsx
-**Properties:**
-- actions: Action[]
-
-#### 199. DashboardPanelProps (props)
-**Defined in:** src/app/hooks/userInterface/DashboardPanel.tsx
-**Properties:**
-- title: string
-- content: React.ReactNode
-
-#### 200. DynamicInputFieldsProps (props)
-**Defined in:** src/app/hooks/userInterface/DynamicInputFieldsProps.tsx
-**Properties:**
-- fields: { label: string
-- type: string
-
-#### 201. InputProps (props)
-**Defined in:** src/app/hooks/userInterface/InputFields.tsx
-**Properties:**
-- id: string
-- type: string
-- value: string
-- placeholder?: string
-- accept?: string
-- onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-- inputValue?: string
-- handleInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-
-#### 202. InputLabelProps (props)
-**Defined in:** src/app/hooks/userInterface/InputFields.tsx
-**Properties:**
-- htmlFor: string
-- children?: React.ReactNode
-
-#### 203. NavigationGeneratorProps (props)
-**Defined in:** src/app/hooks/userInterface/NavigationGenerator.tsx
-**Properties:**
-- onNavigationChange?: (newItems: NavigationItem[]) => void
-- defaultNavigationItems?: NavigationItem[]
-- showIcons?: boolean
-- showLabels?: boolean
-
-#### 204. RandomWalkVisualizationProps (props)
-**Defined in:** src/app/hooks/userInterface/RandomWalkVisualization.tsx
-**Properties:**
-- updateTeamData: (randomWalk: number[]) => void
-
-#### 205. ResizablePanelsProps (props)
-**Defined in:** src/app/hooks/userInterface/ResizablePanels.tsx
-**Properties:**
-- sizes: (() => number[]) | number[]
-- onResize: (newSizes: number[]) => void
-- onResizeStop: (newSizes: number[]) => void
-- children: ReactNode[]
-- snap?: boolean
-- panelSizes?: number[]
-- minPanelWidth?: number
-- maxPanelWidth?: number
-
-#### 206. ThemeConfigProps (props)
-**Defined in:** src/app/hooks/userInterface/ThemeConfigContext.tsx
-**Properties:**
-- fontSize: string
-- fontColor: string
-- fontFamily?: string
-- primaryColor?: string
-- secondaryColor?: string
-- backgroundColor?: string
-- isDarkMode?: boolean
-- toggleDarkMode?: () => void
-- setPrimaryColor?: React.Dispatch<React.SetStateAction<string>>
-- setThemeConfig?: React.Dispatch<React.SetStateAction<ThemeConfig>>
-- setSecondaryColor?: React.Dispatch<React.SetStateAction<string>>
-- setFontSize?: React.Dispatch<React.SetStateAction<string>>
-- setFontFamily?: React.Dispatch<React.SetStateAction<string>>
-- setFontColor?: React.Dispatch<React.SetStateAction<string>>
-- children?: React.ReactNode
-- themeConfig: ThemeConfig
-- applyThemeConfig?: (themeConfig: ThemeConfig) => void
-
-#### 207. ThemeCustomizationProps (props)
-**Defined in:** src/app/hooks/userInterface/ThemeCustomization.tsx
-**Properties:**
-- themeState: ThemeConfig
-- infoColor: string
-- setThemeState: React.Dispatch<SetStateAction<ThemeState>>
-- notificationState: React.Dispatch<SetStateAction<NotificationData[]>>
-- tableStyle: TableStyle
-
-#### 208. VisualizationProps (interface)
-**Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
-**Properties:**
-- type: VisualizationType
-
-#### 209. NavigationMenuProps (props)
-**Defined in:** src/app/interfaces/NavigationMenu.tsx
-**Properties:**
-- onSelect: (view: string) => void
-
-#### 210. UserUserIdeaComponentUIProps (props)
-**Defined in:** src/app/interfaces/UserIdeaComponentUI.tsx
-**Properties:**
-- userIdea: string
-- setUserIdea: React.Dispatch<React.SetStateAction<string>>
-- handleUserIdeaSubmit: () => void
-
-#### 211. CustomizationOptionsProps (interface)
-**Defined in:** src/app/interfaces/options/CustomizationOptions.tsx
-**Properties:**
-- updateTheme: (theme: ThemeState) => void
-
-#### 212. TeamBuildingSettings (interface)
-**Defined in:** src/app/interfaces/settings/TeamBuildingSettings.ts
-**Properties:**
-- enableTeamBuilding: boolean
-- teamBuildingMethod: "iceBreakers" | "workshops" | "teamRetreat" | "custom"
-- projectTimeline: "mediumTerm"
-- teamBuildingActivities: string[]
-- teamBuildingBudget: number
-- teamBuildingFrequency: "weekly" | "monthly" | "quarterly" | "custom"
-- customTeamBuildingSchedule?: string
-- teamBuildingLocations: string[]
-- teamBuildingFacilitator: string
-- teamBuildingFeedbackEnabled: boolean
-
-#### 213. FullscreenControlsProps (props)
-**Defined in:** src/app/layout/FullscreenControls.tsx
-**Properties:**
-- isFullscreen: boolean
-- isComponentLoaded: boolean
-- onFullscreenToggle: (checked: boolean) => void
-- onExitFullscreen: () => void
-
-#### 214. LayoutControlsProps (props)
-**Defined in:** src/app/layout/LayoutControls.tsx
-**Properties:**
-- isMinimized: boolean
-- onMinimizeToggle: () => void
-
-#### 215. DialProps (props)
-**Defined in:** src/app/libraries/animations/AnimationDial.tsx
-**Properties:**
-- label: string
-- min: number
-- max: number
-- value: number
-- onChange: (newValue: number) => void
-
-#### 216. CollectedProps (props)
-**Defined in:** src/app/libraries/animations/DraggableAnimation/useDrag.tsx
-**Properties:**
-- isDragging: boolean
-
-#### 217. TextProps (props)
-**Defined in:** src/app/libraries/animations/DraggableAnimation/useText.tsx
-**Properties:**
-- onDragStart: () => void
-- onDragMove: (dragX: number, dragY: number) => void
-- onDragEnd: () => void
-- TextType: string
-- text: string
-- onTextDragStart: () => void
-- onTextDragMove: (drawingId: string, dragX: number, dragY: number) => void
-- onTextDragEnd: (dragX: number, dragY: number) => Promise<void>
-
-#### 218. DraggableAnimationProps (props)
-**Defined in:** src/app/libraries/animations/DraggableAnimation.tsx
-**Properties:**
-- onDragStart: () => void
-- onDragEnd: () => void
-- draggableId: string
-- index: number
-- children: ReactNode
-
-#### 219. DynamicSelectionControlsProps (props)
-**Defined in:** src/app/libraries/animations/DynamicSelectionControls.tsx
-**Properties:**
-- options: Option[]
-- controlType: 'checkbox' | 'radio' | 'select' | 'toggle'
-
-#### 220. FadeInProps (props)
-**Defined in:** src/app/libraries/animations/FadeInAnimation.tsx
-**Properties:**
-- duration: number
-
-#### 221. RotateProps (props)
-**Defined in:** src/app/libraries/animations/RotateAnimation.tsx
-**Properties:**
-- angle: number
-- duration: number
-
-#### 222. SlideUpProps (props)
-**Defined in:** src/app/libraries/animations/SlideUpAnimation.tsx
-**Properties:**
-- duration: number
-
-#### 223. CheckBoxProps (props)
-**Defined in:** src/app/libraries/menu/Checkbox.tsx
-**Properties:**
-- label: string
-- checked: boolean
-- onChange: (checked: boolean) => void
-- className?: string
-- style?: React.CSSProperties
-
-#### 224. DropDownProps (props)
-**Defined in:** src/app/libraries/menu/Dropdown.tsx
-**Properties:**
-- options: string[]
-- selectedOption: string
-- onSelectOption: (option: string) => void
-
-#### 225. RadioButtonProps (props)
-**Defined in:** src/app/libraries/menu/RadioButton.tsx
-**Properties:**
-- label: string
-- value: string
-- checked: boolean
-- onChange: (value: string) => void
-
-#### 226. ToggleSwitchProps (props)
-**Defined in:** src/app/libraries/menu/ToggleSwitch.tsx
-**Properties:**
-- label: string
-- checked: boolean
-- onChange: (checked: boolean) => void
-
-#### 227. ThemeManagerServiceProps (props)
-**Defined in:** src/app/libraries/theme/ThemeManagerServiceContext.tsx
-**Properties:**
-- setPrimaryColor: React.Dispatch<React.SetStateAction<string>>
-- setSecondaryColor: React.Dispatch<React.SetStateAction<string>>
-- setFontSize: React.Dispatch<React.SetStateAction<string>>
-- setFontFamily: React.Dispatch<React.SetStateAction<string>>
-- themeConfig: ThemeConfig
-
-#### 228. SidebarProps (props)
-**Defined in:** src/app/libraries/toolbar/Sidebar.tsx
-**Properties:**
-- children?: ReactNode
-
-#### 229. ContentRendererProps (props)
-**Defined in:** src/app/libraries/ui/ContentRenderer.tsx
-**Properties:**
-- dynamicContent?: Task[] | Project[]
-- handleTaskClick: (task: Task) => Promise<void>
-- handleTodoClick: (todoId: Todo["id"]) => Promise<void>
-- handleProjectClick: (
-- project: {
-- projectId: string
-- project: Project
-- projectDetails: ProjectDetails
-- completion: number
-- pending: boolean
-
-#### 230. DynamicRendererProps (props)
-**Defined in:** src/app/libraries/ui/DynamicRenderer.tsx
-**Properties:**
-- handleTodoClick?: (todoId: Todo) => void
-- handleTaskClick?: (taskId: Task) => void
-- handleDynamicAction1?: () => void
-- handleDynamicAction2?: () => void
-- dynamicContent: any[]
-
-#### 231. ButonProps (props)
-**Defined in:** src/app/libraries/ui/UILibrary.tsx
-**Properties:**
-- variant?: string
-
-#### 232. CustomSliderProps (props)
-**Defined in:** src/app/libraries/ui/buttons/CustomSlider.tsx
-**Properties:**
-- min: number
-- max: number
-- value: number
-- onChange: ChangeEventHandler<HTMLInputElement>
-
-#### 233. DynamicRouteComponentProps (props)
-**Defined in:** src/app/libraries/ui/components/DynamicRouteComponent.tsx
-**Properties:**
-- dynamicData: string | null
-
-#### 234. ChecklistItemProps (props)
-**Defined in:** src/app/models/ChecklistItem.tsx
-**Properties:**
-- item: DetailsItem<any>
-
-#### 235. ContentProps (props)
-**Defined in:** src/app/models/content/AddContent.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 236. DetailsProviderProps (props)
-**Defined in:** src/app/models/data/DetailsContext.tsx
-**Properties:**
-- children: ReactNode
-
-#### 237. ProgressBarProps (props)
-**Defined in:** src/app/models/tracker/ProgressBar.tsx
-**Properties:**
-- progress: Progress | null
-- duration: number
-- barStyle?: React.CSSProperties
-- containerStyle?: React.CSSProperties
-- animationClass?: string
-- animationType?: string
-- phase: {
-- type: string,
-- duration: number,
-- value: number
-
-#### 238. ExtendedAppProps (props)
-**Defined in:** src/app/pages/ExtendedAppLogic.tsx
-**Properties:**
-- notifications: NotificationData[]
-- setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>
-
-#### 239. BlogGeneratorProps (props)
-**Defined in:** src/app/versions/BlogPostHistory.tsx
-**Properties:**
-- posts: BlogPostHistory[]
-
-#### 240. BlogGroupProps (props)
-**Defined in:** src/app/pages/blog/BlogGroup.tsx
-**Properties:**
-- blogGroups: Group<BlogPost>[]
-
-#### 241. BlogManagerProps (props)
-**Defined in:** src/app/pages/blog/BlogManager.tsx
-**Properties:**
-
-#### 242. BlogOverviewProps (props)
-**Defined in:** src/app/pages/blog/BlogOverview.tsx
-**Properties:**
-- title: string
-- content: string
-- author: string
-- date: Date
-
-#### 243. BlogPostsProps (props)
-**Defined in:** src/app/pages/blog/BlogPosts.tsx
-**Properties:**
-- platform: 'android' | 'ios'
-- posts: BlogPost[]
-
-#### 244. BlogShareProps (props)
-**Defined in:** src/app/pages/blog/BlogShare.tsx
-**Properties:**
-- blogId: string
-
-#### 245. GroupRendererProps (props)
-**Defined in:** src/app/pages/blog/GroupRenderer.tsx
-**Properties:**
-- groups: JSX.Element[][]
-
-#### 246. NotificationDisplayProps (props)
-**Defined in:** src/app/pages/blog/NotificationDisplay.tsx
-**Properties:**
-- notifications: NotificationData[]
-
-#### 247. ChatPageProps (props)
-**Defined in:** src/app/pages/chat/ChatPage.tsx
-**Properties:**
-- currentUser: User
-- currentChannel: Channel
-- messages: Message[]
-- sendMessage: (text: string) => void
-- switchChannel: (channelId: string) => void
-- optionalProp?: string
-
-#### 248. CollaborationSettingsProps (props)
-**Defined in:** src/app/pages/community/CollaborationSettings.tsx
-**Properties:**
-- onSave: (settings: CollaborationSettingsState) => void
-
-#### 249. CollaborationToolsToolbarProps (props)
-**Defined in:** src/app/pages/community/CollaborationToolsToolbar.tsx
-**Properties:**
-- projectManagementOptions: string[]
-- documentManagementOptions: string[]
-- taskManagementOptions: string[]
-- calendarOptions: string[]
-- analyticsOptions: string[]
-- securityOptions: string[]
-- integrationOptions: string[]
-- userManagementOptions: string[]
-- mobileAppOptions: string[]
-- accessibilityOptions: string[]
-- supportOptions: string[]
-- localizationOptions: string[]
-- gamificationOptions: string[]
-
-#### 250. CommunityProjectsPageProps (props)
-**Defined in:** src/app/pages/community/CommunityProjectsPage.tsx
-**Properties:**
-- community: CommunityData
-
-#### 251. ConfirmationPageProps (props)
-**Defined in:** src/app/pages/confirmation/ConfirmationPage.tsx
-**Properties:**
-- title: string
-- message: string
-- onConfirm: () => void
-- children?: ReactNode
-
-#### 252. ContentCreateionPageProps (props)
-**Defined in:** src/app/pages/content/ContentCreationPage.tsx
-**Properties:**
-- onComplete: () => void
-
-#### 253. CourseLearningPhaseProps (props)
-**Defined in:** src/app/pages/course/CourseLearningPhase.tsx
-**Properties:**
-- onSubmit: (data: any) => void
-- setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>
-- userData: SnapshotStore<Snapshot<Data<any>, Data<any>>>[]
-
-#### 254. CourseSetupPhaseProps (props)
-**Defined in:** src/app/pages/course/CourseSetupPhase.tsx
-**Properties:**
-- onSubmit: (data: any) => void
-- setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>
-- userData: SnapshotStore<Snapshot<Data, Data>>[]
-
-#### 255. CommonCommentProps (props)
-**Defined in:** src/app/pages/dashboards/BugComments.tsx
-**Properties:**
-- comments: Comment[]
-- onAddComment: (text: string, replyTo: string | null) => void
-- onEditComment: (id: string, text: string) => void
-- onDeleteComment: (id: string) => void
-- onReplyToComment: (commentId: string) => void
-- onEditReply: (id: string, text: string) => void
-- onDeleteReply: (id: string) => void
-
-#### 256. BugFilterProps (props)
-**Defined in:** src/app/pages/dashboards/BugFilter.tsx
-**Properties:**
-- filters: any
-- eventId: string
-- onFilterChange: (filters: any) => void
-
-#### 257. BugListProps (props)
-**Defined in:** src/app/pages/dashboards/BugList.tsx
-**Properties:**
-- bugs: DetailsItem<Data>[]
-- onClick: (bug: DetailsItem<Data>) => void
-
-#### 258. BugSortProps (props)
-**Defined in:** src/app/pages/dashboards/BugSort.tsx
-**Properties:**
-- sortOptions: {
-- sortBy: string
-- sortOrder: string
-- sortContentBy: string
-
-#### 259. ChatDashboardProps (props)
-**Defined in:** src/app/pages/dashboards/ChatDashboard.tsx
-**Properties:**
-- aquaConfig: AquaConfig
-
-#### 260. CollaborationPanelProps (props)
-**Defined in:** src/app/pages/dashboards/CollaborationPanel.tsx
-**Properties:**
-- onClose: () => void
-
-#### 261. DashboardLoaderProps (props)
-**Defined in:** src/app/pages/dashboards/DashboardLoader.tsx
-**Properties:**
-- dashboardConfig: {
-- title: string
-- content: React.ReactNode
-
-#### 262. DesignDashboardBaseProps (props)
-**Defined in:** src/app/pages/dashboards/DesignDashboard.tsx
-**Properties:**
-- colors: string[]
-- onColorChange?: (newColors: string[]) => void
-- frontendStructure?: FrontendStructure
-- backendStructure?: any
-
-#### 263. EnhancedTreeViewProps (props)
-**Defined in:** src/app/pages/dashboards/EnhancedTreeView.tsx
-**Properties:**
-- onFileSelect?: (file: FileTreeNode) => void
-- onDirectorySelect?: (directory: FileTreeNode) => void
-- initialPath?: string
-
-#### 264. RealTimeDashboardPageProps (props)
-**Defined in:** src/app/pages/dashboards/RealTimeDashboardPage.tsx
-**Properties:**
-- user: User
-
-#### 265. VisualFlowDashboardProps (props)
-**Defined in:** src/app/pages/dashboards/VisualFlowDashboard.tsx
-**Properties:**
-- user: User
-- searchQuery: string
-
-#### 266. AndroidSpecificContentProps (props)
-**Defined in:** src/app/pages/development/AndroidSpecificContent.tsx
-**Properties:**
-- additionalFeatures?: Feature[]
-
-#### 267. EmailConfirmationPhaseComponentProps (props)
-**Defined in:** src/app/pages/development/EmailConfirmationPhaseComponent.tsx
-**Properties:**
-- onSuccess: (condition: boolean, dynamicData: any) => void
-
-#### 268. PhaseProps (props)
-**Defined in:** src/app/pages/development/PlanningPhase.tsx
-**Properties:**
-- onSubmit: () => void
-
-#### 269. ChangePasswordFormProps (props)
-**Defined in:** src/app/pages/forms/ChangePasswordForm.tsx
-**Properties:**
-- onChangePassword: (currentPassword: string, newPassword: string, user: User) => Promise<void>
-- onSuccess: () => void
-
-#### 270. DynamicFormProps (props)
-**Defined in:** src/app/pages/forms/DynamicForm.tsx
-**Properties:**
-- onSubmit: (data: any) => void
-- setCurrentSubPhase: React.Dispatch<React.SetStateAction<AppDevelopmentPhase>>
-- userData: TempUserData
-
-#### 271. FormControlProps (props)
-**Defined in:** src/app/pages/forms/FormControl.tsx
-**Properties:**
-- children: React.ReactNode
-- fullWidth?: boolean
-- formID: RefObject<HTMLFormElement>
-
-#### 272. FormInputProps (props)
-**Defined in:** src/app/pages/forms/formBuilder/FormInput.tsx
-**Properties:**
-- label: string
-- name: string
-- value: string
-- onChange: (name: string, value: string) => void
-
-#### 273. FormUIProps (props)
-**Defined in:** src/app/pages/forms/FormUI.tsx
-**Properties:**
-- onSubmit: (userIdea: string) => void
-- ComponentActions: typeof ComponentActions
-
-#### 274. LoginFormProps (props)
-**Defined in:** src/app/pages/forms/LoginForm.tsx
-**Properties:**
-- setUsername: Dispatch<SetStateAction<string>>
-- setPassword: Dispatch<SetStateAction<string>>
-- onSubmit?: (
-- username: string,
-- password: string,
-- onSuccess: () => void,
-- onError: (error: string) => void
-- onDashboardConfigReceived?: (dashboardConfig: any) => void
-
-#### 275. PreviewFormProps (props)
-**Defined in:** src/app/pages/forms/PreviewForm.tsx
-**Properties:**
-- initialContent: string
-- formData: FormData
-
-#### 276. ProjectCreationFormProps (props)
-**Defined in:** src/app/pages/forms/ProjectCreationForm.tsx
-**Properties:**
-- onSubmit?: (project: ClientProjectEntity) => void
-- onCancel?: () => void
-- initialData?: Partial<ClientProjectEntity>
-- teams?: Array<{ id: string
-- name: string
-
-#### 277. UserSettingsFormProps (props)
-**Defined in:** src/app/pages/forms/UserSettingsForm.tsx
-**Properties:**
-- onSubmit: (duration: number) => void
-
-#### 278. DropdownMenuProps (props)
-**Defined in:** src/app/pages/forms/formElement/DropdownMenu.tsx
-**Properties:**
-- items: MenuItem[]
-
-#### 279. TextInputProps (props)
-**Defined in:** src/app/pages/forms/formElement/TextInput.tsx
-**Properties:**
-- value: string
-- onChange: (value: string) => void
-
-#### 280. CommonLayoutProps (props)
-**Defined in:** src/app/pages/layouts/CommonLayout.tsx
-**Properties:**
-- children: React.ReactNode
-
-#### 281. LayoutProps (props)
-**Defined in:** src/app/pages/layouts/Layouts.tsx
-**Properties:**
-- children: React.ReactNode
-
-#### 282. FeatureImplementationSubPhaseProps (props)
-**Defined in:** src/app/pages/onboarding/FeatureImplementationSubPhase.tsx
-**Properties:**
-- onSubmit: (data: any) => void
-- userData: TempUserData
-
-#### 283. QuestionnairePageProps (props)
-**Defined in:** src/app/pages/onboarding/QuestionnairePage.tsx
-**Properties:**
-- title: string
-- description: string
-- questions: Question[]
-- onSubmit: (userResponses: any) => void
-
-#### 284. RegistrationPhaseProps (props)
-**Defined in:** src/app/pages/onboarding/RegistrationPhase.tsx
-**Properties:**
-- onSuccess: (userData: UserData) => void
-
-#### 285. RegistrationPhaseComponentProps (props)
-**Defined in:** src/app/pages/onboarding/RegistrationPhaseComponent.tsx
-**Properties:**
-- onSuccess: (userData?: any) => void
-- onPhaseComplete?: (phaseData: any) => void
-- currentPhase?: PhaseDefault
-- onNext?: () => void
-- onPrevious?: () => void
-
-#### 286. StepProps (props)
-**Defined in:** src/app/phases/steps/steps.tsx
-**Properties:**
-- title: string
-- content?: JSX.Element
-- onSubmit: (event: React.MouseEvent<HTMLButtonElement>) => void
-- tradeData?: TradeData
-- onConfirm?: () => void
-- message?: string
-
-#### 287. CryptoEnthusiastCalendarProps (props)
-**Defined in:** src/app/pages/personas/CryptoEnthusiastCalendar.tsx
-**Properties:**
-
-#### 288. CryptoEnthusiastDocumentsProps (props)
-**Defined in:** src/app/pages/personas/CryptoEnthusiastDocuments.tsx
-**Properties:**
-- shareDocument: (document: DocumentOptions) => void
-- collaborationDocuments: DocumentOptions[]
-
-#### 289. ProfessionalTraderAlertsProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderAlerts.tsx
-**Properties:**
-
-#### 290. ProfessionalTraderCalendarProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderCalendar.tsx
-**Properties:**
-
-#### 291. ProfessionalTraderCollaborationProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderCollaboration.tsx
-**Properties:**
-
-#### 292. ProfessionalTraderContentManagementProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderContentManagement.tsx
-**Properties:**
-
-#### 293. ProfessionalTraderDashboardProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderDashboard.tsx
-**Properties:**
-
-#### 294. ProfessionalTraderProfileProps (props)
-**Defined in:** src/app/pages/personas/ProfessionalTraderProfile.tsx
-**Properties:**
-
-#### 295. ProjectManagerPersonaProps (props)
-**Defined in:** src/app/pages/personas/ProjectManagerPersona.tsx
-**Properties:**
-- teams: TeamDocument[]
-
-#### 296. UserJourneyManagerProps (props)
-**Defined in:** src/app/pages/personas/UserJourneyManager.tsx
-**Properties:**
-- user: User
-- phaseName: PhaseOptions
-
-#### 297. UserQuestionnaireProps (props)
-**Defined in:** src/app/pages/personas/UserQuestionnaire.tsx
-**Properties:**
-- onSubmit: (userResponses: any) => void
-- onComplete: (userResponses: any) => Promise<void>
-- onSubmitProfile: (profileData: any) => void // Add a new prop for submitting profile
-- onIdeaSubmission: (ideaData: any) => void // Add a new prop for submitting ideas
-
-#### 298. PersonaPanelProps (props)
-**Defined in:** src/app/pages/personas/recruiterDashboard/PersonaPanel.tsx
-**Properties:**
-- persona: string
-- contentProps: typeof DynamicContentProps
-- personaData: PersonaData
-- userPersonas: string[]
-- businessPersonas: string[]
-- socialPersonas: string[]
-- selectedPersona: string
-- onSelectPersona: (persona: PersonaTypeEnum) => void
-
-#### 299. FilterTasksRequestProps (props)
-**Defined in:** src/app/pages/searches/FilterTasksRequest.tsx
-**Properties:**
-- options: SearchOptions
-- onSubmit: (filters: any[]) => void
-
-#### 300. SearchComponentProps (props)
-**Defined in:** src/app/pages/searches/SearchComponent.tsx
-**Properties:**
-- searchQuery: string
-- documentData: DocumentData<Data>[]
-- componentSpecificData: {
-- id: string | number
-- title: string
-- description: string
-- source: string
-
-#### 301. SearchItemProps (props)
-**Defined in:** src/app/pages/searches/SearchItems.tsx
-**Properties:**
-- userId: string
-- query: string
-- toLowerCase?: () => string
-
-#### 302. TeamCreationConfirmationPageProps (props)
-**Defined in:** src/app/prompts/TeamCreationConfirmationPage.tsx
-**Properties:**
-- teamData?: TeamData
-- onConfirm: () => void
-- onCancel: () => void
-
-#### 303. TeamCreationQuestionnaireProps (props)
-**Defined in:** src/app/pages/teams/TeamCreationQuestionnaire.tsx
-**Properties:**
-- onSubmit: (teamResponses: any) => void
-
-#### 304. PaymentProcessProps (props)
-**Defined in:** src/app/payment/PaymentProcess.tsx
-**Properties:**
-- onSubmit: (payload: any) => void
-
-#### 305. EnhancedThemeProviderProps (props)
-**Defined in:** src/app/platform/styles/EnhancedThemeContextType.tsx
-**Properties:**
-- children: React.ReactNode
-- userRole: string
-- initialTheme?: Theme
-
-#### 306. AnalyzeDataProps (props)
-**Defined in:** src/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData.tsx
-**Properties:**
-- projectId: string
-
-#### 307. RefactoringRebrandingPhaseProps (props)
-**Defined in:** src/app/projects/RefactoringRebrandingPhase.tsx
-**Properties:**
-
-#### 308. TaskManagementManagerProps (props)
-**Defined in:** src/app/projects/TaskManagementPhase.tsx
-**Properties:**
-- taskId: () => string
-- newTitle: () => string
-- task: Task
-
-#### 309. TeamBuildingPhaseProps (props)
-**Defined in:** src/app/projects/TeamBuildingPhase.tsx
-**Properties:**
-- startPhase: () => void
-- endPhase: () => void
-
-#### 310. UpdatedProjectDetailsProps (props)
-**Defined in:** src/app/projects/UpdateProjectDetails.tsx
-**Properties:**
-- projectId: string
-- projectDetails: Project & { status: StatusType | undefined
-
-#### 311. ProjectManagerProps (props)
-**Defined in:** src/app/projects/projectManagement/ProjectManager.tsx
-**Properties:**
-- storeProps: SnapshotStoreProps<ProjectDataManagement>
-
-#### 312. ProjectProgressProps (props)
-**Defined in:** src/app/projects/projectManagement/ProjectProgress.tsx
-**Properties:**
-- projectId: string
-- projectProgress: number
-- onUpdateProgress: () => void
-
-#### 313. ProjectProgressBarProps (props)
-**Defined in:** src/app/projects/projectManagement/ProjectProgressBar.tsx
-**Properties:**
-- projectProgress: number
-- onUpdateProgress: () => void
-
-#### 314. TaskProgressProps (props)
-**Defined in:** src/app/projects/projectManagement/TaskProgress.tsx
-**Properties:**
-- taskProgress: DetailsItem<Data>[]
-- selectedTask: Task
-- newProgress: number
-- onUpdateProgress: (newProgress: number) => void
-- onTaskClick: (task: Task) => void
-- handleTaskClick?: () => void
-
-#### 315. TaskProgressBarProps (props)
-**Defined in:** src/app/projects/projectManagement/TaskProgressBar.tsx
-**Properties:**
-- taskProgress: number
-- onUpdateProgress?: () => void
-
-#### 316. TodoProgressProps (props)
-**Defined in:** src/app/projects/projectManagement/TodoProgress.tsx
-**Properties:**
-- todoProgress: DetailsItem<Data>[]
-- newProgress: number
-- selectedTodo?: Todo
-- onUpdateProgress: (todo: Todo, newProgress: number) => void
-- onTodoClick: (todoId: Todo['id']) => Promise<void>
-
-#### 317. TodoProgressBarProps (props)
-**Defined in:** src/app/projects/projectManagement/TodoProgressBar.tsx
-**Properties:**
-- todoProgress: number
-- onUpdateProgress: () => void
-
-#### 318. PromptSystemProps (props)
-**Defined in:** src/app/prompts/PromptSystem.tsx
-**Properties:**
-- onUserResponse: (response: string) => void
-- documentType: DocumentOptions['documentType']
-- userIdea: DocumentOptions['userIdea']
-
-#### 319. PromptViewerProps (props)
-**Defined in:** src/app/prompts/PromptViewer.tsx
-**Properties:**
-- prompts: Prompt[]
-- children: React.ReactNode
-
-#### 320. AuthComponentProps (props)
-**Defined in:** src/app/server/auth/AuthComponent.tsx
-**Properties:**
-- onSuccess: () => void
-- onSearch: (event: React.FormEvent, searchQuery: string) => void
-
-#### 321. StorageManagerProps (props)
-**Defined in:** src/app/server/database/storage/StorageManager.tsx
-**Properties:**
-- key: string
-
-#### 322. DynamicErrorBoundaryProps (props)
-**Defined in:** src/app/shared/DynamicErrorBoundary.tsx
-**Properties:**
-- children: ReactNode
-
-#### 323. ErrorBoundaryProps (props)
-**Defined in:** src/app/shared/ErrorBoundary.tsx
-**Properties:**
-- children: ReactNode
-
-#### 324. ErrorBoundaryContextProps (props)
-**Defined in:** src/app/shared/ErrorBoundaryProvider.tsx
-**Properties:**
-- ErrorHandler: ErrorHandlerType | null
-
-#### 325. ErrorBoundaryProviderProps (props)
-**Defined in:** src/app/shared/ErrorBoundaryProvider.tsx
-**Properties:**
-- ErrorHandler: ErrorHandlerType | null
-- children: ReactNode
-
-#### 326. SnapshotContainerProps (props)
-**Defined in:** src/app/snapshots/SnapshotContainerComponent.tsx
-**Properties:**
-- target: Target
-
-#### 327. FeatureProviderProps (props)
-**Defined in:** src/app/state/context/FeatureContext.tsx
-**Properties:**
-- children: ReactNode
-
-#### 328. SearchContextProps (props)
-**Defined in:** src/app/state/context/SearchContext.tsx
-**Properties:**
-- searchQuery: string
-- contextSearchQuery: string
-- updateSearchQuery: (query: string) => void
-
-#### 329. StoreProviderProps (props)
-**Defined in:** src/app/state/context/UIContext.tsx
-**Properties:**
-- children: ReactNode
-
-#### 330. VideoViewerProps (props)
-**Defined in:** src/app/state/redux/sagas/VideoViewer.tsx
-**Properties:**
-- videoUrl: string
-
-#### 331. TodoItemProps (props)
-**Defined in:** src/app/todos/TodoItem.tsx
-**Properties:**
-- todo: Todo
-- index: number
-- moveTodo: (dragIndex: number, hoverIndex: number) => void
-
-#### 332. TraderCallsProps (props)
-**Defined in:** src/app/trading/Trades.tsx
-**Properties:**
-- onSelectPlatform: (platform: TradingPlatform | null) => void
-- selectedPlatform: TradingPlatform | null
-
-#### 333. DynamicTextAreaProps (props)
-**Defined in:** src/app/ts/DynamicTextArea.tsx
-**Properties:**
-- value: string
-- onChange: (value: string) => void
-- placeholder?: string
-- name?: any
-- required?: boolean
-
-#### 334. ScheduleEventModalProps (props)
-**Defined in:** src/app/ts/ScheduleEventModal.tsx
-**Properties:**
-- visible: boolean
-- onCancel: () => void
-- eventId?: string
-
-#### 335. ClipboardProps (props)
-**Defined in:** src/app/ts/clipboard.tsx
-**Properties:**
-- onCopy?: (content: string) => void
-- onPaste?: (content: string) => void
-
-#### 336. DataPreviewProps (props)
-**Defined in:** src/app/users/DataPreview.tsx
-**Properties:**
-- data: UserData
-
-#### 337. IdeaFormProps (props)
-**Defined in:** src/app/users/userJourney/IdeaCreationPhase.tsx
-**Properties:**
-- onSubmit: (idea: any) => void
-- onTransition: (idea: any) => void
-- duration: number
-
-#### 338. ControlPanelProps (props)
-**Defined in:** src/utils/ControlPanel.tsx
-**Properties:**
-- speed: number
-- onChangeSpeed: (newSpeed: number) => void
-- container: NotificationContextProps
-
-#### 339. DynamicNamingConventionsProps (props)
-**Defined in:** src/utils/DynamicNamingConventions.tsx
-**Properties:**
-- dynamicContent?: boolean
-
-#### 340. ReportingProps (props)
-**Defined in:** src/utils/Reporting.tsx
-**Properties:**
-- reports: Report[]
-
-#### 341. CallButtonProps (props)
-**Defined in:** src/utils/web3/CallButton.tsx
-**Properties:**
-- onClick: () => void
-- label: string
-
-#### 342. DAppAdapterProps (props)
-**Defined in:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
-**Properties:**
-- title: string
-- description: string
-- className?: string
-- style?: React.CSSProperties
-- userId: string
-- userName: string
-- data: any[]
-- fetchData: () => void
-- onClick: () => void
-- onHover: (isHovered: boolean) => void
-- enableFeatureA: boolean
-- enableFeatureB: boolean
-- onPluginLoaded: (plugins: AppPlugin[]) => void
-- onPluginError?: (error: PluginError) => void
-- onPluginInitialized?: (plugin: AppPlugin) => void
-- customComponent?: React.ReactNode
-- web3Provider: Web3Provider
-- accountAddress: string
-- pluginConfig?: PluginManagerConfig
-- additionalProp1?: string
-- additionalProp2?: number
-
-#### 343. AdapterContentProps (props)
-**Defined in:** src/utils/web3/dAppAdapter/AdapterContent.tsx
-**Properties:**
-- selectedDevice: string
-- animationSettings: AnimatedComponentProps[]
-- handleAnimationSettingsChange: (settings: AnimatedComponentProps[]) => void
-- handleBrandingSwatchesChange: (swatches: ColorSwatchProps[]) => void
-- headerElements: ScreenElementProps[]
-- footerElements: ScreenElementProps[]
-- panelElements: ScreenElementProps[]
-- buttonElements: ScreenElementProps[]
-- layoutElements: ScreenElementProps[]
-- linkElements: ScreenElementProps[]
-- cardElements: ScreenElementProps[]
 
 ### Custom Hooks
 
@@ -4628,9 +2335,10 @@
 
 #### 2. src/app/api/ApiCalendar.ts
 - async fetchCalendarEvent(): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
-- async addCalendarEvent(newEvent: Omit<SimpleCalendarEvent, "id">): Promise<void>
+- async addCalendarEvent(newEvent: Omit<SimpleCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id">): Promise<void>
 - async removeCalendarEvent(eventId: string): Promise<void>
-- async updateCalendarEvent(eventId: string, newTitle: string): Promise<void>
+- async updateCalendarEvent(eventId: string,
+    newTitle: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void>
 - async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
 - async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>
 - async fetchCalendarEvents(): Promise<any>
@@ -4641,13 +2349,9 @@
 #### 3. src/app/api/ApiClient.ts
 - createHeaders(): typeof HeadersConfig
 - async get(url: string,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages): Promise<AxiosResponse<T>>
+    options: ApiRequestOptions<TMessages> = {}): Promise<AxiosResponse<T>>
 - async delete(url: string,
-    config?: AxiosRequestConfig,
-    successMessageId?: keyof TMessages,
-    errorMessageId?: keyof TMessages): Promise<AxiosResponse<T>>
+    options: ApiRequestOptions<TMessages> = {}): Promise<AxiosResponse<T>>
 - async getRequestHandeler(): any
 - async fetchClientDetails(clientId: number): Promise<any>
 - async updateClientDetails(clientId: number,
@@ -4683,16 +2387,16 @@
 
 #### 5. src/app/api/ApiCommunicationService.ts
 - getItem("accessToken"): null;
-      const userId =
-        typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-      const appVersion = "1.0.0";
+    const userId =
+      typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+    const appVersion = "1.0.0";
 
-      const headers = (this.createHeaders
-        ? this.createHeaders(token, userId, appVersion)
-        : this.config.headers) as Record<string, string>;
+    const headers = (this.createHeaders
+      ? this.createHeaders(token, userId, appVersion)
+      : this.config.headers) as Record<string, string>;
 
-      // Send snapshot
-      await internalApiService.post(saveSnapshotEndpoint, snapshotData,
+    // Send snapshot
+    await internalApiService.post(saveSnapshotEndpoint, snapshotData,
 - async fetchSnapshotById(snapshotId: string): Promise<
   SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
 >
@@ -4704,17 +2408,24 @@
 - createRequestHeaders(token: string): any
 **Exports:** ApiCommunicationService, useApiCommunication, ApiCommunicationHook
 
-#### 6. src/app/api/ApiConfig.ts
+#### 6. src/app/api/ApiConfigManager.ts
+- getEndpointStats(): any
+- findEndpointByPath(path: string): any
+- getEndpointUrl(category: T,
+    endpointKey: keyof EndpointConfigurations[T],
+    params?: Record<string, any>): string
+- getCategoryUrls(category: T,
+    sampleParams?: Record<string, any>): Record<string, string>
+**Exports:** 
+
+#### 7. src/app/api/ApiConfigService.ts
 - getEndpoint(category: T,
     endpointKey: EndpointKey<T>): any
 - getCategories(): EndpointCategory[]
 - getEndpointsForCategory(category: T): EndpointKey<T>[]
+- getConfigurations(): EndpointConfigurations
+- getEndpoints(): Endpoints
 **Exports:** ApiConfig
-
-#### 7. src/app/api/ApiConfigManager.ts
-- getEndpointStats(): any
-- findEndpointByPath(path: string): any
-**Exports:** 
 
 #### 8. src/app/api/ApiDashboard.ts
 - async loadDashboardState(): any
@@ -4755,8 +2466,9 @@
 #### 12. src/app/api/ApiDrawing.ts
 - handleDrawingApiErrorAndNotify(error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof DrawingNotificationMessages): any
-**Exports:** handleDrawingApiErrorAndNotify, fetchDrawing, fetchDrawingById, createDrawing, updateDrawing, saveDrawingToDatabase, deleteDrawing
+  errorMessageId: keyof DrawingNotificationMessages,
+  additionalData?: any  // Add optional parameter): any
+**Exports:** handleDrawingApiErrorAndNotify, updateDrawing, fetchDrawing, fetchDrawingById, createDrawing, saveDrawingToDatabase, deleteDrawing
 
 #### 13. src/app/api/ApiEvent.ts
 - handleEventApiErrorAndNotify(error: AxiosError<unknown>,
@@ -4812,9 +2524,13 @@
 **Exports:** createMetadataHeaders
 
 #### 20. src/app/api/ApiNote.ts
+- handleNoteApiErrorAndNotify(error: AxiosError<unknown>,
+  defaultMessage: string,
+  errorType: string,
+  additionalData?: any): any
 - async fetchNoteByIdAPI(noteId: number,
   dataCallback: (data: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>): any
-**Exports:** fetchNoteByIdAPI, addNote, updateNote, archiveNote, restoreNote, moveNote, mergeNotes, splitNote, addNoteAPI, updateNoteAPI, deleteNoteAPI, listAllNotesAPI, searchNotesAPI, filterNotesAPI, searchNotes, bulkUpdateNotesAPI, bulkDeleteNotesAPI, exportNotesAPI, importNotesAPI, getNoteTagsAPI, addNoteTagAPI, removeNoteTagAPI, getNoteVersionsAPI, restoreNoteVersionAPI, getNoteCollaboratorsAPI, shareNoteAPI, unshareNoteAPI, addNoteCollaboratorAPI, removeNoteCollaboratorAPI, getNoteCommentsAPI, addNoteCommentAPI, updateNoteCommentAPI, deleteNoteCommentAPI, getNoteAnalyticsAPI, getNoteTemplatesAPI, createNoteFromTemplateAPI
+**Exports:** handleNoteApiErrorAndNotify, fetchNoteByIdAPI, addNote, updateNote, archiveNote, restoreNote, moveNote, mergeNotes, splitNote, addNoteAPI, updateNoteAPI, deleteNoteAPI, listAllNotesAPI, searchNotesAPI, filterNotesAPI, searchNotes, bulkUpdateNotesAPI, bulkDeleteNotesAPI, exportNotesAPI, importNotesAPI, getNoteTagsAPI, addNoteTagAPI, removeNoteTagAPI, getNoteVersionsAPI, restoreNoteVersionAPI, getNoteCollaboratorsAPI, shareNoteAPI, unshareNoteAPI, addNoteCollaboratorAPI, removeNoteCollaboratorAPI, getNoteCommentsAPI, addNoteCommentAPI, updateNoteCommentAPI, deleteNoteCommentAPI, getNoteAnalyticsAPI, getNoteTemplatesAPI, createNoteFromTemplateAPI
 
 #### 21. src/app/api/ApiStateGovCities.ts
 - async createStateGovCity(newCity: DetailsItem<Data>): any
@@ -4889,7 +2605,7 @@
 - getConfig(): Config
 - getConfigsData(): Config
 - updateConfig(newConfig: Partial<Config>): void
-**Exports:** Config, configManager
+**Exports:** Config, ConfigNotificationMessages, configNotificationMessages, configManager
 
 #### 30. src/app/api/CustomFetchEvent.ts
 - getResponse(): Promise<Response>
@@ -4902,6 +2618,13 @@
 
 #### 32. src/app/api/DatabaseClient.ts
 - getDefaultConfig(): PoolConfig
+- async createDataset(datasetData: any): Promise<any>
+- async getDatasets(): Promise<any[]>
+- async createDatasetsTableIfNotExists(): Promise<void>
+- async getDatasetById(datasetId: string): Promise<any | null>
+- async deleteDataset(datasetId: string): Promise<boolean>
+- async updateDataset(datasetId: string, updates: any): Promise<any | null>
+- async searchDatasets(searchTerm: string, filters?: any): Promise<any[]>
 - async uploadDataset(formData: FormData): Promise<DatasetModel<T, K> | null>
 - async fetchDatasets(): Promise<DatasetModel<T, K>[]>
 - async getDatasetById(datasetId: number): Promise<DatasetModel<T, K> | null>
@@ -5063,116 +2786,122 @@
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 59. src/app/api/documents/generate.ts
+#### 59. src/app/api/datasets/upload/route.ts
+- async GET(request: NextRequest): any
+- GET(request: NextRequest): any
+**Exports:** 
+
+#### 60. src/app/api/documents/generate.ts
 - handler(req: NextApiRequest, res: NextApiResponse): any
 **Exports:** 
 
-#### 60. src/app/api/encrypt.ts
+#### 61. src/app/api/encrypt.ts
 - handler(req, res): any
 **Exports:** 
 
-#### 61. src/app/api/endpointConfigurations.ts
+#### 62. src/app/api/endpointConfigurations.ts
 - createApiConfig(configurations: EndpointConfigurations,
   endpoints: EndpointConfigurations): ApiConfig
-**Exports:** endpointConfigurations, endpoints, apiConfig, createApiConfig, getApiEndpoint, getApiEndpointUrl
+**Exports:** endpointConfigurations, endpoints, apiConfig, createApiConfig, getValidatedEndpoint, getApiEndpoint, getApiEndpointUrl
 
-#### 62. src/app/api/external/auth/route.ts
+#### 63. src/app/api/external/auth/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 63. src/app/api/external/shopify/route.ts
+#### 64. src/app/api/external/shopify/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 64. src/app/api/external/sites/route.ts
+#### 65. src/app/api/external/sites/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 65. src/app/api/externalApiConfig.ts
+#### 66. src/app/api/externalApiConfig.ts
 - getApiInfo(apiName: keyof typeof externalAPIs): any
 **Exports:** wixApi, twitterApi, facebookApi, youtubeApi, stripeApi, githubApi, externalApiInstances, getApiInfo
 
-#### 66. src/app/api/fetchDataAnalysisAPI.ts
+#### 67. src/app/api/fetchDataAnalysisAPI.ts
 - fetchDataAnalysisSaga(): Generator<Effect, void, any>
 - fetchDataAnalysisRequestSaga(): Generator<Effect, void, any>
 - fetchDataAnalysisSuccessSaga(action: ReturnType<typeof DataAnalysisActions.fetchDataAnalysisSuccess>): Generator<Effect, void, any>
 **Exports:** dataAnalysisSagas
 
-#### 67. src/app/api/files/route.ts
+#### 68. src/app/api/files/route.ts
 - async GET(request: NextRequest): any
 - createSecureResponse(data: any, status: number = 200): NextResponse
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 68. src/app/api/generateComponent.ts
+#### 69. src/app/api/generateComponent.ts
 - handler(req: NextApiRequest,
   res: NextApiResponse): any
 **Exports:** 
 
-#### 69. src/app/api/getEndpoint.ts
+#### 70. src/app/api/getEndpoint.ts
 - getEndpoint(endpointPath: string, obj: any): string | undefined
 **Exports:** getEndpoint
 
-#### 70. src/app/api/getSnapshotEndpoint.ts
+#### 71. src/app/api/getSnapshotEndpoint.ts
 - getSnapshotEndpoint(snapshotCategory: SnapshotCategoryType, snapshotId?: string | number): string | EndpointConfig
 **Exports:** 
 
-#### 71. src/app/api/headers/authenticationHeaders.tsx
+#### 72. src/app/api/headers/authenticationHeaders.tsx
 - createAuthenticationHeaders(token: string | null,
   userId: string | null,
   appVersion: string): AuthenticationHeaders
 **Exports:** currentAppVersion, createAuthenticationHeaders
 
-#### 72. src/app/api/headers/cacheHeaders.js
+#### 73. src/app/api/headers/cacheHeaders.js
 - createCacheHeaders(): any
 **Exports:** 
 
-#### 73. src/app/api/headers/contentHeaders.js
+#### 74. src/app/api/headers/contentHeaders.js
 - createContentHeaders(): any
 **Exports:** 
 
-#### 74. src/app/api/headers/requestHeaders.js
+#### 75. src/app/api/headers/requestHeaders.js
 - createRequestHeaders(authToken): any
 **Exports:** 
 
-#### 75. src/app/api/headers/securityHeaders.js
+#### 76. src/app/api/headers/securityHeaders.js
 - createSecurityHeaders(): any
 **Exports:** 
 
-#### 76. src/app/api/processSnapshotData.ts
+#### 77. src/app/api/processSnapshotData.ts
 - getDefaultPermissions(): AppStructurePermissions
 **Exports:** 
 
-#### 77. src/app/api/projects/updateProgress.ts
+#### 78. src/app/api/projects/updateProgress.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 78. src/app/api/service/ApiService.ts
+#### 79. src/app/api/service/ApiService.ts
 - async get(endpointPath: string, config?: AxiosRequestConfig): Promise<T>
 - async getUserProfile(userId: string): Promise<any>
 - async updateUserSettings(userId: string, settings: any): Promise<any>
 **Exports:** 
 
-#### 79. src/app/api/service/ArchiveService.tsx
+#### 80. src/app/api/service/ArchiveService.tsx
+- getCloudStorageStatus(): any
 - async updateSnapshotArchiveStatus(snapshotId: string | number, archiveId: string): Promise<void>
 - getCurrentUser(): string
 **Exports:** ArchiveMetadata, ArchivedSnapshot, archiveSnapshot
 
-#### 80. src/app/api/service/BaseApiService.ts
+#### 81. src/app/api/service/BaseApiService.ts
 - async get(endpointPath: string, config?: AxiosRequestConfig): Promise<T>
 - async delete(endpointPath: string, config?: AxiosRequestConfig): Promise<T>
 **Exports:** 
 
-#### 81. src/app/api/service/BugApiService.tsx
+#### 82. src/app/api/service/BugApiService.tsx
 - async fetchBugs(): Promise<AxiosResponse>
 - async createBug(bugData: any): Promise<AxiosResponse>
 **Exports:** 
 
-#### 82. src/app/api/service/ContentApiService.ts
+#### 83. src/app/api/service/ContentApiService.ts
 - async fetchContentById(contentId: string): Promise<ContentResponseType | null>
 - async fetchContentsByIds(contentIds: string[]): Promise<ContentResponseType[]>
 - async fetchAllContents(params?: ContentFilterParams): Promise<ContentListResponseType>
@@ -5188,23 +2917,23 @@
 - async getContentHistory(contentId: string): Promise<any[]>
 **Exports:** ContentFilterParams, ContentBulkUpdateRequest, ContentExportParams, ContentApiService, contentApiService
 
-#### 83. src/app/api/service/DetailsApiService.ts
+#### 84. src/app/api/service/DetailsApiService.ts
 - async get(endpoint: string = '', config?: any): Promise<T>
 - async delete(endpoint: string = '', config?: any): Promise<T>
 **Exports:** 
 
-#### 84. src/app/api/service/DynamicEventHandlerService.tsx
+#### 85. src/app/api/service/DynamicEventHandlerService.tsx
 - updateUI(details: string): any
 - getClipboardHistory(text: string): any
 - setClipboardHistory(history: string[]): any
 - addToClipboardHistory(text: string): any
 **Exports:** 
 
-#### 85. src/app/api/service/FeedbackService.tsx
+#### 86. src/app/api/service/FeedbackService.tsx
 - getInstance(): FeedbackService
 **Exports:** 
 
-#### 86. src/app/api/service/PhaseService.ts
+#### 87. src/app/api/service/PhaseService.ts
 - async addPhaseAndSync(phase: AppPhase): Promise<void>
 - async updatePhaseAndSync(phaseId: number, updatedPhase: AppPhase): Promise<void>
 - getPhases(): AppPhase[]
@@ -5215,7 +2944,7 @@
 - updatePhase(phaseId: number, updatedPhase: AppPhase): void
 **Exports:** 
 
-#### 87. src/app/api/service/PortfolioService.ts
+#### 88. src/app/api/service/PortfolioService.ts
 - getInstance(): PortfolioService
 - async updateUserPortfolio(userId: string, 
     trade: {
@@ -5250,7 +2979,7 @@
 - getLocalTradeHistory(userId: string, limit: number = 50): TradeActivity[]
 **Exports:** PortfolioAsset, UserPortfolio, TradeActivity, PortfolioPerformance, RebalanceRecommendation, portfolioService, updateUserPortfolio, logTradeActivity
 
-#### 88. src/app/api/service/PriceApiService.ts
+#### 89. src/app/api/service/PriceApiService.ts
 - getInstance(): PriceService
 - async getMarketPrice(symbol: string, currency: string = 'usd'): Promise<number>
 - async getMarketData(symbol: string, currency: string = 'usd'): Promise<MarketPrice>
@@ -5270,7 +2999,7 @@
 - getMarketPrice(symbol: string): Promise<number>
 **Exports:** MarketPrice, PriceHistory, PriceAlert, ExchangeRate, priceService
 
-#### 89. src/app/api/service/SocialMediaIntegrationService.tsx
+#### 90. src/app/api/service/SocialMediaIntegrationService.tsx
 - fetchMessages(platform: SocialMediaPlatform): Promise<any[]>;
   postMessage(platform: SocialMediaPlatform, message: string): Promise<void>;
 }
@@ -5283,31 +3012,36 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - async fetchMessages(platform: SocialMediaPlatform): Promise<any[]>
 **Exports:** socialMediaIntegrationService
 
-#### 90. src/app/api/subscription/route.ts
+#### 91. src/app/api/service/TreeDataService.ts
+- async getTreeData(): Promise<DocumentTree | null>
+- async getEventResponses(eventId: string): Promise<any[]>
+**Exports:** treeDataService
+
+#### 92. src/app/api/subscription/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 91. src/app/api/teams/route.ts
+#### 93. src/app/api/teams/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 92. src/app/api/traverse/route.ts
+#### 94. src/app/api/traverse/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 93. src/app/api/users/route.ts
+#### 95. src/app/api/users/route.ts
 - async GET(request: NextRequest): any
 - GET(request: NextRequest): any
 **Exports:** 
 
-#### 94. src/app/api/videos/AppCacheManagerAPI.ts
+#### 96. src/app/api/videos/AppCacheManagerAPI.ts
 - async updateCache(cacheData: CacheData): Promise<void>
 **Exports:** 
 
-#### 95. src/app/api/videos/VideoAPI.ts
+#### 97. src/app/api/videos/VideoAPI.ts
 - async getVideos(): Promise<Video[]>
 - async addVideo(video: Video): Promise<void>
 - async deleteVideo(videoId: string): Promise<void>
@@ -5316,7 +3050,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - async getPrivacySettings(videoId: string): Promise<PrivacySettings | undefined>
 **Exports:** 
 
-#### 96. src/app/services/AffiliateMarketingService.ts
+#### 98. src/app/services/AffiliateMarketingService.ts
 - getInstance(): AffiliateMarketingService
 - setCommissionRate(rate: number): void
 - getCommissionRate(): number
@@ -5326,55 +3060,56 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - getUserId(): string
 **Exports:** 
 
-#### 97. src/app/services/AppTreeService.ts
-- async getUserIds(): Promise<string[]>
-- async getTree(): any
-- async getTrees(): any
-**Exports:** 
+#### 99. src/app/services/AppTreeService.ts
+- async getTree(): Promise<DocumentTree | null>
+- async comprehensiveSearch(query: string): Promise<
+- searchInAnalysis(analysis: any, query: string): any[]
+- searchInAppTree(appTreeData: any, query: string): any[]
+- async getTreeData(): Promise<DocumentTree | null>
+**Exports:** AppTreeService
 
-#### 98. src/app/services/ChatEventService.ts
+#### 100. src/app/services/ChatEventService.ts
 - getEventsEndpoint(groupId: string, limit: number): string
 - async fetchEvents(groupId: string, limit: number): Promise<ChatEvent[]>
 - async fetchChatEvent(roomId: string): Promise<ChatMessage>
 - async createEvent(groupId: string, eventData: any): Promise<ChatEvent>
 **Exports:** 
 
-#### 99. src/app/services/ConfigurationService.ts
+#### 101. src/app/services/ConfigurationService.ts
 - async getApiKey(): Promise<string>
 - async getAppId(): Promise<string>
 - async getAppDescription(): Promise<string>
 - getDefaultApiConfig(): ApiConfig
+- getEndpoint(category: T,
+    endpointKey: EndpointKey<T>): any
+- getApiConfigService(): ApiConfigService
+- getSimpleInstance(): ConfigurationService
+- getInstance(configurations?: EndpointConfigurations, endpoints?: Endpoints): ConfigurationService
 - getAppName(currentAppName: string): string
 - getPublicDefaultApiConfig(): ApiConfig
-- getInstance(): ConfigurationService
-- async getSystemConfigs(): Promise<ReturnType<typeof createSystemConfigs>>
-- async getUserConfigs(): Promise<typeof UserConfigs>
-- async getUserSettings(): Promise<Record<string, any>>
+- async getSystemConfigs(): Promise < ReturnType < typeof createSystemConfigs >>
+- async getUserConfigs(): Promise < typeof UserConfigs >
+- async getUserSettings(): Promise < Record < string, any >>
 - getSnapshotConfig(): LazyLoadScriptConfigImpl
-- async getCachedSnapshotConfig(): Promise<LazyLoadScriptConfigImpl>
-- async getLazyLoadScriptConfig(): Promise<LazyLoadScriptConfigImpl>
+- getFullApiConfig(): ApiConfig
+- async getCachedSnapshotConfig(): Promise < LazyLoadScriptConfigImpl >
+- async getLazyLoadScriptConfig(): Promise < LazyLoadScriptConfigImpl >
 - getApiConfig(): ApiConfig
 - getCurrentApiConfig(): ApiConfig
 - getApiVersionHeader(): string
 - getDataPath(): string
 - getConfigurationOptions(): ConfigurationOptions
 - updateApiConfig(updatedConfig: Partial<ApiConfig>): void
+- handleApiError(error: any, message: string): void
 **Exports:** RetryConfig, DATA_PATH, ConfigurationService
 
-#### 100. src/app/services/CryptoIntegrationService.ts
+#### 102. src/app/services/CryptoIntegrationService.ts
 - async getPortfolio(userId: number): Promise<CryptoPortfolio>
 - async getMarketData(symbols: string[]): Promise<any>
 - async getProjectPortfolio(userId: number, projectId: number): Promise<CryptoPortfolio &
 **Exports:** TradeRequest, CryptoIntegrationService, cryptoIntegrationService
 
-#### 101. src/app/services/DataAnalysisService.ts
-- async fetchDataAnalysis(): Promise<DataAnalysis[]>
-- async getDataByProjectId(projectId: string): Promise<any>
-- async removeData(tableName: string, id: number | string): Promise<any>
-- async updateData(tableName: string, updateData: any, conditions?: string, params?: any[]): Promise<any>
-**Exports:** 
-
-#### 102. src/app/services/EventService.tsx
+#### 103. src/app/services/EventService.tsx
 - createCustomEvent(id: string,
   title: string,
   description: string,
@@ -5416,7 +3151,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
     useCapture?: boolean): void
 **Exports:** createCustomEvent, eventService
 
-#### 103. src/app/services/FileApiService.tsx
+#### 104. src/app/services/FileApiService.tsx
 - async fetchFiles(): Promise<AxiosResponse>
 - async fetchFile(): Promise<AxiosResponse>
 - async fetchFileFromDatabase(id: string): Promise<AxiosResponse>
@@ -5429,19 +3164,20 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - async getFileType(file: string): Promise<FileType>
 **Exports:** fileApiService
 
-#### 104. src/app/services/FileTreeService.ts
-- searchFiles(tree: FileTreeNode[], 
+#### 105. src/app/services/FileTreeService.ts
+- searchFiles(// ✅ Remove 'static'
+    tree: FileTreeNode[], 
     query: string, 
     searchInContent: boolean = false): FileTreeNode[]
 - getFileContent(filePath: string): string | null
 - getTreeStats(tree: FileTreeNode[]): any
 **Exports:** FileTreeNode, FileTreeService
 
-#### 105. src/app/services/GeolocationService.tsx
+#### 106. src/app/services/GeolocationService.tsx
 - getCurrentLocation(): Promise<GeolocationCoordinates>
 **Exports:** 
 
-#### 106. src/app/services/PresentationService.ts
+#### 107. src/app/services/PresentationService.ts
 - createPresentation(title: string, slides: Slide[]): Presentation
 - updatePresentation(presentation: Presentation,
     title: string,
@@ -5449,19 +3185,26 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - deletePresentation(presentation: Presentation): void
 **Exports:** presentationService
 
-#### 107. src/app/services/TaskService.ts
-- getInstance(): any
+#### 108. src/app/services/TaskService.ts
+- getCacheKey(): string
 - getTaskById(id: string): Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 - fetchTaskData(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 - updateTaskProgress(id: string, progress: Progress): void
 **Exports:** taskService
 
-#### 108. src/app/services/identityService.ts
+#### 109. src/app/services/dataAnalysisService.ts
+- async fetchDataAnalysis(): Promise<DataAnalysis[]>
+- async getDataByProjectId(projectId: string): Promise<any>
+- async removeData(tableName: string, id: number | string): Promise<any>
+- async updateData(tableName: string, updateData: any, conditions?: string, params?: any[]): Promise<any>
+**Exports:** 
+
+#### 110. src/app/services/identityService.ts
 - getUserIdentity(userId: string): any
 - updateUserIdentity(userId: string, updatedData: any): any
 **Exports:** 
 
-#### 109. src/app/services/teamService.ts
+#### 111. src/app/services/teamService.ts
 - fetch(`${this.baseUrl}${endpoint}`, {
         method,
         headers: {
@@ -5483,17 +3226,32 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 
 ### Services & Business Logic
 
-#### 1. src/app/services/NotificationService.tsx
-- eventHandler(eventName: string, eventData: any): any
-**Exports:** eventHandler, logData, NotificationManagerServiceProps
+#### 1. src/app/services/BackgroundService.ts
+- setupBackupRoutine(): void
+- setupPerformanceMonitoring(): void
+**Exports:** BackgroundService
 
-### Data Models
+#### 2. src/app/services/NotificationService.tsx
+- eventHandler(eventName: string, eventData: any): any
+**Exports:** eventHandler, logData, useNotificationManagerService
 
 ## 🔄 Shared Resources
 
 ### Common Types & Interfaces
 
-#### 1. Channel (interface)
+#### 1. NavigationView (type)
+**Defined in:** src/app/interfaces/NavigationManager.tsx
+**Definition:** `| 'projectManagement'
+  | 'socialMedia'
+  | 'dashboard'
+  | 'project-explorer'
+  | 'communication'
+  | 'ideation'
+  | 'creation'
+  | 'launch'
+  | 'analysis'`
+
+#### 2. Channel (interface)
 **Defined in:** src/app/interfaces/chat/Channel.ts
 **Properties:**
 - id: string
@@ -5503,14 +3261,14 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - members: ChannelMember[]
 - messages: ChannelMessage[]
 
-#### 2. ChannelMember (interface)
+#### 3. ChannelMember (interface)
 **Defined in:** src/app/interfaces/chat/Channel.ts
 **Properties:**
 - userId: string
 - username: string
 - role: ChannelRole
 
-#### 3. ChannelMessage (interface)
+#### 4. ChannelMessage (interface)
 **Defined in:** src/app/interfaces/chat/Channel.ts
 **Properties:**
 - messageId: string
@@ -5519,27 +3277,27 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - content: string
 - timestamp: Date
 
-#### 4. DummyCardItemType (type)
+#### 5. DummyCardItemType (type)
 **Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
 **Definition:** `{ type: "file" | "folder" }`
 
-#### 5. OrganizedCardItemType (type)
+#### 6. OrganizedCardItemType (type)
 **Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
 **Definition:** `{ type: "file" | "folder" | "product" | "feedback" }`
 
-#### 6. VisualizationType (type)
+#### 7. VisualizationType (type)
 **Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
 **Definition:** `"line" | "bar" | "table" | "pie"`
 
-#### 7. PromptOption (type)
+#### 8. PromptOption (type)
 **Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
 **Definition:** `{ id: string`
 
-#### 8. PromptType (type)
+#### 9. PromptType (type)
 **Defined in:** src/app/interfaces/chat/CommonInterfaces.ts
 **Definition:** `{ id: string`
 
-#### 9. GroupChat (interface)
+#### 10. GroupChat (interface)
 **Defined in:** src/app/interfaces/chat/GroupChat.ts
 **Properties:**
 - id: number
@@ -5547,13 +3305,13 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - members: TeamMember[]
 - messages: ChatMessage[]
 
-#### 10. FeatureToggle (interface)
+#### 11. FeatureToggle (interface)
 **Defined in:** src/app/interfaces/features/FeatureToggleManager.ts
 **Properties:**
 - feature: string
 - isEnabled: boolean
 
-#### 11. FeatureToggleStore (interface)
+#### 12. FeatureToggleStore (interface)
 **Defined in:** src/app/interfaces/features/FeatureToggleManager.ts
 **Properties:**
 - featureToggles: FeatureToggle[]
@@ -5564,7 +3322,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - fetchFeatureTogglesSuccess: (featureToggles: FeatureToggle[]) => void
 - fetchFeatureTogglesFailure: (error: string) => void
 
-#### 12. TaskHistoryEntry (interface)
+#### 13. TaskHistoryEntry (interface)
 **Defined in:** src/app/interfaces/history/TaskHistoryEntry.tsx
 **Properties:**
 - id: number
@@ -5572,79 +3330,79 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - timestamp: number
 - action: string
 
-#### 13. TaskHistoryStore (interface)
+#### 14. TaskHistoryStore (interface)
 **Defined in:** src/app/interfaces/history/TaskHistoryEntry.tsx
 **Properties:**
 - getTaskHistory: (taskId: number) => Promise<TaskHistoryEntry[]>
 - addTaskHistoryEntry: (taskId: number, action: string) => void
 
-#### 14. CollaborationOptions (interface)
+#### 15. CollaborationOptions (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - id: string
 - name: string
 - description: string
 
-#### 15. TeamCollaborationAnalysis (interface)
+#### 16. TeamCollaborationAnalysis (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - teamId: string
 - collaborationScore: number
 - feedback: string
 
-#### 16. CommunicationOption (interface)
+#### 17. CommunicationOption (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - id: string
 - name: string
 - description: string
 
-#### 17. RealTimeCollaborationTool (interface)
+#### 18. RealTimeCollaborationTool (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - name: string
 - description: string
 
-#### 18. ProjectManagementFeature (interface)
+#### 19. ProjectManagementFeature (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - name: string
 - description: string
 
-#### 19. DataAnalysisTool (interface)
+#### 20. DataAnalysisTool (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - name: string
 - description: string
 - isActive: boolean
 
-#### 20. CommunityEngagementFeature (interface)
+#### 21. CommunityEngagementFeature (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - name: string
 - description: string
 
-#### 21. MonetizationAndIncentiveOption (interface)
+#### 22. MonetizationAndIncentiveOption (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - name: string
 - description: string
 
-#### 22. VisualizationResult (interface)
+#### 23. VisualizationResult (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - id: string
 - type: string
 - data: any
 
-#### 23. Decision (interface)
+#### 24. Decision (interface)
 **Defined in:** src/app/interfaces/options/CollaborationOptions.ts
 **Properties:**
 - id: string
 - decision: string
 - rationale: string
 
-#### 24. Payload (interface)
+#### 25. Payload (interface)
 **Defined in:** src/app/interfaces/payload/payloadTypes.ts
 **Properties:**
 - error: string | undefined
@@ -5673,19 +3431,20 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - optionalData: any
 - data: any
 
-#### 25. AuthenticationProvider (interface)
+#### 26. AuthenticationProvider (interface)
 **Defined in:** src/app/interfaces/provider/AuthenticationProvider.ts
 **Properties:**
 - name: string
 - type: string
+- connected: boolean
 
-#### 26. CustomAuthProvider (interface)
+#### 27. CustomAuthProvider (interface)
 **Defined in:** src/app/interfaces/provider/authProviderInstance.ts
 **Properties:**
 - setPermissions: (permissions: Permission[]) => void
 - userPermissions: Permission[]
 
-#### 27. BrainstormingSettings (interface)
+#### 28. BrainstormingSettings (interface)
 **Defined in:** src/app/interfaces/settings/BrainstormingSettings.ts
 **Properties:**
 - enableBrainstorming: boolean
@@ -5699,14 +3458,14 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - feedbackMechanism: 'anonymous' | 'named' | 'custom'
 - customFeedbackMechanismDetails?: string
 
-#### 28. CalendarDisplaySettings (interface)
+#### 29. CalendarDisplaySettings (interface)
 **Defined in:** src/app/interfaces/settings/CalendarDisplaySettings.tsx
 **Properties:**
 - showAllDayEvents: boolean
 - showWeekends: boolean
 - customSettings: {
 
-#### 29. CollaborationPreferences (interface)
+#### 30. CollaborationPreferences (interface)
 **Defined in:** src/app/interfaces/settings/CollaborationPreferences.ts
 **Properties:**
 - teamBuilding: TeamBuildingSettings
@@ -5715,7 +3474,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - brainstorming: BrainstormingSettings
 - branding: BrandingSettings
 
-#### 30. LearningPreferences (interface)
+#### 31. LearningPreferences (interface)
 **Defined in:** src/app/interfaces/settings/LearningPreferences.ts
 **Properties:**
 - style?: 'visual' | 'auditory' | 'reading' | 'kinesthetic' | 'mixed'
@@ -5730,7 +3489,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - shortTermGoals?: string[]
 - longTermGoals?: string[]
 
-#### 31. MeetingsSettings (interface)
+#### 32. MeetingsSettings (interface)
 **Defined in:** src/app/interfaces/settings/MeetingsSettings.ts
 **Properties:**
 - enableMeetings: boolean
@@ -5745,7 +3504,7 @@ class SocialMediaIntegrationServiceImpl implements SocialMediaIntegrationService
 - meetingNotesEnabled: boolean
 - recordingEnabled: boolean
 
-#### 32. ProjectManagementSettings (interface)
+#### 33. ProjectManagementSettings (interface)
 **Defined in:** src/app/interfaces/settings/ProjectManagementSettings.ts
 **Properties:**
 - enableProjectManagement: boolean

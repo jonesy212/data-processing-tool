@@ -1,6 +1,8 @@
 // MessageEntity.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 
 // Define the actual MessageEntity interface
 interface MessageEntity extends BaseDataEntity {
@@ -46,13 +48,10 @@ type MessageBaseParams = {
   ExcludedFields: MessageExcludedFields;
   IncludedFields: MessageIncludedFields;
 };
-
+type AppMessage = Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>
 export type {
-  MessageEntity,
-  MessageK,
-  MessageMeta,
-  MessageAttachment,
-  MessageExcludedFields,
-  MessageIncludedFields,
-  MessageBaseParams
-};    
+  AppMessage, MessageAttachment, MessageBaseParams, MessageEntity, MessageExcludedFields,
+  MessageIncludedFields, MessageK,
+  MessageMeta
+};
+

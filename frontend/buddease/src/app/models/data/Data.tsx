@@ -6,23 +6,23 @@ import { CommonDetails } from "@/app/components/models/details/CommonDetails";
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { Team } from "@/app/components/teams/Team";
 import {
-    BaseDataEntity,
-    BaseDataRoot,
-    DefaultExcludedFields,
-    DefaultMeta
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta
 } from '@/app/config/BaseConfig';
 import {
-    fetchUserAreaDimensions,
-    UnifiedMetadata,
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
 } from "@/app/config/MetaDataOptions";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import userSettings from "@/app/config/UserSettings";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-    SharedIdentifiers,
-    SharedStatusFlags,
-    SharedTimestamps,
+  SharedIdentifiers,
+  SharedStatusFlags,
+  SharedTimestamps,
 } from "@/app/documents/RelatedProps";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -44,12 +44,12 @@ import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysi
 import { taskService } from "@/app/services/TaskService";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-    Snapshots,
-    SnapshotsArray,
+  Snapshots,
+  SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
-    SnapshotStoreReference,
+  SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
@@ -65,7 +65,6 @@ import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
@@ -81,10 +80,10 @@ import { AxiosResponse } from "axios";
 import { Comment } from "../comments/Comments";
 import FileData from "./FileData";
 import {
-    PriorityTypeEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriptionTypeEnum,
+  PriorityTypeEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriptionTypeEnum,
 } from "./StatusType";
 
 interface SharedRelationshipData<K> {
@@ -92,7 +91,9 @@ interface SharedRelationshipData<K> {
   relatedData?: K[] | undefined;
 }
 
-type CommonRelationship<T extends BaseData<any, any> = any, K extends T = T> = {
+type CommonRelationship<
+  T extends BaseDataEntity,
+  K extends T = T,> = {
   sharedRelationships: SharedRelationshipData<K>;
 };
 
@@ -627,9 +628,16 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
       id: "",
       name: "",
       phases: [],
-      trackFileChanges: (
-        file: FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
-      ): FileData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> => {
+      trackFileChanges: <
+          T extends BaseDataEntity,
+          K extends T = T,
+          Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+          AttachmentType extends Attachment = Attachment,
+          ExcludedFields extends keyof T = never,
+          IncludedFields extends keyof T = keyof T
+      >(
+          file: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      ): FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
         return {
           id: file.id,
           title: file.title,
@@ -688,6 +696,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         (this as typeof coreData.preferences).stroke = newStroke;
         (this as typeof coreData.preferences).fillColor = newFillColor;
       },
+      modules: [],
       refreshUI: () => {},
     },
 
@@ -1132,8 +1141,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         isAllowingSharingWithPublicAndTeamsAndGroups: [],
         isAllowingingSharingWithPublicAndTeams: [],
         isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [],
-        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups:
-          [],
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
         isAllowingSharingWithTeamsAndGroups: [],
         isAllowingSharingingWithPublicAndTeamsAndGroups: [],
         isAllowingSharingWithPublicAndTeams: [],
@@ -1174,6 +1182,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         audioCall: false,
         videoCall: false,
         screenShare: false,
+        inApp: false
       },
       types: {
         mention: false,
@@ -1749,15 +1758,15 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
 };
 
 export type {
-    BaseData,
-    ChildRelationship,
-    CommonRelationship,
-    Data,
-    DataDetails,
-    DataDetailsComponent,
-    DataDetailsProps, DataWithOmittedFields,
-    SharedRelationshipData,
-    TodoSubtasks
+  BaseData,
+  ChildRelationship,
+  CommonRelationship,
+  Data,
+  DataDetails,
+  DataDetailsComponent,
+  DataDetailsProps, DataWithOmittedFields,
+  SharedRelationshipData,
+  TodoSubtasks
 };
 
 // Clean the coreData to replace empty strings with null

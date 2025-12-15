@@ -1,15 +1,30 @@
 // UISlice.ts
-import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { UIActions } from "@/app/actions/UIActions";
-import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { setIsDrawing } from "@/app/state/redux/slices/DrawingSlice";
 import { resetMilestones, resetTrackers } from "@/app/state/redux/slices/TrackerSlice";
 import { CollaborationState } from "@/app/state/redux/slices/CollaborationSlice";
 import { produce } from 'immer';
+import { CollaboratorBaseParams } from '@/app/typings/entities/CollaboratorEntity';
+import {
+  CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields
+} from '@/app/typings/entities/CollaboratorEntity';
 
-// Define interface for UI-related state
+// Create a type alias for the collaboration state with concrete types
+type ConcreteCollaborationState = CollaborationState<CollaboratorEntity,
+  CollaboratorK,
+  CollaboratorMeta,
+  CollaboratorAttachment,
+  CollaboratorExcludedFields,
+  CollaboratorIncludedFields>;
+
 // Define interface for UI-related state
 interface UIState {
   // Layout
@@ -28,16 +43,32 @@ interface UIState {
     y: number;
   };
   isPointerDown: boolean;
+  
+  // Phase Management
+  currentPhase: string | null;
+  previousPhase: string | null;
+  
+  // Notification
+  notification: {
+    message: string;
+    type: string | null;
+  };
+  
+  // Theme & Language
+  selectedTheme: string;
+  selectedLanguage: string;
+  
+  // Collaboration
+  collaborationState: ConcreteCollaborationState | null;
 }
-
-
-
 
 // Define initial state for UI
 const initialState: UIState = {
   isLoading: false,
   error: null,
   showModal: false,
+  currentPage: null,
+  currentLayout: null,
   notification: {
     message: "",
     type: null,
@@ -55,94 +86,115 @@ const initialState: UIState = {
   collaborationState: null
 };
 
+type DraftCollaborationState = WritableDraft<ConcreteCollaborationState>;
+
 // Create UI slice
 export const useUIManagerSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    // Define reducers for UI actions here
-    setLoading: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isLoading = action.payload
-      const { payload } = action;
-      return {
-        ...state,
-        isLoading: payload
-      };
+    // Loading & Error states
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
     },
-    setError: (
-      state,
-      action: PayloadAction<string>
-    ) => {
+    setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-    },
-    setShowModal: (state, action) => {
-      state.showModal = action.payload;
-    },
-    setNotification: (state, action) => {
-      state.notification = action.payload;
     },
     clearError: (state) => {
       state.error = null;
+    },
+    
+    // Modal & Notification
+    setShowModal: (state, action: PayloadAction<boolean>) => {
+      state.showModal = action.payload;
+    },
+    setNotification: (
+      state, 
+      action: PayloadAction<{ message: string; type: string | null }>
+    ) => {
+      state.notification = action.payload;
     },
     clearNotification: (state) => {
       state.notification.message = "";
       state.notification.type = null;
     },
-    setCurrentPhase: (state, action) => {
+    
+    // Layout & Navigation
+    setCurrentPage: (state, action: PayloadAction<string | null>) => {
+      state.currentPage = action.payload;
+    },
+    setCurrentLayout: (state, action: PayloadAction<string | null>) => {
+      state.currentLayout = action.payload;
+    },
+    setIsSidebarOpen: (state, action: PayloadAction<boolean>) => {
+      state.isSidebarOpen = action.payload;
+    },
+    
+    // Theme & Language
+    setSelectedTheme: (state, action: PayloadAction<string>) => {
+      state.selectedTheme = action.payload;
+    },
+    setSelectedLanguage: (state, action: PayloadAction<string>) => {
+      state.selectedLanguage = action.payload;
+    },
+    
+    // Interaction
+    setPointerPosition: (state, action: PayloadAction<{ x: number; y: number }>) => {
+      state.pointerPosition = action.payload;
+    },
+    setIsPointerDown: (state, action: PayloadAction<boolean>) => {
+      state.isPointerDown = action.payload;
+    },
+    getGesturePosition: (state, action: PayloadAction<{ x: number; y: number }>) => {
+      state.pointerPosition = action.payload;
+    },
+    
+    // Phase Management
+    setCurrentPhase: (state, action: PayloadAction<string | null>) => {
       state.currentPhase = action.payload;
     },
-    setPreviousPhase: (state, action) => {
-      state.previousPhase = state.currentPhase;
-      state.currentPhase = action.payload;
+    setPreviousPhase: (state, action: PayloadAction<string | null>) => {
+      state.previousPhase = action.payload;
     },
     resetPhases: (state) => {
       state.currentPhase = null;
       state.previousPhase = null;
     },
     
-
-
-    updateCollaborationState: (
-      state,
-      action: PayloadAction<WritableDraft<CollaborationState>>
-    ) => {
-      state.collaborationState = action.payload;
-
-      state.collaborationState.documents =
-        state.collaborationState.documents.map((doc) => {
-          if (doc.filePath) {
-            return {
-              ...doc,
-              filePath: produce(doc.filePath, (draftPath: any) => {
-                if (draftPath.options.additionalOptions) {
-                  draftPath.options.additionalOptions = [
-                    ...draftPath.options.additionalOptions,
-                  ];
-                }
-              }),
-            };
+    // Collaboration State
+    updateCollaborationState: (state, action: PayloadAction<DraftCollaborationState>) => {
+      const newState = action.payload;
+      
+      // Process documents if they exist
+      if (newState.documents) {
+        newState.documents.forEach((doc) => {
+          const additionalOptions = doc.filePath?.options?.additionalOptions;
+          
+          if (additionalOptions !== undefined && additionalOptions !== null) {
+            // Handle different types of additionalOptions
+            if (Array.isArray(additionalOptions)) {
+              // It's already an array, spread it
+              doc.filePath!.options!.additionalOptions = [...additionalOptions];
+            } else if (typeof additionalOptions === 'string') {
+              // Convert string to array
+              doc.filePath!.options!.additionalOptions = [additionalOptions];
+            } else if (typeof additionalOptions === 'number') {
+              // Convert number to array
+              doc.filePath!.options!.additionalOptions = [additionalOptions];
+            } else {
+              // For any other type, wrap in array
+              doc.filePath!.options!.additionalOptions = [additionalOptions];
+            }
           }
-          return doc;
         });
+      }
+      
+      state.collaborationState = newState;
     },
-
+    // Reset
     resetUI: (state) => {
       Object.assign(state, initialState);
     },
-    getGesterPosition: (
-      state,
-      action: PayloadAction<{ x: 0; y: 0 }>
-    ) => {
-      const { payload } = action;
-      // Update the pointer position
-      state.pointerPosition = { x: payload.x, y: payload.y };
-      return state;
-    },
-
-    // You can also include additional UI-related actions as needed
   },
 });
 
@@ -150,14 +202,23 @@ export const useUIManagerSlice = createSlice({
 export const {
   setLoading,
   setError,
+  clearError,
   setShowModal,
   setNotification,
-  clearError,
   clearNotification,
+  setCurrentPage,
+  setCurrentLayout,
+  setIsSidebarOpen,
+  setSelectedTheme,
+  setSelectedLanguage,
+  setPointerPosition,
+  setIsPointerDown,
+  getGesturePosition,
   setCurrentPhase,
   setPreviousPhase,
   resetPhases,
-  updateCollaborationState
+  updateCollaborationState,
+  resetUI,
 } = useUIManagerSlice.actions;
 
 // Export the reducer for the UI slice
@@ -167,31 +228,61 @@ export const uiReducer = useUIManagerSlice.reducer;
 export const useUIManager = () => {
   const dispatch = useDispatch();
 
-
-  const updateCollaborationState = (state: CollaborationState) => {
-    dispatch(UIActions.updateCollaborationState(state));
-  }
+  const updateCollaborationState = (state: DraftCollaborationState) => {
+    dispatch(useUIManagerSlice.actions.updateCollaborationState(state));
+  };
+  
+  const setLoading = (isLoading: boolean) => {
+    dispatch(useUIManagerSlice.actions.setLoading(isLoading));
+  };
+  
+  const setError = (error: string) => {
+    dispatch(useUIManagerSlice.actions.setError(error));
+  };
+  
+  const clearError = () => {
+    dispatch(useUIManagerSlice.actions.clearError());
+  };
+  
+  const setCurrentPhase = (phase: string | null) => {
+    dispatch(useUIManagerSlice.actions.setCurrentPhase(phase));
+  };
+  
+  const setPreviousPhase = (phase: string | null) => {
+    dispatch(useUIManagerSlice.actions.setPreviousPhase(phase));
+  };
+  
+  const resetPhases = () => {
+    dispatch(useUIManagerSlice.actions.resetPhases());
+  };
+  
   // Define UI-related actions
   const stopDrawing = () => {
     // Dispatch actions from DrawingSlice to reset drawing-related state properties
     dispatch(
       UIActions.resetDrawingState({
-        drawing: [], // Example: Array of drawings
-        shapes: [], // Example: Array of shapes
-        currentShape: null, // Example: Current selected shape
-        selectedShapes: [], // Example: Array of selected shapes
+        drawing: [],
+        shapes: [],
+        currentShape: null,
+        selectedShapes: [],
       })
     );
-    dispatch(resetTrackers()); // Reset trackers if needed
-    dispatch(resetMilestones()); // Reset milestones if needed
-
-    // Dispatch action from DrawingSlice to set isDrawing to false
+    dispatch(resetTrackers());
+    dispatch(resetMilestones());
     dispatch(setIsDrawing(false));
-
-    // Perform any other necessary actions specific to your UI
   };
 
   // Return UI-related actions
-  return { stopDrawing };
+  return { 
+    stopDrawing,
+    updateCollaborationState,
+    setLoading,
+    setError,
+    clearError,
+    setCurrentPhase,
+    setPreviousPhase,
+    resetPhases,
+  };
 };
-export type { UIState, produce };
+
+export type { UIState, ConcreteCollaborationState };

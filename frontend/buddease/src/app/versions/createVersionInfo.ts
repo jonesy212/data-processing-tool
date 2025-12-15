@@ -1,25 +1,24 @@
 // createVersionInfo.ts
 import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { backendStructure } from '@/app/server/database/BackendStructure';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields, DefaultSnapshotTypes } from '@/app/typings/entities/SnapshotEntity'
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
+import { DefaultSnapshotTypes, SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
 import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, default as VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
-import { data } from "@/app/snapshots/SnapshotWithCriteria";
 
 const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 

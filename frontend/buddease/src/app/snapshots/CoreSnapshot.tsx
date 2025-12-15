@@ -5,15 +5,15 @@ import { ChatRoom } from '@/app/communications/ChatRoom';
 import { Sender } from '@/app/components/communications/CommunicationPage';
 import { Task } from '@/app/components/models/tasks/Task';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Data } from '@/app/models/data/Data'
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
+import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotBase, SnapshotData } from ".";
@@ -23,13 +23,14 @@ import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, Defaul
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import {
-    SnapshotEquality,
-    Snapshots,
-    SnapshotsArray
+  SnapshotEquality,
+  Snapshots,
+  SnapshotsArray
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
@@ -41,10 +42,6 @@ import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { User } from "@/app/users/User";
 import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
-import {
-    SnapshotRelationships,
-} from "./SnapshotData";
-import { SnapshotInitialization } from "./SnapshotInitialization";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotMethods } from "./SnapshotMethods";
 import { default as SnapshotStore } from "./SnapshotStore";
@@ -53,7 +50,6 @@ import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
 import { InitializedDataStore } from "./SnapshotStoreOptions";
 import { SnapshotCRUD } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { TagsRecord } from '@/app/models/tracker/Tag';
 
 interface CoreSnapshot<
   T extends BaseDataEntity = BaseDataRoot,

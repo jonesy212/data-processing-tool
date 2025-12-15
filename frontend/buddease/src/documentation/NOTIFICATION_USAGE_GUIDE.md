@@ -186,6 +186,7 @@ Type	Usage	Example Message
 🟡 WARNING	Risk or incomplete action	“Network unstable — retrying…”
 🔵 INFO	General system updates	“Fetching latest data…”
 🧩 Example Notification Definition
+
 enum NotificationTypeEnum {
   SUCCESS = "SUCCESS",
   ERROR = "ERROR",

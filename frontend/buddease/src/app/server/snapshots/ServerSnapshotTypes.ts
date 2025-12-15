@@ -1,8 +1,10 @@
 // ServerSnapshotTypes.ts
 // Server-specific types and interfaces
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface ServerSnapshotConfig<
   T extends BaseDataEntity = BaseDataRoot,

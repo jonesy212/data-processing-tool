@@ -1,5 +1,5 @@
 // AppDevelopmentPhase.tsx
-import { useAuth } from "@/app/auth/AuthContext";
+import { useAuth } from "@/app/auth/context/AuthContext";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import FeatureImplementationSubPhase from "@/app/pages/onboarding/FeatureImplementationSubPhase";
 import InitialSetupSubPhase from "@/app/pages/onboarding/InitialSetupSubPhase";
@@ -8,16 +8,13 @@ import { useNotification } from '@/app/state/context/NotificationContext';
 import React, { useState } from "react";
 // Import other sub-phase components as needed
 
-const { notify } = useNotification(); // Destructure notify from useNotification
- 
 interface InitialSetupSubPhaseProps {
   onSubmit: (data: any) => void;
   userData: TempUserData;
   setCurrentSubPhase: React.Dispatch<React.SetStateAction<AppDevelopmentPhase>>;
-  notify: (id: string, message: string, content: any, date: Date, type: NotificationType, notificationPosition?: NotificationPosition) => Promise<void>; // Keep original name and type
-  appName: string;
+  customNotify: (id: string, message: string, content: any, date: Date, type: string, notificationPosition?: any) => Promise<void>; // Keep original name and type
+  appName?: string;
 }
-
 
 export enum AppDevelopmentPhase {
   AUTHENTICATION,
@@ -34,7 +31,6 @@ const AppDevelopmentPhaseManager: React.FC = () => {
     AppDevelopmentPhase.INITIAL_SETUP // Initial sub-phase
   );
 
-
   const timeBasedCode = generateTimeBasedCode();
   let userData: TempUserData = {
     id: state.user?.data?.id ?? "", // Use optional chaining and nullish coalescing operator to handle undefined id
@@ -47,11 +43,6 @@ const AppDevelopmentPhaseManager: React.FC = () => {
     // Define any additional properties needed for the phase
   };
 
-  useNotification().notify(  "string",  "string",   "",)
-
-  // Additional logic specific to the App Development Phase
-
-
   // Function to handle submission logic for Initial Setup Sub Phase
   const handleInitialSetupSubmit = async (data: any) => {
     try {
@@ -60,14 +51,22 @@ const AppDevelopmentPhaseManager: React.FC = () => {
       // Call a function to submit the data to the database
       await saveDataToDatabase(data);
   
-      // Notify the user about successful submission
-      notify(
-        'initial-setup-success',  // Unique ID for the notification
-        'Initial setup submitted successfully!',
-        '',  // Content can be empty or include additional details
-        new Date(),  // Current date
-        'success'  // Notification type
-      );
+      // Notify the user about successful submission using proper notify pattern
+      notify({
+        id: 'initial-setup-success',
+        message: 'Initial setup submitted successfully!',
+        data: {
+          entityId: userData.id || 'unknown',
+          entityType: 'user',
+          extra: { 
+            data,
+            phase: 'initial-setup'
+          }
+        },
+        timestamp: new Date(),
+        type: 'success', // Assuming this matches your NotificationTypeEnum
+        level: 'success' as const
+      });
     } catch (error) {
       // Handle errors gracefully
       handleSubmissionError(error, 'Initial setup submission failed.');
@@ -82,14 +81,22 @@ const AppDevelopmentPhaseManager: React.FC = () => {
       // Call a function to submit the data to the database
       await saveDataToDatabase(data);
   
-      // Notify the user about successful submission
-      notify(
-        'feature-implementation-success', // Unique ID for the notification
-        'Feature implementation submitted successfully!',
-        '',  // Content can be empty or include additional details
-        new Date(),  // Current date
-        'success'  // Notification type
-      );
+      // Notify the user about successful submission using proper notify pattern
+      notify({
+        id: 'feature-implementation-success',
+        message: 'Feature implementation submitted successfully!',
+        data: {
+          entityId: userData.id || 'unknown',
+          entityType: 'user',
+          extra: { 
+            data,
+            phase: 'feature-implementation'
+          }
+        },
+        timestamp: new Date(),
+        type: 'success',
+        level: 'success' as const
+      });
     } catch (error) {
       // Handle errors gracefully
       handleSubmissionError(error, 'Feature implementation submission failed.');
@@ -106,14 +113,41 @@ const AppDevelopmentPhaseManager: React.FC = () => {
   // Function to handle submission errors and notify the user
   const handleSubmissionError = (error: any, message: string) => {
     console.error('Submission error:', error); // Log the error
-      notify(
-        'submission-error', // Unique ID for the error notification
-        message,
-        '',  // Content can be empty or include additional details
-        new Date(),  // Current date
-        'error'  // Notification type
-      );
-    };
+    
+    // Use proper notify pattern for errors
+    notify({
+      id: 'submission-error',
+      message: message,
+      data: {
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+        entityId: userData.id || 'unknown',
+        entityType: 'user',
+        extra: { 
+          error,
+          userData 
+        }
+      },
+      timestamp: new Date(),
+      type: 'error',
+      level: 'error' as const
+    });
+  };
+
+
+  const customNotifyWrapper = (id: string, message: string, content: any, date: Date, type: string) => {
+  notify({
+    id,
+    message,
+    data: {
+      entityId: userData.id || 'unknown',
+      entityType: 'user',
+      extra: { content }
+    },
+    timestamp: date,
+    type,
+    level: type === 'error' ? 'error' as const : 'success' as const
+  });
+};
   
   // Add more handlers for other sub-phases as needed
 
@@ -126,15 +160,15 @@ const AppDevelopmentPhaseManager: React.FC = () => {
           customNotify={notify}
           setCurrentSubPhase={setCurrentSubPhase} />
       )}
-       {currentSubPhase === AppDevelopmentPhase.PLANNING && (
+      {currentSubPhase === AppDevelopmentPhase.PLANNING && (
         <PlanningSubPhase setCurrentSubPhase={setCurrentSubPhase} />
       )}
       {currentSubPhase === AppDevelopmentPhase.FEATURE_IMPLEMENTATION && (
         <FeatureImplementationSubPhase
           onSubmit={handleFeatureImplementationSubmit}
           userData={userData}
-          customNotify={notify}
-          etCurrentSubPhase={setCurrentSubPhase} />
+          customNotify={customNotifyWrapper}
+          setCurrentSubPhase={setCurrentSubPhase} />
       )}
       {/* Add more sub-phase components as needed */}
     </div>

@@ -1,11 +1,11 @@
 // MappingConfig.tsx
-// MappingConfig.ts
+
+import { CommonData } from "@/app/components/models/details/CommonDetails";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CryptoData, ParsedData } from "@/app/dataIntegration/parseData";
 import { SupportedData } from "@/app/models/CommonData";
-import { CommonData } from "@/app/models/details/CommonDetails";
 import { StatusType } from "@/app/models/data/StatusType";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { AllTypes } from '@/app/typings/PropTypes';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -127,8 +127,8 @@ const mapParsedDataToCommonData = <
 
   };
     // Add more default assignments if needed
-  };
 
+  
   // 4️⃣ Apply type-specific mappings
   switch (typeName) {
     case "CryptoData":

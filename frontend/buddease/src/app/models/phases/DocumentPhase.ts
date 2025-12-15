@@ -1,8 +1,7 @@
 // DocumentPhase.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, DefaultIncludedFields  } from '@/app/config/BaseConfig';
 
 // ---------------------------
 // Supporting Interfaces (New)
@@ -33,4 +32,4 @@ interface DocumentPhase<
   onChange: (phase: ProjectPhaseTypeEnum) => void;
 }
 
-export type { DocumentPhase }
+export type { DocumentPhase };

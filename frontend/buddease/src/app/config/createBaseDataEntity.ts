@@ -1,6 +1,5 @@
 // createBaseDataEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 
 
 function createBaseDataEntity<T extends BaseDataEntity>(overrides?: Partial<T>): T {
@@ -60,8 +59,9 @@ function createSimpleBaseDataEntity<T extends BaseDataEntity>(
   } as T;
 }
 
-export { 
-  createBaseDataEntity, 
-  createBaseDataEntityWithOptions, 
-  createSimpleBaseDataEntity 
+export {
+    createBaseDataEntity,
+    createBaseDataEntityWithOptions,
+    createSimpleBaseDataEntity
 };
+

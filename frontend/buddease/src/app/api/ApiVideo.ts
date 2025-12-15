@@ -3,70 +3,102 @@ import { VideoActions } from "@/app/actions/VideoActions";
 import internalApiService from '@/app/api/ApiClient';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { VideoMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/app/state/context/NotificationContext";
 import useVideoStore from "@/app/state/stores/VideoStore";
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
 import { Video, VideoData } from "@/app/typings/videoTypes/Video";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
-import { Partial } from "react-spring";
 
 const API_BASE_URL = endpoints.videos.list;
 
-const { notify } = useNotification(); // Destructure notify from useNotification
-
+// Get the notification function
+const { notify } = useNotification();
 
 const handleApiError = (
   error: AxiosError<unknown>,
   errorMessage: string
 ): void => {
   console.error(`API Error: ${errorMessage}`);
+  
+  // Extract common notification data
+  const errorData = {
+    originalError: error.message,
+    extra: {} as any
+  };
+
   if (axios.isAxiosError(error)) {
     if (error.response) {
       console.error("Response data:", error.response.data);
       console.error("Response status:", error.response.status);
       console.error("Response headers:", error.response.headers);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Generic.ERROR,
+      
+      errorData.extra = {
         errorMessage,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+        responseData: error.response.data,
+        status: error.response.status,
+        headers: error.response.headers
+      };
+      
+      notify({
+        id: "ApiErrorResponse",
+        message: NOTIFICATION_MESSAGES.Generic.ERROR,
+        data: errorData,
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Generic.NO_RESPONSE,
+      
+      errorData.extra = {
         errorMessage,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+        requestDetails: error.request
+      };
+      
+      notify({
+        id: "ApiErrorNoResponse",
+        message: NOTIFICATION_MESSAGES.Generic.NO_RESPONSE,
+        data: errorData,
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     } else {
       console.error("Error details:", error.message);
-      notify(
-        "ErrorId",
-        NOTIFICATION_MESSAGES.Details.ERROR,
-        errorMessage,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      
+      errorData.extra = { errorMessage };
+      
+      notify({
+        id: "ApiErrorRequest",
+        message: NOTIFICATION_MESSAGES.Details.ERROR,
+        data: errorData,
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     }
   } else {
     console.error("Non-Axios error:", error);
-    notify(
-      "ErrorId",
-      NOTIFICATION_MESSAGES.Generic.ERROR,
+    
+    errorData.extra = {
       errorMessage,
-      new Date(),
-      NotificationTypeEnum.OPERATION_ERROR
-    );
+      errorDetails: error
+    };
+    
+    notify({
+      id: "NonAxiosError",
+      message: NOTIFICATION_MESSAGES.Generic.ERROR,
+      data: errorData,
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
   }
 };
-
 
 export const videoService = observable({
   createVideo: async (
@@ -81,27 +113,44 @@ export const videoService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "createVideo",
-        "CreateVideoSuccessId",
-        NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "createVideoSuccess",
+        message: NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_SUCCESS,
+        data: { 
+          entityId: response.data?.id,
+          entityType: 'video',
+          extra: { 
+            title, 
+            description,
+            videoId: response.data?.id 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to create video");
-      notify(
-        "CreateVideoErrorId",
-        NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "createVideoError",
+        message: NOTIFICATION_MESSAGES.Video.CREATE_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityType: 'video',
+          extra: { 
+            title, 
+            description,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
-
 
   updateVideoData: async (
     id: string,
@@ -115,23 +164,34 @@ export const videoService = observable({
         // Update state or perform other MobX-related actions
         useVideoStore().updateVideo(id, response.data); // Update the video in the VideoStore
       });
-      notify(
-        "UpdateVideoDataSuccessId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "updateVideoDataSuccess",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { metadata }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to update video");
-      notify(
-        "UpdateVideoDataErrorId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "updateVideoDataError",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { metadata, error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -149,54 +209,82 @@ export const videoService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "UpdateVideoSuccessId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "updateVideoSuccess",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            title, 
+            description
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to update video");
-      notify(
-        "UpdateVideoErrorId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "updateVideoError",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            title, 
+            description,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
 
   fetchVideo: async function (id: string): Promise<{ video: Video }> {
     try {
-      const response = internalApiService.get(`${API_BASE_URL}/${id}`);
+      const response = await internalApiService.get(`${API_BASE_URL}/${id}`);
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "FetchVideoSuccessId",
-        NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-      return { video: (await response).data };
+      notify({
+        id: "fetchVideoSuccess",
+        message: NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video'
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
+      return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to fetch video");
-      notify(
-        "FetchVideoErrorId",
-        NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "fetchVideoError",
+        message: NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
-
+  
   fetchVideoByUserId: async function (userId: string): Promise<Video[]> {
     try {
       const response = await internalApiService.get(
@@ -206,15 +294,39 @@ export const videoService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
         VideoActions.setVideos(videoData);
-        // Update state or perform other MobX-related actions
+      });
+      notify({
+        id: "fetchVideosByUserSuccess",
+        message: NOTIFICATION_MESSAGES.Video.FETCH_VIDEOS_BY_USER_SUCCESS,
+        data: { 
+          userId,
+          entityType: 'video',
+          count: videoData.length,
+          extra: { userId }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
       });
       return videoData;
     } catch (error) {
-      // Handle error
+      handleApiError(error as AxiosError<unknown>, "Failed to fetch videos by user ID");
+      notify({
+        id: "fetchVideosByUserError",
+        message: NOTIFICATION_MESSAGES.Video.FETCH_VIDEOS_BY_USER_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          userId,
+          entityType: 'video',
+          extra: { userId, error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
-  
 
   deleteVideo: async function (id: string): Promise<{ video: Video }> {
     try {
@@ -222,23 +334,33 @@ export const videoService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "DeleteVideoSuccessId",
-        NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "deleteVideoSuccess",
+        message: NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video'
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete video");
-      notify(
-        "DeleteVideoErrorId",
-        NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "deleteVideoError",
+        message: NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -247,33 +369,44 @@ export const videoService = observable({
     try {
       const response = await internalApiService.delete(`${API_BASE_URL}/${id}`);
       runInAction(() => {
-        // Update state or perform other MobX-related actions
-        console.log(response);
-        console.log(response.data);
-        console.log(response.data.id);
+        console.log("Delete response:", response);
+        console.log("Response data:", response.data);
+        console.log("Video ID to delete:", response.data.id);
         useVideoStore().deleteVideo(response.data.id);
       });
-      notify(
-        "DeleteVideoSuccessId",
-        NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "deleteVideoSuccessAction",
+        message: NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            deletedId: response.data.id 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete video");
-      notify(
-        "DeleteVideoErrorId",
-        NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "deleteVideoErrorAction",
+        message: NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
-
 
   sendVideoNotification: async (
     id: string,
@@ -284,32 +417,46 @@ export const videoService = observable({
         `${API_BASE_URL}/notification`,
         {
           title: "Video Notification",
-          description: "This is a video notification",
+          description: notification || "This is a video notification",
         }
       );
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "SendVideoNotificationSuccessId",
-        NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "sendVideoNotificationSuccess",
+        message: NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { notification }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to send video notification"
       );
-      notify(
-        "SendVideoNotificationErrorId",
-        NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "sendVideoNotificationError",
+        message: NOTIFICATION_MESSAGES.Video.SEND_VIDEO_NOTIFICATION_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            notification,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -325,30 +472,43 @@ export const videoService = observable({
       );
       runInAction(() => {
         // Perform state updates or other MobX-related actions here
-        // For example:
         useVideoStore().updateVideo(id, response.data);
-        console.log("State updated using MobX");
+        console.log("Video metadata updated using MobX");
       });
-      notify(
-        "UpdateVideoMetadataSuccessId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: "updateVideoMetadataSuccess",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { metadata }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: response.data };
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to update video metadata"
       );
-      notify(
-        "UpdateVideoMetadataErrorId",
-        NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_ERROR,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: "updateVideoMetadataError",
+        message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_METADATA_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            metadata,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -384,7 +544,7 @@ export const videoService = observable({
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>,
+      videoData: {} as VideoData<VideoEntity, VideoK>,
       title: "",
       description: "",
       videoDislikes: 0,
@@ -405,24 +565,40 @@ export const videoService = observable({
         // Update state or perform other MobX-related actions here
         useVideoStore().updateVideoTags(id, newTags); // Update video tags in the VideoStore
       });
-      notify(
-        "AddVideoTagsSuccessId",
-        NOTIFICATION_MESSAGES.Video.ADD_VIDEO_TAGS_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-  
-    
-
+      notify({
+        id: "addVideoTagsSuccess",
+        message: NOTIFICATION_MESSAGES.Video.ADD_VIDEO_TAGS_SUCCESS,
+        data: { 
+          entityId: id,
+          entityType: 'video',
+          extra: { newTags }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return { video: { ...dummyVideo, id, tags: newTags } };
     } catch (error) {
       // Error handling logic
-      console.error("Error setting theme:", error);
+      console.error("Error adding video tags:", error);
+      handleApiError(error as AxiosError<unknown>, "Failed to add video tags");
+      notify({
+        id: "addVideoTagsError",
+        message: NOTIFICATION_MESSAGES.Video.ADD_VIDEO_TAGS_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: id,
+          entityType: 'video',
+          extra: { 
+            newTags,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      throw error;
     }
-    // Return an empty video object as a fallback
-    return { video: { ...dummyVideo } };
   },
 });
-
-

@@ -4,7 +4,7 @@ import {
   EventListener, 
   EventFilter, 
   EventEmitterConfig 
-} from '@/app/typings/eventTypes';
+} from '@/app/typings/eventHandlers/eventTypes'
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 export class EventEmitter<T extends Record<string, any>> {

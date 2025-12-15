@@ -5,10 +5,10 @@ import { createMetadata } from '@/app/config/metadata/createMetadata';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SharedRelationshipData } from '@/app/models/data/Data';
-import { Taggable } from '@/app/models/tracker/Tag';
+import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { Permission } from "@/app/permissions/Permission";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -18,7 +18,6 @@ import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { TagsRecord } from '@/app/models/tracker/Tag'
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 

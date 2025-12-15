@@ -1,8 +1,7 @@
 // BaseCustomEvent.ts
 // CustomEvent.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 const ClipboardData = {
   onCopy: (content: string) => {},

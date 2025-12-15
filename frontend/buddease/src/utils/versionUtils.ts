@@ -1,7 +1,7 @@
 // versionUtils.ts
 import { hasPriority } from '@/app/api/processSnapshotData';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { useDataStore } from '@/app/state/stores/DataStore';
 

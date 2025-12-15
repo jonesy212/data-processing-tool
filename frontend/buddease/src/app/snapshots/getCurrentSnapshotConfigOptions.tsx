@@ -1,33 +1,33 @@
 // getCurrentSnapshotConfigOptions.tsx
 
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore } from "@/app/state/stores/DataStore";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/utils/versionUtils";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/utils/versionUtils";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 
 class InitializedDelegateClass<
   T extends BaseDataEntity, 

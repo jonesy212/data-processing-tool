@@ -1,5 +1,5 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -11,7 +11,7 @@ export function addDebugInfo<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  configs: SnapshotStoreConfig<T, K>[],
+  configs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   configId: string,
   message: string,
   operation?: string

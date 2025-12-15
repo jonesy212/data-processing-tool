@@ -3,8 +3,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
-import { createErrorNotificationContent, errorLogger } from "@/app/libraries/logging/Logger";
-import { Payload } from '@/app/server/database/Payload';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { createErrorNotificationContent, errorLogger } from '@/app/logging/Logger';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import React, { useState } from 'react';
@@ -71,14 +71,45 @@ const SnapshotHandler: React.FC<{
     };
 
     const handleSnapshotError = (error: Error) => {
-        setErrorState(error.message); // Store the error message
-        console.error("Handling snapshot error:", error);
+    setErrorState(error.message); // Store the error message
+    console.error("Handling snapshot error:", error);
 
-        // Log the error
-        logError(error);
+    // Log the error
+    logError(error);
 
-        // Optionally notify users
-        notify("Snapshot Error", error.message, {}, new Date(), NotificationTypeEnum.ERROR);
+    // Enhanced error notification using object format
+    notify({
+        id: `snapshot_error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        message: "Snapshot operation failed",
+        data: {
+        entityType: 'snapshot',
+        action: 'error_handling',
+        errorDetails: {
+            originalError: error.message,
+            errorName: error.name,
+            stack: error.stack,
+            errorType: getSnapshotErrorType(error)
+        },
+        timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const,
+        metadata: {
+        operation: 'snapshot_error_handling',
+        severity: getErrorSeverity(error),
+        requiresManualReview: isCriticalSnapshotError(error),
+        retryable: isRetryableSnapshotError(error)
+        },
+        action: isRetryableSnapshotError(error) ? {
+        label: "Retry Operation",
+        onClick: () => {
+            console.log("Retrying snapshot operation...");
+            // Implement retry logic here
+            // retrySnapshotOperation();
+        }
+        } : undefined
+    });
     };
 
     const resetErrorState = () => {
@@ -93,7 +124,7 @@ const SnapshotHandler: React.FC<{
     };
 
     // Example of how to parse data with error handling
-    const parseSnapshotData = (data: YourResponseType[], threshold: number) => {
+    const parseSnapshotData = (data: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], threshold: number) => {
         return parseDataWithErrorHandling(data, threshold);
     };
 

@@ -5,8 +5,8 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
 import SecurityAudit from "@/app/server/security/SecurityAudit";
-import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { useAuth } from '@/app/state/context/AuthContext';
+import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { useMemo, useState } from "react";
 
 function useMetadata<

@@ -57,8 +57,6 @@ export const OperationNotificationTypes = {
   ASSIGNMENT_OPERATION_SUCCESS: 'AssignmentOperationSuccess',
   CREATION_SUCCESS: 'CreationSuccess',
   GET_STORE_SUCCESS: 'GetStoreSuccess',
-  API_SUCCESS: 'APISuccess',
-  API_ERROR: 'APIError',
   DISPLAY_SUCCESS: 'DisplaySuccess',
 } as const;
 
@@ -337,6 +335,73 @@ export const PhaseNotificationTypes = {
 
 } as const;
 
+// Add this to your notification types
+export const ApiNotificationTypes = {
+  // API Status notifications
+  API_SUCCESS: 'APISuccess',
+  API_ERROR: 'APIError',
+  API_WARNING: 'APIWarning',
+  API_INFO: 'APIInfo',
+  
+  // HTTP Status notifications
+  HTTP_200: 'HTTP200',
+  HTTP_201: 'HTTP201',
+  HTTP_204: 'HTTP204',
+  HTTP_400: 'HTTP400',
+  HTTP_401: 'HTTP401',
+  HTTP_403: 'HTTP403',
+  HTTP_404: 'HTTP404',
+  HTTP_409: 'HTTP409',
+  HTTP_500: 'HTTP500',
+  HTTP_502: 'HTTP502',
+  HTTP_503: 'HTTP503',
+  
+  // API Operation notifications
+  API_REQUEST_START: 'APIRequestStart',
+  API_REQUEST_COMPLETE: 'APIRequestComplete',
+  API_REQUEST_FAILED: 'APIRequestFailed',
+  API_RETRY: 'APIRetry',
+  API_TIMEOUT: 'APITimeout',
+  
+  // API Data notifications
+  DATA_FETCH_SUCCESS: 'DataFetchSuccess',
+  DATA_FETCH_ERROR: 'DataFetchError',
+  DATA_UPDATE_SUCCESS: 'DataUpdateSuccess',
+  DATA_UPDATE_ERROR: 'DataUpdateError',
+  DATA_DELETE_SUCCESS: 'DataDeleteSuccess',
+  DATA_DELETE_ERROR: 'DataDeleteError',
+  
+  // API Validation notifications
+  VALIDATION_ERROR: 'ValidationError',
+  VALIDATION_SUCCESS: 'ValidationSuccess',
+  VALIDATION_WARNING: 'ValidationWarning',
+  
+  // API Connection notifications
+  CONNECTION_SUCCESS: 'ConnectionSuccess',
+  CONNECTION_ERROR: 'ConnectionError',
+  CONNECTION_LOST: 'ConnectionLost',
+  CONNECTION_RESTORED: 'ConnectionRestored',
+  
+  // API Rate limiting
+  RATE_LIMIT_WARNING: 'RateLimitWarning',
+  RATE_LIMIT_EXCEEDED: 'RateLimitExceeded',
+  
+  // API Authentication/Authorization
+  AUTH_SUCCESS: 'AuthSuccess',
+  AUTH_ERROR: 'AuthError',
+  TOKEN_EXPIRED: 'TokenExpired',
+  TOKEN_REFRESHED: 'TokenRefreshed',
+  PERMISSION_DENIED: 'PermissionDenied',
+  
+  // API Versioning
+  API_VERSION_DEPRECATED: 'APIVersionDeprecated',
+  API_VERSION_UPGRADE: 'APIVersionUpgrade',
+  
+  // API Documentation
+  API_DOCS_UPDATED: 'APIDocsUpdated',
+  API_SCHEMA_CHANGED: 'APISchemaChanged',
+} as const;
+
 // Combine all types
 export const NOTIFICATION_TYPES = {
   ...BaseNotificationTypes,
@@ -352,6 +417,7 @@ export const NOTIFICATION_TYPES = {
   ...CustomNotificationTypes,
   ...OnboardingNotificationTypes,
    ...PhaseNotificationTypes,
-   ...EventNotificationTypes
+  ...EventNotificationTypes,
+   ...ApiNotificationTypes, 
 } as const;
 

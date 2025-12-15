@@ -1,42 +1,66 @@
 // callbackRegistry.ts
-import { EventHandler, EventFilter } from '@/app/typings/eventHandlers/eventTypes';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { EventFilter, EventHandler } from '@/app/typings/eventHandlers/eventTypes';
 
-export interface RegisteredCallback<T = any> {
+
+export interface RegisteredCallback<
+  Entity extends BaseDataEntity = BaseDataRoot,
+  K extends Entity = Entity,
+  Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+  IncludedFields extends keyof Entity = keyof Entity
+> {
   id: string;
   eventType: string;
-  handler: EventHandler<T>;
-  filter?: EventFilter<T>;
+  handler: EventHandler<Entity>; // Always receives Entity
+  filter?: EventFilter<Entity>;
   priority: number;
   context?: any;
   isActive: boolean;
+  storeName?: string;
+  store?: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 export class CallbackRegistry {
   private callbacks: Map<string, RegisteredCallback<any>[]> = new Map();
   private callbackById: Map<string, RegisteredCallback<any>> = new Map();
 
-  register<T>(
+  register<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(
     eventType: string,
-    handler: EventHandler<T>,
+    handler: EventHandler<Entity>,
     options: {
-      filter?: EventFilter<T>;
+      filter?: EventFilter<Entity>;
       priority?: number;
       context?: any;
       id?: string;
+      storeName?: string;
+      store?: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     } = {}
   ): string {
     const callbackId = options.id || UniqueIDGenerator.generateId("callback");
     const priority = options.priority || 0;
 
-    const callback: RegisteredCallback<T> = {
+    const callback: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: callbackId,
       eventType,
       handler,
       filter: options.filter,
       priority,
       context: options.context,
-      isActive: true
+      isActive: true,
+      storeName: options.storeName,
+      store: options.store
     };
 
     if (!this.callbacks.has(eventType)) {
@@ -82,11 +106,26 @@ export class CallbackRegistry {
     }
   }
 
-  getCallbacks<T>(eventType: string): RegisteredCallback<T>[] {
-    return this.callbacks.get(eventType)?.filter(cb => cb.isActive) || [];
+  getCallbacks<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(eventType: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const callbacks = this.callbacks.get(eventType);
+    return callbacks?.filter(cb => cb.isActive) || [];
   }
 
-  getCallback(callbackId: string): RegisteredCallback<any> | undefined {
+  getCallback<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(callbackId: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
     return this.callbackById.get(callbackId);
   }
 
@@ -100,8 +139,15 @@ export class CallbackRegistry {
   }
 
   // Execute callbacks for an event
-  async executeCallbacks<T>(eventType: string, eventData: T): Promise<void> {
-    const callbacks = this.getCallbacks<T>(eventType);
+  async executeCallbacks<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(eventType: string, eventData: Entity): Promise<void> {
+    const callbacks = this.getCallbacks<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(eventType);
     const executionPromises: Promise<void>[] = [];
 
     for (const callback of callbacks) {
@@ -134,33 +180,141 @@ export class CallbackRegistry {
 
   getCallbackCount(eventType?: string): number {
     if (eventType) {
-      return this.getCallbacks(eventType).length;
+      const callbacks = this.callbacks.get(eventType);
+      return callbacks?.filter(cb => cb.isActive).length || 0;
     }
-    return this.callbackById.size;
+    
+    // Count only active callbacks
+    let count = 0;
+    for (const callbacks of this.callbacks.values()) {
+      count += callbacks.filter(cb => cb.isActive).length;
+    }
+    return count;
   }
 
-  getCallbacksByStore(storeName: string): RegisteredCallback<any>[] {
-    const allCallbacks: RegisteredCallback<any>[] = [];
+  getCallbacksByStore<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(storeName: string): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const allCallbacks: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    
     for (const callbacks of this.callbacks.values()) {
-      allCallbacks.push(...callbacks.filter(cb => cb.store === storeName));
+      allCallbacks.push(
+        ...callbacks.filter(cb => cb.storeName === storeName)
+      );
     }
+    
+    return allCallbacks;
+  }
+
+  getCallbacksByStoreInstance<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(store: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const allCallbacks: RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    
+    for (const callbacks of this.callbacks.values()) {
+      allCallbacks.push(
+        ...callbacks.filter(cb => cb.store === store)
+      );
+    }
+    
     return allCallbacks;
   }
 
   unregisterByStore(storeName: string): void {
     for (const [eventType, callbacks] of this.callbacks.entries()) {
-      const filteredCallbacks = callbacks.filter(cb => cb.store !== storeName);
+      const filteredCallbacks = callbacks.filter(cb => cb.storeName !== storeName);
       this.callbacks.set(eventType, filteredCallbacks);
       
       // Also remove from callbackById
       callbacks
-        .filter(cb => cb.store === storeName)
+        .filter(cb => cb.storeName === storeName)
         .forEach(cb => this.callbackById.delete(cb.id));
     }
   }
+
+  unregisterByStoreInstance<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(store: SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+    for (const [eventType, callbacks] of this.callbacks.entries()) {
+      const filteredCallbacks = callbacks.filter(cb => cb.store !== store);
+      this.callbacks.set(eventType, filteredCallbacks);
+      
+      // Also remove from callbackById
+      callbacks
+        .filter(cb => cb.store === store)
+        .forEach(cb => this.callbackById.delete(cb.id));
+    }
+  }
+
+  // Get all active callbacks for a specific store (both by name and instance)
+  getAllCallbacksForStore<
+    Entity extends BaseDataEntity = BaseDataRoot,
+    K extends Entity = Entity,
+    Meta extends DefaultMeta<Entity, K> = DefaultMeta<Entity, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof Entity = DefaultExcludedFields<Entity>,
+    IncludedFields extends keyof Entity = keyof Entity
+  >(storeNameOrInstance: string | SnapshotStore<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): RegisteredCallback<Entity, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    const isInstance = typeof storeNameOrInstance !== 'string';
+    
+    if (isInstance) {
+      return this.getCallbacksByStoreInstance(storeNameOrInstance as any);
+    } else {
+      return this.getCallbacksByStore(storeNameOrInstance as string);
+    }
+  }
+
+  // Clear all callbacks (for cleanup)
+  clear(): void {
+    this.callbacks.clear();
+    this.callbackById.clear();
+  }
+
+  // Get stats about the registry
+  getStats(): {
+    totalCallbacks: number;
+    activeCallbacks: number;
+    eventTypes: number;
+    stores: Set<string>;
+  } {
+    const stores = new Set<string>();
+    let activeCallbacks = 0;
+    let totalCallbacks = 0;
+
+    for (const callbacks of this.callbacks.values()) {
+      totalCallbacks += callbacks.length;
+      activeCallbacks += callbacks.filter(cb => cb.isActive).length;
+      
+      callbacks.forEach(cb => {
+        if (cb.storeName) {
+          stores.add(cb.storeName);
+        }
+      });
+    }
+
+    return {
+      totalCallbacks,
+      activeCallbacks,
+      eventTypes: this.callbacks.size,
+      stores
+    };
+  }
 }
-
-
 
 // Create a global instance
 export const globalCallbackRegistry = new CallbackRegistry();

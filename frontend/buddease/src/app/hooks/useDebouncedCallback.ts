@@ -15,7 +15,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   options: DebounceOptions = {}
 ): T {
   const callbackRef = useRef<T>(callback);
-  const debouncedRef = useRef<ReturnType<typeof debounce>>();
+  const debouncedRef = useRef<ReturnType<typeof debounce> | null>(null); // Initialize as null
 
   // Update callback reference
   useEffect(() => {
@@ -52,7 +52,7 @@ export function useEnhancedDebouncedCallback<T extends (...args: any[]) => any>(
   options: DebounceOptions = {}
 ) {
   const callbackRef = useRef<T>(callback);
-  const debouncedRef = useRef<ReturnType<typeof debounce>>();
+  const debouncedRef = useRef<ReturnType<typeof debounce> | null>(null); 
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -96,4 +96,38 @@ export function useEnhancedDebouncedCallback<T extends (...args: any[]) => any>(
     cancel,
     pending
   };
+}
+
+// Alternative: Simpler version with immediate initialization
+export function useDebouncedCallbackSimple<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number,
+  options: DebounceOptions = {}
+): T {
+  const callbackRef = useRef(callback);
+  
+  // Update callback ref
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  // Use useMemo to create debounced function once
+  const debouncedFn = useRef(
+    debounce(
+      (...args: Parameters<T>) => callbackRef.current(...args),
+      delay,
+      options
+    )
+  ).current;
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      debouncedFn.cancel();
+    };
+  }, []);
+
+  return useCallback((...args: Parameters<T>) => {
+    return debouncedFn(...args);
+  }, [debouncedFn]) as T;
 }

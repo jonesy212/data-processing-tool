@@ -1,25 +1,24 @@
 import getSnapshotId from "@/app/api/SnapshotApi";
+import {
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta
+} from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotData } from '@/app/snapshots';
 import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultIncludedFields,
-  DefaultMeta
-} from '@/app/config/BaseConfig';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 
 // createSnapshotStore.ts
 function createSnapshotStore <
@@ -34,7 +33,7 @@ function createSnapshotStore <
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category?:  Category,
   callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-  snapshotDataConfig?: SnapshotStoreConfig<T, K> 
+  snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   // Validate inputs
   if (!id || !snapshotData) {
@@ -65,7 +64,7 @@ function createSnapshotStore <
     setSnapshotData: (
       data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       subscribers: Subscriber<any, any>[],
-      snapshotData: Partial<SnapshotStoreConfig<T, K>>) => {
+      snapshotData: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },

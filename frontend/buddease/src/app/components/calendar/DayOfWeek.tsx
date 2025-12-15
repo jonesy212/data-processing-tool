@@ -1,10 +1,10 @@
 // DayOfWeek.tsx
-import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Task } from '@/models/tasks/Task';
-import React from 'react';
+import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Task } from '@/app/models/tasks/Task';
+import React from 'react';
 
 interface DayOfWeekProps<
   T extends BaseDataEntity, 

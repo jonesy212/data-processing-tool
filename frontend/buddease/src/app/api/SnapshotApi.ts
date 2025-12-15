@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 
 // Core models and types
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
@@ -54,6 +54,7 @@ import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessin
 import { DataStore } from '@/app/state/stores/DataStore';
 
 // Operations and config
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
@@ -61,10 +62,8 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 
 // Subscribers and notifications
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
 
@@ -1166,13 +1165,17 @@ const saveSnapshotToDatabase = async (snapshotData: any): Promise<boolean> => {
       headers: headersConfig,
     });
 
-    useNotification().notify(
-      "SaveSnapshotSuccessId",
-      snapshotNotificationMessages.CREATE_SNAPSHOT_SUCCESS,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    useNotification().notify({
+      id: "SaveSnapshotSuccessId",
+      message: snapshotNotificationMessages.CREATE_SNAPSHOT_SUCCESS,
+      data: {
+        entityType: 'snapshot',
+        extra: { snapshotData }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success' as const
+    });
 
     // Notify subscribers of successful snapshot save
     subscriptionServiceInstance.notify("snapshotSaved", snapshotData);
@@ -1881,7 +1884,7 @@ async function fetchSnapshotContainerData<
   if(criteria === undefined){
     throw new Error("criteria is not properly configured");
   }
-  const currentConfig = snapshotApi.getSnapshotStoreConfig<T, K>(snapshotId, snapshotContainer, criteria, storeId);
+  const currentConfig = snapshotApi.getSnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotId, snapshotContainer, criteria, storeId);
 
   if (currentConfig === null) {
     throw new Error("currentConfig is not properly configured");

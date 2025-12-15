@@ -1,13 +1,13 @@
 // useSnapshotNotifications.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { snapshotStoreInstance } from '@/app/snapshots/SnapshotStore';
-import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
 import { useSnapshot } from "@/app/state/context/SnapshotContext";
+import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
 import { useCallback } from 'react';
 
 // Snapshot notification types

@@ -1,33 +1,30 @@
 // ProjectManagerStore.ts
 import internalApiService from '@/app/api/ApiClient';
-import IdeationPhase from '@/app/users/userJourney/IdeationPhase';
-import { 
-  ProjectEntity,
-  ProjectK, 
-  ProjectMeta, 
-  ProjectAttachment, 
-  ProjectExcludedFields, 
-  ProjectIncludedFields 
-} from '@/app/typings/entities/ProjectEntity';
-import { ProjectActions } from "@/app/actions/ProjectActions";
 import { ApiProject } from "@/app/api/ApiProject";
-import Milestone from "@/app/typings/milestoneTypes";
-import { CommonData } from "@/app/models/CommonData";
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Product } from "@/app/products/Product";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import {
+  ProjectAttachment,
+  ProjectEntity,
+  ProjectExcludedFields,
+  ProjectIncludedFields,
+  ProjectK,
+  ProjectMeta
+} from '@/app/typings/entities/ProjectEntity';
+import Milestone from "@/app/typings/milestoneTypes";
+import { YourSettingsResponseType } from '@/app/typings/responseTypes';
 import { StateType } from "@/app/typings/StateType";
-import { User, VisualizationData } from "@/app/users/User";
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { User } from "@/app/users/User";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { makeAutoObservable } from "mobx";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { YourSettingsResponseType } from '@/app/typings/responseTypes';
 
 // state/hybrid/ProjectManagerStore.ts
 /**

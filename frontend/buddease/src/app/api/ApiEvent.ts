@@ -1,6 +1,6 @@
 // ApiEvent.ts
-// EventApi.ts
-import headersConfig from '@/api/headers/HeadersConfig';
+
+import headersConfig from '@/app/api/headers/HeadersConfig';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -72,22 +72,32 @@ const processEventsWithHandlers = (events: any, newData: any): void => {
   }
 };
 
-
 export const handleEventApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: keyof EventNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
+  
   if (errorMessageId) {
-    const errorMessageText = eventNotificationMessages[errorMessageId]; // Directly access the message
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText as unknown as string,
-      null,
-      new Date(),
-      'EventApiError' as NotificationTypeEnum
-    );
+    const errorMessageText = eventNotificationMessages[errorMessageId];
+    
+    useNotification().notify({
+      id: `eventApiError${String(errorMessageId).replace(/\s+/g, '')}`,
+      message: errorMessageText as string,
+      data: { 
+        originalError: error.message,
+        extra: {
+          errorMessage,
+          errorMessageId: String(errorMessageId),
+          responseData: error.response?.data,
+          status: error.response?.status
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.EventApiError,
+      level: 'error'
+    });
   }
 };
 

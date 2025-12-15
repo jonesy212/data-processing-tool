@@ -1,11 +1,10 @@
 // SnapshotStoreOptions.ts
-import { Data } from '@/app/models/data/Data';
 import { SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import { ProjectMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData } from '@/app/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
@@ -463,12 +462,10 @@ function normalizeInitializedData<
 
 
 export type {
-    InitializedData, InitializedDataStore,
-    InitializedDelegate, InitializedDelegateSearch,
-    InitializedSnapshot, MetaDataOptions,
-    SnapshotConfigOption, SnapshotInstanceProps,
-    SnapshotStoreOptions,
-    SnapshotWithCriteriaAsBase, UnifiedConfigOption,
-    normalizeInitializedData
+  InitializedData, InitializedDataStore,
+  InitializedDelegate, InitializedDelegateSearch,
+  InitializedSnapshot, MetaDataOptions, normalizeInitializedData, SnapshotConfigOption, SnapshotInstanceProps,
+  SnapshotStoreOptions,
+  SnapshotWithCriteriaAsBase, UnifiedConfigOption
 };
 

@@ -2,25 +2,24 @@
 import { Meeting } from "@/app/communications/scheduler/Meeting";
 import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { ProjectDetails } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { DeveloperPersona } from "@/app/pages/personas/DeveloperPersona";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { User } from "./User";
+import { User } from '@/app/users/User'
 
 interface ProjectOwnerState {
   // Define the state structure here
 
   projectDetails: ProjectDetails | null;
   teamMembers: TeamMember[] | null;
-  tasks: Task[] | null;
+  notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   users: User[] | null;
   team: Team | null;
   meetings: Meeting[] | null;
@@ -47,6 +46,7 @@ const initialState: ProjectOwnerState = {
   meetings: null,
   developers: [],
   compensation: "",
+  notification: null,
   selectedDeveloper: "",
   productLaunched: false,
   dataAnalysisPerformed: false,
@@ -167,25 +167,27 @@ export const useProjectOwnerSlice = createSlice({
     updateProject: (state, action: PayloadAction<WritableDraft<ProjectDetails>>) => {
       try {
         state.projectDetails = action.payload;
-
-        notify(
-          "updateProjectSuccess",
-          "Update Project Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Store notification in state instead of calling notify()
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
+          id: 'updateProjectSuccess',
+          data: { projectDetails: action.payload }
+        };
       } catch (error) {
         // Handle errors
-        notify(
-          "updateProjectError",
-          NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
-          "Update Project Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
+          id: 'updateProjectError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            projectDetails: action.payload
+          }
+        };
       }
     },
+    
     addTeamMember: (state, action: PayloadAction<WritableDraft<TeamMember>>) => {
       try {
         // Ensure teamMembers is initialized as an array if it's currently null
@@ -196,23 +198,24 @@ export const useProjectOwnerSlice = createSlice({
         // Push the new member to the array
         state.teamMembers.push(action.payload);
 
-        // Notify success
-        notify(
-          "addTeamMemberSuccess",
-          "Add Team Member Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Store notification in state
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
+          id: 'addTeamMemberSuccess',
+          data: { teamMember: action.payload }
+        };
       } catch (error) {
         // Handle errors
-        notify(
-          "addTeamMemberError",
-          NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
-          "Add Team Member Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
+          id: 'addTeamMemberError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            teamMember: action.payload
+          }
+        };
       }
     },
 
@@ -226,224 +229,254 @@ export const useProjectOwnerSlice = createSlice({
           );
         }
 
-        // Notify success
-        notify(
-          "removeTeamMemberSuccess",
-          NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
-          "Remove Team Member Success",
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Store notification in state
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
+          id: 'removeTeamMemberSuccess',
+          data: { memberId: memberIdToRemove }
+        };
       } catch (error) {
         // Handle errors
-        notify(
-          "",
-          NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
-          "Remove Team Member Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
+          id: 'removeTeamMemberError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            memberId: action.payload.memberId
+          }
+        };
       }
     },
+    
+    // Add a reducer to clear notifications
+    clearNotification: (state) => {
+      state.notification = null;
+    },
 
-    assignTask: (
-      state,
-      action: PayloadAction<{ taskId: number; teamMemberId: number }>
-    ) => {
-      // Synchronous logic for assigning a task
-      try {
-        const { taskId, teamMemberId } = action.payload;
-
-        // Ensure state.tasks is not null before attempting to access it
-        if (state.tasks) {
-          state.tasks.forEach((task) => {
-            if (task.id === String(taskId)) {
-              // Ensure state.users is not null before attempting to access it
-              if (state.users) {
-                // Retrieve the corresponding user from state or another source
-                const user: WritableDraft<User> | undefined = state.users.find(
-                  (user) => user.id === teamMemberId
-                );
-
-                if (user) {
-                  // Assign the task to the specified team member
-                  task.assignedTo = user;
-                } else {
-                  // Handle case where user is not found
-                  throw new Error(`User with id ${teamMemberId} not found`);
-                }
-              } else {
-                // Handle case where state.users is null
-                throw new Error("Users array in state is null");
-              }
-            }
-          });
-        } else {
-          // Handle case where state.tasks is null
-          throw new Error("Tasks array in state is null");
+  assignTask: (
+    state,
+    action: PayloadAction<{ taskId: number; teamMemberId: number }>
+  ) => {
+    const { taskId, teamMemberId } = action.payload;
+    
+    try {
+      // Ensure state.tasks is not null before attempting to access it
+      if (!state.tasks) {
+        throw new Error("Tasks array in state is null");
+      }
+      
+      if (!state.users) {
+        throw new Error("Users array in state is null");
+      }
+      
+      const task = state.tasks.find(task => task.id === String(taskId));
+      if (!task) {
+        throw new Error(`Task with id ${taskId} not found`);
+      }
+      
+      const user = state.users.find(user => user.id === teamMemberId);
+      if (!user) {
+        throw new Error(`User with id ${teamMemberId} not found`);
+      }
+      
+      task.assignedTo = user;
+      
+      // Store success notification in state
+      state.notification = {
+        type: 'success',
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
+        id: 'assignTaskSuccess',
+        data: { taskId, teamMemberId, assignedTo: user.name || user.id }
+      };
+      
+    } catch (error) {
+      // Store error notification in state
+      state.notification = {
+        type: 'error',
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
+        id: 'assignTaskError',
+        data: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          taskId,
+          teamMemberId
         }
-        // Notify success
-        notify(
-          "assignTaskSuccess",
-          NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
-          "Assign Task Success",
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
-      } catch (error) {
-        // Handle error
-        notify(
-          "assignTaskError",
-          NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
-          "Assign Task Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
-      }
-    },
+      };
+    }
+  },
 
     createMeeting: (state, action: PayloadAction<any>) => {
       try {
-        // Extract any necessary data from the action payload
         const meetingData = action.payload;
-
-        // Your synchronous logic here, for example, updating state or performing other operations
-
-        // Example of updating state:
+        // Your synchronous logic here
         // state.meetings.push(meetingData);
-
-        // Handle error
-        notify(
-          "createMeetingError",
-          NOTIFICATION_MESSAGES.ProjectOwner.CREATE_MEETING_ERROR,
-          "Create Meeting Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
-      } catch (error) {}
+        
+        // Store success notification in state
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.CREATE_MEETING_SUCCESS,
+          id: 'createMeetingSuccess',
+          data: { meetingData }
+        };
+      } catch (error) {
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.CREATE_MEETING_ERROR,
+          id: 'createMeetingError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            meetingData: action.payload
+          }
+        };
+      }
     },
 
     updateMeeting: (state, action: PayloadAction<any>) => {
       try {
-        // Extract meeting data from action payload
         const meetingId = action.payload.id;
+        let found = false;
+        
         // Find meeting in state by id and update
-        state.meetings?.forEach((meeting) => {
-          if (meeting.id === meetingId) {
-            meeting.title = action.payload.title;
-            meeting.description = action.payload.description;
-            meeting.date = action.payload.date;
-          }
-        });
+        if (state.meetings) {
+          state.meetings.forEach((meeting) => {
+            if (meeting.id === meetingId) {
+              meeting.title = action.payload.title;
+              meeting.description = action.payload.description;
+              meeting.date = action.payload.date;
+              found = true;
+            }
+          });
+        }
 
-        // Handle error
-        notify(
-          "updateMeetingError",
-          NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
-          "Update Meeting Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
-      } catch (e) {
-        // Handle error
-        notify(
-          "updateMeetingError",
-          "Update Meeting Error",
-          NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETIN_ERROR,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        if (found) {
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS,
+            id: 'updateMeetingSuccess',
+            data: { meetingId, updates: action.payload }
+          };
+        } else {
+          throw new Error(`Meeting with id ${meetingId} not found`);
+        }
+      } catch (error) {
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
+          id: 'updateMeetingError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            meetingId: action.payload?.id
+          }
+        };
       }
     },
+
     deleteMeeting: (state, action: PayloadAction<any>) => {
       try {
-        // Extract meeting id from action payload
         const id = action.payload;
+        let found = false;
 
-        // Check if state.meetings is not null or undefined
-        if (state.meetings !== null && state.meetings !== undefined) {
-          // Filter meetings array to remove meeting with id
-          state.meetings = state.meetings.filter(
-            (meeting) => meeting.id !== id
-          );
+        if (state.meetings) {
+          state.meetings = state.meetings.filter((meeting) => {
+            if (meeting.id === id) {
+              found = true;
+              return false;
+            }
+            return true;
+          });
         }
-        // Handle success
-        notify(
-          "deleteMeetingSuccess",
-          "Delete Meeting Success",
-          NOTIFICATION_MESSAGES.Project.DELETE_MEETING_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+
+        if (found) {
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_SUCCESS,
+            id: 'deleteMeetingSuccess',
+            data: { meetingId: id }
+          };
+        } else {
+          throw new Error(`Meeting with id ${id} not found`);
+        }
       } catch (error) {
-        // Handle error
-        notify(
-          "deleteMeetingError",
-          NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
-          "Delete Meeting Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
+          id: 'deleteMeetingError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            meetingId: action.payload
+          }
+        };
       }
     },
 
     getTeamMembers: (state, action: PayloadAction<any>) => {
       try {
         // Extract team members from state
-        const teamMembers = state;
+        const teamMembers = state.teamMembers || [];
+        
+        // Store success notification in state
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.GET_TEAM_MEMBERS_SUCCESS,
+          id: 'getTeamMembersSuccess',
+          data: { count: teamMembers.length }
+        };
       } catch (error) {
-        // Handle error
-        notify(
-          "getTeamMembersError",
-          "Get Team Members Error",
-          NOTIFICATION_MESSAGES.ProjectOwner.GET_TEAM_MEMBERS_ERROR,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
-        // Return team members
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.GET_TEAM_MEMBERS_ERROR,
+          id: 'getTeamMembersError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
-
+   
     generateReport: (
       state,
       action: PayloadAction<{ reportData: any; customSections?: string[] }>
     ) => {
       try {
-        // Extract necessary data from the action payload
         const { reportData, customSections } = action.payload;
 
         // Generate report using reportData and customSections
         const report = generateReport(
-          JSON.parse(JSON.stringify(state)) as ProjectOwnerState, // Convert to an immutable object
+          JSON.parse(JSON.stringify(state)) as ProjectOwnerState,
           reportData,
           customSections
         );
         
-        // Handle success (if needed)
-        notify(
-          "generateReportSuccess",
-          "Generate Report Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Store success notification in state
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_SUCCESS,
+          id: 'generateReportSuccess',
+          data: {
+            reportData,
+            customSections,
+            reportGenerated: !!report
+          }
+        };
 
-        // Optionally return the generated report (if needed)
+        // Optionally return the generated report
         return report;
       } catch (error) {
-        // Handle error
         console.error("Error generating report:", error);
-        notify(
-          "generateReportError",
-          NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_ERROR,
-          "Generate Report Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
-        // Return undefined or some default value in case of error
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_ERROR,
+          id: 'generateReportError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            reportData: action.payload.reportData
+          }
+        };
         return undefined;
       }
     },
+
     updateTask: (
       state,
       action: PayloadAction<{ taskId: string; updatedTask: Task }>
@@ -455,33 +488,35 @@ export const useProjectOwnerSlice = createSlice({
         const taskToUpdate = state.tasks?.find((task) => task.id === taskId);
         if (taskToUpdate) {
           Object.assign(taskToUpdate, updatedTask);
-          notify(
-            "updateTaskSuccess",
-            "Update Task Success",
-            NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_SUCCESS,
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-          );
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_SUCCESS,
+            id: 'updateTaskSuccess',
+            data: { taskId, updatedTask }
+          };
         } else {
-          // Handle case where task is not found
-          notify(
-            "updateTaskError",
-            NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
-            "Update Task Error: Task not found",
-            new Date(),
-            NotificationTypeEnum.OPERATION_ERROR
-          );
+          // Task not found
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
+            id: 'updateTaskError',
+            data: {
+              error: `Task with ID ${taskId} not found`,
+              taskId
+            }
+          };
         }
       } catch (error) {
-        // Handle errors
         console.error("Error updating task:", error);
-        notify(
-          "updateTaskError",
-          NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
-          "Update Task Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
+          id: 'updateTaskError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            taskId: action.payload.taskId
+          }
+        };
       }
     },
 
@@ -490,71 +525,87 @@ export const useProjectOwnerSlice = createSlice({
         const taskIdToDelete = action.payload;
 
         // Check if state.tasks is not null or undefined
-        if (state.tasks !== null && state.tasks !== undefined) {
-          // Remove the task with taskIdToDelete
-          state.tasks = state.tasks.filter(
-            (task) => task.id !== taskIdToDelete
-          );
-
-          notify(
-            "deleteTaskSuccess",
-            "Delete Task Success",
-            NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_SUCCESS,
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-          );
+        if (state.tasks) {
+          const initialLength = state.tasks.length;
+          state.tasks = state.tasks.filter((task) => task.id !== taskIdToDelete);
+          
+          if (state.tasks.length < initialLength) {
+            // Task was deleted
+            state.notification = {
+              type: 'success',
+              message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_SUCCESS,
+              id: 'deleteTaskSuccess',
+              data: { taskId: taskIdToDelete }
+            };
+          } else {
+            // Task not found
+            state.notification = {
+              type: 'error',
+              message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
+              id: 'deleteTaskError',
+              data: {
+                error: `Task with ID ${taskIdToDelete} not found`,
+                taskId: taskIdToDelete
+              }
+            };
+          }
         } else {
-          // Handle case where state.tasks is null or undefined
-          console.error(
-            "Error deleting task: state.tasks is null or undefined"
-          );
-          notify(
-            "deleteTaskError",
-            NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
-            "Delete Task Error: state.tasks is null or undefined",
-            new Date(),
-            NotificationTypeEnum.OPERATION_ERROR
-          );
+          // state.tasks is null or undefined
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
+            id: 'deleteTaskError',
+            data: {
+              error: "state.tasks is null or undefined",
+              taskId: taskIdToDelete
+            }
+          };
         }
       } catch (error) {
-        // Handle other errors
         console.error("Error deleting task:", error);
-        notify(
-          "deleteTaskError",
-          NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
-          "Delete Task Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
+          id: 'deleteTaskError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            taskId: action.payload
+          }
+        };
       }
     },
 
     hireDeveloper: (state, action: PayloadAction<DeveloperPersona>) => {
       try {
         const developerId = action.payload;
+        
+        // Ensure developers array exists
+        if (!state.developers) {
+          state.developers = [];
+        }
+        
         // Add logic to hire the developer
         state.developers.push(developerId);
-
-        notify(
-          "hireDeveloperSuccess",
-          "Hire Developer Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_SUCCESS,
+          id: 'hireDeveloperSuccess',
+          data: { developerId }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error hiring developer:", error);
-        notify(
-          "hireDeveloperError",
-          NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_ERROR,
-          "Hire Developer Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_ERROR,
+          id: 'hireDeveloperError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            developerId: action.payload
+          }
+        };
       }
     },
-
     compensateDeveloper: (
       state,
       action: PayloadAction<{ developerId: string; amount: number }>
@@ -567,25 +618,36 @@ export const useProjectOwnerSlice = createSlice({
         );
         if (developer) {
           developer.compensation += amount;
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_SUCCESS,
+            id: 'compensateDeveloperSuccess',
+            data: { developerId, amount, newCompensation: developer.compensation }
+          };
+        } else {
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_ERROR,
+            id: 'compensateDeveloperError',
+            data: {
+              error: `Developer with ID ${developerId} not found`,
+              developerId,
+              amount
+            }
+          };
         }
-
-        notify(
-          "compensateDeveloperSuccess",
-          "Compensate Developer Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
       } catch (error) {
-        // Handle errors
         console.error("Error compensating developer:", error);
-        notify(
-          "compensateDeveloperError",
-          NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_ERROR,
-          "Compensate Developer Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_ERROR,
+          id: 'compensateDeveloperError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            developerId: action.payload.developerId,
+            amount: action.payload.amount
+          }
+        };
       }
     },
 
@@ -593,102 +655,127 @@ export const useProjectOwnerSlice = createSlice({
       try {
         const selectedDeveloperId = action.payload;
 
-        // select the developer
-
-        state.selectedDeveloper = selectedDeveloperId;
-
-        notify(
-          "selectDeveloperSuccess",
-          "Select Developer Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // Check if developer exists
+        const developerExists = state.developers?.some(dev => dev.id === selectedDeveloperId);
+        
+        if (developerExists || state.developers?.length === 0) {
+          // select the developer
+          state.selectedDeveloper = selectedDeveloperId;
+          state.notification = {
+            type: 'success',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_SUCCESS,
+            id: 'selectDeveloperSuccess',
+            data: { selectedDeveloperId }
+          };
+        } else {
+          state.notification = {
+            type: 'error',
+            message: NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_ERROR,
+            id: 'selectDeveloperError',
+            data: {
+              error: `Developer with ID ${selectedDeveloperId} not found`,
+              selectedDeveloperId
+            }
+          };
+        }
       } catch (error) {
-        // Handle errors
         console.error("Error selecting developer:", error);
-        notify(
-          "selectDeveloperError",
-          NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_ERROR,
-          "Select Developer Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_ERROR,
+          id: 'selectDeveloperError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            selectedDeveloperId: action.payload
+          }
+        };
       }
     },
 
     initiateIdeationPhase: (state) => {
       try {
         // Logic to initiate the ideation phase
-        // This could involve setting a flag in the state or performing other operations
-
-        notify(
-          "ideationPhaseInitiated",
-          "Ideation Phase Initiated",
-          NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.currentPhase = 'ideation';
+        state.ideationInitiated = true;
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_SUCCESS,
+          id: 'ideationPhaseInitiated',
+          data: { phase: 'ideation', timestamp: new Date().toISOString() }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error initiating ideation phase:", error);
-        notify(
-          "ideationPhaseInitiationError",
-          NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_ERROR,
-          "Error initiating ideation phase",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_ERROR,
+          id: 'ideationPhaseInitiationError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
     formTeam: (state, action: PayloadAction<TeamMember[]>) => {
       try {
         // Logic to form a team
-        // This could involve updating the state with team members, creating a team object, etc.
-
-        notify(
-          "teamFormed",
-          "Team Formed",
-          NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        const teamMembers = action.payload;
+        state.teamMembers = [...(state.teamMembers || []), ...teamMembers];
+        state.teamFormed = true;
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_SUCCESS,
+          id: 'teamFormed',
+          data: {
+            teamMembersCount: teamMembers.length,
+            totalTeamMembers: state.teamMembers?.length || 0
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error forming team:", error);
-        notify(
-          "teamFormationError",
-          NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_ERROR,
-          "Error forming team",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_ERROR,
+          id: 'teamFormationError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            teamMembersCount: action.payload.length
+          }
+        };
       }
     },
 
     brainstormProduct: (state, action: PayloadAction<any>) => {
       try {
         // Logic to brainstorm product ideas
-        // This could involve facilitating brainstorming sessions, collecting ideas, etc.
-
-        notify(
-          "productBrainstormingSuccess",
-          "Product Brainstorming Success",
-          NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        const brainstormData = action.payload;
+        state.brainstormingSession = {
+          ...brainstormData,
+          timestamp: new Date().toISOString()
+        };
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_SUCCESS,
+          id: 'productBrainstormingSuccess',
+          data: {
+            brainstormData,
+            timestamp: new Date().toISOString()
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error brainstorming product:", error);
-        notify(
-          "productBrainstormingError",
-          NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_ERROR,
-          "Error brainstorming product",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_ERROR,
+          id: 'productBrainstormingError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            brainstormData: action.payload
+          }
+        };
       }
     },
 
@@ -696,96 +783,111 @@ export const useProjectOwnerSlice = createSlice({
       try {
         // Add logic to launch the product
         state.productLaunched = true;
-
-        notify(
-          "launchProductSuccess",
-          "Product Launched",
-          NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.productLaunchDate = new Date().toISOString();
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_SUCCESS,
+          id: 'launchProductSuccess',
+          data: {
+            launchDate: state.productLaunchDate,
+            productLaunched: true
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error launching product:", error);
-        notify(
-          "launchProductError",
-          NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_ERROR,
-          "Launch Product Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_ERROR,
+          id: 'launchProductError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
+
     performDataAnalysis: (state) => {
       try {
         // Add logic to perform data analysis
         state.dataAnalysisPerformed = true;
-
-        notify(
-          "performDataAnalysisSuccess",
-          "Data Analysis Performed",
-          NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.dataAnalysisDate = new Date().toISOString();
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_SUCCESS,
+          id: 'performDataAnalysisSuccess',
+          data: {
+            dataAnalysisPerformed: true,
+            analysisDate: state.dataAnalysisDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error performing data analysis:", error);
-        notify(
-          "performDataAnalysisError",
-          NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_ERROR,
-          "Perform Data Analysis Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_ERROR,
+          id: 'performDataAnalysisError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
+
     participateCommunity: (state) => {
       try {
         // Add logic to participate in the community
         state.communityParticipation = true;
-
-        notify(
-          "participateCommunitySuccess",
-          "Participated in Community",
-          NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.communityParticipationDate = new Date().toISOString();
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_SUCCESS,
+          id: 'participateCommunitySuccess',
+          data: {
+            communityParticipation: true,
+            participationDate: state.communityParticipationDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error participating in community:", error);
-        notify(
-          "participateCommunityError",
-          NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_ERROR,
-          "Participate Community Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_ERROR,
+          id: 'participateCommunityError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
+
     promoteUnity: (state) => {
       try {
         // Add logic to promote unity within the community
         state.unityPromoted = true;
-
-        notify(
-          "promoteUnitySuccess",
-          "Unity Promoted",
-          NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.unityPromotionDate = new Date().toISOString();
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_SUCCESS,
+          id: 'promoteUnitySuccess',
+          data: {
+            unityPromoted: true,
+            promotionDate: state.unityPromotionDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error promoting unity:", error);
-        notify(
-          "promoteUnityError",
-          NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_ERROR,
-          "Promote Unity Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_ERROR,
+          id: 'promoteUnityError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
@@ -793,24 +895,27 @@ export const useProjectOwnerSlice = createSlice({
       try {
         // Add logic to reward contributions within the community
         state.contributionsRewarded = true;
-
-        notify(
-          "rewardContributionsSuccess",
-          "Contributions Rewarded",
-          NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.rewardsDate = new Date().toISOString();
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_SUCCESS,
+          id: 'rewardContributionsSuccess',
+          data: {
+            contributionsRewarded: true,
+            rewardsDate: state.rewardsDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error rewarding contributions:", error);
-        notify(
-          "rewardContributionsError",
-          NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_ERROR,
-          "Reward Contributions Error",
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_ERROR,
+          id: 'rewardContributionsError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
 
@@ -818,77 +923,93 @@ export const useProjectOwnerSlice = createSlice({
       try {
         const numberOfApps = action.payload;
         // Add logic to build custom apps
-
+        
+        // Initialize if not exists
+        if (!state.customAppsBuilt) {
+          state.customAppsBuilt = 0;
+        }
+        
         state.customAppsBuilt += numberOfApps;
-
-        notify(
-          "buildCustomAppsSuccess",
-          "Custom Apps Built",
-          `${numberOfApps} custom apps successfully built.`,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Project.BUILD_CUSTOM_APPS_SUCCESS || `${numberOfApps} custom apps successfully built.`,
+          id: 'buildCustomAppsSuccess',
+          data: {
+            numberOfAppsBuilt: numberOfApps,
+            totalCustomApps: state.customAppsBuilt,
+            buildDate: new Date().toISOString()
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error building custom apps:", error);
-        notify(
-          "buildCustomAppsError",
-          "Build Custom Apps Error",
-          NOTIFICATION_MESSAGES.Project.BUILD_CUSTOM_APPS_ERROR,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Project.BUILD_CUSTOM_APPS_ERROR,
+          id: 'buildCustomAppsError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            numberOfApps: action.payload
+          }
+        };
       }
     },
     incentivizeProjectMetrics: (state) => {
       try {
         // Add logic to incentivize project metrics
         state.projectMetricsIncentivized = true;
-
-        notify(
-          "incentivizeProjectMetricsSuccess",
-          "Project Metrics Incentivized",
-          NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.metricsIncentivizedDate = new Date().toISOString();
+      
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_SUCCESS,
+          id: 'incentivizeProjectMetricsSuccess',
+          data: {
+            projectMetricsIncentivized: true,
+            incentivizedDate: state.metricsIncentivizedDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error incentivizing project metrics:", error);
-        notify(
-          "incentivizeProjectMetricsError",
-          "Incentivize Project Metrics Error",
-          NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_ERROR,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_ERROR,
+          id: 'incentivizeProjectMetricsError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
     },
+
     contributeToSustainability: (state) => {
       try {
         // Add logic to contribute to sustainability
         state.sustainabilityContributed = true;
-
-        notify(
-          "contributeToSustainabilitySuccess",
-          "Contribution to Sustainability",
-          NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        state.sustainabilityContributionDate = new Date().toISOString();
+  
+        state.notification = {
+          type: 'success',
+          message: NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_SUCCESS,
+          id: 'contributeToSustainabilitySuccess',
+          data: {
+            sustainabilityContributed: true,
+            contributionDate: state.sustainabilityContributionDate
+          }
+        };
       } catch (error) {
-        // Handle errors
         console.error("Error contributing to sustainability:", error);
-        notify(
-          "contributeToSustainabilityError",
-          "Contribute to Sustainability Error",
-          NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_ERROR,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        state.notification = {
+          type: 'error',
+          message: NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_ERROR,
+          id: 'contributeToSustainabilityError',
+          data: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        };
       }
-    },
-  },
+    }
+  }
 });
 
 // Export action creators

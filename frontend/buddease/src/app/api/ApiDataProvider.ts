@@ -3,10 +3,8 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from "axios";
 
 const API_BASE_URL = endpoints.dataProviders;
@@ -73,17 +71,38 @@ export const updateProviderRecord = async (id: number, data: any, token: string)
       },
     });
 
-    notify(
-      "UpdateProviderRecordSuccessId",
-      "Provider record updated successfully",
-      { id },
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notify({
+      id: "UpdateProviderRecordSuccessId",
+      message: "Provider record updated successfully",
+      data: { 
+        id,
+        operation: "updateProviderRecord",
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_SUCCESS, // or SUCCESS if that exists
+      level: 'success'
+    });
 
     return;
   } catch (error) {
     handleApiError(error as AxiosError, "Failed to update provider record");
+    
+    // Also notify about the error
+    notify({
+      id: "UpdateProviderRecordErrorId",
+      message: "Failed to update provider record",
+      data: { 
+        id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        operation: "updateProviderRecord",
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_ERROR, // or ERROR if that exists
+      level: 'error'
+    });
+    
     throw error;
   }
 };
@@ -97,21 +116,41 @@ export const deleteProviderRecord = async (id: number, token: string) => {
       },
     });
 
-    notify(
-      "DeleteProviderRecordSuccessId",
-      "Provider record deleted successfully",
-      { id },
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    notify({
+      id: "DeleteProviderRecordSuccessId",
+      message: "Provider record deleted successfully",
+      data: { 
+        id,
+        operation: "deleteProviderRecord",
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_SUCCESS, // or SUCCESS if that exists
+      level: 'success'
+    });
 
     return id;
   } catch (error) {
     handleApiError(error as AxiosError, "Failed to delete provider record");
+    
+    // Also notify about the error
+    notify({
+      id: "DeleteProviderRecordErrorId",
+      message: "Failed to delete provider record",
+      data: { 
+        id,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        operation: "deleteProviderRecord",
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.API_ERROR, // or ERROR if that exists
+      level: 'error'
+    });
+    
     throw error;
   }
 };
-
 
 
 export const getManyProviders = async (providerIds: number[], token: string) => {

@@ -4,7 +4,7 @@
 import React from "react";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps, EventDetails } from "./CalendarEventViewingDetails";
-import { CalendarManagerState } from "./CalendarSlice";
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
 
 // EventDetailsEnhancement.ts
 interface EventDetailsEnhancement extends EventDetails {

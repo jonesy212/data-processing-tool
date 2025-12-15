@@ -1,12 +1,12 @@
 // ApiExchange.ts
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { YourResponseType } from "@/app/typings/responseTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AxiosError } from "axios";
 import {
   apiNotificationMessages,
@@ -63,7 +63,7 @@ export const fetchExchangeData = async <
   }
 };
 
-const transformYourResponseToExchangeData = <
+export const transformYourResponseToExchangeData = <
   T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,

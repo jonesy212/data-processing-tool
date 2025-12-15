@@ -8,12 +8,25 @@ import PackageRecommendationGenerator from '@/app/generators/PackageRecommendati
 import { PackageJson } from '@/app/scripts/generate-commands-doc'
 
 interface ProjectStructure {
+  name?: string;
+  root?: string;
   interfaces: [string, InterfaceInfo][];
   components: [string, ComponentInfo][];
   apis: [string, ApiInfo][];
   totalFiles: number;
   files: string[];
   packageJson: PackageJson | null;
+
+  // --- optional extras the scanner wants to write ---
+  modules?: {
+    name: string;
+    path: string;
+    type: string;
+    dependencies: string[];
+  }[];
+  dependencies?: Record<string, any>;
+  type?: string;
+  version?: string;
 }
 
 /**
@@ -26,7 +39,11 @@ interface ProjectStructure {
 export async function generateRoadmaps(
   userPrompt: string,
   outputDir: string = './roadmaps'
-): Promise<{ devFile: string; nonTechFile: string }> {
+): Promise<{
+  devFile: string;
+  nonTechFile: string,  
+  projectStructure: ProjectStructure;  
+}> {
   const analyzer = new ProjectTreeAnalyzer();
   const projectStructure = await analyzer.analyzeProjectTree(); // async fetch
 
@@ -83,7 +100,7 @@ export async function generateRoadmaps(
   console.log(`✅ Frontend packages saved: ${frontendPackagesFile}`);
   console.log(`✅ Backend packages saved: ${backendPackagesFile}`);
 
-  return { devFile, nonTechFile };
+  return { devFile, nonTechFile, projectStructure };
 }
 
 function categorizeProjectStructure(projectStructure: ProjectStructure): DomainStructure {

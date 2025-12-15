@@ -2,15 +2,17 @@
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { T } from '@/app/models/data/dataStoreMethods';
+import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
-import { SnapshotStoreConfig } from "@/app/snapshot/SnapshotStoreConfig";
-import { SnapshotStoreMethods, SnapshotStoreProps } from "@/app/snapshot/SnapshotStoreProps";
 import { Snapshot, SnapshotDataType } from '@/app/snapshots';
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreMethods, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -231,6 +233,7 @@ function convertSnapshot<
         createdAt: snapshot.store.createdAt || undefined,
         updatedBy: snapshot.store.updatedBy || undefined,
         updatedAt: snapshot.store.updatedAt || undefined,
+        videos, contributors, links, 
       },
     
       // Assigning video-related properties to `videoMetadata`
@@ -259,6 +262,7 @@ function convertSnapshot<
       ...snapshot.store.metadata,
     };
     
+      SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     const snapshotConfig = snapshotApi.getSnapshotConfig(
         snapshot.store.id ? Number(snapshot.store.id) : 0,
         // snapshot.store.baseData,
@@ -269,7 +273,7 @@ function convertSnapshot<
         snapshot.store.categoryProperties ? snapshot.store.categoryProperties : ({} as CategoryProperties),
         snapshot.store.subscriberId ? String(snapshot.store.subscriberId) : undefined,
         snapshot.store.getDelegate(context),
-        snapshot.store.getSnapshotData(),
+        snapshot.store.getSnapshotData(params),
         snapshot.store.snapshot,
         snapshot.store.data instanceof Map 
         ? convertSnapshotMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshot.store.data) 
@@ -307,7 +311,8 @@ function convertSnapshot<
           config,
           operation,
           expirationDate,
-          payload, callback, storeProps, endpointCategory, initialState
+          payload, callback, storeProps, endpointCategory, initialState,
+          core, security, storage, isExpired, data, snapshotStore
         });
 
         resolve({

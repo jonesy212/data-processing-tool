@@ -9,6 +9,7 @@ import { Router, useRouter } from "next/router";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes'
 import { useState } from "react";
+import { createEventHandler } from '@/app/typings/eventHandlers/factoryHandlers'
 
 const DynamicEventHandlerService = ({
   handleSorting,

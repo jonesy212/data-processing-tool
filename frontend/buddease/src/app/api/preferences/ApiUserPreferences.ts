@@ -1,7 +1,7 @@
 // ApiUserPreferences.ts
-import { endpointPreferences } from "@/app/ApiPreferencesEndpoints";
-import axiosInstance from '@/app/api/csrfToken';
-import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
+import { endpointPreferences } from "@/app/api/ApiPreferencesEndpoints";
+import internalApiService from '@/app/api/ApiClient';
+import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { UserPreferences } from "@/app/config/UserPreferences";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
@@ -21,23 +21,28 @@ type ApiUserPreferences = {
     notificationPreferences: NotificationPreferences
   ) => Promise<void>;
 };
-
 const useApiUserPreferences = (): ApiUserPreferences => {
   const { notify } = useNotification(); // Use the useNotification hook
 
   const fetchUserPreferences = async (): Promise<UserPreferences> => {
     try {
-      const response = await axiosInstance.get(endpointPreferences.userPreferences.fetchUserPreferences);
+      const response = await internalApiService.get(endpointPreferences.userPreferences.fetchUserPreferences);
       return response.data.preferences;
     } catch (error) {
       console.error("Error fetching user preferences:", error);
-      notify(
-        "Error fetching user preferences",
-        "Failed to fetch user preferences",
-        NOTIFICATION_MESSAGES.UserPreferences.FETCHING_PREFERENCES_ERROR,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error fetching user preferences".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.FETCHING_PREFERENCES_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error fetching user preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
@@ -46,176 +51,270 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     updatedPreferences: UserPreferences
   ): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.updateUserPreferences, updatedPreferences);
-      notify(
-        "User preferences updated successfully",
-        "User preferences updated successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_SUCCESS,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.updateUserPreferences, updatedPreferences);
+      notify({
+        id: `success${"User preferences updated successfully".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_SUCCESS,
+        data: { 
+          extra: {
+            operation: "Update user preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error updating user preferences:", error);
-      notify(
-        "Error updating user preferences",
-        "Failed to update user preferences",
-        NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error updating user preferences".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error updating user preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const setTheme = async (theme: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setTheme, { theme });
-      notify(
-        "Theme set successfully",
-        "Theme set successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.THEME_SET_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setTheme, { theme });
+      notify({
+        id: `success${"Theme set successfully".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.THEME_SET_SUCCESSFULLY,
+        data: { 
+          extra: {
+            theme,
+            operation: "Set theme"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error setting theme:", error);
-      notify(
-        "Error setting theme",
-        "Failed to set theme",
-        NOTIFICATION_MESSAGES.UserPreferences.THEME_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error setting theme".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.THEME_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error setting theme",
+            theme
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const setFontSize = async (fontSize: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setFontSize, { fontSize });
+      await internalApiService.put(endpointPreferences.userPreferences.setFontSize, { fontSize });
     } catch (error) {
       console.error("Error setting font size:", error);
-      notify(
-        "Error setting font size",
-        "Failed to set font size",
-        NOTIFICATION_MESSAGES.UserPreferences.FONT_SIZE_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error setting font size".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.FONT_SIZE_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error setting font size",
+            fontSize
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
     }
   };
 
   const setIdeationPhase = async (ideationPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setIdeationPhase, { ideationPhase });
-      notify(
-        "IdeationPhaseSetSuccess",
-        "Ideation phase set successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SET_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setIdeationPhase, { ideationPhase });
+      notify({
+        id: `success${"IdeationPhaseSetSuccess".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SET_SUCCESSFULLY,
+        data: { 
+          extra: {
+            ideationPhase,
+            operation: "Set ideation phase"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error setting ideation phase:", error);
-      notify(
-        "Error setting ideation phase",
-        "Failed to set ideation phase",
-        NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error setting ideation phase".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error setting ideation phase",
+            ideationPhase
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const deleteUserPreferences = async (): Promise<void> => {
     try {
-      await axiosInstance.delete(endpointPreferences.userPreferences.deleteUserPreferences);
-      notify(
-        "UserPreferencesDeleteSuccessful",
-        "User preferences deleted successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETED_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.delete(endpointPreferences.userPreferences.deleteUserPreferences);
+      notify({
+        id: `success${"UserPreferencesDeleteSuccessful".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETED_SUCCESSFULLY,
+        data: { 
+          extra: {
+            operation: "Delete user preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error deleting user preferences:", error);
-      notify(
-        "Error deleting user preferences",
-        "Failed to delete user preferences",
-        NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETION_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error deleting user preferences".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETION_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error deleting user preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const setBrainstormingPhase = async (brainstormingPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setBrainstormingPhase, { brainstormingPhase });
-      notify(
-        "brainistormingPhaseSetSuccess",
-        "Brainstorming phase set successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SET_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setBrainstormingPhase, { brainstormingPhase });
+      notify({
+        id: `success${"brainistormingPhaseSetSuccess".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SET_SUCCESSFULLY,
+        data: { 
+          extra: {
+            brainstormingPhase,
+            operation: "Set brainstorming phase"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error setting brainstorming phase:", error);
-      notify(
-        "Error setting brainstorming phase",
-        "Failed to set brainstorming phase",
-        NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"Error setting brainstorming phase".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error setting brainstorming phase",
+            brainstormingPhase
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const setLaunchPhase = async (launchPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setLaunchPhase, { launchPhase });
-      notify(
-        "launchPhaseSetSuccessfully",
-        "Launch phase set successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SET_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setLaunchPhase, { launchPhase });
+      notify({
+        id: `success${"launchPhaseSetSuccessfully".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SET_SUCCESSFULLY,
+        data: { 
+          extra: {
+            launchPhase,
+            operation: "Set launch phase"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error setting launch phase:", error);
-      notify(
-        "SettingLaunchPhaseError",
-        "Failed to set launch phase",
-        NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"SettingLaunchPhaseError".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to set launch phase",
+            launchPhase
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
 
   const setDataAnalysisPhase = async (dataAnalysisPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setDataAnalysisPhase, { dataAnalysisPhase });
-      notify(
-        "DataAnalysisPhaseSetSuccessfully",
-        "Data analysis phase set successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SET_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setDataAnalysisPhase, { dataAnalysisPhase });
+      notify({
+        id: `success${"DataAnalysisPhaseSetSuccessfully".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SET_SUCCESSFULLY,
+        data: { 
+          extra: {
+            dataAnalysisPhase,
+            operation: "Set data analysis phase"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error setting data analysis phase:", error);
-      notify(
-        "settingDataAnalysisPhaseError",
-        "Failed to set data analysis phase",
-        NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SETTING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"settingDataAnalysisPhaseError".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SETTING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to set data analysis phase",
+            dataAnalysisPhase
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   };
@@ -224,23 +323,34 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     notificationPreferences: NotificationPreferences
   ): Promise<void> => {
     try {
-      await axiosInstance.put(endpointPreferences.userPreferences.setNotificationPreferences, { notificationPreferences });
-      notify(
-        "NotificationPreferencesSavedSuccessfully",
-        "Notification preferences saved successfully",
-        NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      await internalApiService.put(endpointPreferences.userPreferences.setNotificationPreferences, { notificationPreferences });
+      notify({
+        id: `success${"NotificationPreferencesSavedSuccessfully".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY,
+        data: { 
+          extra: {
+            operation: "Save notification preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       console.error("Error saving notification preferences:", error);
-      notify(
-        "ErrorSavingNotificationPreferences",
-        "Failed to save notification preferences",
-        NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVING_FAILED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      notify({
+        id: `error${"ErrorSavingNotificationPreferences".replace(/\s+/g, '')}`,
+        message: NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVING_FAILED,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to save notification preferences"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
     }
   };
 

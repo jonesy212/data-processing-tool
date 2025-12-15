@@ -1,16 +1,16 @@
 // userScenarioCreation.tsx
-import { useState } from 'react';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
-import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentIncludedFields, DocumentExcludedFields } from '@/app/typings/entities/DocumentEntity'
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { DocumentBuilderProps } from '@/app/documents/SharedDocumentProps';
 import { Phase } from '@/app/models/phases/Phase';
 import PhaseManager from '@/app/models/phases/PhaseManager';
-import useDocumentManagerSlice from '@/app/state/redux/slices/DocumentSlice';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 import PersonaTypeEnum, { PersonaBuilder } from '@/app/pages/personas/PersonaBuilder';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import useDocumentManagerSlice from '@/app/state/redux/slices/DocumentSlice';
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { Version } from '@/app/versions/Version';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { useState } from 'react';
 
 // ---------------------------
 // DocumentWithBuilderProps interface

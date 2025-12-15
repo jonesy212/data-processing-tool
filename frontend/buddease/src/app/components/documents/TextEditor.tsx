@@ -6,9 +6,14 @@ import {
 } from "@/app/config/DocumentBuilderConfig";
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import "quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import Quill from "react-quill";
+
+
+if (typeof window !== 'undefined') {
+  import("quill/dist/quill.snow.css");
+}
+
 
 export interface TextEditorProps extends ToolbarOptionsProps {
   id: string;

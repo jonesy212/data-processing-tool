@@ -1,12 +1,15 @@
 // TaskStore .tsx
 // TaskManagerStore.tsx
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import { TaskActions } from '@/app/actions/TaskActions';
 import addSnapshot from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { saveAs } from '@/app/documents/editing/autosave';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import useApiManager from "@/app/hooks/dynamicHooks/useApiManager";
@@ -21,10 +24,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
-import {
-    NotificationType, NotificationTypeEnum,
-    useNotification
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
 import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
@@ -75,7 +75,7 @@ export interface TaskManagerStore<
   archiveCompletedTasks: () => void;
   updateTaskAssignee: (
     taskId: string,
-    assignee: User
+    assignee: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => (dispatch: any) => Promise<void>;
   getTasksByAssignee: (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], assignee: User) => Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   getTaskById: (taskId: string) => Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -101,7 +101,7 @@ export interface TaskManagerStore<
   completeAllTasksFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+   setDynamicNotificationMessage: (message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: NotificationType) => void;
   takeTaskSnapshot: (taskId: string) => void;
   markTaskAsComplete: (taskId: string) => void;
 
@@ -112,7 +112,7 @@ export interface TaskManagerStore<
   ) => void;
   batchFetchTaskSnapshotsSuccess: (taskId:  Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   batchFetchUserSnapshotsRequest: (
-    snapshotData: Record<string, User[]>
+    snapshotData: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
   ) => void
 }
 
@@ -229,7 +229,7 @@ const useTaskManagerStore = <
       default:
         break;
     }
-    
+  } 
 
     const reassignedTasks = ["task1", "task2", "task3"];
 
@@ -301,25 +301,60 @@ const useTaskManagerStore = <
     });
 
   const reassignTask = (
-  taskId: string,
-  oldUserId: string,
-  newUserId: string
-) => {
-  const tasks = assignedTaskStore[taskId] ?? [];
-  const reassignedTasks = tasks.map((task) =>
-    task.userId === oldUserId ? { ...task, userId: newUserId } : task
-  );
-  setAssignedTaskStore({
-    ...assignedTaskStore,
-    [taskId]: reassignedTasks,
-    task: undefined,
-    assignee: "",
-  });
-
-  setDynamicNotificationMessage(
-    NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
-  );
-};
+    taskId: string,
+    oldUserId: string,
+    newUserId: string
+  ) => {
+    try {
+      // Check if task exists
+      if (!tasks[taskId] || tasks[taskId].length === 0) {
+        console.error(`Task with ID ${taskId} does not exist or has no data.`);
+        setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.TASK_NOT_FOUND);
+        return;
+      }
+      
+      // Create snapshot before any changes
+      const taskSnapshot = { [taskId]: [...tasks[taskId]] };
+      useSnapshotManager().addSnapshot(
+        taskSnapshot as unknown as Omit<Todo<T, K, Meta>, "id">
+      );
+      
+      // Update assignedTaskStore (for task-user assignments)
+      const assignedTasks = assignedTaskStore[taskId] ?? [];
+      const reassignedTasks = assignedTasks.map((task) =>
+        task.userId === oldUserId ? { ...task, userId: newUserId } : task
+      );
+      
+      setAssignedTaskStore({
+        ...assignedTaskStore,
+        [taskId]: reassignedTasks,
+      });
+      
+      // Update the main task with new assignee
+      const updatedTask = { 
+        ...tasks[taskId][0], 
+        assignedUserId: newUserId,
+        lastUpdated: new Date()
+      };
+      
+      setTasks((prevTasks) => ({
+        ...prevTasks,
+        [taskId]: [updatedTask]
+      }));
+      
+      // Show success notification
+      setDynamicNotificationMessage(
+        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT
+      );
+      
+      // Optional: Log the reassignment
+      console.log(`Reassigned task ${taskId} from user ${oldUserId} to ${newUserId}`);
+      
+    } catch (error) {
+      console.error(`Error reassigning task ${taskId}:`, error);
+      setDynamicNotificationMessage(NOTIFICATION_MESSAGES.Error.DEFAULT);
+    }
+  };
 
     const reassignUser = (
       taskId: string,
@@ -346,20 +381,9 @@ const useTaskManagerStore = <
       }
     };
 
-    const updateTaskTitle = (title: string) => {
-      setTaskTitle(title);
+    const updateTaskDescription = (description: string, taskId: string) => {
+      setTaskDescription(description, taskId);
     };
-
-    const updateTaskDescription = (description: string) => {
-      setTaskDescription(description);
-    };
-
-    const updateTaskStatus = (
-      status: TaskStatus
-    ) => {
-      setTaskStatus(status);
-    };
-  };
 
   const addTaskSuccess = (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
     const { task } = payload;
@@ -446,30 +470,6 @@ const useTaskManagerStore = <
     });
   };
 
-  const reassignTask = (
-    taskId: string,
-    oldUserId: string,
-    newUserId: string
-  ) => {
-    // Ensure the taskId exists in the tasks
-    if (!tasks[taskId]) {
-      console.error(`Task with ID ${taskId} does not exist.`);
-      return;
-    }
-    // Create a snapshot of the current tasks for the specified taskId
-    const taskSnapshot = { [taskId]: [...tasks[taskId]] };
-    // Store the snapshot in the SnapshotStore
-    useSnapshotManager().addSnapshot(
-      taskSnapshot as unknown as Omit<Todo<T, K, Meta>, "id">
-    );
-    // Update the task
-    const updatedTask = { ...tasks[taskId][0], assignedUserId: newUserId };
-    setTasks((prevTasks) => {
-      const updatedTasks = { ...prevTasks };
-      updatedTasks[taskId] = [updatedTask];
-      return updatedTasks;
-    });
-  };
 
   const addTasks = (tasksToAdd: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     // Ensure at least one task is passed
@@ -539,10 +539,6 @@ const useTaskManagerStore = <
 
   const updateTaskTitle = (title: string, taskId: string) => {
     updateTaskTitle(title, taskId);
-  };
-
-  const updateTaskDescription = (description: string, taskId: string) => {
-    updateTaskDescription(description, taskId);
   };
 
   const updateTaskStatus = (
@@ -641,26 +637,50 @@ const useTaskManagerStore = <
       markTaskComplete(taskId);
 
       // Simulating asynchronous operation
-      setTimeout((error: Error) => {
-        notify(
-          "markTaskAsCompleteFailure",
-          `Error marking task ${taskId} as complete`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+      setTimeout(() => {
+        // Note: This won't have access to the Redux thunk's `dispatch` context
+        // You might want to move this to a different approach
+        console.log(`Task ${taskId} completed asynchronously`);
       }, 1000);
+
+      // Show success notification
+      notify({
+        id: `markTaskCompleteSuccess-${taskId}`,
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        data: {
+          extra: {
+            taskId,
+            operation: "Mark task as complete",
+            status: "completed"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+
     } catch (error) {
       console.error(`Error marking task ${taskId} as complete`, error);
 
-      dispatch(markTaskAsCompleteFailure({ taskId: "taskId", error: "error" })),
-        notify(
-          "markTaskAsCompleteFailure",
-          `Error marking task ${taskId} as complete`,
-          NOTIFICATION_MESSAGES.Error.DEFAULT,
-          new Date(new Date().getTime()),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+      dispatch(markTaskAsCompleteFailure({ 
+        taskId: taskId, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }));
+
+      notify({
+        id: `markTaskCompleteError-${taskId}`,
+        message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: `Error marking task ${taskId} as complete`,
+            taskId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
     }
   };
 
@@ -774,7 +794,7 @@ const useTaskManagerStore = <
       // Download CSV file as a blob
     };
   };
-
+  
   const updateTaskPriority = (taskId: string, priority: PriorityTypeEnum) => async (dispatch: any) => {
     try {
       // Update task priority
@@ -790,133 +810,273 @@ const useTaskManagerStore = <
         }
         return updatedTasks;
       });
+      
       // Dispatch the synchronous action immediately
       dispatch(TaskActions.updateTaskPrioritySuccess({
         taskId,
         priority
       }));
-      // Simulating asynchronous operation
+      
+      // Show success notification
+      notify({
+        id: `updateTaskPrioritySuccess-${taskId}`,
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        data: {
+          extra: {
+            taskId,
+            priority,
+            operation: "Update task priority"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+      
+      // Simulating asynchronous operation (if needed)
       setTimeout(() => {
-        notify(
-          "updateTaskPriorityFailure",
-          `Error updating priority for task ${taskId}`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+        // If you need to do something async after success
+        console.log(`Priority updated for task ${taskId}`);
       }, 1000);
+      
     } catch (error) {
       console.error(`Error updating priority for task ${taskId}`, error);
 
       dispatch(
         TaskActions.updateTaskPriorityFailure({
           taskId,
-          error: error.message,
+          error: error instanceof Error ? error.message : 'Unknown error',
         })
-      ),
-        notify(
-          "updateTaskPriorityFailure",
-          `Error updating priority for task ${taskId}`,
-          NOTIFICATION_MESSAGES.Error.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+      );
+
+      notify({
+        id: `updateTaskPriorityError-${taskId}`,
+        message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: `Error updating priority for task ${taskId}`,
+            taskId,
+            priority
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
     }
   };
-
-
 
   const filterTasksByStatus = (status: TaskStatus) => {
     return tasksDataSource.filter((task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === status);
   }
-  const updateTaskAssignee =
-    (taskId: string, assignee: User) => async (dispatch: any) => {
-      try {
-        // Update task assignee
-        // Assuming setTasks is a local state updater
-        setTasks((prevTasks) => {
-          const updatedTasks = { ...prevTasks };
-          const taskToUpdate = updatedTasks[taskId];
-          if (taskToUpdate) {
-            taskToUpdate[0].assignee = assignee;
-          }
-          return updatedTasks;
-        });
-      } catch (err) {
-        console.error(`Error updating task ${taskId} assignee`, err);
-      }
-
-      // Dispatch the synchronous action immediately
-      dispatch(updateTaskAssigneeSuccess(taskId, assignee));
-      updateTaskAssignee(taskId, assignee);
-
-      // Simulating asynchronous operation
-      setTimeout((error: Error) => {
-        notify(
-          "updateTaskAssigneeFailure",
-          `Error updating task ${taskId} assignee`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
-      }, 1000);
-    };
 
   // Define an index signature for taskCountByStatus
   const taskCountByStatus: { [key: string]: number } = {};
 
-  const getTaskCountByStatus = async (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
+  
+  const updateTaskAssignee = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  taskId: string, 
+  assignee: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+) => async (dispatch: AppDispatch) => { // Use proper AppDispatch type if available
+  const notificationId = `updateTaskAssignee-${taskId}-${Date.now()}`;
+  
+  try {
+    // Update task assignee in local state
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks };
+      const taskToUpdate = updatedTasks[taskId];
+      if (taskToUpdate && taskToUpdate[0]) {
+        taskToUpdate[0].assignee = assignee;
+      }
+      return updatedTasks;
+    });
+
+    // Dispatch synchronous action
+    dispatch(updateTaskAssigneeSuccess(taskId, assignee));
+    
+    // Show immediate success notification
+    notify({
+      id: notificationId,
+      message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+      data: {
+        extra: {
+          taskId,
+          assigneeId: assignee.id,
+          assigneeName: assignee.name || 'Unknown',
+          operation: "Update task assignee",
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
+
+    // Optional: Async operation (API call, server sync, etc.)
+    // Uncomment and implement if needed:
+    /*
+    setTimeout(async () => {
+      try {
+        // API call to update assignee on server
+        await api.updateTaskAssignee(taskId, assignee.id);
+        
+        // Optional: Show completion notification
+        notify({
+          id: `asyncUpdateAssigneeSuccess-${taskId}`,
+          message: "Assignee sync completed",
+          data: { taskId, assigneeId: assignee.id },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_SUCCESS,
+          level: 'info'
+        });
+      } catch (serverError) {
+        console.error(`Server sync failed for task ${taskId}`, serverError);
+        
+        notify({
+          id: `serverSyncError-${taskId}`,
+          message: "Server sync failed - changes saved locally",
+          data: { 
+            taskId, 
+            assigneeId: assignee.id,
+            error: serverError instanceof Error ? serverError.message : 'Unknown error'
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'warning'
+        });
+      }
+    }, 1000);
+    */
+
+  } catch (error) {
+    console.error(`Error updating task ${taskId} assignee`, error);
+    
+    // Dispatch error action if available
+    if (updateTaskAssigneeFailure) {
+      dispatch(updateTaskAssigneeFailure({ 
+        taskId, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }));
+    }
+    
+    // Show error notification
+    notify({
+      id: `${notificationId}-error`,
+      message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+      data: {
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+        extra: {
+          errorMessage: `Error updating task ${taskId} assignee`,
+          taskId,
+          assigneeId: assignee.id
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error'
+    });
+    
+    // Optional: Re-throw if you want calling code to handle it
+    // throw error;
+  }
+};
+  
+
+const getTaskCountByStatus = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     try {
+      // Clear previous counts
+      Object.keys(taskCountByStatus).forEach(key => {
+        delete taskCountByStatus[key];
+      });
+
       const statuses = Object.keys(TaskStatus);
       for (const status of statuses) {
         taskCountByStatus[status] = tasks.filter(
           (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === status
         ).length;
       }
-      // Simulating asynchronous operation
-      setTimeout(() => {
-        notify(
-          "getTaskCountByStatusFailure",
-          `Error getting task count by status`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
-      }, 1000);
 
-      return taskCountByStatus;
+      // Show success notification immediately
+      notify({
+        id: `getTaskCountByStatusSuccess-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        data: {
+          extra: {
+            operation: "Get task count by status",
+            totalTasks: tasks.length,
+            statusCounts: { ...taskCountByStatus }, // Create a copy
+            timestamp: new Date().toISOString()
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+
+      return { ...taskCountByStatus }; 
     } catch (error) {
       console.error(`Error getting task count by status`, error);
-      notify(
-        "getTaskCountByStatusFailure",
-        `Error getting task count by status`,
-        NOTIFICATION_MESSAGES.Error.DEFAULT,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      notify({
+        id: `getTaskCountByStatusError-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Error getting task count by status",
+            totalTasks: tasks.length
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
+      
+      // Return empty object on error
+      return {};
     }
   };
 
   const updateTaskPositionSuccess = async (payload: { taskId: string }) => {
     const { taskId } = payload;
-    // Assuming getTaskById is asynchronous and returns a promise
     const task = await getTaskById(taskId);
-    if (task) {
-      const { status } = task; // Access status property directly
-      const taskList = tasks[status];
+  
+    if (task && task.status) {
+      // Cast status to TaskStatus if needed
+      const status = task.status as TaskStatus;
+      const taskList = tasks[status] || []; // Provide fallback array
+    
       const taskIndex = taskList.findIndex((t) => t.id === taskId);
-      const updatedTaskList = [
-        ...taskList.slice(0, taskIndex),
-        task,
-        ...taskList.slice(taskIndex + 1),
-      ];
-      setTasks({
-        ...tasks,
-        [status]: updatedTaskList
-      })
+    
+      if (taskIndex !== -1) {
+        const updatedTaskList = [
+          ...taskList.slice(0, taskIndex),
+          task,
+          ...taskList.slice(taskIndex + 1),
+        ];
+      
+        setTasks({
+          ...tasks,
+          [status]: updatedTaskList
+        });
+      }
     }
-  }
-
+  }  
 
   const clearAllTasks = () => {
     setTasks({});
@@ -924,29 +1084,44 @@ const useTaskManagerStore = <
 
   const archiveCompletedTasks = () => {
     try {
-      // Convert tasksDataSource to an array
-      const tasksArray = Object.values(tasksDataSource);
+      // Get all tasks from data source (assuming it's Record<string, Task>)
+      const allTasks = tasksDataSource as Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
       
-      // Filter completed tasks
-      const completedTasks = tasksArray.filter(
-        (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === TaskStatus.Completed
-      );
-  
-      // Create a new tasksDataSource excluding completed tasks
-      const updatedTasks = tasksArray.reduce((acc, task) => {
+      // Filter out completed tasks
+      const filteredTasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
+      
+      Object.entries(allTasks).forEach(([taskId, task]) => {
         if (task.status !== TaskStatus.Completed) {
-          acc[task.id] = task;
+          filteredTasks[taskId] = task;
         }
-        return acc;
-      }, {} as Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
-  
-      // Simulate updating the state with the new tasks object
-      setTasks(Object.values(updatedTasks));
+      });
+
+      // Transform to the expected state structure: Record<string, Task[]>
+      const updatedState: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {
+        [TaskStatus.Pending]: [],
+        [TaskStatus.InProgress]: [],
+        [TaskStatus.Completed]: []
+      };
+
+      Object.values(filteredTasks).forEach(task => {
+        if (task.status === TaskStatus.Pending) {
+          updatedState[TaskStatus.Pending].push(task);
+        } else if (task.status === TaskStatus.InProgress) {
+          updatedState[TaskStatus.InProgress].push(task);
+        } else if (task.status === TaskStatus.Completed) {
+          updatedState[TaskStatus.Completed].push(task);
+        }
+      });
+
+      // Update the state
+      setTasks(updatedState);
+      
+      console.log(`Archived ${Object.keys(allTasks).length - Object.keys(filteredTasks).length} completed tasks`);
     } catch (error) {
       console.error("Error archiving completed tasks", error);
     }
   };
-  
+
 
   const getTasksByAssignee = async (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], assignee: User) => {
     try {
@@ -1034,61 +1209,140 @@ const useTaskManagerStore = <
     snapshotData: Record<string, T[]>
   ): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
-      Object.values(snapshotData).forEach((tasks: T[], index: number) => {
-        tasks.forEach((task: T) => {
-          // Create a snapshot for each task
-          const snapshot: Snapshot<Omit<T, "id">> = {
-            data: task,
-            timestamp: new Date(),
-            category: "task",
-          };
+      try {
+        Object.values(snapshotData).forEach((tasks: T[], index: number) => {
+          tasks.forEach((task: T) => {
+            // Create a snapshot for each task
+            const snapshot: Snapshot<Omit<T, "id">> = {
+              data: { ...task },
+              timestamp: new Date(),
+              category: "task",
+            };
 
-          // Add the snapshot to the SnapshotManager
-          useSnapshotManager().addSnapshot(snapshot);
+            // Add the snapshot to the SnapshotManager
+            useSnapshotManager(initialStoreId, storeProps).addSnapshot(snapshot);
+          });
         });
-      });
 
-      // Resolve with a message indicating success
-      resolve("Batch fetch task snapshots completed successfully.");
+        // Show success notification
+        notify({
+          id: `batchFetchTaskSnapshotsSuccess-${Date.now()}`,
+          message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+          data: {
+            extra: {
+              operation: "Batch fetch task snapshots",
+              totalTasks: Object.values(snapshotData).flat().length,
+              timestamp: new Date().toISOString()
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_SUCCESS,
+          level: 'success'
+        });
+
+        // Resolve with a message indicating success
+        resolve("Batch fetch task snapshots completed successfully.");
+      } catch (error) {
+        console.error("Error in batchFetchTaskSnapshotsRequest:", error);
+      
+        notify({
+          id: `batchFetchTaskSnapshotsError-${Date.now()}`,
+          message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+          data: {
+            originalError: error instanceof Error ? error.message : 'Unknown error',
+            extra: {
+              errorMessage: "Failed to batch fetch task snapshots",
+              snapshotCount: Object.keys(snapshotData).length
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error'
+        });
+      
+        reject(error);
+      }
     });
   };
 
-  const batchFetchTaskSnapshotsSuccess =
-    async (taskId: Promise<string>) => async (dispatch: any) => {
+  const batchFetchTaskSnapshotsSuccess = (taskId: string) => async (dispatch: any) => {
+    try {
       console.log(`Task ${taskId} fetched`);
-      notify(
-        "batchFetchTaskSnapshotsFailure",
-        `Task ${taskId} fetched`,
-        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+    
+      // Show success notification
+      notify({
+        id: `batchFetchTaskSnapshotsSuccess-${taskId}-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        data: {
+          extra: {
+            taskId,
+            operation: "Batch fetch task snapshots success",
+            timestamp: new Date().toISOString()
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
 
       // Assuming you have a method to fetch tasks by taskId from your data source
-      const tasks = fetchTasksByTaskId(await taskId); // Implement this method
+      const tasks = fetchTasksByTaskId(taskId); // Implement this method
 
       // Check if tasks is not null or undefined
       if (tasks) {
         // Dispatch the fetched tasks to the store or perform any necessary logic
         dispatch(batchFetchTaskSnapshotsSuccess(tasks));
 
-        // Simulating asynchronous operation
-        setTimeout((error: Error) => {
-          notify(
-            "batchFetchTaskSnapshotsFailure",
-            `Error fetching task ${taskId}`,
-            NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-          );
+        // Simulating asynchronous operation - if you need actual async behavior
+        setTimeout(() => {
+          console.log(`Async operation for task ${taskId} completed`);
+          // If you need to notify after async operation:
+          // notify({
+          //   id: `asyncBatchFetchComplete-${taskId}`,
+          //   message: "Async batch fetch completed",
+          //   data: { taskId, taskCount: tasks.length },
+          //   timestamp: new Date(),
+          //   type: NotificationTypeEnum.OPERATION_SUCCESS,
+          //   level: 'success'
+          // });
         }, 1000);
       } else {
         console.error(`Tasks not found for taskId ${taskId}`);
+      
+        notify({
+          id: `batchFetchTaskSnapshotsNotFound-${taskId}`,
+          message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+          data: {
+            extra: {
+              errorMessage: `Tasks not found for taskId ${taskId}`,
+              taskId
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error'
+        });
       }
-    };
-  
-  
- 
+    } catch (error) {
+      console.error(`Error in batchFetchTaskSnapshotsSuccess for task ${taskId}:`, error);
+    
+      notify({
+        id: `batchFetchTaskSnapshotsError-${taskId}-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: `Error fetching task ${taskId}`,
+            taskId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
+    }
+  };
+
   const batchFetchUserSnapshotsRequest =
     <T extends { id: string }>(
       snapshotData: Record<string, T[]>
@@ -1113,31 +1367,75 @@ const useTaskManagerStore = <
       });
     };
 
- 
-  const markTaskAsInProgressSuccess =
-    (taskId: string, requestData: string) => (dispatch: any) => {
+
+  const markTaskAsInProgressSuccess = (taskId: string, requestData: string) => (dispatch: any) => {
+    try {
       console.log(`Task ${taskId} marked as in progress`);
-      notify(
-        "markTaskAsInProgressSuccess",
-        `Task ${taskId} marked as in progress`,
-        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+  
+      // Show success notification
+      notify({
+        id: `markTaskAsInProgressSuccess-${taskId}-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
+        data: {
+          extra: {
+            taskId,
+            requestData,
+            operation: "Mark task as in progress",
+            status: "in-progress",
+            timestamp: new Date().toISOString()
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
+  
+      // Dispatch the success action
       dispatch(markTaskAsInProgressSuccess(taskId, requestData));
+  
+      // Call the service method if needed
       const { markTaskAsInProgress } = taskService;
-      markTaskAsInProgress(taskId, requestData);
-      // Simulating asynchronous operation
-      setTimeout((error: Error) => {
-        notify(
-          "markTaskAsInProgressFailure",
-          `Error marking task ${taskId} as in progress`,
-          NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-          new Date(),
-          NotificationTypeEnum.OPERATION_SUCCESS
-        );
+      if (markTaskAsInProgress) {
+        markTaskAsInProgress(taskId, requestData);
+      }
+  
+      // Simulating asynchronous operation - if actually needed
+      setTimeout(() => {
+        console.log(`Async operation for task ${taskId} in-progress status completed`);
+        // If you need async notification:
+        // notify({
+        //   id: `asyncMarkTaskInProgressSuccess-${taskId}`,
+        //   message: "Task in-progress status synced",
+        //   data: { taskId, requestData },
+        //   timestamp: new Date(),
+        //   type: NotificationTypeEnum.OPERATION_SUCCESS,
+        //   level: 'success'
+        // });
       }, 1000);
-    };
+  
+    } catch (error) {
+      console.error(`Error in markTaskAsInProgressSuccess for task ${taskId}:`, error);
+  
+      // Dispatch error action if you have one
+      // dispatch(markTaskAsInProgressFailure({ taskId, error }));
+  
+      notify({
+        id: `markTaskAsInProgressError-${taskId}-${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Error.DEFAULT,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: `Error marking task ${taskId} as in progress`,
+            taskId,
+            requestData
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
+    }
+  };
 
   const markTaskPending = (taskId: string) => async (dispatch: any) => {
     try {
@@ -1240,9 +1538,7 @@ const useTaskManagerStore = <
     updateTaskPositionSuccess,
     clearAllTasks,
     archiveCompletedTasks,
-  }
-  );
-
+  });
 
   return useTaskManagerStore;
 };

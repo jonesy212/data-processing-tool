@@ -10,6 +10,17 @@ import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirma
 import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnaire";
 import { useNotification } from "@/app/state/context/NotificationContext";
 import { TeamCreationPhase } from "./TeamCreationManager";
+import { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity';
+
+type ConcreteTeamData = TeamData<
+  TeamEntity,
+  TeamK,
+  TeamMeta,
+  TeamAttachment,
+  TeamExcludedFields,
+  TeamIncludedFields
+>;
+
 
 const TeamCreationPhaseManager: React.FC = () => {
   const { state } = useAuth();
@@ -18,7 +29,7 @@ const TeamCreationPhaseManager: React.FC = () => {
     TeamCreationPhase.QUESTIONNAIRE
   );
 
-  const [teamData, setTeamData] = useState<TeamData | null>(null);
+  const [teamData, setTeamData] = useState<ConcreteTeamData | null>(null);
 
   const handleQuestionnaireSubmit = async (teamResponses: any) => {
     try {
@@ -42,27 +53,46 @@ const TeamCreationPhaseManager: React.FC = () => {
       setCurrentPhase(TeamCreationPhase.CONFIRMATION);
 
       // Notify user of successful team creation
-      notify(
-        "teamCreationSuccess" + teamData!._id,
-        "Your team has been successfully created",
-        "TeamCreationSuccess",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: `teamCreationSuccess_${teamData?._id || Date.now()}`,
+        message: "Your team has been successfully created",
+        data: {
+          entityId: teamData?._id || 'unknown',
+          entityType: 'team',
+          extra: { 
+            teamData,
+            teamResponses,
+            response: response.data
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
     } catch (error: any) {
       // Handle any network or unexpected errors
       console.error("Error creating team:", error);
-      notify(
-        "teamCreationError" + error.message,
-        "There was an error creating your team, please try again",
-        "TeamCreationError",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      notify({
+        id: `teamCreationError_${Date.now()}`,
+        message: "There was an error creating your team, please try again",
+        data: {
+          originalError: error.message || 'Unknown error',
+          entityType: 'team',
+          extra: { 
+            teamData,
+            teamResponses,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     }
   };
 
-  const handleConfirmation = async (teamData: TeamData) => {
+  const handleConfirmation = async (teamData: ConcreteTeamData) => {
     try {
       // Example: Send confirmation request to the server using Axios
       const response = await axiosInstance.post("/teams/confirm", teamData);
@@ -73,29 +103,47 @@ const TeamCreationPhaseManager: React.FC = () => {
       console.log("Server response:", response.data);
 
       // Notify user of successful team confirmation
-      notify(
-        "teamConfirmationSuccess" + teamData.id,
-        "Your team has been successfully confirmed",
-        "TeamConfirmationSuccess",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: `teamConfirmationSuccess_${teamData.id || Date.now()}`,
+        message: "Your team has been successfully confirmed",
+        data: {
+          entityId: teamData.id || 'unknown',
+          entityType: 'team',
+          extra: { 
+            teamData,
+            response: response.data
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
 
       // Perform additional actions as needed, such as updating the UI or navigating to a different page
     } catch (error: any) {
       // Handle any network or unexpected errors
       console.error("Error confirming team creation:", error);
-      notify(
-        "teamConfirmationError" + error.message,
-        "There was an error confirming your team, please try again",
-        "TeamConfirmationError",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      notify({
+        id: `teamConfirmationError_${teamData.id || Date.now()}`,
+        message: "There was an error confirming your team, please try again",
+        data: {
+          originalError: error.message || 'Unknown error',
+          entityId: teamData.id || 'unknown',
+          entityType: 'team',
+          extra: { 
+            teamData,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     }
   };
 
-  const confirmTeamCreation = async (teamData: TeamData) => {
+  const confirmTeamCreation = async (teamData: ConcreteTeamData) => {
     try {
       // Send confirmation request to the server using Axios
       const response = await TeamCreationAPI.confirmTeamCreation(
@@ -125,6 +173,3 @@ const TeamCreationPhaseManager: React.FC = () => {
 
 export default TeamCreationPhaseManager;
 export { TeamCreationPhase };
-
-
-

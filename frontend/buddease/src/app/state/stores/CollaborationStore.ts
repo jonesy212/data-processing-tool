@@ -1,11 +1,11 @@
 // CollaborationStore.ts
-import { AssignBaseStore, useAssignBaseStore } from "@/app/AssignBaseStore";
+import { AssignBaseStore, useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { useAuth } from '@/app/state/context/AuthContext';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { useAssignEventStore } from "./AssignEventStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
+import { useAssignEventStore } from "@/app/state/stores/AssignEventStore";
+import { useAssignTeamMemberStore } from "@/app/state/stores/AssignTeamMemberStore";
 
 // Define necessary types and interfaces
 type CollaborationStoreSubset = Pick<

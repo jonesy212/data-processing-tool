@@ -1,29 +1,27 @@
 // AssignBaseStore.tsx
-import { Config } from '@/app/api/ApiConfigService';
-import type { AppUser } from '@/app/typings/entities/UserEntity';
+import { Config } from '@/app/api/ConfigManager';
 import { HeadersConfig } from '@/app/api/headers/HeadersConfig';
 import teamApiService from '@/app/api/TeamApi';
 import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from '@/app/calendar/CalendarEventTimingOptimization';
 import { Team } from '@/app/components/teams/Team';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { AssignBaseStoreLogger } from '@/app/logging/Logger';
-
+import { AnalyticsLogger, AssignBaseStoreLogger } from '@/app/logging/Logger';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { Todo, UserAssignee } from '@/app/todos/Todo';
 import { todoService } from '@/app/todos/TodoService';
+import type { AppUser } from '@/app/typings/entities/UserEntity';
 import { User } from '@/app/users/User';
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { makeAutoObservable } from 'mobx';
 import { ReassignEventResponse } from './AssignEventStore';
 import { useAssignTeamMemberStore } from './AssignTeamMemberStore';
 import { AuthStore } from './AuthStore';
 import { PresentationStore, presentationStore } from './presentationStore';
-import ApiConfig from '@/app/api/ApiConfigService';
 
 const { notify } = useNotification();
 
@@ -370,7 +368,7 @@ const useAssignBaseStore = (): AssignBaseStore<AppUser> => {
       const message = `User ${userId} assigned to ${todoIds.length} todos`;
       setDynamicNotificationMessage(
         message,
-        NotificationTypeEnum.AssignmentOperationSuccess
+        NotificationTypeEnum.ASSIGNMENT_OPERATION_SUCCESS
       );
     }
     
@@ -699,6 +697,9 @@ const useAssignBaseStore = (): AssignBaseStore<AppUser> => {
       if (teamApiService.updateTeamWorkload) {
         await teamApiService.updateTeamWorkload(teamId, { todoId, action: 'assigned' });
       }
+
+            const message = `User ${userId} assigned to ${todoIds.length} todos`;
+
 
       /* -------  optional user-facing notification  ------------------ */
       notify(

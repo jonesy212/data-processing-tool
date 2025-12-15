@@ -1,10 +1,11 @@
 // lifecycleMethods.ts
 // snapshotStore/methods/LifecycleMethods.ts
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Content } from '@/app/models/content/AddContent';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
@@ -14,21 +15,18 @@ import type {
   SnapshotUnion,
   Subscriber,
 } from "@/app/types";
-import { Snapshot } from "@/app/snapshots/Snapshot";
 
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { convertToSnapshotUnion } from "@/app/snapshots/ConvertSnapshotUnion";
+import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { isSnapshot } from '@/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { convertToSnapshotUnion } from "@/app/snapshots/ConvertSnapshotUnion";
-import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
 
 export const LifecycleMethods = {

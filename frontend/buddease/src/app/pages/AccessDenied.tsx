@@ -15,7 +15,7 @@ interface CustomAction {
 interface AccessDeniedProps {
   feature?: string;
   requiredRole?: UserRole | UserRole[];
-  userRole: UserRoleEnum;
+  userRole?: UserRoleEnum;
 
   message?: string;
   type?: 'unauthorized' | 'access-denied' | 'permission';

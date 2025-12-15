@@ -1,12 +1,12 @@
 // subscribeToSnapshotsImplementation.ts
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 type Callback<T> = (snapshot: T) => void;
 

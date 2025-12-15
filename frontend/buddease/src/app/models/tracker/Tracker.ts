@@ -11,11 +11,11 @@ import { Phase } from '@/app/models/phases/Phase';
 import { useAuth } from "@/app/state/context/AuthContext";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
-    fetchUsersSuccess,
-    updateBio,
-    updateFullName,
-    updateProfilePicture,
-    updateQuota,
+  fetchUsersSuccess,
+  updateBio,
+  updateFullName,
+  updateProfilePicture,
+  updateQuota,
 } from "@/app/state/redux/slices/UserSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
 import { User } from "@/app/users/User";

@@ -4,7 +4,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";

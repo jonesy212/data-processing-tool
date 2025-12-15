@@ -1,14 +1,14 @@
 // NotificationManager.ts
 import { apiNotificationMessages } from "@/app/api/ApiData";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { LogData } from "@/app/models/LogData";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError } from 'axios';
-import { observer } from "mobx-react";
 import React from "react";
 
 type NotificationMessages = typeof NOTIFICATION_MESSAGES;

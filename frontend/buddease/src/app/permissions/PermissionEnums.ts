@@ -6,6 +6,7 @@ export enum PermissionLevel {
   Write = 'Write',
   Execute = 'Execute',
   Admin = 'Admin',
+  Owner = 'Owner' // Add the missing value
 }
 
 // VisibilityLevel.ts

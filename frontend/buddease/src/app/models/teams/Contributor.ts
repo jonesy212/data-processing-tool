@@ -1,8 +1,8 @@
 // Contributor.ts
-import { Project } from '@/app/models/projects/Project';
-import { Member } from '@/app/models/members/Member';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Member } from '@/app/models/members/Member';
+import { Project } from '@/app/models/projects/Project';
 
 export interface Contribution {
   projectId: string;       // or number if projects have IDs

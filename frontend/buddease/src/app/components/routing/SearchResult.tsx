@@ -1,15 +1,15 @@
 // SearchResult.tsx
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import ListGenerator from '@/app/generators/ListGenerator';
 import FolderData from '@/app/models/data/FolderData';
+import { Entity } from '@/app/routing/FuzzyMatch';
 import SearchHistory from '@/app/versions/SearchHistory';
 import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Entity } from '@/app/routing/FuzzyMatch';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 

@@ -50,11 +50,8 @@ type SenderBaseParams = {
 };
 
 export type {
-  SenderEntity,
-  SenderK,
-  SenderMeta,
-  SenderAttachment,
-  SenderExcludedFields,
-  SenderIncludedFields,
-  SenderBaseParams
+  SenderAttachment, SenderBaseParams, SenderEntity, SenderExcludedFields,
+  SenderIncludedFields, SenderK,
+  SenderMeta
 };
+

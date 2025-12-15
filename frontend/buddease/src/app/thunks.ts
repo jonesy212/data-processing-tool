@@ -4,7 +4,7 @@ import { useDataStore } from '@/app/state/stores/DataStore';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';

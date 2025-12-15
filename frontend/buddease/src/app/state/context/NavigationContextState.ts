@@ -1,5 +1,6 @@
 // NavigationContextState.ts
 
+import { Step } from '@/app/hooks/useStepNavigation'
 import { NavigationView } from "./NavigationContext"; // assuming NavigationView is defined
 import { NavState, NavEvent } from "./NavigationContext"; // state machine types
 

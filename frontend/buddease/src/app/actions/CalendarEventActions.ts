@@ -1,23 +1,21 @@
 // CalendarEventActions.ts
 // CalendarActions.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
-import { createAction } from "@reduxjs/toolkit";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { default as CustomFile, default as File } from "@/app/documents/File";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
-import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-
+import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
+import { AppNotificationData } from '@/app/typings/entities/CommonEntities';
+import { createAction } from "@reduxjs/toolkit";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
   "setEventColor"
 );
 
-type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K, DefaultMeta<BaseDataRoot, BaseDataRoot>>>;
+type DefaultCalendarEvent = CalendarEvent<AppCalendarEvent>;
 
 export const CalendarActions = <
   T extends BaseDataEntity,
@@ -145,7 +143,7 @@ export const CalendarActions = <
   }>("shareEvent"),
   shareFilesWithinCalendarEvent: createAction<{
     eventId: string;
-    files: CustomFile<T>[];
+    files: CustomFile<AppCalendarEvent>[];
     calendarEventId: string;
     recipients: string[];
   }>("shareFilesWithinCalendarEvent"),

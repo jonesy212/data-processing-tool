@@ -4,7 +4,7 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import {
     createCompleteSnapshot

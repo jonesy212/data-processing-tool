@@ -1,6 +1,6 @@
 // generateComponent.ts
+import generateComponent from '@/app/api/generateComponent';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { generateComponent } from '@/app/components/server/generateComponent';
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,7 +16,7 @@ export default async function handler(
       category,
       properties,
       brand,
-      nestedCategory
+      nestedCategory,
     } = req.body;
 
     const reactCode = generateComponent(
@@ -29,10 +29,9 @@ export default async function handler(
 
     res.status(200).json({ success: true, reactCode });
   } catch (error) {
-    console.error('Component generation error:', error);
     res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

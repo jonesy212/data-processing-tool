@@ -4,8 +4,8 @@ import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 import { ValidationActionTypes, ValidationActions, validationSuccess } from "@/app/components/security/ValidationActions";
 import ThemeValidator from "@/app/components/security/validateTheme";
-import Logger from "@/app/libraries/logging/Logger";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import Logger from '@/app/logging/Logger';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { call, put, takeLatest } from "redux-saga/effects";
@@ -35,7 +35,7 @@ const handleThemeApiErrorAndNotify = (
 
 // Then use it in your sagas
 // ThemeSettingsSagas.ts
-import { showThemeSuccessNotification, showThemeErrorNotification } from './ThemeNotificationHelpers';
+import { showThemeErrorNotification, showThemeSuccessNotification } from './ThemeNotificationHelpers';
 
 function* setHeaderColor(action: PayloadAction<Theme>) {
   try {

@@ -7,7 +7,7 @@ import { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, Defaul
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/app/config/StructuredMetadata';
 import { useMeta } from '@/app/config/useMeta';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseEntityProperties } from "@/app/documents/RelatedProps";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
@@ -894,6 +894,7 @@ function createVideoMetadata<
       name: "Default Video Data",
       createdAt: new Date(),
       updatedAt: new Date(),
+      latestVersion: latestVersion
     },
     uploadDate: options?.uploadDate ?? new Date(),
     uploader: options?.uploader ?? "default uploader",

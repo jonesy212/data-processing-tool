@@ -51,11 +51,8 @@ type ChatRoomBaseParams = {
 };
 
 export type {
-  ChatRoomEntity,
-  ChatRoomK,
-  ChatRoomMeta,
-  ChatRoomAttachment,
-  ChatRoomExcludedFields,
-  ChatRoomIncludedFields,
-  ChatRoomBaseParams
+  ChatRoomAttachment, ChatRoomBaseParams, ChatRoomEntity, ChatRoomExcludedFields,
+  ChatRoomIncludedFields, ChatRoomK,
+  ChatRoomMeta
 };
+

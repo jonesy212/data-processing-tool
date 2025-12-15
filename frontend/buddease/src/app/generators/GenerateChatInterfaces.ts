@@ -1,11 +1,11 @@
 // GenerateChatInterfaces.ts
 
 import { ChatRoom } from '@/app/communications/ChatRoom';
+import { Sender } from '@/app/components/communications/CommunicationPage';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Tag } from "@/app/models/tracker/Tag";
 import { User, UserData } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Sender } from '@/app/components/communications/CommunicationPage';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface Message<
   T extends BaseDataEntity,

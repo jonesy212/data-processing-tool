@@ -1,5 +1,5 @@
 // NoteEntity.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -21,10 +21,8 @@ type NoteIncludedFields = keyof NoteEntity;
 
 
 export type {
-    NoteEntity,
-    NoteK,
-    NoteMeta,
-    NoteAttachment,
-    NoteExcludedFields,
-    NoteIncludedFields
-}
+  NoteAttachment, NoteEntity, NoteExcludedFields,
+  NoteIncludedFields, NoteK,
+  NoteMeta
+};
+

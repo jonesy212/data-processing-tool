@@ -1,6 +1,6 @@
 // SnapshotStorageOptionsEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 // Define specific entity type for snapshot storage
@@ -37,3 +37,4 @@ export type {
   SnapshotStorageAttachment, SnapshotStorageBaseParams, SnapshotStorageEntity, SnapshotStorageExcludedFields,
   SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta
 };
+

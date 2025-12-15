@@ -1,10 +1,9 @@
 // Video.ts
 
 import { Label } from '@/app/branding/BrandingSettings';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
 
 

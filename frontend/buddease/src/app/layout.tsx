@@ -5,18 +5,18 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from "@/app/models/data/Data";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { useSnapshot } from "@/app/state/context/SnapshotContext";
 import { EventManager } from "@/app/state/stores/DataStore";
 import { AppEntity, AppSnapshot } from '@/app/typings/entities/AppEntity';
 import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import React from "react";
-import { useSnapshot } from "@/app/state/context/SnapshotContext";
+import RootLayout from './RootLayout';
 import { version } from "./versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
-import RootLayout from './RootLayout';
 
 
 const area = fetchUserAreaDimensions().toString()

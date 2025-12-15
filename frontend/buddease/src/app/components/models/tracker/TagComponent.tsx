@@ -13,7 +13,9 @@ import React from 'react';
 interface TagProps<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+
 > { 
   tagOptions: TagOptions<T>,
   excludedFields?: ExcludedFields,

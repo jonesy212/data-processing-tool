@@ -1,6 +1,6 @@
 // validationMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '@/app/middleware/types'
-import { snapshotValidators } from '@/app/utils/snapshotValidators';
+import { MiddlewareFunction } from '@/app/middleware/core/types';
+import { snapshotValidators } from '@/utils/snapshotValidators';
 
 export const validationMiddleware: MiddlewareFunction = async (context, next) => {
   const { operation, payload, store } = context;

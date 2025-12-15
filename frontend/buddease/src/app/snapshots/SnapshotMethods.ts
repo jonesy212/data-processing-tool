@@ -1,13 +1,13 @@
 // SnapshotMethods.ts
 
-import { Data } from '@/app/models/data/Data';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData, DataDetails } from '@/app/models/data/Data';
+import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -17,8 +17,8 @@ import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/se
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import {
-    Result,
-    Snapshots, SnapshotsArray, SnapshotUnion
+  Result,
+  Snapshots, SnapshotsArray, SnapshotUnion
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
@@ -33,7 +33,6 @@ import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -1011,7 +1010,7 @@ interface SnapshotMethods<
   subscriberManagement?: SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   failureDate?: Date; // Tracks the most recent failure date
   payload: Payload | undefined;
-  dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   setCategory?: ((category: symbol | string | Category | undefined) => void) | undefined;

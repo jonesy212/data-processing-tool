@@ -1,20 +1,20 @@
 // ScheduledData.ts
 
-import { Task } from "@/app/models/tasks/Task";
-import { Data } from '@/app/models/data/Data';
-import { BaseDataRoot } from '@/app/config/BaseConfig';
-import { Todo } from "@/app/todos/Todo";
-import { StatusType } from "@/app/models/data/StatusType";
-import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import TodoImpl, { UserAssignee } from "@/app/todos/Todo";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
-import { TaskEntity,
-  TaskK,
-  TaskMeta,
+import { Data } from '@/app/models/data/Data';
+import { StatusType } from "@/app/models/data/StatusType";
+import { Task } from "@/app/models/tasks/Task";
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
+import {
   TaskAttachment,
+  TaskEntity,
   TaskExcludedFields,
-  TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
+  TaskIncludedFields,
+  TaskK,
+  TaskMeta
+} from '@/app/typings/entities/TaskEntity';
 
 
 export interface Schedule {
@@ -60,7 +60,7 @@ export interface ScheduledData<
     Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Explicitly define the `createdBy` property to resolve the conflict
   createdBy: string | undefined;
-  scheduledDate: Date;
+  scheduledDate: Date | undefined;
   priority?: "scheduled" | "completed" | "canceled" | "rescheduled"; // General status for scheduling
   assignee?: UserAssignee | null;
   subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];

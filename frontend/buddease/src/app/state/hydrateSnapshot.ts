@@ -1,14 +1,17 @@
 // hydrateSnapshot.ts
 
-import { runInAction, toJS } from "mobx";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { ExtendedVersionData } from "@/app/versions/VersionData";
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/app/models/data/StatusType";
-import { Version } from "@/app/versions/Version";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { AppMetadata } from '@/app/typings/metadataTypes';
+import { Version } from "@/app/versions/Version";
+import { ExtendedVersionData } from "@/app/versions/VersionData";
+import { runInAction, toJS } from "mobx";
+
 
 export interface SnapshotDataLocal<
   T extends BaseDataEntity = BaseDataRoot,
@@ -85,6 +88,8 @@ export const persistSnapshotLocal = async (store: any, key: string): Promise<voi
     const snapshot: SnapshotData = {
       timestamp: Date.now(),
       state: toJS(store),
+      shared, operations, base, sharedMetadata,
+      
     };
     localStorage.setItem(`snapshot:${key}`, JSON.stringify(snapshot));
   } catch (error) {

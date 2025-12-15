@@ -177,8 +177,9 @@ const sampleSubjects: Subject[] = [
     }));
   };
 
-  // FeaturePrompt Management
-  const handleCreatePrompt = (promptData: Omit<FeaturePrompt, 'id' | 'createdAt' | 'updatedAt'>) => {
+// FeaturePrompt Management
+const handleCreatePrompt = (promptData: Omit<FeaturePrompt, 'id' | 'createdAt' | 'updatedAt'>) => {
+  try {
     const newPrompt: FeaturePrompt = {
       ...promptData,
       id: Date.now().toString(),
@@ -190,14 +191,184 @@ const sampleSubjects: Subject[] = [
       prompts: [...prev.prompts, newPrompt]
     }));
     
-    notify(
-      "FeaturePrompt Created",
-      `"${promptData.title}" created successfully`,
-      "PROMPT_CREATE_SUCCESS",
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
-  };
+    // Success notification using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `feature_prompt_create_success_${newPrompt.id}_${Date.now()}`,
+      message: `"${promptData.title}" created successfully`,
+      data: {
+        entityType: 'feature_prompt',
+        entityId: newPrompt.id,
+        action: 'create',
+        promptData: {
+          title: promptData.title,
+          description: promptData.description,
+          category: promptData.category,
+          priority: promptData.priority
+        },
+        promptId: newPrompt.id,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const,
+      metadata: {
+        promptCategory: promptData.category,
+        promptPriority: promptData.priority,
+        isFeaturePrompt: true
+      }
+    });
+    
+  } catch (error: any) {
+    console.error("Error creating feature prompt:", error);
+    
+    // Error notification for local state operations
+    const { notify } = useNotification();
+    notify({
+      id: `feature_prompt_create_error_${Date.now()}`,
+      message: `Failed to create feature prompt: "${promptData.title}"`,
+      data: {
+        entityType: 'feature_prompt',
+        action: 'create',
+        promptData: promptData,
+        originalError: error.message,
+        errorType: 'FEATURE_PROMPT_CREATE_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
+    
+    // Optional: Re-throw or handle the error as needed
+    throw error;
+  }
+};
+
+// Also update other FeaturePrompt operations for consistency:
+
+const handleUpdatePrompt = (promptId: string, updatedData: Partial<FeaturePrompt>) => {
+  try {
+    setState(prev => ({
+      ...prev,
+      prompts: prev.prompts.map(prompt => 
+        prompt.id === promptId 
+          ? { 
+              ...prompt, 
+              ...updatedData, 
+              updatedAt: new Date() 
+            } 
+          : prompt
+      )
+    }));
+    
+    // Success notification for update
+    const { notify } = useNotification();
+    const updatedPrompt = getPromptById(promptId); // Assuming you have this helper
+    
+    notify({
+      id: `feature_prompt_update_success_${promptId}_${Date.now()}`,
+      message: `Feature prompt updated successfully`,
+      data: {
+        entityType: 'feature_prompt',
+        entityId: promptId,
+        action: 'update',
+        updatedData: updatedData,
+        promptTitle: updatedPrompt?.title || 'Unknown',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const
+    });
+    
+  } catch (error: any) {
+    console.error("Error updating feature prompt:", error);
+    
+    const { notify } = useNotification();
+    notify({
+      id: `feature_prompt_update_error_${promptId}_${Date.now()}`,
+      message: `Failed to update feature prompt`,
+      data: {
+        entityType: 'feature_prompt',
+        entityId: promptId,
+        action: 'update',
+        updatedData: updatedData,
+        originalError: error.message,
+        errorType: 'FEATURE_PROMPT_UPDATE_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
+    
+    throw error;
+  }
+};
+
+const handleDeletePrompt = (promptId: string) => {
+  try {
+    const promptToDelete = getPromptById(promptId);
+    
+    setState(prev => ({
+      ...prev,
+      prompts: prev.prompts.filter(prompt => prompt.id !== promptId)
+    }));
+    
+    // Success notification for delete
+    const { notify } = useNotification();
+    notify({
+      id: `feature_prompt_delete_success_${promptId}_${Date.now()}`,
+      message: `"${promptToDelete?.title || 'Feature prompt'}" deleted successfully`,
+      data: {
+        entityType: 'feature_prompt',
+        entityId: promptId,
+        action: 'delete',
+        promptTitle: promptToDelete?.title,
+        promptCategory: promptToDelete?.category,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const,
+      metadata: {
+        isDeleted: true,
+        deletionTime: new Date().toISOString()
+      }
+    });
+    
+  } catch (error: any) {
+    console.error("Error deleting feature prompt:", error);
+    
+    const { notify } = useNotification();
+    notify({
+      id: `feature_prompt_delete_error_${promptId}_${Date.now()}`,
+      message: `Failed to delete feature prompt`,
+      data: {
+        entityType: 'feature_prompt',
+        entityId: promptId,
+        action: 'delete',
+        originalError: error.message,
+        errorType: 'FEATURE_PROMPT_DELETE_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
+    
+    throw error;
+  }
+};
+
+// Helper function (assuming it exists or needs to be created)
+const getPromptById = (promptId: string): FeaturePrompt | undefined => {
+  // Implementation depends on how you access your state
+  // This is just a placeholder
+  return state.prompts.find(prompt => prompt.id === promptId);
+};
+
 
   // Conversation Linking
   const handleLinkToConversation = (promptId: string, conversationId: string) => {
@@ -229,30 +400,92 @@ const sampleSubjects: Subject[] = [
 
   // Document Management
   const handleUploadDocument = (file: File, subjectIds: string[], accessLevel: string) => {
-    const newDocument: DocumentFile = {
-      id: Date.now().toString(),
-      name: file.name,
-      type: file.type,
-      url: URL.createObjectURL(file),
-      size: file.size,
-      subjectIds,
-      conversationIds: [],
-      accessLevel: accessLevel as any,
-      uploadedBy: 'current-user', // Replace with actual user
-      uploadedAt: new Date()
-    };
-    setState(prev => ({
-      ...prev,
-      documents: [...prev.documents, newDocument]
-    }));
-    
-    notify(
-      "Document Uploaded",
-      `"${file.name}" uploaded successfully`,
-      "DOCUMENT_UPLOAD_SUCCESS",
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    try {
+      const newDocument: DocumentFile = {
+        id: Date.now().toString(),
+        name: file.name,
+        type: file.type,
+        url: URL.createObjectURL(file),
+        size: file.size,
+        subjectIds,
+        conversationIds: [],
+        accessLevel: accessLevel as any,
+        uploadedBy: 'current-user', // Replace with actual user
+        uploadedAt: new Date()
+      };
+      setState(prev => ({
+        ...prev,
+        documents: [...prev.documents, newDocument]
+      }));
+      
+      // Success notification using consistent object format
+      const { notify } = useNotification();
+      notify({
+        id: `document_upload_success_${newDocument.id}_${Date.now()}`,
+        message: `"${file.name}" uploaded successfully`,
+        data: {
+          entityType: 'document',
+          entityId: newDocument.id,
+          action: 'upload',
+          documentInfo: {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            subjectCount: subjectIds.length,
+            accessLevel: accessLevel
+          },
+          fileData: {
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+            lastModified: file.lastModified
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const,
+        metadata: {
+          documentType: file.type,
+          fileSize: file.size,
+          accessLevel: accessLevel,
+          isLocalUpload: true // Flag for local vs API upload
+        }
+      });
+      
+    } catch (error: any) {
+      console.error("Error uploading document:", error);
+      
+      // Error notification for local upload failure
+      const { notify } = useNotification();
+      notify({
+        id: `document_upload_error_${Date.now()}`,
+        message: `Failed to upload "${file.name}"`,
+        data: {
+          entityType: 'document',
+          action: 'upload',
+          documentInfo: {
+            name: file.name,
+            type: file.type,
+            size: file.size
+          },
+          fileData: {
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size
+          },
+          originalError: error.message,
+          errorType: 'DOCUMENT_UPLOAD_ERROR',
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      
+      // Re-throw the error if needed
+      throw error;
+    }
   };
 
   // Access Control

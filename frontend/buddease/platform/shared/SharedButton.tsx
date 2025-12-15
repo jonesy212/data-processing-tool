@@ -1,8 +1,9 @@
 // platform/shared/SharedButton.tsx
 import React from "react";
+import { Label } from '@/app/branding/BrandingSettings';
 
 export interface BaseButtonProps {
-  label?: string;
+  label: string | Label;
   variant?: string;
   disabled?: boolean;
   style?: React.CSSProperties;

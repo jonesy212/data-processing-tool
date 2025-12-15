@@ -1,7 +1,7 @@
 // useNotificationSystem.ts
 
-import { NotificationType } from '@/app/context/NotificationContext';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { NotificationType } from '@/app/state/context/NotificationContext';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -403,7 +403,7 @@ export const useNotificationSystem = <
     attemptNumber: number, 
     options: NotificationOptions = {}
   ): string => {
-    const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    const message: Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
       content: `Recovery attempt ${attemptNumber} in progress...`,
       type: 'info'
     };
@@ -521,6 +521,8 @@ export const useNotificationSystem = <
     showError,
     showWarning,
     showInfo,
+    showStyledNotification,
+    getNotificationsByStyle,
     
     // Enhanced methods
     showEnhancedNotification,

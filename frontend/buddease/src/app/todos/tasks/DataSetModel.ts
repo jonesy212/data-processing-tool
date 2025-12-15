@@ -1,7 +1,7 @@
 // DataSetModel.ts
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
 import { Team } from "@/app/components/teams/Team";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentPath } from "@/app/documents/DocumentPath";
@@ -9,7 +9,6 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { BaseEntity } from '@/app/config/BaseConfig';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";

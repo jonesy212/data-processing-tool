@@ -1,6 +1,6 @@
 // BaseStoreWithCallbacks.ts
 import { globalCallbackRegistry, CallbackRegistry } from './callbackRegistry';
-import { EventHandler } from '@/types/eventTypes';
+import { EventHandler } from '@/app/typings/eventHandlers/eventTypes'
 
 export abstract class BaseStoreWithCallbacks {
   protected storeName: string;
@@ -21,11 +21,11 @@ export abstract class BaseStoreWithCallbacks {
       priority?: number;
       context?: any;
       id?: string;
-    } = {}
+    } = {},
   ): string {
     const callbackId = this.callbackRegistry.register(eventType, handler, {
       ...options,
-      store: this.storeName
+      storeName: this.storeName
     });
     this.registeredCallbackIds.add(callbackId);
     return callbackId;

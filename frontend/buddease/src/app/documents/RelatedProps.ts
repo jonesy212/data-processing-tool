@@ -1,6 +1,7 @@
 // RelatedProps.ts
-import { RootCategories } from '@/app/config/BaseConfig'
 import { Label } from '@/app/branding/BrandingSettings';
+import { ExternalReference } from '@/app/calendar/ExternalReference';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, RootCategories } from '@/app/config/BaseConfig';
 import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
@@ -9,8 +10,6 @@ import { PermissionLevel, VisibilityLevel, } from '@/app/permissions/PermissionE
 import { ValidationStatus } from '@/app/permissions/ValidationStatus';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { AllTypes } from '@/app/typings/PropTypes';
-import { ExternalReference } from '@/app/calendar/ExternalReference';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Version } from "@/app/versions/Version";
 
 interface BaseEntityProperties { 

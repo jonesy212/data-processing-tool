@@ -1,13 +1,13 @@
 // createSnapshotStoreMap.ts
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { createBaseDataEntity } from '@/app/config/createBaseDataEntity';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot'
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig'
 import SnapshotStore from './SnapshotStore';
-import { createBaseDataEntity } from '@/app/config/createBaseDataEntity'
 
 export function createSnapshotStoreMap<
   T extends BaseDataEntity,

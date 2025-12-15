@@ -1,7 +1,6 @@
 // getSecureSubscriberId.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions'
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
 // For sanitizing strings specifically

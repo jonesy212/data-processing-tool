@@ -8,7 +8,7 @@ import { SecurityReport, SecurityScanResult } from '@/app/typings/securityMeasur
 import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
@@ -95,6 +95,7 @@ function isEnhancedSnapshotData<
     
     // Convert Snapshot to SnapshotData properly
     return {
+      validate, serialize, get, set, processEvent,
       // Core nested properties with proper types
       core: firstEntry.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       shared: firstEntry.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -430,7 +431,7 @@ function hasPriority<T extends Partial<DataWithPriority>>(
 }
 
 export {
-    findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
+  findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
 };
 export type { EnhancedSnapshotData };
 

@@ -1,21 +1,21 @@
 // UserEntity.ts
 import { UserProfile } from '@/app/api/ApiUser';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
+import { LoginCredentials } from '@/app/server/auth/AuthServerService';
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { UserPreferences } from '@/app/typings/userTypes';
 import { User, UserData } from "@/app/users/User";
-import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { RealtimeDataItem } from '../realtimeTypes';
 import { ApplyFieldFilters } from './AppEntity';
-import { LoginCredentials } from '@/app/server/auth/AuthServerService'
-import { AppEntity } from '@/app/typings/entities/AppEntity'
 
 // Define the actual UserEntity interface
 interface UserEntity extends AppEntity {
@@ -251,26 +251,18 @@ export type {
   AppUserData,
   AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
   AppUserSnapshotData,
-  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, BasicUser,
-  PremiumUser, PrivateUserData,
+  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, BasicUser, BasicUserInfo, PremiumUser, PrivateUserData,
   // Data variations
-  PublicUserData, UserAttachment, UserContext,
+  PublicUserData, PublicUserProfile, UserAttachment, UserContext,
   // Role-specific types
   UserDataDefault, UserEntity, UserExcludedFields,
   // Utility types
   UserFilterOptions, UserFrontendStructure, UserIncludedFields, UserK,
   // User metadata types
-  UserMeta, UserParams,
+  UserMeta, UserParams, UserRealtimeDataItemDefault,
   // State types
-  UserSession, UserSnapshotDefault, UserSnapshotsArray,
+  UserSession, UserSnapshotDataDefault, UserSnapshotDefault, UserSnapshotsArray,
   // Configuration types
-  UserSnapshotStoreConfig, UserSortOptions,
-  PublicUserProfile,
-
-  UserSnapshotDataDefault,
-UserSnapshotStoreDefault,
-UserRealtimeDataItemDefault,
-  UserUnifiedMetadata,
-  BasicUserInfo
+  UserSnapshotStoreConfig, UserSnapshotStoreDefault, UserSortOptions, UserUnifiedMetadata
 };
 

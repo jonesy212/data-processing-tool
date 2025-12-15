@@ -31,7 +31,7 @@ import { Tag } from '@/app/models/tracker/Tag';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType } from '@/app/state/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { Payload } from '@/app/server/database/Payload';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 
 

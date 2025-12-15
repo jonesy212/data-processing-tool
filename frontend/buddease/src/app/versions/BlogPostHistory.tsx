@@ -1,8 +1,8 @@
 // BlogPostHistory.tsx
 
 import { BlogPost } from "@/app/community/DiscussionForumComponent";
+import { HistoryEntry } from '@/app/components/state/stores/HistoryStore';
 import Version from "./Version";
-import { HistoryEntry } from '@/components/state/stores/HistoryStore'
 
 interface BlogPostHistory extends BlogPost {
   version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;// Reference to the version of the post

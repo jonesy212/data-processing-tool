@@ -1,16 +1,17 @@
 // formatCalendarAsDOCX.ts
-import { SimpleCalendarEvent } from "@/app/components/calendar/CalendarContext";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext';
+import { MyPropertiesOptions } from '@/app/config/declarations/global';
 import { CustomDocument } from '@/app/documents/DocumentOptions';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { MyPropertiesOptions } from '@/app/config/declarations/global';
+import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
 import * as docx from 'docx';
 
 
 
 // Function to format calendar data as DOCX
 export const formatCalendarAsDOCX = async (
-  events: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[],
+  events: (WritableDraft<SimpleCalendarEvent<AppCalendarEvent>> | WritableDraft<CalendarEvent<AppCalendarEvent>>)[],
   calendarDisplaySettings: CalendarDisplaySettings,
   options: MyPropertiesOptions = {} as MyPropertiesOptions
 ): Promise<Blob> => {

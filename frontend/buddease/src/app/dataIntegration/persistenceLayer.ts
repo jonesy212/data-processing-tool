@@ -1,8 +1,8 @@
 // persistenceLayer.ts
-import { CacheProxyConfig, PersistenceAdapter, PersistenceConfig } from '@/app/typings/persistenceTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { CacheProxyConfig, PersistenceAdapter, PersistenceConfig } from '@/app/typings/persistenceTypes';
 
 
 // Adapters

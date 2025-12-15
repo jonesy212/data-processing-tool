@@ -1,8 +1,8 @@
 // MetadataComponent.tsx
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { StatusType } from "@/app/models/data/StatusType";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { StatusType } from "@/app/models/data/StatusType";
 import { useEffect, useState } from 'react';
 
 

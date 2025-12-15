@@ -1,7 +1,7 @@
 // MarkdownDocument.ts
-import { CommonDocumentPropertiesAndMethods } from "./CommonDocumentPropertiesAndMethods";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CommonDocumentPropertiesAndMethods } from "./CommonDocumentPropertiesAndMethods";
 
 export interface MarkdownDocument<
   T extends BaseDataEntity,

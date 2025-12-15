@@ -1,10 +1,10 @@
 // endpointManager.ts
-import { uiSettingsConfig } from '@/app/config/endpoints/uiSettingsConfig'
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';
-import { analyticsConfig } from '@/app/config/endpoints/analyticsConfig';
+import { BasicChannels } from '@/app/notifications/NotificationChannelHelper'
 
-import { searchOptions } from '@/app/pages/searches/SearchOptions';
-import useSearchOptions from "@/app/pages/searches/useSearchOptions";
+// Import ALL configs
+import { uiSettingsConfig } from '@/app/config/endpoints/uiSettingsConfig';
+import { analyticsConfig } from '@/app/config/endpoints/analyticsConfig';
 import { usersConfig } from '@/app/config/endpoints/usersConfig';
 import { apiWebBaseConfig } from '@/app/config/endpoints/apiWebBaseConfig';
 import { commentsConfig } from '@/app/config/endpoints/commentsConfig';
@@ -26,7 +26,6 @@ import { versionConfig } from '@/app/config/endpoints/versionConfig';
 import { tasksConfig } from '@/app/config/endpoints/tasksConfig';
 import { teamsConfig } from '@/app/config/endpoints/teamsConfig';
 import { todosConfig } from '@/app/config/endpoints/todosConfig';
-
 import { authConfig } from '@/app/config/endpoints/authConfig';
 import { blogsConfig } from '@/app/config/endpoints/blogsConfig';
 import { calendarConfig } from '@/app/config/endpoints/calendarConfig';
@@ -40,7 +39,6 @@ import { dataProvidersConfig } from '@/app/config/endpoints/dataProvidersConfig'
 import { dexConfig } from '@/app/config/endpoints/dexConfig';
 import { detailsConfig } from '@/app/config/endpoints/detailsConfig';
 import { donationsConfig } from '@/app/config/endpoints/donationsConfig';
-
 import { drawingConfig } from '@/app/config/endpoints/drawingConfig';
 import { externalAuthConfig } from '@/app/config/endpoints/externalAuthConfig';
 import { feedbackConfig } from '@/app/config/endpoints/feedbackConfig';
@@ -83,122 +81,497 @@ import { logsConfig } from '@/app/config/endpoints/logsConfig';
 import { realtimeConfig } from '@/app/config/endpoints/realtimeConfig';
 import { batchConfig } from '@/app/config/endpoints/batchConfig';
 
+// Import notification channels config (new)
+import { notificationsConfig } from '@/app/config/endpoints/notificationsConfig';
+import { NotificationChannelManager } from '@/app/notifications/NotificationChannelManager'
+
+import { WebhookSettings } from '@/app/settings/Reminder';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+type EndpointGroup = keyof EndpointConfigurations;
+
+interface EndpointManagerOptions {
+  autoRegister?: boolean;
+  logger?: {
+    debug: (msg: string) => void;
+    info: (msg: string) => void;
+    warn: (msg: string) => void;
+    error: (msg: string) => void;
+  };
+}
+
+// ============================================================================
+// ENDPOINT CONFIG MANAGER
+// ============================================================================
 
 class EndpointConfigManager {
-  private configMap = new Map<keyof EndpointConfigurations, any>();
+  private configMap = new Map<EndpointGroup, any>();
+  private notificationChannelManager: NotificationChannelManager;
+  private logger: EndpointManagerOptions['logger'];
   
-  registerConfigs() {
-    // Register ALL configs matching your EndpointConfigurations interface
-    this.configMap.set('teams', teamsConfig);
-    this.configMap.set('users', usersConfig);
-    this.configMap.set('dev', devConfig);
-    this.configMap.set('data', dataConfig);
-    this.configMap.set('documents', documentsConfig);
-    this.configMap.set('delegates', delegatesConfig);
-    this.configMap.set('web', webConfig);
-    this.configMap.set('sorting', sortingConfig);
-    this.configMap.set('filtering', filteringConfig);
-    this.configMap.set('highlights', highlightsConfig);
-    this.configMap.set('logging', loggingConfig);
-    this.configMap.set('news', newsConfig);
-    this.configMap.set('notes', notesConfig);
-    this.configMap.set('projects', projectsConfig);
-    this.configMap.set('searching', searchingConfig);
-    this.configMap.set('snapshots', snapshotsConfig);
-    this.configMap.set('ui', uiConfig);
-    this.configMap.set('version', versionConfig);
-    this.configMap.set('tasks', tasksConfig);
-    this.configMap.set('todos', todosConfig);
-    this.configMap.set('auth', authConfig);
-    this.configMap.set('blogs', blogsConfig);
-    this.configMap.set('calendar', calendarConfig);
-    this.configMap.set('chat', chatConfig);
-    this.configMap.set('client', clientConfig);
-    this.configMap.set('collaborationTools', collaborationToolsConfig);
-    this.configMap.set('communication', communicationConfig);
-    this.configMap.set('communityInteraction', communityInteractionConfig);
-    this.configMap.set('crypto', cryptoConfig);
-    this.configMap.set('dataProviders', dataProvidersConfig);
-    this.configMap.set('dex', dexConfig);
-    this.configMap.set('details', detailsConfig);
-    this.configMap.set('donations', donationsConfig);
-    this.configMap.set('drawing', drawingConfig);
-    this.configMap.set('externalAuth', externalAuthConfig);
-    this.configMap.set('feedback', feedbackConfig);
-    this.configMap.set('files', filesConfig);
-    this.configMap.set('realtime', realtimeConfig);
-    this.configMap.set('freelancers', freelancersConfig);
-    this.configMap.set('generators', generatorsConfig);
-    this.configMap.set('globalCollaboration', globalCollaborationConfig);
-    this.configMap.set('marker', markerConfig);
-    this.configMap.set('moderators', moderatorsConfig);
-    this.configMap.set('monetization', monetizationConfig);
-    this.configMap.set('parameterCustomization', parameterCustomizationConfig);
-    this.configMap.set('payment', paymentConfig);
-    this.configMap.set('personas', personasConfig);
-    this.configMap.set('phases', phasesConfig);
-    this.configMap.set('projectManagement', projectManagementConfig);
-    this.configMap.set('projectOwner', projectOwnerConfig);
-    this.configMap.set('randomWalk', randomWalkConfig);
-    this.configMap.set('registration', registrationConfig);
-    this.configMap.set('reports', reportsConfig);
-    this.configMap.set('security', securityConfig);
-    this.configMap.set('stateGovCities', stateGovCitiesConfig);
-    this.configMap.set('teamManagement', teamManagementConfig);
-    this.configMap.set('theme', themeConfig);
-    this.configMap.set('toolbar', toolbarConfig);
-    this.configMap.set('trading', tradingConfig);
-    this.configMap.set('userManagement', userManagementConfig);
-    this.configMap.set('userRoles', userRolesConfig);
-    this.configMap.set('userRolesNFT', userRolesNFTConfig);
-    this.configMap.set('userSettings', userSettingsConfig);
-    this.configMap.set('videos', videosConfig);
-    this.configMap.set('database', databaseConfig);
-    this.configMap.set('apiConfig', apiEndpointConfig);
-    this.configMap.set('participants', participantsConfig);
-    this.configMap.set('messages', messagesConfig);
-    this.configMap.set('screenSharing', screenSharingConfig);
-    this.configMap.set('dataAnalysis', dataAnalysisConfig);
-    this.configMap.set('logs', logsConfig);
-    this.configMap.set('batch', batchConfig);
-    this.configMap.set('analytics', analyticsConfig);
-    this.configMap.set('uiSettings', uiSettingsConfig);
-
+  constructor(options: EndpointManagerOptions = {}) {
+    this.logger = options.logger || console;
+    this.notificationChannelManager = new NotificationChannelManager();
     
-    // Add any new ones here as you create them
+    if (options.autoRegister !== false) {
+      this.registerConfigs();
+    }
   }
+  
+  /**
+   * Register all endpoint configurations
+   */
+  registerConfigs() {
+    this.logger?.info('Registering endpoint configurations...');
+    
+    // Core project management endpoints
+    this.registerCoreConfigs();
+    
+    // Collaboration & communication endpoints
+    this.registerCollaborationConfigs();
+    
+    // Crypto & trading endpoints
+    this.registerCryptoConfigs();
+    
+    // Advanced features endpoints
+    this.registerAdvancedConfigs();
+    
+    // Notification endpoints (new)
+    this.registerNotificationConfigs();
+    
+    this.logger?.info(`Total endpoints registered: ${this.configMap.size}`);
 
+    // notification configs
+    this.configMap.set('notifications', notificationsConfig);
+  }
+  
+  private registerCoreConfigs() {
+    const coreConfigs = {
+      teams: teamsConfig,
+      users: usersConfig,
+      projects: projectsConfig,
+      tasks: tasksConfig,
+      todos: todosConfig,
+      phases: phasesConfig,
+      data: dataConfig,
+      documents: documentsConfig,
+      delegates: delegatesConfig,
+      notes: notesConfig,
+      reports: reportsConfig,
+    };
+    
+    Object.entries(coreConfigs).forEach(([key, config]) => {
+      this.configMap.set(key as EndpointGroup, config);
+    });
+  }
+  
+  private registerCollaborationConfigs() {
+    const collaborationConfigs = {
+      chat: chatConfig,
+      communication: communicationConfig,
+      collaborationTools: collaborationToolsConfig,
+      communityInteraction: communityInteractionConfig,
+      realtime: realtimeConfig,
+      messages: messagesConfig,
+      participants: participantsConfig,
+      screenSharing: screenSharingConfig,
+      videoCall: { enabled: true, provider: 'jitsi' }, // Integrated from notifications
+      audioCall: { enabled: true, provider: 'twilio' }, // Integrated from notifications
+    };
+    
+    Object.entries(collaborationConfigs).forEach(([key, config]) => {
+      this.configMap.set(key as EndpointGroup, config);
+    });
+  }
+  
+  private registerCryptoConfigs() {
+    const cryptoConfigs = {
+      crypto: cryptoConfig,
+      trading: tradingConfig,
+      dex: dexConfig,
+      payment: paymentConfig,
+      monetization: monetizationConfig,
+      userRolesNFT: userRolesNFTConfig,
+    };
+    
+    Object.entries(cryptoConfigs).forEach(([key, config]) => {
+      this.configMap.set(key as EndpointGroup, config);
+    });
+    
+    // Setup crypto notifications
+    this.notificationChannelManager.setupCryptoNotifications();
+  }
+  
+  private registerAdvancedConfigs() {
+    const advancedConfigs = {
+      analytics: analyticsConfig,
+      dataAnalysis: dataAnalysisConfig,
+      aiGenerators: generatorsConfig,
+      search: searchingConfig,
+      filtering: filteringConfig,
+      sorting: sortingConfig,
+      security: securityConfig,
+      auth: authConfig,
+      externalAuth: externalAuthConfig,
+      userManagement: userManagementConfig,
+      userSettings: userSettingsConfig,
+      logs: logsConfig,
+      batch: batchConfig,
+      database: databaseConfig,
+      apiConfig: apiEndpointConfig,
+      web: webConfig,
+      ui: uiConfig,
+      uiSettings: uiSettingsConfig,
+      theme: themeConfig,
+      toolbar: toolbarConfig,
+    };
+    
+    Object.entries(advancedConfigs).forEach(([key, config]) => {
+      this.configMap.set(key as EndpointGroup, config);
+    });
+  }
+  
+  private registerNotificationConfigs() {
+    // Register the notifications config
+    this.configMap.set('notifications', notificationsConfig);
+    
+    // Configure notification channels for different features
+    this.notificationChannelManager.setChannel('email', true);
+    this.notificationChannelManager.setChannel('push', { enabled: true, sound: 'default' });
+    this.notificationChannelManager.setChannel('inApp', { enabled: true });
+    
+    // Webhook based on environment
+      const webhookConfig = this.getWebhookConfig();
+        this.notificationChannelManager.setChannel('webhook', webhookConfig);
+      
+      // Add notification endpoints to config
+      const channelConfig = this.notificationChannelManager.getChannelEndpointConfig();
+      this.configMap.set('notificationChannels', channelConfig);
+    }
+
+  private getWebhookConfig(): boolean | WebhookSettings {
+    const webhookUrl = process.env.WEBHOOK_URL || '';
+    
+    if (!webhookUrl?.trim()) {
+      return false;
+    }
+    
+    // Cast to the correct WebhookSettings type
+    const webhookConfig: WebhookSettings = {
+      enabled: true,
+      url: webhookUrl.trim(), // Ensure it's a string, not undefined
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      retryPolicy: {
+        maxRetries: 3,
+        retryInterval: 5000,
+        backoffMultiplier: 2,
+        backoffFactor: 2
+      }
+    };
+    
+    if (process.env.WEBHOOK_SECRET) {
+      webhookConfig.headers!['Authorization'] = `Bearer ${process.env.WEBHOOK_SECRET}`;
+    }
+    
+    return webhookConfig;
+  }
+  /**
+   * Get all endpoint configurations
+   */
   getEndpointConfigurations(): EndpointConfigurations {
     const configs: Partial<EndpointConfigurations> = {};
     this.configMap.forEach((value, key) => {
-      configs[key as keyof EndpointConfigurations] = value;
+      configs[key] = value;
     });
     return configs as EndpointConfigurations;
   }
-
-  // For adding new endpoint groups
-  addEndpointGroup<T extends keyof EndpointConfigurations>(
-    name: T, 
-    config: EndpointConfigurations[T]
-  ) {
-    this.configMap.set(name, config);
+  
+  /**
+   * Get notification channel manager
+   */
+  getNotificationManager(): NotificationChannelManager {
+    return this.notificationChannelManager;
   }
-
-  listEndpointGroups(): (keyof EndpointConfigurations)[] {
+  
+  /**
+   * Add new endpoint group
+   */
+  addEndpointGroup<T extends EndpointGroup>(
+    name: T,
+    config: EndpointConfigurations[T]
+  ): this {
+    this.configMap.set(name, config);
+    this.logger?.info(`Added endpoint group: ${name}`);
+    return this;
+  }
+  
+  /**
+   * Remove endpoint group
+   */
+  removeEndpointGroup(name: EndpointGroup): boolean {
+    const result = this.configMap.delete(name);
+    if (result) {
+      this.logger?.info(`Removed endpoint group: ${name}`);
+    }
+    return result;
+  }
+  
+  /**
+   * Get specific endpoint configuration
+   */
+  getEndpointGroup<T extends EndpointGroup>(name: T): EndpointConfigurations[T] | undefined {
+    return this.configMap.get(name);
+  }
+  
+  /**
+   * Check if endpoint group exists
+   */
+  hasEndpointGroup(name: EndpointGroup): boolean {
+    return this.configMap.has(name);
+  }
+  
+  /**
+   * List all endpoint groups
+   */
+  listEndpointGroups(): EndpointGroup[] {
     return Array.from(this.configMap.keys());
   }
+  
+  /**
+   * List endpoint groups by category
+   */
+  listEndpointGroupsByCategory() {
+    return {
+      core: ['teams', 'users', 'projects', 'tasks', 'todos', 'phases', 'data', 'documents'],
+      collaboration: ['chat', 'communication', 'collaborationTools', 'realtime', 'messages', 'videoCall', 'audioCall'],
+      crypto: ['crypto', 'trading', 'dex', 'payment', 'monetization'],
+      notifications: ['notifications', 'notificationChannels'],
+      advanced: ['analytics', 'dataAnalysis', 'security', 'auth', 'userManagement', 'logs']
+    };
+  }
+  
+  /**
+   * Get all configurations for export
+   */
+  getAllConfigs() {
+    const allConfigs: Record<string, any> = {};
+    this.configMap.forEach((value, key) => {
+      allConfigs[key] = value;
+    });
+    return allConfigs;
+  }
+  
 
-  // Alternative method if you specifically need string keys only
-  listEndpointGroupNames(): string[] {
-    return Array.from(this.configMap.keys()).filter(key => 
-      typeof key === 'string'
-    ) as string[];
+  initializeUserNotificationChannels(userPreferences?: any) {
+  if (userPreferences?.notifications) {
+    // Type-safe way to handle user preferences
+    const notifications = userPreferences.notifications as Record<string, any>;
+    
+    Object.entries(notifications).forEach(([channel, settings]) => {
+      // Check if it's a valid basic channel
+      const basicChannels: BasicChannels[] = ['email', 'push', 'sms', 'inApp', 'webhook'];
+      
+      if (basicChannels.includes(channel as BasicChannels)) {
+        const channelKey = channel as BasicChannels;
+        
+        if (typeof settings === 'boolean') {
+          this.notificationChannelManager.setChannel(channelKey, settings);
+        } else if (settings && typeof settings === 'object') {
+          // Validate and sanitize settings based on channel type
+          const sanitizedSettings = this.sanitizeChannelSettings(channelKey, settings);
+          this.notificationChannelManager.setChannel(channelKey, sanitizedSettings);
+        }
+      } else if (channel === 'advanced' && settings && typeof settings === 'object') {
+        // Handle advanced channels
+        Object.entries(settings).forEach(([advancedChannel, advancedSettings]) => {
+          if (advancedSettings && typeof advancedSettings === 'object') {
+            this.setAdvancedChannelFromPreferences(advancedChannel, advancedSettings);
+          }
+        });
+      }
+    });
+  }
+  
+  // Setup project notifications by default
+  this.notificationChannelManager.setupProjectNotifications();
+  
+  return this.notificationChannelManager;
+}
+
+// Helper method to sanitize channel settings
+private sanitizeChannelSettings(channel: BasicChannels, settings: any): any {
+  switch(channel) {
+    case 'email':
+      return {
+        enabled: settings.enabled !== false,
+        subjectTemplate: settings.subjectTemplate,
+        bodyTemplate: settings.bodyTemplate,
+        cc: settings.cc || [],
+        bcc: settings.bcc || []
+      };
+    case 'push':
+      return {
+        enabled: settings.enabled !== false,
+        sound: settings.sound || 'default',
+        badgeCount: settings.badgeCount || 0
+      };
+    case 'sms':
+      return {
+        enabled: settings.enabled !== false,
+        provider: settings.provider || 'default',
+        senderId: settings.senderId || ''
+      };
+    case 'inApp':
+      return {
+        enabled: settings.enabled !== false,
+        displayDuration: settings.displayDuration || 5000,
+        position: settings.position || 'top'
+      };
+    case 'webhook':
+      return {
+        enabled: settings.enabled !== false,
+        url: settings.url || '', // Ensure URL is a string
+        headers: settings.headers || {},
+        retryPolicy: settings.retryPolicy || {
+          maxRetries: 3,
+          retryInterval: 5000
+        }
+      };
+    default:
+      return { enabled: settings.enabled !== false };
   }
 }
 
-// Initialize and export
-const endpointManager = new EndpointConfigManager();
-endpointManager.registerConfigs();
+// Helper method for advanced channels
+  private setAdvancedChannelFromPreferences(channel: string, settings: any) {
+    const advancedChannels = ['chat', 'calendar', 'audioCall', 'videoCall', 'screenShare'];
+  
+    if (advancedChannels.includes(channel)) {
+      const sanitizedSettings = {
+        enabled: settings.enabled !== false,
+        ...settings
+      };
+    
+      if (channel === 'chat') {
+        this.notificationChannelManager.setChatSettings(sanitizedSettings);
+      } else if (channel === 'calendar') {
+        this.notificationChannelManager.setCalendarSettings(sanitizedSettings);
+      } else if (channel === 'audioCall') {
+        this.notificationChannelManager.setAudioCallSettings(sanitizedSettings);
+      } else if (channel === 'videoCall') {
+        this.notificationChannelManager.setVideoCallSettings(sanitizedSettings);
+      } else if (channel === 'screenShare') {
+        this.notificationChannelManager.setScreenShareSettings(sanitizedSettings);
+      }
+    }
+  }
+}
 
+// ============================================================================
+// EXPORTS
+// ============================================================================
+
+// Create singleton instance
+const endpointManager = new EndpointConfigManager({
+  autoRegister: true,
+  logger: {
+    debug: (msg) => console.debug(`[EndpointManager] ${msg}`),
+    info: (msg) => console.log(`[EndpointManager] ${msg}`),
+    warn: (msg) => console.warn(`[EndpointManager] ${msg}`),
+    error: (msg) => console.error(`[EndpointManager] ${msg}`),
+  }
+});
+
+// Export manager and configurations
 export const endpointConfigurations = endpointManager.getEndpointConfigurations();
-export { endpointManager };
+export const notificationChannelManager = endpointManager.getNotificationManager();
+
+// Export individual configs for backward compatibility
+export {
+  endpointManager,
+  uiSettingsConfig,
+  analyticsConfig,
+  usersConfig,
+  apiWebBaseConfig,
+  commentsConfig,
+  contentConfig,
+  dataConfig,
+  delegatesConfig,
+  webConfig,
+  sortingConfig,
+  filteringConfig,
+  highlightsConfig,
+  loggingConfig,
+  newsConfig,
+  notesConfig,
+  projectsConfig,
+  searchingConfig,
+  snapshotsConfig,
+  uiConfig,
+  versionConfig,
+  tasksConfig,
+  teamsConfig,
+  todosConfig,
+  authConfig,
+  blogsConfig,
+  calendarConfig,
+  chatConfig,
+  clientConfig,
+  collaborationToolsConfig,
+  communicationConfig,
+  communityInteractionConfig,
+  cryptoConfig,
+  dataProvidersConfig,
+  dexConfig,
+  detailsConfig,
+  donationsConfig,
+  drawingConfig,
+  externalAuthConfig,
+  feedbackConfig,
+  filesConfig,
+  freelancersConfig,
+  generatorsConfig,
+  globalCollaborationConfig,
+  markerConfig,
+  moderatorsConfig,
+  monetizationConfig,
+  parameterCustomizationConfig,
+  paymentConfig,
+  personasConfig,
+  phasesConfig,
+  projectManagementConfig,
+  projectOwnerConfig,
+  randomWalkConfig,
+  registrationConfig,
+  reportsConfig,
+  securityConfig,
+  stateGovCitiesConfig,
+  teamManagementConfig,
+  themeConfig,
+  toolbarConfig,
+  tradingConfig,
+  userManagementConfig,
+  userRolesConfig,
+  userRolesNFTConfig,
+  userSettingsConfig,
+  videosConfig,
+  databaseConfig,
+  apiEndpointConfig,
+  devConfig,
+  documentsConfig,
+  participantsConfig,
+  messagesConfig,
+  screenSharingConfig,
+  dataAnalysisConfig,
+  logsConfig,
+  realtimeConfig,
+  batchConfig,
+};
+
+// Export types
+export type { EndpointGroup, EndpointManagerOptions };

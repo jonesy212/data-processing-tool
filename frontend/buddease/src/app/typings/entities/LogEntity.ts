@@ -1,8 +1,8 @@
 // LogEntity.ts
 // LogEntity.ts - Separate entity for logging
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { LogData } from '@/app/models/LogData'
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { LogData } from '@/app/models/LogData';
 
 // 1. Base Log Entity
 export interface BaseLogEntity extends BaseDataEntity {
@@ -29,10 +29,9 @@ type LogIncludedFields = keyof BaseLogEntity;
 type LogDataEntity = LogData<BaseLogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields>;
 
 
-export type {LogEntity,
-LogK,
-LogMeta,
-LogAttachment,
-LogExcludedFields,
-LogIncludedFields,
-LogDataEntity }
+export type {
+  LogAttachment, LogDataEntity, LogEntity, LogExcludedFields,
+  LogIncludedFields, LogK,
+  LogMeta
+};
+

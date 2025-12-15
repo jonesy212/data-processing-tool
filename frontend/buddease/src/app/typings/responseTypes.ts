@@ -18,6 +18,7 @@ import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysi
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
 import { CalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
 import { IconStore } from '@/app/state/stores/IconStore';
@@ -27,7 +28,6 @@ import { TrackerStore } from '@/app/state/stores/TrackerStore';
 import { Todo } from '@/app/todos/Todo';
 import { BaseResponseType } from '@/app/typings/baseResponseTypes';
 import { User } from '@/app/users/User';
-import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo

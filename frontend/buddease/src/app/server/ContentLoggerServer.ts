@@ -1,6 +1,7 @@
 // ContentLoggerServer.ts
-import { Logger } from '@/BaseLogger'; // Assuming Logger is defined elsewhere
-import fs from 'fs';
+import { Logger } from '@/app/dataIntegration/projectIntegration/activityLogger';
+import { saveToLocalStorage } from '@/app/hooks/useLocalStorage';
+
 
 export class ContentLoggerServer extends Logger {
   static logContentCreated(title: string, contentId: string, userId: string) {
@@ -47,11 +48,46 @@ export class ContentLoggerServer extends Logger {
     super.logWithOptions("Content", `Task completed (Task ID: ${taskId}, User ID: ${userId})`, userId);
   }
 
-  static logEventToFile(logType: string, message: string, fileName: string) {
-    fs.appendFileSync(fileName, JSON.stringify({
-      event: logType,
-      data: message,
-      timestamp: new Date()
-    }) + '\n');
+    static logEventToFile(logType: string, message: string, fileName: string) {
+    const timestamp = new Date().toISOString();
+    const entry = `[${timestamp}] [${logType}] ${message}`;
+    
+    // Always log to console
+    console.log(`[${logType}]`, message);
+    
+    // In browser, store in buffer
+    if (typeof window !== 'undefined') {
+      this.logBuffer.push(entry);
+      saveToLocalStorage(this.LOG_KEY, this.logBuffer);
+    }
+    
+    // In server, write to file
+    if (typeof window === 'undefined') {
+      // This will only work if called from server-side code
+      this.writeToServerFile(logType, message, fileName);
+    }
+    
+    return entry;
+  }
+  
+  private static writeToServerFile(logType: string, message: string, fileName: string) {
+    try {
+      // Dynamic import for Node.js modules
+      const fs = require('fs');
+      const path = require('path');
+      
+      const timestamp = new Date().toISOString();
+      const entry = `[${timestamp}] [${logType}] ${message}`;
+      const logDir = path.join(process.cwd(), 'logs');
+      
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
+      }
+      
+      const logPath = path.join(logDir, fileName);
+      fs.appendFileSync(logPath, entry + '\n');
+    } catch (error) {
+      console.error('Failed to write to server log file:', error);
+    }
   }
 }

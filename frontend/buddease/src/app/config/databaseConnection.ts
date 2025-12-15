@@ -1,14 +1,13 @@
-// config.ts
+// databaseConnection.ts (formerly config.ts)
 import { PoolConfig } from 'pg';
-import configData from "@/configData";
+import configData from "@/app/config/endpoints/configData";
 
-const databaseConfig: PoolConfig = {
+const databaseConnection: PoolConfig = {  
   host: configData.database.host,
   port: configData.database.port,
   database: configData.database.database,
   user: configData.database.username,
   password: configData.database.password
-}
+};
 
-
-export { databaseConfig }
+export { databaseConnection };  

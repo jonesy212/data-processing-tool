@@ -1,11 +1,9 @@
 // CommonDetails.tsx
 
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import React, { useState } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CommonData } from "@/app/models/CommonData";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import React, { useState } from "react";
 
 
 interface Customizations<T> {
@@ -145,5 +143,5 @@ interface CommonDetailsProps<
 };    
  
 export { CommonDetails };
-export type { Customizations, CommonDetailsProps };
+export type { CommonDetailsProps, Customizations };
 

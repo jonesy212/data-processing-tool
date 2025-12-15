@@ -3,14 +3,12 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
 import { YourSettingsResponseType } from '@/app/typings/responseTypes';
 import { makeAutoObservable } from "mobx";

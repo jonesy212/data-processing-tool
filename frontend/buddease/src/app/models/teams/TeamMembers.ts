@@ -1,13 +1,12 @@
 // TeamMembers.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Member } from "@/app/models/members/Member";
 import { UserRole } from "@/app/models/UserRole";
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
-import { Permission, BasePermissions } from '@/app/permissions/Permission';
-import { MemberData, MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Member } from "@/app/models/members/Member";
-import { MemberPermission } from '@/app/permissions/Permission'
+import { BasePermissions, MemberPermission, Permission } from '@/app/permissions/Permission';
+import { MemberAttachment, MemberData, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/app/typings/entities/MemberEntity';
 
 // Team member settings
 interface TeamMemberSettings {

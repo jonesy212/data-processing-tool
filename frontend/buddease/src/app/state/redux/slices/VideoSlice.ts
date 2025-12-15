@@ -2,19 +2,17 @@
 import { DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 // video/VideoSlice.ts
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from "@/app/documents/RelatedProps";
-import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
-import { Video } from '@/app/typings/videoTypes/Video'
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
-import { Channel } from "@/app/interfaces/chat/Channel";
-import { VideoData } from "@/app/typings/videoTypes/Video";
 import { VideoMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Channel } from "@/app/interfaces/chat/Channel";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { implementThen } from '@/app/state/stores/CommonEvent';
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
+import { Video, VideoData } from '@/app/typings/videoTypes/Video';
 import { User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDraft } from "immer";
-import { implementThen } from '@/app/state/stores/CommonEvent';
 import { ApiManagerState } from "./ApiSlice";
 import { CustomComment } from "./BlogSlice";
 
@@ -30,7 +28,7 @@ const generateCaptions = (video: any): string[] => {
 
 interface VideoState<
   T extends BaseDataEntity = VideoEntity, 
-  K extends T = VideoK, 
+  K extends T = T, 
   Meta extends DefaultMeta<T, K> = VideoMeta, 
   AttachmentType extends Attachment = VideoAttachment,
   ExcludedFields extends keyof T = VideoExcludedFields,
@@ -46,7 +44,7 @@ interface VideoState<
   subscribedChannels: string[];
   blockedUsers: string[];
   skipped: string[];
-  content: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  content: VideoData<T, K> | null;
   pinned: string[];
   snapshots: { [videoId: string]: string }; // Map of video ID to snapshot URL
   playbackHistory: string[]; // Array of video IDs representing the playback history

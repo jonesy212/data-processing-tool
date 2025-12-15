@@ -4,7 +4,7 @@ import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";
 import { useUIElement } from "@/app/libraries/ui/useUIElement";
 import { Project } from "@/app/models/projects/Project";
-import { AnimationsAndTransitions } from "@/app/styling/AnimationsAndTansitions";
+import { AnimationsAndTransitions } from '@/app/components/styling/AnimationsAndTansitions'
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const animatedComponentRef = useRef<AnimatedComponentRef | null>({
@@ -50,8 +50,10 @@ const ProjectCard = ({ project }: { project: Project }) => {
     initializeAnimatedComponent();
   }, []);
 
-  const { toggleActivation, resetIdleTimeout } = useIdleTimeout({});
-
+  const { toggleActivation, resetIdleTimeout } = useIdleTimeout(
+    "ProjectCard", // name parameter
+    {} // props parameter
+  );
   // Use the useUIElement hook to get the button element
   const buttonElement: ReactNode = useUIElement({
     type: "button",

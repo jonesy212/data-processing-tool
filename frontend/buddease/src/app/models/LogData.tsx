@@ -1,13 +1,12 @@
 // LogData.tsx
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
-import { Highlight } from "@/app/documents/NoteData";
-import CustomFile from "@/app/documents/File";
-import {  Snapshot} from "@/app/snapshots";
-import { BaseData } from "./data/Data";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import CustomFile from "@/app/documents/File";
+import { Highlight } from "@/app/documents/NoteData";
+import { Snapshot } from "@/app/snapshots";
+import { BaseData } from "./data/Data";
 
 interface LogData<
   T extends BaseDataEntity,

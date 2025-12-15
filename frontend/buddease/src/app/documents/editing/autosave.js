@@ -1,8 +1,7 @@
 // autosave.js
 import { AutosaveLogActions } from "@/app/actions/AutosaveLogActions";
-import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
-import VersionGenerator from "@/app/versions/VersionGenerator";
+import VersionGenerator, { getCurrentAppInfo } from '@/app/versions/VersionGenerator'
 import { useDispatch } from "react-redux";
 
 const handleError = useErrorHandling(); // Error handling hook

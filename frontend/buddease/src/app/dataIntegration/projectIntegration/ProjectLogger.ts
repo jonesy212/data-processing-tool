@@ -1,9 +1,76 @@
 // ProjectLogger.ts
-import { Logger } from "./activityLogger";
+import { Logger } from '@/app/dataIntegration/projectIntegration/activityLogger';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
+// import { createErrorNotificationContent } from '@/app/features/support/ErrorNotificationUtils'; // Add if exists
+
+// // If you don't have this function, create a simple version
+// function createErrorNotificationContent(error: Error | any): any {
+//   return {
+//     name: error.name || 'UnknownError',
+//     message: error.message || 'Unknown error occurred',
+//     stack: error.stack || 'No stack trace available',
+//     timestamp: new Date().toISOString()
+//   };
+// }
 
 export class ProjectLogger extends Logger {
   // Project Lifecycle Events
+
+
+
+    static logWithOptions(type: string, message: string, uniqueID: string) {
+    console.log(`[${type}] ${message} (ID: ${uniqueID})`);
+  }
+
+  static logSessionEvent(sessionID: string, event: string) {
+    fetch('/api/logs/session', {
+      method: "POST",
+      body: JSON.stringify({ sessionID, event }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to log session event");
+      }
+    })
+    .catch((error: any) => {
+      console.error("Failed to log session event:", error);
+    });
+  }
+
+  static logProjectPhase(phase: string, projectId: string) {
+    this.logWithOptions("Project Phase", `${phase} (Project ID: ${projectId})`, projectId);
+  }
+
+  static logUserActivity(action: string, userId: string) {
+    this.logWithOptions("User Activity", `${action} (User ID: ${userId})`, userId);
+  }
+
+  static logError(errorMessage: string, error?: Error | string | null, extraInfo?: any) {
+    // Simplified version
+    let user: string | null = null;
+    let actualError: Error | undefined;
+    
+    if (typeof error === 'string' || error === null) {
+      user = error as string | null;
+    } else if (error instanceof Error) {
+      actualError = error;
+    }
+    
+    const logData: any = { errorMessage };
+    
+    if (user) logData.user = user;
+    if (actualError) {
+      logData.error = actualError;
+      logData.stack = actualError.stack;
+    }
+    if (extraInfo) logData.context = extraInfo;
+    
+    console.error(`[ERROR] ${errorMessage}`, logData);
+  }
+  
   static logProjectCreation(
     projectId: string, 
     projectName: string, 
@@ -381,7 +448,8 @@ export class ProjectLogger extends Logger {
       projectId
     );
 
-    this.logError(errorMessage, context?.userId || null);
+    // Remove or fix the errorLogger reference
+    this.logError(errorMessage, new Error(errorMessage));
 
     console.error("Project Error Details:", {
       projectId,

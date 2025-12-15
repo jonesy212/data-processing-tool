@@ -1,17 +1,15 @@
 // AppConfig.ts
 
-import { AppVersion } from '@/app/versions/AppVersion';
+import { ApiConfig } from '@/app/api/ApiConfigService';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
-import { NotificationData } from "@/app/hooks/useNotificationSystem";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { User } from "@/app/users/User";
-import { currentAppName } from "@/app/versions/AppVersion";
+import { AppVersion, currentAppName } from '@/app/versions/AppVersion';
 import { RetryConfig, configServiceInstance } from "../services/ConfigurationService";
-import { ApiConfig } from '@/app/api/ApiConfigService';
-import { AppStructureItem } from "./appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the API version header constant
 const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader();
@@ -314,5 +312,6 @@ export const getAppConfig = (): AppConfig => {
 const appConfig: AppConfig = getAppConfig();
 console.log(appConfig.appName);
 
-export type { AppConfig };
 export { API_VERSION_HEADER, appConfig };
+export type { AppConfig };
+

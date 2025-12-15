@@ -2,25 +2,24 @@
 
 import { GlobalStateActions } from '@/app/actions/GlobalStateActions';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UserSettings } from '@/app/config/UserSettings';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentAnimationOptions } from '@/app/documents/SharedDocumentProps';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { DesignSystemConfig } from '@/app/libraries/ui/theme/MapProperties';
 import { BaseData } from '@/app/models/data/Data';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import Version from '@/app/versions/Version';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';
 import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from 'docx';
 import { action, makeAutoObservable } from 'mobx';
 import { useDispatch } from 'react-redux';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 

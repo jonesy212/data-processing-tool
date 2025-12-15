@@ -5,7 +5,7 @@ import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayl
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { environmentAwareEndpointManager } from '@/app/config/endpoints/EnvironmentAwareEndpointManager';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
@@ -516,7 +516,7 @@ const convertSnapshotStore = <
     id: retrievedSnapshot.id,
     topic: '',
     date: retrievedSnapshot.timestamp,
-    config: {} as Promise<SnapshotStoreConfig<T, K>>,
+    config: {} as Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     title: '',
     category: retrievedSnapshot.category,
     description: '',
@@ -585,7 +585,7 @@ const convertSnapshotStore = <
     eventRecords: retrievedSnapshot.events?.eventRecords ? retrievedSnapshot.events?.eventRecords : null,
     type: 'snapshot',
     snapshots: [],
-    snapshotConfig: {} as SnapshotStoreConfig<T, K>,
+    snapshotConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     meta: {},
     snapshotMethods: [],
     getSnapshotsBySubscriber: () => { },
@@ -729,7 +729,7 @@ const convertSnapshotStore = <
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string | null,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+        snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         type: string,
         event: Event
       ) => SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -930,8 +930,8 @@ const convertSnapshotStore = <
     getSnapshotVersions: () => { },
     createSnapshot: () => { },
     deleteSnapshot: () => { },
-    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
-    getSnapshotItems: (): (SnapshotStoreConfig<T, K> | SnapshotItem<T, K>)[] => [],
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    getSnapshotItems: (): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K>)[] => [],
     dataStore: {} as  InitializedDataStore<T>,
     mapDataStore: {} as T | Map<string, DataStore<T, K>> | null | undefined,
     initialState: {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -965,7 +965,7 @@ const convertSnapshotStore = <
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string | null,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+      snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event
     ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {},

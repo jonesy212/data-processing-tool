@@ -3,10 +3,9 @@ import { useState } from "react";
 
 import * as IdeaLifecycleAPI from "@/app/api/IdeaLifecycleAPI";
 import axiosInstance from '@/app/api/csrfToken';
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from '@/app/state/context/NotificationContext';
+
+
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import IdeaValidation from "@/app/users/userJourney/IdeaValidation";
 import ProofOfConcept from "@/app/users/userJourney/ProofOfConcept";
 import { IdeaLifecyclePhase } from "./ideaPhase/IdeaLifecyclePhase";
@@ -52,22 +51,41 @@ const IdeaLifecycleProcess: React.FC = () => {
         ideaData
       );
       console.log("Server response:", response.data);
-      notify(
-        "ideaCreationSuccess" + ideaData._id,
-        "Idea has been successfully created",
-        "success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-    } catch (error) {
+      
+      notify({
+        id: `ideaCreationSuccess_${ideaData._id || Date.now()}`,
+        message: "Idea has been successfully created",
+        data: {
+          entityId: ideaData._id || 'unknown',
+          entityType: 'idea',
+          extra: { 
+            ideaData,
+            response: response.data
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
+    } catch (error: any) {
       console.error("Error creating idea:", error);
-      notify(
-        "ideaCreationFailure" + ideaData._id,
-        "Error creating idea",
-        "error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      notify({
+        id: `ideaCreationFailure_${ideaData._id || Date.now()}`,
+        message: "Error creating idea",
+        data: {
+          originalError: error.message || 'Unknown error',
+          entityId: ideaData._id || 'unknown',
+          entityType: 'idea',
+          extra: { 
+            ideaData,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     }
   };
 
@@ -80,25 +98,43 @@ const IdeaLifecycleProcess: React.FC = () => {
       console.log("Server response:", response);
 
       // Notify user of successful idea confirmation
-      notify(
-        "ideaConfirmationSuccess" + ideaData._id,
-        "Your idea has been successfully confirmed",
-        "IdeaConfirmationSuccess",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      notify({
+        id: `ideaConfirmationSuccess_${ideaData._id || Date.now()}`,
+        message: "Your idea has been successfully confirmed",
+        data: {
+          entityId: ideaData._id || 'unknown',
+          entityType: 'idea',
+          extra: { 
+            ideaData,
+            response 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
 
       // Perform additional actions as needed, such as updating the UI or navigating to a different page
-    } catch (error) {
+    } catch (error: any) {
       // Handle any network or unexpected errors
       console.error("Error confirming idea creation:", error);
-      notify(
-        "ideaConfirmationFailure" + ideaData._id,
-        "There was an error confirming your idea, please try again",
-        "IdeaConfirmationError",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      notify({
+        id: `ideaConfirmationFailure_${ideaData._id || Date.now()}`,
+        message: "There was an error confirming your idea, please try again",
+        data: {
+          originalError: error.message || 'Unknown error',
+          entityId: ideaData._id || 'unknown',
+          entityType: 'idea',
+          extra: { 
+            ideaData,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
     }
   };
 

@@ -18,8 +18,8 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/app/features/support/NotificationMessagesFactory";
 
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/models/data/BaseConfig';
-import { FileAttachment } from '@/models/data/Attachment';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/models/data/BaseConfig';
+import { FileAttachment } from '@/app/models/data/Attachment';
 
 // Default alias for generic NotificationData
 export type DefaultNotificationData = NotificationData<

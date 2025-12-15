@@ -1,9 +1,8 @@
 // CustomPayload.ts
-import { CustomSnapshotData } from '@/app/snapshots';
-import { Payload } from '@/app/server/database/Payload';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { CustomSnapshotData } from '@/app/snapshots';
 
 // Define CustomPayload that extends Payload and aligns with CustomSnapshotData
 type CustomPayload<  T extends BaseDataEntity,

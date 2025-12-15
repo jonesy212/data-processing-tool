@@ -1,4 +1,5 @@
 // SnapshotSubscriberManagement.ts
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition } from "@/app/models/data/StatusType";
@@ -6,7 +7,6 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { EventManagement } from '@/app/snapshots/SnapshotEvents';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
@@ -17,7 +17,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Content } from '@/app/models/content/AddContent';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';

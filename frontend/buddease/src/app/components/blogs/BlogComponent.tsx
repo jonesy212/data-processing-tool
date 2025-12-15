@@ -1,8 +1,8 @@
 // BlogComponent.tsx
-import * as subscriberApi from '@/api/subscriberApi';
+import * as subscriberApi from '@/app/api/subscriberApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Content } from '@/app/models/content/AddContent';
 import { Data } from '@/app/models/data/Data';

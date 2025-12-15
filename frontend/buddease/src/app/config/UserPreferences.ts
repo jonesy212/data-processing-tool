@@ -1,17 +1,22 @@
 // UserPreferences.ts
-// userPreferences.ts
 import { apiService } from "@/app/api/ApiDetails";
 import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import { HighlightColor } from "@/app/components/styling/Palette";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import FileData from "@/app/models/data/FileData";
-import FolderData from "@/app/models/data/FolderData";
 import { CommonTrackerProps } from "@/app/models/tracker/Tracker";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
+import { refreshUI } from '@/app/snapshots/refreshUI';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
+import { FileAttachment, FileEntity, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/app/typings/entities/FileEntity';
 import { User } from "@/app/users/User";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFields, FileIncludedFields } from '@/app/typings/entities/FileEntity'
+import { AnyAction, Reducer } from 'redux';
+
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';
 
@@ -32,13 +37,16 @@ interface UserPreferences<
   K extends T = T
 > extends Partial<CommonTrackerProps> {
   // General Preferences
+  modules: ModuleType
   theme?: 'light' | 'dark'; // Example of a theme preference
   language?: LanguageEnum; // Preferred language
   fontSize?: 'small' | 'medium' | 'large'; // Font size for accessibility
   colorScheme?: string; // Color scheme for UI
   fontStyles?: { fontFamily: string; fontSize: number }; // Font styles
   trackerId?: string;
-  actions?: string;
+  actions?: string[];
+
+  reducers?: Reducer<unknown, AnyAction>[];
   // Notifications Preferences
   notifications?: {
     email: boolean; // Email notifications enabled/disabled
@@ -197,55 +205,69 @@ const userPreferences: UserPreferences = {
     // e.g., send file change event to a backend
     apiService.sendFileChangeEvent(file);
   },
+
   updateAppearance: (
-    updates: {
-      stroke: {
-        width: number;
-        color: string;
-      },
-    },
-    fillColor: string,
-    newStroke: { width: number; color: string },
-    newFillColor: string
+    newStroke,
+    newFillColor,
+    updates,
+    newBorderColor,
+    newHighlightColor
   ) => {
-    // Log the appearance updates
     console.log('Updating appearance:');
-    console.log('Current Stroke:', updates.stroke);
     console.log('New Stroke:', newStroke);
-    console.log('Current Fill Color:', fillColor);
     console.log('New Fill Color:', newFillColor);
-  
-    // Assume we are updating a canvas or DOM element with the new styles
-    const element = document.getElementById('elementId'); // Replace with actual element logic
-    
+    console.log('Updates:', updates);
+    console.log('New Border Color:', newBorderColor);
+    console.log('New Highlight Color:', newHighlightColor);
+
+    const element = document.getElementById('elementId');
+
     if (element) {
-      // Update stroke width and color
-      element.style.borderWidth = `${newStroke.width}px`;
-      element.style.borderColor = newStroke.color;
-  
-      // Update fill color
-      element.style.backgroundColor = newFillColor;
+      if (newStroke) {
+        element.style.borderWidth = `${newStroke.width}px`;
+        element.style.borderColor = newStroke.color;
+      }
+
+      if (newFillColor) {
+        element.style.backgroundColor = newFillColor;
+      }
+
+      if (newBorderColor) {
+        element.style.borderColor = newBorderColor;
+      }
+
+      if (updates?.backgroundColor) {
+        element.style.backgroundColor = updates.backgroundColor;
+      }
     }
-  
-    // Additional logic can be added to handle the UI refresh or updating any state
-  }  
-  };
+  },
+  refreshUI: refreshUI
+}
+
 
 
 
 // Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
-const getUserPreferences = async (): Promise<UserPreferences> => {
+const getUserPreferences = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<UserPreferences<T, K>> => {
   // Simulate fetching user preferences asynchronously
-  return new Promise<UserPreferences>((resolve, reject) => {
+  return new Promise<UserPreferences<T, K>>((resolve, reject) => {
     setTimeout(() => {
       // Example user preferences
-      const userPreferences: UserPreferences = {
+      const userPreferences: UserPreferences<T, K> = {
         id: "",
         name: "",
         theme: 'light',
         fontSize: 'medium',
         language: LanguageEnum.English,
         phases: [],
+        modules: [],
         colorScheme: '', // Define a default color scheme if needed
         fontStyles: {
           fontFamily: '', // Define a default font family if needed
@@ -253,9 +275,9 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
         },
 
         // User preference methods
-        trackFolderChanges: (folder: FolderData) => { },
-        updateUserProfile: (userData: User) => { },
-        sendNotification: (notification: NotificationData, userData: User) => { },
+        trackFolderChanges: (folder) => { },
+        updateUserProfile: (userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => { },
+        sendNotification: (notification: NotificationData, userData: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => { },
         refreshUI: () => {},
         // Notifications Preferences
         notifications: {
@@ -501,14 +523,28 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
         x: 0,
         y: 0,
         // Method to update appearance by modifying stroke width/color and fill color
-        updateAppearance: function (updates, newStroke, newFillColor) {
-          if (this.stroke!) {
+        updateAppearance: function (
+          newStroke: Stroke,
+          newFillColor: string,
+          updates: {
+            stroke?: Stroke;
+            fillColor?: string;
+            borderColor?: string;
+            textColor?: string;
+            highlightColor?: HighlightColor;
+            backgroundColor?: string;
+            fontSize?: string;
+            fontFamily?: string;
+          },
+          newBorderColor?: string,
+          newHighlightColor?: string
+        ) {
+          if (this.stroke) {
             this.stroke.width = newStroke.width;
             this.stroke.color = newStroke.color;
-            this.fillColor = newFillColor; // Assigning a string value
-        
-            console.log(`Appearance updated: stroke ${newStroke.width}px ${newStroke.color}, fill ${newFillColor}`);
           }
+
+          this.fillColor = newFillColor;
         },
       };
       resolve(userPreferences);
@@ -532,15 +568,6 @@ export { getUserPreferences, userPreferences };
 export type { CryptoPreferences, UserPreferences };
 
 
-
-
-
-  
-  
-  
-  
-  
-  
   
 // #Review
 
@@ -561,7 +588,8 @@ const file: FileData<FileEntity, FileK, FileMeta, FileAttachment, FileExcludedFi
   title: "",
   description: "",
   scheduledDate: undefined,
-  createdBy: ""
+  createdBy: "",
+  latestVersion: latestVersion
 };
 
 
@@ -571,9 +599,11 @@ if (userPreferences.trackFileChanges) {
 
 if (userPreferences.updateAppearance) {
   userPreferences.updateAppearance(
-    { stroke: { width: 5, color: "#FF0000" } },
-    "#00FF00",
-    { width: 3, color: "#0000FF" },
+    { width: 5, color: "#FF0000" },  // ✅ Stroke
+    "#00FF00",                        // ✅ fill color
+    {                                 // ✅ updates object
+      stroke: { width: 3, color: "#0000FF" }
+    },
     "#FFFF00"
   );
 }

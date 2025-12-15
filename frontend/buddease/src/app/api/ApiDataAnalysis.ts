@@ -1,13 +1,13 @@
 // ApiDataAnalysis.ts
-import { NotificationPosition } from '@/app/models/data/StatusType';
+import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
-import internalApiService from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationPosition, PriorityTypeEnum } from '@/app/models/data/StatusType';
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { convertResponseToSnapshot } from "@/app/snapshots/InitializedSnapshotTypes";
 import { Snapshot } from "@/app/snapshots/Snapshot";
@@ -15,11 +15,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+
 import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { YourResponseType } from '@/app/typings/responseTypes';

@@ -2,16 +2,17 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CustomHydrateResult } from '@/app/config/DocumentBuilderConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { options } from '@/app/documents/editing/DocumentBuilder';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType, SubscriberTypeEnum } from '@/app/models/data/StatusType';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { Payload } from "@/app/server/database/Payload";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { category } from '@/app/snapshots/isValidFileCategory';
 import { Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -22,7 +23,7 @@ import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
@@ -30,12 +31,12 @@ import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import {
-    SnapshotAttachment,
-    SnapshotEntity,
-    SnapshotExcludedFields,
-    SnapshotIncludedFields,
-    SnapshotK,
-    SnapshotMeta
+  SnapshotAttachment,
+  SnapshotEntity,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
+  SnapshotK,
+  SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";

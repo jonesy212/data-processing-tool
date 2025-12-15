@@ -10,7 +10,7 @@ import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import { ModifiedDate } from '@/app/documents/DocType';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { Section } from '@/app/documents/Section';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
 import {
   BorderStyle,

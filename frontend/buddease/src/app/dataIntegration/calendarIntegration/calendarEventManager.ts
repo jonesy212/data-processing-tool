@@ -5,7 +5,7 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AllStatus, StatusType } from '@/app/models/data/StatusType';
-import { Member } from '@/app/models/teams/TeamMembers';
+import { Member } from '@/app/models/members/Members';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 

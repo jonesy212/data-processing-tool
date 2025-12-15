@@ -2,9 +2,9 @@
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from "@/app/snapshots";
 import {
-  DataStore,
-  useDataStore,
-  VersionedData,
+    DataStore,
+    useDataStore,
+    VersionedData,
 } from "@/app/state/stores/DataStore";
 import { createContext, ReactNode, useContext } from "react";
 
@@ -15,7 +15,7 @@ interface DataContextProps<
 > {
   dataStore: DataStore<T, K> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
-  simulatedDataSource: SnapshotStoreConfig<T, K>[];
+  simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 // Fix the createContext to use correct generics
@@ -37,7 +37,7 @@ export const DataProvider = <
   // Initialize the data store
   const dataStore = useDataStore<T, K>() as DataStore<T, K> &
     VersionedData<T, K>;
-  const simulatedDataSource: SnapshotStoreConfig<T, K>[] = [];
+  const simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
   // Define the DataContext here to bind T, K dynamically
   const DataContext = createContext<DataContextProps<T, K, Meta> | undefined>(

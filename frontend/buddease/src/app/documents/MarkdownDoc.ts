@@ -1,11 +1,11 @@
 // MarkdownDoc.ts
-import { Task } from '@/app/models/tasks/Task';
 import { Collaborator } from '@/app/collaborators/Collaborator';
+import { Task } from '@/app/models/tasks/Task';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { MarkdownDocument } from "@/app/documents/DocumentInterfaces";
+import { MarkdownDocument } from "@/app/documents/editing/MarkdownDocument";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // MarkdownDocument Implementation
 class MarkdownDoc<
@@ -21,9 +21,8 @@ class MarkdownDoc<
     content: string;
     htmlContent: string;
     author: string;
-    author: string;
     tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Can initialize empty array
-    collaborators: Collaborator[] = [];
+    collaborators: Collaborato<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
     createdAt: Date;
     updatedAt: Date;

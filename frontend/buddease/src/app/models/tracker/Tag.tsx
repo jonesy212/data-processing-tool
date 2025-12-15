@@ -1,23 +1,21 @@
 // Tag.tsx
 import { TagComponent } from '@/app/components/models/tracker/TagComponent';
-import { BaseConfig, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { VersionData } from '@/app/versions/VersionData';
-import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
-import { SpecificMetadata } from '@/app/config/StructuredMetadata';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseConfig } from '@/app/config/BaseConfig';
+import { SpecificMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { BaseEntityProperties, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import {  BaseDataEntity } from '@/app/snapshots/ValidationRule';
-import { 
-  TagEntity, 
-  TagK, 
-  TagMeta,
-  TagAttachment, 
-  TagExcludedFields, 
-  TagIncludedFields
- } from '@/app/typings/entities/TagEntity'
-import { AllTypes } from '@/app/typings/PropTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
+import {
+    TagAttachment,
+    TagEntity,
+    TagExcludedFields,
+    TagIncludedFields,
+    TagK,
+    TagMeta
+} from '@/app/typings/entities/TagEntity';
+import { AllTypes } from '@/app/typings/PropTypes';
+import { VersionData } from '@/app/versions/VersionData';
 import React from 'react';
 // Define the Tag interface and TagOptions interface
 // Main Tag interface

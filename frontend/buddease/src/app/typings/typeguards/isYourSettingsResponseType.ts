@@ -1,9 +1,9 @@
 // isYourSettingsResponseType.ts
-import { AppEntity } from '@/app/typings/entities/AppEntity';
-import { ParsedData } from '@/app/dataIntegration/parseData'
-import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ParsedData } from '@/app/dataIntegration/parseData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { AppEntity } from '@/app/typings/entities/AppEntity';
+import { YourResponseType, YourSettingsResponseType } from '@/app/typings/responseTypes';
 
 function isYourSettingsResponseType<
   T extends BaseDataEntity = AppEntity,
@@ -14,7 +14,7 @@ function isYourSettingsResponseType<
   IncludedFields extends keyof T = keyof T
 >(
     data: ParsedData<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-): data is ParsedData<YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields>> {
+): data is ParsedData<YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return (
         data.data !== undefined &&
         typeof data.data.id === "string" &&
@@ -63,7 +63,12 @@ function convertToYourSettingsResponseType<
         todoStore: data.todoStore,
         taskManagerStore: data.taskManagerStore,
         iconStore: data.iconStore,
-       
+        calendarEventTypes: data.calendarEventTypes,
+         todoTypes: data.todoTypes,
+         taskTypes: data.taskTypes,
+         snapshotStoreTypes: data.snapshotStoreTypes,
+        
+
         // Include any other necessary properties here...
     };
 }
@@ -71,3 +76,4 @@ function convertToYourSettingsResponseType<
 export {
   convertToYourSettingsResponseType, isYourSettingsResponseType
 };
+

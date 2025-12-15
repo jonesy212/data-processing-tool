@@ -1,22 +1,20 @@
 // DetailsEntity.ts
 
 import { DetailsItem } from '@/app/api/ApiDetails';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Content, ContentData } from "@/app/content/Content";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { ContentPreferences } from '@/app/typings/contentTypes';
-import { Content, ContentData } from "@/app/content/Content";
-import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { RealtimeDataItem } from '../realtimeTypes';
 import { ApplyFieldFilters } from './AppEntity';
-import { ContentCredentials } from '@/app/server/content/ContentServerService'
-import { AppEntity } from '@/app/typings/entities/AppEntity'
 
 // Define the actual DetailsEntity interface
 interface DetailsEntity extends AppEntity {
@@ -315,6 +313,7 @@ type ContentWorkflow = {
 
 // Export all the new types
 export type {
+  AdminDetailsData,
   // Core App types
   AppDetails,
   AppDetailsData,
@@ -324,59 +323,25 @@ export type {
   AppDetailsSnapshotData,
   AppDetailsSnapshotStore,
   AppDetailsStructuredMetadata,
-  AppDetailsUnifiedMetadata,
-  
-  // Status-specific types
-  DraftDetails,
-  PublishedDetails,
-  ArchivedDetails,
-  
-  // Data variations
-  PublicDetailsData,
-  PrivateDetailsData,
-  AdminDetailsData,
-  
-  // Core entity types
-  DetailsEntity,
-  DetailsK,
-  DetailsMeta,
-  DetailsAttachment,
-  DetailsExcludedFields,
-  DetailsIncludedFields,
-  
-  // Utility types
-  DetailsContext,
-  DetailsSession,
-  DetailsFilterOptions,
-  DetailsSortOptions,
-  
+  AppDetailsUnifiedMetadata, ArchivedDetails, BasicDetailsInfo,
+  // Filtered types
+  CompleteDetails,
   // Content-specific types
   ContentAnalytics,
   ContentVersion,
-  ContentWorkflow,
-  
-  // Configuration types
-  DetailsDataDefault,
-  DetailsSnapshotDefault,
-  DetailsSnapshotDataDefault,
-  DetailsSnapshotStoreDefault,
-  DetailsRealtimeDataItemDefault,
-  DetailsUnifiedMetadata,
-  DetailsStructuredMetadata,
-  DetailsSnapshotStoreConfig,
-  DetailsSnapshotsArray,
-  DetailsParams,
-  DetailsFrontendStructure,
-  
+  ContentWorkflow, DetailsAttachment,
   // Base params
   DetailsBaseParams,
-  
-  // Filtered types
-  CompleteDetails,
-  PublicDetailsProfile,
-  BasicDetailsInfo,
-  ManagedDetails,
-  InternalDetails,
-  SecureDetails,
-  MinimalDetailsProfile
+  // Utility types
+  DetailsContext,
+  // Configuration types
+  DetailsDataDefault,
+  // Core entity types
+  DetailsEntity, DetailsExcludedFields, DetailsFilterOptions, DetailsFrontendStructure, DetailsIncludedFields, DetailsK,
+  DetailsMeta, DetailsParams, DetailsRealtimeDataItemDefault, DetailsSession, DetailsSnapshotDataDefault, DetailsSnapshotDefault, DetailsSnapshotsArray, DetailsSnapshotStoreConfig, DetailsSnapshotStoreDefault, DetailsSortOptions, DetailsStructuredMetadata, DetailsUnifiedMetadata,
+  // Status-specific types
+  DraftDetails, InternalDetails, ManagedDetails, MinimalDetailsProfile, PrivateDetailsData,
+  // Data variations
+  PublicDetailsData, PublicDetailsProfile, PublishedDetails, SecureDetails
 };
+

@@ -1,21 +1,24 @@
 // SnapshotActions.tsx
 // snapshots/SnapshotActions.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { CreateSnapshotsPayload, Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotsPayload, Payload } from '@/app/interfaces/payload/payloadTypes'
 import { Snapshots, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { NotificationTypeEnum, NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -28,8 +31,6 @@ import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "../snapshots/SnapshotConfig";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
 const dispatch = useDispatch()
 
@@ -245,6 +246,7 @@ export const TaskWithSubtasksSnapshotActions = <
 })
 
 
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
 const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> = {
   id: '1',
@@ -267,6 +269,7 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
     createdAt: new Date(),
     updatedAt: new Date(),
     timestamp: Date.now(),
+    latestVersion: latestVersion
   },
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -278,7 +281,9 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
     eventIds: [],
   },
   mappedSnapshot: new Map<string, Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>(),
-  meta: {} as TaskMeta,
+  meta: {
+    baseConfig, sharedMetadata, sharedBaseData, taggable,
+  } as TaskMeta,
   
   getSnapshotId: (key: string | SnapshotData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>) => {
     if (typeof key === 'string') {
@@ -293,11 +298,30 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
     }
   },
 
-  compareSnapshotState: (snapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> | null, state: any) => {
-    if (!snapshot) return null;
-    return JSON.stringify(snapshot.data) === JSON.stringify(state)
-      ? 'States are identical'
-      : 'States are different';
+  compareSnapshotState: (
+    snapshot1: Snapshot<
+      TaskEntity,
+      TaskK,
+      TaskMeta,
+      TaskAttachment,
+      TaskExcludedFields,
+      TaskIncludedFields
+    > | null,
+    snapshot2: Snapshot<
+      TaskEntity,
+      TaskK,
+      TaskMeta,
+      TaskAttachment,
+      TaskExcludedFields,
+      TaskIncludedFields
+    >
+  ): boolean => {
+    if (!snapshot1) return false;
+
+    return (
+      JSON.stringify(snapshot1.data) ===
+      JSON.stringify(snapshot2.data)
+    );
   },
 
   unsubscribe: function(callback: Callback<Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>>) {
@@ -715,10 +739,13 @@ transformSnapshotConfig: function <U extends BaseDataEntity>(
 
 
   // Snapshot collections
-  setSnapshots: function (snapshots: Snapshots<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
+  setSnapshots: function (snapshots: SnapshotsSnapshot<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
-  clearSnapshot: function (): void {
+  clearSnapshot: function (
+    predicate: (
+      snapshot: Snapshot<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>
+  ) => boolean): Snapshot<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> {
     throw new Error("Function not implemented.");
   },
   mergeSnapshots: function (

@@ -1,12 +1,10 @@
 // RealtimeServiceConfig.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   BaseDataEntity,
-  BaseDataRoot,
   DefaultExcludedFields,
-  DefaultIncludedFields,
   DefaultMeta
 } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useUIRealtimeData';
 
 export interface RealtimeServiceConfig<

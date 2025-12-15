@@ -1,10 +1,9 @@
 // handleSnapshotOperation.ts
 import { SnapshotStoreActions } from "@/app/actions/SnapshotActions";
 import * as snapshotApi from "@/app/api/SnapshotApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

@@ -1,9 +1,9 @@
 // FileEntity.ts
-import { CommonData } from '@/app/models/CommonData';
 import { FileMetadata } from '@/app/components/models/file/FileManager';
+import { CommonData } from '@/app/models/CommonData';
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AppFile } from '@/app/typings/file/fileTypes';
 
 export interface FileEntity extends BaseDataEntity {

@@ -1,5 +1,6 @@
 // AppEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -9,8 +10,7 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
+import { AppStructure } from '@/app/config/appStructure/AppStructure'
 // Core App type definitions
 interface AppEntity extends BaseDataEntity {
   // Common app-level properties
@@ -38,7 +38,7 @@ type AppBaseParams = {
   ExcludedFields: AppExcludedFields;
   IncludedFields: AppIncludedFields;
 };
-type MainApp = App<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
+type MainApp = AppStructure<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
 type AppSnapshot = Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
 type AppSnapshotData = SnapshotData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
 type AppSnapshotStore = SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>;
@@ -62,16 +62,8 @@ type ApplyFieldFilters<
 
 
 export type {
-  AppEntity, 
-  AppK,
-  AppMeta,
-  AppAttachment,
-  AppExcludedFields,
-  AppIncludedFields,
-  
-  ApplyFieldFilters,
-  AppParams, AppRealtimeDataItem, AppSnapshot,
-  AppBaseParams,
-  AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppSubscriberCollection
+  AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
+  AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot, AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppSubscriberCollection,
+  MainApp
 };
 

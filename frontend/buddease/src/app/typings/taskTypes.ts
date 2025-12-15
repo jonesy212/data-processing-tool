@@ -1,12 +1,12 @@
 // taskTypes.ts
 import { Task } from "@/app/components/models/tasks/Task";
-import { Permission } from '@/app/permissions/Permission';
+import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { UserRole } from "@/app/models/UserRole";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
-import { CreationPhase } from "./appTypes";
+import { UserRole } from "@/app/models/UserRole";
 import { TaskEntity } from '@/app/typings/entities/TaskEntity';
+import { CreationPhase } from "./appTypes";
 
 // Define TaskUnion similar to SnapshotUnion
 type TaskUnion<  
@@ -73,7 +73,7 @@ type Tasks<
 
 
 interface TaskEntityExtended extends TaskEntity {
-  appPermissions: Permission[];
+  appPermissions?: AppStructurePermissions[];
   permissions: Permission[];
   ownerId: string;
 }

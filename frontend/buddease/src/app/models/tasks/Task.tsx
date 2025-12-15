@@ -2,21 +2,21 @@
 
 // Task.ts
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import { Data } from '@/app/models/data/Data'
 import { SharedDetails } from '@/app/components/models/data/Details';
-import Progress from "@/app/components/models/tracker/ProgressBar";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedTimestamps } from '@/app/documents/RelatedProps';
+import { Data } from '@/app/models/data/Data';
 import { taskMetadata } from '@/app/models/data/TaskMetadata';
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from "@/app/shared/SharedMetadata";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta, TaskStructuredMetadata } from '@/app/typings/entities/TaskEntity';
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { User } from "@/app/users/User";
 
@@ -111,6 +111,7 @@ const createTask = <
     title: "New Task",
     description: "Task Description",
     date: new Date(),
+    uploadedAt: new Date(),
     metadataEntries: {},
     scheduled: undefined,
     isScheduled: false,
@@ -160,6 +161,5 @@ const createTask = <
 
 
 export { createTask };
-
-    export type { Task, TaskDetails };
+export type { Task, TaskDetails };
 

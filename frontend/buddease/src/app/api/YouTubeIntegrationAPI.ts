@@ -1,7 +1,7 @@
 // YouTubeIntegrationAPI.ts
     // Import necessary modules and types
-    import { headersConfig } from '@/components/shared/SharedHeaders'; // Assuming you have shared headers configuration
-    import axiosInstance from '@/app/api/csrfToken'
+    import axiosInstance from '@/app/api/csrfToken';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'; // Assuming you have shared headers configuration
 
     // Define the base URL for YouTube API
     const YOUTUBE_API_BASE_URL = 'https://www.googleapis.com/youtube/v3';

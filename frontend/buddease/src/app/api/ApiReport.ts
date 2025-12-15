@@ -1,22 +1,21 @@
 // ApiReport.ts
-import { generateReportAsync } from './../state/redux/slices/ProjectOwnerSlice';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import internalApiService from '@/app/api/ApiClient';
-import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { FinancialMetrics, processFinancialMetrics } from '@/app/components/metrics/FinancialMetrics';
+import { processTechnicalSpecifications, TechnicalSpecifications } from '@/app/components/metrics/TechnicalSpecifications';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { analyzeResearchFindings, ResearchFindings } from '@/app/pages/searches/ResearchFindings';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import {
-    AddReportBase,
-    BaseReport, FinancialReport, ReportOptions,
-    ResearchReport,
-    TechnicalReport
-} from '@/app/documents/Report';
-import { FinancialMetrics, processFinancialMetrics } from '@/components/metrics/FinancialMetrics';
-import { processTechnicalSpecifications, TechnicalSpecifications } from '@/components/metrics/TechnicalSpecifications';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import {
+  AddReportBase,
+  BaseReport, FinancialReport, ReportOptions,
+  ResearchReport,
+  TechnicalReport
+} from '@/app/documents/Report';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { analyzeResearchFindings, ResearchFindings } from '@/app/pages/searches/ResearchFindings';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
@@ -25,45 +24,9 @@ const API_BASE_URL = endpoints.reports.list
 
 export type AddReportType = FinancialReport | TechnicalReport | ResearchReport;
 
-interface AddReport<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends AddReportBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  reportType?: "financial" | "technical" | "research";
-  financialMetrics?: FinancialMetrics;
-  fiscalYear?: number;
-  technicalSpecifications?: TechnicalSpecifications;
-  projectCode?: string;
-  researchFindings?: ResearchFindings;
-
-  experimentDate?: Date;
-    processedMetrics?: {
-    profit?: number;
-    efficiency?: number;
-    isStable?: boolean;
-  };
-  technicalAnalysis?: {
-    hasHighPerformance?: boolean;
-    techStackSize?: number;
-  };
-}
-
-
-
-
-// Enhanced AddReport interface with processed metrics
-interface AddReport<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends AddReportBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+// The combined interface
+interface AddReport<T extends BaseDataEntity> extends AddReportBase<T> {
+  title?: string;
   reportType?: "financial" | "technical" | "research";
   financialMetrics?: FinancialMetrics;
   fiscalYear?: number;
@@ -71,20 +34,19 @@ interface AddReport<
   projectCode?: string;
   researchFindings?: ResearchFindings;
   experimentDate?: Date;
-  
-  // Add processed metrics (optional)
   processedMetrics?: {
     profit?: number;
     efficiency?: number;
     isStable?: boolean;
   };
+  
   technicalAnalysis?: {
     hasHighPerformance?: boolean;
     techStackSize?: number;
   };
 }
 
-type ProcessableReport = AddReport<any, any, any, any, any, any> & {
+type ProcessableReport = AddReport<any> & {
   reportType?: "financial" | "technical" | "research";
   title?: string;
   financialMetrics?: FinancialMetrics;
@@ -93,14 +55,9 @@ type ProcessableReport = AddReport<any, any, any, any, any, any> & {
 };
 
 
-export const processReports = async <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(reports: AddReport<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): Promise<void> => {
+export const processReports = async <T extends BaseDataEntity>(
+  reports: AddReport<T>[]
+): Promise<void> => {
   const results = await Promise.allSettled(
     reports.map(async (report) => {
       const reportType = report.reportType ?? "unknown";
@@ -126,7 +83,8 @@ export const processReports = async <
         {
           prefix: 'report',
           name: report.title,
-          type: 'document'
+          type: 'document',
+          storeId, endpointCategory, expirationDate, config,
         } // storeProps
       );
 
@@ -181,7 +139,10 @@ const saveReportSnapshot = async (report: AddReportType, reportType: string): Pr
         endpointCategory: "",
         expirationDate: new Date(),
         config: "",
-        storeId, schema, initialState, operation,
+        storeId: '',
+        schema: {},
+        initialState: '',
+        operation: '',
         
       },
       undefined,                 // storeOptions (optional)
@@ -236,7 +197,10 @@ export const fetchReports = async (options: ReportOptions = {}): Promise<BaseRep
     if (options.projectCode) queryParams.append('projectCode', options.projectCode);
     if (options.experimentDate) queryParams.append('experimentDate', options.experimentDate.toISOString());
 
-    const response = await internalApiService.get(`${API_BASE_URL}?${queryParams.toString()}`, { headers: headersConfig });
+    const response = await internalApiService.get(`${API_BASE_URL}?${queryParams.toString()}`, {
+      config: { headers: headersConfig }
+    });
+
     return response.data.reports;
   } catch (error) {
     console.error('Error fetching reports:', error);
@@ -252,18 +216,19 @@ export const addReport = async (newReport: Omit<AddReportType, 'id'>): Promise<v
     const processedReport = await processReportWithMetrics(newReport as ProcessableReport);
     
     const addReportEndpoint = `${API_BASE_URL}/add`;
-    await internalApiService.post(addReportEndpoint, processedReport, { headers: headersConfig });
+    await internalApiService.post(addReportEndpoint, processedReport, {config: { headers: headersConfig }});
     console.log('Report added successfully with processed metrics.');
   } catch (error) {
     console.error('Error adding report:', error);
     throw error;
   }
 };
+
 // Function to remove a report
 export const removeReport = async (reportId: number): Promise<void> => {
   try {
     const removeReportEndpoint = `${API_BASE_URL}.remove.${reportId}`;
-    await internalApiService.delete(removeReportEndpoint, { headers: headersConfig });
+    await internalApiService.delete(removeReportEndpoint, {config: { headers: headersConfig }});
   } catch (error) {
     console.error('Error removing report:', error);
     throw error;
@@ -353,5 +318,6 @@ const processReportWithMetrics = async (report: ProcessableReport): Promise<Proc
 };
 
 
+export { processReportMetrics, processReportWithMetrics };
 export type { AddReport };
-export { processReportMetrics, processReportWithMetrics }
+

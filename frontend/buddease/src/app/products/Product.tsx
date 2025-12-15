@@ -1,9 +1,9 @@
 // Product.tsx
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CommonData } from "@/app/models/CommonData";
 import { UserData, VisualizationData } from "@/app/users/User";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface Product<
   T extends BaseDataEntity,

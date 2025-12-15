@@ -1,16 +1,16 @@
 // ProjectOwnerApi.ts
-// projectOwnerApi.ts
+
 import { ProjectOwnerActions } from "@/app/actions/ProjectOwnerActions";
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Project, ProjectData } from '@/app/models/projects/Project';
-import MemberData from "@/app/models/teams/Contributor";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import MemberData from '@/app/typings/entities/MemberEntity';
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 
@@ -19,36 +19,65 @@ const API_BASE_URL = endpoints.projectOwner.base;
 const { notify } = useNotification();
 
 export const projectOwnerApiService = observable({
-  createProject: async (projectData: ProjectData): Promise<any> => {
+  createProject: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(
+    projectData: ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<any> => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}`, projectData);
       runInAction(() => {
         // Update state or perform other MobX-related actions
         ProjectOwnerActions.createProjectSuccess(response.data); // Dispatch success action with response data
       });
-      useNotification().notify(
-        "useNotificationSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
-        {},
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "createProjectSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
+        data: { 
+          extra: {
+            operation: "Create project",
+            projectData: projectData
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to create project");
-      notify(
-        "handleApiError",
-        NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_ERROR,
-        "Create Project Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "createProjectError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to create project",
+            projectData: projectData
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
 
-  inviteMember: async (
-    projectId: Project,
+  inviteMember: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(
+    projectId: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     memberId: MemberData
   ): Promise<void> => {
     try {
@@ -65,13 +94,20 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.inviteMemberSuccess(response.data); // Dispatch success action with response data
       });
 
-      useNotification().notify(
-       "useNotificationSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_SUCCESS,
-        "Invite Member Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "inviteMemberSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            memberId,
+            operation: "Invite member"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to invite member");
       // Dispatch inviteMemberFailure action with error message
@@ -79,19 +115,34 @@ export const projectOwnerApiService = observable({
         error: NOTIFICATION_MESSAGES.Member.INVITE_MEMBER_ERROR,
       });
 
-      useNotification().notify(
-        "useNotificationError",
-        NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_ERROR,
-        "Invite Member Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "inviteMemberError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to invite member",
+            projectId,
+            memberId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
 
       throw error;
     }
   },
 
-  fetchUpdatedProjectDetails: async (projectId: Project): Promise<any> => {
+  fetchUpdatedProjectDetails: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(projectId: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<any> => {
     try {
       ProjectOwnerActions.fetchUpdatedProjectDetailsRequest({
         projectId: projectId,
@@ -102,13 +153,19 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.fetchUpdatedProjectDetails(response.data);
         ProjectOwnerActions.fetchUpdatedProjectSuccess(response.data);
       });
-      useNotification().notify(
-        "fetchProjectDetailsSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_SUCCESS,
-        "Fetch Project Details Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "fetchProjectDetailsSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            operation: "Fetch project details"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
       return response.data;
     } catch (error) {
       handleApiError(
@@ -118,12 +175,20 @@ export const projectOwnerApiService = observable({
       ProjectOwnerActions.fetchUpdatedProjectFailure({
         error: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_DETAILS,
       });
-      useNotification().notify("fetchProjectDetailsError",
-        NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_ERROR,
-        "Fetch Project Details Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "fetchProjectDetailsError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to fetch project details",
+            projectId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -137,30 +202,50 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.deleteProjectSuccess(true);
         // Update state or perform other MobX-related actions
       });
-      useNotification().notify(
-        "deleteProjectSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_SUCCESS,
-        "Delete Project Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "deleteProjectSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            operation: "Delete project"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete project");
-      notify(
-        "ideleteProjectError",
-        NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_ERROR,
-        "Delete Project Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "deleteProjectError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to delete project",
+            projectId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
 
   // Add runInAction for updateProject
-  updateProject: async (
+  updateProject: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(
     projectId: string,
-    updatedProjectData: Partial<Project>
+    updatedProjectData: Partial<Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): Promise<AxiosResponse> => {
     try {
       const response = await axiosInstance.put(
@@ -171,24 +256,38 @@ export const projectOwnerApiService = observable({
         // Update state or perform other MobX-related actions
         ProjectOwnerActions.updateProjectSuccess(response.data); // Dispatch success action with updated project data
       });
-      notify(
-        "updateProjectSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
-        "Update Project Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "updateProjectSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            operation: "Update project",
+            updatedData: updatedProjectData
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
       return response;
     } catch (error) {
-
       handleApiError(error as AxiosError<unknown>, "Failed to update project");
-      notify(
-        "updateProjectError",
-        NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
-        "Update Project Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "updateProjectError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to update project",
+            projectId,
+            updatedData: updatedProjectData
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -208,22 +307,37 @@ export const projectOwnerApiService = observable({
           success: NOTIFICATION_MESSAGES.Team.UPDATE_TEAM_MEMBERS_SUCCESS
         });
       });
-      notify(
-        "addTeamMemberSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
-        "Add Team Member Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "addTeamMemberSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            memberId,
+            operation: "Add team member"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to add team member");
-      notify(
-        "addTeamMemberError",
-        NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
-        "Add Team Member Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "addTeamMemberError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to add team member",
+            projectId,
+            memberId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -242,25 +356,40 @@ export const projectOwnerApiService = observable({
         ProjectOwnerActions.removeTeamMemberSuccess(response.data); // Dispatch success action
       });
 
-      notify(
-        "removeTeamMemberSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
-        "Remove Team Member Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "removeTeamMemberSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            memberId,
+            operation: "Remove team member"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to remove team member"
       );
-      notify(
-        "removeTeamMemberError",
-        NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
-        "Remove Team Member Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "removeTeamMemberError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to remove team member",
+            projectId,
+            memberId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -270,35 +399,54 @@ export const projectOwnerApiService = observable({
       await axiosInstance.post(`${API_BASE_URL}/tasks/${taskId}/assign`, {
         teamMemberId,
       });
-      notify(
-        "assignTaskSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
-        "Assign Task Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "assignTaskSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
+        data: { 
+          extra: {
+            taskId,
+            teamMemberId,
+            operation: "Assign task"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
-
       handleApiError(error as AxiosError<unknown>, "Failed to assign task");
-      notify(
-        "assignTaskError",
-        NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
-        "Assign Task Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "assignTaskError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to assign task",
+            taskId,
+            teamMemberId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
 
-  updateMeeting: async (
-    projectId: Project,
+  updateMeeting: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = never,
+    IncludedFields extends keyof T = keyof T
+  >(
+    projectId: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     meetingId: number,
     updatedMeetingDetails: any
   ): Promise<void> => {
     try {
-      
-
       ProjectOwnerActions.updateMeetingRequest({ projectId, memberId: updatedMeetingDetails });
       const response = await axiosInstance.put(
         `${API_BASE_URL}/meetings/${meetingId}`,
@@ -307,24 +455,39 @@ export const projectOwnerApiService = observable({
       runInAction(() => {
         ProjectOwnerActions.updateMeetingSuccess({success: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS}); // Dispatch success action
       });
-      notify(
-        "updateMeetingSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS,
-        "Update Meeting Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "updateMeetingSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS,
+        data: { 
+          extra: {
+            projectId,
+            meetingId,
+            operation: "Update meeting"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to update meeting");
       ProjectOwnerActions.updateMeetingFailure({error: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR});
-      notify(
-        "updateMeetingError",
-        NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
-        "Update Meeting Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "updateMeetingError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to update meeting",
+            projectId,
+            meetingId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },
@@ -335,22 +498,35 @@ export const projectOwnerApiService = observable({
       runInAction(() => {
         ProjectOwnerActions.deleteMeetingSuccess(true); // Dispatch success action
       });
-      notify(
-        "deleteMeetingSuccess",
-        NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_SUCCESS,
-        "Delete Meeting Success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
+      useNotification().notify({
+        id: "deleteMeetingSuccess",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_SUCCESS,
+        data: { 
+          extra: {
+            meetingId,
+            operation: "Delete meeting"
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success'
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete meeting");
-      notify(
-        "deleteMeetingError",
-        NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
-        "Delete Meeting Error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      useNotification().notify({
+        id: "deleteMeetingError",
+        message: NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
+        data: { 
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          extra: {
+            errorMessage: "Failed to delete meeting",
+            meetingId
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error'
+      });
       throw error;
     }
   },

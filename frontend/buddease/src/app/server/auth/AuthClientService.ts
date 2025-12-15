@@ -1,7 +1,8 @@
 // AuthClientService.ts
-// AuthClientService.ts
-import AuthService from "./AuthService";
-import UserService from "@/app/users/ApiUser";
+
+import AuthService from "@/app/server/AuthService";
+import UserService from "@/app/api/ApiUser";
+import { AuthenticationProvider } from '@/app/interfaces/provider/AuthenticationProvider'
 
 class AuthClientService extends AuthService {
 

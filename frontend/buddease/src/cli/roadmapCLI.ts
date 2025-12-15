@@ -6,9 +6,9 @@ import readline from 'readline';
 import { RoadmapService } from '@/app/services/roadmapService';
 import { RoadmapAudience, RoadmapNode } from '@/app/typings/roadmap';
 import { buildStakeholderRoadmap } from '@/app/services/stakeholderRoadmap';
-import { handleCombinedRoadmap } from './combinedRoadmap';
+import { handleCombinedRoadmap } from '@/cli/combinedRoadmap';
 import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { AnalysisNode } from '@/app/typings/phases/AnalysisNode';
+import { AnalysisNode } from '@/app/typings/AnalysisNode';
 import { generateOutline } from './roadmapOutline';
 
 const rl = readline.createInterface({

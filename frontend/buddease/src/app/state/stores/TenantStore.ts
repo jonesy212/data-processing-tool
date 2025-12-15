@@ -1,5 +1,4 @@
 // TenantStore.ts
-import { Tenant } from '@/app/components/users/TenantStore';
 import { makeAutoObservable } from "mobx";
 
 
@@ -56,6 +55,6 @@ interface TenantStore {
     return new TenantStoreClass();
   };
 
-  export { useTenantStore };
+export { useTenantStore };
 export type { Tenant };
 

@@ -1,5 +1,8 @@
 // SQLDocument.ts 
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CommonDocumentPropertiesAndMethods } from '@/app/documents/editing/MarkdownDocument';
 
 export interface SQLDocument<
   T extends BaseDataEntity,

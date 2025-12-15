@@ -1,15 +1,15 @@
 // UserPreferencesActions.ts
 // generators/UserPreferencesActions.ts
-import { createAction } from "@reduxjs/toolkit";
-import { Audio } from "openai/resources/index.mjs";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Phase } from '@/app/models/phases/Phase';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import type {
   ActionCreatorWithPayload,
   ActionCreatorWithoutPayload
 } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
+import { Audio } from "openai/resources/index.mjs";
 
 
 // Communication Preferences

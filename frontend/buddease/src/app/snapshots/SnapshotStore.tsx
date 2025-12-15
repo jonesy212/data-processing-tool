@@ -1,25 +1,25 @@
 // SnapshotStore.tsx
 
 import { SnapshotCategory } from '@/app/api/getSnapshotEndpoint';
-import { FilterMethods } from '@/app/snapshots/methods/FilterMethods'
 import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Data } from '@/app/models/data/Data';
-import { PriorityValue } from '@/app/pages/searches/CriteriaType';
+import { CriteriaType, PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
 import { U, WrappedU } from '@/app/snapshots/isCompatibleTempData';
+import { FilterMethods } from '@/app/snapshots/methods/FilterMethods';
 import { MethodBinder, bindAllMethods } from '@/app/snapshots/methods/methodBinder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStoreReference';
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
+import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
 import { AllTypes } from '@/app/typings/PropTypes';
 import { VersionHistory } from '@/app/versions/VersionData';
 
 import getSnapshotStoreConfig from '@/app/api/SnapshotApi';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
@@ -27,7 +27,6 @@ import { SnapshotMethodsImplementation } from '@/app/snapshots/methods/snapshotM
 import { ValidationMethods } from '@/app/snapshots/methods/validationMethods';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import {NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { Video } from '@/app/typings/videoTypes/Video';
 
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
@@ -35,6 +34,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions } from '@/app/hooks/useSnapshotManager';
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
@@ -43,7 +43,6 @@ import { NotificationPosition, StatusType } from '@/app/models/data/StatusType';
 import { DebugInfo, TempData } from '@/app/models/data/TempData';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import {
@@ -55,7 +54,7 @@ import {
 import { ConfigMethods, applyStoreConfig } from '@/app/snapshots/methods/configMethods';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/state/stores/DataStore'
+import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/state/stores/DataStore';
 import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
@@ -65,6 +64,7 @@ import { Version } from '@/app/versions/Version';
 import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from '@/utils/snapshotUtils';
 
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { createSnapshotStores } from '@/app/snapshots/newStoreUtils';
 import { ConfigureSnapshotStorePayload, RetentionPolicy, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
@@ -75,7 +75,6 @@ import { SnapshotOperations, getSnapshotItems } from '@/app/snapshots/snapshotOp
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteriaContract, data } from '@/app/snapshots/SnapshotWithCriteria';
-import { TagsRecord } from '@/app/models/tracker/Tag';
 
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
@@ -2598,6 +2597,135 @@ handleActions(action: any): void {
     // Add any validation/cleanup logic here
   }
 
+
+
+    // ✅ PUBLIC wrapper method for auto-sync
+  public async startAutoSync(): Promise<void> {
+    try {
+      console.log('Starting auto-sync via public method...');
+      
+      // Perform any pre-checks or validations
+      const config = await this.getConfig();
+      if (!config) {
+        throw new Error('Cannot start auto-sync: No configuration available');
+      }
+      
+      // Check if auto-sync is enabled in config
+      if (config.options?.autoSyncEnabled === false) {
+        console.log('Auto-sync is disabled in configuration');
+        return;
+      }
+      
+      // Call the protected internal method
+      this.autoSyncData();
+      
+      console.log('Auto-sync started successfully');
+    } catch (error) {
+      console.error('Failed to start auto-sync:', error);
+      throw error;
+    }
+  }
+
+  // ✅ PUBLIC method to manually trigger sync
+  public async triggerManualSync(): Promise<void> {
+    try {
+      console.log('Manual sync triggered...');
+      
+      // Perform any additional checks for manual sync
+      const config = await this.getConfig();
+      if (!config) {
+        throw new Error('Cannot trigger manual sync: No configuration available');
+      }
+      
+      // Call the protected method directly
+      this.autoSyncData();
+      
+      console.log('Manual sync completed');
+    } catch (error) {
+      console.error('Manual sync failed:', error);
+      throw error;
+    }
+  }
+
+  // ✅ PUBLIC method to check sync status
+  public isSyncing(): boolean {
+    return this.syncInProgress;
+  }
+
+  // ✅ PUBLIC method to get sync queue length
+  public getSyncQueueLength(): number {
+    return this.syncQueue.length;
+  }
+
+
+  // ✅ PROTECTED helper methods
+  protected queueSyncOperation(): void {
+    console.log('Queueing sync operation...');
+    this.syncQueue.push(async () => {
+      await this.performAutoSync();
+    });
+  }
+
+  protected async processSyncQueue(): Promise<void> {
+    if (this.syncQueue.length === 0) {
+      return;
+    }
+    
+    console.log(`Processing sync queue (${this.syncQueue.length} items)...`);
+    
+    // Process each queued operation
+    while (this.syncQueue.length > 0) {
+      const operation = this.syncQueue.shift();
+      if (operation) {
+        try {
+          await operation();
+        } catch (error) {
+          console.error('Error processing queued sync operation:', error);
+        }
+      }
+    }
+  }
+
+  protected handleSyncFailure(error: Error): void {
+    console.error('Handling sync failure:', error.message);
+    
+    // Implement retry logic, logging, notifications, etc.
+    // For example:
+    // this.retrySyncAfterDelay();
+    // this.sendErrorNotification(error);
+  }
+
+  // ✅ PUBLIC method to stop auto-sync
+  public async stopAutoSync(): Promise<void> {
+    console.log('Stopping auto-sync...');
+    
+    // Clear sync queue
+    this.syncQueue = [];
+    
+    // Set flag to prevent new syncs (if needed)
+    // Note: You might need to implement a cancellation mechanism
+    // for in-progress syncs
+    
+    console.log('Auto-sync stopped');
+  }
+
+  // ✅ PUBLIC method to configure sync settings
+  public configureSync(settings: {
+    enabled?: boolean;
+    interval?: number;
+    retryCount?: number;
+    retryDelay?: number;
+  }): void {
+    console.log('Configuring sync settings:', settings);
+    
+    // Store sync configuration
+    // This could be saved to config or stored as instance variables
+  }
+
+
+
+
+
   protected snapshotStores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map(); 
   
   // Define defaultConfigs property
@@ -2788,6 +2916,8 @@ handleActions(action: any): void {
       this.handleSyncFailure(error);
     });
   }
+
+
   protected dataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null;
   
   protected config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
@@ -3378,7 +3508,7 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
   /**
    * Set configuration with proper typing
    */
-  protected async setConfig(
+  public async setConfig(
     config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
   ): Promise<void> {
     console.log('Base SnapshotStore setConfig called.');
@@ -4131,13 +4261,6 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     }
   }
 
-
-  // Example method for syncing data
-  protected autoSyncData(): void {
-    console.log('Auto-syncing data...');
-    // Add your sync logic here
-  }
-  
   private ensureDelegate(): SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     if (!this.delegate || this.delegate.length === 0) {
       throw new Error("Delegate is not defined or is empty.");
@@ -5560,8 +5683,8 @@ private cleanupOldSnapshots(): void {
   }
 
   get getTransformedSnapshot() {
-    return <U extends Data<U>, T extends Data>(
-      snapshot: Snapshot<Data, T>
+    return <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Snapshot<WrappedU, WrappedU, Meta, ExcludedFields> => {
       return this.transformSnapshot<U, T>(snapshot);
     };

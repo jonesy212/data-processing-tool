@@ -1,6 +1,6 @@
 // route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { processTradesServerAPI } from '@/app/exchangeIntegrationServer';
+import { processTradesServerAPI } from '@/app/api/exchangeIntegrationServer';
 
 export async function POST(request: NextRequest) {
   try {

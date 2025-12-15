@@ -1,29 +1,18 @@
 // dataProviderInstance.ts
-import { } from '@/models/data/dataContracts';
+import axiosInstance from "@/app/api/axiosInstance";
+import {
+    CreateManyResponse, CreateResponse,
+    CustomBaseRecord, CustomCreateManyParams,
+    CustomCreateParams, CustomGetListParams,
+    CustomGetListResponse, CustomResponse, CustomUpdateManyParams,
+    CustomUpdateParams, DeleteManyParams, DeleteManyResponse, DeleteOneParams,
+    DeleteOneResponse, GetManyParams, GetManyResponse, GetOneParams,
+    GetOneResponse, InternalCustomParams, UpdateManyResponse, UpdateResponse
+} from '@/app/models/data/dataContracts';
 import {
     BaseRecord,
     DataProvider,
 } from "@refinedev/core";
-import axiosInstance from "@/app/api/axiosInstance";
-import {
-    CustomCreateManyParams,
-    CustomCreateParams,
-    CreateResponse,
-    CustomBaseRecord,
-    DeleteManyParams,
-    DeleteOneParams,
-    DeleteOneResponse,
-    CustomGetListParams,
-    CustomGetListResponse,
-    GetManyParams,
-    InternalCustomParams,
-    CustomResponse,
-    GetOneParams,
-    GetOneResponse,
-    CustomUpdateManyParams,
-    CustomUpdateParams,
-    CreateManyResponse, DeleteManyResponse, GetManyResponse, UpdateManyResponse, UpdateResponse
-} from "@/app/models/data/dataContracts";
 
 const API_URL = 'https://your-api-url.com'; // Replace with your API base URL
 

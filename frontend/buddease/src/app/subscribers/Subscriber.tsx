@@ -5,25 +5,25 @@ import addSnapshot, * as snapshotApi from "@/app/api/SnapshotApi";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-    SnapshotStoreOptions,
-    convertSnapshotToContent
+  SnapshotStoreOptions,
+  convertSnapshotToContent
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-    NotificationStatus,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
+  NotificationStatus,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
 } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import {
-    CustomSnapshotData,
-    SnapshotConfig,
-    SnapshotData,
-    SnapshotItem,
-    SnapshotStoreConfig,
-    SnapshotWithCriteria
+  CustomSnapshotData,
+  SnapshotConfig,
+  SnapshotData,
+  SnapshotItem,
+  SnapshotStoreConfig,
+  SnapshotWithCriteria
 } from "@/app/snapshots";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
@@ -32,49 +32,47 @@ import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "@/app/snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "@/app/snapshots/SnapshotStoreSubset";
 import {
-    addSnapshotSuccess,
-    createInitSnapshot,
-    createSnapshotFailure,
-    createSnapshotSuccess,
-    updateSnapshot,
-    updateSnapshotFailure,
-    updateSnapshotSuccess,
-    updateSnapshots,
-    updateSnapshotsSuccess,
+  addSnapshotSuccess,
+  createInitSnapshot,
+  createSnapshotFailure,
+  createSnapshotSuccess,
+  updateSnapshot,
+  updateSnapshotFailure,
+  updateSnapshotSuccess,
+  updateSnapshots,
+  updateSnapshotsSuccess,
 } from "@/app/snapshots/snapshotHandlers";
+
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import {
-    NotificationType,
-    NotificationTypeEnum,
-} from "@/app/state/context/NotificationContext";
-import {
-    clearSnapshots,
-    removeSnapshot,
+  clearSnapshots,
+  removeSnapshot,
 } from "@/app/state/redux/slices/SnapshotSlice";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import {
-    FetchSnapshotByIdCallback,
-    Subscription,
+  FetchSnapshotByIdCallback,
+  Subscription,
 } from "@/app/subscriptions/Subscription";
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import {
-    YourSpecificSnapshotType,
-    convertMapToSnapshot
+  YourSpecificSnapshotType,
+  convertMapToSnapshot
 } from "@/app/typings/YourSpecificSnapshotType";
 import { AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
 import {
-    SnapshotAttachment,
-    SnapshotEntity,
-    SnapshotExcludedFields,
-    SnapshotIncludedFields,
-    SnapshotK,
-    SnapshotMeta
+  SnapshotAttachment,
+  SnapshotEntity,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
+  SnapshotK,
+  SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { SubscriberAttachment, SubscriberEntity, SubscriberExcludedFields, SubscriberIncludedFields, SubscriberK, SubscriberMeta } from '@/app/typings/entities/SubscriberEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
@@ -2280,7 +2278,7 @@ console.log("Subscriber state:", subscriber.getState("state"));
 
 export { Subscriber, subscriber };
 export type {
-    AppSubscriber,
-    AppSubscription, AuditRecord, SubscribeResult, SubscriberCallback, Subscribers
+  AppSubscriber,
+  AppSubscription, AuditRecord, SubscribeResult, SubscriberCallback, Subscribers
 };
 

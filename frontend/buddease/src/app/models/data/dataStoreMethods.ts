@@ -12,6 +12,7 @@ import { addToSnapshotList, isBaseData, isSnapshot } from '@/utils/snapshotUtils
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -23,10 +24,9 @@ import { SnapshotStoreConfig, UserConfig } from "@/app/snapshots/SnapshotStoreCo
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
+import { User } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";
 import { BaseData, Data } from "./Data";
-import { UserSettings } from "@/app/config/UserSettings";
-import { User } from "@/app/users/User";
 
 // Assuming T is defined in your context
 type T = BaseDataEntity; // Replace with the appropriate type if necessary
@@ -1344,7 +1344,6 @@ const dataStoreMethods = <
     getAllItems: async (
       storeId: number,
       snapshotId: string,
-      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       timestamp: string | number | Date | undefined,
@@ -1352,7 +1351,8 @@ const dataStoreMethods = <
       event: Event,
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: T
+      data: T,
+      category?: Category,
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
       try {
         const keys = await snapshotStore.getAllKeys(storeId, snapshotId, category, categoryProperties, snapshot, timestamp, type, event, id, snapshotStore, data);

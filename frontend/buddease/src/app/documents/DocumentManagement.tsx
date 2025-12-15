@@ -1,9 +1,9 @@
 // DocumentManagement.tsx
-import { DappProps } from "@/app/DAppAdapterConfig";
-import { DocumentData, } from "@/app/documents/editing/DocumentBuilder";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import DocumentGenerator, { DocumentTypeEnum } from "@/app/server/ServerDocumentGenerator";
+import { DappProps } from "@/app/DAppAdapterConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentData, } from "@/app/documents/editing/DocumentBuilder";
+import DocumentGenerator, { DocumentTypeEnum } from "@/app/server/ServerDocumentGenerator";
 
 const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
 

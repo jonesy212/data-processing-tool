@@ -1,20 +1,26 @@
 // eventHandlers.ts
-import { EventEmitter } from '@/app/libraries/eventSystem';
+import { EventEmitter } from '@/app/libraries/eventSystem/eventEmitter'
 import { 
   SnapshotEvent, 
   BatchSnapshotEvent, 
   ErrorEvent, 
   SubscriptionEvent,
-  EventContext 
-} from '@/app/typings/eventTypes';
+  EventContext,
+  EventHandler
+} from '@/app/typings/eventHandlers/eventTypes'
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { EventHandler } from '@/app/typings/eventTypes'
 
 
-export interface SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+export interface  SnapshotEventMap<
+  T extends BaseDataEntity = BaseDataRoot,               // ← add
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   'snapshot:added': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   'snapshot:updated': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   'snapshot:removed': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

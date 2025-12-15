@@ -9760,7 +9760,7 @@
 ```
 
 ## 📄 theme-provider.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/platform/styles/theme-provider.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/app/platform/styles/ThemeProvider.tsx
 
 ### 1. undefined
 **Type:** suggestion
@@ -12354,7 +12354,7 @@
 ```
 
 ## 📄 DAppAdapter.tsx
-**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+**Path:** /Users/dixiejones/data_analysis/frontend/buddease/src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 
 ### 1. undefined
 **Type:** suggestion

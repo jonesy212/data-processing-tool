@@ -1,15 +1,15 @@
 // CalendarDetails.tsx
-import React from 'react';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import ListGenerator from '@/app/generators/ListGenerator';
-import { observer } from 'mobx-react-lite';
-import  { CommonEvent } from '@/app/state/stores/CommonEvent';
-import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { CollaborationOptions } from '@/app/interfaces/options/CollaborationOptions';
 import { CommonData, Customizations } from '@/app/models/CommonData';
 import { Data } from '@/app/models/data/Data';
-import { CollaborationOptions } from '@/app/interfaces/options/CollaborationOptions';
-import { Attachment } from '@/app/documents/attachment/Attachment'
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from '@/app/typiings/entities/CalendarEntity'
+import { CommonEvent } from '@/app/state/stores/CommonEvent';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typiings/entities/CalendarEntity';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
 
 type CalendarDataAndEventDetails = Data | CommonEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
 

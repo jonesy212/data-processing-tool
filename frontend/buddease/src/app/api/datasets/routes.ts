@@ -1,7 +1,7 @@
 // routes.ts
 // src/app/api/datasets/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/database/DatabaseClient';
+import DatabaseClient from '@/app/api/DatabaseClient';
 
 // GET /api/datasets - List all datasets
 export async function GET(request: NextRequest) {

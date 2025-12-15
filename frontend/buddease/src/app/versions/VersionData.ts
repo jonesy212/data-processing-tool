@@ -1,11 +1,8 @@
 // VersionData.ts
 
-import { Permission } from '@/app/permissions/Permission';
 import getAppPath from '@/app/config/appStructure/appPath';
-import { BaseData } from '@/app/models/data/Data';
 import { AppStructureItem, AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import FrontendStructure, { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity'
 import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
@@ -15,9 +12,13 @@ import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProp
 import { createBaseData } from '@/app/hooks/useSnapshotManager';
 import { Comment } from '@/app/models/comments/Comments';
 import { Content } from '@/app/models/content/AddContent';
-import { Data } from '@/app/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { Permission } from '@/app/permissions/Permission';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import BackendStructure from '@/app/server/database/BackendStructure';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
@@ -27,8 +28,6 @@ import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, A
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { BuildVersion, Version, version } from '@/app/versions/Version';
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
-import { DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields } from '@/app/typings/entities/DataEntity'
-import { BackendStructure } from '@/app/server/database/BackendStructure'
 
 const { snapshotData } = storeProps
 
@@ -63,11 +62,7 @@ interface SharedContent<
 
 interface CoreDataItem<
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 > extends SharedIdentifiers<T, K>,
   SharedTimestamps {
   name?: string;
@@ -75,7 +70,7 @@ interface CoreDataItem<
   draft?: boolean;
   id?: string | number;
   permissions?: Permission[];
-  appPermissions?: AppStructurePermissions;
+  appPermissions?: AppStructurePermissions[];
   type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
 }
 
@@ -160,7 +155,7 @@ interface ExtendedVersionData<
   documentId?: string;
   userId?: string;
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
   versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   releaseDate?: string | Date;
@@ -329,7 +324,7 @@ const transformToStructureItems = <
       permissions: value.permissions || undefined, // Use provided permissions or undefined
       versions: value.versions || undefined, // Use provided versions or undefined
       versionData: value.versionData || null, // Use provided versionData or null
-      items: value.items ? transformToStructureItems(value.items) : undefined, // Recursively transform nested items
+      items: value.items ? transformToStructureItems(value.items) : null, // Recursively transform nested items
     };
   }
 
@@ -780,5 +775,5 @@ function calculateChecksum(content: string): string {
 }
 
 export { createDefaultVersionData, versionHistory };
-export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, SharedVersioning, VersionData, VersionHistory, SharedContent };
+export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedContent, SharedVersionData, SharedVersioning, VersionData, VersionHistory };
 

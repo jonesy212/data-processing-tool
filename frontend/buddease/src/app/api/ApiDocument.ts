@@ -9,11 +9,12 @@ import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Presentation } from "@/app/documents/editing/Presentation";
-import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import Subtask from '@/app/model/tasks/Subtask';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from '@/app/models/data/StatusType';
+import Subtask from '@/app/models/tasks/Subtask';
 import { useNotification } from '@/app/state/context/NotificationContext';
 
+import { Tag } from '@/app/models/tracker/Tag';
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
@@ -21,7 +22,6 @@ import { AppDocument } from '@/app/typings/entities/DocumentEntity';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError, AxiosResponse } from "axios";
 import { current } from "immer";
-import { Tag } from 'sanitize-html';
 
 
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -208,21 +208,84 @@ const apiNotificationMessages: DocumentNotificationMessages = {
 // Function to handle API errors and notify
 const handleDocumentApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessageId: keyof DocumentNotificationMessages
+  errorMessageId: keyof DocumentNotificationMessages,
+  additionalData?: any
 ) => {
-  const errorMessage = apiNotificationMessages[errorMessageId]
-  handleApiError(error, errorMessage);
-  if (errorMessageId) {
-    useNotification().notify(
-      errorMessageId,
-      'Document error',
-      null,
-      new Date(),
-      "DocumentError" as NotificationType
-    );
+  // Get the error message text from the notification messages
+  const errorMessage = apiNotificationMessages[errorMessageId];
+  
+  // Get the notification service
+  const notificationService = useNotification();
+  
+  // Create a more descriptive error message based on the Axios error
+  let userFriendlyMessage = errorMessage;
+  
+  if (error.response) {
+    // Server responded with an error status
+    switch (error.response.status) {
+      case 400:
+        userFriendlyMessage = "Invalid document data provided";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required to access this document";
+        break;
+      case 403:
+        userFriendlyMessage = "You don't have permission to access this document";
+        break;
+      case 404:
+        userFriendlyMessage = "Document not found";
+        break;
+      case 409:
+        userFriendlyMessage = "Document conflict occurred";
+        break;
+      case 422:
+        userFriendlyMessage = "Document validation failed";
+        break;
+      case 500:
+        userFriendlyMessage = "Server error while processing document";
+        break;
+      default:
+        userFriendlyMessage = errorMessage;
+    }
+  } else if (error.request) {
+    // Request was made but no response received
+    userFriendlyMessage = "Network error: Unable to connect to document server";
+  } else {
+    // Something else happened
+    userFriendlyMessage = error.message || errorMessage;
   }
+  
+  // Log the error for debugging
+  console.error('Document API Error:', {
+    messageId: errorMessageId,
+    errorMessage: userFriendlyMessage,
+    originalError: error.message,
+    statusCode: error.response?.status,
+    url: error.config?.url,
+    method: error.config?.method,
+    data: additionalData
+  });
+  
+  // Show notification to user
+  notificationService.notify({
+    id: `document_error_${errorMessageId}_${Date.now()}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'document',
+      entityId: additionalData?.documentId || 'unknown',
+      originalError: error.message,
+      statusCode: error.response?.status,
+      action: errorMessageId.replace('_ERROR', '').toLowerCase(),
+      extra: additionalData || {}
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const
+  });
+  
+  // If you have a separate handleApiError function, call it
+  handleApiError(error, userFriendlyMessage);
 };
-
 
 const fakeApiCall = (documentId: number): Promise<AppDocument> => {
   return new Promise((resolve) => {
@@ -264,7 +327,7 @@ export const createDocumentThunks = <
         >(
           `${API_BASE_URL}/documents/${documentId}/name`,
           { name: newName },
-          { headers: headersConfig }
+          { config: { headers: headersConfig } }
         );
 
         // ✅ Updated notification call
@@ -469,6 +532,8 @@ const convertToDocumentObject = <
       : undefined,
       currentMeta: draft.currentMeta,
     defaultView: draft.defaultView as Window | undefined,
+    
+    computeCurrentHash, createDefaultVersionData, initializeStructures, generateStructureHash,
   } as DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
@@ -561,7 +626,6 @@ const fetchXmlDocumentByIdAPI = async (
   }
 };
 
-
 // Example API function to update document name
 const updateDocumentNameAPI = async (
   documentId: number,
@@ -584,14 +648,24 @@ const updateDocumentNameAPI = async (
     // Pass the response data to the callback function
     dataCallback(response.data);
 
-    // Dispatch success notification
-    useNotification().notify(
-      "UPDATE_DOCUMENT_NAME_SUCCESS",
-      apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
-      null,
-      new Date(),
-      "DocumentSuccess" as NotificationType
-    );
+    // Dispatch success notification using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `document_update_name_success_${documentId}_${Date.now()}`,
+      message: apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS || "Document name updated successfully",
+      data: {
+        entityType: 'document',
+        entityId: documentId.toString(),
+        action: 'update_name',
+        oldName: undefined, // Could track old name if available
+        newName: newName,
+        responseData: response.data,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const
+    });
 
     // Return the response data
     return response.data;
@@ -600,12 +674,19 @@ const updateDocumentNameAPI = async (
     const errorMessage = "Failed to update document name";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-
-      "UPDATE_DOCUMENT_NAME_ERROR"
+      errorMessage,
+      "UPDATE_DOCUMENT_NAME_ERROR" as keyof DocumentNotificationMessages,
+      {
+        documentId,
+        newName,
+        action: 'update_name'
+      }
     );
+    
+    // Re-throw the error to allow calling code to handle it
+    throw error;
   }
 };
-
 
 const addDocumentAPI = <
   T extends BaseDataEntity,
@@ -621,7 +702,7 @@ const addDocumentAPI = <
 
   return new Promise((resolve, reject) => {
     axiosInstance
-      .post(addDocumentEndpoint, documentData, { headers: headersConfig })
+      .post(addDocumentEndpoint, documentData, { config: { headers: headersConfig } })
         .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
           resolve(response.data);
         })
@@ -1574,7 +1655,7 @@ const resolveFeedbackOnDocument = async (
 
 const collaborativeEditing = async (
   documentId: string,
-  collaborators: Collaborator[]
+  collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 ): Promise<any> => {
   try {
     const response = await axiosInstance.post(

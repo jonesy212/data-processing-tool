@@ -1,17 +1,14 @@
 // createSharedSnapshotContainer.ts
 
-import  UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import SnapshotStore from '@/app/snapshots/Snapshot';
-import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { VersionData } from '@/app/versions/Version';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, SharedConfig } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SharedProperties } from '@/app/snapshots/SnapshotEvents';
-import { BaseDataRoot, SharedConfig } from '@/app/config/BaseConfig';
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { SharedPhaseData, SharedRelationshipData } from '@/app/models/data/Data';
+import SnapshotStore from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SharedAuditInfo, SharedVersioning, SharedUpdateHistory } from '@/app/versions/VersionData'
-import { SharedRelationshipData, SharedPhaseData } from '@/app/models/data/Data'
-import {SharedContent } from '@/app/versions/Version'
+import { SharedProperties } from '@/app/snapshots/SnapshotEvents';
+import { SharedContent } from '@/app/versions/Version';
+import { SharedAuditInfo, SharedUpdateHistory, SharedVersioning } from '@/app/versions/VersionData';
 
 interface Shared<
   T extends BaseDataEntity = BaseDataRoot,
@@ -74,4 +71,4 @@ export function createSharedSnapshotContainer<
 }
 
 export const snapshotContainerInstance = createSharedSnapshotContainer();
-export type { Shared }
+export type { Shared };

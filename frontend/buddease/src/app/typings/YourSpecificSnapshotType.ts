@@ -1,28 +1,25 @@
 // YourSpecificSnapshotType.ts
-import getSnapshotId from "@/app/api/SnapshotApi";
-import { snapshotApi } from '@/app/api/SnapshotApi';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { SampleSnapshot } from '@/app/snapshots/SampleSnapshot'
+import getSnapshotId, { snapshotApi } from "@/app/api/SnapshotApi";
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { snapshot, Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots';
-import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { CustomSnapshotData } from '@/app/snapshots/SnapshotData'
+import { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots';
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SampleSnapshot } from '@/app/snapshots/SampleSnapshot';
+import { snapshot, Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { createSnapshotStoreOptions } from '@/app/snapshots/createSnapshotStoreOptions';
 import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';

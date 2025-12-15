@@ -1,13 +1,13 @@
 // baseResponseTypes.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { ChatRoom } from '@/app/communications/ChatRoom';
+import { Sender } from '@/app/components/communications/CommunicationPage';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { ApiPagination } from '@/app/typings/apiTypes';
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ChatRoom } from '@/app/communications/ChatRoom'
-import { Sender } from '@/app/components/communications/CommunicationPage';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 // Base response structure that all API responses should extend
 export interface BaseResponseType<

@@ -1,9 +1,9 @@
 // Meeting.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Todo } from "@/app/todos/Todo";
-import { UserData } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Todo } from "@/app/todos/Todo";
+import { UserData } from "@/app/users/User";
 
 export interface Meeting<
   T extends BaseDataEntity, 
@@ -20,7 +20,7 @@ export interface Meeting<
   description: string;
   participants: string[]; // This can be an array of user IDs or names
   eventId?: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['id']
-  assignedTo?: Todo<T, K>['assignedTo']
+  assignedTo?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['assignedTo']
   
   organizer: string;
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled' | 'postponed';

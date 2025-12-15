@@ -1,17 +1,16 @@
 // CustomSnapshot.ts
+import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { BaseEntity } from '@/app/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
-import { InitializedState } from '@/app/state/stores/DataStore';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { InitializedState } from '@/app/state/stores/DataStore';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
+import { ExtendedVersionData } from '@/app/versions/VersionData';
 
 interface CustomSnapshot<
   T extends BaseDataEntity = BaseDataRoot,

@@ -1,6 +1,7 @@
 // SnapshotOptions.tsx
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/confgs/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
@@ -8,7 +9,6 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
   interface CreateOptions<
     T extends BaseDataEntity,

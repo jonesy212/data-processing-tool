@@ -1,27 +1,26 @@
 // AuthEntity.ts
 
-import { AuthenticationProvider } from '@/app/server/auth/AuthService'
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums'; 
-import { AccessControlEntry } from '@/app/permissions/AccessControlEntry'; 
-import { SecurityEvent } from '@/app/state/redux/slices/SecurityEventSlice'
-import { PublicUserProfile } from '@/app/typings/entities/UserEntity'; 
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { User } from "@/app/users/User";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
+import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums';
+import { AuthenticationProvider } from '@/app/server/auth/AuthService';
 import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { RealtimeDataItem } from '../realtimeTypes';
-import { ApplyFieldFilters } from './AppEntity';
-import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { DashboardConfig } from '@/app/typings/authTypes';
+import { SecurityEvent } from '@/app/state/redux/slices/SecurityEventSlice';
 import { UserContactInfo, UserNotificationPreferences, UserSession } from '@/app/state/stores/AuthStore';
 import { SubscriptionPlan } from '@/app/subscriptions/SubscriptionPlan';
+import { DashboardConfig } from '@/app/typings/authTypes';
+import { PublicUserProfile } from '@/app/typings/entities/UserEntity';
 import { UserPreferences } from '@/app/typings/userTypes';
-
+import { User } from "@/app/users/User";
+import { RealtimeDataItem } from '../realtimeTypes';
+import { ApplyFieldFilters } from './AppEntity';
 
 // Define sensitive fields that should never be exposed
 const SensitiveAuthFields = [
@@ -390,7 +389,7 @@ type InternalAuthInfo = ApplyFieldFilters<AuthEntity, SensitiveAuthField,
 
 type SecureAuthInfo = ApplyFieldFilters<AuthEntity, SensitiveAuthField>;
 
-type PermissionLevel = 'read' | 'write' | 'admin' | 'owner'; 
+export type PermissionLevelType = keyof typeof PermissionLevel;
 type VisibilityLevelType = VisibilityLevel; 
 
 
@@ -541,75 +540,79 @@ type AuthSecurityConfig = {
 
 // Export all the auth types with integrated security levels
 export type {
-  // ========================
-  // 🔧 CORE ENTITY & PARAMETERS
-  // ========================
-  AuthEntity,                                   // 🟡 INTERNAL
-  AuthK,                                       // 🟡 INTERNAL  
-  AuthMeta,                                    // 🟡 INTERNAL
-  AuthAttachment,                              // 🟡 INTERNAL
-  AuthExcludedFields,                          // 🟡 INTERNAL
-  AuthIncludedFields,                          // 🟡 INTERNAL
-  AuthBaseParams,                              // 🟡 INTERNAL
 
-  // ========================
-  // 📊 DATA VARIATIONS (Security Tiered)
-  // ========================
-  PublicAuthInfo,                              // 🟢 CLIENT-SAFE
-  BasicAuthInfo,                               // 🟢 CLIENT-SAFE
-  AuthContextData,                             // 🟢 CLIENT-SAFE
-  ApiAuthResponse,                             // 🟢 CLIENT-SAFE
-  
-  InternalAuthData,                            // 🟡 INTERNAL
-  SecureAuthInfo,                              // 🟡 INTERNAL
-  SessionAuth,                                 // 🟡 INTERNAL
-  SecureAuth,                                  // 🟡 INTERNAL
-  
-  CompleteAuth as __CompleteAuth,              // 🔴 SECURITY ONLY
-  RawAuthData as __RawAuthData,                // 🔴 SECURITY ONLY
+  CompleteAuth as __CompleteAuth, // 🔴 SECURITY ONLY
+  EncryptedAuthData as __EncryptedAuthData, // 🔴 SECURITY ONLY
+  RawAuthData as __RawAuthData, // 🔴 SECURITY ONLY
+  SecureTokenStorage as __SecureTokenStorage, // 🔴 SECURITY ONLY
+  SecurityData as __SecurityData, // 🟡 INTERNAL
+  TokenData as __TokenData, // 🟢 CLIENT-SAFE
+  ApiAuthResponse, // 🟢 CLIENT-SAFE
 
-  // ========================
-  // 🔐 SECURITY & AUTH OPERATIONS
-  // ========================
-  AuthCredentials,                             // 🟡 INTERNAL
-  SecureAuthOperation,                         // 🟡 INTERNAL
-  TokenData as __TokenData,                    // 🔴 SECURITY ONLY
-  SecurityData as __SecurityData,              // 🔴 SECURITY ONLY
-  EncryptedAuthData as __EncryptedAuthData,    // 🔴 SECURITY ONLY
-  SecureTokenStorage as __SecureTokenStorage,  // 🔴 SECURITY ONLY
 
-  // ========================
-  // ⚙️ CONFIGURATION & METADATA
-  // ========================
-  AuthDataDefault,                             // 🟡 INTERNAL
-  AuthSnapshotDefault,                         // 🟡 INTERNAL
-  AuthSnapshotDataDefault,                     // 🟡 INTERNAL
-  AuthSnapshotStoreDefault,                    // 🟡 INTERNAL
-  AuthRealtimeDataItemDefault,                 // 🟡 INTERNAL
-  
-  AuthUnifiedMetadata,                         // 🟡 INTERNAL
-  AuthStructuredMetadata,                      // 🟡 INTERNAL
-  
-  AuthSnapshotStoreConfig,                     // 🟡 INTERNAL
-  AuthSnapshotsArray,                          // 🟡 INTERNAL
-  AuthParams,                                  // 🟡 INTERNAL
-  AuthFrontendStructure,                       // 🟢 CLIENT-SAFE
 
   // ========================
   // 🎯 UTILITY & STATE TYPES
   // ========================
-  AppAuth,
-  AuthFilterOptions,                           // 🟢 CLIENT-SAFE
-  AuthSortOptions,                             // 🟢 CLIENT-SAFE
-  AuthSessionState,                            // 🟡 INTERNAL
-  AuthProviderConfig,                          // 🟢 CLIENT-SAFE
-  
-  AuthValidationResult,                        // 🟡 INTERNAL
-  AuthSecurityConfig,                          // 🟡 INTERNAL
-  SecurityEvent,                               // 🟡 INTERNAL
-  SensitiveAuthField,                          // 🟡 INTERNAL
-  CriticalAuthField                            // 🟡 INTERNAL
+  AppAuth, // 🟡 INTERNAL
+  AuthAttachment, // 🟡 INTERNAL
+  AuthBaseParams, // 🟢 CLIENT-SAFE
+  AuthContextData, // 🔴 SECURITY ONLY
+
+
+
+  // ========================
+  // 🔐 SECURITY & AUTH OPERATIONS
+  // ========================
+  AuthCredentials, // 🔴 SECURITY ONLY
+
+
+
+  // ========================
+  // ⚙️ CONFIGURATION & METADATA
+  // ========================
+  AuthDataDefault,
+  // ========================
+  // 🔧 CORE ENTITY & PARAMETERS
+  // ========================
+  AuthEntity, // 🟡 INTERNAL
+  AuthExcludedFields, AuthFilterOptions, // 🟡 INTERNAL
+  AuthFrontendStructure, // 🟡 INTERNAL
+  AuthIncludedFields, // 🟡 INTERNAL
+  AuthK, // 🟡 INTERNAL  
+  AuthMeta, // 🟡 INTERNAL
+  AuthParams, // 🟡 INTERNAL
+  AuthProviderConfig, // 🟡 INTERNAL
+  AuthRealtimeDataItemDefault, // 🟡 INTERNAL
+  AuthSecurityConfig, // 🟢 CLIENT-SAFE
+  AuthSessionState, // 🟡 INTERNAL
+  AuthSnapshotDataDefault, // 🟡 INTERNAL
+  AuthSnapshotDefault, // 🟡 INTERNAL
+  AuthSnapshotsArray, // 🟡 INTERNAL
+  AuthSnapshotStoreConfig, // 🟡 INTERNAL
+  AuthSnapshotStoreDefault, // 🟢 CLIENT-SAFE
+  AuthSortOptions, // 🟡 INTERNAL
+  AuthStructuredMetadata, // 🟡 INTERNAL
+  AuthUnifiedMetadata, // 🟢 CLIENT-SAFE
+  AuthValidationResult, // 🟢 CLIENT-SAFE
+  BasicAuthInfo, // 🟡 INTERNAL
+  CriticalAuthField // 🟡 INTERNAL
+  , // 🟢 CLIENT-SAFE
+  InternalAuthData, // 🟡 INTERNAL
+
+
+
+  // ========================
+  // 📊 DATA VARIATIONS (Security Tiered)
+  // ========================
+  PublicAuthInfo, // 🟡 INTERNAL
+  SecureAuth, // 🟡 INTERNAL
+  SecureAuthInfo, // 🟡 INTERNAL
+  SecureAuthOperation, // 🟡 INTERNAL
+  SecurityEvent, // 🟡 INTERNAL
+  SensitiveAuthField, // 🟡 INTERNAL
+  SessionAuth
 };
 
 // Export the sensitive fields arrays for validation
-export { SensitiveAuthFields, CriticalAuthFields };
+    export { CriticalAuthFields, SensitiveAuthFields };

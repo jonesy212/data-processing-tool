@@ -1,7 +1,7 @@
 // route.ts
 // src/app/api/datasets/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/database/DatabaseClient';
+import DatabaseClient from '@/app/api/DatabaseClient';
 
 // GET /api/datasets/[id] - Get specific dataset
 export async function GET(

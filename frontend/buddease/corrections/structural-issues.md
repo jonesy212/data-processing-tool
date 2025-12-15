@@ -1764,7 +1764,7 @@ Create the missing interface or fix the reference
 ---
 
 ## 📄 theme-provider.tsx
-**Path:** src/app/platform/styles/theme-provider.tsx
+**Path:** src/app/platform/styles/ThemeProvider.tsx
 
 ### 1. Component 'ThemeProvider' references missing props interface '{
   children: React.ReactNode;

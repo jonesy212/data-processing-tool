@@ -5,7 +5,7 @@ import { NotificationActions } from '@/app/actions/NotificationActions';
 import calendarApiService from '@/app/api/ApiCalendar';
 import { fetchEventData } from '@/app/api/ApiEvent';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { AppCalendarEvent } from '@/app/calendar/AppCalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import CalendarEventCategory from '@/app/calendar/CalendarEventCategory';
 import CalendarEventConflictDetectionResult from '@/app/calendar/CalendarEventConflictDetectionResult';
 import CalendarEventContentGeneration from '@/app/calendar/CalendarEventContentGeneration';
@@ -40,6 +40,7 @@ import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CustomFile from '@/app/documents/File';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import useFileUpload from '@/app/hooks/commHooks/useFileUpload';
@@ -48,10 +49,10 @@ import { Theme } from '@/app/libraries/ui/theme/Theme';
 import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
 import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from '@/app/models/data/EventPriorityClassification';
 import {
-    CalendarStatus,
-    PriorityTypeEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
+  CalendarStatus,
+  PriorityTypeEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
 } from '@/app/models/data/StatusType';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import { LogData } from '@/app/models/LogData';
@@ -60,13 +61,11 @@ import { Task } from '@/app/models/tasks/Task';
 import { Tag } from '@/app/models/tracker/Tag';
 import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import NotificationData, { dispatchNotification, SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
 import CalendarEventAlternative from '@/app/state/stores/CalendarEventAlternative';
+import { AppCalendarEvent } from '@/app/typings/meetingTypes';
 import { CalendarMilestone, Milestone } from '@/app/typings/milestoneTypes';
 import { User } from '@/app/users/User';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -98,7 +97,13 @@ const productMilestone: ProductMilestone = {
   title: "Product Launch",
   date: new Date(),
   productId: "ABC123",
-  dueDate: new Date("2023-12-31")
+  dueDate: new Date("2023-12-31"),
+  name: '', 
+  startDate: new Date(), 
+  status: '', 
+  completed: false, 
+
+
 };
 
 
@@ -254,7 +259,7 @@ export const sendMessageToChatRoom = async (
     // Assuming chatRoom is an array of ChatRoom objects, ensure it's not empty before accessing its first element
     if (Array.isArray(chatRoom) && chatRoom.length > 0) {
       // Generate message
-      const message: Partial<Message & ChatMessage> = {
+      const message: Partial<Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & ChatMessage> = {
         id: UniqueIDGenerator.generateMessageID(),
         channelId: chatRoom[0].id,
         content: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId})`,
@@ -278,8 +283,8 @@ export const sendMessageToChatRoom = async (
           content: `Discussion about calendar event "${calendarEvent.title}" (${action.payload.calendarEventId}) sent successfully to chat room`,
           message: "Message sent to chat room successfully",
           sendStatus: "Success" as SendStatus,
-          completionMessageLog: {} as LogData,
-          type: NotificationTypeEnum.ChatID,
+          completionMessageLog: {} as LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          type: NotificationTypeEnum.CHAT_ID,
         })
       );
     } else {
@@ -327,7 +332,6 @@ export const sendCalendarEventReminder = createAsyncThunk(
 
       // Dispatch a success notification if showSuccessNotification is defined
       notificationContext.showSuccessNotification?.(
-        "",
         "Calendar event reminder sent successfully",
         NOTIFICATION_MESSAGES.CalendarEvents.EVENT_REMINDER_SUCCESS,
         new Date()
@@ -516,7 +520,7 @@ export const commentOnCalendarEvent = createAsyncThunk(
 // Action to assign tasks within a calendar event
 export const assignTasksWithinCalendarEvent = createAsyncThunk(
   "calendar/assignTasksWithinEvent",
-  async ({ eventId, tasks }: { eventId: string; tasks: Task[] }) => {
+  async ({ eventId, tasks }: { eventId: string; tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
     // Add logic to assign tasks within the calendar event asynchronously
     // For example, you can make an API call to assign tasks
     const response = await fetch(`/api/calendar/${eventId}/assign-tasks`, {
@@ -571,7 +575,7 @@ const initialState: CalendarManagerState = {
   suggestedMarketingChannels: [] as MarketingChannel[],
   suggestEventPartnerships: [] as CalendarEventPartnership[],
   suggestedPartnerships: [] as CalendarEventPartnership[],
-  suggestedTags: [] as Tag[],
+  suggestedTags: [] as Tag<T>[],
   suggestedLocations: [] as Location[],
   suggestedTimingOptimization: [],
   eventContentAnalysis: {} as EventContentAnalysis,
@@ -674,7 +678,15 @@ export const exportCalendarEventsToExternalSources = createAsyncThunk(
   }
 );
 
-export const useCalendarManagerSlice = createSlice({
+export const useCalendarManagerSlice = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+>() =>
+  createSlice({
   name: "calendarEvents",
   initialState: {
     entities: {},
@@ -2524,11 +2536,11 @@ export const useCalendarManagerSlice = createSlice({
               // show message that tasks were assigned successfully
 
               // Display a toast message
-              const message: Message = {
+              const message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
                 id: "task assigned" as string,
                 content: "Tasks assigned successfully:",
                 timestamp: new Date(),
-              } as Message;
+              } as Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
               showToast(message);
             } else {

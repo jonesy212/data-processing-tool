@@ -1,8 +1,9 @@
 // ReusableButton.tsx
 // platform/web/ReusableButton.tsx
 import React from 'react';
-import { SharedButton, BaseButtonProps } from '@/app/platform/shared/SharedButton'
+import { SharedButton, BaseButtonProps } from '@/platform/shared/SharedButton'
 import { BrandingSettings } from '@/app/branding/BrandingSettings';
+import { Label } from '@/app/branding/BrandingSettings';
 import { ChildComponentProps } from '@/app/hooks/ChildComponent';
 
 interface WebButtonProps extends BaseButtonProps {

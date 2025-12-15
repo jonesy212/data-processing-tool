@@ -1,14 +1,13 @@
 // useErrorHandling.tsx
 
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import safeParseData from "@/app/dataIntegration/SafeParseData";
 import { ParsedData } from "@/app/dataIntegration/parseData";
 import { FileLogger } from "@/app/logging/Logger";
-import { AppEntity } from "@/app/typings/entities/AppEntity";
 import ErrorHandler from "@/app/shared/ErrorHandler";
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { ErrorInfo, useState } from "react";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Most practical solution
 // Create a factory function that returns configured hooks

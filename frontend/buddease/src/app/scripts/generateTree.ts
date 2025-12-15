@@ -521,7 +521,6 @@ export async function main() {
 }
 
 // === TREE OUTPUT ===
-// === TREE OUTPUT ===
 async function generateTreeOutput(args: string[]) {
   const outputType = args[0] || 'text';
   const outputIndex = args.indexOf('--output');

@@ -7,7 +7,7 @@ import { action, observable, runInAction } from 'mobx';
 import { useAuth } from '@/app/state/context/AuthContext';
 import DATA_NOTIFICATIONS from '@/app/features/support/DataNotifications';
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataState } from '@/app/state/DataState'
 

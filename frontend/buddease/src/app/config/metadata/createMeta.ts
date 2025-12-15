@@ -1,10 +1,10 @@
 // createMeta.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
 import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from '@/app/models/data/dataStoreMethods';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 const createMeta = <
   T extends BaseDataEntity,

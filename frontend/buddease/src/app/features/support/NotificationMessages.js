@@ -90,6 +90,9 @@ const NOTIFICATION_MESSAGES = {
         ERROR_WRITING_TO_CACHE: "Error writing to cache"
     },
     Client: {
+        GENERIC_POST_ERROR: "POST request failed",
+        GENERIC_PUT_ERROR: "PUT request failed",
+        GENERIC_DELETE_ERROR: "DELETE request failed",
         GENERIC_GET_ERROR: "Failed to complete GET request",
         FETCH_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
         FETCH_CLIENT_DETAILS_ERROR: "Client failed to update client",
@@ -192,6 +195,7 @@ const NOTIFICATION_MESSAGES = {
         DEFAULT: "Loading data..",
         PAGE_LOADING: "Loading page..",
         ERROR_EXPORTING_DATA: "Error exporting data. Please try again",
+        UPLOAD_DATA_SUCCESS: 'Uploadiing data successful'
         // Add more messages for the DataLoading type
     },
     Database: {
@@ -457,6 +461,36 @@ const NOTIFICATION_MESSAGES = {
         CLEAR_ALL_SUCCESS: "Sent notification successfully",
         UPDATE_MESSAGE_SUCCESS: "Sent notification successfully",
     },
+
+
+    Notification: {
+        ERROR: {
+        default: "An error occurred",
+        apiError: "API Error",
+        validationError: "Validation Error",
+        networkError: "Network Error"
+        },
+        INFO: {
+        default: "Information",
+        logInfo: "Info logged successfully",
+        apiRequest: "API request completed"
+        },
+        SUCCESS: {
+        default: "Success",
+        logSuccess: "Success logged",
+        operationComplete: "Operation completed successfully"
+        },
+        WARNING: {
+        default: "Warning",
+        validationWarning: "Validation Warning",
+        performanceWarning: "Performance Warning"
+        },
+        LOGGING_ERROR: {
+        default: "Logging Error",
+        logFailure: "Failed to log message",
+        apiLogError: "API Logging Error"
+        }
+    },
     // Success and Operation
     OperationSuccess: {
         DEFAULT: "Operation successful",
@@ -534,6 +568,22 @@ const NOTIFICATION_MESSAGES = {
         DELETE_TASK_ERROR: "Error deleting task, please try again",
         FETCH_PROJECT_DETAILS_ERROR: "Error trying to retrieve project details",
         FETCH_PROJECT_DETAILS_SUCCESS: "Fetch project details successfully",
+        HIRE_DEVELOPER_SUCCESS: 'Hire Developer success',
+        HIRE_DEVELOPER_ERROR: 'hire develop error',
+        COMPENSATE_DEVELOPER_SUCCESS: 'Compensated developer successfully',
+        COMPENSATE_DEVELOPER_ERROR: 'Error paying developer',
+        SELECT_DEVELOPER_SUCCESS: 'Successfully selected a developer',
+        SELECT_DEVELOPER_ERROR: 'Error selecttng developer',
+        INITIATE_IDEATION_PHASE_SUCCESS: 'Initiating ideation phase waas sccessful',
+        INITIATE_IDEATION_PHASE_ERROR: 'Error trying to initiate ideation phase',
+        FORM_TEAM_SUCCESS: 'Forming team success',
+        FORM_TEAM_ERROR: 'Error trying to from the team',
+        BRAINSTORM_PRODUCT_SUCCESS: 'Brainstormng product successful',
+        BRAINSTORM_PRODUCT_ERROR: 'Error trying to set up brain stormng product',
+        LAUNCH_PRODUCT_SUCCESS: 'Launching  product successful',
+        LAUNCH_PRODUCT_ERROR: 'Error trying to set up brain stormng product',
+        PERFORM_DATA_ANALYSIS_SUCCESS: 'Performng data analysis is successful',
+        PERFORM_DATA_ANALYSIS_ERROR: 'Error trying to perform data analysis',
     },
     Prompts: {
         FETCH_PROMPTS_REQUEST: "Fetching prompts..",
@@ -697,7 +747,10 @@ const NOTIFICATION_MESSAGES = {
         COMPLETE_ALL_TODOS_ERROR: "Error completing all todo. Please try again",
         TODO_TOGGLE_ERROR: "Error toggling todo status. Please try again",
         BATCH_ASSIGN_ERROR: "Error assigning todos in batch. Please try again",
+        ASSIGN_TEAM_SUCCESS: 'Assign team success.',
+        
     },
+
     User: {
         FETCH_USER_ERROR: "Error fetching user data. Please try again later",
         ASSIGN_USER_FAILURE: "Failed to assign user. Please try again",
@@ -719,6 +772,27 @@ const NOTIFICATION_MESSAGES = {
         SET_LANGUAGE_SUCCESS: "Language set successfully!",
         SET_IDEATION_PHASE_ERROR: "Error setting ideation phase. Please try again",
         FETCH_THEME_FAILURE: "Error getting theme. Please try again",
+        FETCHING_PREFERENCES_ERROR: 'Error fetching preferences',
+        USER_PREFERENCE_UPDATED_SUCCESS: 'User preference updated succefully.',
+        USER_PREFERENCE_UPDATED_FAILED: 'User preference updated failed.',
+        THEME_SET_SUCCESSFULLY: 'Theme set successful',
+        THEME_SETTING_FAILED: 'Theme setting failed',
+        FONT_SIZE_SETTING_FAILED: 'Font siize setting failed',
+        IDEATION_PHASE_SET_SUCCESSFULLY: 'Ideation phase set successful',
+        IDEATION_PHASE_SETTING_FAILED: 'Idea phase setting phase',
+        USER_PREFERENCES_DELETED_SUCCESSFULLY: 'user preferences deleted',
+        USER_PREFERENCES_DELETION_FAILED: 'User prefernces deletiion failed',
+        BRAINSTORMING_PHASE_SET_SUCCESSFULLY: 'Brainstorming phase successfully set',
+        BRAINSTORMING_PHASE_SETTING_FAILED: 'Brainstorming phase failed to set',
+        LAUNCH_PHASE_SET_SUCCESSFULLY: 'launch phase set successfully',
+        LAUNCH_PHASE_SETTING_FAILED: 'Setting launch phase failed',
+        DATA_ANALYSIS_PHASE_SET_SUCCESSFULLY: 'Data analysiis phase was successfully set',
+        DATA_ANALYSIS_PHASE_SETTING_FAILED: 'Settiing data analysiis phase failed',
+        NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY: 'Notification preferences saved successfully',
+        NOTIFICATION_PREFERENCES_SAVING_FAILED: 'saving notification preferences failed',
+    },
+    Search: {
+        SEARCH_ERROR: 'Error trying to search.'
     },
     Validation: {
         PERMISSION_ERROR: "You do not have permission to perform this action",
@@ -729,6 +803,10 @@ const NOTIFICATION_MESSAGES = {
     },
     Version: {
         GENERATE_VERSION_ERROR_ID: "Generate version error ID",
+    },
+    VersionData: {
+        FETCH_VERSION_DATA_SUCCESS: 'Fetching version data is a success',
+        FETCH_VERSION_DATA_ERROR: 'Fetching version data has caused an error ',
     },
     Video: {
         DEFAULT: "Error in Videos",

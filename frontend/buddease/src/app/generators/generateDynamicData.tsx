@@ -1,5 +1,5 @@
 // generateDynamicData.tsx
-import { CommonData } from '@/components/models/CommonDetails';
+import { CommonData } from '@/app/components/models/CommonDetails';
 
 // Define a function to generate dynamic data based on CommonData
 const generateDynamicData = (data: CommonData<any>): JSX.Element => {

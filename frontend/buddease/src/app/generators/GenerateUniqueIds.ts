@@ -1,19 +1,21 @@
 // GenerateUniqueIds.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from '@/app/config/useMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { DataDetails } from '@/app/models/data/Data';
-import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { AreaDimensions, FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
-import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-
-import { useMeta } from "@/app/config/useMeta";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 const area = fetchUserAreaDimensions().toString()
 
@@ -164,6 +166,76 @@ class UniqueIDGenerator {
     return generatedId;
   }
 
+    /**
+   * Generate a metadata ID with proper structure
+   */
+  static generateMetadataID<
+    T extends BaseDataEntity = BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    metadataType: string = 'metadata',
+    options?: {
+      contentId?: string;
+      entityType?: string;
+      timestamp?: Date;
+      includeRandomSuffix?: boolean;
+      customSuffix?: string;
+      metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }
+  ): string {
+    const timestamp = options?.timestamp || new Date();
+    const dateStr = timestamp.toISOString().split('T')[0]; // YYYY-MM-DD
+    const timeStr = timestamp.getTime().toString(36); // Base36 timestamp
+    
+    const typeSlug = metadataType.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    const entitySlug = options?.entityType ? `_${options.entityType.toLowerCase()}` : '';
+    const contentRef = options?.contentId ? `_${options.contentId.substring(0, 8)}` : '';
+    const randomSuffix = options?.includeRandomSuffix ? `_${Math.random().toString(36).substr(2, 5)}` : '';
+    const customSuffix = options?.customSuffix ? `_${options.customSuffix}` : '';
+    
+    return `MD_${typeSlug}${entitySlug}${contentRef}_${dateStr}_${timeStr}${randomSuffix}${customSuffix}`;
+  }
+
+  /**
+   * Generate a complete metadata object with ID
+   */
+  static generateMetadataWithID<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    metadataType: string,
+    baseData: Omit<BaseEntityProperties, 'id'> & {
+      [key: string]: any;
+    },
+    options?: {
+      contentId?: string;
+      entityType?: string;
+      timestamp?: Date;
+      includeRandomSuffix?: boolean;
+      customSuffix?: string;
+    }
+  ): BaseEntityProperties & { [key: string]: any } {
+    const id = this.generateMetadataID(metadataType, options);
+    
+    return {
+      ...baseData,
+      id,
+      createdAt: baseData.createdAt || new Date(),
+      updatedAt: baseData.updatedAt || new Date(),
+      // Ensure other required fields
+      isActive: baseData.isActive !== undefined ? baseData.isActive : true,
+      isDeleted: baseData.isDeleted !== undefined ? baseData.isDeleted : false,
+    };
+  }
+
  /**
    * Public method to send formatted notifications
    * @param id - Unique identifier for the notification
@@ -183,13 +255,14 @@ class UniqueIDGenerator {
     type: NotificationType,
     notificationType: NotificationType = NotificationTypeEnum.SYSTEM,
     options?: {
-      additionalOptions?: readonly string[] | string | number | any[] | undefined;
+      additionalOptions?: readonly string[] | string | number | any[];
       additionalDocumentOptions?: DocumentOptions;
       additionalOptionsLabel?: string;
     },
     userName?: string
   ): void {
-    notify(
+    // Wrap all arguments into a single object
+    notify({
       id,
       message,
       content,
@@ -198,8 +271,9 @@ class UniqueIDGenerator {
       notificationType,
       options,
       userName
-    );
+    });
   }
+
     private static notifyFormattedPrivate(
     id: string,
     message: string,
@@ -248,10 +322,116 @@ class UniqueIDGenerator {
     );
   }
 
+
+    /**
+   * Generate a deterministic hash string from an array of participant IDs.
+   * Sorted for consistency.
+   */
+  static generateParticipantHash(participants: string[]): string {
+    if (!participants || participants.length === 0) return 'NOPART';
+    
+    // Sort participants to ensure consistent hash regardless of order
+    const sorted = [...participants].sort();
+
+    // Join and hash using a simple checksum or base36 encoding
+    const combined = sorted.join('-'); // e.g., "user1-user2-user3"
+
+    // Simple hash function: sum char codes, then convert to base36
+    const hash = combined
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      .toString(36);
+
+    // Shorten to 8 chars max for readability
+    return hash.substr(0, 8).toUpperCase();
+  }
+
+
+    /**
+   * Generates a unique room ID for chat, video, or collaborative sessions
+   * @param roomType - Type of room (chat, video, collaboration, meeting, etc.)
+   * @param participants - Optional list of participant IDs or user IDs
+   * @param options - Additional generation options
+   * @returns A unique room identifier
+   */
+  static generateRoomID(
+    roomType?: "chat" | "video" | "collaboration" | "meeting" | "workspace" | string,
+    participants?: string[],
+    options?: {
+      customPrefix?: string;
+      includeTimestamp?: boolean;
+      includeHash?: boolean;
+      separator?: string;
+      maxParticipantsInId?: number;
+    }
+  ): string {
+    const type = roomType ? roomType.toLowerCase() : 'room';
+    const prefix = options?.customPrefix || 'ROOM';
+    const includeTimestamp = options?.includeTimestamp !== false; // default true
+    const includeHash = options?.includeHash !== false; // default true
+    const separator = options?.separator || '_';
+    const maxParticipants = options?.maxParticipantsInId || 3;
+    
+    // Build room ID parts
+    const parts: string[] = [prefix, type.toUpperCase()];
+    
+    // Add participant hash if participants provided
+    if (participants && participants.length > 0) {
+      // Sort participants for consistency
+      const sortedParticipants = [...participants].sort();
+      
+      // Create a hash from participant IDs (limit to maxParticipants for readability)
+      const participantHash = this.generateParticipantHash(
+        sortedParticipants.slice(0, maxParticipants)
+      );
+      parts.push(participantHash);
+    }
+    
+    // Add timestamp if requested
+    if (includeTimestamp) {
+      parts.push(Date.now().toString(36)); // Base36 timestamp for shorter ID
+    }
+    
+    // Add random hash if requested
+    if (includeHash) {
+      parts.push(Math.random().toString(36).substr(2, 8)); // 8-char random
+    }
+    
+    return parts.join(separator);
+  }
+  
+
   // New static method for generating snapshot data key
   static generateSnapshotDataKey(documentId: string, userId: string): string {
     // Generate a unique key for snapshot data using documentId and userId
     return `documents.${userId}.${documentId}`;
+  }
+
+
+
+  /**
+   * Generate a unique chat ID
+   * @param prefix Optional prefix for the chat ID, defaults to 'chat'
+   * @param participants Optional array of user IDs to include in the ID
+   * @param options Optional settings
+   *   - includeTimestamp: whether to include the current timestamp (default: true)
+   *   - includeRandom: whether to include a random suffix (default: true)
+   */
+  static generateChatID(
+    prefix: string = 'chat',
+    participants?: string[],
+    options?: { includeTimestamp?: boolean; includeRandom?: boolean }
+  ): string {
+    const timestamp = options?.includeTimestamp !== false ? `_${Date.now()}` : '';
+    const randomSuffix = options?.includeRandom !== false
+      ? `_${Math.random().toString(36).substr(2, 5)}`
+      : '';
+    const participantsPart = participants && participants.length
+      ? `_${participants.join('_')}`
+      : '';
+
+    // Uppercase the prefix for consistency
+    return `${prefix.toUpperCase()}${participantsPart}${timestamp}${randomSuffix}`;
   }
 
   // New static method for generating a snapshot ID with a category
@@ -266,6 +446,7 @@ class UniqueIDGenerator {
     // Combine the category and unique ID with a timestamp for uniqueness
     return `${category}_${uniqueID}_${timestamp}`;
   }
+
   static generateNotificationID<
     T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
@@ -282,27 +463,127 @@ class UniqueIDGenerator {
   ): string {
     const notificationID = `${notificationType}_${notification.message.id}_${date.getTime()}`;
 
-    notify(
-      notificationID,                        // id: string
-      `Generated notification ID: ${notificationID}`, // content: string
-      notification.message,                  // notificationMessage: NotificationMessages
-      new Date(),                            // date: Date
-      NotificationTypeEnum.GENERATED_ID,      // type: NotificationTypeEnum
-      notificationType,                      // notificationType: NotificationType
-      {                                      // options (optional)
+    notify({
+      id: notificationID,
+      message: `Generated notification ID: ${notificationID}`,
+      data: {
+        ...notification,
+        completionMessageLog,
+        notificationType,
         additionalOptions: [notificationID],
         additionalDocumentOptions: {
           documentId: notification.documentId,
           version: notification.version
         }
       },
-      notification.userName
-    );
+      timestamp: new Date(),
+      type: NotificationTypeEnum.GENERATED_ID,
+      userId: notification.userName // assuming notify supports userId
+    });
 
     if (callback) callback();
     return notificationID;
   }
 
+    static generateCircularDependencyID(
+    type: 'import' | 'type' | 'generic' | 'inheritance',
+    cycle: string[] = [],
+    options?: {
+      customSuffix?: string;
+      includeTimestamp?: boolean;
+      includeRandom?: boolean;
+    }
+  ): string {
+    const includeTimestamp = options?.includeTimestamp ?? true;
+    const includeRandom = options?.includeRandom ?? true;
+    const customSuffix = options?.customSuffix ? `_${options.customSuffix}` : '';
+    
+    // Normalize type for the prefix
+    const typePrefix = type.toUpperCase();
+    
+    // Create a hash/slug from the cycle for better identification
+    let cycleHash = '';
+    if (cycle.length > 0) {
+      // Create a short hash from the cycle (first 3 characters of each type name)
+      const cycleSlug = cycle
+        .map(name => name.substring(0, 3).toUpperCase())
+        .join('_');
+      cycleHash = `_${cycleSlug}`;
+    }
+    
+    // Build the ID components
+    const timestampPart = includeTimestamp ? `_${Date.now()}` : '';
+    const randomPart = includeRandom ? `_${Math.random().toString(36).substr(2, 5)}` : '';
+    
+    return `CIRC_${typePrefix}${cycleHash}${timestampPart}${randomPart}${customSuffix}`;
+  }
+
+  static generateCircularDependencyIDWithFiles(
+    type: 'import' | 'type' | 'generic' | 'inheritance',
+    files: string[] = [],
+    cycle: string[] = [],
+    options?: {
+      includeFolderInfo?: boolean;
+      maxPathDepth?: number;
+    }
+  ): string {
+    const includeFolderInfo = options?.includeFolderInfo ?? true;
+    const maxPathDepth = options?.maxPathDepth ?? 2;
+    
+    let locationHash = '';
+    if (includeFolderInfo && files.length > 0) {
+      // Extract folder information from files
+      const folders = files.map(file => {
+        const parsed = path.parse(file);
+        const dirParts = parsed.dir.split(path.sep);
+        // Take last N folder parts
+        const relevantParts = dirParts.slice(-maxPathDepth);
+        return relevantParts.join('_');
+      });
+      locationHash = `_${folders.join('-').replace(/[^a-zA-Z0-9_-]/g, '')}`;
+    }
+    
+    return this.generateCircularDependencyID(type, cycle, {
+      customSuffix: locationHash,
+      includeTimestamp: true,
+      includeRandom: true
+    });
+  }
+
+  static generateEnhancedCircularDependencyID(
+    issue: Partial<CircularDependency>,
+    options?: {
+      includeComplexity?: boolean;
+      includeSeverity?: boolean;
+    }
+  ): string {
+    const type = issue.type || 'unknown';
+    const severity = issue.severity || 'medium';
+    const complexity = issue.complexity || 0;
+    
+    const severityCode = {
+      'critical': 'CRIT',
+      'high': 'HIGH',
+      'medium': 'MED',
+      'low': 'LOW'
+    }[severity] || 'UNK';
+    
+    const complexityCode = complexity > 7 ? 'CMPX' : complexity > 4 ? 'MOD' : 'SMPL';
+    
+    const baseId = this.generateCircularDependencyID(
+      type as any,
+      issue.cycle || [],
+      {
+        includeTimestamp: true,
+        includeRandom: true
+      }
+    );
+    
+    const enhancement = options?.includeSeverity ? `_${severityCode}` : '';
+    const complexityPart = options?.includeComplexity ? `_${complexityCode}` : '';
+    
+    return `${baseId}${enhancement}${complexityPart}`;
+  }
 
   // New method: generateSubscriberID
   static generateSubscriberID<
@@ -649,15 +930,16 @@ class UniqueIDGenerator {
   }
 }
 
-const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
+
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 
 
 
 // Dynamically set the FetchOptions using properties from the `area` object
-const options: FetchOptions = {
+const options: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   elementId: area.id, // Use `area.id` as the `elementId`
   listenForResize: true, // Set to true to listen for resize
-  onChange: (dimensions) => {
+  onChange: (dimensions: AreaDimensions) => {
     console.log(`Updated dimensions for area "${area.name}":`, dimensions);
   }
 };

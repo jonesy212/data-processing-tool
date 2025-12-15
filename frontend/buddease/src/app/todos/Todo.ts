@@ -8,7 +8,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { CreateSnapshotsPayload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import ChecklistItem, { ChecklistItemProps } from '@/app/models/ChecklistItem';
 import { Comment } from '@/app/models/comments/Comments';
@@ -21,7 +21,6 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { Payload } from '@/app/server/database/Payload';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { LocalStorageSnapshotStore, Result, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -87,6 +86,8 @@ export interface Todo<
   assignedUsers: string[];
   collaborators: Collaborator<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   labels: string[];
+  lastAssignedAt?: string | Date;
+  onAssignment?: Date;
   comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| CustomComment)[] | undefined;
   attachments?: AttachmentType[];
   checklists?: (typeof ChecklistItem)[];

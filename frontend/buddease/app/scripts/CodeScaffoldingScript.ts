@@ -126,7 +126,8 @@ export class CodeScaffoldingScript {
 
   private async generateCoreFiles(projectConfig: ProjectConfig): Promise<void> {
     // Generate Next.js app router structure
-    const layoutContent = `import './globals.css';
+const layoutContent = `'use client'; // Add this for client-side components
+
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -143,6 +144,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/globals.css" />
+      </head>
       <body className={inter.className}>
         <div className="min-h-screen bg-background">
           {children}

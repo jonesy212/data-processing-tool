@@ -1,7 +1,7 @@
 // useSecurityAudit.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId as fetchSecureUserId } from '@/app/hooks/useSecureUserId';
 
 // Type guard for sensitive fields

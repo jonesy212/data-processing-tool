@@ -1,12 +1,11 @@
 // subscriptionServiceInstance.ts
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { determineSubscriberType } from "@/app/subscriptions/SubscriptionLevel";
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
+import { BaseData } from '@/app/models/data/Data';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { determineSubscriberType } from "@/app/subscriptions/SubscriptionLevel";
 
  // Helper function to generate a unique event name based on user and snapshot
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;

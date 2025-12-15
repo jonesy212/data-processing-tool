@@ -1,5 +1,5 @@
 // Apilogs.ts
-import { DataTypeEnums } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -36,14 +36,14 @@ export const handleApiError = (
           }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
       notify({
         id: `error${errorMessage.replace(/\s+/g, '')}`,
-        message: NOTIFICATION_MESSAGES.Generic.ERROR,
+        message: NOTIFICATION_MESSAGES.Notification.ERROR.apiError, 
         data: { 
           originalError: error.message,
           extra: {
@@ -52,7 +52,7 @@ export const handleApiError = (
           }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
     } else {
@@ -67,7 +67,7 @@ export const handleApiError = (
           }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
     }
@@ -84,7 +84,7 @@ export const handleApiError = (
         }
       },
       timestamp: new Date(),
-      type: DataTypeEnums.Notification.ERROR,
+      type: NotificationTypeEnum.API_ERROR,
       level: 'error'
     });
   }
@@ -116,7 +116,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.INFO,
+        type: NotificationTypeEnum.INFO,
         level: 'info'
       });
       return response;
@@ -133,7 +133,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
       throw error;
@@ -150,7 +150,7 @@ export const logsApiService = observable({
           extra: { endpoint }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.INFO,
+        type: NotificationTypeEnum.INFO,
         level: 'info'
       });
     } catch (error) {
@@ -185,7 +185,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.SUCCESS,
+        type: NotificationTypeEnum.SUCCESS,
         level: 'success'
       });
       return response;
@@ -202,7 +202,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
       throw error;
@@ -233,7 +233,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.LOGGING_ERROR,
+        type: NotificationTypeEnum.LOGGING_ERROR,
         level: 'error'
       });
       return response;
@@ -250,7 +250,7 @@ export const logsApiService = observable({
           extra: { message, user }
         },
         timestamp: new Date(),
-        type: DataTypeEnums.Notification.ERROR,
+        type: NotificationTypeEnum.API_ERROR,
         level: 'error'
       });
       throw error;

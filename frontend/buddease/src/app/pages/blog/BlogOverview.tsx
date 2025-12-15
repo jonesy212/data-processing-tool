@@ -1,7 +1,10 @@
 // BlogOverview.tsx
-// BlogOverview.ts
+
 import React from 'react';
-import '@/app/pages/blog/BlogOverview.css'; // Import CSS for styling
+// Import CSS for styling
+if (typeof window !== 'undefined') {
+  import('@/app/pages/blog/BlogOverview.css');
+}
 
 interface BlogOverviewProps {
   title: string;

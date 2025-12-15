@@ -515,7 +515,7 @@ This sensitive field should be properly encapsulated in your type hierarchy. Con
 ---
 
 ### 24. Potential sensitive data exposure in interface 'DAppAdapterProps' - field 'className'
-**File:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+**File:** src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 **Type:** Sensitive Data Exposure
 **Severity:** CRITICAL
 
@@ -3869,7 +3869,7 @@ Data sanitization should be integrated into your data flow architecture.
 ---
 
 ### 139. Component 'ThemeProvider' may have insecure role-based access control
-**File:** src/app/platform/styles/theme-provider.tsx
+**File:** src/app/platform/styles/ThemeProvider.tsx
 **Type:** Role Violation
 **Severity:** HIGH
 

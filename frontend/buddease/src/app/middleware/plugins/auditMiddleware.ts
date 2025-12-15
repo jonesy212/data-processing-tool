@@ -1,9 +1,10 @@
 // auditMiddleware.ts
-import { User } from '@/app/users/User'; // Adjust import path as needed
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { AuditEntry } from '@/app/config/MetaDataOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { MiddlewareContext, MiddlewareFunction } from '@/app/middleware/core/types';
+import { User } from '@/app/users/User'; // Adjust import path as needed
 
-import { MiddlewareContext, MiddlewareFunction } from '@/app/middleware/types'
 export interface AuditMiddlewareConfig<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,

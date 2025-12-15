@@ -1,14 +1,14 @@
 // transformDataToSnapshot.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CombinedEvents } from '@/app/hooks/useSnapshotManager';
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { SnapshotEvents } from '@/app/typings/eventTypes';
 
 const transformDataToSnapshot =  <  T extends BaseDataEntity,
   K extends T = T,

@@ -9,17 +9,17 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Drawing } from "@/app/libraries/drawing/generateDrawingJSON";
-import { databaseConfig } from '@/app/server/database/config';
+import { databaseConfig } from '@/src/app/config/databaseConnection';
 import { useAuth } from "@/app/state/context/AuthContext";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import { AxiosError, AxiosResponse } from "axios";
 
 const { notify } = useNotification();
 
 const API_BASE_URL = endpoints.documents;
-
 
 
 const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
@@ -29,18 +29,64 @@ const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> =
     const response = await axiosInstance.get(documentUrl, { headers });
     const document = response.data;
     document.status = 'draft';
+    
+    // Success notification could be added here if needed
+    // notify({
+    //   id: `document_fetch_success_${documentId}_${Date.now()}`,
+    //   message: "Document fetched from archive successfully",
+    //   data: { documentId },
+    //   timestamp: new Date(),
+    //   type: NotificationTypeEnum.OPERATION_SUCCESS,
+    //   level: 'success' as const
+    // });
+    
   } catch (error: any) {
+    // Keep the existing handleApiError call
     handleApiError(error, 'fetchDocumentFromArchive');
-    notify(
-      'fetchDocumentFromArchiveError',
-      'Error fetching document from archive',
-      NOTIFICATION_MESSAGES.Document.FETCH_FROM_ARCHIVE_ERROR,
-      new Date(),
-      'ERROR' as NotificationType
-    );
+    
+    // Enhanced error notification
+    const axiosError = error as AxiosError;
+    let userMessage = 'Error fetching document from archive';
+    
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 401:
+          userMessage = 'Authentication required to access archived documents';
+          break;
+        case 403:
+          userMessage = 'You don\'t have permission to access this archived document';
+          break;
+        case 404:
+          userMessage = 'Archived document not found';
+          break;
+        case 410:
+          userMessage = 'Document has been permanently removed from archive';
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = 'Network error: Unable to connect to document archive';
+    }
+    
+    // Using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `document_archive_fetch_error_${documentId}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'document',
+        entityId: documentId,
+        action: 'fetch_from_archive',
+        originalError: axiosError.message,
+        statusCode: axiosError.response?.status,
+        errorType: 'ARCHIVE_FETCH_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
   }
-}
-
+};
 
 async function updateDocumentInDatabase(documentId: DocumentId, status: DocumentStatus): Promise<void> {
   try {
@@ -52,26 +98,130 @@ async function updateDocumentInDatabase(documentId: DocumentId, status: Document
     
     // Check if the user is authenticated before making the update request
     if (!token) {
+      // Handle authentication error with consistent notification format
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_auth_error_${documentId}_${Date.now()}`,
+        message: 'Authentication required to update document',
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          errorType: 'AUTHENTICATION_ERROR',
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
       throw new Error('User not authenticated');
     }
 
-    const response: AxiosResponse = await axiosInstance.put(documentUpdateUrl, { status }, { headers });
+    const response: AxiosResponse = await axiosInstance.put(
+      documentUpdateUrl, 
+      { status }, 
+      { headers }
+    );
 
     if (response.status === 200) {
       console.log(`Document ${documentId} updated successfully in the database.`);
+      
+      // Success notification
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_success_${documentId}_${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS || "Document updated successfully",
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          responseData: response.data,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
+      
     } else {
+      // Handle non-200 status with consistent notification format
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_failed_${documentId}_${Date.now()}`,
+        message: `Failed to update document (Status: ${response.status})`,
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          statusCode: response.status,
+          statusText: response.statusText,
+          responseData: response.data,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      
       throw new Error(`Failed to update document ${documentId} in the database.`);
     }
   } catch (error: any) {
     const errorMessage = "Failed to update document";
+    
+    // Keep the existing handleApiError call
     handleApiError(error as AxiosError<unknown>, errorMessage);
-    notify(
-      "UpdateDocumentErrorId",
-      NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_ERROR,
-      { documentId, error: errorMessage },
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    
+    // Enhanced error notification for caught errors
+    const axiosError = error as AxiosError;
+    let userMessage = errorMessage;
+    
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 400:
+          userMessage = 'Invalid document update data';
+          break;
+        case 401:
+          userMessage = 'Authentication required to update document';
+          break;
+        case 403:
+          userMessage = 'You don\'t have permission to update this document';
+          break;
+        case 404:
+          userMessage = 'Document not found for update';
+          break;
+        case 409:
+          userMessage = 'Document update conflict';
+          break;
+        case 422:
+          userMessage = 'Document validation failed';
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = 'Network error: Unable to update document';
+    }
+    
+    // Using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `document_update_error_${documentId}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'document',
+        entityId: documentId,
+        action: 'update',
+        status: status,
+        originalError: axiosError.message,
+        statusCode: axiosError.response?.status,
+        errorType: 'DOCUMENT_UPDATE_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
 
     throw error;
   }

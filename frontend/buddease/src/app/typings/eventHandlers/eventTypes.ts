@@ -11,10 +11,15 @@ import React, {
 } from "react";
 import { GestureHandlerGestureEvent } from "react-native-gesture-handler";
 
-
-
 export type EventHandler<T = any> = (event: T) => void | Promise<void>;
 export type EventFilter<T = any> = (event: T) => boolean;
+
+export interface EventEmitterConfig {
+  maxListeners?: number;
+  enableErrorHandling?: boolean;
+  enablePerformanceMonitoring?: boolean;
+}
+
 
 // Define the type of the event parameter to match ReactiveEventHandler
 type ReactiveClipboardEvent = React.ClipboardEvent<HTMLElement>;

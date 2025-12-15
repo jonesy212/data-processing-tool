@@ -1,20 +1,7 @@
 // userTypes.ts
-import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
-import { UserEntity, UserDataDefault } from '@/app/typings/entities/UserEntity';
+import ChatSettings from '@/app/hooks/userInterface/ChatSettings';
+import { UserDataDefault, UserEntity } from '@/app/typings/entities/UserEntity';
 
-// Supporting interfaces (from your UserData.ts)
-interface UserPreferences {
-  ui?: {
-    compactMode?: boolean;
-    sidebarCollapsed?: boolean;
-    fontSize?: 'small' | 'medium' | 'large';
-  };
-  notifications?: {
-    emailFrequency?: 'instant' | 'daily' | 'weekly';
-    desktopAlerts?: boolean;
-    soundEnabled?: boolean;
-  };
-}
 
 interface UserProfileDetails {
   bio?: string;
@@ -82,15 +69,14 @@ const emptyUserData: UserDataDefault = createDefaultUserData();
 
 export type {
 
-  // Core type parameters
-  UserEntity,
+    // Core type parameters
+    UserEntity,
 
-  // Supporting interfaces
-  UserPreferences,
-  UserSettings,
-  UserProfileDetails
+    // Supporting interfaces
+    UserPreferences, UserProfileDetails, UserSettings
 };
 
   export {
-    createDefaultUser, createDefaultUserData, emptyUser, emptyUserData
-  };
+        createDefaultUser, createDefaultUserData, emptyUser, emptyUserData
+    };
+

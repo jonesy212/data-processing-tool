@@ -1,14 +1,13 @@
 // ProjectStore.ts
-import { PhaseMeta } from '@/app/typings/phaseTypes';
 import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
-import { AppPhase } from '@/types/PhaseEntity';
+import { AppPhase } from '@/app/typings/entities/PhaseEntity';
 import { Phase } from '@/app/models/phases/Phase';
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { makeAutoObservable, reaction } from "mobx";
 import { v4 as uuid } from "uuid";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Milestone } from "@/app/typiings/entites/milestoneTypes";
+import { Milestone } from "@/app/typings/milestoneTypes";
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import NotificationStore from "@/app/state/stores/NotificationStore"; // the advanced one
@@ -46,10 +45,10 @@ export class ProjectStore {
   notificationStore: NotificationStore;
 
   constructor(
+    settingsStore: SettingsStore,
     taskStore?: TaskStore,
     milestoneStore?: MilestoneStore,
     notificationStore?: NotificationStore,
-    settingsStore: SettingsStore
   ) {
     this.taskStore = taskStore || new TaskStore();
     this.milestoneStore = milestoneStore || new MilestoneStore();
@@ -69,7 +68,9 @@ export class ProjectStore {
       advanced: {
         chat: { 
           enabled: true,
-          platforms: ['slack', 'teams']
+          platforms: ['slack', 'teams'],
+          realTimeChatEnabled, notificationEmailEnabled, enableEmojis, enableAudioChat,
+
         },
         videoCall: { 
           enabled: false,
@@ -116,10 +117,12 @@ export class ProjectStore {
     tasks: projectData.tasks || [],
     status: projectData.status || 'active',
     isActive: true,
-    leader: '',
+    leader: projectData.leader,
     phase: {} as Phase<AppPhase>,
     phases: [],
-  
+    type: projectData.type,
+    currentPhase: projectData.currentPhase,
+    done: projectData.done,
     createdAt: projectData.createdAt || new Date(),
     updatedAt: projectData.updatedAt || new Date(),
     owner: projectData.owner || 'current-user',

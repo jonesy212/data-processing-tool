@@ -1,12 +1,12 @@
 // SnapshotContainer.ts
-import { Data } from '@/app/models/data/Data';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { ContentItem } from '@/app/cards/DummyCardLoader';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category, SnapshotCategoryMethods } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
+import { Data } from '@/app/models/data/Data';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { createCompleteSnapshot } from '@/app/snapshots/createSnapshot';
@@ -14,9 +14,8 @@ import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/Loca
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Version } from "@/app/versions/Version";
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { BaseEntity } from '@/app/config/BaseConfig';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotData, SnapshotRelationships } from "@/app/snapshots/SnapshotData";
 import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
@@ -56,7 +55,7 @@ interface SnapshotBase<
           SnapshotCategoryMethods // reuse the shared signatures
 {
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
-  items: ItemUnion[];
+  snapshotItems: ItemUnion[];
   contentItems?: ContentItem[];
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   timestamp: string | number | Date | undefined;
@@ -83,7 +82,7 @@ interface SnapshotContainerData<
 > extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
-  items: ItemUnion[];
+  snapshotItems: ItemUnion[];
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   timestamp?: string | number | Date;
   currentcategory?: Category;

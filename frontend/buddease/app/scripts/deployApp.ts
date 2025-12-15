@@ -4,7 +4,6 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import fs from 'fs/promises';
 import path from 'path';
-import fetch from 'node-fetch'; // npm i -D node-fetch @types/node-fetch
 import { createHash } from 'crypto';
 
 const execAsync = promisify(exec);
@@ -141,6 +140,26 @@ export class DeployAppScript {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+  }
+  private async hashDirectory(dir: string): Promise<string> {
+    const hash = createHash('sha256');
+
+    const walk = async (current: string) => {
+      const entries = await fs.readdir(current, { withFileTypes: true });
+
+      for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+        const fullPath = path.join(current, entry.name);
+
+        if (entry.isDirectory()) {
+          await walk(fullPath);
+        } else {
+          hash.update(await fs.readFile(fullPath));
+        }
+      }
+    };
+
+    await walk(dir);
+    return hash.digest('hex');
   }
 }
 

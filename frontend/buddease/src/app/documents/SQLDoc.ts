@@ -1,10 +1,19 @@
 // SQLDoc.ts
 
 import { Task } from "@/app/models/tasks/Task";
-import { SQLDocument } from "@/app/documents/DocumentInterfaces";
+import { SQLDocument } from "@/app/documents/editing/SQLDocument";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // SQLDocument Implementation
-class SQLDoc implements SQLDocument {
+class SQLDoc<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> implements SQLDocument<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   createdAt!: Date;
   updatedAt!: Date;
   sharedWith!: string[];
@@ -33,7 +42,7 @@ class SQLDoc implements SQLDocument {
     version!: number;
     comments!: string[];
     tags!: string[];
-    tasks!: Task[];
+    tasks!: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     collaborators!: string[];
     permissions!: Record<string, boolean>;
     parentDocument!: string;

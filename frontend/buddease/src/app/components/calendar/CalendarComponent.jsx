@@ -1,5 +1,5 @@
 import DataFrameAPI from "@/app/api/DataframeApi";
-import { useCalendarContext } from "@/app/components/calendar/CalendarContext";
+import { useCalendarContext } from '@/app/calendar/CalendarEvent';
 import ProgressBar from "@/app/models/tracker/ProgressBar";
 import FullCalendar from "@fullcalendar/react";
 

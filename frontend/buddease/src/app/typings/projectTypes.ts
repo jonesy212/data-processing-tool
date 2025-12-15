@@ -1,13 +1,13 @@
 // projectTypes.ts
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { PriorityTypeEnum } from '@/app/models/data/StatusType';
-import { BaseData } from '@/app/models/data/Data';
-import { Task } from '@/app/models/tasks/Task';
-import { Member } from '@/app/models/members/Member';
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { ProjectMilestone } from '@/app/typings/milestoneTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseData } from '@/app/models/data/Data';
+import { PriorityTypeEnum } from '@/app/models/data/StatusType';
+import { Member } from '@/app/models/members/Member';
+import { Task } from '@/app/models/tasks/Task';
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
+import { ProjectMilestone } from '@/app/typings/milestoneTypes';
 
 // -------------------- Project Core Types --------------------
 

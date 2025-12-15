@@ -13,7 +13,7 @@ interface Target {
   url?: string;
 }
 
-const constructTarget = <K extends keyof Endpoints>(
+const constructTarget = <K extends keyof typeof endpoints>(
   endpointCategory: K,
   endpointKey: keyof Endpoints[K],
   params: { sortBy: string; limit: number; [key: string]: string | number } = {

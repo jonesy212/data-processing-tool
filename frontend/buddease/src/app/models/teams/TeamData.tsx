@@ -7,10 +7,10 @@ import { TeamBuildingSettings } from '@/app/interfaces/settings/TeamBuildingSett
 import BrandingSettings from '@/app/libraries/theme/BrandingService';
 import { CommonData } from '@/app/models/CommonData';
 import { BaseData } from '@/app/models/data/Data';
+import { Member } from '@/app/models/members/Member';
 import { Project } from '@/app/models/projects/Project';
 import { Progress } from '@/app/models/tracker/ProgressBar';
 import { User } from '@/app/users/User';
-import { Member } from '@/app/models/members/Member';
 
 interface TeamData<  
   T extends BaseDataEntity,

@@ -1,11 +1,15 @@
 // MemberEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { AuditRecord } from '@/app/subscribers/Subscriber';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Member } from "@/app/models/members/Member";
 import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
 import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
 import { UserRole } from "@/app/models/UserRole";
+import UserRoles from "@/app/models/UserRoles";
+import { Persona } from "@/app/pages/personas/Persona";
 import { Permission } from '@/app/permissions/Permission';
 import { Product } from '@/app/products/Product';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -15,16 +19,11 @@ import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { ProjectBudget } from '@/app/typings/projectTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UserEntity } from '@/app/typings/entities/UserEntity';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { PhaseMeta } from '../phaseTypes';
-import UserRoles from "@/app/models/UserRoles";
-import { Persona } from "@/app/pages/personas/Persona";
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
   // Only include fields that are fundamentally part of the entity data model
@@ -242,7 +241,7 @@ export type {
   MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
 };
 
-export {
-  createDefaultMemberData, emptyMemberData
-};
+    export {
+    createDefaultMemberData, emptyMemberData
+  };
 

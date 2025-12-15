@@ -1,43 +1,41 @@
 
 // RootSlice.ts
-import { BaseDataRoot } from '@/app/config/BaseConfig';
-import { VersionState } from '@/app/state/redux/slices/VersionSlice';
-import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BlogState } from '@/app/state/redux/slices/BlogSlice';
 import { PagingState } from '@/app/pages/Paging';
-import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
-import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
-import { NotificationState } from '@/app/state/redux/slices/NotificationSlice';
-import EntityId from '@/app/state/redux/slices/RootSlice';
-import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
-import { EventState } from '@/app/state/redux/slices/EventSlice';
-import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
-import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
-import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
-import { TodoManagerState } from '@/app/todos/Todo';
 import { CalendarManagerState } from '@/app/state/redux/slices//CalendarSlice';
-import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
+import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
+import { BlogState } from '@/app/state/redux/slices/BlogSlice';
+import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
 import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
-import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
-import { TaskState } from '@/app/state/redux/slices/TaskSlice';
+import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
+import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
+import { EventState } from '@/app/state/redux/slices/EventSlice';
+import { NotificationState } from '@/app/state/redux/slices/NotificationSlice';
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice';
 import { ProjectState } from '@/app/state/redux/slices/ProjectSlice';
-import { UIState } from '@/app/state/stores/UISlice';
+import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
+import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
+import { EntityId } from '@/app/state/redux/slices/RootSlice';
+import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
+import { TaskState } from '@/app/state/redux/slices/TaskSlice';
 import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
+import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
+import { VersionState } from '@/app/state/redux/slices/VersionSlice';
 import { VideoState } from '@/app/state/redux/slices/VideoSlice';
 import { ToolbarState } from '@/app/state/stores/ToolbarStore';
-import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
-import { WritableDraft } from "immer";
+import { UIState } from '@/app/state/stores/UISlice';
+import { TodoManagerState } from '@/app/todos/Todo';
+import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
+import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 
 // Import your AppTask / TaskCollection types (6-param)
-import { AppTask, TaskCollection } from "@/app/typings/entities/TaskEntity";
-import { FilteredEventsState } from "@/app/state/stores/FilterStore";
 import { UserManagerState } from "@/app/state/redux/slices//UserSlice";
-import { DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields } from '@/app/typings/entities/DrawingEntity'
-
+import { AuthState } from '@/app/state/redux/slices/AuthSlice';
+import { FilteredEventsState } from "@/app/state/stores/FilterStore";
+import { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/app/typings/entities/DrawingEntity';
+import { AppTask, TaskCollection } from "@/app/typings/entities/TaskEntity";
 /** Task payloads */
 type NewTaskPayload = Partial<AppTask> & { title: string };
 type UpdateTaskPayload = { id: string; patch: Partial<AppTask> };
@@ -55,6 +53,9 @@ export interface RootState<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
+  
+  // Auth
+  authManager: AuthState
   // User & UI
   user: UserManagerState;
   // Video & UI Management
@@ -75,8 +76,8 @@ export interface RootState<
   dataManager: DataSliceState;
   dataAnalysisManager: DataAnalysisState;
   calendarManager: CalendarManagerState;
-  todoManager: TodoManagerState;
-  documentManager: DocumentSliceState<DocumentEntity, DocumentK, DocumentMeta>;
+  todoManager: TodoManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentManager: DocumentSliceState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 
   // API & Networking
   apiManager: ApiManagerState;
@@ -84,10 +85,7 @@ export interface RootState<
 
   // Event & Collaboration
   eventManager: EventState;
-  collaborationManager: CollaborationState<
-    UserProfile<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
-    ProjectData
-  >;
+  collaborationManager: CollaborationState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Entity & Notification
   entityManager: EntityState<any, EntityId>;
@@ -190,7 +188,8 @@ const rootSlice = createSlice({
       state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
     },
     updateTaskLocal(state, action: PayloadAction<UpdateTaskPayload>) {
-      const task = state.tasks.find((t) => t.id === action.payload.id) as WritableDraft<AppTask> | undefined;
+      const task = state.tasks.find((t) => t.id === action.payload.id)
+      //  as WritableDraft<AppTask> | undefined;
       if (task) {
         Object.assign(task, action.payload.patch);
       }

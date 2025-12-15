@@ -1,7 +1,7 @@
 // BaseDataOperations.ts
 // BaseDataOperations
 import { fetchApiData } from '@/app/api/ApiData';
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
   addData as addDataAction,
@@ -11,9 +11,7 @@ import {
   removeData as removeDataAction,
   updateDataDetails as updateDataDetailsAction
 } from '@/app/state/redux/slices/DataSlice'; // Adjust based on your project structure
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useDispatch } from 'react-redux';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

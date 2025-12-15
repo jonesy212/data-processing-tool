@@ -1,6 +1,6 @@
 // BlogAndContentEditorFramework.tsx
 import { DashboardPanel } from '@/app/hooks/userInterface/DashboardPanel';
-import BlogAndContentEditorWrapper from '@/models/content/BlogAndContentEditorWrapper';
+import BlogAndContentEditorWrapper from '@/app/models/content/BlogAndContentEditorWrapper';
 import React from 'react';
 
 const BlogAndContentEditorFramework: React.FC = () => {

@@ -2,6 +2,7 @@
 import { Label } from '@/app/branding/BrandingSettings';
 import { createMetaState } from '@/app/config/metadata/MetadataHooks';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { ModifiedDate } from "@/app/documents/DocType";
 import {
     getDefaultDocumentOptions,
@@ -10,7 +11,7 @@ import {
 } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { buildDocument } from '@/app/documents/editing/DocumentBuilderComponent';
+import { buildDocument } from '@/app/components/documents/editing/DocumentBuilderComponent';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
 import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
@@ -23,7 +24,7 @@ import { generateValidationRulesCode } from "@/app/server/security/validationRul
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { UserData } from '@/app/users/User';
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entties/AppEntity";
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppEntity'
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
@@ -33,11 +34,17 @@ import { useState } from "react";
 import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity'
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { useMeta } from "@/app/config/useMeta";
-import { NestedCategoryKeys } from '@/app/pages/personas/ScenarioBuilder'
+import { NestedCategoryKey, defaultCondition } from '@/app/pages/personas/ScenarioBuilder'
 import { useMetadata } from "@/app/config/useMetadata";
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+
+
+
+
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
 const currentMeta: AppStructuredMetadata = useMeta(area)
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 
 // Helper functions (you need to implement these)
 function mergeCategoryProperties(properties: Partial<CategoryProperties>): CategoryProperties {
@@ -160,7 +167,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     const userPersonaBuilder = new PersonaBuilder();
     
     // Create and set phase data directly, not using PhaseManager instance directly
-    const phases: Phase[] = [
+    const phases: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [
       // Example phase objects
       {
         id: "201-1",
@@ -241,13 +248,13 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     fs.writeFileSync(componentFilePath, reactCode);
     
 
-    const content: Content<UserData, UserData, StructuredMetadata<UserData, UserData>> = {
+    const content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       // Initialize with appropriate values for UserData and StructuredMetadata
       metadata: {/* initialize StructuredMetadata properties */},
       userData: {/* initialize UserData properties */},
     };    
     // Example usage of buildDocument function
-    const documentObject: DocumentObject<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>> = {
+    const documentObject: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       createdBy: undefined,
       alinkColor: '',
       supportedLanguages: [],
@@ -256,7 +263,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       eta: new Date(), 
       userId: '', 
       path: '', 
-      draft: '',
+      draft: true,
       phaseType: ProgressPhase.Ideation,
       DocumentData: {},
       currentScript: null,
@@ -377,7 +384,9 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
           items: [],
           data: {},
           latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
-          schema: {}
+          schema: {},
+
+          apiEndpoint, apiKey, timeout, retryAttempts,
          } as Content<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>,
         highlights: ["highlighted phrase 1", "tagged item 2"],
         topics: ["topic 1", "topic 2"],
@@ -396,6 +405,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
             description: "",
             scheduledDate: new Date(),
             createdBy: "user1",
+            latestVersion: latestVersion
           },
           {
             name: "file 2",

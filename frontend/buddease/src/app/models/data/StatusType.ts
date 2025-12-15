@@ -288,6 +288,7 @@ enum BorderStyle {
   OUTSET = "outset",
   None = "none",
 }
+
 enum SubscriptionTypeEnum {
   PortfolioUpdates = "portfolioUpdates",
   TradeExecutions = "tradeExecutions",

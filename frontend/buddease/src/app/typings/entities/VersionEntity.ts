@@ -1,21 +1,20 @@
 // VersionEntity.ts
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { Version, default as VersionImpl } from "@/app/versions/Version";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
-import { HistoryEntry } from "@/app/state/stores/HistoryStore";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { VersionData } from '@/app/versions/VersionData'
-import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure'
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { HistoryEntry } from "@/app/state/stores/HistoryStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { Version, default as VersionImpl } from "@/app/versions/Version";
+import { VersionData } from '@/app/versions/VersionData';
 
 // --- Core Version type definitions ---
 type VersionEntity = BaseDataEntity;
@@ -281,14 +280,7 @@ const createDefaultVersionData = (
 });
 
 export type {
-  VersionEntity,
-  VersionK,
-  VersionMeta,
-  VersionAttachment,
-  VersionExcludedFields,
-  VersionIncludedFields,
-  VersionBaseParams,
-  VersionEntityApplyFieldFilters,
+  VersionAttachment, VersionBaseParams, VersionEntity, VersionEntityApplyFieldFilters,
   VersionEntityBackendStructure,
   VersionEntityData,
   VersionEntityDataInterface,
@@ -302,15 +294,16 @@ export type {
   VersionEntitySnapshotStore,
   VersionEntitySnapshotStoreConfig,
   VersionEntitySubscriberCollection,
-  VersionEntityType,
-  VersionStructuredMetadata,
+  VersionEntityType, VersionExcludedFields,
+  VersionIncludedFields, VersionK,
+  VersionMeta, VersionStructuredMetadata,
   VersionUnifiedMetadata
 };
 
-export {
-  createDefaultVersionData,
-  emptyVersionData
-};
+    export {
+    createDefaultVersionData,
+    emptyVersionData
+  };
 
 // Export specific type alias for AppVersion
 export type AppVersion = VersionEntityType;

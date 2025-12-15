@@ -2,47 +2,46 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as ApiTask from "@/app/api/TasksApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { TaskDetails } from '@/app/models/tasks/Task';
 import {
-    ContentAttachment,
-    ContentEntity,
-    ContentExcludedFields,
-    ContentIncludedFields,
-    ContentK,
-    ContentMeta
+  ContentAttachment,
+  ContentEntity,
+  ContentExcludedFields,
+  ContentIncludedFields,
+  ContentK,
+  ContentMeta,
 } from '@/app/typings/entities/ContentEntity';
+import { DetailsAttachment, DetailsEntity, DetailsExcludedFields, DetailsIncludedFields, DetailsK, DetailsMeta } from '@/app/typings/entities/DetailsEntity';
 
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import { ContentItem } from "@/app/components/models/content/ContentItem";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
-import { Task, TaskData } from "@/app/components/models/tasks/Task";
+import { Task } from "@/app/components/models/tasks/Task";
 import { TaskSort } from "@/app/components/sort/TaskSort";
-import { FileType } from "@/app/documents/attachment/Attachment";
+import { FileType } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useWebNotifications from "@/app/hooks/commHooks/useWebNotifications";
-import { ContentLogger } from "@/app/libraries/logging/Logger";
+import { ContentLogger } from "@/app/logging/Logger";
 import { SupportedData } from '@/app/models/CommonData';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import { BaseData, Data } from "@/app/models/data/Data";
 import {
-    PriorityTypeEnum,
-    StatusType,
-    TaskStatus,
+  PriorityTypeEnum,
+  StatusType,
+  TaskStatus,
 } from "@/app/models/data/StatusType";
 import { Phase } from "@/app/models/phases/Phase";
 import ExportTasksPayload from "@/app/models/tasks/ExportTasksPayload";
 import { SortCriteria } from "@/app/settings/SortCriteria";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { ProjectManagerStore } from '@/app/state/hybrid/ProjectManagerStore';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { ProjectManagerStore } from "@/app/state/stores/ProjectStore";
+
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Idea, IdeationSession } from "@/app/users/Ideas";
@@ -103,7 +102,7 @@ interface ContentManagerState<
   [Symbol.iterator]: () => Iterator<any, any, undefined>;
   _id: string;
   phase: any | null;
-  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  videoData: VideoData<T, K> | undefined;
   ideas: any[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   users: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -204,7 +203,7 @@ const generateNewContent = (
 
 
 
-function createUpdatedDetail(detail: DetailsItem<any>): WritableDraft<DetailsItem<any>> {
+function createUpdatedDetail(detail: DetailsItem<any>): WritableDraft<DetailsItemDetailsItem<DetailsEntity, DetailsK, DetailsMeta, DetailsAttachment, DetailsExcludedFields, DetailsIncludedFields>> {
   return {
     ...detail,
     // Assuming the id, subtitle, and value are mandatory properties
@@ -214,7 +213,7 @@ function createUpdatedDetail(detail: DetailsItem<any>): WritableDraft<DetailsIte
   } as WritableDraft<DetailsItem<any>>;
 }
 
-const API_BASE_URL = endpoints.conent;
+const API_BASE_URL = endpoints.content;
 
 const getTaskHistoryFromDatabaseAsync = async <
   T extends BaseDataEntity,
@@ -228,47 +227,67 @@ const getTaskHistoryFromDatabaseAsync = async <
   previousState: any
 ): Promise<any> => {
   try {
-    updateTaskDetails: (
-      state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-      action: PayloadAction<TaskDetails & {
-        id: string;
-        subtitle: string;
-        assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-        previouslyAssignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-        phase?: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
-        updates: TaskDetails;
-        value: number;
-      }>
-    ) => {
-      const { taskId, details, assignedTo, dependencies, previouslyAssignedTo, phase, id, subtitle, value } = action.payload;
-
-      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-
-      if (taskIndex !== -1) {
-        state.tasks[taskIndex] = {
-          ...state.tasks[taskIndex],
-          ...details,
-          id,
-          subtitle,
-          value,
-          assignedTo: assignedTo
-            ? assignedTo.map((user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => user as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)
-            : [],
-          dependencies: dependencies
-            ? dependencies.map((dependency: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
-                dependency as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-              )
-            : null,
-          previouslyAssignedTo: previouslyAssignedTo
-            ? previouslyAssignedTo.map((user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => user as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)
-            : [],
-          phase: phase ? (phase as WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) : null,
-        };
-      }
-    };
+    // Your async logic here
+    // For example: fetch task history from database
+    const response = await fetch(`/api/tasks/${taskId}/history`);
+    const history = await response.json();
+    return history;
   } catch (error) {
     console.error(error);
+    throw error;
+  }
+};
+
+// Separate reducer function (this should be in your slice)
+const updateTaskDetails = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  action: PayloadAction<{
+    taskId: string;
+    details: TaskDetails;
+    assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+    previouslyAssignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    phase?: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+    id: string;
+    subtitle: string;
+    value: number;
+  }>
+) => {
+  const { taskId, details, assignedTo, dependencies, previouslyAssignedTo, phase, id, subtitle, value } = action.payload;
+
+  const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+
+  if (taskIndex !== -1) {
+    state.tasks[taskIndex] = {
+      ...state.tasks[taskIndex],
+      ...details,
+      id,
+      subtitle,
+      value,
+      assignedTo: assignedTo
+        ? assignedTo.map((user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+            user as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+          )
+        : [],
+      dependencies: dependencies
+        ? dependencies.map((dependency: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
+            dependency as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+          )
+        : null,
+      previouslyAssignedTo: previouslyAssignedTo
+        ? previouslyAssignedTo.map((user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => 
+            user as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+          )
+        : [],
+      phase: phase ? (phase as WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) : null,
+    };
   }
 };
 
@@ -482,7 +501,7 @@ export const useContentSlice = createSlice({
       state.tasks[taskIndex].status = TaskStatus.Completed;
     
       // Log task completion
-      ContentLogger.logTaskCompletion(taskId, userId);
+      ContentLogger.logTaskCompleted(taskId, userId);
     
       // Move completed task to completedTasks array
       state.completedTasks.push(state.tasks[taskIndex]);
@@ -557,7 +576,7 @@ export const useContentSlice = createSlice({
         priority: PriorityTypeEnum.Low,
         previouslyAssignedTo: [],
         done: false,
-        data: {} as WritableDraft<TaskData>,
+        data: {} as WritableDraft<Data<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>,
         source: "user",
         startDate: undefined,
         endDate: undefined,
@@ -572,7 +591,10 @@ export const useContentSlice = createSlice({
           throw new Error("Function not implemented.");
         },
         some: function (
-          callbackfn: (value: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>, index: number, array: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]) => unknown,
+          callbackfn: (value: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>,
+            index: number,
+            array: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]
+          ) => unknown,
           thisArg?: any
         ): boolean {
           throw new Error("Function not implemented.");
@@ -580,7 +602,7 @@ export const useContentSlice = createSlice({
         then: function (arg0: (newTask: any) => void): unknown {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]> {
+        getData: function (): Promise<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]> {
           throw new Error("Function not implemented.");
         },
       });
@@ -616,7 +638,6 @@ export const useContentSlice = createSlice({
       }
     },
     
-
     filterTasks: (state, action: PayloadAction<TaskStatus>) => {
       state.taskFilter = action.payload;
 
@@ -642,23 +663,35 @@ export const useContentSlice = createSlice({
 
       // Sort tasks based on the criteria
       if (criteria === SortCriteria.Title) {
-        // Sort tasks by title
-        state.tasks.sort((a, b) => a.title.localeCompare(b.title));
+        // Sort tasks by title with null handling
+        state.tasks.sort((a, b) => {
+          const titleA = a.title || "";
+          const titleB = b.title || "";
+          return titleA.localeCompare(titleB);
+        });
       } else if (criteria === SortCriteria.Date) {
-        // Sort tasks by date
-        state.tasks.sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
+        // Sort tasks by date with null handling
+        state.tasks.sort((a, b) => {
+          const dateA = a.date ? new Date(a.date).getTime() : 0;
+          const dateB = b.date ? new Date(b.date).getTime() : 0;
+          return dateA - dateB;
+        });
       } else if (criteria === SortCriteria.Priority) {
-        // Sort tasks by priority
-        state.tasks.sort((a, b) => a.priority.localeCompare(b.priority));
+        // Sort tasks by priority with null handling
+        state.tasks.sort((a, b) => {
+          const priorityA = a.priority || "";
+          const priorityB = b.priority || "";
+          return priorityA.localeCompare(priorityB);
+        });
       }
       // Sort tasks by status
       else if (criteria === SortCriteria.Status) {
-        // Sort tasks by status
-        state.tasks.sort((a, b) =>
-          (a.status || "").localeCompare(b.status || "")
-        );
+        // Sort tasks by status with null handling
+        state.tasks.sort((a, b) => {
+          const statusA = a.status || "";
+          const statusB = b.status || "";
+          return statusA.localeCompare(statusB);
+        });
       }
       // Add more conditions for other sorting criteria if needed
     },
@@ -712,8 +745,8 @@ export const useContentSlice = createSlice({
             phase: changes.phase as WritableDraft<Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>> ?? existingTask.phase as WritableDraft<Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>,
             comments: changes.comments
               ? Array.isArray(changes.comments) 
-                ? changes.comments.map((comment) => ({ ...comment } as WritableDraft<Comment<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>))
-                : [changes.comments as WritableDraft<Comment<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>] 
+                ? changes.comments.map((comment) => ({ ...comment } as WritableDraft<Comment>))
+                : [changes.comments as WritableDraft<Comment>] 
               : existingTask.comments,
             updatedDetails: changes.updatedDetails
               ? Array.isArray(changes.updatedDetails)
@@ -733,8 +766,8 @@ export const useContentSlice = createSlice({
               : existingTask.updatedActions,
             updatedComments: changes.updatedComments
               ? Array.isArray(changes.updatedComments)
-                ? changes.updatedComments.map((updatedComment) => ({ ...updatedComment } as WritableDraft<Comment<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>))
-                : [changes.updatedComments as WritableDraft<Comment<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>]
+                ? changes.updatedComments.map((updatedComment) => ({ ...updatedComment } as WritableDraft<Comment>))
+                : [changes.updatedComments as WritableDraft<Comment>]
               : existingTask.updatedComments,
             updatedPhase: changes.updatedPhase
               ? changes.updatedPhase as WritableDraft<Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>
@@ -758,7 +791,7 @@ export const useContentSlice = createSlice({
     
           // Log task completion
           if (updatedTask.status === TaskStatus.Completed) {
-            ContentLogger.logTaskCompletion(taskId, userId);
+            ContentLogger.logTaskCompleted(taskId, userId);
           }
     
           // Log task editing
@@ -782,12 +815,12 @@ export const useContentSlice = createSlice({
             existingTask.assignedTo.length > 0 &&
             Array.isArray(assignedUsers) &&
             assignedUsers.length > 0 &&
-            existingTask.assignedTo[0]._id !== (assignedUsers[0] as User)._id
+            existingTask.assignedTo[0]._id !== (assignedUsers[0] as User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>)._id
           ) {
             ContentLogger.logTaskReassignment(
               taskId,
               existingTask.assignedTo[0]._id ?? "",
-              (assignedUsers[0] as User)._id ?? ""
+              (assignedUsers[0] as User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>)._id ?? ""
             );
           }
         }
@@ -848,7 +881,6 @@ export const useContentSlice = createSlice({
         state.tasks[taskIndex].status = TaskStatus.InProgress;
       }
     },
-
     redoAction: (
       state,
       action: PayloadAction<{
@@ -865,7 +897,7 @@ export const useContentSlice = createSlice({
           ...state.tasks[taskIndex],
           ...changes,
           assignedTo: changes.assignedTo
-            ? (changes.assignedTo as (User | WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)[]).map(
+            ? (changes.assignedTo as (User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields> | WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)[]).map(
                 (user) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>
               )
             : state.tasks[taskIndex].assignedTo,
@@ -885,15 +917,64 @@ export const useContentSlice = createSlice({
 
         // Check if notification permission is granted before displaying notification
         if (!("Notification" in window)) {
-          notify(
-            "completedContent",
-            "Desktop notification permission required.",
-            NOTIFICATION_MESSAGES.Notifications.DEFAULT,
-            new Date(),
-            "Error" as NotificationType
-          );
+          notify({
+            id: "desktopNotificationPermissionRequired",
+            message: NOTIFICATION_MESSAGES.Notifications.DEFAULT || "Desktop notification permission required.",
+            data: {
+              entityId: taskId,
+              entityType: 'task',
+              extra: {
+                taskId,
+                contentId: state.tasks[taskIndex].contentId,
+                userId,
+                platform: 'desktop',
+                feature: 'browser_notifications'
+              }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.ERROR, // Or appropriate error type
+            level: 'warning' as const
+          });
           return;
         }
+
+        // Optional: Add success notification for redo action
+        notify({
+          id: `redoActionSuccess_${taskId}`,
+          message: "Task successfully updated",
+          data: {
+            entityId: taskId,
+            entityType: 'task',
+            extra: {
+              taskId,
+              changes,
+              contentId: state.tasks[taskIndex].contentId,
+              userId,
+              action: 'redo'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_SUCCESS,
+          level: 'success' as const
+        });
+      } else {
+        // Task not found notification
+        notify({
+          id: "taskNotFound",
+          message: "Task not found for redo action",
+          data: {
+            entityId: taskId,
+            entityType: 'task',
+            extra: {
+              taskId,
+              action: 'redo',
+              reason: 'task_not_found'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error' as const
+        });
       }
     },
     
@@ -901,7 +982,7 @@ export const useContentSlice = createSlice({
     exportTasks: (state, action: PayloadAction<ExportTasksPayload>) => {
       const { tasks } = action.payload;
 
-      tasks.forEach((task: Task) => {
+      tasks.forEach((task: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => {
         const taskIndex = state.tasks.findIndex((t) => t.id === task.id);
 
         if (taskIndex !== -1) {
@@ -909,14 +990,14 @@ export const useContentSlice = createSlice({
             ...state.tasks[taskIndex],
             ...task,
             previouslyAssignedTo: task.previouslyAssignedTo
-              ? (task.previouslyAssignedTo as User[]).map(
+              ? (task.previouslyAssignedTo as User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]).map(
                   (user) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>
                 )
               : [],
             phase: task.phase ? (task.phase as WritableDraft<Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>) : null,
             data: task.data as WritableDraft<TaskData>,
             assignedTo: task.assignedTo
-              ? (task.assignedTo as User[]).map(
+              ? (task.assignedTo as User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[]).map(
                   (user) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>
                 )
               : [],
@@ -933,7 +1014,7 @@ export const useContentSlice = createSlice({
     importTasks: (state, action: PayloadAction<ImportTasksPayload>) => {
       const { tasks } = action.payload;
 
-      tasks.forEach((task: Task) => {
+      tasks.forEach((task: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => {
         if (!state.tasks.find((t) => t.id === task.id)) {
           state.tasks.push(task as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>);
         }
@@ -943,10 +1024,10 @@ export const useContentSlice = createSlice({
     updateTaskDetails: (
       state: WritableDraft<ContentManagerState<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>,
       action: PayloadAction<TaskDetails & {
-        assignedTo?: User[];
+        assignedTo?: User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[];
         dependencies?: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[] | null;
-        previouslyAssignedTo?: User[];
-        phase?: Phase;
+        previouslyAssignedTo?: User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>[];
+        phase?: Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>;
         id: string;
         updates: TaskDetails;
         subtitle: string;
@@ -965,17 +1046,14 @@ export const useContentSlice = createSlice({
           subtitle,
           value,
           assignedTo: assignedTo
-            ? assignedTo.map((user: User) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
+            ? assignedTo.map((user: User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
             : [],
           dependencies: dependencies
             ? dependencies.map((dependency: Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => dependency as WritableDraft<Task<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
             : null,
           previouslyAssignedTo: previouslyAssignedTo
-            ? previouslyAssignedTo.map((user: User) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
+            ? previouslyAssignedTo.map((user: User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>) => user as WritableDraft<User<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>)
             : [],
-
-
-
           phase: phase ? (phase as WritableDraft<Phase<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields>>) : null,
         };
       }
@@ -1088,7 +1166,7 @@ export const useContentSlice = createSlice({
     getTaskHistory: (state, action: PayloadAction<string>) => {
       const taskId = action.payload;
       // Call API to get task history
-      const taskHistory = ApiTask.getTaskHistory(taskId);
+      const taskHistory = ApiTask.getTaskHistoryAPI(taskId);
       // Update state with task history
       state.taskHistories = {
         ...state.taskHistories,
@@ -1116,7 +1194,6 @@ export const useContentSlice = createSlice({
         };
       }
     },
-
     // Define the action
     markTaskAsInProgress: (
       state,
@@ -1140,58 +1217,224 @@ export const useContentSlice = createSlice({
           .then(() => {
             // Check if user has granted notification permission
             if (Notification.permission === "granted") {
-              // Display success notification
-              notify(
-                "taskInProgress",
-                `Task marked as in progress.`,
-                NOTIFICATION_MESSAGES.Notifications.DEFAULT,
-                new Date(),
-                "Success" as NotificationType
-              );
+              // Display success notification using proper pattern
+              notify({
+                id: `taskInProgress_${taskId}`,
+                message: NOTIFICATION_MESSAGES.Notifications.DEFAULT || "Task marked as in progress.",
+                data: {
+                  entityId: taskId,
+                  entityType: 'task',
+                  extra: {
+                    taskId,
+                    previousStatus: previousState.status,
+                    newStatus: "inProgress",
+                    historySaved: true
+                  }
+                },
+                timestamp: new Date(),
+                type: NotificationTypeEnum.SUCCESS, // Or NotificationTypeEnum.OPERATION_SUCCESS
+                level: 'success' as const
+              });
+            } else {
+              // Show alternative notification if browser notifications not permitted
+              notify({
+                id: `taskInProgressNoPermission_${taskId}`,
+                message: "Task marked as in progress (browser notifications not enabled)",
+                data: {
+                  entityId: taskId,
+                  entityType: 'task',
+                  extra: {
+                    taskId,
+                    previousStatus: previousState.status,
+                    newStatus: "inProgress",
+                    browserNotificationPermission: Notification.permission,
+                    historySaved: true
+                  }
+                },
+                timestamp: new Date(),
+                type: NotificationTypeEnum.SUCCESS,
+                level: 'info' as const
+              });
             }
           })
           .catch((error) => {
             // Handle error if needed
             console.error("Error fetching task history:", error);
+            
+            // Notify about the error but still mark task as in progress
+            notify({
+              id: `taskHistoryError_${taskId}`,
+              message: "Task marked as in progress, but history save failed",
+              data: {
+                originalError: error.message || 'Unknown error',
+                entityId: taskId,
+                entityType: 'task',
+                extra: {
+                  taskId,
+                  previousStatus: previousState.status,
+                  newStatus: "inProgress",
+                  historySaved: false,
+                  error
+                }
+              },
+              timestamp: new Date(),
+              type: NotificationTypeEnum.ERROR,
+              level: 'warning' as const
+            });
           });
+      } else {
+        // Task not found notification
+        notify({
+          id: "taskNotFound",
+          message: "Task not found for marking as in progress",
+          data: {
+            entityId: taskId,
+            entityType: 'task',
+            extra: {
+              taskId,
+              action: 'markAsInProgress',
+              reason: 'task_not_found'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error' as const
+        });
       }
     },
-
-   markTaskAsCompleted: (
+        markTaskAsCompleted: (
       state,
       action: PayloadAction<{
         taskId: string;
       }>
     ) => {
-     const { taskId } = action.payload;
-     const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
-     if (taskIndex !== -1) {
-       // Update task status to "completed"
-       state.tasks[taskIndex].status = "completed";
-       // Save the current task state to history
-       const previousState = { ...state.tasks[taskIndex] };
-       // Call the function to fetch task history from the database
-       getTaskHistoryFromDatabaseAsync(taskId, previousState)
-         .then(() => {
-         // Check if user has granted notification permission
-         if (Notification.permission === "granted") {
-           // Display success notification
-           notify(
-             "taskCompleted",
-             `Task marked as completed.`,
-             NOTIFICATION_MESSAGES.Notifications.DEFAULT,
-             new Date(),
-             "Success" as NotificationType
-           );
-         }
-         })
-         .catch((error) => {
-           // Handle error if needed
-           console.error("Error fetching task history:", error);
-         });
-     }
-    },
+      const { taskId } = action.payload;
+      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+      
+      if (taskIndex !== -1) {
+        // Save the previous state before updating
+        const previousState = { ...state.tasks[taskIndex] };
+        
+        // Update task status to "completed"
+        state.tasks[taskIndex].status = "completed";
+        state.tasks[taskIndex].completedAt = new Date(); // Optional: Add completion timestamp
 
+        // Call the function to fetch task history from the database
+        getTaskHistoryFromDatabaseAsync(taskId, previousState)
+          .then(() => {
+            // Check if user has granted notification permission
+            if (Notification.permission === "granted") {
+              // Display success notification using proper pattern
+              notify({
+                id: `taskCompleted_${taskId}`,
+                message: NOTIFICATION_MESSAGES.Notifications.DEFAULT || "Task marked as completed.",
+                data: {
+                  entityId: taskId,
+                  entityType: 'task',
+                  extra: {
+                    taskId,
+                    taskTitle: state.tasks[taskIndex].title || 'Untitled Task',
+                    previousStatus: previousState.status,
+                    newStatus: "completed",
+                    completedAt: new Date().toISOString(),
+                    historySaved: true,
+                    browserNotificationPermission: "granted"
+                  }
+                },
+                timestamp: new Date(),
+                type: NotificationTypeEnum.SUCCESS, // Or NotificationTypeEnum.OPERATION_SUCCESS
+                level: 'success' as const
+              });
+            } else {
+              // Show alternative notification if browser notifications not permitted
+              notify({
+                id: `taskCompletedNoPermission_${taskId}`,
+                message: "Task marked as completed (browser notifications not enabled)",
+                data: {
+                  entityId: taskId,
+                  entityType: 'task',
+                  extra: {
+                    taskId,
+                    taskTitle: state.tasks[taskIndex].title || 'Untitled Task',
+                    previousStatus: previousState.status,
+                    newStatus: "completed",
+                    completedAt: new Date().toISOString(),
+                    historySaved: true,
+                    browserNotificationPermission: Notification.permission
+                  }
+                },
+                timestamp: new Date(),
+                type: NotificationTypeEnum.SUCCESS,
+                level: 'info' as const
+              });
+            }
+          })
+          .catch((error) => {
+            // Handle error if needed
+            console.error("Error fetching task history:", error);
+            
+            // Notify about the error but still mark task as completed
+            notify({
+              id: `taskCompletedHistoryError_${taskId}`,
+              message: "Task marked as completed, but history save failed",
+              data: {
+                originalError: error.message || 'Unknown error',
+                entityId: taskId,
+                entityType: 'task',
+                extra: {
+                  taskId,
+                  taskTitle: state.tasks[taskIndex].title || 'Untitled Task',
+                  previousStatus: previousState.status,
+                  newStatus: "completed",
+                  completedAt: new Date().toISOString(),
+                  historySaved: false,
+                  error
+                }
+              },
+              timestamp: new Date(),
+              type: NotificationTypeEnum.ERROR,
+              level: 'warning' as const
+            });
+          });
+
+        // Optional: Additional success notification for the state update itself
+        notify({
+          id: `taskStateUpdated_${taskId}`,
+          message: "Task status updated to completed",
+          data: {
+            entityId: taskId,
+            entityType: 'task',
+            extra: {
+              taskId,
+              taskTitle: state.tasks[taskIndex].title || 'Untitled Task',
+              action: 'markAsCompleted'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_SUCCESS,
+          level: 'success' as const
+        });
+      } else {
+        // Task not found notification
+        notify({
+          id: "taskNotFoundForCompletion",
+          message: "Task not found for marking as completed",
+          data: {
+            entityId: taskId,
+            entityType: 'task',
+            extra: {
+              taskId,
+              action: 'markAsCompleted',
+              reason: 'task_not_found'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error' as const
+        });
+      }
+    },
+        
     batchFetchTaskSnapshots: (
       state,
       action: PayloadAction<{ taskIds: string[] }>
@@ -1245,9 +1488,9 @@ export const useContentSlice = createSlice({
         state.tasks[taskIndex].ideationSession = sessionDetails;
       }
     },
-
     completeContent: (state, action: PayloadAction<string>) => {
       const completedContentId = action.payload;
+      
       // Find the completed content in the state
       const completedContent = state.contentItems.find(
         (content) => content.id === completedContentId
@@ -1255,33 +1498,118 @@ export const useContentSlice = createSlice({
 
       if (!completedContent) {
         // If the content does not exist, display an error notification
-        notify(
-          "completedContent",
-          "Could not find content to complete.",
-          NOTIFICATION_MESSAGES.Notifications.DEFAULT,
-          new Date(),
-          "Error" as NotificationType
-        );
+        notify({
+          id: "contentNotFound",
+          message: NOTIFICATION_MESSAGES.Notifications.DEFAULT || "Could not find content to complete.",
+          data: {
+            entityId: completedContentId,
+            entityType: 'content',
+            extra: {
+              contentId: completedContentId,
+              action: 'complete',
+              reason: 'content_not_found'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.ERROR, // Or NotificationTypeEnum.OPERATION_ERROR
+          level: 'error' as const
+        });
         return;
       }
 
+      // Update content status to completed
+      completedContent.status = "completed";
+      completedContent.completedAt = new Date();
+      completedContent.updatedAt = new Date();
+
       // Check if notification permission is granted before displaying notification
       if (Notification.permission === "granted") {
+        // Show browser notification
         showNotification("Content Completed", {
-          body: "Congratulations! You have completed a content.",
+          body: `"${completedContent.title || 'Content'}" has been completed successfully!`,
+          icon: '/content-completed-icon.png', // Optional icon
+          tag: `content-completed-${completedContentId}`, // Optional tag to replace previous notifications
+          data: {
+            contentId: completedContentId,
+            action: 'view_content'
+          }
+        });
+
+        // Also show in-app notification
+        notify({
+          id: `contentCompletedSuccess_${completedContentId}`,
+          message: NOTIFICATION_MESSAGES.Notifications.CONTENT_COMPLETED_SUCCESS || `"${completedContent.title || 'Content'}" completed successfully!`,
+          data: {
+            entityId: completedContentId,
+            entityType: 'content',
+            extra: {
+              contentId: completedContentId,
+              contentTitle: completedContent.title,
+              contentType: completedContent.type,
+              completedAt: new Date().toISOString(),
+              browserNotificationShown: true,
+              browserNotificationPermission: "granted"
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.SUCCESS,
+          level: 'success' as const
         });
       } else {
-        notify(
-          "completedContent",
-          "Notification permission not granted.",
-          NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SEND_FAILED,
-          new Date(),
-          NotificationTypeEnum.OPERATION_ERROR
-        );
+        // Show in-app notification only
+        notify({
+          id: `contentCompletedNoPermission_${completedContentId}`,
+          message: NOTIFICATION_MESSAGES.Notifications.CONTENT_COMPLETED_SUCCESS || `"${completedContent.title || 'Content'}" completed successfully!`,
+          data: {
+            entityId: completedContentId,
+            entityType: 'content',
+            extra: {
+              contentId: completedContentId,
+              contentTitle: completedContent.title,
+              contentType: completedContent.type,
+              completedAt: new Date().toISOString(),
+              browserNotificationShown: false,
+              browserNotificationPermission: Notification.permission,
+              note: "Browser notifications not enabled"
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.SUCCESS,
+          level: 'success' as const
+        });
+
+        // Optional: Show separate notification about browser permission
+        notify({
+          id: "browserNotificationPermissionRequired",
+          message: NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SEND_FAILED || "Enable browser notifications for completion alerts",
+          data: {
+            entityType: 'system',
+            extra: {
+              feature: 'browser_notifications',
+              permissionStatus: Notification.permission,
+              suggestedAction: 'request_permission'
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.WARNING,
+          level: 'info' as const
+        });
+      }
+
+      // Optional: Log completion for analytics
+      if (typeof ContentLogger?.logContentCompletion === 'function') {
+        const userId = completedContent.assignedTo?.[0]?.id || completedContent.createdBy;
+        if (userId) {
+          ContentLogger.logContentCompletion(completedContentId, 'complete', userId);
+        }
+      }
+
+      // Optional: Trigger additional actions (e.g., update user progress, send to backend)
+      if (typeof updateUserProgress === 'function') {
+        updateUserProgress(completedContentId);
       }
     },
 
-    // More reducers...
   },
 });
 
@@ -1335,7 +1663,7 @@ export const {
 } = useContentSlice.actions;
 
 // Export selector for accessing the content items from the state
-export const selectContentItems = (state: { content: ContentManagerState }) =>
+export const selectContentItems = (state: { content: ContentManagerState<ContentEntity, ContentK, ContentMeta, ContentAttachment, ContentExcludedFields, ContentIncludedFields> }) =>
   state.content.contentItems;
 
 // Export reducer for the content entity slice

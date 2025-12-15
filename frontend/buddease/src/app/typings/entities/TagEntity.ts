@@ -1,12 +1,12 @@
 // TagEntity.ts
-import { RoadmapAudience } from '@/app/typings/roadmap';
-import { SnapshotsArray } from '@/app/snapshots';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotsArray } from '@/app/snapshots';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { RoadmapAudience } from '@/app/typings/roadmap';
 // --- Core Tag Type Definitions ---
 
 type TagEntity = BaseDataEntity;
@@ -111,3 +111,4 @@ export type {
   TagEntityStoreConfig, TagExcludedFields, TagIncludedFields, TagK,
   TagMeta, TagStructuredMetadata, TagUnifiedMetadata
 };
+

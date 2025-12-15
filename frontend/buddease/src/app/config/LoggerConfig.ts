@@ -11,7 +11,7 @@ import {
   SecurityLogger,
   TenantLogger,
   WebLogger,
-} from "@/app/libraries/logging/Logger";
+} from '@/app/logging/Logger';
 
 // Define the LoggerConfig class
 class LoggerConfig {

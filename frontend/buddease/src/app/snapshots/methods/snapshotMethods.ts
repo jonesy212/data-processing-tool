@@ -1,31 +1,31 @@
 // snapshotMethods.ts
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { isSnapshot } from '@/utils/snapshotUtils';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { isSnapshot } from '@/utils/snapshotUtils';
 
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 
 export const SnapshotMethodsImplementation = {
 

@@ -1,14 +1,11 @@
-// docxGenerator.ts
-import { BaseDataRoot } from '@/app/config/BaseConfig';
 // docxGenerator.ts - Generic version
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { User, UserData } from "@/app/users/User";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from 'file-saver';
 import JSZip from "jszip";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from "@/app/typings/entities/UserEntity";
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity';
 
 // Make the interface generic
 export interface DocxGeneratorOptions<

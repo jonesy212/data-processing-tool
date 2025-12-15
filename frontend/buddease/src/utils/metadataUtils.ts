@@ -1,15 +1,12 @@
 // metadataUtils.ts
+import { contentApiService } from '@/app/api/service/ContentApiService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CategoryKeys, getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { ContentState } from "draft-js";
-import { contentApiService } from "@/app/api/contentApiService";
-
-import { Data } from '@/app/documents/DataTypes';
-import { getCategoryProperties, CategoryKeys } from '@/app/pages/personas/ScenarioBuilder/CategoryManager';
 import nlp from 'compromise'; // lightweight NLP library
+import { ContentState } from "draft-js";
 import Sentiment from 'sentiment';
 
 /**
@@ -18,7 +15,7 @@ import Sentiment from 'sentiment';
 
 const sentimentAnalyzer = new Sentiment();
 
-export async function getMetadataForContent<
+async function getMetadataForContent<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -76,7 +73,7 @@ export async function getMetadataForContent<
 
   // --- Construct metadata object ---
   const metadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-    contentId,
+    id,
     category: bestCategory,
     categoryProperties,
     keywords,
@@ -119,12 +116,12 @@ async function getMetadataFromPlainText<
  * i.e., StructuredMetadata with expected fields like metadataEntries or startDate
  */
 function isUnifiedMetaDataOptions<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  IncludedFields extends keyof T = keyof T,
 >(snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): snapshotStore is SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (!snapshotStore || !snapshotStore.metadata) return false;
   return 'metadataEntries' in snapshotStore.metadata || 'startDate' in snapshotStore.metadata;
@@ -134,12 +131,15 @@ function isUnifiedMetaDataOptions<
  * Type guard to check if metadata is a generic record (not unified metadata)
  */
 function isGenericMetadata<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(snapshotStore: SnapshotStore<T, K, any>): snapshotStore is SnapshotStore<T, K, Record<string, any>> {
+  IncludedFields extends keyof T = keyof T,
+>(
+  snapshotStore: SnapshotStore<T, K, any, AttachmentType, ExcludedFields, IncludedFields>
+): snapshotStore is SnapshotStore<T, K, Record<string, any>, AttachmentType, ExcludedFields, IncludedFields> {
   return !isUnifiedMetaDataOptions(snapshotStore);
 }
   

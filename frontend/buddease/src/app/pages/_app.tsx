@@ -19,12 +19,12 @@ import { handleLogin } from "@/app/hooks/dynamicHooks/dynamicHooks";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import {
-    ThemeConfigProvider,
-    useThemeConfig,
+  ThemeConfigProvider,
+  useThemeConfig,
 } from "@/app/hooks/userInterface/ThemeConfigContext";
 import {
-    default as ThemeCustomization,
-    default as defaultThemeConfig,
+  default as ThemeCustomization,
+  default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { useTheme } from "@/app/libraries/ui/useTheme";
@@ -43,6 +43,7 @@ import { PhaseActivityProvider } from '@/app/state/context/PhaseActivityContext'
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
 import { AppContentEntity, ContentAttachment, ContentExcludedFields, ContentIncludedFields, ContentK, ContentMeta } from '@/app/typings/entities/ContentEntity';
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 import { DocumentTree } from "@/app/users/User";
 import { DataProvider, Refine } from "@refinedev/core";
 import { BytesLike, uuidV4 } from "ethers";
@@ -50,10 +51,10 @@ import { AppProps } from "next/app";
 import { useParams } from "next/navigation";
 import React, { SetStateAction, useState } from "react";
 import {
-    Navigator, Route,
-    Router, Routes, useLocation,
-    useNavigate,
-    useSearchParams
+  Navigator, Route,
+  Router, Routes, useLocation,
+  useNavigate,
+  useSearchParams
 } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
@@ -74,15 +75,14 @@ import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
 import StepComponent from "@/app/components/phases/steps/StepComponent";
 import { RouteGuard } from "@/app/components/routing/RouteGuard";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { authProvider } from "@/app/interfaces/provider/authProviderInstance";
 import ToolbarItemsContext from "@/app/libraries/toolbar/ToolbarItemsProvider";
 import steps from "@/app/phases/steps/steps";
 import useNotificationManagerService from "@/app/services/NotificationService";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import StepProvider, { useStepContext } from "@/app/state/context/StepContext";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -422,7 +422,7 @@ async function MyApp({
         expirationDate: undefined,
         localStorage: undefined,
         payload: undefined,
-        callback: function (data: ProjectData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
+        callback: function (data: ProjectData<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>): void {
           throw new Error("Function not implemented.");
         },
         storeProps: undefined,

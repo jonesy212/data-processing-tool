@@ -3,7 +3,6 @@ import { Entity } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
 import { useAuth } from '@/app/state/context/AuthContext';
-
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { processTextWithSpaCy } from "@/app/intelligence/AutoGPTSpaCyIntegration";
 import fuzzysort from "fuzzysort";
@@ -43,7 +42,6 @@ export const fuzzyMatchEntities = async <
   }
 };
 
-
 // Example concrete entity type using generics
 type ConcreteEntity = Entity<
   BaseDataEntity,         // T
@@ -54,29 +52,53 @@ type ConcreteEntity = Entity<
   keyof BaseDataEntity    // IncludedFields
 >;
 
-// Define entities array with proper generic typing
+// Define entities array with the new properties added
 const entities: ConcreteEntity[] = [
   {
-    id: 1, name: "Apple Inc.", description: "Tech company", source: "local", type: "company",
+    id: 1,
+    name: "Apple Inc.",
+    description: "Tech company",
+    source: "local",
+    type: "company",
     createdBy: undefined,
-    createdAt: undefined
+    createdAt: undefined,
+    userId: 'user-123',
+    path: '/companies/apple',
+    draft: true
   },
   {
-    id: 2, name: "Microsoft Corporation", description: "Tech company", source: "global", type: "company",
+    id: 2,
+    name: "Microsoft Corporation",
+    description: "Tech company",
+    source: "global",
+    type: "company",
     createdBy: undefined,
-    createdAt: undefined
+    createdAt: undefined,
+    userId: 'user-456',
+    path: '/companies/microsoft',
+    draft: false
   },
   {
-    id: 3, name: "Project X", description: "Development project", source: "local", type: "project",
+    id: 3,
+    name: "Project X",
+    description: "Development project",
+    source: "local",
+    type: "project",
     createdBy: undefined,
-    createdAt: undefined
+    createdAt: undefined,
+    userId: 'user-789',
+    path: '/projects/project-x',
+    draft: true
   },
 ];
 
-// Query for fuzzy matching with NLP processing
+// Query for fuzzy matching
 const query = "Microsft Corp"; // Intentional typo for demonstration
 
-// Perform fuzzy matching with NLP processing
-const matchedEntities = fuzzyMatchEntities(query, entities);
-const filteredEntities = entities.filter((entity) => entity.type === "company");
-console.log("Matched Entities:", matchedEntities, filteredEntities);
+// Perform fuzzy matching
+(async () => {
+  const matchedEntities = await fuzzyMatchEntities(query, entities);
+  const filteredEntities = entities.filter((entity) => entity.type === "company");
+  console.log("Matched Entities:", matchedEntities);
+  console.log("Filtered Entities:", filteredEntities);
+})();

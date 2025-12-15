@@ -1,41 +1,40 @@
 // GenerateCache.ts
 
 import { FileTypeEnum } from "@/app/documents/FileType";
-import { BaseData } from '@/app/models/data/Data';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Data } from '@/app/models/data/Data';
-import { RealtimeData } from "@/app/typings/realtimeTypes";
-import {
-    useBrainstormingPhase,
-    useMeetingsPhase,
-    useProjectManagementPhase,
-    useTeamBuildingPhase,
-} from "@/app/hooks/phaseHooks/CollaborationPhaseHooks";
-import {
-    authenticationPhaseHook,
-    dataAnalysisPhaseHook,
-    generalCommunicationFeaturesPhaseHook,
-    ideationPhaseHook,
-    jobSearchPhaseHook,
-    productBrainstormingPhaseHook,
-    productLaunchPhaseHook,
-    recruiterDashboardPhaseHook,
-    teamCreationPhaseHook,
-} from "@/app/hooks/phaseHooks/PhaseHooks";
-import {
-    darkModeTogglePhaseHook,
-    notificationBarPhaseHook,
-} from "@/app/hooks/userInterface/UIPhaseHooks";
-import { VersionHistory } from "@/app/versions/VersionData";
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import { IBackendStructure } from "@/app/config/appStructure/IBackendStructure";
 import { backendConfig } from "@/app/config/BackendConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { frontendConfig } from "@/app/config/FrontendConfig";
 import userSettings from "@/app/config/UserSettings";
-import { IBackendStructure } from "@/app/config/appStructure/IBackendStructure";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields } from '@/app/typings/entities/RealtimeDataEntity';
+import {
+  useBrainstormingPhase,
+  useMeetingsPhase,
+  useProjectManagementPhase,
+  useTeamBuildingPhase,
+} from "@/app/hooks/phaseHooks/CollaborationPhaseHooks";
+import {
+  authenticationPhaseHook,
+  dataAnalysisPhaseHook,
+  generalCommunicationFeaturesPhaseHook,
+  ideationPhaseHook,
+  jobSearchPhaseHook,
+  productBrainstormingPhaseHook,
+  productLaunchPhaseHook,
+  recruiterDashboardPhaseHook,
+  teamCreationPhaseHook,
+} from "@/app/hooks/phaseHooks/PhaseHooks";
+import {
+  darkModeTogglePhaseHook,
+  notificationBarPhaseHook,
+} from "@/app/hooks/userInterface/UIPhaseHooks";
+import { Data } from '@/app/models/data/Data';
+import { RealtimeDataAttachment, RealtimeDataEntity, RealtimeDataExcludedFields, RealtimeDataIncludedFields, RealtimeDataK, RealtimeDataMeta } from '@/app/typings/entities/RealtimeDataEntity';
+import { RealtimeData } from "@/app/typings/realtimeTypes";
+import { VersionHistory } from "@/app/versions/VersionData";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

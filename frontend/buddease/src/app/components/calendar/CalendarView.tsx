@@ -1,27 +1,36 @@
 // CalendarView.tsx
 
+import React from 'react';
+import DayView from '@/ap/components/calendar/CalendarDay';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import React from "react";
-import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
-import { Task } from "@/app/models/tasks/Task";
-import { Project } from "@/app/models/projects/Project";
-import { selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";
-import { Todo } from "@/app/todos/Todo";
-import DayView from "@/app/calendar/CalendarDay";
-import MonthView from "./CalendarMonthView";
-import WeekView from "./CalendarWeek";
-import YearView from "./CalendarYearView";
-import QuarterView from "./QuarterView";
+import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
+import { Project } from '@/app/models/projects/Project';
+import { Task } from '@/app/models/tasks/Task';
+import Milestone from '@/app/typings/milestoneTypes'
+import { selectSelectedProject } from '@/app/state/redux/slices/CollaborationSlice';
+import { Todo } from '@/app/todos/Todo';
+import MonthView from '@/app/components/calendar/CalendarMonthView';
+import YearView from '@/app/components/calendar/CalendarYearView';
+import QuarterView from '@/app/components/calendar/QuarterView'
+import WeekView from '@/app/components/calendar/WeekView';
 
-interface CalendarViewProps extends CommonCalendarProps {
+interface CalendarViewProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonCalendarProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   year: number;
-  events: CalendarEvent[];
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   projects: Project[];
   month: number;
   weekStartDate: Date;
   date: Date;
-  tasks: Task[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   todos: Todo[];
+  milestones: Milestone 
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({

@@ -1,21 +1,22 @@
 // DocumentEntity.ts
-import  UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { Version } from '@/app/versions/Version';import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Content } from "@/app/models/content/AddContent";
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Version } from '@/app/versions/Version';
 
+import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 
 // Core Document type definitions
@@ -547,3 +548,4 @@ export type {
     createDefaultDocument, createDefaultDocumentData,
     createDocumentVersion, emptyDocument, emptyDocumentData, incrementVersion
   };
+

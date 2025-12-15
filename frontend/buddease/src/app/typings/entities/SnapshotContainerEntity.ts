@@ -1,15 +1,14 @@
 // SnapshotContainerEntity.ts
 
 
-import { SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity'
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer'
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import {
   BaseDataEntity,
-  BaseDataRoot,
   DefaultExcludedFields,
-  DefaultMeta,
+  DefaultMeta
 } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotEntityDataInterface } from '@/app/typings/entities/SnapshotEntity';
 
 export type SnapshotContainerEntity<
   T extends BaseDataEntity,

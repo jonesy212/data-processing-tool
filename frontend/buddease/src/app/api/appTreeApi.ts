@@ -2,13 +2,13 @@
 // AppTreeApi.ts
 
 import { handleApiError } from "@/app/api/ApiLogs";
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "@/app/hooks/useLocalStorage";
 import AppTreeService from "@/app/services/AppTreeService";
 import { useNotification, } from '@/app/state/context/NotificationContext';
-import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";

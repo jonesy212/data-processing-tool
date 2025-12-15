@@ -3,21 +3,21 @@
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import {
-    NotificationAttachment,
-    NotificationEntity,
-    NotificationExcludedFields,
-    NotificationIncludedFields,
-    NotificationK,
-    NotificationMeta,
-    NotificationSnapshotData,
-    NotificationSnapshotStore,
-    NotificationSnapshotWithCriteria,
-    NotificationUnifiedMetadata
+  NotificationAttachment,
+  NotificationEntity,
+  NotificationExcludedFields,
+  NotificationIncludedFields,
+  NotificationK,
+  NotificationMeta,
+  NotificationSnapshotData,
+  NotificationSnapshotStore,
+  NotificationSnapshotWithCriteria,
+  NotificationUnifiedMetadata
 } from '@/app/typings/entities/NotificationEntity';
 import { Dispatch, PayloadAction } from "@reduxjs/toolkit";
 

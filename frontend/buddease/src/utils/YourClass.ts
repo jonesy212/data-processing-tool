@@ -1,11 +1,11 @@
 // YourClass.ts
+import ApiConfig from '@/app/api/ApiConfigService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
 import { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
 import { DappProps, fluenceApiKey } from './web3/dAppAdapter/DAppAdapterConfig';
-import ApiConfig from '@/app/api/ApiConfigService';
 
 // Example implementation of YourClass with combined functionality
 class YourClass<
@@ -15,7 +15,7 @@ class YourClass<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-  DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  // DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > {
   customizeTheme(themeConfig: any, dappProps?: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): YourClass {
     console.log("Customizing theme with:", themeConfig);

@@ -1,15 +1,15 @@
 // dataMethods.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { isSnapshot } from '@/utils/snapshotUtils';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export function addDataSnapshot<
   T extends BaseDataEntity,

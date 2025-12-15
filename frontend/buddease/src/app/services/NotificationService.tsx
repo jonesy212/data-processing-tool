@@ -1,21 +1,18 @@
 // NotificationService.tsx
-import { SendStatus } from '@/app/state/redux/slices/NofiticationsSlice';
-import { NotificationManagerServiceProps } from '@/app/components/notifications/useNotificationManagerServiceProps'
 import { EventActions } from '@/app/actions/EventActions';
-import { BaseDataRoot } from '@/app/config/BaseConfig';
-import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { NotificationActions } from "@/app/actions/NotificationActions";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import AnnouncementManager from "@/app/features/support/AnnouncementManager";
+import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
+import PushNotificationManager from "@/app/features/support/PushNotificationManager";
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { LogData } from "@/app/models/LogData";
 import { NotificationType, useNotification } from "@/app/state/context/NotificationContext";
-import AnnouncementManager from "@/app/features/support/AnnouncementManager";
-import PushNotificationManager from "@/app/features/support/PushNotificationManager";
 import { selectNotifications } from "@/app/state/redux/slices/NofiticationsSlice";
-import { NotificationData } from '@/app/hooks/useNotificationSystem'
+import { LogAttachment, LogEntity, LogExcludedFields, LogIncludedFields, LogK, LogMeta } from '@/app/typings/entities/LogEntity';
 import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { LogEntity, LogK, LogMeta, LogAttachment, LogExcludedFields, LogIncludedFields } from '@/app/typings/entities/LogEntity'
 
 
 interface NotificationContainer<

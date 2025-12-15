@@ -1,10 +1,10 @@
 // exchangeTypes.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot, SnapshotData, SnapshotWithCriteria } from "@/app/snapshots";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Exchange-specific entity types
 type ExchangeEntity = BaseDataEntity & {

@@ -1,6 +1,5 @@
 // DocumentGeneratorMethods.ts
-// DocumentGeneratorMethods.t
-// // Add the namespace declaration for DXT if it's not already imported
+
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
   fetchDocumentByIdAPI,
@@ -11,6 +10,8 @@ import { allowedDiagramFormats } from "@/app/components/form/FormatEnum";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { loadDrawingFromDatabase } from "@/app/config/database/updateDocumentInDatabase";
+import { CustomPDFPage } from '@/app/documents/CustomPDFPage';
+import { DocumentPath } from '@/app/documents/DocumentPath';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { parseCSV } from "@/app/documents/parseCSV";
 import { parseDocx } from "@/app/documents/parseDocx";
@@ -26,18 +27,14 @@ import { generatePresentationJSON } from "@/app/libraries/presentations/generate
 import { loadCryptoWatchlistFromDatabase } from "@/app/models/crypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "@/app/models/crypto/generateCryptoWatchlistJSON";
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
-import {
-  DocumentSize
-} from "@/app/models/data/StatusType";
+import { DocumentSize } from "@/app/models/data/StatusType";
 import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
 import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import {
   CustomDocxtemplater,
-  CustomPDFPage,
   CustomPDFProxyPage,
-  DocumentPath,
   DocumentTypeEnum,
 } from "@/app/typings/documentTypes";
 import Papa from "papaparse";
@@ -500,7 +497,7 @@ async function loadGenericDocumentContent<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  documentId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  documentId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   format: string,
   dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<string> {
@@ -905,7 +902,7 @@ async function loadOtherDocumentContent(
 }
 
 async function loadCryptoWatchDocumentContent(
-  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   userId: string
 ): Promise<string> {
   try {
@@ -932,7 +929,7 @@ async function loadCryptoWatchDocumentContent(
 // Update the return type in loadDocumentContent to handle Promise
 async function loadDocumentContent(
   documentId: number,
-  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void,
   docx: CustomDocxtemplater<any>
 ): Promise<string | undefined> {
@@ -956,7 +953,7 @@ async function loadDocumentContent(
   return undefined; // Return undefined for unsupported document types
 }
 
-function loadSpreadsheetDocumentContent(document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): string {
+function loadSpreadsheetDocumentContent(document: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
   // Logic to load content for a spreadsheet document
   // For example, if the content is stored in a database:
   const workbook = new xl.Workbook();

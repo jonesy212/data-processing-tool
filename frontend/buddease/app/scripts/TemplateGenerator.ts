@@ -1,30 +1,27 @@
-import { ComponentPattern } from './ComponentPatternDetector';
 import {
   BaseDataEntity,
-  BaseDataRoot,
-  DefaultMeta,
-  DefaultExcludedFields,
+  BaseDataRoot
 } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import {
-  storeTempData,
-  getTempData
-} from '@/utils/tempDataUtils';
+import { ComponentPattern } from '@/app/scripts/ComponentPatternDetector';
 
-import {
-  DebugInfo,
-  TempData,
-} from '@/app/models/data/TempData'
+type GeneratorPattern = {
+  componentName: string;
+  fields?: (string | number | symbol)[];
+  usesComponentConfig?: boolean;
+  configKeys?: readonly string[];
+};
+
 
 export class TemplateGenerator {
   /* ---------- Properties ---------- */
   private readonly defaultIndentation = 2;
   private readonly maxLineLength = 100;
 
-  /* ---------- Public methods ---------- */
+  /* =========================================================
+   *  PUBLIC GENERATION ENTRY-POINTS
+   * ========================================================= */
   public generate<T extends BaseDataEntity = BaseDataRoot>(
-    pattern: ComponentPattern
+    pattern: ComponentPattern<T>
   ): string {
     switch (pattern.pattern) {
       case 'CRUD':
@@ -33,14 +30,48 @@ export class TemplateGenerator {
         return this.formTemplate<T>(pattern);
       case 'Table':
         return this.tableTemplate<T>(pattern);
+      case 'List':
+        return this.listTemplate<T>(pattern);
+      case 'Detail':
+        return this.detailTemplate<T>(pattern);
+      case 'Modal':
+        return this.modalTemplate<T>(pattern);
+      case 'Chart':
+        return this.chartTemplate<T>(pattern);
       default:
         return this.genericTemplate<T>(pattern);
     }
   }
 
-  /* ---------- Private template methods ---------- */
-  private crudTemplate<T extends BaseDataEntity>(
-    pattern: ComponentPattern
+  public generateList<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
+  ): string {
+    return this.listTemplate<T>(pattern);
+  }
+
+  public generateDetail<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
+  ): string {
+    return this.detailTemplate<T>(pattern);
+  }
+
+  public generateModal<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
+  ): string {
+    return this.modalTemplate<T>(pattern);
+  }
+
+  public generateChart<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
+  ): string {
+    return this.chartTemplate<T>(pattern);
+  }
+
+  /* =========================================================
+   *  PRIVATE TEMPLATES (richer file-1 versions kept)
+   * ========================================================= */
+  private crudTemplate<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
   ): string {
     const {
       usesSnapshotStore,
@@ -64,45 +95,60 @@ export class TemplateGenerator {
     const render = this.buildCrudRender(pattern);
 
     return `import React, { useEffect, useState${usesComponentConfig ? ', useMemo' : ''} } from 'react';
-${imports}
+    ${imports}
 
-${propsInterface}
+    ${propsInterface}
 
-export const ${componentName} = <T extends BaseDataEntity = BaseDataRoot>({
-${requiresAuth ? '  accessToken,\n' : ''}${usesSnapshotStore ? '  snapshotConfigs,\n  configId,\n' : ''}${usesDebugInfo ? '  debugInfo,\n  onDebug,\n' : ''}${usesMeta ? '  meta,\n' : ''}${usesComponentConfig && configKeys ? '  themeOverride,\n' : ''}  data,
-  onChange,
-}: ${componentName}Props<T>) => {
-  const [rows, setRows] = useState<T[]>(data);
-  const [loading, setLoading] = useState(false);
-${hooks}
+    export const ${componentName} = <T extends BaseDataEntity = BaseDataRoot>({
+    ${requiresAuth ? '  accessToken,\n' : ''}${usesSnapshotStore ? '  snapshotConfigs,\n  configId,\n' : ''}${usesDebugInfo ? '  debugInfo,\n  onDebug,\n' : ''}${usesMeta ? '  meta,\n' : ''}${usesComponentConfig && configKeys ? '  themeOverride,\n' : ''}  data,
+      onChange,
+    }: ${componentName}Props<T>) => {
+      const [rows, setRows] = useState<T[]>(data);
+      const [loading, setLoading] = useState(false);
+    ${hooks}
 
-${debugHelper}
+    ${debugHelper}
 
-${snapshotEffects}
+    ${snapshotEffects}
 
-${handlers}
+    ${handlers}
 
-${render}
-};
-`;
+    ${render}
+    };
+  `;
   }
 
-  private formTemplate<T extends BaseDataEntity>(
-    pattern: ComponentPattern
+  private formTemplate<T extends BaseDataEntity = BaseDataRoot>(
+    pattern: ComponentPattern<T>
   ): string {
-    const { usesSnapshotStore, componentName, fields } = pattern;
+    const {
+      usesSnapshotStore,
+      usesComponentConfig,
+      // configKeys,
+      usesErrorHandling,
+      componentName,
+      // fields,
+    } = pattern;
 
-    return `import React, { useState, useEffect } from 'react';
-${usesSnapshotStore ? "import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';\n" + "import { storeTempData, getTempData } from '@/app/utils/tempDataUtils';\n" : ''}
+    const { fields: _f, configKeys: _ck } = pattern;
+    const fields      = this.safeKeys(_f);
+    const configKeys  = this.safeKeys(_ck);
+
+    return `import React, { useState, useEffect${usesComponentConfig ? ', useMemo' : ''} } from 'react';
+${usesSnapshotStore ? "import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';\n" + "import { storeTempData, getTempData } from '@/app/utils/tempDataUtils';\n" : ''}${usesComponentConfig ? "import { useComponentConfig } from '@/app/hooks/useComponentConfig';\n" : ''}${usesErrorHandling ? "import { useErrorHandling } from '@/app/hooks/useErrorHandling';\n" : ''}
 
 interface ${componentName}Props<T extends BaseDataEntity> {
-${usesSnapshotStore ? '  snapshotConfigs: SnapshotStoreConfig<T, T, any, any, any, any>[];\n  configId: string;' : ''}
+${usesSnapshotStore ? '  snapshotConfigs: SnapshotStoreConfig<T, T, any, any, any, any>[];\n  configId: string;' : ''}${usesComponentConfig && configKeys ? `\n  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName} = <T extends BaseDataEntity>({
-${usesSnapshotStore ? '  snapshotConfigs, configId' : ''}
+${usesSnapshotStore ? '  snapshotConfigs, configId,' : ''}${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
 }: ${componentName}Props<T>) => {
   const [form, setForm] = useState<Record<string, any>>({});
+  ${usesComponentConfig && configKeys ? `
+  const theme = useComponentConfig();
+  const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+  ${usesErrorHandling ? 'const { error, handleError } = useErrorHandling();' : ''}
 
   /* ------- Cache last valid form state ------- */
   useEffect(() => {
@@ -125,54 +171,301 @@ ${usesSnapshotStore ? '  snapshotConfigs, configId' : ''}
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      ${fields.map(f => `<label key="${f}">
+    <form onSubmit={handleSubmit}${usesComponentConfig && configKeys ? ` style={{
+      ...(activeTheme.input?.backgroundColor && { backgroundColor: activeTheme.input.backgroundColor }),
+      ...(activeTheme.input?.textColor && { color: activeTheme.input.textColor })
+    }}` : ''}>
+      ${safeFields.map(f => `<label key="${f}"${usesComponentConfig && configKeys ? ` style={{
+        color: activeTheme.input?.textColor
+      }}` : ''}>
         ${f}
-        <input name="${f}" value={form.${f} ?? ''} onChange={handleChange} />
+        <input 
+          name="${f}" 
+          value={form.${f} ?? ''} 
+          onChange={handleChange}
+          ${usesComponentConfig && configKeys ? `style={{
+            color: activeTheme.input?.textColor,
+            backgroundColor: activeTheme.input?.backgroundColor,
+            border: activeTheme.input?.border
+          }}` : ''}
+        />
       </label>`).join('\n      ')}
-      <button type="submit">Submit</button>
+      <button type="submit"${usesComponentConfig && configKeys ? ` style={{
+        color: activeTheme.button?.textColor,
+        backgroundColor: activeTheme.button?.backgroundColor,
+        borderColor: activeTheme.button?.borderColor,
+        borderRadius: activeTheme.button?.borderRadius
+      }}` : ''}>Submit</button>
     </form>
   );
 };
 `;
   }
 
+
+  private safeKeys<T extends BaseDataEntity>(keys?: (keyof T)[]): string[] {
+    if (!keys) return [];
+    return keys.map(k => String(k));
+  }
+
   private tableTemplate<T extends BaseDataEntity>(
-    pattern: ComponentPattern
+    pattern: ComponentPattern<T>
   ): string {
-    const { componentName, fields } = pattern;
-    
-    return `import React from 'react';
+    const {
+      componentName,
+      fields,
+      usesComponentConfig,
+      configKeys,
+    } = pattern;
+
+    const safeFields = this.safeKeys(fields);
+
+    return `import React${usesComponentConfig ? ', { useMemo }' : ''} from 'react';${usesComponentConfig ? "\nimport { useComponentConfig } from '@/app/hooks/useComponentConfig';" : ''}
+
+  interface ${componentName}Props<T extends BaseDataEntity> {
+    data: T[];
+  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
+  }
+
+  export const ${componentName} = <T extends BaseDataEntity>({
+    data,${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
+  }: ${componentName}Props<T>) => {
+    ${usesComponentConfig && configKeys ? `
+    const theme = useComponentConfig();
+    const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+
+    return (
+      <table className="${componentName.toLowerCase()}"${usesComponentConfig && configKeys ? ` style={{
+        ...(activeTheme.table?.backgroundColor && { backgroundColor: activeTheme.table.backgroundColor })
+      }}` : ''}>
+        <thead>
+          <tr${usesComponentConfig && configKeys ? ` style={{
+            backgroundColor: activeTheme.header?.backgroundColor,
+            color: activeTheme.header?.textColor
+          }}` : ''}>
+            ${safeFields
+              .map(f =>
+                `<td key="${f}">${f.includes('.') ? `row?.${f}` : `row.${f}`}</td>`
+              )
+              .join('')}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, index) => (
+            <tr key={index}>
+              ${safeFields.map(f => `<td key="${f}">${f.includes('.') ? `row?.${f}` : `row.${f}`}</td>`).join('')}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+`;
+  }
+
+  /* ---------------------------------------------------------
+   *  TEMPLATES ONLY IN FILE-1 (kept verbatim)
+   * --------------------------------------------------------- */
+  private listTemplate<T extends BaseDataEntity>(
+    pattern: ComponentPattern<T>
+  ): string {
+    const {
+      componentName,
+      fields,
+      usesComponentConfig,
+      configKeys,
+    } = pattern;
+
+    return `import React${usesComponentConfig ? ', { useMemo }' : ''} from 'react';${usesComponentConfig ? "\nimport { useComponentConfig } from '@/app/hooks/useComponentConfig';" : ''}
 
 interface ${componentName}Props<T extends BaseDataEntity> {
-  data: T[];
+  items: T[];
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
 }
 
 export const ${componentName} = <T extends BaseDataEntity>({
-  data,
+  items,${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
 }: ${componentName}Props<T>) => {
+  ${usesComponentConfig && configKeys ? `
+  const theme = useComponentConfig();
+  const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+
   return (
-    <table className="${componentName.toLowerCase()}">
-      <thead>
-        <tr>
-          ${fields.map(f => `<th key="${f}">${f}</th>`).join('')}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, index) => (
-          <tr key={index}>
-            ${fields.map(f => `<td key="${f}">${f.includes('.') ? `row?.${f}` : `row.${f}`}</td>`).join('')}
-          </tr>
+    <div className="${componentName.toLowerCase()}"${usesComponentConfig && configKeys ? ` style={{
+      ...(activeTheme.list?.backgroundColor && { backgroundColor: activeTheme.list.backgroundColor })
+    }}` : ''}>
+      {items.map((item, index) => (
+        <div key={index} className="list-item"${usesComponentConfig && configKeys ? ` style={{
+          border: activeTheme.list?.borderColor ? \`1px solid \${activeTheme.list.borderColor}\` : undefined,
+          padding: '8px',
+          margin: '4px 0'
+        }}` : ''}>
+          ${safeFields.map(f => `<div key="${f}">${f.includes('.') ? `item?.${f}` : `item.${f}`}</div>`).join('')}
+        </div>
+      ))}
+    </div>
+  );
+};
+`;
+  }
+
+  private detailTemplate<T extends BaseDataEntity>(
+    pattern: ComponentPattern<T>
+  ): string {
+    const {
+      componentName,
+      fields,
+      usesComponentConfig,
+      configKeys,
+    } = pattern;
+
+    return `import React${usesComponentConfig ? ', { useMemo }' : ''} from 'react';${usesComponentConfig ? "\nimport { useComponentConfig } from '@/app/hooks/useComponentConfig';" : ''}
+
+  interface ${componentName}Props<T extends BaseDataEntity> {
+    data: T;
+  ${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
+  }
+
+  export const ${componentName} = <T extends BaseDataEntity>({
+    data,${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
+  }: ${componentName}Props<T>) => {
+    ${usesComponentConfig && configKeys ? `
+    const theme = useComponentConfig();
+    const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+
+    return (
+      <div className="${componentName.toLowerCase()}"${usesComponentConfig && configKeys ? ` style={{
+        ...(activeTheme.detail?.backgroundColor && { backgroundColor: activeTheme.detail.backgroundColor }),
+        ...(activeTheme.detail?.textColor && { color: activeTheme.detail.textColor })
+      }}` : ''}>
+        ${safeFields.map(f => `<div key="${f}" className="detail-field">
+          <strong>${f}:</strong> ${f.includes('.') ? `data?.${f}` : `data.${f}`}
+        </div>`).join('')}
+      </div>
+    );
+  };
+  `;
+    }
+
+  private modalTemplate<T extends BaseDataEntity>(
+    pattern: ComponentPattern<T>
+  ): string {
+    const {
+      componentName,
+      usesComponentConfig,
+      configKeys,
+    } = pattern;
+
+    return `import React${usesComponentConfig ? ', { useMemo }' : ''} from 'react';${usesComponentConfig ? "\nimport { useComponentConfig } from '@/app/hooks/useComponentConfig';" : ''}
+
+interface ${componentName}Props {
+  isOpen: boolean;
+  onClose: () => void;
+  children?: React.ReactNode;
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;` : ''}
+}
+
+export const ${componentName}: React.FC<${componentName}Props> = ({
+  isOpen,
+  onClose,
+  children,${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
+}) => {
+  ${usesComponentConfig && configKeys ? `
+  const theme = useComponentConfig();
+  const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: activeTheme.modal?.overlayColor || 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000
+    }} onClick={onClose}>
+      <div className="modal-content" style={{
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '8px',
+        border: activeTheme.modal?.borderColor ? \`1px solid \${activeTheme.modal.borderColor}\` : '1px solid #ccc',
+        minWidth: '300px'
+      }} onClick={e => e.stopPropagation()}>
+        {children}
+        <button onClick={onClose} style={{
+          marginTop: '10px',
+          color: activeTheme.button?.textColor,
+          backgroundColor: activeTheme.button?.backgroundColor
+        }}>
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+`;
+  }
+
+  private chartTemplate<T extends BaseDataEntity>(
+    pattern: ComponentPattern<T>
+  ): string {
+    const {
+      componentName,
+      usesComponentConfig,
+      configKeys,
+    } = pattern;
+
+    return `import React${usesComponentConfig ? ', { useMemo }' : ''} from 'react';${usesComponentConfig ? "\nimport { useComponentConfig } from '@/app/hooks/useComponentConfig';" : ''}
+
+interface ${componentName}Props {
+  data: any[];
+  width?: number;
+  height?: number;
+${usesComponentConfig && configKeys ? `  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${String(k)}'`).join(' | ')}>;` : ''}
+}
+
+export const ${componentName}: React.FC<${componentName}Props> = ({
+  data,
+  width = 400,
+  height = 300,${usesComponentConfig && configKeys ? '\n  themeOverride,' : ''}
+}) => {
+  ${usesComponentConfig && configKeys ? `
+  const theme = useComponentConfig();
+  const activeTheme = useMemo(() => ({ ...theme, ...themeOverride }), [theme, themeOverride]);` : ''}
+
+  return (
+    <div className="${componentName.toLowerCase()}" style={{
+      width: \`\${width}px\`,
+      height: \`\${height}px\`,
+      border: activeTheme.chart?.borderColor ? \`1px solid \${activeTheme.chart.borderColor}\` : '1px solid #ddd',
+      padding: '10px'
+    }}>
+      <svg width={width} height={height}>
+        {/* Simple bar chart example */}
+        {data.map((item, index) => (
+          <rect
+            key={index}
+            x={index * (width / data.length)}
+            y={height - (item.value / 100) * height}
+            width={width / data.length - 2}
+            height={(item.value / 100) * height}
+            fill={activeTheme.chart?.barColor || '#007bff'}
+          />
         ))}
-      </tbody>
-    </table>
+      </svg>
+    </div>
   );
 };
 `;
   }
 
   private genericTemplate<T extends BaseDataEntity>(
-    pattern: ComponentPattern
+    pattern: ComponentPattern<T>
   ): string {
     const { componentName } = pattern;
 
@@ -190,8 +483,12 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
 `;
   }
 
-  /* ---------- Helper methods ---------- */
-  private buildImports(pattern: ComponentPattern): string {
+  /* =========================================================
+   *  HELPERS (richest file-1 versions kept)
+   * ========================================================= */
+  private buildImports<T extends BaseDataEntity>(
+    pattern: ComponentPattern<T>
+): string {
     const {
       usesComponentConfig,
       usesErrorHandling,
@@ -207,6 +504,7 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
 
     if (usesComponentConfig) {
       imports.push("import { useComponentConfig } from '@/app/hooks/useComponentConfig';");
+      imports.push("import type { ComponentsConfig } from '@/app/config/ComponentsConfig';");
     }
     if (usesErrorHandling) {
       imports.push("import { useErrorHandling } from '@/app/hooks/useErrorHandling';");
@@ -246,7 +544,7 @@ export const ${componentName}: React.FC<${componentName}Props> = () => (
       props.push('  meta?: DefaultMeta<T, T>;');
     }
     if (usesComponentConfig && configKeys) {
-      props.push(`  themeOverride?: Pick<ComponentConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;`);
+      props.push(`  themeOverride?: Pick<ComponentsConfig, ${configKeys.map(k => `'${k}'`).join(' | ')}>;`);
     }
     props.push('  data: T[];');
     props.push('  onChange?: (rows: T[]) => void;');
@@ -356,7 +654,7 @@ ${props.join('\n')}
     return `  /* ------- Render ------- */
   return (
     <div className="${componentName.toLowerCase()}-wrapper"${usesComponentConfig && configKeys ? ` style={{
-        ...(activeTheme.${configKeys[0]} && activeTheme.${configKeys[0]})
+        ...(activeTheme.${configKeys[0]}?.backgroundColor && { backgroundColor: activeTheme.${configKeys[0]}.backgroundColor })
       }}` : ''}>
       ${usesDebugInfo ? `{debugInfo && (
         <pre className="debug">{JSON.stringify(debugInfo, null, 2)}</pre>
@@ -364,21 +662,39 @@ ${props.join('\n')}
       ${usesMeta ? `{meta && (
         <meta name="${componentName}" content={JSON.stringify(meta)} />
       )}` : ''}
-      <h2>${componentName}</h2>
-      <button onClick={() => {/* TODO create */}}>Add</button>
+      <h2${usesComponentConfig && configKeys ? ` style={{
+        color: activeTheme.header?.textColor,
+        backgroundColor: activeTheme.header?.backgroundColor
+      }}` : ''}>${componentName}</h2>
+      <button onClick={() => {/* TODO create */}}${usesComponentConfig && configKeys ? ` style={{
+        color: activeTheme.button?.textColor,
+        backgroundColor: activeTheme.button?.backgroundColor,
+        borderColor: activeTheme.button?.borderColor,
+        borderRadius: activeTheme.button?.borderRadius
+      }}` : ''}>Add</button>
       <table>
         <thead>
-          <tr>
-            ${fields.map(f => `<th key="${f}">${f}</th>`).join('')}
+          <tr${usesComponentConfig && configKeys ? ` style={{
+            backgroundColor: activeTheme.header?.backgroundColor,
+            color: activeTheme.header?.textColor
+          }}` : ''}>
+            ${safeFields
+              .map(f =>
+                `<td key="${f}">${f.includes('.') ? `row?.${f}` : `row.${f}`}</td>`
+              )
+              .join('')}
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(row => (
             <tr key={(row as any).id ?? JSON.stringify(row)}>
-              ${fields.map(f => `<td key="${f}">{${f.includes('.') ? `row?.${f}` : `row.${f}`}}</td>`).join('')}
+              ${safeFields.map(f => `<td key="${f}">{${f.includes('.') ? `row?.${f}` : `row.${f}`}}</td>`).join('')}
               <td>
-                <button onClick={() => handleDelete((row as any).id)}>
+                <button onClick={() => handleDelete((row as any).id)}${usesComponentConfig && configKeys ? ` style={{
+                  color: activeTheme.button?.textColor,
+                  backgroundColor: activeTheme.button?.backgroundColor
+                }}` : ''}>
                   Delete
                 </button>
               </td>

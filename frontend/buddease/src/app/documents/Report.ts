@@ -3,8 +3,9 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
+import { BaseEntityProperties } from '@/app/documents/RelatedProps'
 
-export interface BaseReport {
+export interface BaseReport extends BaseEntityProperties {
   id: number;
   title: string;
   description: string;

@@ -32,6 +32,10 @@ interface Theme {
   borderRadius: { small: string; medium: string; large: string };
   boxShadow: string;
 
+  borderColorFocus?: string;
+  themeColor?: string;
+  defaultColor?: string;
+
   // Optional wrappers
   branding?: Partial<BrandingSettings>;
   language?: string;
@@ -40,6 +44,7 @@ interface Theme {
   isDarkMode?: boolean;
 
   infoColor?: string;
+
   notificationState?: React.Dispatch<SetStateAction<NotificationData[]>>;
   setThemeState?: React.Dispatch<SetStateAction<ThemeState>>;
 

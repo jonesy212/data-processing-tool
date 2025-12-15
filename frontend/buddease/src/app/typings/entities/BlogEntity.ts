@@ -1,6 +1,7 @@
 // BlogEntity.ts
 // BlogEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -10,7 +11,6 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Core Blog type definitions
 type BlogEntity = BaseDataEntity & {
@@ -67,9 +67,10 @@ type ApplyBlogFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  BlogAttachment, BlogBaseParams, BlogEntity, BlogExcludedFields,
-  BlogIncludedFields, BlogK, ApplyBlogFieldFilters, BlogMeta, BlogParams, 
-  BlogRealtimeDataItem, BlogSnapshot, BlogSnapshotData, BlogSnapshotsArray, 
-  BlogSnapshotStore, BlogSnapshotStoreConfig, BlogSnapshotWithCriteria, 
+  ApplyBlogFieldFilters, BlogAttachment, BlogBaseParams, BlogEntity, BlogExcludedFields,
+  BlogIncludedFields, BlogK, BlogMeta, BlogParams,
+  BlogRealtimeDataItem, BlogSnapshot, BlogSnapshotData, BlogSnapshotsArray,
+  BlogSnapshotStore, BlogSnapshotStoreConfig, BlogSnapshotWithCriteria,
   BlogSubscriberCollection
 };
+

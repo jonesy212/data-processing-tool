@@ -1,14 +1,13 @@
 // CourseEntity.ts
-import { Course } from '@/app/documents/editing/CourseBuilder'
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { 
-  BaseEntityProperties, 
-  SharedIdentifiers, 
-  SharedSnapshotProperties, 
-  SharedStatusFlags, 
-  SharedTimestamps 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Course } from '@/app/documents/editing/CourseBuilder';
+import {
+  BaseEntityProperties,
+  SharedIdentifiers,
+  SharedStatusFlags,
+  SharedTimestamps
 } from '@/app/documents/RelatedProps';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
 
 interface CourseEntity extends 
   BaseDataEntity,
@@ -58,4 +57,4 @@ type CourseBaseParams = {
 
 type AppCourse = Course<CourseEntity, CourseK, CourseMeta, CourseAttachment, CourseExcludedFields, CourseIncludedFields>
 
-export type { CourseEntity, CourseK, CourseMeta, CourseAttachment, CourseExcludedFields, CourseIncludedFields }
+export type { CourseAttachment, CourseEntity, CourseExcludedFields, CourseIncludedFields, CourseK, CourseMeta };

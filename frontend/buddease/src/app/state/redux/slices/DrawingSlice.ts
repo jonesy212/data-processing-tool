@@ -1,22 +1,22 @@
 // DrawingSlice.ts
 import { DrawingActions } from "@/app/actions/DrawingActions";
-import Tracker from '@/app/components/models/tracker/Tracker';
-import { TrackerProps } from '@/app/components/models/tracker/Tracker';
+import Tracker, { TrackerProps } from '@/app/components/models/tracker/Tracker';
 import { autosaveDrawing } from "@/app/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import FolderData from '@/app/models/data/FolderData';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/app/typings/entities/DrawingEntity';
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { DrawingEntity, DrawingK, DrawingMeta, DrawingAttachment, DrawingExcludedFields, DrawingIncludedFields } from '@/app/typings/entities/DrawingEntity'
 
 import {
   createMilestone
 } from "./TrackerSlice";
 
 import * as drawingApi from "@/app/api/ApiDrawing";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { saveAs } from "@/app/documents/editing/autosave";
 import TextType from "@/app/documents/TextType";
@@ -29,9 +29,8 @@ import { Content } from "@/app/models/content/AddContent";
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { K } from '@/app/models/data/dataStoreMethods';
 import FileData from "@/app/models/data/FileData";
-import Milestone from "@/app/typings/milestoneTypes";
 import { ContentItem } from "@/app/state/stores/ContentStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import Milestone from "@/app/typings/milestoneTypes";
 
 
 type AppFileData = FileData<
@@ -1902,7 +1901,7 @@ export const {
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-export type { AppearanceUpdate, DrawingState, Stroke, TrackerDrawingElement, Shadow, DrawingElement};
+export type { AppearanceUpdate, DrawingElement, DrawingState, Shadow, Stroke, TrackerDrawingElement };
 
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;

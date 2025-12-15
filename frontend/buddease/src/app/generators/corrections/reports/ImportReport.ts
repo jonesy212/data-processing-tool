@@ -323,76 +323,107 @@ export class ImportReport {
     this.relationships = Array.from(consolidated.values());
   }
 
-  async generateImportReport(outputPath?: string): Promise<string> {
-      const analysisArray = Array.from(this.importAnalysis.values());
-      const totalFiles = analysisArray.length;
-      const totalImports = analysisArray.reduce((sum, analysis) => sum + analysis.totalImports, 0);
+async generateImportReport(outputPath?: string): Promise<string> {
+  const analysisArray = Array.from(this.importAnalysis.values());
+  const totalFiles = analysisArray.length;
+  const totalImports = analysisArray.reduce((sum, a) => sum + a.totalImports, 0);
+  const fixRecommendations = this.generateImportFixRecommendations();
 
-      // Calculate unused and duplicate import counts using .length
-      const totalUnusedImports = analysisArray.reduce((sum, a) => sum + a.unusedImports.length, 0);
-      const totalDuplicateImports = analysisArray.reduce((sum, a) => sum + a.duplicateImports.length, 0);
+  const totalUnusedImports = analysisArray.reduce(
+    (sum, a) => sum + a.unusedImports.length,
+    0
+  );
 
-      const report = [
-        '# 📦 Import Analysis Report',
-        '',
-        `**Generated:** ${new Date().toISOString()}`,
-        `**Files Analyzed:** ${totalFiles}`,
-        `**Total Imports:** ${totalImports}`,
-        `**Import Fixes Needed:** ${this.importFixes.length}`,
-        '',
-        '## 📊 Import Summary',
-        '',
-        '### Import Distribution',
-        `- **External Imports:** ${analysisArray.reduce((sum, a) => sum + a.externalImports, 0)}`,
-        `- **Internal Imports:** ${analysisArray.reduce((sum, a) => sum + a.internalImports, 0)}`,
-        `- **Relative Imports:** ${analysisArray.reduce((sum, a) => sum + a.relativeImports, 0)}`,
-        `- **Absolute Imports:** ${analysisArray.reduce((sum, a) => sum + a.absoluteImports, 0)}`,
-        `- **Wildcard Imports:** ${analysisArray.reduce((sum, a) => sum + a.wildcardImports, 0)}`,
-        `- **Deep Imports (3+ levels):** ${analysisArray.reduce((sum, a) => sum + a.deepImports, 0)}`,
-        '',
-        '### Issues Summary',
-        `- **Unused Imports:** ${totalUnusedImports}`, // Use calculated total
-        `- **Duplicate Imports:** ${totalDuplicateImports}`, // Use calculated total
-        `- **Files with High Bundle Impact:** ${analysisArray.filter(a => a.bundleImpact === 'high').length}`,
-        '',
-        '## 🚨 Import Issues by File',
-        '',
-        '| File | Total Imports | Issues | Bundle Impact |',
-        '|------|---------------|--------|---------------|',
-        ...analysisArray
-          .filter(analysis => analysis.issues.length > 0 || analysis.unusedImports.length > 0) // Use .length
-          .sort((a, b) => b.issues.length - a.issues.length)
-          .map(analysis => 
-            `| ${path.relative(process.cwd(), analysis.filePath)} | ${analysis.totalImports} | ${analysis.issues.length} | ${analysis.bundleImpact} |`
-          ),
-        '',
-        '## 🔧 Recommended Import Fixes',
-        '',
-        ...this.generateImportFixRecommendations(),
-        '',
-        '## 📈 Bundle Impact Analysis',
-        '',
-        ...this.generateBundleImpactAnalysis(),
-        '',
-        '## 🔗 Import Relationships',
-        '',
-        ...this.generateRelationshipAnalysis(),
-        '',
-        '## 🛠️ Quick Import Fixes',
-        '',
-        ...this.generateQuickImportFixes()
-      ].join('\n');
+  const totalDuplicateImports = analysisArray.reduce(
+    (sum, a) => sum + a.duplicateImports.length,
+    0
+  );
 
-      if (outputPath) {
-        const fullPath = path.resolve(process.cwd(), outputPath);
-        await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
-        await fs.promises.writeFile(fullPath, report, 'utf8');
-        console.log(`📦 Import report saved to: ${fullPath}`);
-      }
+  const FILE_COL_WIDTH = 47;
+  const TOTAL_COL_WIDTH = 13;
+  const ISSUES_COL_WIDTH = 8;
+  const IMPACT_COL_WIDTH = 13;
 
-      return report;
+  const pad = (
+    value: string | number,
+    width: number,
+    align: 'left' | 'right' = 'left'
+  ): string =>
+    align === 'right'
+      ? String(value).padStart(width, ' ')
+      : String(value).padEnd(width, ' ');
+
+  const issuesTable = [
+    '## 🚨 Import Issues by File',
+    '',
+    `${pad('File', FILE_COL_WIDTH)}  ${pad('Total Imports', TOTAL_COL_WIDTH, 'right')}   ${pad('Issues', ISSUES_COL_WIDTH, 'right')}   ${pad('Bundle Impact', IMPACT_COL_WIDTH)}`,
+    `${'-'.repeat(FILE_COL_WIDTH)}  ${'-'.repeat(TOTAL_COL_WIDTH)}   ${'-'.repeat(ISSUES_COL_WIDTH)}   ${'-'.repeat(IMPACT_COL_WIDTH)}`,
+    ...analysisArray
+      .filter(a => a.issues.length > 0 || a.unusedImports.length > 0)
+      .sort((a, b) => b.issues.length - a.issues.length)
+      .map(a =>
+        `${pad(
+          path.relative(process.cwd(), a.filePath),
+          FILE_COL_WIDTH
+        )}  ${pad(a.totalImports, TOTAL_COL_WIDTH, 'right')}   ${pad(a.issues.length, ISSUES_COL_WIDTH, 'right')}   ${pad(a.bundleImpact, IMPACT_COL_WIDTH)}`
+      ),
+    ''
+  ];
+
+  const report = [
+    '# 📦 Import Analysis Report',
+    '',
+    `**Generated:** ${new Date().toISOString()}`,
+    `**Files Analyzed:** ${totalFiles}`,
+    `**Total Imports:** ${totalImports}`,
+    `**Import Fixes Needed:** ${this.importFixes.length}`,
+    '',
+    '## 📊 Import Summary',
+    '',
+    '### Import Distribution',
+    `- **External Imports:** ${analysisArray.reduce((s, a) => s + a.externalImports, 0)}`,
+    `- **Internal Imports:** ${analysisArray.reduce((s, a) => s + a.internalImports, 0)}`,
+    `- **Relative Imports:** ${analysisArray.reduce((s, a) => s + a.relativeImports, 0)}`,
+    `- **Absolute Imports:** ${analysisArray.reduce((s, a) => s + a.absoluteImports, 0)}`,
+    `- **Wildcard Imports:** ${analysisArray.reduce((s, a) => s + a.wildcardImports, 0)}`,
+    `- **Deep Imports (3+ levels):** ${analysisArray.reduce((s, a) => s + a.deepImports, 0)}`,
+    '',
+    '### Issues Summary',
+    `- **Unused Imports:** ${totalUnusedImports}`,
+    `- **Duplicate Imports:** ${totalDuplicateImports}`,
+    `- **Files with High Bundle Impact:** ${analysisArray.filter(a => a.bundleImpact === 'high').length}`,
+    '',
+    ...issuesTable,
+    '## 🔧 Recommended Import Fixes',
+    '',
+    ...(fixRecommendations.length > 0
+      ? fixRecommendations
+      : ['No import fixes are required at this time.']),
+    '',
+    '## 📈 Bundle Impact Analysis',
+    '',
+    ...this.generateBundleImpactAnalysis(),
+    '',
+    '## 🔗 Import Relationships',
+    '',
+    ...this.generateRelationshipAnalysis(),
+    '',
+    '## 🛠️ Quick Import Fixes',
+    '',
+    ...this.generateQuickImportFixes()
+  ].join('\n');
+
+  if (outputPath) {
+    const fullPath = path.resolve(process.cwd(), outputPath);
+    await fs.promises.mkdir(path.dirname(fullPath), { recursive: true });
+    await fs.promises.writeFile(fullPath, report, 'utf8');
+    console.log(`📦 Import report saved to: ${fullPath}`);
   }
 
+  return report;
+}
+
+  
   private generateImportFixRecommendations(): string[] {
     const recommendations: string[] = [];
     const analysisArray = Array.from(this.importAnalysis.values());
@@ -554,6 +585,11 @@ export class ImportReport {
     ];
   }
 
+  /** Push a pre-built analysis into the report (external tooling) */
+  public addAnalysis(analysis: ImportAnalysis): void {
+    this.importAnalysis.set(analysis.filePath, analysis);
+  }
+
   async generateVisualImportReport(outputPath?: string): Promise<string> {
     const analysisArray = Array.from(this.importAnalysis.values());
     
@@ -692,4 +728,5 @@ export class ImportReport {
     await fs.promises.writeFile(fullPath, JSON.stringify(importData, null, 2), 'utf8');
     console.log(`💾 Import data saved to: ${fullPath}`);
   }
+
 }

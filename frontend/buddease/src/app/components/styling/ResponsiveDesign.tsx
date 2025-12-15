@@ -1,16 +1,16 @@
 // ResponsiveDesign.tsx
 // components/ResponsiveDesign.tsx
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
 import getAppPath from "@/app/config/appStructure/appPath";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import BackendStructure from '@/app/server/database/BackendStructure';
+import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import { ColorSwatchProps } from "./ColorPalette";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {

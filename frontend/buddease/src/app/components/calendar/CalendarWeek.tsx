@@ -1,28 +1,35 @@
-// CalendarWeek.tsx
-// WeekView.jsx
-import React from 'react';
-import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
-import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
-import CalendarWeek from '@/CalendarWeek';
+// app/components/calendar/CalendarWeek.tsx
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { Task } from '@/app/components/models/tasks/Task';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 
-interface WeekViewProps<T, K> extends CommonCalendarProps<CalendarEvent<T, K>, Date> {
+interface CalendarWeekProps<
+  T extends BaseDataEntity,
+  K extends T = T
+> {
   weekStartDate: Date;
   events: CalendarEvent<T, K>[];
-  
+  tasks: Task<any>[]; // Use appropriate Task type
+  // Add other props needed specifically for week view
 }
 
-const WeekView: React.FC<WeekViewProps> = ({ weekStartDate, events, ...taskHandlers }) => {
+const CalendarWeek = <
+  T extends BaseDataEntity,
+  K extends T = T
+>({
+  weekStartDate,
+  events,
+  tasks,
+  ...props
+}: CalendarWeekProps<T, K>) => {
   return (
-    <div>
-      <h2>Week View</h2>
-      {/* Display tasks and events for the week */}
-      <CalendarWeek
-        weekStartDate={weekStartDate}
-        events={events}
-        {...taskHandlers} // Pass taskHandlers to CalendarWeek
-      />
+    <div className="calendar-week">
+      <h3>Week View</h3>
+      {/* Week view implementation */}
+      <div>Week starting: {weekStartDate.toDateString()}</div>
+      {/* Display days, events, tasks for the week */}
     </div>
   );
 };
 
-export default WeekView;
+export default CalendarWeek;

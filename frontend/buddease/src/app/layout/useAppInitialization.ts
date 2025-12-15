@@ -1,7 +1,8 @@
 // useAppInitialization.ts
 // app/layout/useAppInitialization.ts
-import { ApiSynchronizationScript } from '@/app/services/ApiSynchronizationScript';
-import { ChangeLogManager } from '@/app/utils/ChangeLogManager';
+
+import { ApiSynchronizationScript } from '@/app/scripts/ApiSynchronizationScript';
+import { ChangeLogManager } from '@/app/logging/ChangeLogEntry'
 
 export const useAppInitialization = () => {
   const initializeLogManagement = () => {

@@ -6,8 +6,8 @@ import { NotificationType } from '@/app/features/support/UnifiedNotificationType
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-    Payload,
-    UpdateSnapshotPayload
+  Payload,
+  UpdateSnapshotPayload
 } from "@/app/server/database/Payload";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';

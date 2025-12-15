@@ -1,27 +1,26 @@
 // StructuredMetadata.ts
 import { Contributor } from '@/app/collaborators/Collaborator';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Comment } from '@/app/models/comments/Comments';
-import { Taggable } from '@/app/models/tracker/Tag'
 import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Task } from '@/app/models/tasks/Task';
+import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Permission } from '@/app/permissions/Permission';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { TagsRecord } from '@/app/models/tracker/Tag'
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
-import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta, ProjectStructuredMetadata } from '@/app/typings/entities/ProjectEntity';
+import { UserEntity, UserK } from '@/app/typings/entities/UserEntity';
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
 import { Video } from '@/app/typings/videoTypes/Video';
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -212,7 +211,7 @@ interface ProjectMetadata<
   milestones: string[];
   videos: Video[]; // Removed generic parameters
   projectId: number | string | undefined;
-  contributors: Contributor[]
+  contributors: Contributor<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   links: string[]
   customFields?: Record<string, any>
   tags?: string[] | TagsRecord<T>
@@ -257,7 +256,7 @@ interface MetadataEntry<
   description: string;
   keywords: string[];
   authors: string[];
-  contributors: Contributor[];
+  contributors: Contributor<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   publisher: string;
   copyright: string;
   license: string;
@@ -354,7 +353,7 @@ function transformProjectToStructured<
     isActive: projectMetadata.isActive,
     permissions: projectMetadata.permissions,
     customFields: projectMetadata.customFields,
-    latestVersion,
+    latestVersion: projectMetadata.latestVersion,
     baseConfig: {
       id: projectMetadata.projectId?.toString() || "default-id",
       isActive: projectMetadata.isActive || false,
@@ -374,12 +373,12 @@ function transformProjectToStructured<
       mappedSnapshot,
       events: {} as EventManager<T, K>,
       schema: {},
-      latestVersion
+      latestVersion: projectMetadata.latestVersion
     },
     sharedMetadata: {
       version: latestVersion.versionNumber || "1.0",
       lastUpdated: projectMetadata.lastUpdated,
-      latestVersion,
+      latestVersion: projectMetadata.latestVersion,
       isActive: projectMetadata.isActive,
       config: {} as Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>,
       permissions: projectMetadata.permissions,
@@ -505,7 +504,7 @@ function validateVideoMetadata<
 
 
 
-const videoMetadata: VideoMetadataVideo<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields> = {
+const videoMetadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields> = {
   title: "Example Video",
   url: "https://example.com/video",
   duration: 300, // 5 minutes

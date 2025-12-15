@@ -99,7 +99,7 @@ export class ImportFixerService {
 
     private readonly MIXED_IMPORT_PATTERNS = [
         {
-            pattern: /import\s+\w+,\s*{\s*\w+\s*,?\s*}\s+from\s+(?!['"]react['"]|['"]react-dom['"]|['"]draft-js['"])/,
+            pattern: /import\s+\w+,\s*{\s*\w+\s*,?\s*}\s+from\s+(?!['"]react['"]|['"]react\\-dom['"]|['"]draft\\-js['"])/,
             corrections: ['import { allNamedImports } from'],
             reason: 'Mixed default and named imports should be separated'
         }
@@ -1512,6 +1512,120 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         }
         
         return { success: totalFixed > 0, fixed: totalFixed };
+    }
+
+    /**
+     * Debug method to test TypeScript error detection
+     */
+    async debugTypeScriptDetection(): Promise<void> {
+        console.log('🔍 DEBUG: Testing TypeScript detection\n');
+        
+        // Test 1: Direct TypeScript command
+        console.log('=== Test 1: Direct tsc command ===');
+        try {
+            const { execSync } = require('child_process');
+            const command = 'npx tsc --noEmit 2>&1';
+            console.log(`Running: ${command}`);
+            
+            const result = execSync(command, {
+                encoding: 'utf8',
+                cwd: process.cwd(),
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+            
+            console.log(`Output length: ${result.length} chars`);
+            
+            if (result.length > 0) {
+                // Show first 500 chars
+                console.log('First 500 chars of output:');
+                console.log(result.substring(0, 500));
+                
+                // Check for error patterns
+                const lines = result.split('\n');
+                const errorLines = lines.filter((line: string) => 
+                    line.toLowerCase().includes('error') || 
+                    line.toLowerCase().includes('cannot find')
+                );
+                
+                console.log(`Found ${errorLines.length} lines with errors`);
+                if (errorLines.length > 0) {
+                    console.log('Sample errors:');
+                    errorLines.slice(0, 5).forEach((line: string) => console.log(`  ${line}`));
+                }
+            } else {
+                console.log('⚠️  No output from TypeScript');
+            }
+        } catch (error: any) {
+            console.log('TypeScript exited with error (expected if there are errors)');
+            if (error.stdout) {
+                console.log('stdout:', error.stdout.toString().substring(0, 500));
+            }
+            if (error.stderr) {
+                console.log('stderr:', error.stderr.toString().substring(0, 500));
+            }
+        }
+        
+        // Test 2: Check a specific file you know has errors
+        console.log('\n=== Test 2: Specific file test ===');
+        const testFile = 'src/app/actions/ActionScheduler.tsx';
+        const fullPath = path.resolve(process.cwd(), testFile);
+        
+        if (fs.existsSync(fullPath)) {
+            console.log(`✅ ${testFile} exists`);
+            
+            try {
+                const { execSync } = require('child_process');
+                const command = `npx tsc --noEmit ${fullPath} 2>&1`;
+                console.log(`Running: ${command}`);
+                
+                const result = execSync(command, {
+                    encoding: 'utf8',
+                    cwd: process.cwd(),
+                    stdio: ['pipe', 'pipe', 'pipe']
+                });
+                
+                console.log(`Output for ${testFile}:`);
+                console.log(result.substring(0, 500));
+                
+                // Extract errors
+                const tsErrors = result.split('\n').filter((line: string) => line.trim());
+                console.log(`Total lines: ${tsErrors.length}`);
+                
+                const missingModules = this.extractMissingModulesFromTSErrors(tsErrors);
+                console.log(`Missing modules found: ${missingModules.length}`);
+                missingModules.forEach((module: string) => console.log(`  - ${module}`));
+                
+            } catch (error: any) {
+                console.log('TypeScript found errors (good!)');
+                const output = error.stdout?.toString() || error.stderr?.toString() || error.message;
+                console.log('Output:', output.substring(0, 500));
+                
+                const tsErrors = output.split('\n').filter((line: string) => line.trim());
+                const missingModules = this.extractMissingModulesFromTSErrors(tsErrors);
+                console.log(`Missing modules found: ${missingModules.length}`);
+            }
+        } else {
+            console.log(`❌ ${testFile} not found`);
+        }
+        
+        // Test 3: Check tsconfig.json
+        console.log('\n=== Test 3: tsconfig.json ===');
+        const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
+        if (fs.existsSync(tsconfigPath)) {
+            try {
+                const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+                console.log('tsconfig exists');
+                console.log('skipLibCheck:', tsconfig.compilerOptions?.skipLibCheck);
+                console.log('strict:', tsconfig.compilerOptions?.strict);
+                console.log('exclude:', tsconfig.exclude);
+                
+                if (tsconfig.compilerOptions?.skipLibCheck === true) {
+                    console.log('⚠️  WARNING: skipLibCheck is true - library errors are hidden!');
+                }
+            } catch (error) {
+                console.log('Error reading tsconfig:', error);
+            }
+        }
     }
 }
 

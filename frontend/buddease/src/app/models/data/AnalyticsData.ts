@@ -1,8 +1,8 @@
 // AnalyticsData.ts
-import {Project} from "@/app/models/projects/Project";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SupportedData } from "@/app/models/CommonData";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Project } from "@/app/models/projects/Project";
 
   interface AnalyticsData<
     T extends BaseDataEntity = BaseDataRoot,

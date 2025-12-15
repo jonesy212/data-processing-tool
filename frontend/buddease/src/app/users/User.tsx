@@ -1,32 +1,23 @@
 // User.tsx
+import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
+import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
+import { CommonDetails } from '@/app/components/models/details/CommonDetails';
+import { Team } from "@/app/components/teams/Team";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { fetchUserAreaDimensions } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { UserPreferences } from "@/app/config/UserPreferences";
-import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
 import { UserSettings } from "@/app/config/UserSettings";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
-import { Data } from '@/app/models/data/Data';
-import { SecuritySettings } from "@/app/settings/SecuritySettings";
-import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { AppUnifiedMetadata, AppStructuredMetadata } from "@/app/typings/entities/AppMetadataEntity";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
-import { UserProfileDetails } from '@/app/typings/userTypes';
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
-import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
-import { Team } from "@/app/components/teams/Team";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import ChatSettings from "@/app/hooks/userInterface/ChatSettings";
-import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import { NFT } from "@/app/models/cypto/NFT";
-import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
+import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Project } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { Task } from "@/app/models/tasks/Task";
@@ -37,18 +28,24 @@ import { Permission } from "@/app/permissions/Permission";
 import { Product } from "@/app/products/Product";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
+import { SecuritySettings } from "@/app/settings/SecuritySettings";
 import { SnapshotStoreConfig } from "@/app/snapshots/";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 import {
-    CustomTransaction,
-    SmartContractInteraction,
+  CustomTransaction,
+  SmartContractInteraction,
 } from "@/app/typings/cryptoTypes/SmartContractInteraction";
-import { DocumentTypeEnum } from "@/app/typings/documentTypes";
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
+import { MetaAttachment, MetaEntity, MetaExcludedFields, MetaIncludedFields, MetaK, MetaMeta } from "@/app/typings/entities/MetaEntity";
+import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { AllTypes } from "@/app/typings/PropTypes";
+import { UserProfileDetails } from '@/app/typings/userTypes';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { SharedVersionData } from "@/app/versions/VersionData";
 import React from "react";
 

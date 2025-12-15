@@ -1,8 +1,11 @@
 // ResizablePanels.tsx
 import React, { ReactNode, useEffect, useRef } from "react";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
-import "react-resizable/css/styles.css";
 
+
+if (typeof window !== 'undefined') {
+  import('@/react-resizable/css/styles.css');
+}
 // Define the props interface for the ResizablePanels component
 interface ResizablePanelsProps {
   sizes: (() => number[]) | number[]; // Updated type definition

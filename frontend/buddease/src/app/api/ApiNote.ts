@@ -1,7 +1,6 @@
 // ApiNote.ts
 // ApiNotes.ts
-import internalApiService from '@/app/api/ApiClient'; // ✅ ADD THIS
-import axiosInstance from '@/app/api/csrfToken';
+import internalApiService from '@/app/api/ApiClient';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -9,20 +8,18 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { NoteData } from '@/app/documents/NoteData';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import FolderData from '@/app/models/data/FolderData';
 import { Tag } from '@/app/models/tracker/Tag';
 import { Encryption } from '@/app/server/security/Encryption';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import {
-    NotificationTypeEnum,
-    useNotification
-} from '@/app/state/context/NotificationContext';
-import {
-    NoteAttachment,
-    NoteEntity,
-    NoteExcludedFields,
-    NoteIncludedFields,
-    NoteK,
-    NoteMeta
+  NoteAttachment,
+  NoteEntity,
+  NoteExcludedFields,
+  NoteIncludedFields,
+  NoteK,
+  NoteMeta
 } from '@/app/typings/entities/NoteEntity';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import AccessHistory from '@/app/versions/AccessHistory';
@@ -30,9 +27,11 @@ import SearchHistory from '@/app/versions/SearchHistory';
 import { Version } from '@/app/versions/Version';
 import { AxiosError } from 'axios';
 import { SearchResponseData } from './ApiSearch';
+import { useNotification } from '@/app/state/context/NotificationContext';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;
+const { notify } = useNotification();
 
 interface NoteNotificationMessages {
   // Core CRUD operations
@@ -123,6 +122,21 @@ interface NoteNotificationMessages {
   FETCH_TEMPLATES_ERROR: string;
   CREATE_FROM_TEMPLATE_SUCCESS: string;
   CREATE_FROM_TEMPLATE_ERROR: string;
+
+  ARCHIVE_NOTE_SUCCESS: string;
+  RESTORE_NOTE_SUCCESS: string;
+  MOVE_NOTE_SUCCESS: string;
+  MERGE_NOTES_SUCCESS: string;
+  SPLIT_NOTE_SUCCESS: string;
+  
+
+  FETCH_TAGS_SUCCESS: string;
+  FETCH_ATTACHMENTS_SUCCESS: string;
+  FETCH_VERSIONS_SUCCESS: string;
+  FETCH_COLLABORATORS_SUCCESS: string;
+  FETCH_COMMENTS_SUCCESS: string;
+  FETCH_ANALYTICS_SUCCESS: string;
+  FETCH_TEMPLATES_SUCCESS: string;
 }
 
 // Define API notification messages
@@ -215,7 +229,24 @@ const apiNotificationMessages: NoteNotificationMessages = {
   FETCH_TEMPLATES_ERROR: "Failed to fetch templates",
   CREATE_FROM_TEMPLATE_SUCCESS: "Note created from template successfully",
   CREATE_FROM_TEMPLATE_ERROR: "Failed to create note from template",
+
+  ARCHIVE_NOTE_SUCCESS: "Note archived successfully",
+  RESTORE_NOTE_SUCCESS: "Note restored successfully", 
+  MOVE_NOTE_SUCCESS: "Note moved successfully",
+  MERGE_NOTES_SUCCESS: "Notes merged successfully",
+  SPLIT_NOTE_SUCCESS: "Note split successfully",
+  
+  // Add success messages for fetch operations
+  FETCH_TAGS_SUCCESS: "Tags fetched successfully",
+  FETCH_ATTACHMENTS_SUCCESS: "Attachments fetched successfully",
+  FETCH_VERSIONS_SUCCESS: "Versions fetched successfully",
+  FETCH_COLLABORATORS_SUCCESS: "Collaborators fetched successfully",
+  FETCH_COMMENTS_SUCCESS: "Comments fetched successfully",
+  FETCH_ANALYTICS_SUCCESS: "Analytics fetched successfully",
+  FETCH_TEMPLATES_SUCCESS: "Templates fetched successfully",
+
 };
+
 // Success notification for note-related actions
 const notifyNoteSuccess = (
   id: string,
@@ -233,25 +264,42 @@ const notifyNoteSuccess = (
 };
 
 // Error handler with notification for notes
-const handleNoteApiErrorAndNotify = (
+export const handleNoteApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessage: string,
-  messageKey: keyof NoteNotificationMessages
+  defaultMessage: string,
+  errorType: string,
+  additionalData?: any
 ) => {
-  console.error(errorMessage, error);
-
-  if (messageKey) {
-    const messageText = apiNotificationMessages[messageKey];
-    useNotification().notify({
-      id: `note-${String(messageKey)}`,
-      message: messageText,
-      data: { originalError: errorMessage },
-      timestamp: new Date(),
-      type: NotificationTypeEnum.ERROR
-    });
+  const axiosError = error as AxiosError;
+  
+  // Determine the appropriate message
+  let message = defaultMessage;
+  if (axiosError.response?.status === 404) {
+    message = "Note not found";
+  } else if (axiosError.response?.status === 401 || axiosError.response?.status === 403) {
+    message = "Authentication required";
+  } else if (axiosError.response?.status === 400) {
+    message = "Invalid data";
   }
+  
+  notify({
+    id: `note_${errorType}_${Date.now()}`,
+    message,
+    data: {
+      originalError: axiosError.message || 'Unknown error',
+      entityType: 'note',
+      extra: {
+        ...additionalData,
+        errorCode: axiosError.response?.status,
+        errorType,
+        timestamp: new Date().toISOString()
+      }
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const
+  });
 };
-
 
 // Extend SearchNotesResponse with attributes from YourResponseType
 type SearchNotesResponse<
@@ -308,23 +356,40 @@ export const fetchNoteByIdAPI = async (
   try {
     const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "FETCH_NOTE_SUCCESS" as any,
       "FETCH_NOTE_ERROR" as any,
       { noteId }
     );
 
     dataCallback(response.data);
+    
+    // Success notification
+    notify({
+      id: `fetch_note_success_${noteId}_${Date.now()}`,
+      message: "Note fetched successfully",
+      data: {
+        entityId: noteId.toString(),
+        entityType: 'note',
+        extra: { noteId, action: 'fetch' }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const
+    });
+    
     return response.data;
   } catch (error) {
     handleNoteApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to fetch note",
-      "FETCH_NOTE_ERROR"
+      "FETCH_NOTE_ERROR",
+      { noteId, action: 'fetch' }
     );
     throw error;
   }
 };
+
 
 export const addNote = async (
   newNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
@@ -333,7 +398,7 @@ export const addNote = async (
     const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes`,
       newNote,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "ADD_NOTE_SUCCESS" as any,
       "ADD_NOTE_ERROR" as any,
       { newNote }
@@ -349,6 +414,7 @@ export const addNote = async (
   }
 };
 
+
 export const updateNote = async (
   noteId: string,
   updatedNote: NoteData<NoteEntity, NoteK, NoteMeta, NoteAttachment, NoteExcludedFields, NoteIncludedFields>
@@ -357,10 +423,12 @@ export const updateNote = async (
     const response = await internalApiService.put(
       `${API_BASE_URL}/api/notes/${noteId}`,
       updatedNote,
-      { headers: headersConfig },
-      "UPDATE_NOTE_SUCCESS" as any,
-      "UPDATE_NOTE_ERROR" as any,
-      { noteId, updatedNote }
+      {
+        config: {headers: headersConfig},
+        successMessageId: "UPDATE_NOTE_SUCCESS",  // Might need to be in config
+        errorMessageId: "UPDATE_NOTE_ERROR",      // Might need to be in config
+        notificationData: { noteId, updatedNote } // Might need to be in config
+      }
     );
     return response.data;
   } catch (error) {
@@ -375,10 +443,10 @@ export const updateNote = async (
 
 export const archiveNote = async (noteId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes/archive/${noteId}`,
       null,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     notifyNoteSuccess(
@@ -400,10 +468,10 @@ export const archiveNote = async (noteId: string): Promise<any> => {
 
 export const restoreNote = async (noteId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes/restore/${noteId}`,
       null,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     notifyNoteSuccess(
@@ -428,10 +496,10 @@ export const moveNote = async (
   destination: string
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes/move/${noteId}`,
       { destination },
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     notifyNoteSuccess(
@@ -453,10 +521,10 @@ export const moveNote = async (
 
 export const mergeNotes = async (noteIds: string[]): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes/merge`,
       { noteIds },
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     notifyNoteSuccess(
@@ -478,10 +546,10 @@ export const mergeNotes = async (noteIds: string[]): Promise<any> => {
 
 export const splitNote = async (noteId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.post(
+    const response = await internalApiService.post(
       `${API_BASE_URL}/api/notes/split`,
       { noteId },
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     notifyNoteSuccess(
@@ -506,7 +574,7 @@ export const addNoteAPI = async (noteData: any): Promise<any> => {
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes`,
       noteData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "ADD_NOTE_SUCCESS" as any,
       "ADD_NOTE_ERROR" as any,
       { noteData }
@@ -530,7 +598,7 @@ export const updateNoteAPI = async (
     const response = await internalApiService.put(
       `${API_BASE_URL}/notes/${noteId}`,
       updatedData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "UPDATE_NOTE_SUCCESS" as any,
       "UPDATE_NOTE_ERROR" as any,
       { noteId, updatedData }
@@ -550,7 +618,7 @@ export const deleteNoteAPI = async (noteId: number): Promise<void> => {
   try {
     await internalApiService.delete(
       `${API_BASE_URL}/notes/${noteId}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "DELETE_NOTE_SUCCESS" as any,
       "DELETE_NOTE_ERROR" as any,
       { noteId }
@@ -569,7 +637,7 @@ export const listAllNotesAPI = async (): Promise<any[]> => {
   try {
     const response = await internalApiService.get(
       `${API_BASE_URL}/notes`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "FETCH_NOTE_SUCCESS" as any,
       "FETCH_NOTE_ERROR" as any
     );
@@ -596,7 +664,7 @@ export const searchNotesAPI = async <
 ): Promise<SearchNotesResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
   try {
     const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(searchQuery)}`;
-    const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(searchNotesEndpoint);
+    const response = await internalApiService.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(searchNotesEndpoint);
 
     const responseData: SearchNotesResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = response.data;
 
@@ -625,9 +693,9 @@ export const filterNotesAPI = async (
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
       .join("&");
     
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/filter?${filterQuery}`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     
     return response.data;
@@ -652,7 +720,7 @@ export const searchNotes = async <
   keyword: string
 ): Promise<Note<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/api/notes/search`,
       {
         params: { keyword },
@@ -680,7 +748,7 @@ export const bulkUpdateNotesAPI = async (
     const response = await internalApiService.put(
       `${API_BASE_URL}/notes/bulk`,
       { noteIds, updateData },
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "BULK_UPDATE_NOTE_SUCCESS" as any,
       "BULK_UPDATE_NOTE_ERROR" as any,
       { noteIds, updateData }
@@ -722,7 +790,7 @@ export const exportNotesAPI = async (format: 'json' | 'csv' | 'pdf' = 'json'): P
   try {
     const response = await internalApiService.get(
       `${API_BASE_URL}/notes/export?format=${format}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "EXPORT_NOTE_SUCCESS" as any,
       "EXPORT_NOTE_ERROR" as any,
       { format }
@@ -743,7 +811,7 @@ export const importNotesAPI = async (importData: any, format: 'json' | 'csv' = '
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/import?format=${format}`,
       importData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "IMPORT_NOTE_SUCCESS" as any,
       "IMPORT_NOTE_ERROR" as any,
       { format, importData }
@@ -762,9 +830,9 @@ export const importNotesAPI = async (importData: any, format: 'json' | 'csv' = '
 // Tag management
 export const getNoteTagsAPI = async (noteId: number): Promise<Tag<any>[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}/tags`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -782,7 +850,7 @@ export const addNoteTagAPI = async (noteId: number, tagData: Partial<Tag<any>>):
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/tags`,
       tagData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "ADD_TAG_SUCCESS" as any,
       "ADD_TAG_ERROR" as any,
       { noteId, tagData }
@@ -809,7 +877,7 @@ export const removeNoteTagAPI = async (noteId: number, tagId: number): Promise<v
   try {
     await internalApiService.delete(
       `${API_BASE_URL}/notes/${noteId}/tags/${tagId}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "REMOVE_TAG_SUCCESS" as any,
       "REMOVE_TAG_ERROR" as any,
       { noteId, tagId }
@@ -833,9 +901,9 @@ export const removeNoteTagAPI = async (noteId: number, tagId: number): Promise<v
 // Version management
 export const getNoteVersionsAPI = async (noteId: number): Promise<Version<any, any, any, any, any, any>[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}/versions`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -853,7 +921,7 @@ export const restoreNoteVersionAPI = async (noteId: number, versionId: number): 
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/versions/${versionId}/restore`,
       null,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "RESTORE_VERSION_SUCCESS" as any,
       "RESTORE_VERSION_ERROR" as any,
       { noteId, versionId }
@@ -879,9 +947,9 @@ export const restoreNoteVersionAPI = async (noteId: number, versionId: number): 
 // Collaboration
 export const getNoteCollaboratorsAPI = async (noteId: number): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}/collaborators`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -899,7 +967,7 @@ export const shareNoteAPI = async (noteId: number, shareSettings: any): Promise<
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/share`,
       shareSettings,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "SHARE_NOTE_SUCCESS" as any,
       "SHARE_NOTE_ERROR" as any,
       { noteId, shareSettings }
@@ -927,7 +995,7 @@ export const unshareNoteAPI = async (noteId: number): Promise<any> => {
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/unshare`,
       null,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "UNSHARE_NOTE_SUCCESS" as any,
       "UNSHARE_NOTE_ERROR" as any,
       { noteId }
@@ -955,7 +1023,7 @@ export const addNoteCollaboratorAPI = async (noteId: number, collaboratorData: a
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/collaborators`,
       collaboratorData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "ADD_COLLABORATOR_SUCCESS" as any,
       "ADD_COLLABORATOR_ERROR" as any,
       { noteId, collaboratorData }
@@ -982,7 +1050,7 @@ export const removeNoteCollaboratorAPI = async (noteId: number, collaboratorId: 
   try {
     await internalApiService.delete(
       `${API_BASE_URL}/notes/${noteId}/collaborators/${collaboratorId}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "REMOVE_COLLABORATOR_SUCCESS" as any,
       "REMOVE_COLLABORATOR_ERROR" as any,
       { noteId, collaboratorId }
@@ -1006,9 +1074,9 @@ export const removeNoteCollaboratorAPI = async (noteId: number, collaboratorId: 
 // Comments
 export const getNoteCommentsAPI = async (noteId: number): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}/comments`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -1026,7 +1094,7 @@ export const addNoteCommentAPI = async (noteId: number, commentData: any): Promi
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/${noteId}/comments`,
       commentData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "ADD_COMMENT_SUCCESS" as any,
       "ADD_COMMENT_ERROR" as any,
       { noteId, commentData }
@@ -1054,7 +1122,7 @@ export const updateNoteCommentAPI = async (noteId: number, commentId: number, co
     const response = await internalApiService.put(
       `${API_BASE_URL}/notes/${noteId}/comments/${commentId}`,
       commentData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "UPDATE_COMMENT_SUCCESS" as any,
       "UPDATE_COMMENT_ERROR" as any,
       { noteId, commentId, commentData }
@@ -1081,7 +1149,7 @@ export const deleteNoteCommentAPI = async (noteId: number, commentId: number): P
   try {
     await internalApiService.delete(
       `${API_BASE_URL}/notes/${noteId}/comments/${commentId}`,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "DELETE_COMMENT_SUCCESS" as any,
       "DELETE_COMMENT_ERROR" as any,
       { noteId, commentId }
@@ -1105,9 +1173,9 @@ export const deleteNoteCommentAPI = async (noteId: number, commentId: number): P
 // Analytics
 export const getNoteAnalyticsAPI = async (noteId: number): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/${noteId}/analytics`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -1123,9 +1191,9 @@ export const getNoteAnalyticsAPI = async (noteId: number): Promise<any> => {
 // Templates
 export const getNoteTemplatesAPI = async (): Promise<any[]> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/notes/templates`,
-      { headers: headersConfig }
+      { config: { headers: headersConfig } }
     );
     return response.data;
   } catch (error) {
@@ -1143,7 +1211,7 @@ export const createNoteFromTemplateAPI = async (templateId: number, noteData: an
     const response = await internalApiService.post(
       `${API_BASE_URL}/notes/templates/${templateId}/create`,
       noteData,
-      { headers: headersConfig },
+      { config: { headers: headersConfig } },
       "CREATE_FROM_TEMPLATE_SUCCESS" as any,
       "CREATE_FROM_TEMPLATE_ERROR" as any,
       { templateId, noteData }

@@ -7,6 +7,7 @@ import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import TaskList from "@/app/components/lists/TaskList";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition, PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
@@ -22,7 +23,7 @@ import {
 } from "@/app/state/redux/slices/TaskSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
 import { ContentPost } from '@/app/typings/contentTypes';
-import { TaskEntity } from '@/app/typings/entites/TaskEntity';
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
 import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -30,8 +31,8 @@ import CalendarMonth from "./CalendarMonth";
 import { YearInfo } from "./CalendarYear";
 import { MonthInfo } from "./Month";
 
-import { TaskCollection } from "@/app/actions/SnapshotActions";
 import { updateTaskDetails } from "@/app/state/redux/slices/ContentSlice";
+import { TaskCollection } from '@/app/typings/entities/TaskEntity';
 
 
 const { notify } = useNotification();
@@ -114,20 +115,25 @@ const updateTaskPosition = (
   return async (dispatch: Dispatch<Action<string>>, getState: () => RootState) => {
     try {
       // Make an API call to update the task's position in the database
-      await taskApi.updateTaskPosition(
+      await taskApi.updateTaskPositionAPI(
         taskId,
         newPosition,
         dispatch,
         () => {
-          // Call notify with the required arguments
-          notify(
-            `task-position-updated-${taskId}`, // Unique ID for the notification
-            "Task position updated", // Notification message
-            { taskId, newPosition }, // Notification content
-            new Date(), // Date of the notification
-            NotificationType.OperationSuccess, // Notification type
-            NotificationPosition.BottomRight // Optional: Notification position
-          ).catch((error) => {
+          // Call notify with object parameters
+          notify({
+            id: `task-position-updated-${taskId}`, // Unique ID for the notification
+            message: "Task position updated", // Notification message
+            data: { 
+              taskId, 
+              newPosition,
+              operation: "updateTaskPosition"
+            }, // Notification data
+            timestamp: new Date(), // Date of the notification
+            type: NotificationTypeEnum.OPERATION_SUCCESS, // Notification type
+            position: NotificationPosition.BottomRight, // Optional: Notification position
+            level: 'success'
+          }).catch((error) => {
             console.error("Failed to send notification:", error);
           });
         }
@@ -140,23 +146,28 @@ const updateTaskPosition = (
       console.error('Error updating task position:', error);
 
       // Notify about the error
-      notify(
-        `task-position-update-failed-${taskId}`, // Unique ID for the notification
-        "Failed to update task position", // Notification message
-        { taskId, error }, // Notification content
-        new Date(), // Date of the notification
-        NotificationType.OperationError, // Notification type
-        NotificationPosition.BottomRight // Optional: Notification position
-      ).catch((error) => {
+      notify({
+        id: `task-position-update-failed-${taskId}`, // Unique ID for the notification
+        message: "Failed to update task position", // Notification message
+        data: { 
+          taskId, 
+          error: error instanceof Error ? error.message : 'Unknown error',
+          operation: "updateTaskPosition"
+        }, // Notification data
+        timestamp: new Date(), // Date of the notification
+        type: NotificationTypeEnum.OPERATION_ERROR, // Notification type
+        position: NotificationPosition.BottomRight, // Optional: Notification position
+        level: 'error'
+      }).catch((error) => {
         console.error("Failed to send error notification:", error);
       });
     }
   }
-}
+};
 
 
   const updateTaskPositionSuccess = (taskId: string, newPosition: number) => ({
-    type: NotificationTypeEnum.TaskLogged, 
+    type: NotificationTypeEnum.TASK_LOGGED, 
     payload: { taskId, newPosition },
   });
 

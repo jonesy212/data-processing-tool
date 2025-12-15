@@ -1,5 +1,5 @@
 // validateTheme.ts
-import { Theme } from '@/app/app/libraries/ui/theme/Theme';
+import { Theme } from '@/app/libraries/ui/theme/Theme';
 import { isValidDID } from '@/utils/web3/didUtils';
 
 const isValidColor = (color: string): boolean => {
@@ -140,18 +140,18 @@ class ThemeValidator {
 
 export default ThemeValidator;
 export {
-  isValidBorderRadius,
-  isValidBorderStyle,
-  isValidBorderWidth,
-  isValidBoxShadow,
-  isValidBrandIcon,
-  isValidBrandName,
-  isValidColor,
-  isValidFontFamily,
-  isValidFontSize,
-  isValidLogoUrl,
-  isValidMargin,
-  isValidPadding,
-  isValidThemeColor
+    isValidBorderRadius,
+    isValidBorderStyle,
+    isValidBorderWidth,
+    isValidBoxShadow,
+    isValidBrandIcon,
+    isValidBrandName,
+    isValidColor,
+    isValidFontFamily,
+    isValidFontSize,
+    isValidLogoUrl,
+    isValidMargin,
+    isValidPadding,
+    isValidThemeColor
 };
 

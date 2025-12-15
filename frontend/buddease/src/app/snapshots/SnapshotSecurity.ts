@@ -314,7 +314,10 @@ const defaultSnapshotSecurity: SnapshotSecurity = {
       id: measure.id || crypto.randomUUID(),
       name: measure.name || "Unnamed Measure",
       type: measure.type || SecurityMeasureType.Custom,
-      status: measure.status || "active",
+      // Cast status to the expected type by checking if it's one of the allowed values
+      status: (['active', 'inactive', 'error'].includes(measure.status) 
+        ? measure.status 
+        : measure.enabled ? 'active' : 'inactive') as 'active' | 'inactive' | 'error',
       lastChecked: measure.lastChecked || now,
     }));
 
@@ -328,7 +331,7 @@ const defaultSnapshotSecurity: SnapshotSecurity = {
       .map(m => ({
         timestamp: m.lastChecked,
         type: `Issue in ${m.name}`,
-        severity: m.status === "error" ? "critical" : "medium",
+        severity: (m.status === "error" ? "critical" : "medium") as 'low' | 'medium' | 'high' | 'critical',
         description: `${m.name} is in ${m.status} state.`,
         resolution: m.status === "error" ? "Manual intervention required" : undefined,
       }));
@@ -356,7 +359,6 @@ const defaultSnapshotSecurity: SnapshotSecurity = {
     };
   },
 
-  
   addSecurityMeasure(measure: SecurityMeasureUnion) {
     if (!this.securityMeasures.find(m => m.id === measure.id)) {
       this.securityMeasures.push(measure);

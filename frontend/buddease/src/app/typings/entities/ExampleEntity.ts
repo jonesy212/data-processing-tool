@@ -1,5 +1,8 @@
 // ExampleEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -8,11 +11,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { AppMetadata } from '@/app/typings/metadataTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { AppMetadata } from '@/app/typings/metadataTypes'
 
 // --- Core entity definition ---
 interface ExampleEntity extends BaseDataEntity {
@@ -151,43 +151,24 @@ type ExampleQuery = {
 
 // Export all types
 export type {
-  // Core types
-  ExampleEntity,
-  ExampleK,
-  ExampleMeta,
-  ExampleAttachment,
-  ExampleExcludedFields,
-  ExampleIncludedFields,
-  
+
   // Metadata types
   AppExampleMetadata,
-  ExampleStructuredMetadata,
-  ExampleUnifiedMetadata,
-  
-  // Params and base
-  ExampleBaseParams,
-  
-  // Snapshot and store types
-  ExampleSnapshot,
-  ExampleSnapshotData,
-  ExampleSnapshotStore,
-  ExampleSnapshotWithCriteria,
-  ExampleSubscriberCollection,
-  ExampleRealtimeDataItem,
-  ExampleCollection,
-  ExampleSnapshotStoreConfig,
-  ExampleSnapshotsArray,
-  ExampleParams,
-  
   // Utility types
-  ApplyExampleFieldFilters,
-  
+  ApplyExampleFieldFilters, ExampleAttachment,
+  // Params and base
+  ExampleBaseParams, ExampleCollection,
+  // Core types
+  ExampleEntity, ExampleExcludedFields,
   // Extended types
   ExampleExtendedEntity,
   ExampleExtendedMetadata,
   ExampleExtendedUnifiedMetadata,
-  ExampleFactory,
-  ExampleQuery
+  ExampleFactory, ExampleIncludedFields, ExampleK,
+  ExampleMeta, ExampleParams, ExampleQuery, ExampleRealtimeDataItem,
+  // Snapshot and store types
+  ExampleSnapshot,
+  ExampleSnapshotData, ExampleSnapshotsArray, ExampleSnapshotStore, ExampleSnapshotStoreConfig, ExampleSnapshotWithCriteria, ExampleStructuredMetadata, ExampleSubscriberCollection, ExampleUnifiedMetadata
 };
 
 

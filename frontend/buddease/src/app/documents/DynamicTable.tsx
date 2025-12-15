@@ -1,9 +1,11 @@
 // DynamicTable.tsx
 // DynamicTable.ts
-import "antd/dist/antd.css";
 import { Table } from "antd";
-
 import React from "react";
+
+if (typeof window !== 'undefined') {
+  import("antd/dist/antd.css");
+}
 
 interface DynamicTableProps {
   data: any[]; // Assuming data is an array of objects

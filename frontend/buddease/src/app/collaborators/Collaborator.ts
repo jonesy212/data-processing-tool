@@ -1,7 +1,7 @@
 // Collaborator.ts
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Member } from "@/app/models/members/Member";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 export interface Collaborator<
@@ -40,4 +40,4 @@ interface Contributor<
   
 }
 
-export type { Contributor }
+export type { Contributor };

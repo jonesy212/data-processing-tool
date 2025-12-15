@@ -1,7 +1,6 @@
 // exchangeIntegration.ts
-import { DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { ClientSubscriber } from './../../subscriptions/ClientSubscriber';
 import { getAppSubscriberIdAPI } from '@/app/api/subscriberApi';
+import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import updateUI, { updateUIWithSearchResults } from "@/app/documents/editing/updateUI";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
@@ -14,8 +13,9 @@ import {
 } from "@/app/typings/exchangeTypes";
 import OrderBookUpdater from "../../components/crypto/OrderBookUpdater";
 import TickerUpdater from "../../components/crypto/TickerUpdater";
+import { ClientSubscriber } from './../../subscriptions/ClientSubscriber';
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
   OrderBookEntity,
   OrderBookSnapshot
@@ -403,3 +403,4 @@ export {
   unsubscribeFromOrderBookUpdates, updateOrderBook,
   updateTicker
 };
+

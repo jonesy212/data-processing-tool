@@ -1,9 +1,11 @@
 // TableComponent.tsx
 // Import necessary components and styles
 import { Table } from 'antd';
-import 'antd/dist/antd.css';
 import React from 'react';
 
+if (typeof window !== 'undefined') {
+  import('antd/dist/antd.css'); // Import CSS for styling
+}
 
 // Your component
 const YourTableComponent = () => {

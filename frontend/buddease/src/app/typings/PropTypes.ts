@@ -1,32 +1,32 @@
 // PropTypes.ts
 // PropTypes.tsx
 import {
-    BaseDataEntity,
-    BaseDataRoot,
-    DefaultExcludedFields,
-    DefaultMeta
+  BaseDataEntity,
+  BaseDataRoot,
+  DefaultExcludedFields,
+  DefaultMeta
 } from '@/app/config/BaseConfig';
 import TextType from "@/app/documents/TextType";
-import { Attachment, FileType } from "@/app/documents/attachment/Attachment";
+import { Attachment, FileType } from '@/app/documents/attachment/Attachment';
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { MessageType } from "@/app/generators/MessaageType";
 import { DataType } from "@/app/models/CommonData";
 import { LogData } from "@/app/models/LogData";
 import {
-    CalendarStatus,
-    ChatType,
-    CustomNotificationType,
-    MessageNotificationStatusType,
-    PriorityTypeEnum,
-    StatusType,
-    TeamStatus
+  CalendarStatus,
+  ChatType,
+  CustomNotificationType,
+  MessageNotificationStatusType,
+  PriorityTypeEnum,
+  StatusType,
+  TeamStatus
 } from "@/app/models/data/StatusType";
 import {
-    ProgressBarAnimationType,
-    ProgressBarProps,
-    ProgressPhase,
+  ProgressBarAnimationType,
+  ProgressBarProps,
+  ProgressPhase,
 } from "@/app/models/tracker/ProgressBar";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
@@ -163,11 +163,11 @@ const progressBarProps: ProgressBarProps = {
 
 export { chatCardProps, notificationProps, progressBarProps };
 export type {
-    AllTypes,
-    BaseProps,
-    ChatCardProps,
-    NotificationProps,
-    ProgressProps,
-    TextType
+  AllTypes,
+  BaseProps,
+  ChatCardProps,
+  NotificationProps,
+  ProgressProps,
+  TextType
 };
 

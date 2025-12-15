@@ -1,6 +1,6 @@
 // DataEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 interface DataEntity extends BaseDataEntity {
   id: string;                        // required for uniqueness
@@ -21,7 +21,4 @@ type DataIncludedFields = keyof DataEntity;
 type DataExcludedFields = DefaultExcludedFields<DataEntity>;
 
 
-export type{ DataEntity,
-  DataK, DataMeta, DataAttachment,
-  DataIncludedFields, DataExcludedFields
-}
+export type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta };

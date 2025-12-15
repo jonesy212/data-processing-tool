@@ -6,7 +6,6 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
 
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
@@ -89,19 +88,162 @@ const tradingNotificationMessages: TradingNotificationMessages = {
 const handleTradingApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof TradingNotificationMessages
+  errorMessageId: keyof TradingNotificationMessages,
+  additionalData?: any
 ) => {
-  handleApiError(error, errorMessage);
-  if (errorMessageId) {
-    const errorMessageText = tradingNotificationMessages[errorMessageId] || errorMessage;
-    useNotification().notify(
-      String(errorMessageId),
-      errorMessageText,
-      null,
-      new Date(),
-      "TradingError" as NotificationType
-    );
+  const { notify } = useNotification();
+  
+  // Get the error message text from the notification messages
+  const errorMessageText = tradingNotificationMessages[errorMessageId] || errorMessage;
+  
+  // Create more detailed error message based on HTTP status and trading context
+  let userFriendlyMessage = errorMessageText;
+  const axiosError = error as AxiosError;
+  
+  if (axiosError.response) {
+    const status = axiosError.response.status;
+    
+    // Trading-specific error messages
+    switch (status) {
+      case 400:
+        userFriendlyMessage = "Invalid trading request data";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required for trading operations";
+        break;
+      case 403:
+        userFriendlyMessage = "Trading permission denied";
+        break;
+      case 404:
+        userFriendlyMessage = "Trading resource not found";
+        break;
+      case 409:
+        userFriendlyMessage = "Trading conflict - resource already exists";
+        break;
+      case 422:
+        userFriendlyMessage = "Trading validation failed";
+        break;
+      case 429:
+        userFriendlyMessage = "Trading rate limit exceeded";
+        break;
+      case 500:
+        userFriendlyMessage = "Trading server error";
+        break;
+      case 503:
+        userFriendlyMessage = "Trading service unavailable";
+        break;
+      default:
+        if (status >= 500) {
+          userFriendlyMessage = "Trading server error occurred";
+        } else if (status >= 400) {
+          userFriendlyMessage = "Trading request failed";
+        }
+    }
+  } else if (axiosError.request) {
+    userFriendlyMessage = "Network error: Unable to connect to trading service";
+  } else {
+    userFriendlyMessage = "Trading operation failed: " + (axiosError.message || errorMessage);
   }
+  
+  // Log the error for debugging (consider logging to monitoring service)
+  console.error("Trading API Error:", {
+    messageId: errorMessageId,
+    message: userFriendlyMessage,
+    originalError: axiosError.message,
+    statusCode: axiosError.response?.status,
+    url: axiosError.config?.url,
+    method: axiosError.config?.method,
+    additionalData,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Optional: Log to trading-specific monitoring service
+  logTradingError({
+    errorMessageId,
+    error: axiosError,
+    userMessage: userFriendlyMessage,
+    additionalData
+  });
+  
+  // Show notification using consistent object format
+  notify({
+    id: `trading_error_${String(errorMessageId)}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'trading',
+      entityId: additionalData?.tradingId || additionalData?.orderId || additionalData?.tradeId || 'unknown',
+      action: additionalData?.action || errorMessageId.toString().toLowerCase().replace('_error', ''),
+      errorCode: axiosError.response?.status,
+      errorType: errorMessageId.toString(),
+      originalError: axiosError.message,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      tradingContext: getTradingContext(additionalData),
+      extra: additionalData || {},
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const,
+    // Optional: Add trading-specific metadata
+    metadata: {
+      isTradingError: true,
+      severity: getTradingErrorSeverity(axiosError.response?.status),
+      requiresAttention: shouldTradingErrorRequireAttention(axiosError.response?.status, errorMessageId)
+    }
+  });
+  
+  // Call the original error handler
+  handleApiError(error, userFriendlyMessage);
+};
+
+// Helper functions for trading error handling
+const getTradingContext = (additionalData: any): any => {
+  return {
+    instrument: additionalData?.instrument,
+    orderType: additionalData?.orderType,
+    side: additionalData?.side,
+    quantity: additionalData?.quantity,
+    price: additionalData?.price,
+    accountId: additionalData?.accountId,
+    portfolioId: additionalData?.portfolioId,
+    ...additionalData?.tradingContext
+  };
+};
+
+const getTradingErrorSeverity = (statusCode?: number): string => {
+  if (!statusCode) return 'medium';
+  
+  if (statusCode >= 500) return 'high';
+  if (statusCode === 429) return 'high'; // Rate limiting is critical for trading
+  if (statusCode === 403) return 'high'; // Permission issues are critical
+  if (statusCode === 401) return 'medium';
+  if (statusCode === 400) return 'medium';
+  return 'low';
+};
+
+const shouldTradingErrorRequireAttention = (statusCode?: number, errorMessageId?: any): boolean => {
+  const criticalStatuses = [429, 403, 500, 503];
+  const criticalErrorTypes = ['INSUFFICIENT_FUNDS', 'MARKET_CLOSED', 'ORDER_REJECTED'];
+  
+  if (statusCode && criticalStatuses.includes(statusCode)) return true;
+  if (errorMessageId && criticalErrorTypes.includes(errorMessageId.toString())) return true;
+  
+  return false;
+};
+
+const logTradingError = (errorInfo: any): void => {
+  // Could send to trading-specific monitoring service
+  console.log('[Trading Error Logged]:', {
+    ...errorInfo,
+    loggedAt: new Date().toISOString()
+  });
+  
+  // Example: Send to external monitoring
+  // tradingMonitorService.trackError(errorInfo);
+  // sentry.captureException(errorInfo.error, { 
+  //   extra: { tradingContext: errorInfo.additionalData }
+  // });
 };
 
 // Core Trading API Functions
@@ -399,7 +541,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TECHNICAL_ANALYSIS_ERROR' as NotificationType
+        'FETCH_TECHNICAL_ANALYSIS_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -422,7 +564,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_MARKET_SENTIMENT_ERROR' as NotificationType
+        'FETCH_MARKET_SENTIMENT_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -443,7 +585,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_GAINERS_ERROR' as NotificationType
+        'FETCH_TOP_GAINERS_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -463,7 +605,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_LOSERS_ERROR' as NotificationType
+        'FETCH_TOP_LOSERS_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -484,7 +626,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_EXCHANGE_RATES_ERROR' as NotificationType
+        'FETCH_EXCHANGE_RATES_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -508,7 +650,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ORDER_BOOK_ERROR' as NotificationType
+        'FETCH_ORDER_BOOK_ERROR' as TradingNotificationMessages
       );
       throw error;
     }
@@ -531,7 +673,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TRADE_HISTORY_ERROR' as NotificationType
+        'FETCH_TRADE_HISTORY_ERROR' as TradingNotificationMessages
       );
       throw error;
     }

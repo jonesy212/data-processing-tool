@@ -1,14 +1,13 @@
 // Task.tsx
 // Task.ts
+import { CommonDetails } from '@/app/components/models/details/CommonDetails';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SupportedData } from '@/app/models/CommonData';
-import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Task } from '@/app/models/tasks/Task';
 import { Permission } from '@/app/permissions/Permission';
-import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
  
 export interface TaskEntityExtended extends TaskEntity {
   permissions?: Permission[] | string[];

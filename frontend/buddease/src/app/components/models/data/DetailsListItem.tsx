@@ -1,6 +1,8 @@
 // DetailsListItem.tsx
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 // Define a new type for DetailsItem with all properties of Data, but make them optional

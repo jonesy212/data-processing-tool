@@ -1,11 +1,11 @@
 // FileManager.tsx
 // Props for FileManager
 import { fetchFolderContentsAPI } from '@/app/api/ApiFiles';
-import Folder from '@/app/models/data/Folder'
+import { Folder } from '@/app/models/data/Folder'
 import { refreshUIForFile } from '@/app/snapshots/refreshUI';
 import { selectFilteredEvents } from '@/app/state/redux/slices/FilteredEventsSlice';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
-import { FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams } from '@/app/typiings/entities/FilterEntity';
+import { FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams } from '@/app/typings/entities/FilterEntity';
 import { FilteredEventsState, useFilterStore } from '@/app/state/stores/FilterStore';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,8 +35,10 @@ const FileManager: React.FC<FileManagerProps> = ({ initialFiles, initialFolders,
     
   const filterStore = useFilterStore(); // Use FilterStore instance
   const dispatch = useDispatch();
-  const filtered = useSelector<RootState, FilteredEventsState<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields>>(selectFilteredEvents);
-  
+  const filtered = useSelector((state: RootState) => 
+    state.filteredEvents as FilteredEventsState<FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields>
+  );
+
   const filteredEvents = filtered.payload;
 
   useEffect(() => {
@@ -47,15 +49,30 @@ const FileManager: React.FC<FileManagerProps> = ({ initialFiles, initialFolders,
   // Update fileMetadata for a specific file
   const updateFileMetadata = (fileId: string, newMetadata: Partial<FileMetadata>) => {
     setFiles(prevFiles => {
-      const updatedFile = { ...prevFiles.get(fileId), fileMetadata: { ...prevFiles.get(fileId)?.fileMetadata, ...newMetadata } };
-
-      if(updatedFile.name === undefined){
-        throw new Error("Must provide a file name to update file")
+      const existingFile = prevFiles.get(fileId);
+      
+      if (!existingFile) {
+        console.warn(`File with ID ${fileId} not found`);
+        return prevFiles; // Return unchanged if file doesn't exist
       }
+
+      // Create a properly typed updated file
+      const updatedFile: AppFile = {
+        ...existingFile,
+        fileMetadata: {
+          ...existingFile.fileMetadata,
+          ...newMetadata
+        }
+      };
+
+      // Validate required fields
+      if (!updatedFile.fileMetadata.fileName) {
+        throw new Error("File must have a fileName in fileMetadata");
+      }
+
       return new Map(prevFiles).set(fileId, updatedFile);
     });
   };
-
   // Refresh UI for a specific file
   const handleRefreshUIForFile = (fileId: number) => {
     refreshUIForFile(fileId); // Call the imported function

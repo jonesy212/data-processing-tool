@@ -1,6 +1,6 @@
 // SanitizationFunctions.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { decryptedData } from '@/app/server/security/decryptedData';
 import { Encryption } from '@/app/server/security/Encryption';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';

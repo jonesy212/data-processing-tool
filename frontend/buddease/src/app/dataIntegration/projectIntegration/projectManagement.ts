@@ -1,5 +1,11 @@
 // projectManagement.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+import { Logger } from '@/app/dataIntegration/projectIntegration/activityLogger';
+import { BaseData } from '@/app/models/data/Data';
 import { ProjectData } from '@/app/models/projects/Project';
+import { Task } from "@/app/models/tasks/Task";
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import {
   ProjectAttachment,
   ProjectEntity,
@@ -7,13 +13,7 @@ import {
   ProjectK,
   ProjectMeta
 } from '@/app/typings/entities/ProjectEntity';
-import { BaseData } from '@/app/models/data/Data';
-import { Task } from "@/app/models/tasks/Task";
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Logger } from "./activityLogger";
 import { ProjectConversionResult, ProjectConverter } from "./projectConverter";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

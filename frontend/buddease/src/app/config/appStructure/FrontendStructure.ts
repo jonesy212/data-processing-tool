@@ -1,28 +1,25 @@
 // FrontendStructure.ts
 import axiosInstance from '@/app/api/csrfToken';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import getAppPath from "@/app/config/appStructure/appPath";
+import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DataVersions } from "@/app/configs/DataVersionsConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { hashString } from "@/app/generators/HashUtils";
-import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/models/data/dataStoreMethods";
 import UserRoles from '@/app/models/UserRoles';
 import { Permission } from '@/app/permissions/Permission';
-import { UserData } from "@/app/users/User";
+import {
+  UserAttachment,
+  UserEntity,
+  UserExcludedFields,
+  UserIncludedFields,
+  UserK,
+  UserMeta
+} from '@/app/typings/entities/UserEntity';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { 
-  UserEntity,
-  UserK, 
-  UserMeta,
-  UserAttachment, 
-  UserExcludedFields, 
-  UserIncludedFields
- } from '@/app/typings/entities/UserEntity';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import getAppPath from "@/app/config/appStructure/appPath";
-import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import * as path from "path";
 
 

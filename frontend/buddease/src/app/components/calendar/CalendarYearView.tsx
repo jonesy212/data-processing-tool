@@ -7,7 +7,7 @@ import { YearInfo } from "./CalendarYear";
 interface YearWiewProps extends CommonCalendarProps {
   year: YearInfo[];
   projects: Project[];
-  
+  tasks: Task[]
 }
 
 

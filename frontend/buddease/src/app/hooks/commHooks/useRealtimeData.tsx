@@ -3,13 +3,13 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Data } from '@/app/models/data/Data';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
-import { Data } from '@/app/models/data/Data';
 
 export const ENDPOINT = endpoints.backend
 

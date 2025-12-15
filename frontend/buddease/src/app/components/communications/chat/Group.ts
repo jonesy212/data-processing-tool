@@ -1,8 +1,10 @@
 // Group.ts
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
-import { Member } from "@/app/models/memebers/Member";
-import { BlogPost } from "@/app/pages/blog/BlogPost";
+import { Member } from '@/app/models/members/Member'
+import { BlogPost } from '@/app/pages/blog/BlogPost';
 
 interface Group<
   T extends BaseDataEntity,
@@ -11,7 +13,7 @@ interface Group<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->  extends Data {
+>  extends Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   groupName: string;
   items: BlogPost[];

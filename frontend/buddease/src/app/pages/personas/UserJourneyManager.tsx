@@ -1,6 +1,8 @@
 // UserJourneyManager.tsx
 import { PhaseActions } from "@/app/actions/phases/PhaseActions";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
 import PlanningPhase, {

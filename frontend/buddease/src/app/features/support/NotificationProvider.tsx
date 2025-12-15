@@ -1,24 +1,24 @@
 // NotificationProvider.tsx
-import React, { createContext, useState } from 'react';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields } from "@/app/typings/entities/MetaEntity";
+import { VideoMetadata } from "@/app/config/StructuredMetadata";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { useMeta } from '@/app/config/useMeta';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { BaseData } from '@/app/models/data/Data';
-import { logData } from '@/app/services/NotificationService';
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
-import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { useMeta } from '@/app/config/useMeta';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { logData } from '@/app/services/NotificationService';
+import { NotificationContextProps } from '@/app/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
 import {
-    NotificationAttachment,
-    NotificationEntity,
-    NotificationExcludedFields, NotificationIncludedFields,
-    NotificationK, NotificationMeta
+  NotificationAttachment,
+  NotificationEntity,
+  NotificationExcludedFields, NotificationIncludedFields,
+  NotificationK, NotificationMeta
 } from '@/app/typings/entities/NotificationEntity';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import React, { createContext, useState } from 'react';
 
 import { title } from 'process';
 

@@ -8,7 +8,7 @@ import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 // Platform-agnostic timeout type
 type TimeoutHandle = ReturnType<typeof setTimeout>;
 
-const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType => {
+const useIdleTimeout = (name?: string | undefined, props?: any): IdleTimeoutType => {
   let timeoutId: TimeoutHandle | null = null;
 
   const onTimeout = () => {
@@ -19,7 +19,7 @@ const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType =
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(onTimeout, timeoutDuration);
+    timeoutId = setTimeout(onTimeout, timeoutDuration) as unknown as number;
   };
 
   const resetIdleTimeout = async (): Promise<void> => {

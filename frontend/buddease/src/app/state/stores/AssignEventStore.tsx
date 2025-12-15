@@ -4,26 +4,25 @@ import { fetchEventData } from "@/app/api/ApiEvent";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { fetchUsersByTaskAPI } from "@/app/api/TasksApi";
 import {
-    default as CalendarEventTimingOptimization,
-    default as ExtendedCalendarEvent,
+  default as CalendarEventTimingOptimization,
+  default as ExtendedCalendarEvent,
 } from "@/app/calendar/CalendarEventTimingOptimization";
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/state/context/NotificationContext";
-import { ExtendedTodo, useAssignBaseStore } from "@/app/state/stores/AssignwBaseStore";
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { ExtendedTodo, useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
+import { AuthStore } from "@/app/state/stores/AuthStore";
+import { PresentationEventAssignment } from "@/app/state/stores/UserPresentationsStore";
+import { MeetingAttachment, MeetingEntity, MeetingExcludedFields, MeetingIncludedFields, MeetingK, MeetingMeta } from '@/app/typings/entities/MeetingEntity';
 import { MessageAttachment, MessageEntity, MessageExcludedFields, MessageIncludedFields, MessageK, MessageMeta } from '@/app/typings/entities/MessageEntity';
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 import { User } from "@/app/users/User";
 import { EventData } from "@/utils/ethereumUtils";
 import { isDataRecentEnough } from "@/utils/isDataRecentEnough";
 import { makeObservable } from "mobx";
-import { AuthStore } from "./AuthStore";
-import { PresentationEventAssignment } from "./UserPresentationsStore";
+
 const RESPONSES_STORAGE_KEY = "responses";
 
 interface ReassignData {
@@ -382,9 +381,9 @@ const useAssignEventStore = (): AssignEventStore => {
 
 export { useAssignEventStore };
 export type {
-    AssignEventStore,
-    EventData,
-    ExtendedTodo,
-    ReassignEventResponse
+  AssignEventStore,
+  EventData,
+  ExtendedTodo,
+  ReassignEventResponse
 };
 

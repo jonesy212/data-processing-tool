@@ -1,6 +1,8 @@
 // EventManager.tsx
 import axiosInstance from '@/app/api/csrfToken';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { defaultEventStore, EventStore } from "@/app/events/EventStore";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -11,13 +13,11 @@ import {
   selectEventLoading,
   selectEvents
 } from "@/app/state/redux/slices/EventSlice";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomEventExtension } from "../../events/BaseCustomEvent";
-import { defaultEventStore, EventStore } from "@/app/events/EventStore";
 
 // Define the thunk actions
 const fetchEvents = createAsyncThunk<CustomEventExtension[]>(

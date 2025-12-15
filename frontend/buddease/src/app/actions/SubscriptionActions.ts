@@ -1,6 +1,7 @@
 // SubscriptionActions.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
@@ -10,12 +11,11 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { AppSubscription } from '@/app/typings/entities/SubscriptionEntity';
 import { category } from '@/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/utils/web3/applicationUtils';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 import { LiveEvent } from "@refinedev/core";
-import { AppSubscription } from '@/app/typings/entities/SubscriptionEntity'
 
 interface SubscriptionPayload<
   T extends BaseDataEntity = BaseDataRoot,

@@ -1,7 +1,7 @@
 // Reminder.ts
 import { EscalationAction } from "./EscalationAction";
 import { CustomAction } from '@/app/settings/CustomAction';
-import { NotificationChannels } from '@/app/notifications/NotificationChannels';
+import { NotificationChannels, RetryPolicy } from '@/app/notifications/NotificationChannels';
 import { ReminderCondition } from '@/app/settings/ReminderConditionEngine'
 // Core reminder definition
 
@@ -74,20 +74,20 @@ interface ReminderSettings {
   eventSpecificReminders: EventReminder[];
   
   // Smart reminder features
-  smartReminders: SmartReminderSettings;
+  smartReminders?: SmartReminderSettings;
   
   // Notification channels
-  channels: NotificationChannels;
+  channels?: NotificationChannels;
   
   // Escalation rules
   escalationRules: EscalationRule[];
   
   // Business rules
-  businessHours: BusinessHours;
+  businessHours?: BusinessHours;
   blackoutPeriods: BlackoutPeriod[];
   
   // User preferences
-  userPreferences: ReminderPreferences;
+  userPreferences?: ReminderPreferences;
 }
 
 
@@ -131,6 +131,10 @@ interface SmartReminderSettings {
 
 // Email notifications
 interface EmailSettings {
+  subjectTemplate?: string;
+  bodyTemplate?: string;
+  cc?: string[];
+  bcc?: string[];
   enabled: boolean;
   frequency?: 'instant' | 'hourly' | 'daily' | 'weekly';
   digestMode?: boolean; // Whether to group multiple alerts into one email
@@ -142,6 +146,8 @@ interface EmailSettings {
 
 // Push notifications (desktop/mobile)
 interface PushNotificationSettings {
+  title?: string;
+  badgeCount?: number;
   enabled: boolean;
   sound?: boolean;
   vibration?: boolean;
@@ -180,12 +186,9 @@ interface InAppSettings {
 // Webhook notifications (for integrations and automation)
 interface WebhookSettings {
   enabled: boolean;
-  url?: string;
+  url: string;
   authToken?: string; // Optional authentication token
-  retryPolicy?: {
-    maxRetries: number;
-    retryIntervalSeconds: number;
-  };
+  retryPolicy?: RetryPolicy; 
   payloadFormat?: 'json' | 'xml';
   events?: string[]; // List of event types to send (e.g., "user.created", "task.updated")
   headers?: Record<string, string>; // Custom headers

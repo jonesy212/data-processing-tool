@@ -4,8 +4,8 @@
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
-import { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
-import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from '@/DynamicPromptPhaseHook';
+import { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
+import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from '@/app/hooks/phases/DynamicPromptPhaseHook';
 
 
 type DynamicPromptPhaseHookConfig = {
@@ -31,24 +31,127 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
         // Cleanup logic for Team Building Phase
         console.log("Cleanup for Team Building Phase");
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during Team Building Phase:", error);
-      // Handle errors using notification service
-      const { notify} = useNotification();
-      notify(
-        "teamBuildingPhaseError",
-        "Team Building Phase Error",
-        NOTIFICATION_MESSAGES.TeamBuildingPhase.CREATING_TEAM_BUILDING_PHASE_ERROR,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      // Enhanced error notification using consistent object format
+      const { notify } = useNotification();
+      let userMessage = "Team Building Phase Error";
+      
+      if (error.message?.includes('network') || error.code === 'NETWORK_ERROR') {
+        userMessage = "Network error during Team Building Phase";
+      } else if (error.message?.includes('timeout') || error.code === 'TIMEOUT') {
+        userMessage = "Team Building Phase operation timed out";
+      } else if (error.message?.includes('validation') || error.code === 'VALIDATION_ERROR') {
+        userMessage = "Team Building Phase validation failed";
+      }
+      
+      notify({
+        id: `team_building_phase_error_${Date.now()}`,
+        message: userMessage,
+        data: {
+          entityType: 'team_building_phase',
+          action: 'phase_execution',
+          phaseName: 'Team Building Phase',
+          originalError: error.message,
+          errorType: 'TEAM_BUILDING_PHASE_ERROR',
+          errorCode: error.code,
+          stackTrace: error.stack,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const,
+        metadata: {
+          phaseType: 'team_building',
+          isHookError: true,
+          hookName: 'useTeamBuildingPhase'
+        }
+      });
+      
+      // Optional: Log to monitoring service
+      logPhaseError({
+        phase: 'team_building',
+        error: error,
+        context: 'useTeamBuildingPhase hook',
+        timestamp: new Date().toISOString()
+      });
+      
       throw error;
     }
-  } ,
-} as DynamicPromptPhaseHookConfig &  DynamicHookParams<void>);
+  },
+} as DynamicPromptPhaseHookConfig & DynamicHookParams<void>);
 
+// Optional: Success notification for phase completion
+const useTeamBuildingPhaseWithSuccess = createDynamicPromptPhaseHook({
+  condition: async () => {
+    const isTeamBuildingPhase = true;
+    return Promise.resolve(isTeamBuildingPhase);
+  },
+  asyncEffect: async () => {
+    try {
+      console.log("useEffect triggered for Team Building Phase");
+      
+      // Your logic here
+      const result = await executeTeamBuildingLogic();
+      
+      // Success notification
+      const { notify } = useNotification();
+      notify({
+        id: `team_building_phase_success_${Date.now()}`,
+        message: "Team Building Phase completed successfully",
+        data: {
+          entityType: 'team_building_phase',
+          action: 'phase_completion',
+          phaseName: 'Team Building Phase',
+          result: result,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
+      
+      return () => {
+        console.log("Cleanup for Team Building Phase");
+      };
+    } catch (error: any) {
+      console.error("Error during Team Building Phase:", error);
+      
+      const { notify } = useNotification();
+      notify({
+        id: `team_building_phase_error_${Date.now()}`,
+        message: "Team Building Phase failed",
+        data: {
+          entityType: 'team_building_phase',
+          action: 'phase_execution',
+          phaseName: 'Team Building Phase',
+          originalError: error.message,
+          errorType: 'TEAM_BUILDING_PHASE_ERROR',
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      
+      throw error;
+    }
+  },
+});
 
+// Helper function (optional)
+export const executeTeamBuildingLogic = async (): Promise<any> => {
+  // Your team building logic here
+  return { success: true };
+};
 
+// Error logging function (optional)
+export const logPhaseError = (errorInfo: any): void => {
+  console.log('[Phase Error Logged]:', errorInfo);
+  // Could send to monitoring service like Sentry
+  sentry.captureException(errorInfo.error, { extra: errorInfo });
+};
 
 
 

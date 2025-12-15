@@ -1,9 +1,10 @@
 // responsetUtils.ts
 import fetchSnapshotById from '@/app/api/SnapshotApi';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
@@ -11,8 +12,7 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from '@/app/snapshots/SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 
 function handleSnapshot<  
   T extends BaseDataEntity,
@@ -309,9 +309,7 @@ const returnsSnapshotStore = async <
   }
 };
 export {
-  handleSnapshot,
-  returnsSnapshotStore,
-  mapResponseToSnapshot
+  handleSnapshot, mapResponseToSnapshot, returnsSnapshotStore
 };
 
 

@@ -776,9 +776,10 @@ function CalendarApp<
       return {} as Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     },
     timestamp: undefined,
-    meta: {},
+    meta: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     getSnapshotStoreData: async function (
-      
+      startDate, endDate, assignedUser, todoStatus,
+
     ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       return [];
     }

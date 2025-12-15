@@ -8,7 +8,7 @@ export type CorrectionType =
   | 'compatibility' | 'imports' | 'import_error' | 'folder_analysis'
   | 'type_annotation' | 'performance' | 'structural'; 
 
-export type CorrectionSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type CorrectionSeverity = 'low' | 'medium' | 'high' | 'critical' ;
 export type CorrectionCategory = 
   | 'compilation' | 'runtime' | 'security' 
   | 'performance' | 'structure' | 'maintainability' 
@@ -19,8 +19,9 @@ export type CorrectionCategory =
   | 'formatting' | 'styling' | 'testing' | 'authentication'
   | 'database' | 'api' | 'mobile' | 'web3' | 'filesystem' 
   | 'general' | 'network' | 'platform' | 'types' | 'general' 
-  | 'network' | 'platform' | 'types' | 'react' | 'imports'
-  | 'react-native' | 'function' | 'class' | 'education' | 'type_error';
+  | 'network' | 'platform' | 'react' | 'imports'
+  | 'react-native' | 'function' | 'class' | 'education'
+  | 'type_error' | 'scripts' | 'data' | 'dependency' | 'critical';
 
 export interface CorrectionInput {
   id: string;

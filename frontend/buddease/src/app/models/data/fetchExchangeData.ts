@@ -1,6 +1,6 @@
 // fetchExchangeData.ts
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import { DexLogger, ExchangeLogger } from "@/app/libraries/logging/Logger";
+import { DexLogger, ExchangeLogger } from '@/app/logging/Logger';
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { processDEXData } from "@/utils/processDEXDataUtils";
 

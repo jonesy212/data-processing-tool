@@ -1,8 +1,7 @@
 // FolderCard.tsx
 import React from 'react';
-import DraggableAnimation from '@/app/components/libraries/animations/DraggableAnimation';
-import { useMovementAnimations } from '@/app/components/libraries/animations/movementAnimations/MovementAnimationActions';
-
+import DraggableAnimation from '@/app/libraries/animations/DraggableAnimation'
+import { useMovementAnimations } from '@/app/libraries/animations/movementAnimations/MovementAnimationActions'
 const FolderCard: React.FC<{ folderName: string }> = ({ folderName }) => {
   const { show, hide, isDragging } = useMovementAnimations();
 

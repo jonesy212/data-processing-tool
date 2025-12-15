@@ -5,11 +5,9 @@ import { Label } from '@/app/branding/BrandingSettings';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { BaseData } from '@/app/models/data/Data';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { Video, VideoData } from '@/app/typings/videoTypes/Video';
 import { makeAutoObservable } from "mobx";
 import { useEffect, useState } from "react";
@@ -25,7 +23,7 @@ export interface VideoWrapper<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // use full metadata-rich type
+  videoData: VideoData<T, K>; // use full metadata-rich type
 }
 
 export interface VideoStore<
@@ -38,13 +36,13 @@ export interface VideoStore<
 > {
   isLoading: boolean; // Add isLoading
   error: string | null; // Add error
-  videos: Record<string, VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  videos: Record<string, VideoData<T, K>[]>;
   fetchVideos: () => void;
   addVideo: (video: Video) => void;
   updateVideo: (id: string, updatedVideo: Video) => void;
   deleteVideo: (id: string) => void;
-  getVideoData: (id: string, video: Video) => VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  getVideosData: (ids: string[], videos: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => Promise<Record<string, VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
+  getVideoData: (id: string, video: Video) => VideoData<T, K> | null;
+  getVideosData: (ids: string[], videos: VideoData<T, K>[]) => Promise<Record<string, VideoData<T, K>>>;
   updateVideoTags: (id: string, tags: string[]) => void;
   setCurrentVideoMeta: (meta: any) => void; // Add this method
   setCurrentVideoMetadata: (metadata: any) => void; // Add this method
@@ -55,14 +53,10 @@ export interface VideoStore<
 
 const convertToVideoData = <
   T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  K extends T = T
 >(
   video: Video
-): VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+): VideoData<T, K> => {
 return {
     ...video,  // start with original video properties
     id: video.id,
@@ -86,14 +80,9 @@ return {
 };
 
 const convertToVideo = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  T extends BaseDataEntity
 >(
-  videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  videoData: VideoData<T, K>
 ): Video => {
   return {
     id: videoData.id,
@@ -110,6 +99,7 @@ const convertToVideo = <
     description: (videoData as any).description ?? videoData.videoDescription,
     // optional metadata
     currentMeta: videoData.currentMeta,
+    watchLater: videoData.watchLater,
     currentMetadata: videoData.currentMetadata,
   };
 };
@@ -124,8 +114,8 @@ const useVideoStore = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(): VideoStore<T, K> => {
-  const [videos, setVideos] = useState<Record<string, VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>({});
-  const [video, setVideo] = useState<VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
+  const [videos, setVideos] = useState<Record<string, VideoData<T, K>[]>>({});
+  const [video, setVideo] = useState<VideoData<T, K> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentMeta, setCurrentMeta] = useState<any>(null);
@@ -169,15 +159,15 @@ const useVideoStore = <
     return videoEntry || (_video ? convertToVideoData(_video) : null);
   };
 
-  const getVideosData = async (ids: string[], videoList: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
+  const getVideosData = async (ids: string[], videoList: VideoData<T, K>[]) => {
     try {
       const response = await axiosInstance.get("/videos", {
         params: { ids, videos: videoList.map((v) => v.id) },
       });
       const data = response.data as Record<string, Video[]>;
-      const converted: Record<string, VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
+      const converted: Record<string, VideoData<T, K>> = {};
       for (const key in data) {
-        converted[key] = convertToVideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(data[key][0]);
+        converted[key] = convertToVideoData<T, K>(data[key][0]);
       }
       return converted;
     } catch (error) {
@@ -195,10 +185,10 @@ const useVideoStore = <
       const data = await response.json();
       const videoData = Object.keys(data).reduce((acc, key) => {
         acc[key] = data[key].map((v: Video) =>
-          convertToVideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(v)
+          convertToVideoData<T, K>(v)
         );
         return acc;
-      }, {} as Record<string, VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>);
+      }, {} as Record<string, VideoData<T, K>[]>);
       setVideos(videoData);
     } catch (error) {
       handleError(error, "fetching videos");
@@ -207,47 +197,104 @@ const useVideoStore = <
     }
   };
 
-  const addVideo = async (videoData: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-    const video = convertToVideo(videoData);
-    await axiosInstance.post(endpoints.videos.add, video);
-    setVideos((prev) => ({ ...prev, [video.id]: [videoData] }));
-    notify(null, "Video added successfully", NOTIFICATION_MESSAGES.Video.ADD_VIDEO_SUCCESS, new Date(), NotificationTypeEnum.OPERATION_SUCCESS);
-  };
+const addVideo = async (videoData: VideoData<T, K>) => {
+  const video = convertToVideo(videoData);
+  await axiosInstance.post(endpoints.videos.add, video);
+  setVideos((prev) => ({ ...prev, [video.id]: [videoData] }));
+  
+  useNotification().notify({
+    id: "addVideoSuccess",
+    message: NOTIFICATION_MESSAGES.Video.ADD_VIDEO_SUCCESS,
+    data: {
+      extra: {
+        videoId: video.id,
+        videoData,
+        operation: "Add video"
+      }
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_SUCCESS,
+    level: 'success'
+  });
+};
 
-  const updateVideo = async (id: string, updatedVideo: VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-    const video = convertToVideo(updatedVideo);
-    const videoData = convertToVideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(video);
-    setVideos((prev) => ({ ...prev, [id]: [videoData] }));
-    await axiosInstance.put(`/videos/${id}`, video);
-    notify(null, "Video updated successfully", NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS, new Date(), NotificationTypeEnum.OPERATION_SUCCESS);
-  };
+const updateVideo = async (id: string, updatedVideo: VideoData<T, K>) => {
+  const video = convertToVideo(updatedVideo);
+  const videoData = convertToVideoData<T, K>(video);
+  setVideos((prev) => ({ ...prev, [id]: [videoData] }));
+  await axiosInstance.put(`/videos/${id}`, video);
+  
+  useNotification().notify({
+    id: "updateVideoSuccess",
+    message: NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
+    data: {
+      extra: {
+        videoId: id,
+        updatedVideo,
+        operation: "Update video"
+      }
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_SUCCESS,
+    level: 'success'
+  });
+};
 
-  const deleteVideo = async (id: string) => {
-    const existingVideo = videos[id]?.[0];
-    const video = existingVideo ? convertToVideo(existingVideo) : { id };
-    await axiosInstance.delete(endpoints.videos.deleteVideo + id, { data: video });
-    setVideos((prev) => {
-      const updated = { ...prev };
-      delete updated[id];
-      return updated;
-    });
-    notify(null, `You have successfully deleted the video ${id}`, NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS, new Date(), NotificationTypeEnum.OPERATION_SUCCESS);
-  };
+const deleteVideo = async (id: string) => {
+  const existingVideo = videos[id]?.[0];
+  const video = existingVideo ? convertToVideo(existingVideo) : { id };
+  await axiosInstance.delete(endpoints.videos.deleteVideo + id, { data: video });
+  setVideos((prev) => {
+    const updated = { ...prev };
+    delete updated[id];
+    return updated;
+  });
+  
+  useNotification().notify({
+    id: "deleteVideoSuccess",
+    message: NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
+    data: {
+      extra: {
+        videoId: id,
+        operation: "Delete video",
+        videoTitle: existingVideo?.title || 'Unknown video'
+      }
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_SUCCESS,
+    level: 'success'
+  });
+};
 
-  const updateVideoTags = (id: string, tags: string[]) => {
-    setVideos((prev) => {
-      const updatedVideos = prev[id] ? [...prev[id]] : [];
-      const video = updatedVideos.find((v) => v.id === id);
-      if (video) video.tags = tags;
-      return { ...prev, [id]: updatedVideos };
-    });
-  };
+const updateVideoTags = (id: string, tags: string[]) => {
+  setVideos((prev) => {
+    const updatedVideos = prev[id] ? [...prev[id]] : [];
+    const video = updatedVideos.find((v) => v.id === id);
+    if (video) video.tags = tags;
+    return { ...prev, [id]: updatedVideos };
+  });
+};
 
-  const handleError = (error: any, action: string) => {
-    console.error(`Error ${action}:`, error);
-    setError(`Error ${action}: ${error.message || "Unknown error"}`);
-    notify(`Error ${action}`, error.message || "Unknown error", "Failed to perform action", new Date(), NotificationTypeEnum.ERROR);
-  };
+const handleError = (error: any, action: string) => {
+  console.error(`Error ${action}:`, error);
+  setError(`Error ${action}: ${error.message || "Unknown error"}`);
+  
+  useNotification().notify({
+    id: `video${action}Error`,
+    message: `Failed to ${action.toLowerCase()} video`,
+    data: {
+      originalError: error instanceof Error ? error.message : 'Unknown error',
+      extra: {
+        errorMessage: `Error ${action}`,
+        action
+      }
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.ERROR,
+    level: 'error'
+  });
+};
+  
 
   const store: VideoStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = makeAutoObservable({
     videos,

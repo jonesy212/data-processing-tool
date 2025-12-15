@@ -1,4 +1,5 @@
 // generateCategoryProperties.ts
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryKeys } from "@/app/libraries/categories/CategoryManager";
@@ -6,7 +7,6 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig } from '@/app/snapshots/';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { BaseDataRoot, BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
@@ -383,4 +383,5 @@ function generateOrVerifySnapshotId <
 }
 export { generateCategoryProperties, generateOrVerifySnapshotId, getCategoryLabelForSnapshot, getOrSetCategoryForSnapshot, isCategoryProperties };
 
-export type { Category, CategoryIdentifier, SnapshotCategoryMethods, CategoryPropertyBundle };
+    export type { Category, CategoryIdentifier, CategoryPropertyBundle, SnapshotCategoryMethods };
+

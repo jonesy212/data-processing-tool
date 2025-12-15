@@ -1,26 +1,20 @@
 // Attendee.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
-import { Team } from '@/app/components/teams/Team'
-import { VideoData } from '@/app/typings/videoTypes/Video';
+import { Team } from '@/app/components/teams/Team';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { transformProjectToUnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { projectMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
-import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { projectMetadata } from '@/app/config/StructuredMetadata';
-import {  transformProjectToUnifiedMetadata } from '@/app/config/MetaDataOptions'
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { useState } from 'react';
 import useAttendancePrediction from './AttendancePrediction';
-import { VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields } from '@/app/typings/entities/VideoEntity'
-import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
-import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity'
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 interface Attendee {
   id: string;
@@ -291,11 +285,11 @@ const calendarManagerState: CalendarManagerState = {
 
 export default calendarManagerState;
 
-export { event,  };
+export { event };
 
-export type {
-  Attendee, AttendeeAvailabilityAnalysis,
-  AttendeeAvailability, AttendeeAvailabilityPrediction,
-  AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
-  ExtendedAttendeeAvailability
-};
+    export type {
+    Attendee, AttendeeAvailability, AttendeeAvailabilityAnalysis, AttendeeAvailabilityPrediction,
+    AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
+    ExtendedAttendeeAvailability
+  };
+

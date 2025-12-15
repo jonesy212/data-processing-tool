@@ -1,10 +1,10 @@
 // FacebookAPI.ts
 
 // Import necessary modules and types
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { Note, handleNoteApiErrorAndNotify } from '@/ApiNote';
+import { Note, handleNoteApiErrorAndNotify } from '@/app/api/ApiNote';
 import axiosInstance from '@/app/api/csrfToken';
-import { headersConfig } from '@/components/shared/SharedHeaders';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { authToken } from '@/app/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
 

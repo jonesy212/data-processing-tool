@@ -3,7 +3,7 @@
 
 import { Label } from '@/app/branding/BrandingSettings';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import ListGenerator from "@/app/generators/ListGenerator";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
@@ -36,8 +36,8 @@ interface SharedDetails<
   IncludedFields extends keyof T = keyof T
 > extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           SharedIdentifiers<T, K> {
-  participants: Participant[];
-  uploadedAt: Date;
+  participants?: Participant[];
+  uploadedAt?: Date;
   phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   phaseName: string;
   fakeData?: FakeData;

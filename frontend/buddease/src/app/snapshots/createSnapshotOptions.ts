@@ -1,6 +1,7 @@
 // createSnapshotOptions.ts
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from '@/app/documents/SharedIdentifiers';
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "@/app/libraries/categories/generateCategoryProperties";
@@ -21,7 +22,6 @@ import { SubscribeResult } from '@/users/Subscriber';
 import { addToSnapshotList, category } from '@/utils/snapshotUtils';
 import { SnapshotData } from ".";
 import { SnapshotOperation } from "../actions/SnapshotActions";
-import { Attachment } from "../documents/attachment/Attachment";
 import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";

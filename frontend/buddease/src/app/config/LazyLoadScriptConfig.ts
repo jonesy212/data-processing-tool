@@ -1,4 +1,6 @@
 // LazyLoadScriptConfig.ts
+import { ApiConfig } from '@/app/api/ApiConfigService';
+import { createSystemConfigs } from '@/app/api/systemConfigs';
 import { traverseFrontendDirectory } from '@/app/api/traverse/route';
 import { UserConfigs } from '@/app/api/userConfigs';
 import { BackendConfig, backendConfig } from '@/app/config/BackendConfig';
@@ -9,10 +11,8 @@ import MainConfig from '@/app/config/MainConfig';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ApiConfig } from '@/app/api/ApiConfigService'
 import ShoppingCenterConfig from '@/app/shoppingCenter/ShoppingCenterConfig';
 import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
-import { createSystemConfigs, SystemConfigs } from '@/app/api/systemConfigs';
 
 interface LazyLoadScriptConfig {
   configureScript(): unknown;

@@ -1,6 +1,6 @@
 // createInitializedSnapshot.ts
-import { createBaseSnapshot } from '@/app/snapshots/createBaseSnapshot'
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { createBaseSnapshot } from '@/app/snapshots/createBaseSnapshot';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

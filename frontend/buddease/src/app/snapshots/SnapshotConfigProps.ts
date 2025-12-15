@@ -1,17 +1,16 @@
 // SnapshotConfigProps.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { BaseEntity } from '@/app/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { DataStore } from "@/app/state/stores/DataStore";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotConfig } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
 interface SnapshotCommonProps<

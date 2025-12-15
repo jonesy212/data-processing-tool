@@ -1,9 +1,9 @@
 // appDevelopmentActionsTypes.ts
 // AppDevelopmentActionsType.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from "@/app/models/data/Data";
 import { Phase } from "@/app/models/phases/Phase";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { PayloadAction } from "@reduxjs/toolkit";
 
 export type AppDevelopmentActionsType<

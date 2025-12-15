@@ -2,11 +2,11 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
-import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent'
 import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
-
 
 interface FetchEventsResponse {
   [key: string]: CalendarEvent[];
@@ -21,7 +21,6 @@ const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://default-api-base
 const { notify } = useNotification();  // Destructure notify from useNotification
 
 export const calendarService = observable({
-
   fetchEvents: async (): Promise<FetchEventsResponse> => {
     try {
       const response: AxiosResponse<FetchEventsResponse> =
@@ -29,27 +28,36 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "fetchEventSuccess",
-        "Fetch Event Success",
-        NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS,
-        new Date(),
-        "Success" as NotificationType
-      );
+      notify({
+        id: "fetchEventsSuccess",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_SUCCESS,
+        data: {
+          entityType: 'calendarEvent',
+          count: Object.values(response.data).flat().length,
+          extra: { count: Object.values(response.data).flat().length }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return response.data;
     } catch (error) {
       handleApiError(
         error as AxiosError<unknown>,
         "Failed to fetch calendar events"
       );
-      notify(
-        "",
-        "Remove Event Error",
-        NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR,
-        new Date(),
-         NotificationTypeEnum.ERROR
-      );
-
+      notify({
+        id: "fetchEventsError",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENTS_ERROR,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityType: 'calendarEvent',
+          extra: { error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -60,16 +68,34 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
+      notify({
+        id: "fetchEventSuccess",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENT_SUCCESS,
+        data: {
+          entityId: eventId,
+          entityType: 'calendarEvent',
+          extra: { eventId }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to fetch calendar event with ID ${eventId}`);
-      notify(
-        "",
-        NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR,
-        "Error",
-        new Date,
-        {} as NotificationType
-      );
+      notify({
+        id: "fetchEventError",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.FETCH_EVENT_ERROR,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: eventId,
+          entityType: 'calendarEvent',
+          extra: { eventId, error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -80,24 +106,31 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "",
-        "Complete All Batch Event Succss",
-        NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS,
-        new Date,
-        NotificationTypeEnum.OPERATION_SUCCESS as NotificationType
-      );
-
+      notify({
+        id: "completeAllEventsSuccess",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS,
+        data: {
+          entityType: 'calendarEvent',
+          extra: {}
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to complete all calendar events');
-      notify(
-        "",
-        NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR,
-        "Error",
-        new Date,
-        {} as NotificationType
-      );
-
+      notify({
+        id: "completeAllEventsError",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_ERROR,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityType: 'calendarEvent',
+          extra: { error }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
@@ -108,24 +141,41 @@ export const calendarService = observable({
       runInAction(() => {
         // Update state or perform other MobX-related actions
       });
-      notify(
-        "",
-        "Reassign Event Success",
-        NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS,
-        new Date,
-        NotificationTypeEnum.OPERATION_SUCCESS as NotificationType
-      );
-
+      notify({
+        id: "reassignEventSuccess",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS,
+        data: {
+          entityId: eventId,
+          entityType: 'calendarEvent',
+          extra: { 
+            eventId,
+            newUserId 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to reassign calendar event with ID ${eventId}`);
-      notify(
-        "Error",
-        NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, "Reassign Event Error",
-        new Date,
-        NotificationTypeEnum.ERROR
-      );
+      notify({
+        id: "reassignEventError",
+        message: NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR,
+        data: {
+          originalError: error instanceof Error ? error.message : 'Unknown error',
+          entityId: eventId,
+          entityType: 'calendarEvent',
+          extra: { 
+            eventId,
+            newUserId,
+            error 
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ERROR,
+        level: 'error' as const
+      });
       throw error;
     }
   },
 });
-

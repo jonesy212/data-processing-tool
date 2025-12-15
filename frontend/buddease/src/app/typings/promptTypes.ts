@@ -1,4 +1,5 @@
 // promptTypes.ts
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
 export interface BasePrompt {
   id: string;
@@ -7,6 +8,7 @@ export interface BasePrompt {
   type: PromptType;
   createdAt: Date;
   updatedAt: Date;
+  category?: Category; // Add optional category
 }
 
 export interface ChatPrompt extends BasePrompt {
@@ -21,6 +23,7 @@ export interface FeaturePrompt extends BasePrompt {
   accessLevel: 'private' | 'team' | 'public' | 'community';
   createdBy: string;
   linkedDocuments?: string[];
+  category: Category;
 }
 
 export interface SystemPrompt extends BasePrompt {

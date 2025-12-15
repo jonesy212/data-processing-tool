@@ -1,21 +1,26 @@
 // NoteBuilder.tsx
-import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
-import { Collaborator } from "@/app/collaborators/Collaborator";
+import { addNoteAPI, updateNoteAPI } from '@/app/api/ApiNote';
+import { Collaborator } from '@/app/collaborators/Collaborator';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { UserData } from "@/app/users/User";
-import { Version } from "@/app/versions/Version";
-import { VersionHistory } from "@/app/versions/VersionData";
+import { UserData } from '@/app/users/User';
+import { Version } from '@/app/versions/Version';
+
+
 import { createMetaState } from '@/app/config/metadata/MetadataHooks';
-import { Editor, EditorState, RichUtils } from "draft-js";
-import "draft-js/dist/Draft.css";
-import React, { useState } from "react";
-import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from "../../documents/NoteData"; // Assuming you have a NoteData interface
+import { VersionHistory } from '@/app/versions/VersionData';
+import { Editor, EditorState, RichUtils } from 'draft-js';
+import React, { useState } from 'react';
+import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from '../../documents/NoteData'; // Assuming you have a NoteData interface
+
+if (typeof window !== 'undefined') {
+  import("draft-js/dist/Draft.css");
+}
 
 const NoteBuilder: React.FC = () => {
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
-  const [noteData, setNoteData] = useState<NoteData>({
+  const [noteData, setNoteData] = useState<NoteData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>({
     id: 0,
     title: "",
     content: "",
@@ -38,11 +43,11 @@ const NoteBuilder: React.FC = () => {
       [], // tags: tags associated with the metadata
       undefined, // metadata: metadata object, can be undefined initially
       undefined, // initialState: initial state of the metadata, can be undefined
-      {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+      {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // meta: additional metadata, can be an empty array if not needed
       { eventRecords: {} }, // events: event manager data, initializing with an empty event record
       [], // relatedData: related data associated with metadata, empty array for now
       {} as Version, // version: version information, can be undefined if not applicable
-      {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+      {} as VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // lastUpdated: last updated version history, it should be provided
       true, // isActive: boolean flag indicating whether metadata is active or not
       {}, // config: configuration settings for the metadata, using an empty object
       [], // permissions: permissions associated with the metadata, empty for now
@@ -63,10 +68,10 @@ const NoteBuilder: React.FC = () => {
       [], // tags: tags associated with the metadata
       undefined, // metadata: metadata object, can be undefined initially
       undefined, // initialState: initial state of the metadata, can be undefined
-      {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+      {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // meta: additional metadata, can be an empty array if not needed
       { eventRecords: {} }, // events: event manager data, initializing with an empty event record
       {} as Version, // version: version information, can be undefined if not applicable
-      {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+      {} as VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // lastUpdated: last updated version history, it should be provided
       true, // isActive: boolean flag indicating whether metadata is active or not
       {}, // config: configuration settings for the metadata, using an empty object
       [], // permissions: permissions associated with the metadata, empty for now

@@ -5,31 +5,31 @@ import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { useMeta } from "@/app/config/useMeta";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import {
-    CombinedEvents,
-    createBaseData,
-    SnapshotManager,
+  CombinedEvents,
+  createBaseData,
+  SnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { BaseData, Data } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import {
-    ProjectPhaseTypeEnum
+  ProjectPhaseTypeEnum
 } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-    SnapshotsArray,
-    SnapshotsObject
+  SnapshotsArray,
+  SnapshotsObject
 } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
-    DataStore,
-    EventRecord,
-    InitializedState,
+  DataStore,
+  EventRecord,
+  InitializedState,
 } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
@@ -42,38 +42,40 @@ import { id, Signature } from "ethers";
 import { refreshUI, refreshUIForFile } from "./refreshUI";
 import { SnapshotConfigProps } from "./SnapshotConfigProps";
 import {
-    defaultAddDataStatus,
-    defaultRemoveData,
-    defaultTransformDelegate,
-    defaultUpdateData,
-    defaultUpdateDataDescription,
-    defaultUpdateDataStatus,
-    defaultUpdateDataTitle
+  defaultAddDataStatus,
+  defaultRemoveData,
+  defaultTransformDelegate,
+  defaultUpdateData,
+  defaultUpdateDataDescription,
+  defaultUpdateDataStatus,
+  defaultUpdateDataTitle
 } from "./snapshotDefaults";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import {
-    snapshotStoreConfigInstance
+  snapshotStoreConfigInstance
 } from "./snapshotStoreConfigInstance";
 
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { Label } from "@/app/branding/BrandingSettings";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { ExcludedFields } from "@/app/components/routing/Fields";
+import { HighlightColor } from "@/app/components/styling/Palette";
 import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { SchemaField } from "@/app/config/metadata/SchemaField";
 import {
-    UnifiedMetaDataOptions
+  UnifiedMetaDataOptions
 } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedSnapshotProperties, SharedTimestamps } from "@/app/documents/RelatedProps";
 import useDocumentManagement from "@/app/hooks/documents/useDocumentManagement";
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
+import { CreateSnapshotStoresPayload } from '@/app/interfaces/payload/payloadTypes';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from "@/app/pages/layouts/fetchUserAreaDimensions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -81,10 +83,8 @@ import { ActivityStatus } from "@/app/pages/profile/Profile";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import baseMeta from "@/app/server/database/baseMeta";
 import { payload } from "@/app/server/database/Payload";
-import { CreateSnapshotStoresPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { HighlightColor } from "@/app/components/styling/Palette";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Todo } from "@/app/todos/Todo";
@@ -98,15 +98,15 @@ import { version } from "os";
 import { config } from "process";
 import { options } from "sanitize-html";
 import {
-    CustomSnapshotData,
-    SnapshotContainer,
-    SnapshotData
+  CustomSnapshotData,
+  SnapshotContainer,
+  SnapshotData
 } from ".";
 import { createSnapshot } from "./createSnapshot";
 import { getData } from "./methods/dataMethods";
 import {
-    ConfigureSnapshotStorePayload,
-    SnapshotConfig,
+  ConfigureSnapshotStorePayload,
+  SnapshotConfig,
 } from "./SnapshotConfig";
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import { storeProps } from "./SnapshotStoreProps";

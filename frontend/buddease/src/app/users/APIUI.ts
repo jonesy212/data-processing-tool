@@ -6,7 +6,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { UserSettings } from '@/app/config/UserSettings';
 import safeParseData, { DataWithComment } from '@/app/dataIntegration/SafeParseData';
 import { ParsedData } from '@/app/dataIntegration/parseData';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum, NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { useNotification } from '@/app/state/context/NotificationContext';
@@ -306,15 +306,26 @@ const handleUiApiErrorAndNotify = (
     errorMessageId: keyof UINotificationMessages
 ) => {
     handleApiError(error, errorMessage);
+    
     if (errorMessageId) {
         const errorMessageText = uiApiNotificationMessages[errorMessageId];
-        useNotification().notify(
-            errorMessageId,
-            errorMessageText,
-            null,
-            new Date(),
-            'UIAPIError' as NotificationType
-        );
+        
+        useNotification().notify({
+            id: errorMessageId.toString(),
+            message: errorMessageText,
+            data: {
+                originalError: error.message || 'Unknown error',
+                entityType: 'ui',
+                extra: {
+                    errorMessage,
+                    errorDetails: error.response?.data,
+                    status: error.response?.status
+                }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.API_ERROR,   
+            level: 'error' as const
+        });
     }
 };
 

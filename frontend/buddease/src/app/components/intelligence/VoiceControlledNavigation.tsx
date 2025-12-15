@@ -1,11 +1,14 @@
 // VoiceControlledNavigation.tsx
 import introJs from "intro.js";
-import "intro.js/introjs.css";
 import React, { useEffect, useState } from "react";
 import {
   startVoiceRecognition,
   stopVoiceRecognition,
 } from "@/app/components/intelligence/VoiceControlledNavigation";
+
+if (typeof window !== 'undefined') {
+  import("intro.js/introjs.css");
+}
 
 const VoiceControlledNavigation: React.FC = () => {
   const [isVoiceRecognitionActive, setVoiceRecognitionActive] = useState(false);

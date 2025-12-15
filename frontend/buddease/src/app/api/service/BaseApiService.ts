@@ -12,7 +12,7 @@ export abstract class BaseApiService {
 
   // Generic request method
   protected async request<T>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS',
     endpointPath: string,
     data?: any,
     config?: AxiosRequestConfig
@@ -51,5 +51,15 @@ export abstract class BaseApiService {
 
   protected async patch<T>(endpointPath: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('PATCH', endpointPath, data, config);
+  }
+
+    // Add HEAD method
+  protected async head<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>('HEAD', endpointPath, undefined, config);
+  }
+
+  // Add OPTIONS method
+  protected async options<T>(endpointPath: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>('OPTIONS', endpointPath, undefined, config);
   }
 }

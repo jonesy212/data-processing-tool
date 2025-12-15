@@ -2,7 +2,7 @@
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
-import { Payload } from '@/app/server/database/Payload';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Result } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta } from '@/app/typings/entities/SnapshotStorageEntity';
@@ -71,7 +71,7 @@ interface SnapshotStorageOptions<
 	category: Category;
 	date: Date;
 	snapshotId?: string | number | null;
-	metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+	metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 	criteria: CriteriaType;
 	multipleCallbacks: MultipleEventsCallbacks<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 	snapshotConfig?: SnapshotConfig<SnapshotStorageEntity, SnapshotStorageK, SnapshotStorageMeta, SnapshotStorageAttachment, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields>[];

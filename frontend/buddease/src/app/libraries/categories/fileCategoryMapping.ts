@@ -1,23 +1,23 @@
 // fileCategoryMapping.ts
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { FileCategory, fileMapping } from "@/app/documents/FileType";
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
-import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
-import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { FileCategory, fileMapping } from "@/app/documents/FileType";
+import { analyzePerformanceFile, analyzeSecurityFile, analyzeWeb3File } from '@/app/generators/corrections/analyzers/fileCategoryAnalyzers';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
+import { CategoryMapper } from '@/app/libraries/categories/CategoryMapper';
 import { determineFileCategoryLogger } from "@/app/logging/determineFileCategoryLogger";
+import { BaseData } from '@/app/models/data/Data';
 import { T } from "@/app/models/data/dataStoreMethods";
 import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { CorrectionCategory } from '@/app/typings/correctionTypes';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CategoryMapper } from '@/app/libraries/categories/CategoryMapper'
-import  {analyzeWeb3File, analyzeSecurityFile, analyzePerformanceFile } from '@/app/generators/corrections/analyzers/fileCategoryAnalyzers'
+import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
+import { ExtendedVersionData } from '@/app/versions/VersionData';
 
 // Define a mapping of file categories to their corresponding snapshot entries
 /* ----------  missing mapping declaration  ---------- */

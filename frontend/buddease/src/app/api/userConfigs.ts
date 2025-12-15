@@ -1,10 +1,10 @@
 // userConfigs.ts
-import { UserConfig } from "@/app/snapshots";
-import { UserData } from "@/app/users/User";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { userPreferences } from "@/app/config/UserPreferences";
 import userSettings, { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserConfig } from "@/app/snapshots";
+import { UserData } from "@/app/users/User";
 
 interface UserConfigData<
   T extends BaseDataEntity,

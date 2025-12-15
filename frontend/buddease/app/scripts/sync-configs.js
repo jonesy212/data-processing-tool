@@ -1,7 +1,7 @@
 // scripts/sync-configs.js
 const fs = require('fs');
 const path = require('path');
-const { generateAliases } = require('../configs/alias-config');
+const { generateAliases } = require('@/configs/alias-config');
 
 function updateVitestConfig() {
   const vitestConfigPath = path.join(__dirname, '..', 'vitest.config.js');

@@ -2,20 +2,21 @@
 // CalendarEvent.tsx
 
 import { endpoints } from '@/app/api/endpointConfigurations';
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import * as subscriptionApi from "@/app/api/subscriberApi";
+import { snapshotApi } from '@/app/api/SnapshotApi';
+import { subscriptionApi } from "@/app/api/subscriberApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-    getDefaultDocumentOptions,
+  getDefaultDocumentOptions,
 } from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import createSubscriber from '@/app/models/cypto/exchangeIntegration';
 import { BaseData, Data } from '@/app/models/data/Data';
 import {
-    PriorityTypeEnum,
-    StatusType,
+  PriorityTypeEnum,
+  StatusType,
 } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/members/Member";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
@@ -34,9 +35,9 @@ import { useNotification } from "@/app/state/context/NotificationContext";
 
 import { makeAutoObservable } from "mobx";
 import {
-    AssignEventStore,
-    ReassignEventResponse,
-    useAssignEventStore,
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
@@ -45,34 +46,34 @@ import { useStore } from "./StoreProvider";
 
 import { EventActions } from "@/app/actions/EventActions";
 import {
-    SnapshotOperation,
-    SnapshotOperationType,
+  SnapshotOperation,
+  SnapshotOperationType,
 } from "@/app/actions/SnapshotActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { combinedEvents } from "@/app/events/Event";
 import {
-    createSnapshotStore,
-    SnapshotStoreOptions,
-    useSnapshotManager,
+  createSnapshotStore,
+  SnapshotStoreOptions,
+  useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import {
-    AddEventPayload,
-    CalendarActionPayload,
-    CalendarActionType,
-    RemoveEventPayload,
-    SetEventStatusPayload,
-    UpdateEventPayload,
+  AddEventPayload,
+  CalendarActionPayload,
+  CalendarActionType,
+  RemoveEventPayload,
+  SetEventStatusPayload,
+  UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
 import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
 import { useDispatch } from "react-redux";
 
 import {
-    defaultCalendarEventManager
+  defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 import {
-    defaultScheduleCoordinator
+  defaultScheduleCoordinator
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
@@ -109,13 +110,24 @@ const API_BASE_URL = endpoints.calendar.events;
 const { notify } = useNotification();
 
 const notifyPromise = Promise.resolve(
-  useNotification().notify(
-    "snapshotStore",
-    "error",
-    NOTIFICATION_MESSAGES.CalendarEvents.DEFAULT,
-    new Date(),
-    NotificationTypeEnum.ERROR
-  )
+  useNotification().notify({
+    id: `snapshot_store_error_${Date.now()}`,
+    message: "Snapshot store operation failed",
+    data: {
+      entityType: 'snapshot',
+      action: 'store',
+      errorType: 'SNAPSHOT_STORE_ERROR',
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const,
+    metadata: {
+      operation: 'snapshot_store',
+      severity: 'high',
+      requiresImmediateAttention: true
+    }
+  })
 );
 
 // Define a synchronous callback function that wraps the asynchronous operation
@@ -131,8 +143,15 @@ const notifyCallback = (): void => {
     });
 };
 
-interface CalendarEntities {
-  events: CalendarEvent<Data<BaseData<any>>, BaseData>[];
+interface CalendarEntities<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   participants: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   hosts: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   guestSpeakers: Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Add guestSpeakers array
@@ -899,39 +918,43 @@ function openCalendarSettingsPage(): void {
 }
 
 function openScheduleEventModal(eventId: string): void {
-  // Open the modal with the eventId
-  // You can add additional logic or trigger notifications as needed
-  useModalFunctions().setIsModalOpen(true);
+  const modalFunctions = useModalFunctions();
 
-  // Render the ScheduleEventModal component to a JSX element
+  // Open the modal
+  modalFunctions.setIsModalOpen(true);
+
+  // Render the ScheduleEventModal component
   const modalElement = (
     <ScheduleEventModal
       eventId={eventId}
       visible={true}
       onCancel={() => {
-        useModalFunctions().setIsModalOpen(false);
+        modalFunctions.setIsModalOpen(false);
       }}
     />
   );
 
-  // Pass the JSX element directly to setModalContent
-  useModalFunctions().setModalContent(modalElement);
+  // Set the modal content
+  modalFunctions.setModalContent(modalElement);
 
-  notify(
-    "Modal content set",
-    "Opening Schedule Event Modal",
-    NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
-    new Date(),
-    NotificationTypeEnum.OPERATION_SUCCESS
-  );
+  // Trigger a notification using an object
+  notify({
+    title: "Modal content set",
+    message: "Opening Schedule Event Modal",
+    content: NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_SUCCESS,
+  });
 }
+
+
 
 // Example function to convert events to the appropriate data format
 function convertEventsToData(
   events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> []>
 ): Data {
   const convertedData: Data = {
-    scheduled: false,
+    scheduled: {},
     isCompleted: false,
     _id: "",
     id: "",
@@ -946,7 +969,7 @@ function convertEventsToData(
     videoUrl: "",
     videoThumbnail: "",
     videoDuration: 0,
-    videoData: {} as VideoData,
+    videoData: {} as VideoData<T, K>,
     ideas: [],
   };
 

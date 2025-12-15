@@ -1,11 +1,11 @@
 // CalendarContext.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Member } from '@/app/models/members/Member';
 import { Project } from '@/app/models/projects/Project';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { createContext, useContext, useState } from "react";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Define the type for calendar data
 type SimpleCalendarEvent<    

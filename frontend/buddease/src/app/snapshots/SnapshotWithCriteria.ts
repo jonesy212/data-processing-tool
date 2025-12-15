@@ -6,15 +6,16 @@ import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createMetadata } from '@/app/config/metadata/createMetadata';
+import { sharedMetadata } from '@/app/config/MetadataStateManager';
 import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { Data, BaseData } from '@/app/models/data/Data';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
-import { Payload } from '@/app/interfaces/payload/payloadTypes'
-import { sharedMetadata } from '@/app/config/MetadataStateManager';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
@@ -22,7 +23,6 @@ import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { useDataContext } from "@/app/state/context/DataContext";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -39,6 +39,8 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
+import { ExcludedFields } from '@/app/routing/Fields';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import {
   SnapshotAttachment,
   SnapshotEntity,
@@ -51,8 +53,6 @@ import {
 } from "@/app/typings/entities/SnapshotEntity";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from '@/app/versions/VersionData';
-import { ExcludedFields } from '@/app/routing/Fields';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotOperation } from "../actions/SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 

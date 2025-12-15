@@ -1,12 +1,11 @@
 // FileApiService.tsx
 import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/app/api/ApiClient";
 import { handleApiError } from "@/app/api/ApiLogs";
-import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { FileType } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { sendNotification } from "@/app/users/UserSlice";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { VersionData } from "@/app/versions/VersionData";
 import { AxiosError, AxiosResponse } from "axios";
 
@@ -78,7 +77,7 @@ class FileApiService {
 
   async fetchFiles(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/files`),
+      () => internalApiService.get(`${API_BASE_URL}/files`),
       "FetchFilesError",
       "Failed to fetch files" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.FETCH_FILES_ERROR
@@ -87,7 +86,7 @@ class FileApiService {
 
   async fetchFile(): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/files`),
+      () => internalApiService.get(`${API_BASE_URL}/files`),
       "FetchFileError",
       "Failed to fetch file" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.FETCH_FILE_ERROR
@@ -112,7 +111,7 @@ class FileApiService {
 
   async fetchFliDetails(fileId: string): Promise<AxiosResponse> {
     return this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/files/${fileId}`),
+      () => internalApiService.get(`${API_BASE_URL}/files/${fileId}`),
       "FetchFileDetailsError",
       "Failed to fetch file details" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.FETCH_FILE_DETAILS_ERROR
@@ -121,7 +120,7 @@ class FileApiService {
 
   async uploadFile(file: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/upload`, file),
+      () => internalApiService.post(`${API_BASE_URL}/upload`, file),
       "UploadFileError",
       "Failed to upload file" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.UPLOAD_FILE_ERROR
@@ -130,7 +129,7 @@ class FileApiService {
 
   async batchRemoveFiles(fileIds: string[]): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/files/batch-remove`, { fileIds }),
+      () => internalApiService.post(`${API_BASE_URL}/files/batch-remove`, { fileIds }),
       "BatchRemoveFilesError",
       "Failed to remove files" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.BATCH_REMOVE_FILES_ERROR,
@@ -140,7 +139,7 @@ class FileApiService {
 
   async markFileAsComplete(fileId: string): Promise<AxiosResponse> { 
     return await this.requestHandler(
-      () => axiosInstance.patch(`/api/files/${fileId}/complete`),
+      () => internalApiService.patch(`/api/files/${fileId}/complete`),
       "Failed to mark file as complete",
       "MarkFileAsCompleteError" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.Client.MARK_FILE_AS_COMPLETE_ERROR,
@@ -241,7 +240,7 @@ class FileApiService {
 
   async initiateCollaborationSession(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/collaboration/initiate`, {
+      () => internalApiService.post(`${API_BASE_URL}/collaboration/initiate`, {
           fileId,
         }),
       "InitiateCollaborationSessionError",
@@ -255,7 +254,7 @@ class FileApiService {
     userId: string
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/collaboration/invite`, {
+      () => internalApiService.post(`${API_BASE_URL}/collaboration/invite`, {
           fileId,
           userId,
         }),
@@ -267,7 +266,7 @@ class FileApiService {
 
   async performDataAnalysis(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/data-analysis/perform`, { fileId }),
+      () => internalApiService.post(`${API_BASE_URL}/data-analysis/perform`, { fileId }),
       "PerformDataAnalysisError",
       "Failed to perform data analysis" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.PERFORM_DATA_ANALYSIS_ERROR
@@ -276,7 +275,7 @@ class FileApiService {
 
   async generateReports(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/reports/generate`, { fileId }),
+      () => internalApiService.post(`${API_BASE_URL}/reports/generate`, { fileId }),
       "GenerateReportsError",
       "Failed to generate reports" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.GENERATE_REPORTS_ERROR
@@ -285,7 +284,7 @@ class FileApiService {
 
   async facilitateDiscussions(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/discussions/facilitate`, {
+      () => internalApiService.post(`${API_BASE_URL}/discussions/facilitate`, {
           fileId,
         }),
       "FacilitateDiscussionsError",
@@ -296,7 +295,7 @@ class FileApiService {
 
   async rewardUser(userId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/users/reward`, { userId }),
+      () => internalApiService.post(`${API_BASE_URL}/users/reward`, { userId }),
       "RewardUserError",
       "Failed to reward user" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.REWARD_USER_ERROR
@@ -305,7 +304,7 @@ class FileApiService {
 
   async handleTransactions(transactionData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(
+      () => internalApiService.post(
           `${API_BASE_URL}/transactions/handle`,
           transactionData
         ),
@@ -317,7 +316,7 @@ class FileApiService {
 
   async trackRevenue(projectId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/revenue/track`, { projectId }),
+      () => internalApiService.post(`${API_BASE_URL}/revenue/track`, { projectId }),
       "TrackRevenueError",
       "Failed to track revenue" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.TRACK_REVENUE_ERROR
@@ -326,7 +325,7 @@ class FileApiService {
 
   async supportMultilingualCommunication(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(
+      () => internalApiService.post(
           `${API_BASE_URL}/communication/multilingual-support`
         ),
       "SupportMultilingualCommunicationError",
@@ -337,7 +336,7 @@ class FileApiService {
 
   async enforceSecurityMeasures(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/security/enforce-measures`),
+      () => internalApiService.post(`${API_BASE_URL}/security/enforce-measures`),
       "EnforceSecurityMeasuresError",
       "Failed to enforce security measures" as keyof ClientNotificationMessages,
       NOTIFICATION_MESSAGES.File.ENFORCE_SECURITY_MEASURES_ERROR
@@ -353,7 +352,7 @@ class FileApiService {
 async getFileType(file: string): Promise<FileType> {
   try {
     // Call the API to get the file type
-    const response: AxiosResponse<{ fileType?: FileType }> = await axiosInstance.get(`/api/files/${file}/type`);
+    const response: AxiosResponse<{ fileType?: FileType }> = await internalApiService.get(`/api/files/${file}/type`);
     // Extract the file type from the response data
     const fileType: FileType | undefined = response?.data?.fileType;
     // Check if fileType is undefined or null, and handle accordingly

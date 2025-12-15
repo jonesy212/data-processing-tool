@@ -1,10 +1,19 @@
 // PDFDoc.ts
 // import { PDFDocument as PdfLibDocument, rgb } from 'pdf-lib';
-import { PDFDocument } from '@/app/documents/DocumentInterfaces';
+import { PDFDocument } from '@/app/documents/editing/PDFDocument'
 import { PDFDocument as PdfLibDocument, rgb, StandardFonts } from 'pdf-lib';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // PDFDocument Implementation
-class PDFDoc implements PDFDocument {
+class PDFDoc<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>  implements PDFDocument<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   filePath: string;
   title: string;
   author: string;

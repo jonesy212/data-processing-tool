@@ -1,7 +1,7 @@
 // ExtendedDappEntity.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { ipfsConfig } from '@/app/config/ipfsConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DAppAdapterConfig } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { PoolConfig } from 'pg';
 // Core ExtendedDapp base types using the 6-parameter pattern
@@ -51,3 +51,4 @@ export type {
   ExtendedDappIncludedFields, ExtendedDappK,
   ExtendedDappMeta, ExtendedDappProps
 };
+

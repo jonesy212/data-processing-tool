@@ -1,11 +1,11 @@
 // collaboratorApi.ts
 
-import { AxiosError } from 'axios';
-import CalendarEventCollaborator from '@/components/calendar/CalendarEventCollaborator';
-import { NotificationType, useNotification } from '@/components/context/NotificationContext';
-import InvitationData from '@/app/state/redux/slices/InvitationData';
+import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import axiosInstance from '@/app/api/csrfToken'
+import CalendarEventCollaborator from '@/app/calendar/CalendarEventCollaborator';
+import { NotificationType, useNotification } from '@/app/state/context/NotificationContext';
+import InvitationData from '@/app/state/redux/slices/InvitationData';
+import { AxiosError } from 'axios';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.collaborators.base;

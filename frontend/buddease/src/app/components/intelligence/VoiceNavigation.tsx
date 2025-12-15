@@ -1,9 +1,11 @@
 // VoiceNavigation.tsx
 import React from "react";
 import IntroJs from 'intro.js';
-import 'intro.js/introjs.css';
 import { useEffect } from 'react';
 
+if (typeof window !== 'undefined') {
+  import("intro.js/introjs.css");
+}
 const VoiceControlledNavigation = () => {
   useEffect(() => {
     const intro =   IntroJs();

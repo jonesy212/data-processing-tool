@@ -1,11 +1,10 @@
 // TradeLogger.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
-import Logger from '@/app/libraries/logging/Logger';
+import Logger from '@/app/components/crypto/CryptoPortfolio'
 import { TradeAction } from '@/app/models/cypto/Exchange';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNotification } from "@/app/state/context/NotificationContext";
-import { payload } from '@/app/utils/Payload'; // Adjust path as needed
-
+import { payload } from "@/app/server/database/Payload";
 const { notify } = useNotification() || { notify: () => {} };
 
 class TradeLogger extends Logger {
@@ -118,7 +117,7 @@ class TradeLogger extends Logger {
     });
   }
 
-  /**
+   /**
    * Log trade error
    */
   static logTradeError(
@@ -128,31 +127,182 @@ class TradeLogger extends Logger {
   ): void {
     const contextMessage = context ? ` in ${context}` : '';
     
+    // Original logging (kept as is)
     Logger.logWithOptions(
       "Trade Error",
       `Trade error${contextMessage}: ${trade.action.toUpperCase()} ${trade.amount} ${trade.asset} - ${error.message}`,
       trade.userId
     );
 
-    // Send notification for critical trade errors
-    notify(
-      "Trade Error",
-      `Failed to execute trade: ${error.message}`,
-      { trade, error: error.message },
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
+    // Enhanced error categorization
+    let userMessage = "Failed to execute trade";
+    let errorType = "TRADE_EXECUTION_ERROR";
+    let severity: 'low' | 'medium' | 'high' | 'critical' = 'medium';
+    
+    // Categorize trade errors
+    if (error.message.includes('insufficient funds') || error.message.includes('balance')) {
+      userMessage = "Insufficient funds for trade";
+      errorType = "INSUFFICIENT_FUNDS_ERROR";
+      severity = 'high';
+    } else if (error.message.includes('market closed') || error.message.includes('trading hours')) {
+      userMessage = "Market is closed for trading";
+      errorType = "MARKET_CLOSED_ERROR";
+      severity = 'medium';
+    } else if (error.message.includes('price invalid') || error.message.includes('spread')) {
+      userMessage = "Invalid trade price";
+      errorType = "INVALID_PRICE_ERROR";
+      severity = 'medium';
+    } else if (error.message.includes('permission') || error.message.includes('authorization')) {
+      userMessage = "Trading permission denied";
+      errorType = "TRADING_PERMISSION_ERROR";
+      severity = 'critical';
+    } else if (error.message.includes('network') || error.message.includes('connection')) {
+      userMessage = "Network error during trade execution";
+      errorType = "TRADE_NETWORK_ERROR";
+      severity = 'high';
+    } else if (error.message.includes('timeout')) {
+      userMessage = "Trade execution timed out";
+      errorType = "TRADE_TIMEOUT_ERROR";
+      severity = 'high';
+    } else if (error.message.includes('rate limit') || error.message.includes('too many requests')) {
+      userMessage = "Trading rate limit exceeded";
+      errorType = "TRADE_RATE_LIMIT_ERROR";
+      severity = 'medium';
+    }
 
+    // Send notification for trade errors using consistent object format
+    const notificationData = {
+      id: `trade_error_${trade.userId}_${trade.asset}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'trade',
+        entityId: trade.tradeId || `trade_${Date.now()}`,
+        action: 'trade_execution',
+        tradeInfo: {
+          userId: trade.userId,
+          asset: trade.asset,
+          action: trade.action,
+          amount: trade.amount,
+          price: trade.price,
+          orderType: trade.orderType,
+          side: trade.side
+        },
+        errorDetails: {
+          originalError: error.message,
+          errorType: errorType,
+          stack: error.stack,
+          context: context,
+          severity: severity
+        },
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        isTradingError: true,
+        requiresManualReview: severity === 'critical' || severity === 'high',
+        tradingSession: this.getTradingSession(),
+        errorSeverity: severity
+      }
+    };
+
+    // Send the notification
+    notify(notificationData);
+
+    // For critical errors, send an additional alert notification
+    if (severity === 'critical') {
+      const alertNotification = {
+        id: `trade_critical_alert_${trade.userId}_${Date.now()}`,
+        message: "CRITICAL: Trading error requires immediate attention",
+        data: {
+          entityType: 'trade',
+          entityId: trade.tradeId,
+          action: 'critical_alert',
+          tradeInfo: {
+            asset: trade.asset,
+            action: trade.action,
+            amount: trade.amount
+          },
+          error: error.message,
+          requiresImmediateAction: true
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ALERT,
+        level: 'critical' as const,
+        autoDismiss: false, // Don't auto-dismiss critical alerts
+        action: {
+          label: "Review Trade",
+          onClick: () => this.navigateToTradeReview(trade)
+        }
+      };
+      
+      notify(alertNotification);
+    }
+
+    // Log to external service
     this.logTradeEventToService({
       type: 'trade_error',
       userId: trade.userId,
       asset: trade.asset,
       action: trade.action,
       amount: trade.amount,
-      error: error.message,
+      price: trade.price,
+      orderType: trade.orderType,
+      side: trade.side,
+      error: {
+        message: error.message,
+        type: errorType,
+        severity: severity,
+        stack: error.stack
+      },
       context: context,
+      timestamp: new Date(),
+      notificationSent: true,
+      notificationData: notificationData
+    });
+
+    // Optional: Send to monitoring service
+    this.sendToTradingMonitor({
+      event: 'trade_error',
+      trade: trade,
+      error: error,
+      context: context,
+      severity: severity,
       timestamp: new Date()
     });
+  }
+
+  /**
+   * Get current trading session
+   */
+  private static getTradingSession(): string {
+    const now = new Date();
+    const hour = now.getHours();
+    
+    if (hour >= 9 && hour < 12) return 'morning_session';
+    if (hour >= 12 && hour < 16) return 'afternoon_session';
+    if (hour >= 16 && hour < 20) return 'evening_session';
+    return 'overnight_session';
+  }
+
+  // #TODO
+  /**
+   * Navigate to trade review (placeholder implementation)
+   */
+  private static navigateToTradeReview(trade: TradeAction): void {
+    console.log(`Navigating to trade review for trade: ${trade.tradeId}`);
+    // Implement actual navigation logic here
+    // window.location.href = `/trades/review/${trade.tradeId}`;
+  }
+
+  /**
+   * Send to trading monitor service (placeholder)
+   */
+  private static sendToTradingMonitor(data: any): void {
+    // Implement actual monitoring service integration
+    console.log('Sending to trading monitor:', data);
+    // tradingMonitorService.trackError(data);
   }
 
   /**

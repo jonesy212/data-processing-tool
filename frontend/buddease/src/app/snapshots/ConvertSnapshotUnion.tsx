@@ -1,10 +1,10 @@
 // ConvertSnapshotUnion.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ConvertMeta } from '@/app/models/data/dataStoreMethods';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 type ConvertSnapshotWithCriteria<
   T extends BaseDataEntity,

@@ -1,21 +1,20 @@
 // SnapshotSlice.tsx
 // snapshots/SnapshotSlice.ts
 
+import { BaseDataRoot } from '@/app/config/BaseConfig';
+import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import {
   createAndAddSnapshot,
   fetchDataStores,
 } from "@/app/thunks"; // adjust imports
 
-import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
-
+import { CreateSnapshotsPayload, Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Payload } from '@/app/server/database/Payload';
-import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
@@ -30,19 +29,19 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Content } from "@/app/models/content/AddContent";
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
+import { Tag } from '@/app/models/tracker/Tag';
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { getSnapshotItems } from "@/app/snapshots/snapshotOperations";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { findCorrectSnapshotStore, isSnapshot } from "@/utils/snapshotUtils";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Tag } from "sanitize-html";
 
 
 type PayloadActionWithMeta<T, M = never> = PayloadAction<T, string, M>;

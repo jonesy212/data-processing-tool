@@ -1,34 +1,32 @@
 // snapshotContainerUtils.ts
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import createSnapshot, * as snapshotApi from '@/app/api/SnapshotApi';
-import { Category, generateCategoryProperties, isCategoryProperties } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category, generateCategoryProperties, isCategoryProperties } from '@/app/libraries/categories/generateCategoryProperties';
 import { dataStoreMethods } from "@/app/models/data/dataStoreMethods";
 import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { criteria } from '@/app/pages/searches/FilterCriteria';
-import {  SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { data } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfig, ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
-import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotStoreProps, storeProps } from "@/app/snapshots/SnapshotStoreProps";
+import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from "@/app/state/stores/DataStore";
 import { store } from '@/app/state/stores/useAppDispatch';
 import { payload } from '@/app/subscribers/Subscriber';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { category, snapshotId } from '@/utils/snapshotUtils';
 import { callback } from 'chart.js/helpers';
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { snapshot } from '@/app/snapshots/Snapshot';
 import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
+import { Snapshot, snapshot } from '@/app/snapshots/Snapshot';
 import { snapshotStoreConfigInstance } from "@/app/snapshots/snapshotStoreConfigInstance";
 
 // Subscription management logic

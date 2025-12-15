@@ -3,14 +3,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { AppProviders } from "./components/AppProviders";
+import { AppProviders } from '@/app/components/AppProviders'
 import { useFullscreen } from "@/app/hooks/useFullscreen";
-import { useAppThemeInit } from "./layout/useAppThemeInit";
-import { useAnimatedRoot } from "./layout/useAnimatedRoot";
-import { useLayoutState } from "./layout/useLayoutState";
-import { useLogManagement } from "./hooks/useLogManagement";
-import { BackgroundService } from "./services/BackgroundService";
-import RootLayoutContent from "./layout/RootLayoutContent";
+import { useAppThemeInit } from "@/app/layout/useAppThemeInit";
+import { useAnimatedRoot } from "@/app/layout/useAnimatedRoot";
+import { useLayoutState } from "@/app/layout/useLayoutState";
+import { useLogManagement } from "@/app/hooks/useLogManagement";
+import { BackgroundService } from "@/app/services/BackgroundService";
+import RootLayoutContent from "@/app/layout/RootLayoutContent";
 
 type RootLayoutProps = { children: React.ReactNode };
 

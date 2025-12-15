@@ -1,28 +1,15 @@
 // GenerateButtons.tsx
 // ButtonGenerator.tsx
-import { fetchEventData } from '@/app/api/ApiEvent';
-import { LifecycleConfig } from '@/app/hooks/phases/lifecycles'
-import userService from "@/app/api/ApiUser";
 import { Label } from '@/app/branding/BrandingSettings';
-import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
-import { RealtimeDataComponent } from '@/app/components/models/realtime/RealtimeDataComponent'
-import { Phase } from "@/app/models/phases/Phase";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { LifecycleConfig } from '@/app/hooks/phases/lifecycles';
 import {
-    startVoiceRecognition,
-    stopVoiceRecognition,
+  startVoiceRecognition
 } from "@/app/intelligence/VoiceControl";
-import { brandingSettings } from "@/app/libraries/theme/BrandingService";
-import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
-import {
-    nextPhase,
-    previousPhase,
-} from "@/app/models/phases/PhaseTransitions";
-import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-import useNotificationManagerService from "@/app/services/NotificationService";
-import { Router, useRouter } from "next/router";
+import { Phase } from "@/app/models/phases/Phase";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
@@ -95,12 +82,12 @@ interface ButtonGeneratorProps<
 
   onTransitionToPreviousPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
-    currentPhase: Phase
+    currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
   onTransitionToNextPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
-    currentPhase: Phase<>
+    currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
   label?: Label | string | Record<string, string> | null; // Allow Record<string, string> as well
 

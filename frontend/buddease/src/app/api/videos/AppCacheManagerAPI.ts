@@ -3,7 +3,7 @@ import { BackendConfig } from '@/app/config/BackendConfig';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import { FrontendConfig } from '@/app/config/FrontendConfig';
 import { UserSettings } from '@/app/config/UserSettings';
-import { IBackendStructure } from '@/config/appStructure/IBackendStructure';
+import BackendStructure from '@/app/server/database/BackendStructure'
 import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import { AsyncHook } from 'async_hooks';
 import axios from 'axios';
@@ -11,13 +11,24 @@ import { RealtimeData } from '@/app/typings/realtimeTypes'
 import { CustomPhaseHooks } from '@/app/models/phases/Phase';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { VersionHistory } from '@/app/versions/VersionData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, Entity } from '@/app/config/BaseConfig';
 
-interface CacheData {
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+
+interface CacheData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   userSettings: UserSettings;
   dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  backendStructure: IBackendStructure;
+  backendStructure: BackendStructure;
   backendConfig: BackendConfig;
   frontendConfig: FrontendConfig;
   realtimeData: RealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -45,7 +56,14 @@ interface CacheData {
 class AppCacheManagerAPI {
   private static baseURL = 'https://example.com/api/cache';
 
-  static async updateCache(cacheData: CacheData): Promise<void> {
+  static async updateCache<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(cacheData: CacheData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
     try {
       await axios.post(this.baseURL, cacheData);
       console.log('Cache updated successfully.');

@@ -1,12 +1,10 @@
 // determineSnapshotStoreCategory.ts
 //determineSnapshotStoreCategory.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import { BaseData } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 function determineSnapshotStoreCategory<
   T extends BaseDataEntity,
   K extends T = T,
@@ -14,10 +12,10 @@ function determineSnapshotStoreCategory<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
-  storeConfigs: SnapshotStoreConfig<T, K>[]
+  storeConfigs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 ): string {
   // Example category mappings based on storeConfig properties
-  const categoryMappings: { [key: string]: (config: SnapshotStoreConfig<T, K>) => boolean } = {
+  const categoryMappings: { [key: string]: (config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean } = {
     "financial": (config) => config.dataType === "financial" && config.priority === "high",
     "healthcare": (config) => config.dataType === "healthcare" && config.privacy === "strict",
     "default": (config) => true, // Default mapping if no other criteria are met

@@ -68,14 +68,8 @@ type ProjectManagementProject = Project<
   ProjectManagementBaseParams['IncludedFields']
 >;
 export type {
-  ProjectManagementEntity,
-  ProjectManagementK,
-  ProjectManagementMeta,
-  ProjectManagementAttachment,
-  ProjectManagementExcludedFields,
-  ProjectManagementIncludedFields,
-  ProjectManagementBaseParams,
-  
-  ProjectManagementTask,
-  ProjectManagementProject
+  ProjectManagementAttachment, ProjectManagementBaseParams, ProjectManagementEntity, ProjectManagementExcludedFields,
+  ProjectManagementIncludedFields, ProjectManagementK,
+  ProjectManagementMeta, ProjectManagementProject, ProjectManagementTask
 };
+

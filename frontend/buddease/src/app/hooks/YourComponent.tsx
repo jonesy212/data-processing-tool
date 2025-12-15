@@ -1,5 +1,5 @@
 // YourComponent.tsx
-import { endpoints } from '@/api/endpointConfigurations';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
  
 import ApiConfig from '@/app/api/ApiConfig';

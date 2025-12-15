@@ -3,10 +3,10 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { createMeta } from "@/app/config/metadata/createMeta";
 import { createMetadata } from '@/app/config/metadata/createMetadata';
-import { useMetadata } from "@/app/config/useMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { useEffect } from 'react';
 import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { useEffect } from 'react';
 
 
 // Utility hooks for handling metadata

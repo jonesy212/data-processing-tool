@@ -1,5 +1,5 @@
 // TaskLoop.tsx
-import { Task } from '@/models/tasks/Task';
+import { Task } from '@/app/models/tasks/Task';
 import React from 'react';
 
 // Default alias for Task with all generics filled in

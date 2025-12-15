@@ -1,7 +1,8 @@
 // snapshotTypes.ts
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
@@ -84,13 +85,13 @@ export interface BaseSnapshotEventHandlers<
   // Core event handlers with consistent signatures
   onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onSnapshotRemoved: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { type: string }) => void;
-    onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
+  onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
     snapshotId: string;
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-    store: SnapshotStore<any, K>;
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   }) => void;
-  onError: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { error: Error }) => void;
+  onError?: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { error: Error }) => void;
   
   // Optional hooks
   beforeSnapshotAdd?: (event: string, ctx: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
@@ -179,10 +180,4 @@ export interface SubscriptionEvent<
   subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   action: 'subscribe' | 'unsubscribe';
-}
-
-export interface EventEmitterConfig {
-  maxListeners?: number;
-  enableErrorHandling?: boolean;
-  enablePerformanceMonitoring?: boolean;
 }

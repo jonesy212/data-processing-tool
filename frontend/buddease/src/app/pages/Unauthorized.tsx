@@ -1,25 +1,18 @@
 // Unauthorized.tsx
-import AccessDenied from '@/app/components/AccessDenied';
+import AccessDenied from '@/app/pages/AccessDenied';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationPosition } from '@/app/models/data/StatusType';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
+import { unauthorizedService } from '@/app/services/unauthorizedService'
 
 export default function Unauthorized() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { notify } = useNotification();
 
   const handleReturnToLogin = () => {
-    notify(
-      'unauthorized_access',
-      `Unauthorized access attempt by ${user?.username || 'unknown user'}`,
-      '',
-      new Date(),
-      NotificationTypeEnum.WARNING,
-      NotificationPosition.TopRight
-    );
+    unauthorizedService.notifyUnauthorizedAccess(user, window.location.pathname);
     navigate('/login');
   };
 
@@ -30,18 +23,14 @@ export default function Unauthorized() {
       'manager': '/manager-dashboard', 
       'user': '/dashboard'
     };
-    navigate(dashboardPaths[userRole] || '/dashboard');
+    const targetPath = dashboardPaths[userRole] || '/dashboard';
+    
+    unauthorizedService.notifyDashboardRedirect(user, targetPath);
+    navigate(targetPath);
   };
 
   const handleContactSupport = () => {
-    notify(
-      'support_request',
-      'User requested support for unauthorized access',
-      '',
-      new Date(),
-      NotificationTypeEnum.INFO,
-      NotificationPosition.TopRight
-    );
+    unauthorizedService.notifySupportRequest(user, window.location.pathname);
     navigate('/support', { 
       state: { 
         issue: 'unauthorized_access',
@@ -51,9 +40,11 @@ export default function Unauthorized() {
   };
 
   const handleLogout = () => {
+    unauthorizedService.notifyLogout(user, 'unauthorized_access_redirect');
     logout();
     navigate('/login');
   };
+
 
   // Custom actions for the AccessDenied component
   const customActions = [

@@ -20,7 +20,9 @@ import {
 
 
 export const NotificationTypeEnum = NOTIFICATION_TYPES;
-export type NotificationType = keyof typeof NOTIFICATION_TYPES
+export type NotificationType = 
+  | keyof typeof NOTIFICATION_TYPES
+  | (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES]
   | DocumentTypeEnum
   | PriorityTypeEnum
   | "RandomDismiss";

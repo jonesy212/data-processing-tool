@@ -1,11 +1,12 @@
 // CategoryApi.ts
-import { endpoints } from "@/app/api/endpointConfigurations";
 import { handleApiError } from "@/app/api/ApiLogs";
-import internalApiService from "./ApiClient";
+import { endpoints } from "@/app/api/endpointConfigurations";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties'
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosError, AxiosResponse } from "axios";
-import { NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import internalApiService from "./ApiClient";
 
 // ---------------------------
 // Notification Messages
@@ -69,16 +70,27 @@ const handleCategoryApiErrorAndNotify = (
 ) => {
   const message = categoryNotificationMessages[errorMessageId];
   handleApiError(error, message);
+  // Get the actual error message from the AxiosError
+  const errorMessage = error.message || 'Unknown error occurred';
+  
+  handleApiError(error, message);
 
   useNotification().notify({
-    id: `category-${String(errorMessageId)}`,
+    id: `category-${String(errorMessageId)}-${Date.now()}`,
     message,
-    data: { originalError: errorMessage },
+    data: { 
+      originalError: errorMessage,
+      extra: {
+        errorMessageId: String(errorMessageId),
+        status: error.response?.status,
+        url: error.config?.url
+      }
+    },
     timestamp: new Date(),
     type: NotificationTypeEnum.ERROR,
+    level: 'error'
   });
 };
-
 // ---------------------------
 // Category API Service
 // ---------------------------

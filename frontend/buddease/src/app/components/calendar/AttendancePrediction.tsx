@@ -1,6 +1,6 @@
 // AttendancePrediction.tsx
 import { useState } from 'react';
-import { AttendancePredictionResult } from "@/app/components/models/data/CalendarEventAttendancePrediction";
+import { AttendancePredictionResult } from "@/app/models/data/CalendarEventAttendancePrediction";
 import { Attendee } from "./Attendee";
 import { BaseEvent } from '@/app/events/BaseEvent'
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";

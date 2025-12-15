@@ -1,14 +1,13 @@
 // SnapshotApiService.ts
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot, SnapshotDataType } from '@/app/snapshots';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot, SnapshotDataType } from '@/app/snapshots';
 import { useCallback } from 'react';
 
 import {

@@ -1,5 +1,6 @@
 // TreeDataService.ts
-import appTreeApiService from './AppTreeApi';
+import appTreeApiService from '@/app/api/appTreeApi';
+import { DocumentTree } from "@/app/users/User";
 
 class TreeDataService {
   // Use existing service for core operations

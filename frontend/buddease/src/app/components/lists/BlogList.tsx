@@ -1,16 +1,16 @@
 // BlogList.tsx
 
-import React from "react";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { Content } from '@/app/models/content/AddContent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import ListGenerator from "@/app/generators/ListGenerator";
-import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Content } from '@/app/models/content/AddContent';
+import { Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { BlogEntity, BlogK, BlogMeta, BlogAttachment, BlogExcludedFields, BlogIncludedFields } from '@/app/typiings/entities/BlogEntity'
+import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typiings/entities/BlogEntity';
+import React from "react";
 // Define a type representing the data structure for blog posts
 interface BlogData<
   T extends BaseDataEntity,

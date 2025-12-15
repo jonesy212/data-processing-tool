@@ -1,9 +1,9 @@
 // FileData.ts
 
 import { ScheduledData } from '@/app/calendar/ScheduledData';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { User } from '@/app/users/User';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
 
 // Define the interface for FileData
 interface FileData<

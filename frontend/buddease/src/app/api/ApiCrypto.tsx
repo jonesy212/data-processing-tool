@@ -6,7 +6,8 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice';
+import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice'
+
 import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
 

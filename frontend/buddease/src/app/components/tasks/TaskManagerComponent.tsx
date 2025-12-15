@@ -1,23 +1,22 @@
 // TaskManagerComponent.tsx
-import { Progress } from '';
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import TaskAssignmentSnapshot from "@/app/actions/TaskAssignmentSnapshot";
 import { UIActions } from "@/app/actions/UIActions";
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { handleTaskApiErrorAndNotify } from "@/app/api/TasksApi";
-import { brandingSettings } from "@/app/branding/BrandingSettings";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import updateUI from "@/app/documents/editing/updateUI";
+import { brandingSettings } from '@/app/libraries/theme/BrandingService';
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { Member } from '@/app/models/members/Members';
 import { Phase } from "@/app/models/phases/Phase";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
-import { TaskEntity } from "@/app/typings/entities/TaskEntity";
-import { Member } from "@/app/models/teams/TeamMembers";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import TaskProgress from "@/app/projects/projectManagement/TaskProgress";
@@ -32,6 +31,7 @@ import useTrackerStore from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { TaskEntity } from "@/app/typings/entities/TaskEntity";
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
@@ -118,7 +118,7 @@ const TaskManagerComponent = <
       snapshot: {} as Snapshot<Data, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
       analysisResults: {} as DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<T, K>,
       save: () => Promise.resolve(),
     },
   ]);
@@ -161,13 +161,13 @@ const TaskManagerComponent = <
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<T, K>,
     },
     {
       _id: "taskData", // Example value
@@ -182,6 +182,10 @@ const TaskManagerComponent = <
       type: "addTask",
       status: "inProgress",
       priority: PriorityTypeEnum.Low,
+
+
+      progress, getData, participants, uploadedAt,
+
       done: false,
       data: {} as TaskData,
       source: "user",
@@ -205,13 +209,13 @@ const TaskManagerComponent = <
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<T, K>,
     },
     {
       _id: "taskData", // Example value
@@ -249,13 +253,13 @@ const TaskManagerComponent = <
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<T, K>,
     },
   ]);
 
@@ -265,17 +269,30 @@ const TaskManagerComponent = <
   // Function to update task progress
   const updateTaskProgress = (taskId: string, newProgress: Progress) => {
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task._id === taskId
-          ? {
-              ...task,
-              progress: {
-                ...task.progress,
-                percentage: newProgress,
-              },
+      prevTasks.map((task) => {
+        if (task._id === taskId) {
+          // Create a properly typed updated task
+          const updatedTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+            ...task,
+            progress: {
+              ...task.progress,
+              percentage: newProgress,
+              // Ensure all required properties are preserved
+              id: task.progress?.id || '', // Provide default if undefined
+              name: task.progress?.name || '',
+              color: task.progress?.color || '',
+              description: task.progress?.description || '',
+              value: task.progress?.value || 0,
+              unit: task.progress?.unit || '',
+              target: task.progress?.target || 100,
+              startValue: task.progress?.startValue || 0,
+              done: task.progress?.done || false
             }
-          : task
-      )
+          };
+          return updatedTask;
+        }
+        return task;
+      })
     );
   };
 
@@ -337,40 +354,34 @@ const TaskManagerComponent = <
 
   const handleUpdateTodo = async (
     todoId: string,
-    updatedFields: Partial<Todo>
+    updatedFields: Partial<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => {
     try {
-      // Call API to update todo
       await updateTodo(Number(todoId), updatedFields);
 
-      // Optimistically update local todo data
       setTodos((prevTodos) =>
-        prevTodos.map((todo) =>
-          todo._id === todoId ? { ...todo, ...updatedFields } : todo
-        )
+        prevTodos.map((todo) => {
+          if (todo._id !== todoId) return todo;
+          
+          const merged = { ...todo, ...updatedFields } as Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          
+          // Type guard to ensure correct return type
+          if (isTodoType(merged)) {
+            return merged;
+          }
+          
+          // Fallback with type assertion
+          return merged as Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+        })
       );
 
-      // Additional use case: Optimistically check todo completion
       if (updatedFields.done !== undefined) {
-        setTodos((prevTodos) =>
-          prevTodos.map((todo) =>
-            todo._id === todoId && updatedFields.done
-              ? { ...todo, done: true }
-              : todo
-          )
-        );
-
-        // Call function to check todo completion asynchronously
         await checkTodoCompletion(todoId);
       }
-
-      // Additional use case: Call any other functions needed (e.g., update UI)
-      // updateUI();
     } catch (error) {
       console.error("Error updating todo:", error);
     }
   };
-
 
   // Define handleTodoClick with the correct signature
   const handleTodoClick = (todoId: Todo['id']): Promise<void> => {

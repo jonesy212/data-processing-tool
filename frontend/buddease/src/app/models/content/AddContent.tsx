@@ -1,31 +1,30 @@
 // AddContent.tsx
-import { BaseData } from '@/app/models/data/Data';
 import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from '@/app/models/data/StatusType';
+import { Phase } from "@/app/models/phases/Phase";
 import { Persona } from '@/app/pages/personas/Persona';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { Phase } from "@/app/models/phases/Phase";
 
-import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { TaskMetadata } from '@/app/config/MetaDataOptions';
-import UserRoles from '@/app/models/UserRoles';
-import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { BaseDataRoot, BaseConfig } from '@/app/config/BaseConfig';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria'
-import { AppContentEntity,
-ContentK,
-ContentMeta,
-ContentAttachment,
-ContentExcludedFields,
-ContentIncludedFields } from '@/app/typings/entities/ContentEntity'
+import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import UserRoles from '@/app/models/UserRoles';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import {
+  AppContentEntity,
+  ContentAttachment,
+  ContentExcludedFields,
+  ContentIncludedFields,
+  ContentK,
+  ContentMeta
+} from '@/app/typings/entities/ContentEntity';
+import React, { FormEvent, useState } from 'react';
 
 interface Content<
   T extends BaseDataEntity = BaseDataRoot,

@@ -1,33 +1,25 @@
 // TaskSlice.ts
-import { UserEntity } from '@/app/typings/entities/UserEntity';
-import { User, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/users/User';
 import { updateTaskPositionAPI } from '@/app/api/TasksApi';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import  Action from '@/app/hooks/userInterface/ActionList';
-import {
-    MeetingAttachment,
-    MeetingEntity,
-    MeetingExcludedFields,
-    MeetingIncludedFields,
-    MeetingK,
-    MeetingMeta
-} from '@/app/typings/entities/MeetingEntity';
 import { TagEntity } from '@/app/typings/entities/TagEntity';
+import { UserEntity } from '@/app/typings/entities/UserEntity';
+import { User, UserAttachment, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/users/User';
 
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Task } from "@/app/components/models/tasks/Task";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Tag } from "@/app/models/tracker/Tag";
-import { NotificationTypeEnum, useNotification } from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { MobXRootState } from "@/app/state/stores/RootStores";
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from "@/app/typings/entities/TaskEntity";
 import {
-    PayloadAction,
-    ThunkAction,
-    createSlice,
+  PayloadAction,
+  ThunkAction,
+  createSlice,
 } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { updateTask } from "./CollaborationSlice";

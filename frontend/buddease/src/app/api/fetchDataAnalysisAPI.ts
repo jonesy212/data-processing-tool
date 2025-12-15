@@ -3,7 +3,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import { DataAnalysis } from "@/app/projects/DataAnalysisPhase/DataAnalysis";
-import { DataAnalysisActions } from "@/app/projects/DataAnalysisPhase/DataAnalysisActions";
+import { DataAnalysisActions } from "@/app/actions/DataAnalysisActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { dataAnalysisService } from "@/app/typings/phases/dataAnalysisTypes";
 

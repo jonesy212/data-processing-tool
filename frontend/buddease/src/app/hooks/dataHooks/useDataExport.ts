@@ -2,7 +2,7 @@
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NOTIFICATION_TYPES } from "@/app/features/support/NotificationTypes";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/app/state/context/NotificationContext";
 import { useState } from 'react';
 
@@ -18,14 +18,38 @@ export const useDataExport = () => {
   const notificationContext = useNotification();
 
   const handleExportError = (errorMessage: string): never => {
-    notificationContext.notify(
-      "handleExportError",
-      'Error trying to export data, try again',
-      NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA,
-      new Date,
-      NotificationTypeEnum.ERROR);
-      throw new Error(NotificationTypeEnum.ERROR);
-    };
+    notificationContext.notify({
+      id: `handleExportError${Date.now()}`,
+      message: NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA,
+      data: {
+        originalError: errorMessage,
+        extra: {
+          errorMessage: "Error trying to export data, try again",
+          operation: "Data export"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      level: 'error'
+    });
+    throw new Error(errorMessage);
+  };
+
+  const handleExportSuccess = (data: any[], message?: string) => {
+    notificationContext.notify({
+      id: `exportDataSuccess${Date.now()}`,
+      message: message || NOTIFICATION_MESSAGES.Data.UPLOAD_DATA_SUCCESS || "Data exported successfully",
+      data: {
+        extra: {
+          dataCount: data.length,
+          operation: "Data export"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success'
+    });
+  };
 
   const exportDataToServer = async (data: any): Promise<DataExportResult> => {
     try {
@@ -34,17 +58,18 @@ export const useDataExport = () => {
 
       if (response.status === 200) {
         console.log('Data exported successfully:', response.data);
+        handleExportSuccess(response.data);
         return { status: response.status, data: response.data };
       } else {
         console.error('Error exporting data:', response.data);
-        handleExportError('Error exporting data');
+        handleExportError(`Server returned status ${response.status}: ${JSON.stringify(response.data)}`);
       }
     } catch (error: any) {
       console.error('Error exporting data:', error.message);
-      handleExportError('Error exporting data');
+      handleExportError(`Network error: ${error.message}`);
     }
-    // Add a default return statement to satisfy TypeScript
-    return handleExportError('Unexpected error exporting data');
+    // This line won't be reached due to handleExportError throwing
+    return { status: 500, data: [] };
   };
 
   const exportData = async (data: any): Promise<DataExportResult> => {
@@ -54,23 +79,37 @@ export const useDataExport = () => {
       if (exportedResult.status === 200) {
         setExportedData(exportedResult.data);
         return exportedResult;
-      } else {
-        handleExportError('Error exporting data');
       }
-    } catch (error) {
-      console.error('Error exporting data:', error);
+    } catch (error: any) {
+      console.error('Error exporting data:', error.message);
       return Promise.reject({
         status: 500,
         data: [],
         errorType: NotificationTypeEnum.ERROR,
+        message: error.message
       });
     }
-
-    // Add a default return statement to satisfy TypeScript
-    return handleExportError('Unexpected error exporting data');
+    
+    // Fallback for unexpected cases
+    return { status: 500, data: [] };
   };
 
-  return { exportedData, exportData };
+  const exportLocalData = async (data: any[]): Promise<void> => {
+    try {
+      // Local export logic (e.g., download file, save to localStorage, etc.)
+      setExportedData(data);
+      handleExportSuccess(data, "Data exported locally");
+    } catch (error: any) {
+      handleExportError(`Local export error: ${error.message}`);
+    }
+  };
+
+  return { 
+    exportedData, 
+    exportData,        // For server export
+    exportLocalData,   // For local export
+    exportDataToServer // Direct server export without state update
+  };
 };
 
 export default useDataExport;

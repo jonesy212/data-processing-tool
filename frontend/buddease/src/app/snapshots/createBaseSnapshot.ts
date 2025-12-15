@@ -1,12 +1,12 @@
 // createBaseSnapshot.ts
 // BaseSnapshotProps.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
 import { Version } from '@/app/versions/Version';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 
 interface BaseSnapshotProps<
   T extends BaseDataEntity,

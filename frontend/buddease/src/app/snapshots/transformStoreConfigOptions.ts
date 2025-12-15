@@ -1,8 +1,7 @@
 // transformStoreConfigOptions.ts
 // transformStoreConfig.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Helper function to transform storeConfig from SnapshotStoreConfig<T, K, Meta> to SnapshotStoreConfig<WrappedU, WrappedU, Meta, ExcludedFields>
 function transformStoreConfig<

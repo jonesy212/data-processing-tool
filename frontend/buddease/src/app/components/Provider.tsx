@@ -1,94 +1,91 @@
-// Provider.tsx
-// components/AppProviders.tsx
 'use client';
+
+import React, { useReducer, useEffect, useRef } from 'react';
 import { User } from "@/app/users/User";
 import { DashboardConfig } from '@/app/typings/authTypes';
-import { NFT } from "@/app/service/crypto/NFT";
-import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
+import { NFT } from '@/app/models/cypto/NFT'
+
+import {
+  UserAttachment,
+  UserEntity,
+  UserExcludedFields,
+  UserIncludedFields,
+  UserK,
+  UserMeta,
+} from '@/app/typings/entities/UserEntity';
+
 import { useAuthStore } from "@/app/state/stores/AuthStore";
-import { useReducer } from 'react'
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { AuthContext } from '@/app/state/context/AuthContext'
+import { AuthContext } from '@/app/state/context/AuthContext';
+import { authReducer, initialState } from '@/app/state/context/AuthContext';
 
-// In your AuthProvider component file
-
-interface AuthProviderProps {
+export interface AuthProviderProps {
   children: React.ReactNode;
-  token?: string; // Make optional if not always required
-  dbStatus?: any; // Add dbStatus prop
+  token?: string;
+  dbStatus?: any;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children,  token: initialToken, dbStatus }) => {
-  // Use reducer with optional initial token
+export const AuthProvider: React.FC<AuthProviderProps> = ({
+  children,
+  token: initialToken,
+  dbStatus,
+}) => {
   const [state, dispatch] = useReducer(authReducer, {
     ...initialState,
-    token: token || initialState.token
+    token: initialToken ?? initialState.token,
   });
-  
+
   const store = useAuthStore();
-  const token = state.token;
-  const user = state.user;
+  const refreshInProgress = useRef(false);
 
   const resetAuthState = () => {
     store.logout();
     dispatch({ type: "RESET_AUTH_STATE" });
   };
 
+  const refreshToken = async () => {
+    if (refreshInProgress.current) return;
+    refreshInProgress.current = true;
+
+    try {
+      const newToken = await store.refreshToken();
+      if (newToken) {
+        dispatch({ type: "SET_TOKEN", payload: newToken });
+      } else {
+        resetAuthState();
+      }
+    } finally {
+      refreshInProgress.current = false;
+    }
+  };
+
   const loginWithRoles = (
-    user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>,
+    user: User<
+      UserEntity,
+      UserK,
+      UserMeta,
+      UserAttachment,
+      UserExcludedFields,
+      UserIncludedFields
+    >,
     roles: string[],
     nfts: NFT[],
     authToken: string
   ) => {
-    // Verify user's NFTs and add corresponding roles
     const verifiedRoles = roles.filter((role) =>
       nfts.some((nft) => nft.role === role)
     );
 
-    store.loginSuccess(authToken, user.id ? user.id.toString() : "");
+    store.loginSuccess(authToken, user.id?.toString() ?? "");
     store.setUser(user);
     store.setRoles(verifiedRoles);
     store.setNFTs(nfts);
-    
-    // Store setup from first version
+
     store.setUserPreferences({
-      theme: "dark", 
+      theme: "dark",
       language: LanguageEnum.English,
-      refreshUI: function (): void {
-        throw new Error("Function not implemented.");
-      }
-    });
-    store.setUserProfilePicture("https://example.com/profile-picture-url");
-    store.setUserEmail("newemail@example.com");
-    store.setUserContactInfo({
-      phone: "+123456789",
-      address: "1234 Main St, Anytown, USA",
-    });
-    store.setUserNotificationPreferences({
-      emailNotifications: true,
-      smsNotifications: false,
-    });
-    store.setAuthenticationProviders([
-      { name: "Google", connected: true, type: '' },
-      { name: "Facebook", connected: false, type: '' },
-    ]);
-    store.setUserSecuritySettings({
-      twoFactorEnabled: true,
-      lastPasswordChange: "2024-01-01",
-    });
-    store.addUserSession({
-      sessionId: "abc123",
-      device: "iPhone",
-      location: "New York, USA",
-      lastAccessed: "2024-06-01T12:34:56Z",
-    });
-    store.removeUserSession("abc123");
-    store.setUserSubscriptionPlan({
-      id: "",
-      planName: "Premium",
-      expiryDate: "2025-06-01",
-      price: 0,
-      features: []
+      refreshUI: () => {},
+      modules: [],
     });
 
     dispatch({
@@ -97,90 +94,84 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children,  token: in
     });
   };
 
-  // Auth methods from second version
-  const login = async (email: string, password: string) => {
-    dispatch({ type: "LOGIN_START" });
-    try {
-      // Implement login logic
-      // const response = await api.login(email, password);
-      // dispatch({ type: "LOGIN_SUCCESS", payload: response });
-    } catch (error) {
-      dispatch({ type: "LOGIN_ERROR", payload: error });
-    }
-  };
+  // Hydrate permissions when token changes
+  useEffect(() => {
+    const hydratePermissions = async () => {
+      if (!state.token) return;
 
-  const logout = () => {
-    dispatch({ type: "LOGOUT" });
-    store.logout();
-  };
+      try {
+        const perms = await store.getUserPermissions();
+        if (perms?.length) {
+          store.setRoles(perms);
+          dispatch({ type: "SET_PERMISSIONS", payload: perms });
+        }
+      } catch (err) {
+        console.error("Permission hydration failed", err);
+      }
+    };
 
-  const register = async (userData: any) => {
-    dispatch({ type: "REGISTER_START" });
-    try {
-      // Implement registration logic
-      // const response = await api.register(userData);
-      // dispatch({ type: "REGISTER_SUCCESS", payload: response });
-    } catch (error) {
-      dispatch({ type: "REGISTER_ERROR", payload: error });
-    }
-  };
+    hydratePermissions();
+  }, [state.token, store]);
 
-  const hasPermission = (permission: string) => {
-    return state.userRoles.includes(permission);
-  };
+  // Token refresh interval
+  useEffect(() => {
+    if (!state.token) return;
 
-  const hasRole = (role: string) => {
-    return state.userRoles.includes(role);
-  };
+    const interval = setInterval(async () => {
+      try {
+        await refreshToken();
+      } catch (err) {
+        console.error("Token refresh failed", err);
+        resetAuthState();
+      }
+    }, 1000 * 60 * 10); // every 10 minutes
 
-  const refreshToken = async () => {
-    dispatch({ type: "REFRESH_TOKEN_START" });
-    try {
-      // Implement token refresh logic
-      // const response = await api.refreshToken(state.token);
-      // dispatch({ type: "REFRESH_TOKEN_SUCCESS", payload: response });
-    } catch (error) {
-      dispatch({ type: "REFRESH_TOKEN_ERROR", payload: error });
-    }
-  };
+    return () => clearInterval(interval);
+  }, [state.token, store]);
 
-  const setDashboardConfig = (config: DashboardConfig | null) => {
-    // Implement dashboard config logic
-    dispatch({ type: "SET_DASHBOARD_CONFIG", payload: config });
-  };
+  // Ensure store + state are coherent on initial mount
+  useEffect(() => {
+    if (!initialToken) return;
+
+    store.loginSuccess(initialToken, state.user?.id?.toString() ?? "");
+    dispatch({ type: "SET_TOKEN", payload: initialToken });
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        // State
         state,
         dispatch,
-        
-        // Auth methods - using the actual implementations, not from state
-        login,
-        logout,
-        register,
-        hasPermission,
-        hasRole,
+
+        login: async () => {},
+        logout: () => {
+          dispatch({ type: "LOGOUT" });
+          store.logout();
+        },
+        register: async () => {},
+
+        hasPermission: (p: string) => state.userRoles.includes(p),
+        hasRole: (r: string) => state.userRoles.includes(r),
+
         refreshToken,
-        setDashboardConfig,
+
+        setDashboardConfig: (config: DashboardConfig | null) =>
+          dispatch({ type: "SET_DASHBOARD_CONFIG", payload: config }),
+
         resetAuthState,
         loginWithRoles,
-        
-        // User data
+
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
         isLoading: state.isLoading,
-        
-        // Extended user properties
+
         accessToken: state.token,
-        userId: state.user?.id || null,
+        userId: state.user?.id ?? null,
         roles: state.userRoles,
         nfts: state.userNFTs,
         authenticationProviders: state.authenticationProviders,
-        
-        // Store-based properties
+
         userPreferences: store.getUserPreferences(),
         userProfilePicture: store.getUserProfilePicture(),
         userEmail: store.getUserEmail(),
@@ -189,12 +180,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children,  token: in
         userSecuritySettings: store.getUserSecuritySettings(),
         userSessions: store.getUserSessions(),
         userSubscriptionPlan: store.getUserSubscriptionPlan(),
-        
-        // Dashboard
-        dashboardConfig: null, // Will be set by setDashboardConfig
-        
-        // Database status
-        dbStatus
+
+        dashboardConfig: state.dashboardConfig,
+        dbStatus,
       }}
     >
       {children}

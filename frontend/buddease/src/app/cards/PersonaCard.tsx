@@ -2,7 +2,7 @@
 import React, { ReactNode } from "react";
 import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { SupportedData } from '@/app/models/CommonData';
-import DetailsProps from "@/app/models/data/Details";
+import DetailsProps from "@/app/components/models/data/Details";
 import DynamicTypography from "./DummyCardLoader";
 
 

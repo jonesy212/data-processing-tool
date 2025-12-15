@@ -1,9 +1,8 @@
 // convertToLocalStorageSnapshotStore.ts
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { LocalStorageSnapshotStore } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { DataStore } from "@/app/state/stores/DataStore";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 function convertToLocalStorageSnapshotStore<T extends BaseDataEntity, K extends T = T>(
   dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

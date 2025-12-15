@@ -1,7 +1,7 @@
 // openNotificationPreferencesModal.tsx
-import { ChatSettingsModal, ModalGenerator } from "@/app/generators/GenerateModal";
 import React, { useState } from "react";
-// import { ModalGenerator, ModalProps, ChatSettingsModal } from "./ModalComponents"; // Import the modal components
+import { ModalProps, ModalGenerator } from "@/app/generators/GenerateModal";
+import {  ChatSettingsModal } from '@/app/cards/modal/ChatSettingsModal'
 
 const openNotificationPreferencesModal = async () => {
   return new Promise((resolve, reject) => {

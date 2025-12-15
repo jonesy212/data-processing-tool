@@ -3,16 +3,15 @@ import internalApiService from '@/app/api/ApiClient';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import {
-    SimpleCalendarEvent,
-    useCalendarContext,
-} from "@/app/components/calendar/CalendarContext";
+    CalendarEvent, SimpleCalendarEvent,
+    useCalendarContext
+} from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { AxiosResponse } from "axios";
 

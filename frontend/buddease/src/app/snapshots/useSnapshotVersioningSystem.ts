@@ -1,12 +1,12 @@
 // useSnapshotVersioningSystem.ts
 import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta
 } from '@/app/config/BaseConfig';
+import { VersionMetadata } from '@/app/config/MetaDataOptions';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import React, { useCallback, useMemo, useState } from 'react';
-import { VersionMetadata } from '@/app/config/MetaDataOptions'
-import { Attachment } from '@/app/documents/attachment/Attachment'
 
 interface SnapshotVersion<T extends BaseDataEntity> {
   id: string;

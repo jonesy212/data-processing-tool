@@ -3,7 +3,7 @@
 import { StatusType } from "@/app/models/data/StatusType";
 import { createAction } from "@reduxjs/toolkit";
 import { TradeIdea} from '@/app/trading/TradeIdea'
-import { MarketData } from '@/app/components/crypto/TradingStrategy'
+import { MarketData } from '@/app/trading/TradingStrategy'
 import { CryptoManagementCriteria } from '@/app/pages/searches/CriteriaOptions'
 import { InvestmentStrategy } from '@/app/components/crypto/InvestmentStrategy'
 import { ContentManagementPhaseEnum } from '@/app/components/phases/ContentManagementPhase'
@@ -11,7 +11,7 @@ import { InvestmentStrategyEnum, CryptoAssetTypeEnum, PerformanceStatusEnum } fr
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { MarketTrendEnum } from '@/app/pages/searches/CriteriaEnums';
-import TradingStrategy from '@/app/components/crypto/TradingStrategy';
+import TradingStrategy from '@/app/trading/TradingStrategy';
 import { FeedbackPhaseEnum } from '@/app/components/phases/FeedbackPhase'
 
 // Helper function to fetch recent market data

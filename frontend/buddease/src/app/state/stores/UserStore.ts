@@ -1,33 +1,30 @@
-// UserStore.ts
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/context/NotificationContext";
 //UserStore.ts
 import CalendarEventTimingOptimization, {
-    ExtendedCalendarEvent,
+  ExtendedCalendarEvent,
 } from "@/app/calendar/CalendarEventTimingOptimization";
+import { tasksDataSource } from "@/app/components/models/tasks/TaskDataSource";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseCustomEvent } from "@/app/events/BaseCustomEvent";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
-import { sanitizeData } from "@/app/models/crypto/SanitizationFunctions";
+import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions';
 import { Task } from "@/app/models/tasks/Task";
-import { tasksDataSource } from "@/app/models/tasks/TaskDataSource";
 import { useAuth } from "@/app/state/context/AuthContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { AssignBaseStore, useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
+import {
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
+} from "@/app/state/stores/AssignEventStore";
+import { useAssignTeamMemberStore } from "@/app/state/stores/AssignTeamMemberStore";
+import { useUndoRedoStore } from "@/app/state/stores/UndoRedoStore";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import {
-    AssignEventStore,
-    ReassignEventResponse,
-    useAssignEventStore,
-} from "./AssignEventStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import { useUndoRedoStore } from "./UndoRedoStore";
 
 
 type EventStoreSubset = Pick<
@@ -66,9 +63,9 @@ export interface UserStore<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->  extends AssignEventStore,
-    AssignBaseStore,
-    UserStoreSubset {
+> extends AssignEventStore,
+  AssignBaseStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  UserStoreSubset {
   // Define a custom interface that extends necessary properties from AssignEventStore and AssignBaseStore
   // Add additional properties specific to UserStore if needed
   users: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
@@ -77,7 +74,7 @@ export interface UserStore<
   // setAssignedTaskStore: (task: Task, user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   updateUserState: (newUsers: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   assignTask: (
-    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   assignFileToTeam: Record<string, string[]>; // Add this property
   assignContactToTeam: Record<string, string[]>; // Add this property
@@ -93,7 +90,7 @@ export interface UserStore<
   batchFetchUserSnapshotsRequest: (userId: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   batchFetchUndoRedoSnapshotsRequest: (userId: string) => void;
   fetchUsersByTaskId: (userId: string) => Promise<string>;
-   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
 }
 
 const userManagerStore = (): UserStore => {
@@ -116,7 +113,7 @@ const userManagerStore = (): UserStore => {
   };
 
   const assignTask = (
-    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Assign task to user
     eventSubset.assignEvent(task.eventId, user); // Changed user._id to user
@@ -249,40 +246,102 @@ const userManagerStore = (): UserStore => {
     }
   };
 
-  const batchFetchUserSnapshotsSuccess =
+
+const batchFetchUserSnapshotsSuccess = 
     async (userId: Promise<string>) => async (dispatch: any) => {
       console.log(`Task ${userId} fetched`);
-      notify(
-        "batchFetchTaskSnapshotsFailure",
-        `Task ${userId} fetched`,
-        NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
 
-      // Assuming you have a method to fetch tasks by userId from your data source
-      const users = fetchUsersByUserId(await userId); // Implement this method
+      // First notification: success message
+      notify({
+        id: "batchFetchUserSnapshotsSuccess",
+        message: NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT || `Task ${userId} fetched`, // REMOVED await
+        data: {
+          entityId: userId, // REMOVED await
+          entityType: 'user',
+          extra: {
+            userId: userId, // REMOVED await
+            action: 'fetch_snapshots'
+          }
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
 
-      // Check if users is not null or undefined
-      if (users) {
-        // Dispatch the fetched users to the store or perform any necessary logic
-        dispatch(batchFetchUserSnapshotsSuccess(users));
+      try {
+        // Assuming you have a method to fetch tasks by userId from your data source
+        const users = fetchUsersByUserId(userId); // REMOVED await
 
-        // Simulating asynchronous operation
-        setTimeout((error: Error) => {
-          notify(
-            "batchFetchTaskSnapshotsFailure",
-            `Error fetching task ${userId}`,
-            NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
-            new Date(),
-            NotificationTypeEnum.OPERATION_SUCCESS
-          );
-        }, 1000);
-      } else {
-        console.error(`Tasks not found for userId ${userId}`);
+        // Check if users is not null or undefined
+        if (users) {
+          // Dispatch the fetched users to the store or perform any necessary logic
+          dispatch(batchFetchUserSnapshotsSuccess(users));
+
+          // Simulating asynchronous operation with error handling
+          setTimeout(() => {
+            // If this is simulating an error, use error notification
+            const mockError = new Error(`Error fetching task ${userId}`); // REMOVED await
+
+            notify({
+              id: "batchFetchTaskSnapshotsFailure",
+              message: NOTIFICATION_MESSAGES.OperationError.DEFAULT || `Error fetching task ${userId}`, // REMOVED await
+              data: {
+                originalError: mockError.message,
+                entityId: userId, // REMOVED await
+                entityType: 'user',
+                extra: {
+                  userId: userId, // REMOVED await
+                  error: mockError
+                }
+              },
+              timestamp: new Date(),
+              type: NotificationTypeEnum.OPERATION_ERROR,
+              level: 'error' as const
+            });
+          }, 1000);
+        } else {
+          console.error(`Tasks not found for userId ${userId}`);
+
+          // Notify about not found users
+          notify({
+            id: "usersNotFound",
+            message: `Tasks not found for userId ${userId}`, // REMOVED await
+            data: {
+              entityId: userId, // REMOVED await
+              entityType: 'user',
+              extra: {
+                userId: userId, // REMOVED await
+                reason: 'users_not_found'
+              }
+            },
+            timestamp: new Date(),
+            type: NotificationTypeEnum.OPERATION_ERROR,
+            level: 'warning' as const
+          });
+        }
+      } catch (error: any) {
+        console.error(`Error fetching users for userId ${userId}:`, error); // REMOVED await
+
+        // Error notification for caught exceptions
+        notify({
+          id: "fetchUsersError",
+          message: NOTIFICATION_MESSAGES.OperationError.DEFAULT || `Error fetching users for userId ${userId}`, // REMOVED await
+          data: {
+            originalError: error.message || 'Unknown error',
+            entityId: userId, // REMOVED await
+            entityType: 'user',
+            extra: {
+              userId: userId, // REMOVED await
+              error
+            }
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.OPERATION_ERROR,
+          level: 'error' as const
+        });
       }
-    };
-
+  };
+  
   const setDynamicNotificationMessage = (message: string) => {
     setNotificationMessage(message);
   };
@@ -429,19 +488,19 @@ const userManagerStore = (): UserStore => {
       useAssignBaseStore().assignBoardAutomationToTeam,
     assignBoardCustomFieldToTeam:
       useAssignBaseStore().assignBoardCustomFieldToTeam,
-    
-    
-      getAuthStore: useAssignBaseStore().getAuthStore,
-    
-    
+
+
+    getAuthStore: useAssignBaseStore().getAuthStore,
+
+
     batchFetchUserSnapshotsSuccess,
     batchFetchUserSnapshotsRequest,
     batchFetchUndoRedoSnapshotsRequest: useUndoRedoStore().batchFetchUndoRedoSnapshotsRequest,
     fetchUsersByTaskId,
-   
+
     convertResponsesToTodos: useAssignEventStore().convertResponsesToTodos,
-    getResponsesByEventId:  useAssignEventStore().getResponsesByEventId,
-   
+    getResponsesByEventId: useAssignEventStore().getResponsesByEventId,
+
   });
 
   return userStore;

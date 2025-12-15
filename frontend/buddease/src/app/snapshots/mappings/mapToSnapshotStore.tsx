@@ -1,15 +1,13 @@
 // mapToSnapshotStore.tsx
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { CriteriaType } from '@/app/pages/searches'
 import {
   BaseDataEntity,
-  BaseDataRoot,
   DefaultExcludedFields,
   DefaultMeta
 } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CriteriaType } from '@/app/pages/searches';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
 
 type AsyncOperation<T> = (snapshotId: string, criteria: CriteriaType) => Promise<T>;
@@ -130,5 +128,6 @@ const someAsyncOperation: AsyncOperation<string | undefined> = async (
 };
 
 
-export { mapSnapshotCore, mapSnapshotAsync, mapSnapshotSync }
-export type { AsyncOperation }
+export { mapSnapshotAsync, mapSnapshotCore, mapSnapshotSync };
+export type { AsyncOperation };
+

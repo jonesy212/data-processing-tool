@@ -1,18 +1,21 @@
 // NotificationChannels.ts
-import { CalendarIntegrationSettings, VoiceSettings, VideoSettings, ScreenShareSettings } from '@/app/components/communications/chat/CalendarIntegrationSettings'
-import ChatSettings from '@/app/hooks/userInterface/ChatSettings'
+import { CalendarIntegrationSettings, ScreenShareSettings, VideoSettings, VoiceSettings } from '@/app/components/communications/chat/CalendarIntegrationSettings';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UserPreferences } from '@/app/config/UserPreferences';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseNotificationSettings } from "@/app/features/support/NotificationSettings";
+import ChatSettings from '@/app/hooks/userInterface/ChatSettings';
+import { Project } from '@/app/models/projects/Project';
 import {
   EmailSettings,
+  InAppSettings,
   PushNotificationSettings,
   SmsSettings,
-  InAppSettings,
-  WebhookSettings 
-} from '@/app/settings/Reminder'
+  WebhookSettings
+} from '@/app/settings/Reminder';
+import { Crypto } from '@/app/state/stores/CryptoStore';
 
-
-
-
+export type AdvancedChannels = 'chat' | 'calendar' | 'audioCall' | 'videoCall' | 'screenShare';
 
 interface RetryPolicy {
   // Core retry configuration
@@ -20,7 +23,8 @@ interface RetryPolicy {
   retryInterval: number; // in milliseconds
   backoffMultiplier?: number; // exponential backoff multiplier (e.g., 2 for doubling)
   maxRetryInterval?: number; // maximum wait between retries in ms
-  
+    backoffFactor: number;
+
   // Retry conditions
   retryableStatusCodes?: number[]; // HTTP status codes that should trigger retry
   retryableErrors?: string[]; // Specific error messages that should trigger retry
@@ -88,26 +92,39 @@ interface BasicNotificationChannels {
   screenShare: boolean;
 }
 
-interface NotificationChannels {
+interface NotificationChannels<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   // Basic channel settings (can be boolean or full settings)
   email: boolean | EmailSettings;
   push: boolean | PushNotificationSettings;
   sms: boolean | SmsSettings;
   inApp: boolean | InAppSettings;
   webhook: boolean | WebhookSettings;
-  
-  // Advanced configurations (separate channels)
-  advanced?: {
-    chat?: { enabled: boolean } & ChatSettings;
-    calendar?: { enabled: boolean } & CalendarIntegrationSettings;
-    audioCall?: { enabled: boolean } & VoiceSettings;
-    videoCall?: { enabled: boolean } & VideoSettings;
-    screenShare?: { enabled: boolean } & ScreenShareSettings;
-    // Note: Don't duplicate email, push, sms here unless they're different from top-level
-  };
+  crypto?: Crypto;
+  project?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
+  // Advanced configurations (separate channels)
+    advanced?: {
+      [K in AdvancedChannels]?: { enabled: boolean } & (
+        K extends 'chat' ? ChatSettings :
+        K extends 'calendar' ? CalendarIntegrationSettings :
+        K extends 'audioCall' ? VoiceSettings :
+        K extends 'videoCall' ? VideoSettings :
+        K extends 'screenShare' ? ScreenShareSettings :
+        never
+      );
+    };
+
+  userPreferences?: UserPreferences<any, any>;
+  
   // Global settings
-  deliveryStrategy?: 'all' | 'sequential' | 'priority-based';
+  deliveryStrategy?: 'all' | 'sequential' | 'priority' | 'priority-based'; // Add 'priority'
   retryPolicy?: RetryPolicy;
   quietHours?: QuietHours;
 }
@@ -124,7 +141,6 @@ interface GeneralNotificationTypes {
   file: boolean;
   meeting: boolean;
   directMessage: boolean;
-
 
   audioCall: boolean,
   videoCall: boolean,
@@ -155,7 +171,7 @@ interface EventNotificationsSettings extends BaseNotificationSettings {
 const aggressiveRetry: RetryPolicy = {
   maxRetries: 5,
   retryInterval: 1000,
-  backoffMultiplier: 2,
+  backoffFactor: 2, // Exponential backoff: 1s, 2s, 4s, 8s, 16s
   maxRetryInterval: 30000,
   retryableStatusCodes: [408, 429, 500, 502, 503, 504],
   jitter: true,
@@ -165,7 +181,8 @@ const aggressiveRetry: RetryPolicy = {
 const conservativeRetry: RetryPolicy = {
   maxRetries: 3,
   retryInterval: 5000,
-  retryableStatusCodes: [429, 500, 503]
+  retryableStatusCodes: [429, 500, 503],
+  backoffFactor: 1.5, // Exponential backoff: 5s, 7.5s, 11.25s
 };
 
 // QuietHours examples
@@ -195,4 +212,28 @@ const weekendQuietHours: QuietHours = {
 };
 
 
-export type { EventNotificationsSettings, GeneralNotificationTypes, CryptoNotificationTypes, BasicNotificationChannels, NotificationChannels};
+// Best approach: Define a clear interface
+interface NotificationEndpointConfig {
+  // Basic channels (objects or empty configs)
+  email?: EmailSettings | {};
+  push?: PushNotificationSettings | {};
+  sms?: SmsSettings | {};
+  inApp?: InAppSettings | {};
+  webhook?: WebhookSettings | {};
+  
+  
+  // Advanced channels (just the settings without 'enabled')
+  chat?: Omit<ChatSettings, 'enabled'>;
+  calendar?: Omit<CalendarIntegrationSettings, 'enabled'>;
+  audioCall?: Omit<VoiceSettings, 'enabled'>;
+  videoCall?: Omit<VideoSettings, 'enabled'>;
+  screenShare?: Omit<ScreenShareSettings, 'enabled'>;
+  
+  // Global
+  deliveryStrategy?: NotificationChannels['deliveryStrategy'];
+  retryPolicy?: NotificationChannels['retryPolicy'];
+  quietHours?: NotificationChannels['quietHours'];
+}
+
+export type { BasicNotificationChannels, CryptoNotificationTypes, EventNotificationsSettings, GeneralNotificationTypes, NotificationChannels, NotificationEndpointConfig, RetryPolicy };
+

@@ -1,8 +1,7 @@
 // CollaboratorEntity.ts
+import { Collaborator } from '@/app/collaborators/Collaborator';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ApplyFieldFilters } from './AppEntity';
-
 // Define the actual CollaboratorEntity interface
 interface CollaboratorEntity extends BaseDataEntity {
   id: string;
@@ -46,11 +45,8 @@ type CollaboratorBaseParams = {
 
 // Export all the types
 export type {
-  CollaboratorEntity,
-  CollaboratorK,
-  CollaboratorMeta,
-  CollaboratorAttachment,
-  CollaboratorExcludedFields,
-  CollaboratorIncludedFields,
-  CollaboratorBaseParams
+  AppCollaborator, CollaboratorAttachment, CollaboratorBaseParams, CollaboratorEntity, CollaboratorExcludedFields,
+  CollaboratorIncludedFields, CollaboratorK,
+  CollaboratorMeta
 };
+

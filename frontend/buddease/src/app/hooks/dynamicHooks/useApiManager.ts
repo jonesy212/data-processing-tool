@@ -1,6 +1,6 @@
 // useApiManager.ts
 import { useApiManagerStore } from '@/app/api/ApiStore';
-import { ApiConfig } from '@/app/api/ApiConfigService'
+import ApiConfigService,{ ApiConfig } from '@/app/api/ApiConfigService'
 
 import { useEffect } from 'react';
 
@@ -33,7 +33,7 @@ const useApiManager = () => {
   
       if (response.ok) {
         // Parse the response to get the updated API config
-        const updatedConfig: ApiConfig = await response.json();
+        const updatedConfig: ApiConfigService = await response.json();
   
         // Correctly pass the updated configuration to the store
         apiManagerStore.updateApiConfigSuccess(updatedConfig); // Use 'updatedConfig' instead of 'apiConfigsData.updatedConfig'

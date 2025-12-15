@@ -304,7 +304,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata`,
         metadata,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to create metadata",
       "CREATE_METADATA_SUCCESS" as keyof TMessages,
@@ -326,7 +326,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => internalApiService.get(
         `${API_BASE_URL}/metadata/${metadataId}`,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to get metadata",
       "GET_METADATA_SUCCESS" as keyof TMessages,
@@ -350,7 +350,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.put(
         `${API_BASE_URL}/metadata/${metadataId}`,
         updates,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to update metadata",
       "UPDATE_METADATA_SUCCESS" as keyof TMessages,
@@ -363,7 +363,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => internalApiService.delete(
         `${API_BASE_URL}/metadata/${metadataId}`,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to delete metadata",
       "DELETE_METADATA_SUCCESS" as keyof TMessages,
@@ -387,7 +387,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/batch`,
         metadataArray,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to create batch metadata",
       "BATCH_CREATE_METADATA_SUCCESS" as keyof TMessages,
@@ -413,7 +413,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.put(
         `${API_BASE_URL}/metadata/batch`,
         updates,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to update batch metadata",
       "BATCH_UPDATE_METADATA_SUCCESS" as keyof TMessages,
@@ -447,7 +447,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/search`,
         { query, filters },
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to search metadata",
       "SEARCH_METADATA_SUCCESS" as keyof TMessages,
@@ -463,7 +463,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/query`,
         criteria,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to query metadata",
       "QUERY_METADATA_SUCCESS" as keyof TMessages,
@@ -488,7 +488,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/${metadataId}/versions`,
         versionData,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to create metadata version",
       "CREATE_METADATA_VERSION_SUCCESS" as keyof TMessages,
@@ -501,7 +501,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => internalApiService.get(
         `${API_BASE_URL}/metadata/${metadataId}/versions`,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to get metadata versions",
       "GET_METADATA_VERSIONS_SUCCESS" as keyof TMessages,
@@ -518,7 +518,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/${metadataId}/rollback`,
         { version: versionNumber },
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to rollback metadata",
       "ROLLBACK_METADATA_SUCCESS" as keyof TMessages,
@@ -542,7 +542,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/validate`,
         metadata,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to validate metadata",
       "VALIDATE_METADATA_SUCCESS" as keyof TMessages,
@@ -557,7 +557,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/import`,
         importData,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to import metadata",
       "IMPORT_METADATA_SUCCESS" as keyof TMessages,
@@ -573,7 +573,7 @@ class MetadataApiService<TMessages extends Record<string, string>> {
       () => internalApiService.post(
         `${API_BASE_URL}/metadata/export`,
         criteria,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to export metadata",
       "EXPORT_METADATA_SUCCESS" as keyof TMessages,

@@ -3,7 +3,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import axiosInstance from '@/app/api/csrfToken';
 import { getMarketPrice, priceService } from '@/app/api/service/PriceApiService'
-import { TradeLogger } from '@/libraries/logging/TradeLogger'
+import { TradeLogger } from '@/app/logging/TradeLogger'
 // Types
 export interface PortfolioAsset {
   symbol: string;

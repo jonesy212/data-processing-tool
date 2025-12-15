@@ -1,26 +1,26 @@
 // PhaseHooks.ts
 
-import IdeationPhaseComponent from "@/app/components/phases/IdeationPhaseComponent";
+import IdeationPhaseComponent from '@/app/components/phases/IdeationPhaseComponent';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import configData from "@/app/config/endpoints/configData";
 import { ipfsConfig } from '@/app/config/ipfsConfig';
-import userSettings from "@/app/config/UserSettings";
-import createDynamicHook from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
-import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
-import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
-import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
-import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import userSettings from '@/app/config/UserSettings';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import createDynamicHook from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
+import { BrainstormingSettings } from '@/app/interfaces/settings/BrainstormingSettings';
+import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
+import { TeamBuildingSettings } from '@/app/interfaces/settings/TeamBuildingSettings';
+import BrandingSettings from '@/app/libraries/theme/BrandingService';
+import { ProjectPhaseTypeEnum } from '@/app/models/data/StatusType';
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
-import { Progress } from "@/app/models/tracker/ProgressBar";
-import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
-import configData from "@/config/endpoints/configData";
+import { Progress } from '@/app/models/tracker/ProgressBar';
 import { useAuth } from '@/app/state/context/AuthContext';
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 import {
   ExtendedDAppAdapter,
   ExtendedDappProps
 } from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
 let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;

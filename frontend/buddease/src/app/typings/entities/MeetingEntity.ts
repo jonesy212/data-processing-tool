@@ -1,5 +1,5 @@
 // MeetingEntity.ts
-import { DefaultExcludedFields, DefaultMeta, BaseEntity} from '@/app/config/BaseConfig';
+import { BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Define the actual MeetingEntity interface
@@ -51,11 +51,8 @@ type MeetingBaseParams = {
 };
 
 export type {
-  MeetingEntity,
-  MeetingK,
-  MeetingMeta,
-  MeetingAttachment,
-  MeetingExcludedFields,
-  MeetingIncludedFields,
-  MeetingBaseParams
+  MeetingAttachment, MeetingBaseParams, MeetingEntity, MeetingExcludedFields,
+  MeetingIncludedFields, MeetingK,
+  MeetingMeta
 };
+

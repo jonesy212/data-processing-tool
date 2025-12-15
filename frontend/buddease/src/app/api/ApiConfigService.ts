@@ -4,9 +4,7 @@ import { Endpoints } from './ApiEndpoints';
 import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
 import { RetryConfig } from "@/app/services/ConfigurationService";
 import { CacheConfig } from "@/app/config/CacheConfig";
-
-type EndpointCategory = keyof EndpointConfigurations;
-type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];
+import { EndpointCategory, EndpointKey } from '@/app/config/EndpointConfig'
 
 export interface ApiConfig {
   [x: string]: any;

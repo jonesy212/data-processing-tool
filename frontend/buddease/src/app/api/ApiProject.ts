@@ -1,25 +1,27 @@
 // ApiProject.ts
+import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
-import internalApiService from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { Task } from "@/app/components/models/tasks/Task";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import FileData from "@/app/models/data/FileData";
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import {
+    ProjectAttachment,
+    ProjectEntity,
+    ProjectExcludedFields,
+    ProjectIncludedFields,
+    ProjectK,
+    ProjectMeta
+} from '@/app/typings/entities/ProjectEntity';
 import { User } from "@/app/users/User";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-import { ProjectEntity,
-ProjectK,
-ProjectMeta,
-ProjectAttachment,
-ProjectExcludedFields,
-ProjectIncludedFields } from '@/app/typings/entities/ProjectEntity'
 
 const API_BASE_URL = endpoints.projectOwner.base;
 

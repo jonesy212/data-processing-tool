@@ -1,6 +1,6 @@
 // fetchUserAreaDimensions.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { UILogger } from '@/app/logging/Logger';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';

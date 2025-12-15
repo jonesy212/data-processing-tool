@@ -1,26 +1,24 @@
 // SharedDocumentProps.ts
 
 import { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
-import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { DocumentPhase } from '@/app/models/phases/DocumentPhase';
 import { Phase } from '@/app/models/phases/Phase';
-import { TagsRecord } from '@/app/models/tracker/Tag'
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import AccessHistory from '@/app/versions/AccessHistory';
 import AppVersionImpl from "@/app/versions/AppVersion";
 import { VersionData } from '@/app/versions/VersionData';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
-import { DocumentPhase } from '@/app/models/phases/DocumentPhase'
 
 
 export interface CommonAnimationOptions {

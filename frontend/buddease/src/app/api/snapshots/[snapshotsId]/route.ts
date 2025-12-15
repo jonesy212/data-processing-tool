@@ -1,8 +1,8 @@
 // route.ts
 // /src/app/api/snapshots/[snapshotId]/route.ts
+import DatabaseClient from '@/app/api/DatabaseClient';
+import { databaseConnection } from '@/app/config/databaseConnection';
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/DatabaseClient';
-import databaseConfig from '@/app/lib/server/database/config';
 
 export async function PUT(
   request: NextRequest,
@@ -12,7 +12,7 @@ export async function PUT(
     const { snapshotId } = params;
     const { snapshotData, events, snapshotStore, dataItems, newData, updatedPayload } = await request.json();
     
-    const dbClient = new DatabaseClient(databaseConfig);
+    const dbClient = new DatabaseClient(databaseConnection);
     await dbClient.connect();
     
     // Update snapshot in database

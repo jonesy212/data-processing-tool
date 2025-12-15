@@ -82,6 +82,8 @@ const notifyDataSuccess = (
   });
 };
 
+
+
 // Error handler with notification
 const handleDataApiErrorAndNotify = (
   error: AxiosError<unknown>,
@@ -182,7 +184,9 @@ class DataApiService {
       const endpoint = `${API_BASE_URL}/highlights`;
       
       const response = await this.requestHandler(
-        () => internalApiService.get(endpoint, { params: { id } }),
+        () => internalApiService.get(endpoint, {
+          config: { params: { id }}
+        }),
         "FETCH_DATA_DETAILS_SUCCESS",
         "FETCH_HIGHLIGHTS_ERROR",
         { id }
@@ -261,7 +265,6 @@ class DataApiService {
     }
   }
 
-
   async updateData(dataId: number, newData: any): Promise<any> {
     try {
       // Fetch necessary user IDs before proceeding with the update
@@ -269,12 +272,17 @@ class DataApiService {
       newData.userIds = userIds;
 
       const response = await this.requestHandler(
-        () => internalApiService.put(`${API_BASE_URL}/data/${dataId}`, newData, {
-          headers: headersConfig
-        }),
+        () => internalApiService.put(
+          `${API_BASE_URL}/data/${dataId}`, 
+          newData, 
+          {
+            config: {headers: headersConfig } // Headers in Axios config
+          }
+        ),
         "UPDATE_DATA_DETAILS_SUCCESS",
         "UPDATE_DATA_DETAILS_ERROR",
         { dataId, newData }
+        // No headers in ApiRequestOptions
       );
 
       addLog(`Data updated: ${JSON.stringify(response.data)}`);
@@ -284,7 +292,6 @@ class DataApiService {
       throw error;
     }
   }
-
 
   async getStoreIds(storeId: number): Promise<void> {
     try {

@@ -1,29 +1,39 @@
-// AquaStore.ts
 // components/state/stores/AquaStore.ts
-import { create } from 'zustand';
-import { AquaConfig, AquaSession } from '@/app/components/aqua/types';
+import { makeAutoObservable, action } from 'mobx';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig'
+import { AquaSession } from '@/app/state/AquaState'
 
-interface AquaStore {
-  config: AquaConfig | null;
-  session: AquaSession | null;
-  isInitialized: boolean;
-  setAquaConfig: (config: AquaConfig) => void;
-  setUserSession: (session: AquaSession) => void;
-  clearSession: () => void;
-  updateLastActivity: () => void;
+export class AquaStore {
+  config: AquaConfig | null = null;
+  session: AquaSession | null = null;
+  isInitialized = false;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setAquaConfig = action((config: AquaConfig) => {
+    this.config = config;
+    this.isInitialized = true;
+  });
+
+  setUserSession = action((session: AquaSession) => {
+    this.session = session;
+  });
+
+  clearSession = action(() => {
+    this.session = null;
+  });
+
+  updateLastActivity = action(() => {
+    if (this.session) {
+      this.session = {
+        ...this.session,
+          lastActivity: new Date()
+      };
+    }
+  });
 }
 
-export const useAquaStore = create<AquaStore>((set) => ({
-  config: null,
-  session: null,
-  isInitialized: false,
-  setAquaConfig: (config) => set({ config, isInitialized: true }),
-  setUserSession: (session) => set({ session }),
-  clearSession: () => set({ session: null }),
-  updateLastActivity: () => set((state) => ({
-    session: state.session ? {
-      ...state.session,
-      lastActive: new Date()
-    } : null
-  }))
-}));
+// Create a singleton instance
+export const aquaStore = new AquaStore();

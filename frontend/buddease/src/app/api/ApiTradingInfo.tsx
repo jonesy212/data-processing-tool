@@ -1,4 +1,4 @@
-// ApiTradingInfo.tsx
+
 // ApiTradingInfo.ts - News and information trading APIs
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
@@ -79,24 +79,143 @@ const tradingInfoNotificationMessages: TradingInfoNotificationMessages = {
   FETCH_EDUCATIONAL_CONTENT_SUCCESS: 'Educational content fetched successfully',
   FETCH_EDUCATIONAL_CONTENT_ERROR: 'Failed to fetch educational content',
 };
-
-// Function to handle API errors and notify for trading info
 const handleTradingInfoApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof TradingInfoNotificationMessages
+  errorMessageId: keyof TradingInfoNotificationMessages,
+  additionalData?: any
 ) => {
-  handleApiError(error, errorMessage);
-  if (errorMessageId) {
-    const errorMessageText = tradingInfoNotificationMessages[errorMessageId] || errorMessage;
-    useNotification().notify(
-      String(errorMessageId),
-      errorMessageText,
-      null,
-      new Date(),
-      "TradingInfoError" as NotificationType
-    );
+  const { notify } = useNotification();
+  
+  // Get the error message text from notification messages
+  const errorMessageText = tradingInfoNotificationMessages[errorMessageId] || errorMessage;
+  
+  // Create more detailed error message based on HTTP status and trading context
+  let userFriendlyMessage = errorMessageText;
+  const axiosError = error as AxiosError;
+  
+  if (axiosError.response) {
+    const status = axiosError.response.status;
+    
+    // Trading info-specific error messages
+    switch (status) {
+      case 400:
+        userFriendlyMessage = "Invalid trading information request";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required for trading data";
+        break;
+      case 403:
+        userFriendlyMessage = "Permission denied for trading information";
+        break;
+      case 404:
+        userFriendlyMessage = "Trading information not found";
+        break;
+      case 429:
+        userFriendlyMessage = "Too many trading data requests - rate limited";
+        break;
+      case 500:
+        userFriendlyMessage = "Trading data server error";
+        break;
+      case 503:
+        userFriendlyMessage = "Trading data service temporarily unavailable";
+        break;
+      default:
+        if (status >= 500) {
+          userFriendlyMessage = "Trading information server error";
+        } else if (status >= 400) {
+          userFriendlyMessage = "Trading data request failed";
+        }
+    }
+  } else if (axiosError.request) {
+    userFriendlyMessage = "Network error: Unable to fetch trading information";
+  } else {
+    userFriendlyMessage = "Trading data error: " + (axiosError.message || errorMessage);
   }
+  
+  // Log the error for debugging
+  console.error("Trading Info API Error:", {
+    messageId: errorMessageId,
+    message: userFriendlyMessage,
+    originalError: axiosError.message,
+    statusCode: axiosError.response?.status,
+    url: axiosError.config?.url,
+    method: axiosError.config?.method,
+    additionalData,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Send notification using consistent object format
+  notify({
+    id: `trading_info_error_${String(errorMessageId)}_${Date.now()}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'trading_info',
+      entityId: additionalData?.symbol || additionalData?.instrumentId || 'unknown',
+      action: additionalData?.action || errorMessageId.toString().toLowerCase().replace('_error', ''),
+      errorCode: axiosError.response?.status,
+      errorType: errorMessageId.toString(),
+      originalError: axiosError.message,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      tradingContext: {
+        symbol: additionalData?.symbol,
+        instrumentType: additionalData?.instrumentType,
+        market: additionalData?.market,
+        timeframe: additionalData?.timeframe,
+        dataType: additionalData?.dataType
+      },
+      extra: additionalData || {},
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const,
+    metadata: {
+      isTradingError: true,
+      errorCategory: 'trading_info',
+      severity: getTradingInfoErrorSeverity(axiosError.response?.status),
+      dataFreshness: additionalData?.dataFreshness || 'unknown'
+    }
+  });
+  
+  // Call the original error handler
+  handleApiError(error, userFriendlyMessage);
+  
+  // Optional: Log to trading analytics service
+  logTradingInfoError({
+    errorMessageId,
+    error: axiosError,
+    userMessage: userFriendlyMessage,
+    additionalData,
+    timestamp: new Date().toISOString()
+  });
+};
+
+// Helper functions for trading info error handling
+const getTradingInfoErrorSeverity = (statusCode?: number): string => {
+  if (!statusCode) return 'medium';
+  
+  if (statusCode >= 500) return 'high';
+  if (statusCode === 429) return 'high'; // Rate limiting is critical for trading data
+  if (statusCode === 403) return 'high'; // Permission issues are critical
+  if (statusCode === 401) return 'medium';
+  if (statusCode === 404) return 'low'; // Not found is usually less critical for info
+  return 'medium';
+};
+
+const logTradingInfoError = (errorInfo: any): void => {
+  // Could send to trading analytics service
+  console.log('[Trading Info Error Logged]:', {
+    ...errorInfo,
+    loggedAt: new Date().toISOString()
+  });
+  
+  // Example: Send to external monitoring
+  // tradingAnalyticsService.trackError(errorInfo);
+  // sentry.captureException(errorInfo.error, { 
+  //   extra: { tradingInfoContext: errorInfo.additionalData }
+  // });
 };
 
 // News and Information API Functions

@@ -1,19 +1,19 @@
 // mappingMethods.ts
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { WrappedU } from "@/app/snapshots/isCompatibleTempData";
 import {
   SnapshotsArray,
   SnapshotsObject
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
-import { WrappedU } from "@/app/snapshots/isCompatibleTempData";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
 // ------------------------
 // mapSnapshots
@@ -135,7 +135,8 @@ export const MapMethods = {
         return null;
       }
     }
-  }
+  },
+  
    mapSnapshots: async function <
     T extends BaseDataEntity,
     K extends T = T,

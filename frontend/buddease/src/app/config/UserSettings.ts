@@ -4,8 +4,9 @@ import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import { Team } from "@/app/components/teams/Team";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
@@ -16,9 +17,9 @@ import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { BaseData, coreData, Data } from '@/app/models/data/Data';
 import { Meta } from "@/app/models/data/dataStoreMethods";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { Member } from '@/app/models/members/Members';
 import { Phase } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
-import { Member } from "@/app/models/teams/TeamMembers";
 import { TrackerProps } from "@/app/models/tracker/Tracker";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
@@ -27,7 +28,6 @@ import { PrivacySettings, selectedSettings } from "@/app/settings/PrivacySetting
 import { TaskEntity } from '@/app/snapshots/SnapshotActoins';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { resetState } from "@/app/state/redux/slices/AppSlice";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { ExtendedTodo } from "@/app/state/stores/AssignBaseStore";
@@ -39,7 +39,6 @@ import { InitializedState } from "@/app/state/stores/DataStore";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { IconStore } from "@/app/state/stores/IconStore";
 import useSettingManagerStore from "@/app/state/stores/SettingsStore";
-import { Settings } from 'app/state/hybrid/SettingsManagerStore'
 import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { store } from "@/app/state/stores/useAppDispatch";
@@ -48,6 +47,7 @@ import { TaskAttachment, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
+import { Settings } from 'app/state/hybrid/SettingsManagerStore';
 import { AxiosResponse } from "axios";
 import { object } from "prop-types";
 

@@ -1,6 +1,6 @@
 // DataStoreComponent.tsx
+import { BaseData } from '@/app/components/models/data/Data';
 import { DataStore } from "@/app/state/stores/DataStore";
-import { BaseData } from '@/components/models/data/Data';
 import StorageManager from '@/StorageManager';
 
 const DataStoreComponent: React.FC = () => {

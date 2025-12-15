@@ -1,5 +1,6 @@
 // FetchSnapshotPayload.ts
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusType } from "@/app/models/data/StatusType";
@@ -8,7 +9,6 @@ import { simulateFetch } from "@/app/simulate/simulateFetch";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 
 interface FetchSnapshotPayload<

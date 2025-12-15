@@ -1,8 +1,8 @@
 // IBackendStructure.ts
 // app/interfaces/IBackendStructure.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
 import { AppStructureItem } from "@/app/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface IBackendStructure<
   T extends BaseDataEntity = BaseDataEntity,

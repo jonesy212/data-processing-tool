@@ -1,18 +1,18 @@
 // defaultSnapshotBuilder.ts
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';

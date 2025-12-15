@@ -1,11 +1,10 @@
 // PhaseTransitions.tsx
-import { ReactNode } from "react";
-import { BaseData } from '@/app/models/data/Data';
-import { Phase } from "./Phase";
-import React from "react";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks } from '@/app/models/phases/Phase';
+import { ReactNode } from "react";
+import { Phase } from "./Phase";
 
 
 // Generic helper with defaults (Case 3)

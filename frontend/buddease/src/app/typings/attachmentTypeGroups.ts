@@ -1,7 +1,6 @@
 // attachmentTypeGroups.ts
-import { AttachmentTypeEnum } from '@/app/documents/NoteData'
+import { AttachmentTypeEnum, NoteAttachment } from '@/app/documents/NoteData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NoteAttachment } from '@/app/documents/NoteData'
 
 export type AttachmentTypes = Attachment | NoteAttachment | CalendarAttachment
 

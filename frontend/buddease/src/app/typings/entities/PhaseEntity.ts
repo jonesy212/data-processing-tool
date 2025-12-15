@@ -1,20 +1,19 @@
 // PhaseEntity.ts
-import { NotificationEntity, NotificationK, NotificationMeta, NotificationAttachment, NotificationExcludedFields, NotificationIncludedFields } from '@/app/typings/entities/NotificationEntity'
-import { Dependency } from '@/app/models/realtime/IntegrationLogic';
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Phase } from '@/app/models/phases/Phase';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Dependency } from '@/app/models/realtime/IntegrationLogic';
+import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, BaseDataRoot,DefaultIncludedFields, DefaultMeta, BaseEntity  } from '@/app/config/BaseConfig';
-import { PhaseStructuredMetadata } from '@/app/typings/phaseTypes'
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { NotificationAttachment, NotificationEntity, NotificationExcludedFields, NotificationIncludedFields, NotificationK, NotificationMeta } from '@/app/typings/entities/NotificationEntity';
+import { PhaseStructuredMetadata } from '@/app/typings/phaseTypes';
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 
 // Define the actual PhaseEntity interface
 interface PhaseEntity
@@ -180,25 +179,20 @@ type NotificationPhase = PhaseWithGenerics<
 export type {
 
   // App Phase type
-  AppPhase, BasicPhaseInfo,
-  // Phase entity types
-  CompletePhase, PhaseAttachment, PhaseBaseParams,
+  AppPhase,
   // Core type parameters
-  AppPhaseEntity, PhaseExcludedFields,
+  AppPhaseEntity, BasicPhaseInfo,
+  // Phase entity types
+  CompletePhase, PhaseAttachment, PhaseBaseParams, PhaseEntity, PhaseExcludedFields,
   PhaseIncludedFields, PhaseK,
-  PhaseMeta, PhaseParams, PhaseRealtimeDataItem,
+  PhaseMeta, PhaseMilestone, PhaseNotificationSettings, PhaseParams, PhaseRealtimeDataItem, PhaseSettings,
   // Snapshot types
   PhaseSnapshot,
   PhaseSnapshotData,
   // Utility types
   PhaseSnapshotFromParams, PhaseSnapshotsArray, PhaseSnapshotStore, PhaseSnapshotStoreConfig, PhaseSnapshotUnionFromParams, PhaseSnapshotWithCriteria, PhaseSpecificMetadata, PhaseStructuredMetadata, PhaseSubscriberCollection,
-  PhaseMilestone,
-  PhaseEntity, 
-  PhaseNotificationSettings, 
-  PhaseSettings ,
   // Metadata tmypes
-  PhaseWithDetails, PublicPhaseProfile,
-
+  PhaseWithDetails, PublicPhaseProfile
 };
 
 // Export the main interfaces

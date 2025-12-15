@@ -1,10 +1,9 @@
 // BaseMetaInfo.ts
-import { AppVersion } from '@/app/versions/AppVersion';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { AppVersionImpl } from '@/app/core/versioning/AppVersionImpl';
-import { default as Version, default as VersionImpl } from "@/app/versions/Version";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields } from '@/app/typings/entities/VersionEntity';
+import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
+import { AppVersion } from '@/app/versions/AppVersion';
 
 export interface BaseMetaInfo<
   T extends BaseDataEntity = VersionEntity,

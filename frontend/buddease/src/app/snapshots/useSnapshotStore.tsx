@@ -1,24 +1,23 @@
 // useSnapshotStore.tsx
 
 import { ModifiedDate } from "@/app/documents/DocType";
-import { useRef } from "react";
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { useDebouncedCallback } from '@/app/hooks/useDebouncedCallback';
 import {
-    SnapshotStoreOptions
+  SnapshotStoreOptions
 } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { useCallback, useEffect, useState } from 'react';
-
+import { useCallback, useEffect, useRef, useState } from "react";
+import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import {
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum
 } from "@/app/models/data/StatusType";
 import {
-    DataStoreWithSnapshotMethods
+  DataStoreWithSnapshotMethods
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
 
@@ -26,23 +25,23 @@ import { useSecureUserId } from '@/app/hooks/useSecureStoreId';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
 } from "@/utils/web3/applicationUtils";
 
-import { Subscription } from '@/app/subscriptions/Subscription';
-import {validationMiddleware }  from '@/app/middleware/core/validationMiddleware'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { useEmergencyShutdown } from '@/app/dataIntegration/errorRecovery';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useEventSystem } from '@/app/hooks/useEventSystem';
 import { useSnapshotNotifications } from '@/app/hooks/useSnapshotNotifications';
+import { validationMiddleware } from '@/app/middleware/core/validationMiddleware';
 import { useSnapshotOperations } from '@/app/snapshots/operations/useSnapshotOperations';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { delegate } from "@/app/snapshots/snapshotHandlers";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { useSnapshotSubscriptions } from '@/app/subscriptions/useSnapshotSubscriptions';
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
@@ -1181,6 +1180,7 @@ const useSnapshotStore = <
 export { useSnapshotStore };
 export type { SnapshotStoreOptions, SnapshotStoreProps };
 
+const { storeProps } = store
 
 // However, for complex objects, we might need more specific dependencies:
 const specificDependencies = [

@@ -1,12 +1,25 @@
 // steps.tsx
 import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
 import { useStepContext } from "@/app/state/context/StepContext";
-import { TradeData } from "@/app/trading/TradeData";
-import TradingPreferencesStep from "@/app/TradingPreferencesStep";
+import { TradeData } from "@/app/components/trading/TradeData";
+import TradingPreferencesStep from "@/app/components/trading/TradingPreferencesStep";
 import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
 import React, { useState } from "react";
-import TradingBasicInfoStep from "./TradingBasicInfoStep";
-import TradingSummaryStep from "./TradingSummaryStep";
+import TradingBasicInfoStep from "@/app/components/trading/TradingBasicInfoStep";
+import TradingSummaryStep from "@/app/components/trading/TradingSummaryStep";
+
+
+// BaseStepProps.ts - Common props for all step components
+interface BaseStepProps {
+  title: string;
+  currentStep?: number;
+  totalSteps?: number;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  onSubmit?: () => void;
+  isLoading?: boolean;
+}
+
 
 interface StepProps {
   title: string;
@@ -15,6 +28,15 @@ interface StepProps {
   tradeData?: TradeData;
   onConfirm?: () => void;
   message?: string;
+}
+
+
+
+interface TradeStepProps extends BaseStepProps {
+  tradeData?: TradeData;
+  onConfirm?: () => void;
+  message?: string;
+  // Trade-specific props
 }
 
 const [tradeData, setTradeData] = useState<any>({
@@ -71,7 +93,7 @@ const handleOnTransition = (
   }
 };
 
-const steps: StepProps[] = [
+const steps: TradeStepProps[] = [
   {
     title: "Trading Basic Info",
     content: <TradingBasicInfoStep
@@ -138,5 +160,5 @@ const steps: StepProps[] = [
 
 export default steps;
 export { tradeDetails };
-export type { StepProps };
+export type { StepProps, TradeStepProps};
 

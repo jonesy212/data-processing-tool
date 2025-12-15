@@ -1,19 +1,17 @@
 // MigrationSystem.ts
 // Types for Entity Relationships & Constraints
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { DatabaseType, IDatabaseService } from '@/app/typings/database';
 import {
   BaseDataEntity,
-  BaseDataRoot,
   DefaultExcludedFields,
-  DefaultIncludedFields,
   DefaultMeta
 } from '@/app/config/BaseConfig';
-import { ValidationRule } from '@/app/snapshots/ValidationRule'
-import { IndexSchema, DatabaseSchema, TableSchema, ColumnSchema, RelationshipSchema, ConstraintSchema, MigrationProgress } from '@/app/scripts/migrateUserData'
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/scripts/migrateUserData';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { ValidationRule } from '@/app/snapshots/ValidationRule';
+import { DatabaseType, IDatabaseService } from '@/app/typings/database';
 
-
+import { DatabaseMigrationDefinition } from '@/app/components/database/MigrationSystem';
 export interface MigrationEvent {
   type: 'start' | 'progress' | 'error' | 'warning' | 'complete' | 'rollback';
   timestamp: Date;
@@ -218,7 +216,7 @@ export interface RelationshipDefinition<
 
 
 // Migration Definition - ENHANCED with database migration specifics
-export interface MigrationDefinition<
+interface MigrationDefinition<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
@@ -301,7 +299,7 @@ export interface IndexDefinition<T extends BaseDataEntity> {
 
 
 // Migration Context - ENHANCED with database operations from migrateUserData
-export interface MigrationContext<
+interface MigrationContext<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
@@ -1309,22 +1307,14 @@ export interface ValidationResult {
   constraintId?: string;
   relationshipId?: string;
   message: string;
-  severity: 'info' | 'warning' | 'error';
+  severity: 'info' | 'warning' | 'error' | 'blocker';
   entityId?: string;
   timestamp: Date;
 }
 
 // Export everything
 export {
-  MigrationDefinition,
-  MigrationContext,
-  DatabaseSchema,
-  TableSchema,
-  ColumnSchema,
-  IndexSchema,
-  RelationshipSchema,
-  ConstraintSchema,
-  MigrationProgress
+  ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationContext, MigrationDefinition, MigrationProgress, RelationshipSchema, TableSchema
 };
 
 export default SchemaEvolutionManager;

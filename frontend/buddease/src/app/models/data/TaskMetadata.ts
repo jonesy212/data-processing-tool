@@ -1,8 +1,8 @@
 // TaskMetadata.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { Task } from "@/app/models/tasks/Task";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata } from '@/app/config/MetaDataOptions';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Task } from "@/app/models/tasks/Task";
 
 
 

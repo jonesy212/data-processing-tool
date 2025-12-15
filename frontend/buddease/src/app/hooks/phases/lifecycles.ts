@@ -1,11 +1,11 @@
 // lifecycles.ts
 
 import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
 } from "@/app/config/BaseConfig";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
@@ -307,10 +307,10 @@ const allLifecyclePhases = [
 
 
 export {
-    allLifecyclePhases,
-    appPlanningLifecyclePhases,
-    genericLifecyclePhases,
-    ideaLifecyclePhases,
-    projectLifecycleManagementPhases
+  allLifecyclePhases,
+  appPlanningLifecyclePhases,
+  genericLifecyclePhases,
+  ideaLifecyclePhases,
+  projectLifecycleManagementPhases
 };
 // Rest of the code remains unchanged

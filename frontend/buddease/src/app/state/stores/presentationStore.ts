@@ -5,7 +5,7 @@ import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Presentation } from "@/app/documents/editing/Presentation";
-import { sanitizeData } from "@/app/models/crypto/SanitizationFunctions";
+import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions'
 import { AssignBaseStore } from "@/app/state/stores/AssignBaseStore";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { AssignTaskStore } from "@/app/state/stores/AssignTaskStore";
@@ -14,7 +14,7 @@ import { userManagerStore } from "@/app/state/stores/UserStore";
 
 // Define the necessary types and interfaces
 type PresentationStoreSubset = Partial<Pick<
-  AssignBaseStore | AssignTaskStore,
+  AssignBaseStore<any, any, any, any, any, any> | AssignTaskStore<any, any, any, any, any, any>,
   | "assignedItems"
   | "snapshotStore"
   | "events"
@@ -81,7 +81,6 @@ function getPropertyIfExists<T extends object, K extends keyof T>(
   return obj[prop];
 }
 
-
 // Use this hook to access methods and properties from AssignBaseStore specific to presentations
 const presentationSubset = {
   ...useAssignTeamMemberStore(),
@@ -92,8 +91,16 @@ const presentationSubset = {
 if ("assignUser" in presentationSubset) {
   presentationSubset.assignUser;
 }
+
 // Define the interface for the presentation store
-export interface PresentationStore extends AssignBaseStore {
+export interface PresentationStore<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends AssignBaseStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   presentations: Record<string, Presentation[]>;
   currentPresentation: Presentation | null;
   updatePresentationState: (
@@ -133,7 +140,7 @@ export interface PresentationStore extends AssignBaseStore {
 }
 
 // Define the presentation store function
-const presentationStore = (): PresentationStore => {
+const presentationStore = (): PresentationStore<any, any, any, any, any, any> => {
   const [presentations, setPresentations] = useState<
     WritableDraft<Record<string, Presentation[]>>
   >({
@@ -191,6 +198,7 @@ const presentationStore = (): PresentationStore => {
       return draft;
     });
   };
+  
   const assignedProjects: Record<string, string[]> = {};
   const assignedMeetings: Record<string, string[]> = {};
   const assignedNotes: Record<string, string[]> = {};
@@ -226,7 +234,7 @@ const presentationStore = (): PresentationStore => {
     setPresentations(JSON.parse(sanitizedPresentations));
   };
 
-  const assignBaseStore: AssignBaseStore = {} as AssignBaseStore;
+  const assignBaseStore: AssignBaseStore<any, any, any, any, any, any> = {} as AssignBaseStore<any, any, any, any, any, any>;
   const store = makeAutoObservable({
     presentations,
     currentPresentation: null,
@@ -366,4 +374,5 @@ const presentationStore = (): PresentationStore => {
 
   return store;
 };
+
 export { presentationStore };

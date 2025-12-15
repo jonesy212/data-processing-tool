@@ -1,5 +1,6 @@
 // NotificationStore.tsx
 import { apiNotificationMessages } from "@/app/api/ApiData";
+import { NOTIFICATION_TYPES } from '@/app/features/support/NotificationTypes';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
@@ -67,7 +68,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 };
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: AppUnifiedMetadata = useMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>('notification-area');
+const currentMetadata: AppUnifiedMetadata = useMetadata('notification-area');
 const currentMeta: AppStructuredMetadata = useMeta(area);
 
 type NotificationMessageKey = string | keyof typeof apiNotificationMessages; // adjust to your messages type
@@ -103,9 +104,15 @@ class NotificationStore {
   channelHelper: NotificationChannelHelper | undefined = undefined;
 
   private channels: NotificationChannels;
+  private customMessages?: NotificationMessages;
 
-  constructor(channels: NotificationChannels | BasicNotificationChannels) {
+  constructor(
+    channels: NotificationChannels | BasicNotificationChannels,
+    messages?: NotificationMessages 
+  ) {
     this.channels = this.normalizeChannels(channels);
+    this.customMessages = messages;
+
   }
 
   /**
@@ -132,11 +139,54 @@ class NotificationStore {
       webhook: { enabled: !!basic.webhook },
 
       advanced: {
-        chat: { enabled: !!basic.chat },
-        calendar: { enabled: !!basic.calendar, syncDirection, updateExisting, addAs, visibility },
-        audioCall: { enabled: !!basic.audioCall, provider, voice, language, retryAttempts },
-        videoCall: { enabled: !!basic.videoCall, autoJoin, enableVideo, enableAudio, recording },
-        screenShare: { enabled: !!basic.screenShare,  autoJoin, enableVideo, enableAudio, recording }
+        chat: { 
+          enabled: !!basic.chat,
+          // Add default chat settings
+          realTimeChatEnabled: true,
+          notificationEmailEnabled: true,
+          enableEmojis: true,
+          enableAudioChat: false,
+          enableVideoChat: false,
+          enableFileSharing: true,
+          enableBlockchainCommunication: false,
+          enableDecentralizedStorage: false,
+          collaborationPreference1: undefined,
+          collaborationPreference2: undefined,
+          platforms: ['slack', 'teams'] as ('slack' | 'teams' | 'discord' | 'whatsapp')[],
+          messageFormat: 'rich' as const,
+          mentionUsers: true
+        },
+        calendar: { 
+          enabled: !!basic.calendar, 
+          syncDirection: 'bidirectional' as const, 
+          updateExisting: true, 
+          addAs: 'event' as const, 
+          visibility: 'default' as const 
+        },
+        audioCall: { 
+          enabled: !!basic.audioCall, 
+          provider: 'twilio' as const, 
+          voice: 'female' as const, 
+          language: 'en-US', 
+          retryAttempts: 3 
+        },
+        videoCall: { 
+          enabled: !!basic.videoCall, 
+          autoJoin: false, 
+          enableVideo: true, 
+          enableAudio: true, 
+          recording: {
+            enabled: false,
+            requireConsent: true
+          }
+        },
+        screenShare: { 
+          enabled: !!basic.screenShare, 
+          quality: 'medium' as const,
+          frameRate: 30,
+          includeAudio: true,
+          requireApproval: true
+        }
       },
 
       deliveryStrategy: "all",
@@ -186,14 +236,23 @@ class NotificationStore {
   public getEnabledChannels(): string[] {
     const enabled: string[] = [];
 
-    for (const key of Object.keys(this.channels)) {
-      const ch = (this.channels as any)[key];
+    // Check basic channels
+    const basicChannels = this.channels as Record<string, any>;
+    for (const key of Object.keys(basicChannels)) {
+      // Skip 'advanced' as we handle it separately
+      if (key === 'advanced') continue;
+      
+      const ch = basicChannels[key];
       if (ch?.enabled) enabled.push(key);
     }
 
-    for (const key of Object.keys(this.channels.advanced)) {
-      const ch = (this.channels.advanced as any)[key];
-      if (ch?.enabled) enabled.push(`advanced:${key}`);
+    // Check advanced channels with proper type checking
+    if (this.channels.advanced && typeof this.channels.advanced === 'object') {
+      const advancedChannels = this.channels.advanced as Record<string, any>;
+      for (const key of Object.keys(advancedChannels)) {
+        const ch = advancedChannels[key];
+        if (ch?.enabled) enabled.push(`advanced:${key}`);
+      }
     }
 
     return enabled;
@@ -244,42 +303,64 @@ class NotificationStore {
     id: string | null,
     content: string,
     date: Date,
-    type: NotificationType,
+    type: NotificationType | string,
     messageKey?: keyof typeof NOTIFICATION_MESSAGES,
     position?: NotificationPosition,
-    notificationType?: NotificationType,
+    notificationType?: NotificationType | string,
     options?: {
       additionalOptions?: readonly string[] | string | number | any[] | undefined;
       additionalDocumentOptions?: DocumentOptions;
       additionalOptionsLabel?: string;
+      dataTypeEnum?: string; // Add this property
     },
     userName?: string
   ) => {
-    // 1️⃣ Generate or reuse notification ID
+    // Use customMessages if available, otherwise use default NOTIFICATION_MESSAGES
+    const messagesToUse = this.customMessages || NOTIFICATION_MESSAGES;
+    
+    // 1️⃣ Convert any string type to proper NotificationType
+    const resolvedType = this.resolveNotificationType(type);
+    const resolvedNotificationType = notificationType 
+      ? this.resolveNotificationType(notificationType)
+      : resolvedType;
+
+    // 2️⃣ If options has dataTypeEnum, use it for mapping
+    let finalNotificationType = resolvedNotificationType;
+    if (options?.dataTypeEnum) {
+      finalNotificationType = this.mapDataTypeEnumToNotificationType(options.dataTypeEnum);
+    }
+
+    // 3️⃣ Generate or reuse notification ID
     const notificationId = id ?? UniqueIDGenerator.generateNotificationIDFromMessage(content);
 
-    // 2️⃣ Normalize other properties
-    const actualNotificationType = notificationType ?? type;
+    // 4️⃣ Normalize other properties
+    const actualNotificationType = finalNotificationType; // Use the resolved type
     const actualPosition = position ?? NotificationPosition.TopRight;
 
-    // 3️⃣ Calculate area (if needed by logs or visuals)
+    // 5️⃣ Calculate area (if needed by logs or visuals)
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-    // 4️⃣ Resolve message text based on priority:
+    // 6️⃣ Resolve message text based on priority:
     // messageKey → content → generated fallback
     let resolvedMessage: string;
-    if (messageKey && NOTIFICATION_MESSAGES[messageKey]) {
-      const candidate = NOTIFICATION_MESSAGES[messageKey];
+    
+    // FIRST: Check customMessages or NOTIFICATION_MESSAGES with messageKey
+    if (messageKey && messagesToUse[messageKey]) {
+      const candidate = messagesToUse[messageKey];
       resolvedMessage = typeof candidate === "function"
         ? candidate(userName || "User")
         : String(candidate);
-    } else if (typeof content === "string" && content.trim().length > 0) {
+    } 
+    // SECOND: Use the content parameter
+    else if (typeof content === "string" && content.trim().length > 0) {
       resolvedMessage = content;
-    } else {
-      resolvedMessage = this.generateNotificationMessage(type, userName);
+    } 
+    // THIRD: Generate from type
+    else {
+      resolvedMessage = this.generateNotificationMessage(finalNotificationType, userName);
     }
 
-    // 5️⃣ Create the new notification object
+    // 7️⃣ Create the new notification object
     this.addNotification({
       id: notificationId,
       content: resolvedMessage,
@@ -325,7 +406,6 @@ class NotificationStore {
       meta: currentMetadata,
     });
   };
-
 
   @action
   showNotification = (
@@ -528,10 +608,70 @@ class NotificationStore {
       return 'Unknown Notification Type';
     }
   };
+
+    /**
+     * Resolve any string to proper NotificationType
+     */
+    private resolveNotificationType(input: NotificationType | string): NotificationType {
+      if (!input || typeof input !== 'string') {
+        return 'INFO' as NotificationType;
+      }
+
+      // Check if it's already a valid NotificationType key
+      if (input in NOTIFICATION_TYPES) {
+        return input as NotificationType;
+      }
+
+      // Check if it's a DataTypeEnums.Notification value
+      if (input === 'ERROR' || input === 'SUCCESS' || input === 'WARNING' || input === 'INFO') {
+        return input as NotificationType;
+      }
+
+      // Try to find by value in NOTIFICATION_TYPES
+      const entries = Object.entries(NOTIFICATION_TYPES);
+      for (const [key, value] of entries) {
+        if (value === input) {
+          return key as NotificationType;
+        }
+      }
+
+      // Default fallback
+      return 'INFO' as NotificationType;
+    }
+
+
+  /**
+   * Map DataTypeEnums.Notification to NOTIFICATION_TYPES
+   */
+  private mapDataTypeEnumToNotificationType(dataTypeEnum: string): NotificationType {
+    const mapping: Record<string, NotificationType> = {
+      'ERROR': 'ERROR' as NotificationType,
+      'SUCCESS': 'SUCCESS' as NotificationType,
+      'WARNING': 'WARNING' as NotificationType,
+      'INFO': 'INFO' as NotificationType,
+      // Add more mappings as needed
+    };
+
+    return mapping[dataTypeEnum] || 'INFO' as NotificationType;
+  }
 }
 
+
+const basicChannels = {
+  email: true,
+  push: true,
+  sms: false,
+  inApp: true,
+  webhook: false,
+  chat: true,
+  calendar: false,
+  audioCall: false,
+  videoCall: false,
+  screenShare: false
+};
+
 // Create an instance of the NotificationStore
-const notificationStoreInstance = new NotificationStore(NOTIFICATION_MESSAGES);
+const notificationStoreInstance = new NotificationStore(basicChannels);
 
 
 export { notificationStoreInstance };

@@ -1,11 +1,10 @@
 // ContentItem.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { FileType } from '@/app/documents/attachment/Attachment';
-import { Data } from "@/app/models/data/Data";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Tag } from "@/app/models/tracker/Tracker";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { useState } from "react";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Check if the tag is an instance of Tag
 function isTagObject(tag: string | Tag<any>): tag is Tag<any> {

@@ -2,7 +2,7 @@
 import axiosInstance from '@/app/api/csrfToken';
 import React, { useState } from "react";
 
-import * as TradingAPI from "@/app/api/ApiTrading";
+import * as TradingAPI from '@/app/api/ApiTradeCore'
 import { useStepContext } from "@/app/context/StepContext";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
@@ -92,64 +92,376 @@ const TradingProcess: React.FC = () => {
     setCurrentStep(TradingPhase.REVIEW);
   };
 
-  const handleReviewSubmit = async () => {
-    try {
-      const response = await axiosInstance.post(
-        "/api/trading-process",
-        tradeData
-      );
-      console.log("Server response:", response.data);
-      setCurrentStep(TradingPhase.CONFIRMATION);
-      notify(
-        "tradeCreationSuccess" + tradeData._id,
-        "Trade has been successfully created",
-        "success",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-    } catch (error) {
-      console.error("Error creating trade:", error);
-      notify(
-        "tradeCreationFailure" + tradeData._id,
-        "Error creating trade",
-        "error",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+const handleReviewSubmit = async () => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/trading-process",
+      tradeData
+    );
+    console.log("Server response:", response.data);
+    setCurrentStep(TradingPhase.CONFIRMATION);
+    
+    // Updated success notification using object format
+    notify({
+      id: `trade_creation_success_${tradeData._id}_${Date.now()}`,
+      message: "Trade has been successfully created",
+      data: {
+        entityType: 'trade',
+        entityId: tradeData._id || 'new',
+        action: 'create',
+        tradeData: tradeData,
+        responseData: response.data,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const,
+      metadata: {
+        isTradingOperation: true,
+        step: 'creation'
+      }
+    });
+  } catch (error: any) {
+    console.error("Error creating trade:", error);
+    
+    // Enhanced error notification for trading
+    const axiosError = error as AxiosError;
+    let userMessage = "Error creating trade";
+    let errorType = "TRADE_CREATION_ERROR";
+    let requiresImmediateAttention = false;
+    
+    if (axiosError.response) {
+      const status = axiosError.response.status;
+      const errorData = axiosError.response.data as any;
+      
+      // Trading-specific error handling
+      switch (status) {
+        case 400:
+          userMessage = "Invalid trade data provided";
+          if (errorData?.errorCode === 'INSUFFICIENT_FUNDS') {
+            userMessage = "Insufficient funds for this trade";
+            errorType = "INSUFFICIENT_FUNDS_ERROR";
+            requiresImmediateAttention = true;
+          } else if (errorData?.errorCode === 'INVALID_PRICE') {
+            userMessage = "Invalid price for this instrument";
+            errorType = "INVALID_PRICE_ERROR";
+          }
+          break;
+        case 401:
+          userMessage = "Authentication required to create trades";
+          break;
+        case 403:
+          userMessage = "Trading permission denied";
+          errorType = "TRADING_PERMISSION_ERROR";
+          requiresImmediateAttention = true;
+          break;
+        case 404:
+          userMessage = "Trading instrument not found";
+          break;
+        case 409:
+          userMessage = "Trade conflict detected";
+          if (errorData?.errorCode === 'DUPLICATE_ORDER') {
+            userMessage = "Duplicate order detected";
+            errorType = "DUPLICATE_ORDER_ERROR";
+          }
+          break;
+        case 422:
+          userMessage = "Trade validation failed";
+          if (errorData?.validationErrors) {
+            userMessage = `Trade validation failed: ${Object.values(errorData.validationErrors).join(', ')}`;
+          }
+          break;
+        case 429:
+          userMessage = "Too many trading requests - please wait";
+          errorType = "TRADING_RATE_LIMIT_ERROR";
+          break;
+        case 500:
+          userMessage = "Trading server error";
+          requiresImmediateAttention = true;
+          break;
+        case 503:
+          userMessage = "Trading service temporarily unavailable";
+          requiresImmediateAttention = true;
+          break;
+        default:
+          userMessage = "Trading operation failed";
+      }
+    } else if (axiosError.request) {
+      userMessage = "Network error: Unable to connect to trading service";
+      errorType = "TRADING_NETWORK_ERROR";
+      requiresImmediateAttention = true;
     }
-  };
-
-  const handleConfirmation = async (tradeData: any) => {
-    try {
-      // Example: Send confirmation request to the server using Axios
-      const response = await TradingAPI.confirmTradeCreation(tradeData);
-
-      // Handle the server response if needed
-      console.log("Server response:", response);
-
-      // Notify user of successful trade confirmation
-      notify(
-        "tradeConfirmationSuccess" + tradeData._id,
-        "Your trade has been successfully confirmed",
-        "TradeConfirmationSuccess",
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-
-      // Perform additional actions as needed, such as updating the UI or navigating to a different page
-    } catch (error) {
-      // Handle any network or unexpected errors
-      console.error("Error confirming trade creation:", error);
-      notify(
-        "tradeConfirmationFailure" + tradeData._id,
-        "There was an error confirming your trade, please try again",
-        "TradeConfirmationError",
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+    
+    // Using consistent object format with trading context
+    notify({
+      id: `trade_creation_error_${tradeData._id}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'trade',
+        entityId: tradeData._id || 'new',
+        action: 'create',
+        tradeData: tradeData,
+        tradingContext: {
+          instrument: tradeData.instrument,
+          orderType: tradeData.orderType,
+          side: tradeData.side,
+          quantity: tradeData.quantity,
+          price: tradeData.price
+        },
+        originalError: axiosError.message,
+        statusCode: axiosError.response?.status,
+        errorType: errorType,
+        errorData: axiosError.response?.data,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        isTradingError: true,
+        requiresImmediateAttention: requiresImmediateAttention,
+        tradingPriority: getTradingErrorPriority(errorType)
+      }
+    });
+    
+    // Additional notification for critical trading errors
+    if (requiresImmediateAttention) {
+      notify({
+        id: `trade_critical_error_${tradeData._id}_${Date.now()}`,
+        message: "Critical trading error - please review immediately",
+        data: {
+          entityType: 'trade',
+          entityId: tradeData._id,
+          action: 'critical_error_alert',
+          errorType: errorType,
+          requiresManualReview: true
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.ALERT,
+        level: 'critical' as const,
+        autoDismiss: false // Don't auto-dismiss critical trading errors
+      });
     }
-  };
+  }
+};
+  
+  
+const handleConfirmation = async (tradeData: any) => {
+  try {
+    const response = await TradingAPI.confirmTradeCreation(tradeData);
+    console.log("Server response:", response);
 
+    // Success notification using object format
+    const { notify } = useNotification();
+    notify({
+      id: `trade_confirmation_success_${tradeData._id}_${Date.now()}`,
+      message: "Your trade has been successfully confirmed",
+      data: {
+        entityType: 'trade',
+        entityId: tradeData._id || 'unknown',
+        action: 'confirm',
+        originalError: undefined, // Optional: not needed for success
+        extra: {
+          tradeData: tradeData,
+          responseData: response,
+          tradeDetails: {
+            symbol: tradeData.symbol,
+            side: tradeData.side,
+            orderType: tradeData.orderType,
+            quantity: tradeData.quantity
+          }
+        },
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const,
+      metadata: {
+        isTradingOperation: true,
+        confirmationStatus: 'confirmed'
+      }
+    });
+    
+  } catch (error: any) {
+    console.error("Error confirming trade creation:", error);
+    
+    // Enhanced error notification for trade confirmation
+    const axiosError = error as AxiosError;
+    let userMessage = "There was an error confirming your trade";
+    let errorType = "TRADE_CONFIRMATION_ERROR";
+    let canRetry = true;
+    
+    if (axiosError.response) {
+      const status = axiosError.response.status;
+      const errorData = axiosError.response.data as any;
+      
+      switch (status) {
+        case 400:
+          userMessage = "Invalid trade confirmation data";
+          if (errorData?.errorCode === 'ORDER_EXPIRED') {
+            userMessage = "Trade order has expired";
+            errorType = "ORDER_EXPIRED_ERROR";
+            canRetry = false;
+          } else if (errorData?.errorCode === 'ORDER_FILLED') {
+            userMessage = "Trade order has already been filled";
+            errorType = "ORDER_FILLED_ERROR";
+            canRetry = false;
+          }
+          break;
+        case 401:
+          userMessage = "Authentication required to confirm trade";
+          break;
+        case 403:
+          userMessage = "You don't have permission to confirm this trade";
+          errorType = "CONFIRMATION_PERMISSION_ERROR";
+          canRetry = false;
+          break;
+        case 404:
+          userMessage = "Trade not found for confirmation";
+          errorType = "TRADE_NOT_FOUND_ERROR";
+          canRetry = false;
+          break;
+        case 409:
+          userMessage = "Trade confirmation conflict";
+          if (errorData?.errorCode === 'MARKET_CLOSED') {
+            userMessage = "Cannot confirm trade - market is closed";
+            errorType = "MARKET_CLOSED_ERROR";
+          }
+          break;
+        case 410:
+          userMessage = "Trade confirmation expired";
+          errorType = "CONFIRMATION_EXPIRED_ERROR";
+          canRetry = false;
+          break;
+        case 422:
+          userMessage = "Trade confirmation validation failed";
+          break;
+        case 429:
+          userMessage = "Too many confirmation attempts - please wait";
+          errorType = "CONFIRMATION_RATE_LIMIT_ERROR";
+          break;
+        case 500:
+          userMessage = "Server error while confirming trade";
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = "Network error: Unable to confirm trade";
+      errorType = "CONFIRMATION_NETWORK_ERROR";
+    }
+    
+    // Using consistent object format with proper data structure
+    const { notify } = useNotification();
+    notify({
+      id: `trade_confirmation_error_${tradeData._id}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'trade',
+        entityId: tradeData._id || 'unknown',
+        action: 'confirm',
+        originalError: axiosError.message,
+        extra: {
+          tradeData: tradeData,
+          statusCode: axiosError.response?.status,
+          errorType: errorType,
+          errorData: axiosError.response?.data,
+          tradeContext: {
+            symbol: tradeData.symbol,
+            side: tradeData.side,
+            orderType: tradeData.orderType
+          }
+        },
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        isTradingError: true,
+        canRetry: canRetry,
+        requiresManualAction: !canRetry,
+        errorCategory: 'trade_confirmation'
+      }
+    });
+    
+    // Provide retry guidance if applicable
+    if (canRetry) {
+      setTimeout(() => {
+        notify({
+          id: `trade_retry_suggestion_${tradeData._id}_${Date.now()}`,
+          message: "You can try confirming this trade again",
+          data: {
+            entityType: 'trade',
+            entityId: tradeData._id,
+            action: 'retry_suggestion',
+            extra: {
+              suggestionType: 'retry',
+              originalErrorType: errorType
+            },
+            timestamp: new Date().toISOString()
+          },
+          timestamp: new Date(),
+          type: NotificationTypeEnum.INFO,
+          level: 'info' as const,
+          action: {
+            label: "Retry Now",
+            onClick: () => handleConfirmation(tradeData)
+          }
+        });
+      }, 2000);
+    } else {
+      // For non-retryable errors, suggest alternative action
+      notify({
+        id: `trade_alternative_action_${tradeData._id}_${Date.now()}`,
+        message: "This trade cannot be confirmed. Please create a new trade.",
+        data: {
+          entityType: 'trade',
+          entityId: tradeData._id,
+          action: 'alternative_action_suggestion',
+          extra: {
+            suggestionType: 'alternative_action',
+            reason: errorType,
+            originalError: userMessage
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.WARNING,
+        level: 'warning' as const,
+        action: {
+          label: "Create New Trade",
+          onClick: () => resetTradeForm()
+        }
+      });
+    }
+  }
+};
+// Helper functions for trading error handling
+const getTradingErrorPriority = (errorType: string): string => {
+  const highPriorityErrors = [
+    'INSUFFICIENT_FUNDS_ERROR',
+    'TRADING_PERMISSION_ERROR',
+    'TRADING_NETWORK_ERROR',
+    'ORDER_FILLED_ERROR'
+  ];
+  
+  const mediumPriorityErrors = [
+    'INVALID_PRICE_ERROR',
+    'DUPLICATE_ORDER_ERROR',
+    'MARKET_CLOSED_ERROR',
+    'CONFIRMATION_RATE_LIMIT_ERROR'
+  ];
+  
+  if (highPriorityErrors.includes(errorType)) return 'high';
+  if (mediumPriorityErrors.includes(errorType)) return 'medium';
+  return 'low';
+};
+
+const resetTradeForm = () => {
+  // Implementation for resetting trade form
+  console.log("Resetting trade form...");
+};
+
+  
   const StepComponent = stepComponents[currentStep];
 
   return (

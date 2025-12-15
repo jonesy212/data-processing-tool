@@ -3,14 +3,13 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { StatusType } from '@/app/models/data/StatusType';
+import { Tag } from '@/app/models/tracker/Tag';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { StatusType } from '@/app/models/data/StatusType';
-import { Tag } from '@/app/models/tracker/Tag';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
 export const FilterMethods = {
   getSnapshots: function <

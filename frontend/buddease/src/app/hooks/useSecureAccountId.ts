@@ -1,6 +1,6 @@
 // useSecureAccountId.ts
-import { sanitizeData } from '@/security/SanitizationFunctions';
-import { TwitterIntegration } from '@/socialMedia/TwitterIntegration';
+import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions'
+import { TwitterIntegration } from '@/app/socialMedia/TwitterIntegration';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { useEffect, useState } from 'react';
 

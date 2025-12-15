@@ -1,8 +1,7 @@
 // BaseEvent.ts
-import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface BaseEvent {
   eventId: string;
@@ -26,10 +25,16 @@ interface SystemEvent<
 }
 
 
+
+// CustomEventType with all required generic parameters for SharedSnapshotEvent
 interface CustomEventType<
   T extends BaseDataEntity, 
-  K extends T = T
-> extends SharedSnapshotEvent<T, K> {
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "custom";
   description: string;
   metadata?: Record<string, any>;

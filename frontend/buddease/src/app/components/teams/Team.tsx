@@ -1,33 +1,31 @@
 // Team.tsx
 "use client";
-import { CommonData } from "@/app/models/CommonData";
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
+import { DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { FileTypeEnum } from "@/app/documents/FileType";
-import { BaseData } from "@/app/models/data/Data";
 import useFiltering from "@/app/hooks/useFiltering";
+import { CommonData } from "@/app/models/CommonData";
+import { BaseData } from "@/app/models/data/Data";
 import { Project, reassignProject } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
-import { Progress } from "@/app/models/tracker/ProgressBar";
-import dynamic from "next/dynamic";
-import React from "react";
 import { TeamData } from "@/app/models/teams/TeamData";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { SearchOptions } from "@/app/pages/searches/SearchOptions";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SortCriteria } from "@/app/settings/SortCriteria";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import {
   AppTeamEntity,
-  TeamK,
-  TeamMeta,
   TeamAttachment,
   TeamExcludedFields,
   TeamIncludedFields,
+  TeamK,
+  TeamMeta,
 } from "@/app/typings/entities/TeamEntity";
+import dynamic from "next/dynamic";
+import React from "react";
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
@@ -878,3 +876,4 @@ const TeamDetails: React.FC<{
 
 export { team, TeamDetails };
 export type { Team };
+

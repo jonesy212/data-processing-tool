@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PatternAnalyzer } from '@/app/scripts/generateComponentsScript'
-import { ComponentPatternDetector } from './ComponentPatternDetector';
+import { ComponentPatternDetector } from '../../src/app/scripts/ComponentPatternDetector';
 import { TemplateGenerator } from './TemplateGenerator';
 
 class GenerateComponentsScript {

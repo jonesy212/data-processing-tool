@@ -1,11 +1,12 @@
 // formatCalendarAsCSV.ts
-import { SimpleCalendarEvent } from "@/app/components/calendar/CalendarContext";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext'
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
 
 // Function to format calendar data as CSV string
 export const formatCalendarAsCSV = (
-  events: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[],
+  events: (WritableDraft<SimpleCalendarEvent<AppCalendarEvent>> | WritableDraft<CalendarEvent<AppCalendarEvent>>)[],
   calendarDisplaySettings: CalendarDisplaySettings): string => {
     // Implement logic to format calendar data as CSV string
     // Example: Convert events and settings to CSV format

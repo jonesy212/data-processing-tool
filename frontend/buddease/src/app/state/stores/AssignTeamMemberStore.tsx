@@ -1,5 +1,5 @@
 // AssignTeamMemberStore.tsx
-import { AssignBaseStore, useAssignBaseStore } from "@/app/AssignBaseStore";
+import { AssignBaseStore, useAssignBaseStore } from "@/app/state/stores/AssignBaseStore";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";

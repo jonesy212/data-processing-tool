@@ -1,5 +1,5 @@
 // AppSettings.ts
-class AppSettings {
+export class AppSettings {
   private apiKey: string;
   private appId: string;
   private appDescription: string;
@@ -28,3 +28,4 @@ class AppSettings {
     return this.username;      // <-- add a getter
   }
 }
+

@@ -1,10 +1,10 @@
 // ApiSearch.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { SearchResult } from "@/app/components/routing/SearchResult";
-import { handleApiError } from '@/app/api/ApiLogs';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Note } from "./ApiNote";
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 // Define the base URL for your search endpoint
 const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your actual API endpoint

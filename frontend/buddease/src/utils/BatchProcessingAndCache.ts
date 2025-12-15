@@ -5,9 +5,9 @@ import UserSettings from '@/app/config/UserSettings';
 import useRealtimeData from '@/app/hooks/commHooks/useRealtimeData';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
-import FrontendStructure from '@/configs/appStructure/FrontendStructure';
-import { CacheData } from '@/generators/GenerateCache';
-import { writeCache } from '@/ReadAndWriteCache';
+import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
+import { CacheData } from '@/app/generators/GenerateCache';
+import { writeCache } from '@/utils/cache/ReadAndWriteCache';
 
 interface BatchProcessingResult {
   success: boolean;
@@ -66,7 +66,7 @@ export const synchronizeCacheFromFrontend = async (
         }
       },
       userSettings: {} as typeof UserSettings,
-      dataVersions: {} as DataVersions,
+      dataVersions: {} as DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       frontendStructure: {} as FrontendStructure,
       realtimeData: updatedData.realtimeData,
       fetchData: updatedData.fetchData,

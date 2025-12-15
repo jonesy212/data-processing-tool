@@ -3,8 +3,15 @@
 import { EventActions } from '@/app/actions/EventActions';
 import { UIActions } from '@/app/actions/UIActions';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { createMetaState } from '@/app/config/MetadataStateManager';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { useMeta } from '@/app/config/useMeta';
+import { useMetadata } from '@/app/config/useMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
+import { CustomEventExtension } from '@/app/events/BaseCustomEvent';
 import { BaseData } from '@/app/models/data/Data';
 import { Member } from '@/app/models/members/Member';
 import { Progress } from '@/app/models/tracker/ProgressBar';
@@ -16,15 +23,10 @@ import { RootState } from '@/app/state/redux/slices/RootSlice';
 import { implementThen } from '@/app/state/stores/CommonEvent';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
-import { EventEntity, EventK, EventMeta, EventAttachment, EventExcludedFields, EventIncludedFields } from '@/app/typings/entities/EventEntity';
+import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
+import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Version } from '@/app/versions/Version';
 import { VersionHistory } from '@/app/versions/VersionData';
-import { VideoData } from '@/app/typings/videoTypes';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { useMeta } from '@/app/config/useMeta';
-import { useMetadata } from '@/app/config/useMetadata';
-import { createMetaState } from '@/app/server/metadata/MetadataStateManager';
 import {
   BaseSyntheticEvent,
   ModifierKey,
@@ -32,8 +34,6 @@ import {
   SyntheticEvent,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CustomEventExtension } from '@/app/events/BaseCustomEvent';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface CustomMouseEvent<T = Element>
   extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget>,
@@ -431,7 +431,7 @@ class EventService {
       then: implementThen,
       analysisType: {} as AnalysisTypeEnum,
       analysisResults: {} as DataAnalysisResult<T, K>[],
-      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      videoData: {} as VideoData<T, K>,
       timestamp: undefined,
       meta: {
         createdAt: new Date(),

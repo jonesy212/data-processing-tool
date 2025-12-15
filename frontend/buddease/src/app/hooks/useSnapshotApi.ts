@@ -1,12 +1,12 @@
 // useSnapshotApi.ts
-import { Payload } from '@/app/server/database/Payload'
+import snapshotApi from '@/app/api/SnapshotApi';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
-import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { useCallback } from 'react';
-import snapshotApi from '@/app/api/SnapshotApi';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { useCallback } from 'react';
 export const useSnapshotApi = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -40,7 +40,7 @@ export const useSnapshotApi = <
       snapshotId: string,
       data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      payload: UpdateSnapshotPayload<Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
+      payload: UpdateSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => {
       return snapshotApi.update(snapshotId, data, newData, payload);
     },

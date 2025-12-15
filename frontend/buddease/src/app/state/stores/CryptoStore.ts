@@ -13,7 +13,21 @@ export interface Crypto {
   currentPrice?: number;
   priceChange24h?: number;
   marketCap?: number;
-  // Add more properties as needed
+
+  // Notification/alert preferences
+  cryptoAlerts?: {
+    enabled: boolean;
+    priority?: number;
+    fallbackOrder?: ('push' | 'inApp' | 'email')[];
+  };
+  tradeExecutions?: {
+    enabled: boolean;
+    priority?: number;
+  };
+  portfolioUpdates?: {
+    enabled: boolean;
+    priority?: number;
+  };
 }
 
 export interface CryptoStore {
@@ -69,7 +83,13 @@ const useCryptoStore = (): CryptoStore => {
     notify({
       id: 'updateCryptoSuccess',
       message: NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_SUCCESS,
-      data: { cryptoId: id, cryptoName: updatedCrypto.name },
+      data: {
+        entityId: id,
+        entityType: 'crypto',
+        extra: {
+          name: updatedCrypto.name
+        }
+      },
       timestamp: new Date(),
       type: NotificationTypeEnum.OPERATION_SUCCESS
     });
@@ -87,7 +107,13 @@ const useCryptoStore = (): CryptoStore => {
     notify({
       id: 'deleteCryptoSuccess',
       message: NOTIFICATION_MESSAGES.Crypto.DELETE_CRYPTO_SUCCESS,
-      data: { cryptoId: id, cryptoName: deletedCrypto?.name },
+      data: {
+        entityId: id,
+        entityType: 'crypto',
+        extra: {
+          name: deletedCrypto.name
+        }
+      },
       timestamp: new Date(),
       type: NotificationTypeEnum.OPERATION_SUCCESS
     });

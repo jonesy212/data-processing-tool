@@ -6,7 +6,6 @@ import {
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import { CustomProperties, HighlightColor } from "@/app/components/styling/Palette";
-import { Data } from '@/app/models/data/Data';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -18,6 +17,7 @@ import { DocumentAnimationOptions } from "@/app/documents/SharedDocumentProps";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { computeChecksum, DocumentData, RevisionOptions } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+import { Data } from '@/app/models/data/Data';
 import {
   BorderStyle,
   DocumentSize,
@@ -25,7 +25,6 @@ import {
   PrivacySettingEnum,
   ProjectPhaseTypeEnum,
 } from "@/app/models/data/StatusType";
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import BackendStructure from '@/app/server/database/BackendStructure';
@@ -33,7 +32,6 @@ import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { AllTypes } from '@/app/typings/PropTypes';
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { UserIdea } from "@/app/users/Ideas";
 import VersionImpl, { version, Version } from '@/app/versions/Version';
 import { VersionData } from "@/app/versions/VersionData";

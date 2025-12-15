@@ -89,13 +89,24 @@ const handleTradingInfoApiErrorAndNotify = (
   handleApiError(error, errorMessage);
   if (errorMessageId) {
     const errorMessageText = tradingInfoNotificationMessages[errorMessageId] || errorMessage;
-    useNotification().notify(
-      String(errorMessageId),
-      errorMessageText,
-      null,
-      new Date(),
-      "TradingInfoError" as NotificationType
-    );
+    useNotification().notify({
+      id: `trading_info_error_${String(errorMessageId)}_${Date.now()}`,
+      message: errorMessageText,
+      data: {
+        entityType: 'trading_info',
+        action: errorMessageId.toString().toLowerCase().replace('_error', ''),
+        errorType: errorMessageId.toString(),
+        originalError: error.message,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        isTradingError: true,
+        errorCategory: 'trading_info'
+      }
+    });
   }
 };
 

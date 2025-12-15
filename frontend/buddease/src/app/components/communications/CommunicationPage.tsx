@@ -1,11 +1,11 @@
 // CommunicationPage.tsx
 // Communication.tsx
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { User } from "@/app/users/User";
-import { Tag } from '@/app/models/tracker/Tag';
-import React from "react";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { Tag } from '@/app/models/tracker/Tag';
+import { User } from "@/app/users/User";
+import React from "react";
 
 // Fix the Sender type with the correct role type
 interface Sender<

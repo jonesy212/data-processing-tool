@@ -1,8 +1,7 @@
 // route.ts
 // Server-side only
+import DatabaseClient from '@/app/api/DatabaseClient'; // Server version
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/DatabaseClient'; // Server version
-import { DatabaseConfig } from '@/app/config/DatabaseConfig';
 
 export async function POST(request: NextRequest) {
   try {

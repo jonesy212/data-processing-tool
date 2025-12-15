@@ -14,20 +14,20 @@ import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { createEventManager } from "@/app/state/stores/DataStore";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import {
-    EventAttachment,
-    EventEntity,
-    EventExcludedFields,
-    EventIncludedFields,
-    EventK,
-    EventMeta
+  EventAttachment,
+  EventEntity,
+  EventExcludedFields,
+  EventIncludedFields,
+  EventK,
+  EventMeta
 } from '@/app/typings/entities/EventEntity';
 import {
-    VersionHistoryAttachment,
-    VersionHistoryEntity,
-    VersionHistoryExcludedFields,
-    VersionHistoryIncludedFields,
-    VersionHistoryK,
-    VersionHistoryMeta
+  VersionHistoryAttachment,
+  VersionHistoryEntity,
+  VersionHistoryExcludedFields,
+  VersionHistoryIncludedFields,
+  VersionHistoryK,
+  VersionHistoryMeta
 } from '@/app/typings/entities/VersionHistoryEntity';
 import { UserData } from "@/app/users/User";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";

@@ -3,6 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Data } from '@/app/models/data/Data';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -12,7 +13,6 @@ import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
-import { Data } from '@/app/models/data/Data';
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

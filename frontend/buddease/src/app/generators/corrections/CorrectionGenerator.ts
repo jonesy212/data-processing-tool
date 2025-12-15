@@ -1,5 +1,4 @@
 // CorrectionGenerator.ts
-import { FileHeaderManager } from '@/utils/fileHeaderManager';
 import { PatternAnalyzer } from '@/app/generators/corrections/analyzers/PatternAnalyzer'
 import { ReactNativeAnalyzer } from './analyzers/ReactNativeAnalyzer';
 import { ReactWebAnalyzer } from './analyzers/ReactWebAnalyzer';
@@ -23,6 +22,7 @@ import { SnapshotAnalyzer } from './SnapshotAnalyzer';
 import { StructureValidator } from './StructureValidator';
 import { TypeRelationshipMapper } from './TypeRelationshipMapper';
 import { BuildErrorHandler } from '@/utils/BuildErrorHandler'
+import { FileHeaderManager } from '@/utils/fileHeaderManager';
 import { readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import fs from 'fs';
@@ -311,7 +311,10 @@ export class CorrectionGenerator {
         const compilationErrors: Correction[] = await this.errorAnalyzer.analyzeCompilationErrors();
         const structureIssues: Correction[] = await this.structureValidator.validateStructure(projectStructure);
         const typeHierarchies: Map<string, TypeHierarchy> = await this.typeMapper.mapTypeRelationships(projectStructure);
-        const circularDeps: string[] = await this.circularDetector.detectCircularDependencies(projectStructure);
+        const circularReport =
+        await this.circularDetector.detectCircularDependencies(projectStructure);
+
+        const circularDeps = circularReport.circularDependencies;
 
         // Convert security issues to corrections
         const rawSecurityIssues = await this.securityAuditor.auditSecurity(projectStructure);
@@ -506,7 +509,7 @@ export class CorrectionGenerator {
             case 'import':
                 return `// Fix import paths for snapshot utilities
 // Ensure all snapshot-related imports use correct paths
-import { snapshotUtils } from '@/app/utils/snapshot';`;
+import { snapshotUtils } from '@/utils/snapshot';`;
 
             case 'type':
                 return `// Align snapshot types with main application types

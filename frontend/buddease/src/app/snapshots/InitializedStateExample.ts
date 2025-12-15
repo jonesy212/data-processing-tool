@@ -1,28 +1,28 @@
 // InitializedStateExample.ts
 
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes'
-import { ExtendedVersionData } from '@/app/versions/VersionData';
-import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { InitializedState, initializeState } from "@/app/state/stores/DataStore";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Data } from "@/app/models/data/Data";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { Data } from "@/app/models/data/Data";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { InitializedState, initializeState } from "@/app/state/stores/DataStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { category } from "@/utils/snapshotUtils";
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludeFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
-import { SnapshotData } from "./SnapshotData";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { ExtendedVersionData } from '@/app/versions/VersionData';
+import { category } from "@/utils/snapshotUtils";
+import { SnapshotData } from "./SnapshotData";
 import { SnapshotIdentity } from "./SnapshotIdentity";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

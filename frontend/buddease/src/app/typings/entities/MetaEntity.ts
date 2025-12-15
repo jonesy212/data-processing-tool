@@ -1,5 +1,8 @@
 // MetaEntity.ts
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
@@ -8,11 +11,8 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { AppMetadata } from '@/app/typings/metadataTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { AppMetadata } from '@/app/typings/metadataTypes'
 
 // 1. Define your base metadata entity (adjust according to your actual base entity)
 interface BaseMetaEntity extends BaseDataEntity {
@@ -96,26 +96,19 @@ type ApplyMetaFieldFilters<
 // export type AppMeta = Meta<MetaEntity, MetaK, MetaMeta, MetaAttachment, MetaExcludedFields, MetaIncludedFields>;
 
 export type {
-  MetaEntity, 
-  MetaK,
-  MetaMeta, 
-  MetaAttachment, 
-  MetaExcludedFields,
-  MetaIncludedFields, 
-  AppMetaMetadata, 
-  ApplyMetaFieldFilters, 
-  BaseMetaEntity,
-  MetaBaseParams, 
-  MetaCollection, 
-  MetaParams, 
-  MetaRealtimeDataItem, 
-  MetaSnapshot, 
-  MetaSnapshotData, 
-  MetaSnapshotsArray, 
-  MetaSnapshotStore, 
-  MetaSnapshotStoreConfig, 
-  MetaSnapshotWithCriteria, 
-  MetaStructuredMetadata, 
-  MetaSubscriberCollection, 
+  ApplyMetaFieldFilters, AppMetaMetadata, BaseMetaEntity, MetaAttachment, MetaBaseParams,
+  MetaCollection, MetaEntity, MetaExcludedFields,
+  MetaIncludedFields, MetaK,
+  MetaMeta, MetaParams,
+  MetaRealtimeDataItem,
+  MetaSnapshot,
+  MetaSnapshotData,
+  MetaSnapshotsArray,
+  MetaSnapshotStore,
+  MetaSnapshotStoreConfig,
+  MetaSnapshotWithCriteria,
+  MetaStructuredMetadata,
+  MetaSubscriberCollection,
   MetaUnifiedMetadata
 };
+

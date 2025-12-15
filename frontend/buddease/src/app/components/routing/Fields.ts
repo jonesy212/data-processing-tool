@@ -1,7 +1,11 @@
 // Fields.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { TaskMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { ProjectMetadata } from "@/app/config/StructuredMetadata";
+import { sharedBaseData } from '@/app/config/metadata/MetadataHooks';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Task } from '@/app/models/tasks/Task';
-import { ExampleEntity, ExampleK, ExampleMeta, ExampleAttachment, ExampleExcludedFields, ExampleIncludedFields } from "@/app/typings/entities/ExampleEntity";
+import { ExampleAttachment, ExampleEntity, ExampleExcludedFields, ExampleIncludedFields, ExampleK, ExampleMeta } from "@/app/typings/entities/ExampleEntity";
 import {
   ProjectAttachment,
   ProjectEntity,
@@ -10,11 +14,7 @@ import {
   ProjectK,
   ProjectMeta
 } from '@/app/typings/entities/ProjectEntity';
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { TaskMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { ProjectMetadata, StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { sharedBaseData } from '@/app/config/metadata/MetadataHooks';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
 
 // Pick specific keys from T
 type Fields<T, K extends keyof T> = Pick<T, K>;

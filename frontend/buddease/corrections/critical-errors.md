@@ -2268,7 +2268,7 @@ const key = SecureFieldManager.createField(value, true);
 ---
 
 ## 📄 DAppAdapter.tsx
-**Path:** src/utils/web3/crossPlatformLayer/src/src/platform/DAppAdapter.tsx
+**Path:** src/utils/web3/crossPlatformLayer/src/platform/DAppAdapter.tsx
 
 ### 1. Potential sensitive data exposure in interface 'DAppAdapterProps' - field 'className'
 **Type:** sensitive_data

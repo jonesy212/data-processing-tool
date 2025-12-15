@@ -1,10 +1,15 @@
 // page.tsx
 "use client";
 
-import { useRef, lazy, Suspense } from "react";
+import  ApiConfigService from "@/app/api/ApiConfigService";
 import LazyLoadedImage from "@/app/components/LazyLoadedImage";
-import styles from "./page.module.css";
-import { ApiConfigService } from "@/app/api/service/ApiConfigService";
+import { lazy, Suspense, useRef } from "react";
+import { endpointConfigurations, endpoints } from '@/app/api/endpointConfigurations';
+import { updateSnapshot } from '@/app/snapshots/snapshotOperations';
+
+if (typeof window !== 'undefined') {
+  import("@/app/page.module.css");
+}
 
 // Dynamically import YourComponent with SSR disabled
 const YourComponent = lazy(() => import("@/app/hooks/YourComponent"));
@@ -42,7 +47,7 @@ export default function Home() {
 
   const apiConfig = new ApiConfigService(
     endpointConfigurations, // Your endpoint configurations
-    new Endpoints(), // Your endpoints instance
+    endpoints, // Your endpoints instance
     {
       name: "exampleName",
       baseURL: "https://example.com",
@@ -59,6 +64,22 @@ export default function Home() {
         maxAge: 1000,
         staleWhileRevalidate: 1000,
         cacheKey: "example-cache-key",
+        strategy: 'memory',  // or 'persistent' or 'hybrid'
+        ttl: 3600000,  // Time to live in milliseconds
+        versioning: {
+          enabled: true,
+          key: 'v1'
+        },
+        invalidation: {
+          onUpdate: true,
+          onDelete: true,
+          pattern: undefined  // optional
+        },
+        persistence: {
+          enabled: false,  // Set to true if you want persistent storage
+          storageKey: 'api-cache',
+          autoRehydrate: false
+        }
       },
       responseType: "json",
       withCredentials: false,
@@ -67,7 +88,7 @@ export default function Home() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <YourComponent ref={componentRef} apiConfig={apiConfig}>
+      <YourComponent ref={componentRef} apiConfig={apiConfig} updateSnapshot={updateSnapshot}>
         <main className={styles.main}>
           <div className={styles.description}>
             <p>

@@ -1,9 +1,8 @@
 // usePhaseManagement.ts
-import { useState } from 'react';
-import { PhaseData } from '@/app/models/phases/Phase'
-import { Phase } from "@/app/models/phases/Phase";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/app/config/BaseConfig';
+import { Phase, PhaseData } from '@/app/models/phases/Phase';
+import { useState } from 'react';
 
 export function usePhaseManagement<
   T extends BaseDataEntity,

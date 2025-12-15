@@ -1,7 +1,7 @@
 // ChatSettingsPanel.tsx
 import React from "react";
 
-import ChatSettings from '@/app/hooks/userInterface/ChatSettingsPanel';
+import ChatSettings from '@/app/hooks/userInterface/ChatSettings';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { UserData } from '@/app/users/User';
 import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';

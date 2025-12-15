@@ -3,8 +3,9 @@ import { saveDrawingToDatabase } from "@/app/api/ApiDrawing";
 import React, { useState } from "react";
 import { ValidationRule } from '@/app/snapshots/ValidationRule'
 
-import "./PreviewForm.css"; // Import CSS for styling
-
+if (typeof window !== 'undefined') {
+  import("@/app/pages/forms/PreviewForm.css"); // Import CSS for styling
+}
 interface FormData {
   [key: string]: {
     value: string;

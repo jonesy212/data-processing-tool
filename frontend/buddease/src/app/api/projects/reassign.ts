@@ -1,14 +1,14 @@
 // reassign.ts
 // /src/app/api/projects/reassign/route.ts
+import DatabaseClient from '@/app/api/DatabaseClient';
+import { databaseConnection } from '@/app/config/databaseConnection'; 
 import { NextRequest, NextResponse } from 'next/server';
-import DatabaseClient from '@/app/lib/server/DatabaseClient';
-import databaseConfig from '@/app/lib/server/database/config';
 
 export async function POST(request: NextRequest) {
   try {
     const { newTeam, newProject, previousTeam, reassignmentDate } = await request.json();
     
-    const dbClient = new DatabaseClient(databaseConfig);
+    const dbClient = new DatabaseClient(databaseConnection);
     await dbClient.connect();
     
     // Step 1: Update project's current team assignment

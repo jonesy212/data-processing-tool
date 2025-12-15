@@ -1,15 +1,16 @@
 // ApiContent.ts
+import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
-import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { NotificationPosition } from '@/app/models/data/StatusType';
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationService } from '@/app/state/stores/NotificationService';
+import { NotificationService } from '@/app/services/NotificationService';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError } from 'axios';
 import { ContentState } from 'draft-js';
@@ -79,7 +80,7 @@ const handleContentApiErrorAndNotify = (
 const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string> => {
   try {
     // Make an API call to fetch the content ID
-    const response = await axiosInstance.post(`${API_BASE_URL}/getContentId`, {
+    const response = await internalApiService.post(`${API_BASE_URL}/getContentId`, {
       contentState, // Send the contentState as part of the request body
     });
 
@@ -110,10 +111,10 @@ const fetchContent = <
     try {
       const fetchContentEndpoint = `${API_BASE_URL}/fetch`;
 
-      axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
-        fetchContentEndpoint,
-        { headers: headersConfig }
-      )
+      internalApiService.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+        fetchContentEndpoint, {
+        config: { headers: headersConfig }
+      })
       .then(response => {
         resolve(response.data);
       })
@@ -133,42 +134,13 @@ const fetchContent = <
   });
 };
 
-// Update an existing content
-const updateContent = async (
-  contentId: number,
-  updatedContentData: any
-): Promise<void> => {
-  try {
-    const updateContentEndpoint = `${API_BASE_URL}/update/${contentId}`; // Adjust the endpoint as needed
-    await axiosInstance.put(updateContentEndpoint, updatedContentData, {
-      headers: headersConfig,
-    });
-    // Notify success message
-    useNotification().notify(
-      "UpdateContentSuccessId",
-      contentNotificationMessages.UPDATE_CONTENT_SUCCESS,
-      { contentId },
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
-  } catch (error) {
-    console.error("Error updating content:", error);
-    handleContentApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      "Failed to update content",
-      "UPDATE_CONTENT_ERROR_ID"
-    );
-    throw error;
-  }
-};
-
 
 // Create a new content
 const createContent = async (newContentData: any): Promise<void> => {
   try {
     const createContentEndpoint = `${API_BASE_URL}/create`; // Adjust the endpoint as needed
-    await axiosInstance.post(createContentEndpoint, newContentData, {
-      headers: headersConfig,
+    await internalApiService.post(createContentEndpoint, newContentData, {
+      config: { headers: headersConfig } 
     });
     // Notify success message
     NotificationService.notify({
@@ -188,32 +160,69 @@ const createContent = async (newContentData: any): Promise<void> => {
   }
 };
 
-// Delete a content
-const deleteContent = async (contentId: number): Promise<void> => {
+const updateContent = async (
+  contentId: number,
+  updatedContentData: any
+): Promise<void> => {
   try {
-    const deleteContentEndpoint = `${API_BASE_URL}/delete/${contentId}`; // Adjust the endpoint as needed
-    await axiosInstance.delete(deleteContentEndpoint, {
-      headers: headersConfig,
+    const updateContentEndpoint = `${API_BASE_URL}/update/${contentId}`;
+    await internalApiService.put(updateContentEndpoint, updatedContentData, {
+      config: {headers: headersConfig},
     });
-    // Notify success message
-    useNotification().notify(
-      "DeleteContentSuccessId",
-      contentNotificationMessages.DELETE_CONTENT_SUCCESS,
-      { contentId },
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
-  } catch (error: any) {
-    console.error("Error deleting content:", error);
+    // Proper notify pattern
+    useNotification().notify({
+      id: "UpdateContentSuccessId",
+      message: contentNotificationMessages.UPDATE_CONTENT_SUCCESS,
+      data: {
+        entityId: contentId.toString(),
+        entityType: 'content',
+        extra: { contentId, updatedContentData }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success' as const
+    });
+  } catch (error) {
+    console.error("Error updating content:", error);
     handleContentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "Failed to delete content",
-       "DELETE_CONTENT_ERROR_ID"
+      "Failed to update content",
+      "UPDATE_CONTENT_ERROR_ID"
     );
     throw error;
   }
 };
 
+// Delete a content
+const deleteContent = async (contentId: number): Promise<void> => {
+  try {
+    const deleteContentEndpoint = `${API_BASE_URL}/delete/${contentId}`;
+    await internalApiService.delete(deleteContentEndpoint, {
+      config : {headers: headersConfig},
+    });
+    // Proper notify pattern
+    useNotification().notify({
+      id: "DeleteContentSuccessId",
+      message: contentNotificationMessages.DELETE_CONTENT_SUCCESS,
+      data: {
+        entityId: contentId.toString(),
+        entityType: 'content',
+        extra: { contentId }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success' as const
+    });
+  } catch (error: any) {
+    console.error("Error deleting content:", error);
+    handleContentApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      "Failed to delete content",
+      "DELETE_CONTENT_ERROR_ID"
+    );
+    throw error;
+  }
+};
 
 const saveTaskHistoryToDatabase = async (
     taskId: string,
@@ -222,7 +231,7 @@ const saveTaskHistoryToDatabase = async (
     try {
       // Make API call to save task history to the database
       const saveTaskHistoryEndpoint = `${API_BASE_URL}/tasks/${taskId}/history`;
-      await axiosInstance.post(saveTaskHistoryEndpoint, previousState, { headers: headersConfig });
+      await internalApiService.post(saveTaskHistoryEndpoint, previousState, { config: { headers: headersConfig } });
       
       // Log a message indicating success
       console.log(`Task history for task ${taskId} saved successfully.`);
@@ -257,8 +266,8 @@ const getMetadataForContent = async <
   try {
     // Make API call to fetch metadata for the content
     const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;
-    const response = await axiosInstance.get(getMetadataEndpoint, {
-      headers: headersConfig // Ensure headersConfig is properly defined
+    const response = await internalApiService.get(getMetadataEndpoint, {
+      config: { headers: headersConfig }// Ensure headersConfig is properly defined
     });
     return response.data;
   } catch (error) {
@@ -274,7 +283,7 @@ const getTaskHistoryFromDatabase = async (
     try {
         // Make API call to fetch task history from the database
         const getTaskHistoryEndpoint = `${API_BASE_URL}/tasks/${taskId}/history`;
-        const response = await axiosInstance.get(getTaskHistoryEndpoint, { headers: headersConfig });
+        const response = await internalApiService.get(getTaskHistoryEndpoint, { config: { headers: headersConfig } });
         return response.data;
     } catch (error) {
         console.error("Error fetching task history from database:", error);
@@ -287,7 +296,7 @@ const fetchContentDataFromAPI = async (
   contentId: string,
 ): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/fetch/${contentId}`
     );
     return response.data;
@@ -299,7 +308,7 @@ const fetchContentDataFromAPI = async (
 
 const fetchContentId = async (contentId: string): Promise<any> => {
   try {
-    const response = await axiosInstance.get(
+    const response = await internalApiService.get(
       `${API_BASE_URL}/fetch/${contentId}`
     );
     return response.data;
@@ -316,8 +325,8 @@ const getContentIdFromURL = (url: string): string => {
   };
 
   export {
-    createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
-    fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
-    getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
+  createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
+  fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
+  getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
 };
 

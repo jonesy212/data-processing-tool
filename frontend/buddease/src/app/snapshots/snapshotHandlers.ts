@@ -13,7 +13,6 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -26,22 +25,19 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { T } from '@/app/models/data/dataStoreMethods';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Payload } from '@/app/server/database/Payload';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotManagerOptions from '@/app/snapshots/SnapshotManagerOptions';
-import {
-    NotificationTypeEnum,
-    useNotification
-} from "@/app/state/context/NotificationContext";
+import { useNotification } from '@/app/state/context/NotificationContext';
 import useSnapshotSlice from '@/app/state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -1258,13 +1254,23 @@ export const addSnapshotSuccess = async <
           console.error('setSnapshotData method is not defined on firstSnapshot');
         }
 
-        notify(
-          "success",
-          "Snapshot updated successfully",
-          NOTIFICATION_MESSAGES.Snapshot.UPDATING_SNAPSHOT_SUCCESS,
-          new Date(),
-          NotificationTypeEnum.SUCCESS
-        );
+      notify({
+        id: `snapshot_update_success_${firstSnapshotId}_${Date.now()}`,
+        message: "Snapshot updated successfully",
+        data: {
+          entityType: 'snapshot',
+          entityId: firstSnapshotId.toString(),
+          action: 'update',
+          // ... other data
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const,
+        metadata: {
+          operation: 'snapshot_update',
+          // ... other metadata
+        }
+      });
 
         return {
           snapshot: [snapshot],
@@ -1314,7 +1320,7 @@ const updateSnapshot = async <
         ...(newData as Partial<T>),
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as T;
+      };
 
       // Update the snapshot store
       data.data = updatedSnapshotData;
@@ -1358,24 +1364,81 @@ const updateSnapshot = async <
 };
 
 
-
-// Define the function to handle successful snapshot updates
 export const updateSnapshotsSuccess = (): void => {
-  // Implement logic to handle a successful snapshot update
-  // For example, you might want to update the UI, show a notification, or log the event
+  try {
+    // Implement logic to handle a successful snapshot update
+    // For example, you might want to update the UI, show a notification, or log the event
 
-  console.log("Snapshots updated successfully.");
+    console.log("Snapshots updated successfully.");
 
-  // If you have a notification system, you can notify the user
-  useNotification().notify(
-    "UpdateSnapshotsSuccessId",
-    "Snapshots have been updated successfully.",
-    null,
-    new Date(),
-    NotificationTypeEnum.SUCCESS
-  );
+    // If you have a notification system, you can notify the user
+    useNotification().notify({
+      id: "updateSnapshotsSuccess",
+      message: "Snapshots have been updated successfully.",
+      data: {
+        extra: {
+          operation: "Update snapshots",
+          timestamp: new Date().toISOString(),
+          success: true
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success'
+    });
 
-  // If you need to perform other actions, such as updating state or triggering other processes, do that here
+    // If you need to perform other actions, such as updating state or triggering other processes, do that here
+    
+  } catch (error) {
+    console.error("Error in updateSnapshotsSuccess:", error);
+    
+    // If notification system is available, notify about the error
+    useNotification()?.notify({
+      id: "updateSnapshotsSuccessError",
+      message: "Error showing snapshot update success notification",
+      data: {
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+        extra: {
+          errorMessage: "Failed to process snapshot update success",
+          operation: "Update snapshots error handling"
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.ERROR,
+      level: 'error'
+    });
+  }
+};
+
+// Alternative version if you want to pass data about what was updated
+export const updateSnapshotsSuccessWithData = (snapshotCount?: number, data?: any): void => {
+  try {
+    console.log("Snapshots updated successfully.", { snapshotCount, data });
+
+    useNotification().notify({
+      id: `updateSnapshotsSuccess-${Date.now()}`,
+      message: snapshotCount 
+        ? `${snapshotCount} snapshots have been updated successfully.`
+        : "Snapshots have been updated successfully.",
+      data: {
+        extra: {
+          operation: "Update snapshots",
+          snapshotCount,
+          timestamp: new Date().toISOString(),
+          ...(data && { metadata: data })
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.SUCCESS,
+      level: 'success'
+    });
+
+  } catch (error) {
+    console.error("Error in updateSnapshotsSuccessWithData:", error);
+    
+    // Fallback to console if notification fails
+    console.error("Snapshots update completed but notification failed:", error);
+  }
 };
 
 /**
@@ -1427,63 +1490,94 @@ const deleteSnapshot = async (
 };
 
 
-export const getAllSnapshots = async  <
+export const getAllSnapshots = async <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-  >(
+>(
   snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const snapshotPromises = snapshotConfig.snapshots.map(
-      async (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-      // Safely cast the category from the command line argument
-      const categoryArg = process.argv[3];
-      // Ensure that the category is a valid key of `CategoryKeys`
-      const category = categoryArg as keyof typeof allCategories;
-      // get current snapshotStoreState from snapshotConfig
-      const snapshotStoreState = snapshotConfig.snapshots.find(
-        (value) => value.snapshotId === snapshotData.snapshotId
-      );
-      const initialState = snapshotStoreState?.data || null;
-      // Access name, version, and schema from snapshotData
-      const { name, version, schema } = snapshotData; // Ensure these are defined in SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      async (snapshotUnion: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+        // Check if it's SnapshotData
+        if (isSnapshotData(snapshotUnion)) {
+          const snapshotData = snapshotUnion;
+          
+          // Safely cast the category from the command line argument
+          const categoryArg = process.argv[3];
+          // Ensure that the category is a valid key of `CategoryKeys`
+          const category = categoryArg as keyof typeof allCategories;
+          
+          // get current snapshotStoreState from snapshotConfig
+          const snapshotStoreState = snapshotConfig.snapshots.find(
+            (value) => 'snapshotId' in value && value.snapshotId === snapshotData.snapshotId
+          );
+          
+          const initialState = snapshotStoreState && 'data' in snapshotStoreState 
+            ? snapshotStoreState.data 
+            : null;
+          
+          // Access name, version, and schema from snapshotData
+          const { name, version, schema } = snapshotData;
 
-      const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
-        initialState,
-        snapshotId: snapshotData.snapshotId,
-        category: category as unknown as Category,
-        categoryProperties: snapshotData.categoryProperties,
-        dataStoreMethods: {
-          // Provide appropriate dataStoreMethods
-        },
-      });
+          const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+            initialState,
+            snapshotId: snapshotData.snapshotId,
+            category: category as unknown as Category,
+            categoryProperties: snapshotData.categoryProperties,
+            dataStoreMethods: {
+              // Provide appropriate dataStoreMethods
+            },
+          });
 
-      const categoryProperties = getCategoryProperties(category);
-      const snapshotId = snapshotData.snapshotId;
-      const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId))
-      const config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = snapshotConfig;
+          const categoryProperties = getCategoryProperties(category);
+          const snapshotId = snapshotData.snapshotId;
+          const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId));
+          const config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = snapshotConfig;
 
-      const operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        operationType: SnapshotOperationType.FindSnapshot
-      };
+          const operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+            operationType: SnapshotOperationType.FindSnapshot
+          };
 
-        if (!name) {
-        
+          if (!name) {
+            // Handle missing name
+            throw new Error(`Snapshot ${snapshotId} is missing name property`);
+          }
+          
+          const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+            storeId, 
+            name, 
+            version, 
+            schema, 
+            category, 
+            options, 
+            config, 
+            operation
+          });
+
+          return snapshotStore;
+        } else {
+          // Handle Snapshot or SnapshotWithCriteria types
+          console.warn(`Skipping non-SnapshotData type: ${snapshotUnion.category || 'unknown'}`);
+          // Return null or throw based on your needs
+          throw new Error(`Expected SnapshotData but got ${snapshotUnion.category || 'other type'}`);
+        }
       }
-      const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({storeId, name, version, schema, category, options, config, operation});
+    );
 
-      return snapshotStore;
-    });
-
-    return Promise.all(snapshotPromises);
+    // Filter out null values if needed
+    const results = await Promise.all(snapshotPromises);
+    return results.filter(Boolean) as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   } catch (error) {
+    console.error('Error in getAllSnapshots:', error);
     throw error;
   }
 };
+
 
 const batchFetchSnapshots = async <
   T extends BaseDataEntity = BaseDataRoot,

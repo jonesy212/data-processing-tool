@@ -1,57 +1,14 @@
 // EntityConversionRules.ts
 
 import {
-  ApiEntity,
-  AppEntity,
-  AppMetadataEntity,
-  ArticleEntity,
-  AuthEntity,
-  BlogEntity,
-  CalendarEntity,
-  ChatEntity,
-  ChatRoomEntity,
-  CommonEntities,
-  ConfigEntity,
-  ContentEntity,
-  DataEntity,
-  DocumentEntity,
-  DrawingEntity,
-  ExtendedDappEntity,
-  EventEntity,
-  ExampleEntity,
-  FileEntity,
-  FilterEntity,
-  LogEntity,
-  MeetingEntity,
-  MessageEntity,
-  MemberEntity,
-  MetaEntity,
-  NoteEntity,
-  NotificationEntity,
-  PhaseEntity,
-  ProductEntity,
-  ProjectEntity,
-  ProjectManagementEntity,
-  ProjectManagerEntity,
-  SenderEntity,
-  SnapshotContainerEntity,
-  SnapshotEntity,
-  SnapshotStorageOptionsEntity,
-  StorePropEntity,
-  TagEntity,
-  TaskEntity,
-  TeamEntity,
-  TrackerEntity,
-  VersionEntity,
-  VersionHistoryEntity,
-  VideoEntity
+  TaskEntity
 } from '@/app/typings/entities/';
 
-import { UserEntity } from '@/app/typings/entities/UserEntity';
-import { SupportedData, CommonData } from "@/app/models/CommonData";
-import { ParsedData } from '@/app/dataIntegration/parseData';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { ParsedData } from '@/app/dataIntegration/parseData';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CommonData, SupportedData } from "@/app/models/CommonData";
+import { UserEntity } from '@/app/typings/entities/UserEntity';
 
 // --------------------
 // Step 1: Define all entities as a const tuple

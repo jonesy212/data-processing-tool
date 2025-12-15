@@ -1,19 +1,18 @@
 // ListGenerator.tsx
-import { BaseData, Data } from '@/app/models/data/Data';
-import { 
-  DetailsEntity, 
-  DetailsK, 
-  DetailsMeta, 
-  DetailsAttachment, 
-  DetailsExcludedFields, 
-  DetailsIncludedFields 
-} from "@/app/typings/entities/DetailsEntity";
+import DetailsListItem from '@/app/components/models/data/DetailsListItem';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Data } from '@/app/models/data/Data';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import DetailsListItem from '@/app/components/models/data/DetailsListItem'
-import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes'
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { BaseDataRoot } from '@/app/config/BaseConfig';
+import {
+  DetailsAttachment,
+  DetailsEntity,
+  DetailsExcludedFields,
+  DetailsIncludedFields,
+  DetailsK,
+  DetailsMeta
+} from "@/app/typings/entities/DetailsEntity";
+import { ReactiveMouseEvent } from '@/app/typings/eventHandlers/eventTypes';
 
 // Define a mapped type to include all properties of Data
 export type AllProperties<

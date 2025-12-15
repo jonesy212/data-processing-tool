@@ -2,10 +2,10 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
-import TaskDetails from "@/app/models/tasks/Task";
+import { TaskDetails } from '@/app/components/models/tasks/TaskDetailsComponent'
 import { AppTask, TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
 import { ValidPriority } from '@/app/pages/searches/CriteriaType'
-
+import { PriorityValue } from '@/app/pages/searches/CriteriaType'; // Import PriorityValue if needed
 /**
  * TaskList Component
  * 
@@ -47,14 +47,25 @@ const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
         completed: 5,
       };
 
-      const getValidPriority = (priority?: string): ValidPriority => {
+      // Update getValidPriority to accept PriorityValue and handle null/undefined
+      const getValidPriority = (priority: PriorityValue | string | undefined): ValidPriority => {
         const validPriorities: ValidPriority[] = ["low", "medium", "high", "scheduled", "completed"];
-        return (priority && validPriorities.includes(priority as ValidPriority)
-          ? priority
+        
+        // Handle null, undefined, or empty string
+        if (!priority) return "low";
+        
+        // Convert to string and check if it's a valid priority
+        const priorityStr = String(priority);
+        return (validPriorities.includes(priorityStr as ValidPriority)
+          ? priorityStr
           : "low") as ValidPriority;
       };
 
-      return priorityOrder[getValidPriority(b.priority)] - priorityOrder[getValidPriority(a.priority)];
+      // Now both parameters will be ValidPriority, not PriorityValue
+      const priorityA = getValidPriority(a.priority);
+      const priorityB = getValidPriority(b.priority);
+      
+      return priorityOrder[priorityB] - priorityOrder[priorityA];
     });
 
   return (
@@ -88,11 +99,3 @@ const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
 });
 
 export default TaskList;
-
-/**
- * Usage Notes:
- * - Can accept optional tasks prop or fallback to MobX store tasks.
- * - Uses observer to reactively render changes in task data.
- * - Priorities are type-safe via ValidPriority.
- * - Reusable for dashboards, project pages, or reports.
- */

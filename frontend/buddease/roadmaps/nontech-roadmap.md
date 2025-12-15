@@ -1,11 +1,11 @@
 # Product Roadmap - Feature Overview
-📋 User Prompt: Project roadmap
-🕒 Generated: 2025-11-11T06:18:54.146Z
+📋 User Prompt: Project structure analysis
+🕒 Generated: 2025-12-10T02:55:19.762Z
 
 ## 📊 Executive Summary
-- **User Interfaces**: 102 pages, 326 components
-- **Backend Services**: 109 API endpoints, 1 services
-- **Data Structures**: 32 models
+- **User Interfaces**: 104 pages, 336 components
+- **Backend Services**: 111 API endpoints, 2 services
+- **Data Structures**: 33 models
 - **Interactive Features**: 16 custom hooks
 
 ## 🖥️ User-Facing Features
@@ -23,6 +23,7 @@
 - RegistrationPhase
 - SearchPage
 - MeetingSchedulerViewerToolbar
+- AccessDenied
 - ExtendedAppLogic
 - BlogGenerator
 - BlogGroup
@@ -111,6 +112,7 @@
 - TeamCreationQuestionnaire
 - PromptPage
 - PromptViewer
+- AnalysisView
 - MarketplacePage
 - VideoViewer
 
@@ -144,6 +146,7 @@
 - SwingCard
 - FileUploadModal
 - FileUploadModalLauncher
+- AppProviders
 - DynamicComponentsProvider
 - LazyIcon
 - LazyLoadedImage
@@ -188,6 +191,7 @@
 - CryptoSectionToolbar
 - CryptoTransaction
 - OrderBook
+- DatabaseMigrationUI
 - DocumentBuilderConfigComponent
 - DocumentFormattingOptionsComponent
 - EditorWithPrompt
@@ -268,6 +272,7 @@
 - ProfileSetupPhase
 - WelcomePhase
 - PostLaunchActivitiesPhase
+- AnalysisStep
 - PreferencesStep
 - TeamBasicInfoStep
 - TeamMembersStep
@@ -354,15 +359,16 @@
 - SupportTicketComponent
 - UserSupportPhaseComponent
 - Tools
-- ButtonGenerator
 - ChatSettingsModal
 - OtherModal
 - ModalGenerator
+- NavigationManager
 - NavigationMenu
 - YourComponentUI
 - CustomizationOptions
 - FullscreenControls
 - LayoutControls
+- RootLayoutContent
 - AnimationDial
 - DraggableAnimation
 - DynamicSelectionControls
@@ -381,6 +387,8 @@
 - ToolbarItemsProvider
 - ContentRenderer
 - DynamicRenderer
+- UIComponentRenderer
+- EnhancedUIComponentRenderer
 - CustomSlider
 - ReusableButton
 - onCancel
@@ -389,7 +397,6 @@
 - onSubmit
 - DynamicRouteComponent
 - ThemeProvider
-- ChecklistItem
 - AddContent
 - DetailsProvider
 - PhaseManager
@@ -422,13 +429,16 @@
 - TodoProgressBar
 - PromptSystem
 - AuthComponent
+- SearchResultsPanel
 - ErrorBoundaryProvider
 - SnapshotContainerComponent
 - SnapshotHandler
+- AppStoresProvider
 - CollaborationProvider
 - ContentProvider
 - DashboardProvider
 - DynamicPromptProvider
+- PhaseActivityProvider
 - SearchProvider
 - StepProvider
 - StoreProvider
@@ -437,6 +447,8 @@
 - DynamicTextArea
 - ScheduleEventModal
 - Clipboard
+- AppStepRenderer
+- FlexibleStep
 - DataPreview
 - UserDetails
 - IdeaCreationPhaseManager
@@ -450,8 +462,8 @@
 - ApiClient.ts: 16 operations
 - ApiCollaboration.ts: 13 operations
 - ApiCommunicationService.ts: 8 operations
-- ApiConfig.ts: 3 operations
-- ApiConfigManager.ts: 2 operations
+- ApiConfigManager.ts: 4 operations
+- ApiConfigService.ts: 5 operations
 - ApiDashboard.ts: 1 operations
 - ApiData.ts: 11 operations
 - ApiDataAnalysis.ts: 1 operations
@@ -464,7 +476,7 @@
 - ApiMarkdown.ts: 1 operations
 - ApiMarker.ts: 3 operations
 - ApiMetadata.ts: 7 operations
-- ApiNote.ts: 1 operations
+- ApiNote.ts: 2 operations
 - ApiStateGovCities.ts: 2 operations
 - ApiStore.ts: 5 operations
 - ApiToolbar.tsx: 4 operations
@@ -476,7 +488,7 @@
 - ConfigManager.ts: 3 operations
 - CustomFetchEvent.ts: 2 operations
 - DataDashboardApi.ts: 1 operations
-- DatabaseClient.ts: 5 operations
+- DatabaseClient.ts: 12 operations
 - FacebookAPI.ts: 1 operations
 - GenerateText.ts: 1 operations
 - InstagramAPI.ts: 5 operations
@@ -503,6 +515,7 @@
 - route.ts: 2 operations
 - route.ts: 2 operations
 - routes.ts: 2 operations
+- route.ts: 2 operations
 - generate.ts: 1 operations
 - encrypt.ts: 1 operations
 - endpointConfigurations.ts: 1 operations
@@ -523,7 +536,7 @@
 - processSnapshotData.ts: 1 operations
 - updateProgress.ts: 2 operations
 - ApiService.ts: 3 operations
-- ArchiveService.tsx: 2 operations
+- ArchiveService.tsx: 3 operations
 - BaseApiService.ts: 2 operations
 - BugApiService.tsx: 2 operations
 - ContentApiService.ts: 13 operations
@@ -534,6 +547,7 @@
 - PortfolioService.ts: 12 operations
 - PriceApiService.ts: 12 operations
 - SocialMediaIntegrationService.tsx: 2 operations
+- TreeDataService.ts: 2 operations
 - route.ts: 2 operations
 - route.ts: 2 operations
 - route.ts: 2 operations
@@ -541,21 +555,22 @@
 - AppCacheManagerAPI.ts: 1 operations
 - VideoAPI.ts: 6 operations
 - AffiliateMarketingService.ts: 7 operations
-- AppTreeService.ts: 3 operations
+- AppTreeService.ts: 5 operations
 - ChatEventService.ts: 4 operations
-- ConfigurationService.ts: 19 operations
+- ConfigurationService.ts: 24 operations
 - CryptoIntegrationService.ts: 3 operations
-- DataAnalysisService.ts: 4 operations
 - EventService.tsx: 19 operations
 - FileApiService.tsx: 10 operations
 - FileTreeService.ts: 3 operations
 - GeolocationService.tsx: 1 operations
 - PresentationService.ts: 3 operations
 - TaskService.ts: 4 operations
+- dataAnalysisService.ts: 4 operations
 - identityService.ts: 2 operations
 - teamService.ts: 4 operations
 
 ### Business Logic
+- BackgroundService.ts: 2 functions
 - NotificationService.tsx: 1 functions
 
 ## 🗄️ Data Models
@@ -563,6 +578,7 @@
 ### Core Data Models
 
 ### Shared Types
+- NavigationView
 - Channel
 - ChannelMember
 - ChannelMessage

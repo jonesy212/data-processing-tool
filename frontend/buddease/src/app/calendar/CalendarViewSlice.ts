@@ -1,26 +1,26 @@
 // CalendarViewSlice.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { SimpleCalendarEvent } from "@/app/components/calendar/CalendarContext";
+import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext';
+import { SetCustomEventNotificationsPayload } from "@/app/components/notifications/SetEventNotification";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { SupportedData } from "@/app/models/CommonData";
 import { CalendarStatus } from "@/app/models/data/StatusType";
-import { SetCustomEventNotificationsPayload } from "@/app/notifications/SetEventNotification";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
 import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
 import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
- 
 
 // Define a union type for calendar events
-type CalendarEventUnion = SimpleCalendarEvent | CalendarEvent;
+type CalendarEventUnion = SimpleCalendarEvent<AppCalendarEvent> | CalendarEvent<AppCalendarEvent>;
 const dispatch = useDispatch();
 
 // Define the slice state interface
@@ -96,7 +96,7 @@ const initialState: CalendarViewManagerState = {
   highlightColor: "#FFFF00", // Default to yellow
   highlightOpacity: 0.5,
   events: [],
-  details: {} as DetailsItem<SupportedData>,
+  details: {} as DetailsItem<SupportedData<AppCalendarEvent>>,
   bulkEdit: false,
   calendarStatus: CalendarStatus.LOADING
 };
@@ -109,7 +109,7 @@ const initialState: CalendarViewManagerState = {
 const generateCalendarId = UniqueIDGenerator.generateID(
   "string",
   "string",
-  NotificationTypeEnum.CalendarEvent
+  NotificationTypeEnum.CALENDAR_EVENT
 );
 
 export const importCalendarStart = (payload: { start_payload: string }) => ({
@@ -213,9 +213,9 @@ export const calendarViewManagerSlice = createSlice({
         event.isVisible = !event.isVisible;
       }
     },
-    copyEvent: (state, action: PayloadAction<WritableDraft<CalendarEvent>>) => {
+    copyEvent: (state, action: PayloadAction<WritableDraft<CalendarEvent<AppCalendarEvent>>>) => {
       const eventToCopy = action.payload;
-      const copiedEvent: WritableDraft<CalendarEvent> = {
+      const copiedEvent: WritableDraft<CalendarEvent<AppCalendarEvent>> = {
         ...eventToCopy,
         id: generateCalendarId,
       };
@@ -234,10 +234,10 @@ export const calendarViewManagerSlice = createSlice({
     },
     duplicateEvent: (
       state,
-      action: PayloadAction<WritableDraft<CalendarEvent>>
+      action: PayloadAction<WritableDraft<CalendarEvent<AppCalendarEvent>>>
     ) => {
       const eventToDuplicate = action.payload;
-      const duplicatedEvent: WritableDraft<CalendarEvent> = {
+      const duplicatedEvent: WritableDraft<CalendarEvent<AppCalendarEvent>> = {
         ...eventToDuplicate,
         id: generateCalendarId,
       };
@@ -333,7 +333,7 @@ export const calendarViewManagerSlice = createSlice({
       let exportData;
       switch (format.toLowerCase()) {
         case 'csv':
-          let defaultCommonEvents: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[] = events,
+          let defaultCommonEvents: (WritableDraft<SimpleCalendarEvent<AppCalendarEvent>> | WritableDraft<CalendarEvent<AppCalendarEvent>>)[] = events,
           exportData = formatCalendarAsCSV(defaultCommonEvents, calendarDisplaySettings);
           break;
         case 'xls':

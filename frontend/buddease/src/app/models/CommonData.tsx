@@ -2,21 +2,19 @@
 // CommonDetails.tsx
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import DetailsProps from "@/app/components/models/data/Details";
 import { TradeData } from "@/app/components/trading/TradeData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { CryptoData } from "@/app/dataIntegration/parseData";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 
 import { SharedIdentifiers, SharedTimestamps } from '@/app/documents/RelatedProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { RealtimeDataComponent } from '@/app/components/models/realtime/RealtimeDataComponent'
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
@@ -30,10 +28,8 @@ import { AllTypes } from "@/app/typings/PropTypes";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { UserData } from "@/app/users/User";
 import AccessHistory from "@/app/versions/AccessHistory";
-import { createDefaultVersionData } from '@/app/versions/VersionData';
 import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
 import { BaseData, DataDetails, DataWithOmittedFields } from "./data/Data";

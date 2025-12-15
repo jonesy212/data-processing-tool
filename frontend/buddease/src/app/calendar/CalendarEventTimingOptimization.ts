@@ -5,7 +5,7 @@ import { DayOfWeekProps } from "@/app/components/calendar/DayOfWeek";
 import { Month } from "@/app/components/calendar/Month";
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { User } from "@/app/users/User";

@@ -1,9 +1,9 @@
 // TeamEntity.ts
-import { Member } from '@/app/models/teams/TeamMembers';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Member } from '@/app/models/members/Members';
 import { TeamPermission } from '@/app/permissions/Permission';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -13,9 +13,9 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { MemberAttachment, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/app/typings/entities/MemberEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields} from '@/app/typings/entities/MemberEntity';
-import { TeamSettings } from '@/app/typings/teamTypes'
+import { TeamSettings } from '@/app/typings/teamTypes';
 
 // Define the actual TeamEntity interface
 
@@ -126,23 +126,23 @@ type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, a
   SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 export type {
-    // Core type parameters
-    AppTeamEntity, BasicTeamInfo,
-    // Team entity types
-    CompleteTeam,
-    PublicTeamProfile, TeamAttachment, TeamBaseParams, TeamExcludedFields,
-    TeamIncludedFields, TeamK,
-    TeamMeta, TeamParams, TeamRealtimeDataItem,
-    // Snapshot types
-    TeamSnapshot,
-    TeamSnapshotData,
-    // Utility types
-    TeamSnapshotFromParams, TeamSnapshotsArray,
-    TeamSnapshotStore, TeamSnapshotStoreConfig,
-    TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria,
-    TeamStructuredMetadata, TeamSubscriberCollection,
-    // Metadata types
-    TeamUnifiedMetadata, TeamWithMembers
+  // Core type parameters
+  AppTeamEntity, BasicTeamInfo,
+  // Team entity types
+  CompleteTeam,
+  PublicTeamProfile, TeamAttachment, TeamBaseParams, TeamExcludedFields,
+  TeamIncludedFields, TeamK,
+  TeamMeta, TeamParams, TeamRealtimeDataItem,
+  // Snapshot types
+  TeamSnapshot,
+  TeamSnapshotData,
+  // Utility types
+  TeamSnapshotFromParams, TeamSnapshotsArray,
+  TeamSnapshotStore, TeamSnapshotStoreConfig,
+  TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria,
+  TeamStructuredMetadata, TeamSubscriberCollection,
+  // Metadata types
+  TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces

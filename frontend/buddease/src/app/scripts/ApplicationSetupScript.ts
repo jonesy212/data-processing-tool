@@ -2,9 +2,9 @@
 import { ProjectConfig } from '@/app/config/ProjectConfig';
 import { DependencyInstallationScript } from '@/app/scripts/DependencyInstallationScript'
 import { DatabaseSetupScript } from '@/app/scripts/DatabaseSetupScript'
-import { ConfigurationGenerationScript } from './ConfigurationGenerationScript';
-import { CodeScaffoldingScript } from './CodeScaffoldingScript';
-import { QualityChecksScript } from './QualityChecksScript';
+import { ConfigurationGenerationScript } from '@/app/scripts/ConfigurationGenerationScript'
+import { CodeScaffoldingScript } from '../../../app/scripts/CodeScaffoldingScript';
+import { QualityChecksScript } from '../../../app/scripts/QualityChecksScript';
 
 export class ApplicationSetupScript {
   private dependencyScript: DependencyInstallationScript;

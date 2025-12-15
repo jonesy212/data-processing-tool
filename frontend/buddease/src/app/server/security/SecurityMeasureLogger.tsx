@@ -1,9 +1,7 @@
 // SecurityMeasureLogger.tsx
 // SecurityMeasureLogger.ts
 
-import Logger from "@/app/libraries/logging/Logger";
 import { SecurityMeasure, SecurityMeasureType } from "./SecurityMeasures";
-import { encryptData } from "./encryptedData";
 
 // Extend the SecurityMeasureLogger interface to include logLevel
 export interface SecurityMeasureLogger extends SecurityMeasure {

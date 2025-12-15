@@ -97,14 +97,19 @@ class ApiUserSettingsService {
     userSettings: UserSettings
   ): Promise<AxiosResponse<UserSettings>> {
     try {
-      const userSettingsUrl = `${API_BASE_URL}/users/${userSettings.userId}/settings`;
+      // Convert userId from Symbol to String if needed
+      const userId = typeof userSettings.userId === 'symbol' 
+        ? String(userSettings.userId) 
+        : userSettings.userId;
+      
+      const userSettingsUrl = `${API_BASE_URL}/users/${userId}/settings`;
 
       // Use axiosInstance with the headers configuration
       const response: AxiosResponse<UserSettings> = await axiosInstance.put(
         userSettingsUrl,
         userSettings,
         {
-          headers: headersConfig, // Pass headers configuration in the request
+          headers: headersConfig,
         }
       );
 

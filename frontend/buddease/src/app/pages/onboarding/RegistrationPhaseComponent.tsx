@@ -16,6 +16,8 @@ interface RegistrationPhaseComponentProps {
   onPrevious?: () => void;
 }
 
+const { notify } = useNotification(); 
+
 const RegistrationPhaseComponent: React.FC<RegistrationPhaseComponentProps> = ({ 
   onSuccess, 
   onPhaseComplete,
@@ -69,44 +71,96 @@ const RegistrationPhaseComponent: React.FC<RegistrationPhaseComponentProps> = ({
       [field]: value
     }));
   };
+const handleSubmit = async () => {
+  if (formData.password !== formData.confirmPassword) {
+    notify({
+      id: 'passwordMismatch',
+      message: 'Passwords do not match',
+      data: { extra: { field: 'password' } },
+      timestamp: new Date(),
+      type: 'error',
+      level: 'error'
+    });
+    return;
+  }
 
-  const handleSubmit = async () => {
-    if (formData.password !== formData.confirmPassword) {
-      notify('Passwords do not match', 'error');
-      return;
-    }
+  if (!formData.agreeToTerms) {
+    notify({
+      id: 'termsNotAgreed',
+      message: 'Please agree to the terms and conditions',
+      data: { extra: { field: 'terms' } },
+      timestamp: new Date(),
+      type: 'error',
+      level: 'error'
+    });
+    return;
+  }
 
-    if (!formData.agreeToTerms) {
-      notify('Please agree to the terms and conditions', 'error');
-      return;
-    }
+  setIsLoading(true);
+  
+  try {
+    // Call your registration API
+    const result = await register({
+      email: formData.email,
+      password: formData.password,
+      firstName: formData.firstName,
+      lastName: formData.lastName
+    });
 
-    setIsLoading(true);
-    
-    try {
-      // Call your registration API
-      const result = await register({
-        email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName
+    if (result.success) {
+      notify({
+        id: 'registrationSuccess',
+        message: 'Registration successful!',
+        data: { 
+          extra: { 
+            email: formData.email,
+            userId: result.user?.id,
+            operation: 'user_registration'
+          }
+        },
+        timestamp: new Date(),
+        type: 'success',
+        level: 'success'
       });
-
-      if (result.success) {
-        notify('Registration successful!', 'success');
-        onPhaseComplete?.(formData);
-        onSuccess(result.user);
-      } else {
-        notify(result.message || 'Registration failed', 'error');
-      }
-    } catch (error) {
-      notify('Registration failed. Please try again.', 'error');
-      console.error('Registration error:', error);
-    } finally {
-      setIsLoading(false);
+      onPhaseComplete?.(formData);
+      onSuccess(result.user);
+    } else {
+      notify({
+        id: 'registrationFailed',
+        message: result.message || 'Registration failed',
+        data: { 
+          originalError: result.message,
+          extra: { 
+            email: formData.email,
+            operation: 'user_registration'
+          }
+        },
+        timestamp: new Date(),
+        type: 'error',
+        level: 'error'
+      });
     }
-  };
-
+  } catch (error) {
+    notify({
+      id: 'registrationError',
+      message: 'Registration failed. Please try again.',
+      data: { 
+        originalError: error instanceof Error ? error.message : 'Unknown error',
+        extra: { 
+          email: formData.email,
+          operation: 'user_registration'
+        }
+      },
+      timestamp: new Date(),
+      type: 'error',
+      level: 'error'
+    });
+    console.error('Registration error:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+  
   const CurrentStepComponent = registrationSteps[currentStep]?.component;
 
   return (
@@ -151,12 +205,30 @@ const AccountInfoStep: React.FC<StepProps> = ({
   onInputChange,
   onNext,
   onPrevious,
+  onSubmit, // Add this prop
   currentStep,
   totalSteps
 }) => {
+  const { notify } = useNotification(); // Add this if not already destructured
+  
   const handleNext = () => {
     if (!formData.email || !formData.password) {
-      notify('Please fill in all required fields', 'error');
+      notify({
+        id: 'requiredFieldsMissing',
+        message: 'Please fill in all required fields',
+        data: { 
+          extra: { 
+            step: 'account_info',
+            missingFields: [
+              ...(!formData.email ? ['email'] : []),
+              ...(!formData.password ? ['password'] : [])
+            ]
+          }
+        },
+        timestamp: new Date(),
+        type: 'error',
+        level: 'error'
+      });
       return;
     }
     onNext();
@@ -167,8 +239,10 @@ const AccountInfoStep: React.FC<StepProps> = ({
       title="Account Information"
       onNext={handleNext}
       onPrevious={onPrevious}
+      onSubmit={onSubmit} // Add this
       currentStep={currentStep}
       totalSteps={totalSteps}
+      stepData={formData} // Add this
     >
       <div className="space-y-4">
         <div className="form-group">
@@ -211,17 +285,35 @@ const AccountInfoStep: React.FC<StepProps> = ({
   );
 };
 
+
 const PersonalDetailsStep: React.FC<StepProps> = ({
   formData,
   onInputChange,
   onNext,
   onPrevious,
+  onSubmit,
   currentStep,
   totalSteps
 }) => {
+  
   const handleNext = () => {
     if (!formData.firstName || !formData.lastName) {
-      notify('Please fill in your name', 'error');
+      notify({
+        id: 'nameFieldsMissing',
+        message: 'Please fill in your name',
+        data: { 
+          extra: { 
+            step: 'personal_details',
+            missingFields: [
+              ...(!formData.firstName ? ['firstName'] : []),
+              ...(!formData.lastName ? ['lastName'] : [])
+            ]
+          }
+        },
+        timestamp: new Date(),
+        type: 'error',
+        level: 'error'
+      });
       return;
     }
     onNext();
@@ -232,8 +324,11 @@ const PersonalDetailsStep: React.FC<StepProps> = ({
       title="Personal Details"
       onNext={handleNext}
       onPrevious={onPrevious}
+      onSubmit={onSubmit}
       currentStep={currentStep}
       totalSteps={totalSteps}
+      stepData={formData} // Add this if required
+      showNavigation={true}
     >
       <div className="space-y-4">
         <div className="form-group">
@@ -263,6 +358,7 @@ const PersonalDetailsStep: React.FC<StepProps> = ({
     </GenericStepContainer>
   );
 };
+
 
 const ConfirmationStep: React.FC<StepProps> = ({
   formData,

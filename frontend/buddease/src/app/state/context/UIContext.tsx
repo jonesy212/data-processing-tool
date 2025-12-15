@@ -1,10 +1,10 @@
 // UIContext.tsx
 // UIContext.ts
 // stores/StoreProvider.tsx
+import { displayToast } from '@/app/components/models/display/ShowToast';
+import UIStore from '@/app/state/stores/UIStore';
 import * as React from 'react';
 import { createContext, ReactNode, useContext } from 'react';
-import UIStore from '@/app/state/stores/UIStore';
-import { displayToast } from '@/components/models/display/ShowToast';
  
 
 interface StoreProviderProps {

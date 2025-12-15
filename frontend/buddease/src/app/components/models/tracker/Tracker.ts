@@ -13,11 +13,11 @@ import { TrackerProps } from '@/app/models/tracker/Tracker';
 import { useAuth } from "@/app/state/context/AuthContext";
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import {
-    fetchUsersSuccess,
-    updateBio,
-    updateFullName,
-    updateProfilePicture,
-    updateQuota,
+  fetchUsersSuccess,
+  updateBio,
+  updateFullName,
+  updateProfilePicture,
+  updateQuota,
 } from "@/app/state/redux/slices/UserSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';

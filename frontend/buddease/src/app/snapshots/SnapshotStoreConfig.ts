@@ -81,7 +81,7 @@ import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { ValidationRule } from "./ValidationRule";
+import { ValidationRule } from '@/app/snapshots/ValidationRule'
 
 interface UserConfig<  
   T extends BaseDataEntity,
@@ -232,7 +232,7 @@ export interface SnapshotStoreConfig<
   callback: (data: T) => void;
   multipleCallbacks: MultipleEventsCallbacks<T>;
 
-  storeId: number
+  storeId: string | number
   name?: string;
   isCore: boolean;
   configId: string

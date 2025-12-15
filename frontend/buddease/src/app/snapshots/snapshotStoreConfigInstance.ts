@@ -27,12 +27,12 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Subscription } from '@/app/subscriptions/Subscription';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
-import { Subscription } from '@/app/subscriptions/Subscription';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { TransformMethods } from "./methods/transformMethods";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
@@ -41,16 +41,16 @@ import { fetchData } from "@/app/api/ApiData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
-    AppAttachment,
-    AppEntity,
-    AppExcludedFields,
-    AppIncludedFields,
-    AppK,
-    AppMeta,
-    AppParams,
-    AppSnapshot,
-    AppSnapshotsArray,
-    AppSnapshotStoreConfig,
+  AppAttachment,
+  AppEntity,
+  AppExcludedFields,
+  AppIncludedFields,
+  AppK,
+  AppMeta,
+  AppParams,
+  AppSnapshot,
+  AppSnapshotsArray,
+  AppSnapshotStoreConfig,
 } from '@/app/typings/entities/AppEntity';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 

@@ -1,32 +1,24 @@
 // ApiSlice.ts
-import { AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import ApiConfig from '@/app/api/ApiConfigService';
+import { Label } from '@/app/branding/BrandingSettings'
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communications/Language";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseDataRoot } from '@/app/config/BaseConfig';
-import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { useMetadata } from "@/app/config/useMetadata";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/interfaces/provider/CloudStorageProvider";
-import { BaseData, Data } from '@/app/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Phase } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
 import { EncryptionSetting, Permission } from "@/app/permissions/Permission";
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
-import  ApiConfig from '@/app/api/ApiConfig';
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { InitializedState } from "@/app/state/stores/DataStore";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity';
-import { ApiEntity, ApiK, ApiMeta, ApiAttachment, ApiExcludedFields, ApiIncludedFields } from '@/app/typings/entities/ApiEntity';
-import { Version, version } from "@/app/versions/Version";
-import { VersionHistory } from "@/app/versions/VersionData";
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntity';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
 import { useDispatch } from "react-redux";
@@ -663,14 +655,17 @@ function convertToWritableMetadata<
 ): WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
     ...metadata,
-    childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<Draft<K>[]>)),
+    childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<K>)),
   };
 
   return mutableMetadata;
 }
 
 export const markTaskAsComplete = (taskId: string, title: string) => async (dispatch: any) => {
-   // Assuming `version` is the current immutable version object
+  // Assuming `version` is the current immutable version object
+  
+  const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+  const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(area)
   const mutableMetadata = convertToWritableMetadata(currentMetadata);
 
 
@@ -796,6 +791,7 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
   }));
 };
 
+
 // Export selector for accessing the API configurations from the state
 export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
   state.apiManager.apiConfigs;
@@ -804,3 +800,9 @@ export const selectApiConfigs = (state: { apiManager: ApiManagerState }) =>
 export default useApiManagerSlice.reducer;
 
 export type { ApiManagerState };
+
+
+
+
+
+

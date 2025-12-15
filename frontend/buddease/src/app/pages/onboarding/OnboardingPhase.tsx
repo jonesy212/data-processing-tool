@@ -6,17 +6,14 @@ import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import CommonDetails, {
-    SupportedData,
-} from "@/app/models/CommonData";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { SupportedData } from "@/app/models/CommonData";
+import { CommonDetails } from '@/app/components/models/details/CommonDetails';
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
-import UserQuestionnaire from "@/app/personas/UserQuestionnaire";
+import UserQuestionnaire from "@/app/pages/personas/UserQuestionnaire";
 import { useAuth } from "@/app/state/context/AuthContext";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { UserData } from "@/app/users/User";
 import React, { useState } from "react";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
@@ -29,14 +26,62 @@ import RegistrationPhase from "./RegistrationPhase";
 const handleRegistrationSuccess = (userData: UserData) => { 
   // Handle registration success
   const { notify } = useNotification();
-  notify(
-    "handleRegistrationSuccess",
-    "Registration Success",
-    NOTIFICATION_MESSAGES.Registration.REGISTRATION_SUCCESS,
-    new Date,
-    NotificationTypeEnum.SUCCESS
-    );
-}
+  
+  notify({
+    id: `registration_success_${userData.id || Date.now()}`,
+    message: NOTIFICATION_MESSAGES.Registration.REGISTRATION_SUCCESS || "Registration successful",
+    data: {
+      entityType: 'user',
+      entityId: userData.id || 'new_user',
+      action: 'registration',
+      userData: {
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        // Add other relevant user data fields
+      },
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_SUCCESS,
+    level: 'success' as const,
+    metadata: {
+      registrationType: userData.registrationType || 'standard',
+      source: userData.source || 'web',
+      hasVerifiedEmail: userData.emailVerified || false,
+      requiresEmailVerification: userData.requiresEmailVerification || false
+    }
+  });
+  
+  // Optional: Additional actions after successful registration
+  if (userData.requiresEmailVerification) {
+    notify({
+      id: `registration_verification_needed_${Date.now()}`,
+      message: "Please check your email to verify your account",
+      data: {
+        entityType: 'user',
+        entityId: userData.id,
+        action: 'verification_required',
+        userEmail: userData.email
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.INFO,
+      level: 'info' as const,
+      action: {
+        label: "Resend Verification Email",
+        onClick: () => resendVerificationEmail(userData.email)
+      }
+    });
+  }
+};
+
+// Optional helper function
+const resendVerificationEmail = (email: string) => {
+  console.log(`Resending verification email to: ${email}`);
+  // Implement actual resend logic here
+  // await authService.resendVerificationEmail(email);
+};
+
 
 interface TempUserData extends Partial<UserData> {
   questionnaireResponses: { [key: string]: string };
@@ -135,27 +180,108 @@ const UserJourneyManager: React.FC = () => {
       // Transition to the next phase (OFFER)
       setCurrentPhase(OnboardingPhase.OFFER);
 
-      // Notify user of successful questionnaire submission
-      notify(
-        "questionnaireId",
-        "Your information has been successfully submitted",
-        NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
-        new Date(),
-        NotificationTypeEnum.OPERATION_SUCCESS
-      );
-    } catch (error) {
+      // Success notification using object format
+      const { notify } = useNotification();
+      notify({
+        id: `questionnaire_submit_success_${userData.id || 'anonymous'}_${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED || "Your information has been successfully submitted",
+        data: {
+          entityType: 'user',
+          entityId: userData.id || 'anonymous',
+          action: 'questionnaire_submit',
+          extra: {
+            userId: userData.id,
+            questionnaireResponses: userResponses,
+            responseCount: Object.keys(userResponses).length,
+            responseData: response.data,
+            timestamp: new Date().toISOString()
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const,
+        metadata: {
+          phase: 'onboarding',
+          step: 'questionnaire',
+          nextPhase: OnboardingPhase.OFFER,
+          hasResponses: Object.keys(userResponses).length > 0
+        }
+      });
+      
+    } catch (error: any) {
       // Handle any network or unexpected errors
       console.error("Error sending questionnaire responses:", error);
-      notify(
-        "",
-        "There was an error saving your submission, try again",
-        NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
-        new Date(),
-        NotificationTypeEnum.OPERATION_ERROR
-      );
+      
+      // Error notification using object format
+      const { notify } = useNotification();
+      const axiosError = error as AxiosError;
+      
+      let userMessage = "There was an error saving your submission, try again";
+      let errorType = "QUESTIONNAIRE_SUBMIT_ERROR";
+      
+      if (axiosError.response) {
+        switch (axiosError.response.status) {
+          case 400:
+            userMessage = "Invalid questionnaire data";
+            break;
+          case 401:
+            userMessage = "Authentication required to submit questionnaire";
+            break;
+          case 403:
+            userMessage = "You don't have permission to submit this questionnaire";
+            break;
+          case 409:
+            userMessage = "Questionnaire already submitted";
+            break;
+          case 422:
+            userMessage = "Questionnaire validation failed";
+            break;
+          case 500:
+            userMessage = "Server error while processing questionnaire";
+            break;
+        }
+      } else if (axiosError.request) {
+        userMessage = "Network error: Unable to submit questionnaire";
+        errorType = "QUESTIONNAIRE_NETWORK_ERROR";
+      }
+      
+      notify({
+        id: `questionnaire_submit_error_${userData.id || 'anonymous'}_${Date.now()}`,
+        message: userMessage,
+        data: {
+          entityType: 'user',
+          entityId: userData.id || 'anonymous',
+          action: 'questionnaire_submit',
+          originalError: axiosError.message,
+          extra: {
+            userId: userData.id,
+            questionnaireResponses: userResponses,
+            responseCount: Object.keys(userResponses).length,
+            statusCode: axiosError.response?.status,
+            errorType: errorType,
+            timestamp: new Date().toISOString()
+          },
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const,
+        metadata: {
+          phase: 'onboarding',
+          step: 'questionnaire',
+          isRetryable: true,
+          requiresUserAction: true
+        },
+        action: {
+          label: "Try Again",
+          onClick: () => handleQuestionnaireSubmit(userResponses)
+        }
+      });
     }
   };
 
+  
   const handleProfileSetup = (profileData: any) => {
     // Logic for handling profile setup data
     console.log("Profile setup data:", profileData);

@@ -2,8 +2,8 @@
 import { createPdfDocument } from '@/app/documents/DocumentCreationUtils';
 import React, { useState } from 'react';
 
+import DocumentFormattingOptionsComponent, { DocumentFormattingOptions } from '@/app/components/documents/DocumentFormattingOptionsComponent';
 import ResizablePanels from '@/app/hooks/userInterface/ResizablePanels';
-import DocumentFormattingOptionsComponent, { DocumentFormattingOptions } from '@/components/documents/DocumentFormattingOptionsComponent';
 
 const YourDocumentGeneratorComponent: React.FC = () => { 
   const [loading, setLoading] = useState(false);

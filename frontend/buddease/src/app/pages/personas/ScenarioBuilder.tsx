@@ -6,7 +6,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMe
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseDataRoot } from '@/app/config/BaseConfig'
 
-type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
+export type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
 
 // Define categories and their associated properties
 // Updated CategoryProperties with generics
@@ -489,7 +489,8 @@ if (category in dataVisualizationProperties) {
    throw new Error(`Invalid category: ${String(category)}`);
 }
 
-const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> => {
+
+export const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> => {
   // Define the threshold for idle timeout
   const IDLE_TIMEOUT_THRESHOLD = 3000; // 3 seconds
 

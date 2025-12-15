@@ -1,13 +1,13 @@
 // ApiTodo.ts
-// TodoApi.ts
 "use client";
+
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from "@/app/state/context/NotificationContext";
 import { Todo } from '@/app/todos/Todo';
 import { AxiosError } from 'axios';
@@ -50,22 +50,78 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
 // Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessageId: keyof TodoNotificationMessages
+  errorMessageId: keyof TodoNotificationMessages,
+  additionalData?: any
 ) => {
-  console.error("Error:", error);
-
-  const errorMessage = todoApiNotificationMessages[errorMessageId];
-  useNotification().notify(
-    errorMessageId,
-    errorMessage,
-    NOTIFICATION_MESSAGES.Todos.Error,
-    new Date(),
-    NotificationTypeEnum.ERROR
-  );
+  const { notify } = useNotification();
+  
+  // Get the error message text from the notification messages
+  const errorMessage = todoApiNotificationMessages[errorMessageId] || NOTIFICATION_MESSAGES.Todos.Error;
+  
+  // Create more detailed error message based on HTTP status
+  let userFriendlyMessage = errorMessage;
+  const axiosError = error as AxiosError;
+  
+  if (axiosError.response) {
+    switch (axiosError.response.status) {
+      case 400:
+        userFriendlyMessage = "Invalid todo data";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required for todo operations";
+        break;
+      case 403:
+        userFriendlyMessage = "You don't have permission to modify this todo";
+        break;
+      case 404:
+        userFriendlyMessage = "Todo not found";
+        break;
+      case 409:
+        userFriendlyMessage = "Todo conflict occurred";
+        break;
+      case 422:
+        userFriendlyMessage = "Todo validation failed";
+        break;
+      case 500:
+        userFriendlyMessage = "Server error while processing todo";
+        break;
+    }
+  } else if (axiosError.request) {
+    userFriendlyMessage = "Network error: Unable to connect to todo server";
+  }
+  
+  // Log the error for debugging
+  console.error("Todo API Error:", {
+    messageId: errorMessageId,
+    message: userFriendlyMessage,
+    originalError: axiosError.message,
+    statusCode: axiosError.response?.status,
+    additionalData
+  });
+  
+  // Show notification using consistent object format
+  notify({
+    id: `todo_error_${errorMessageId}_${Date.now()}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'todo',
+      entityId: additionalData?.todoId?.toString() || 'unknown',
+      action: additionalData?.action || errorMessageId.toLowerCase().replace('_error', ''),
+      originalError: axiosError.message,
+      statusCode: axiosError.response?.status,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      extra: additionalData || {},
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const
+  });
+  
+  // Re-throw the error
   throw error;
 };
-
-
 
 
 export const fetchTodos = async (): Promise<any> => {
@@ -129,7 +185,7 @@ export const addTodo = async <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(newTodo: Omit<Todo<T, K>, 'id'>): Promise<void> => {
+  IncludedFields extends keyof T = keyof T>(newTodo: Omit<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
   try {
     const addTodoEndpoint = `${API_BASE_URL}.add`;
     await axiosInstance.post(addTodoEndpoint, newTodo);
@@ -165,30 +221,47 @@ export const updateTodo = async <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(todoId: number, updatedFields: Partial<Todo<T,K>>): Promise<void> => {
+  IncludedFields extends keyof T = keyof T
+>(
+  todoId: number, 
+  updatedFields: Partial<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): Promise<void> => {
   try {
     const updateTodoEndpoint = `${API_BASE_URL}.update.${todoId}`;
-    await axiosInstance.put(updateTodoEndpoint, updatedFields);
+    const response = await axiosInstance.put(updateTodoEndpoint, updatedFields);
 
-    // Notify success
-    const successMessage = todoApiNotificationMessages.UPDATE_TODO_SUCCESS;
-    useNotification().notify(
-      'UPDATE_TODO_SUCCESS',
-      successMessage,
-      null,
-      new Date(),
-      NotificationTypeEnum.SUCCESS
-    );
+    // Success notification using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `todo_update_success_${todoId}_${Date.now()}`,
+      message: todoApiNotificationMessages.UPDATE_TODO_SUCCESS || "Todo updated successfully",
+      data: {
+        entityType: 'todo',
+        entityId: todoId.toString(),
+        action: 'update',
+        updatedFields: updatedFields,
+        responseData: response.data,
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const
+    });
+    
   } catch (error) {
     console.error('Error updating todo:', error);
     handleTodoApiErrorAndNotify(
       error as AxiosError<unknown>,
-      "UPDATE_TODO_ERROR"
+      "UPDATE_TODO_ERROR" as keyof TodoNotificationMessages,
+      { 
+        todoId, 
+        updatedFields, 
+        action: 'update' 
+      }
     );
     throw error;
   }
 };
-
 
 // Check todo completion
 export const checkTodoCompletion = async (todoId: string): Promise<void> => { 

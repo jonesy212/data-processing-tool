@@ -1,11 +1,9 @@
 // RootStores.ts
-import { globalCallbackRegistry } from './../../libraries/eventSystem/callbackRegistry';
-import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
+import { ApiManagerStore, useApiManagerStore } from '@/app/api/ApiStore';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { EventStore } from '@/app/events/EventStore';
 import useUIStore from '@/app/libraries/ui/useUIStore';
-import { RealTimeDataStore } from '@/app/models/realtime/RealTimeDataStore';
 import { CalendarActionPayload, CalendarActionType } from '@/app/server/database/CalendarActionPayload';
 import { AppStore } from '@/app/state/stores/AppStore';
 import { AuthorizationStore, useAuthorizationStore } from '@/app/state/stores/AuthorizationStore';
@@ -18,9 +16,10 @@ import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStor
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
 import NotificationStore from '@/app/state/stores/NotificationStore';
 import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
+import { globalCallbackRegistry } from './../../libraries/eventSystem/callbackRegistry';
 
-import {  SettingsStore } from '@/app/state/stores/SettingsStore';
 import { SettingManagerStore } from '@/app/state/hybrid/SettingManagerStore';
+import { SettingsStore } from '@/app/state/stores/SettingsStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from '@/app/state/stores/TodoStore';
@@ -93,7 +92,8 @@ export class RootStores<
 > {
 
   private callbackRegistry: CallbackRegistry;
-
+  aquaStore: AquaStore;
+  
   // Use definite assignment assertion
   browserCheckStore!: BrowserCheckStore;
   appStore!: AppStore;
@@ -140,7 +140,7 @@ export class RootStores<
       this.notificationStore,
       this.settingsStore  // Inject settings
     );
-
+    this.aquaStore = new AquaStore();
     // Keep your current variable names
     this.appManager = useAppStore(props);
     this.browserCheckStore = useCheckBrowser();

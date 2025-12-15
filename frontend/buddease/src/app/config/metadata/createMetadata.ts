@@ -4,7 +4,7 @@
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import SecureFieldManager from '@/app/server/security/SecureFieldManager';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";

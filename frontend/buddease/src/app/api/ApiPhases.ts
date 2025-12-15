@@ -2,10 +2,11 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
-
+import { logPhaseError } from '@/app/hooks/phaseHooks/CollaborationPhaseHooks'
 import axios, { AxiosError } from 'axios';
 
 // Base URL for your API
@@ -31,23 +32,81 @@ const apiNotificationMessages: PhaseNotificationMessages = {
   // Define other messages as necessary
 };
 
-const handleApiErrorAndNotify= (
+const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof PhaseNotificationMessages
+  errorMessageId: keyof PhaseNotificationMessages,
+  additionalData?: any
 ) => {
-  handleApiError(error, errorMessage);
-  if(errorMessageId) {
-    const errorMessageText = apiNotificationMessages[errorMessageId];
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      null,
-      new Date(),
-      "PhaseApiError" as NotificationType
-    );
+  const { notify } = useNotification();
+  
+  // Get the error message text from the notification messages
+  const errorMessageText = apiNotificationMessages[errorMessageId] || errorMessage;
+  
+  // Create more detailed error message based on HTTP status
+  let userFriendlyMessage = errorMessageText;
+  const axiosError = error as AxiosError;
+  
+  if (axiosError.response) {
+    switch (axiosError.response.status) {
+      case 400:
+        userFriendlyMessage = "Invalid phase data provided";
+        break;
+      case 401:
+        userFriendlyMessage = "Authentication required for phase operation";
+        break;
+      case 403:
+        userFriendlyMessage = "You don't have permission to perform this phase operation";
+        break;
+      case 404:
+        userFriendlyMessage = "Phase not found";
+        break;
+      case 409:
+        userFriendlyMessage = "Phase conflict occurred";
+        break;
+      case 422:
+        userFriendlyMessage = "Phase validation failed";
+        break;
+      case 500:
+        userFriendlyMessage = "Server error while processing phase";
+        break;
+    }
+  } else if (axiosError.request) {
+    userFriendlyMessage = "Network error: Unable to connect to phase server";
   }
-}
+  
+  // Show notification using consistent object format
+  notify({
+    id: `phase_error_${errorMessageId}_${Date.now()}`,
+    message: userFriendlyMessage,
+    data: {
+      entityType: 'phase',
+      entityId: additionalData?.phaseId || additionalData?.id || 'unknown',
+      action: additionalData?.action || errorMessageId.toLowerCase().replace('_error', ''),
+      originalError: axiosError.message,
+      statusCode: axiosError.response?.status,
+      url: axiosError.config?.url,
+      method: axiosError.config?.method,
+      extra: additionalData || {},
+      timestamp: new Date().toISOString()
+    },
+    timestamp: new Date(),
+    type: NotificationTypeEnum.OPERATION_ERROR,
+    level: 'error' as const
+  });
+  
+  // Call the original error handler with the enhanced message
+  handleApiError(error, userFriendlyMessage);
+  
+  // Optional: Log to analytics or monitoring service
+  logPhaseError({
+    errorMessageId,
+    error: axiosError,
+    userMessage: userFriendlyMessage,
+    additionalData
+  });
+};
+
 
 // Function to handle Axios errors and notify
 const handlePhaseApiError = (

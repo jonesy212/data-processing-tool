@@ -1,11 +1,18 @@
 // route.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define the event data type that matches your frontend
 
-interface AppendDataRequest {
-  event: CalendarEvent;
+interface AppendDataRequest<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> {
+  event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Add other fields if needed
   snapshotId?: string;
   userId?: string;

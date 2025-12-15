@@ -1,22 +1,22 @@
 // SnapshotConfigBuilder.ts
 
-import { EventStore } from "@/app/events/EventStore";
-import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { EventStore } from "@/app/events/EventStore";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import baseMeta from "@/app/server/database/baseMeta";
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotEvents } from '@/app/typings/eventHandlers/eventTypes';
 import { ExcludedFields } from "../components/routing/Fields";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { Attachment } from "../documents/attachment/Attachment";
 import { K, Meta, T } from "../models/data/dataStoreMethods";
 import { StoreMethods } from "../models/tasks/StoreMethods";
 import { criteria } from "../pages/searches/FilterCriteria";
 import { initialState } from "../state/redux/slices/FilteredEventsSlice";
 import { SnapshotMeta } from "../typings/entities/SnapshotEntity";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
 import { generateId } from "./SnapshotIdentity";
 import { InitializedData, SnapshotInstanceProps } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
@@ -91,21 +91,21 @@ export interface SnapshotConfigBuilder<
   getIncluded(): IncludedFields[];
 //   build(): any; 
   // Core
-  buildBaseConfig(): Promise<SnapshotConfig<T, K, Meta, ExcludedFields>>;
-  buildStoreMethods(): Promise<StoreMethods<T, K, Meta, ExcludedFields>>;
-  buildEventHandlers(): Promise<EventHandlers<T, K, Meta, ExcludedFields>>;
-  buildSnapshotStore(): Promise<EventStore<T, K, Meta, ExcludedFields>>;
-  buildSnapshotUnion(data: T, related?: K[]): Promise<SnapshotUnion<T, K, Meta, ExcludedFields>>;
-  buildLifecycle(): Promise<SnapshotLifecycle<T, K, Meta, ExcludedFields>>;
-  buildMeta(): Promise<SnapshotMeta<T, K, Meta, ExcludedFields>>;
+  buildBaseConfig(): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildStoreMethods(): Promise<StoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildEventHandlers(): Promise<EventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildSnapshotStore(): Promise<EventStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildSnapshotUnion(data: T, related?: K[]): Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildLifecycle(): Promise<SnapshotLifecycle<T>>;
+  buildMeta(): Promise<SnapshotMeta>;
 
   // Extended
-  buildStoreConfig(): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>>;
-  buildSnapshotEvents(): Promise<SnapshotEvents<T, K, Meta, ExcludedFields>>;
-  buildContainer(): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>;
-  buildSubscribers(): Promise<SnapshotSubscriberManagement<T, K, Meta, ExcludedFields>>;
-  buildWithCriteria(): Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields>>;
-  buildManager(): Promise<SnapshotManager<T, K, Meta, ExcludedFields>>;
+  buildStoreConfig(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildSnapshotEvents(): Promise<SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildContainer(): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildSubscribers(): Promise<SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildWithCriteria(): Promise<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  buildManager(): Promise<SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 
@@ -117,31 +117,31 @@ const builder: SnapshotConfigBuilder<SnapshotConfigParams> = {
   buildBaseConfig: async (params) => ({
 
     deleted, initialConfig, onInitialize, taskIdToAssign,
+    latestVersion, schema, currentCategory, mappedSnapshotData,
 
 
+    id: generateId?.('prefix', 'name', NotificationTypeEnum.Default) || 'default-id',
+    description: 'Snapshot description',
+    category: currentCategory,
+    metadata: unifiedMetadata, // Optional
+    meta: structuredMetadata, // Optional
+    mappedSnapshot: new Map(),
+    mappedMeta: new Map(),
+    snapshotCriteria: undefined,
+    criteria: criteria || 'default-criteria',
+    priority: priority || 'normal',
+    data: baseData as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    subscribers: [],
+    storeConfig: snapshotStoreConfig,
+    initialState: initialState || {},
+    isCore: true,
+    additionalData: additionalData,
+    hasSnapshots: async () => false, // Provide a default implementation
 
-        id: generateId?.('prefix', 'name', NotificationTypeEnum.Default) || 'default-id',
-      description: 'Snapshot description',
-      category: currentCategory,
-      metadata: unifiedMetadata, // Optional
-      meta: structuredMetadata, // Optional
-      mappedSnapshot: new Map(),
-      mappedMeta: new Map(),
-      snapshotCriteria: undefined,
-      criteria: criteria || 'default-criteria',
-      priority: priority || 'normal',
-      data: baseData as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscribers: [],
-      storeConfig: snapshotStoreConfig,
-      initialState: initialState || {},
-      isCore: true,
-      additionalData: additionalData,
-      hasSnapshots: async () => false, // Provide a default implementation
-
-      // If you need, include baseData / baseMeta props as well
-      baseData,
-      baseMeta,
-      props: storeProps!,
+    // If you need, include baseData / baseMeta props as well
+    baseData,
+    baseMeta,
+    props: storeProps!,
   }),
   buildStoreMethods: async () => ({} as any),
   buildEventHandlers: async () => ({} as any),

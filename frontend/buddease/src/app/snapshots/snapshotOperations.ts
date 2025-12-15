@@ -31,12 +31,12 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import {
-    SnapshotAttachment,
-    SnapshotEntity,
-    SnapshotExcludedFields,
-    SnapshotIncludedFields,
-    SnapshotK,
-    SnapshotMeta
+  SnapshotAttachment,
+  SnapshotEntity,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields,
+  SnapshotK,
+  SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
@@ -1097,9 +1097,9 @@ const configureSnapshot = <
 
 
 export {
-    clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
-    takeSnapshot, updateSnapshot, validateSnapshot
+  clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
+  getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+  takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };
 

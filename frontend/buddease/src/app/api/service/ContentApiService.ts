@@ -1,15 +1,15 @@
 // ContentApiService.ts
 // app/api/contentApiService.ts
 import internalApiService from '@/app/api/ApiClient';
-import { 
-  ContentResponseType, 
+import {
+  ContentResponseType,
   ContentListResponseType,
   ContentCreateRequest,
   ContentUpdateRequest,
   ContentSearchParams,
   ContentBulkOperationResponse
-} from './types';
-import { AxiosResponse } from 'axios';
+} from '@/app/models/content/fetchContent';
+
 
 export interface ContentFilterParams {
   contentType?: string;
@@ -76,7 +76,7 @@ export class ContentApiService {
     try {
       const response = await internalApiService.get<ContentListResponseType>(
         this.basePath,
-        { params }
+        { config: { params } } 
       );
       return response.data;
     } catch (error) {
@@ -88,6 +88,7 @@ export class ContentApiService {
       };
     }
   }
+
 
   /**
    * Create new content
@@ -274,7 +275,9 @@ export class ContentApiService {
         `${this.basePath}/export`,
         exportParams,
         {
-          responseType: 'blob'
+          config: {
+            responseType: 'blob'
+          }
         }
       );
       return response.data;
@@ -299,8 +302,8 @@ export class ContentApiService {
         `${this.basePath}/import`,
         formData,
         {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+          config: {
+            headers: { 'Content-Type': 'multipart/form-data' }
           }
         }
       );

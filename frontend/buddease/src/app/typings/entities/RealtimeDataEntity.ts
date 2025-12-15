@@ -1,7 +1,7 @@
 // RealtimeDataEntity.ts
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
-import { RealtimeDataItem, RealtimeData } from '@/app/typings/realtimeTypes';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { RealtimeData, RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 export interface RealtimeDataEntity extends BaseDataEntity {
   // Core realtime data properties

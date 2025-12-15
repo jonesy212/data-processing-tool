@@ -1,7 +1,9 @@
 // ProjectSlice.ts
+import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { Team } from "@/app/components/teams/Team";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/members/Member";
 import { Project } from '@/app/models/projects/Project';
@@ -11,6 +13,7 @@ import { JobRole } from '@/app/models/UserRoles';
 import { Product } from "@/app/products/Product";
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
+import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import Milestone, {
   ProductMilestone,
@@ -28,14 +31,10 @@ import {
   ProjectManagerMeta
 } from '@/app/typings/entities/ProjectManagerEntity';
 import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/typings/entities/TaskEntity';
+import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
 import { useDispatch } from "react-redux";
-
-import { Meeting } from "@/app/components/communications/scheduler/Meeting";
-import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
-import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
-import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 
 interface ProjectState<
   T extends BaseDataEntity = BaseDataRoot,

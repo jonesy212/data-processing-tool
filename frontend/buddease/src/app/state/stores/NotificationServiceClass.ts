@@ -2,6 +2,7 @@
 import { NotificationTypeEnum, UnifiedNotificationOptions } from '@/app/features/support/UnifiedNotificationTypes'
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
 import { NotificationPosition } from '@/app/models/data/StatusType';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 
 class NotificationServiceClass {
   private generateId(): string {

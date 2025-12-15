@@ -10,9 +10,9 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { VersionData } from '@/app/versions/VersionData';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
+import { VersionData } from '@/app/versions/VersionData';
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 
@@ -35,6 +35,10 @@ interface ClientNotificationMessages {
   // Existing messages
   [key: string]: string;
 
+  GENERIC_POST_ERROR: string;
+  GENERIC_PUT_ERROR: string;
+  GENERIC_DELETE_ERROR: string;
+  
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
@@ -164,8 +168,19 @@ const getNotificationMessage = (key: keyof ClientNotificationMessages): string =
   return fallbackMessages[key] || `${key} message not configured`;
 };
 
-const clientNotificationMessages: ClientNotificationMessages = {
-  // Existing client messages
+const clientNotificationMessages: ClientNotificationMessages & {
+  GENERIC_POST_ERROR: string;
+  GENERIC_PUT_ERROR: string;
+  GENERIC_DELETE_ERROR: string;
+} = {
+
+  // Generic messages:
+  GENERIC_GET_ERROR: "GENERIC_GET_ERROR" as const,
+  GENERIC_POST_ERROR: "GENERIC_POST_ERROR" as const,
+  GENERIC_PUT_ERROR: "GENERIC_PUT_ERROR" as const,
+  GENERIC_DELETE_ERROR: "GENERIC_DELETE_ERROR" as const,
+  
+  // client messages
   FETCH_CLIENT_DETAILS_SUCCESS: getNotificationMessage('FETCH_CLIENT_DETAILS_SUCCESS'),
   FETCH_CLIENT_DETAILS_ERROR: getNotificationMessage('FETCH_CLIENT_DETAILS_ERROR'),
   UPDATE_CLIENT_DETAILS_SUCCESS: getNotificationMessage('UPDATE_CLIENT_DETAILS_SUCCESS'),
@@ -264,7 +279,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
   private async requestHandler(
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
-    successMessageId: keyof TMessages,
+    successMessageId: keyof TMessages | undefined, 
     errorMessageId: keyof TMessages,
     notificationData: any = null
   ): Promise<AxiosResponse> {
@@ -300,14 +315,23 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     );
   }
 
-
   async post<T = any>(
     url: string,
     data?: any,
     options: ApiRequestOptions<TMessages> = {}
   ): Promise<AxiosResponse<T>> {
+
+    // Auto-set headers for FormData
+    const config: AxiosRequestConfig = {
+      ...options.config,
+      headers: {
+        ...(options.config?.headers || {}),
+        ...(data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}),
+      },
+    };
+
     return this.requestHandler(
-      () => axiosInstance.post<T>(url, data, options.config),
+      () => axiosInstance.post<T>(url, data, config),
       "POST request failed",
       options.successMessageId,
       options.errorMessageId || this.defaultErrorKeys.GENERIC_POST_ERROR as keyof TMessages,
@@ -362,7 +386,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
     return await this.requestHandler(
       () => axiosInstance.get(
         `${API_BASE_URL}/clients/${clientId}`,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to fetch client details", // For handleApiError logging
       "FETCH_CLIENT_DETAILS_SUCCESS" as keyof TMessages, // Success notification key
@@ -379,7 +403,7 @@ export class ClientApiService<TMessages extends Record<string, string>> {
       () => axiosInstance.put(
         `${API_BASE_URL}/clients/${clientId}`,
         updatedDetails,
-        { headers: headersConfig }
+        { config: { headers: headersConfig } }
       ),
       "Failed to update client details",
       "UPDATE_CLIENT_DETAILS_SUCCESS" as keyof TMessages,

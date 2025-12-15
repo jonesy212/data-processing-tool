@@ -1,16 +1,16 @@
 // ChatApi.ts
-import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
-import { uiStore } from '@/app/state/stores/UIStore';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { ChatRoom } from '@/app/communications/ChatRoom'
+import { ChatRoom } from '@/app/communications/ChatRoom';
 import ChatMessage from "@/app/components/communications/chat/ChatMessage";
 import Group from "@/app/components/communications/chat/Group";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
+import { uiStore } from '@/app/state/stores/UIStore';
 import { User } from "@/app/users/User";
 import { AxiosResponse } from "axios";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface AudioOptions {
   microphone?: boolean;

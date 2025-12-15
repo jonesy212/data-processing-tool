@@ -1,20 +1,28 @@
 // newStoreUtils.ts
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
+import { snapshotApi } from '@/app/api/SnapshotApi';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { CreateSnapshotStoresPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
 import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { snapshot, Snapshot } from "@/app/snapshots/Snapshot";
+import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { subscribeToSnapshot, subscribeToSnapshots } from "@/app/snapshots/snapshotHandlers";
+import SnapshotManagerOptions from "@/app/snapshots/SnapshotManagerOptions";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { EventRecord } from '@/app/state/stores/DataStore';
-import { ExcludedFields } from '@/routing/Fields';
-import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
-import SnapshotManagerOptions from "./SnapshotManagerOptions";
-import SnapshotStore from "./SnapshotStore";
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
 
-const snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = {/* your snapshot configuration logic here */}
+const snapConfig: SnapshotConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | undefined = {/* your snapshot configuration logic here */}
 
 export const createSnapshotStores = async <
   T extends BaseDataEntity,
@@ -120,7 +128,7 @@ export const createSnapshotStores = async <
                     description: 'Mock Description',
                     timestamp: new Date(),
                     category: 'mock-category'
-                  } as T,
+                  } as BaseDataRoot,
                   meta: new Map() as Meta,
                   events: {
                     eventRecords: new Map()
@@ -138,10 +146,10 @@ export const createSnapshotStores = async <
             // Return the snapshots array
             return mockSnapshots;
           },
-          subscribeToSnapshot: async () => {},
           delegate: [],
-          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           getDelegate: async () => [],
+          subscribeToSnapshot: async () => {},
+          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
             return {} as DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           },
@@ -157,7 +165,7 @@ export const createSnapshotStores = async <
             description: "Mock Description",
             timestamp: new Date(),
             category: "Mock Category"
-          } as T,
+          } as BaseDataRoot,
           createdAt: new Date(),
           updatedAt: new Date()
         }),
@@ -168,7 +176,7 @@ export const createSnapshotStores = async <
             id: `mock-${Date.now()}`,
             createdAt: new Date(),
             updatedAt: new Date()
-          } as T,
+          } as BaseDataRoot,
           createdAt: new Date(),
           updatedAt: new Date()
         }),
@@ -178,7 +186,7 @@ export const createSnapshotStores = async <
             ...data,
             id,
             updatedAt: new Date()
-          } as T,
+          } as BaseDataRoot,
           createdAt: new Date(),
           updatedAt: new Date()
         }),
@@ -191,21 +199,37 @@ export const createSnapshotStores = async <
             description: "Description 1",
             timestamp: new Date(),
             category: "Category 1"
-          } as T,
+          } as BaseDataRoot,
           createdAt: new Date(),
           updatedAt: new Date()
         }]
       }),
     }).get()
   : {
-      // ... rest of your alternative configuration
+      eventRecords: {},
+      category: '',
+      date: new Date(),
+      type: '',
+      data: new Map<string, Snapshot<T, K>>(),
+      initialState: null,
+      snapshotId: '',
+      snapshotConfig: [],
+      subscribeToSnapshots: subscribeToSnapshots,
+      subscribeToSnapshot: subscribeToSnapshot,
+      delegate: [],
+      dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
+      getDelegate: [],
+      getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
+        throw new Error('Function not implemented.');
+      },
+      snapshotMethods: [],
     };
 
   const operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     operationType: SnapshotOperationType.FindSnapshot,
   };
 
-  const newStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(storeId, options, category, config, operation);
+  const newStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({storeId, name, version, schema, options, category, config, operation,snapshots, expirationDate, payload, callback, storeProps, endpointCategory});
   callback([newStore]);
   // Simulate a delay before receiving the update
   setTimeout(() => {
@@ -230,7 +254,7 @@ const config: SnapshotStoreConfig<SnapshotWithCriteria<Data, any>, any> = snapsh
 const snapshotStoreDataConfig = snapshotApi.getSnapshotStoreConfigData(Number(snapshotId), snapshotContainer, criteria, storeId, config)
 // Correctly handle the snapshotManager instance
 const data = await snapshotApi.getSnapshotData(snapshotContainer, snapshot, criteria, storeId, config)
-const snapshotManagerResponse = await useSnapshotManager(storeId);
+const snapshotManagerResponse = await useSnapshotManager(storeId, storeProps);
 const options = snapshotManagerResponse && snapshotManagerResponse.snapshotManager
   ? snapshotManagerResponse.snapshotManager.getData(data)
   : {

@@ -1,8 +1,8 @@
 // ChatRoom.ts
-import ChatMessage from '@/app/components/communications/chat/ChatMessage'
-import { User } from '@/app/users/User'
+import ChatMessage from '@/app/components/communications/chat/ChatMessage';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { User } from '@/app/users/User';
 
 export interface ChatRoom<
   T extends BaseDataEntity = BaseDataEntity,

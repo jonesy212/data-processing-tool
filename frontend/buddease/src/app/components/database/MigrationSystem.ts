@@ -1,22 +1,17 @@
 // DatabaseMigrationDefinition.ts
 
-import { 
-  MigrationDefinition, 
-  MigrationContext, 
-  MigrationType, 
-  MigrationStatus,
-  RelationshipDefinition,
-  Constraint,
-  SchemaEvolutionManager
-} from './SchemaEvolutionManager';
-import { MigrationEvent } from '@/app/components/database/SchemaEvolutionManager'
+import { MigrationEvent } from '@/app/components/database/SchemaEvolutionManager';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { DatabaseType } from '@/app/typings/database';
-
+import {
+    MigrationContext,
+    MigrationDefinition
+} from './SchemaEvolutionManager';
 // Add Database-specific migration types
 export interface DatabaseMigrationDefinition<T, K, Meta> extends MigrationDefinition<T, K, Meta> {
   sourceType: DatabaseType;
   targetType: DatabaseType;
-  
+  typeMappings: Record<string, string>
   // Database-specific properties
   batchSize?: number;
   skipValidation?: boolean;

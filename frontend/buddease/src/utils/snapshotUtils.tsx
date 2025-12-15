@@ -1,23 +1,28 @@
 // snapshotUtils.tsx
-import * as snapshotApi from '@/app/api/SnapshotApi';
+import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
+import { snapshotApi } from '@/app/api/SnapshotApi';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ModifiedDate } from "@/app/documents/DocType";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ModifiedDate } from "@/app/documents/DocType";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
+import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots';
+import { createSnapshotStoreOptions } from "@/app/snapshots/createSnapshotStoreOptions";
 import {
-    Snapshots,
-    SnapshotsArray,
-    SnapshotStoreObject,
-    SnapshotUnion,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotStoreObject,
+  SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
@@ -25,12 +30,32 @@ import { useNotification } from '@/app/state/context/NotificationContext';
 import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
+import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { IHydrateResult } from "mobx-persist";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
+
+const isSnapshotUnionBaseData = (
+  value: any
+): value is SnapshotUnion<BaseData> => {
+  return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
+};
+
+// Type guard to check if a value is a Snapshot<BaseData, any>
+const isSnapshotBaseData = (value: any): value is Snapshot<BaseData, any> => {
+  return (
+    value &&
+    typeof value.data !== "undefined" && // Check if the snapshot has `data`
+    typeof value.snapshot === "function" && // Ensures the presence of the `snapshot` method
+    typeof value.setCategory === "function" && // Ensures the presence of `setCategory`
+    typeof value.getSnapshotData === "function" // Ensures the presence of `getSnapshotData`
+  );
+};
+
+
 
 function isSnapshotConfig<
   T extends BaseDataEntity,
@@ -71,32 +96,153 @@ const isSnapshotStoreCoreData = <
 };
 
 // Type guard function to check if a value is a SnapshotUnion<BaseData, Meta>
-const isSnapshotUnionBaseData = <  T extends BaseDataEntity,
+// Type guard to check if a value is SnapshotData (not Snapshot or SnapshotWithCriteria)
+function isSnapshotData<
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  value: any
-): value is SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
-  return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
-};
+  data: any
+): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
 
-// Type guard to check if a value is a Snapshot<BaseData, any>
-const isSnapshotBaseData = (value: any): value is Snapshot<BaseData, any> => {
-  return (
-    value &&
-    typeof value.data !== "undefined" && // Check if the snapshot has `data`
-    typeof value.snapshot === "function" && // Ensures the presence of the `snapshot` method
-    typeof value.setCategory === "function" && // Ensures the presence of `setCategory`
-    typeof value.getSnapshotData === "function" // Ensures the presence of `getSnapshotData`
-  );
-};
+  // Check if it's NOT a Snapshot or SnapshotWithCriteria first
+  // This helps narrow down to specifically SnapshotData
+  const isSnapshot = 'id' in data && 'baseData' in data && 'baseMeta' in data;
+  const isSnapshotWithCriteria = 'criteria' in data && 'snapshots' in data;
+  
+  if (isSnapshot || isSnapshotWithCriteria) {
+    return false; // It's either Snapshot or SnapshotWithCriteria, not SnapshotData
+  }
 
+  // Check for SnapshotData required methods (from both original functions)
+  const hasRequiredMethods = 
+    typeof data.validate === 'function' &&
+    typeof data.serialize === 'function' &&
+    typeof data.get === 'function' &&
+    typeof data.set === 'function';
+
+  // Check for SnapshotData required properties (from both original functions)
+  const hasRequiredProperties = 
+    'storeId' in data &&
+    'config' in data &&
+    'timestamp' in data &&
+    'core' in data; // Added from the second type guard
+
+  // Additional validation to ensure it's specifically SnapshotData
+  const isSnapshotDataSpecific = 
+    hasRequiredMethods && 
+    hasRequiredProperties &&
+    !('baseData' in data) && // Not Snapshot
+    !('criteria' in data);   // Not SnapshotWithCriteria
+
+  return isSnapshotDataSpecific;
+}
+
+export const getAllSnapshots = async <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+  try {
+    const snapshotPromises = snapshotConfig.snapshots.map(
+      async (snapshotUnion: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+        // Check if it's SnapshotData
+        if (isSnapshotData(snapshotUnion)) {
+          const snapshotData = snapshotUnion;
+          
+          // Safely cast the category from the command line argument
+          const categoryArg = process.argv[3];
+          // Ensure that the category is a valid key of `CategoryKeys`
+          const category = categoryArg as keyof typeof allCategories;
+          
+          // get current snapshotStoreState from snapshotConfig
+          const snapshotStoreState = snapshotConfig.snapshots.find(
+            (value) => 'snapshotId' in value && value.snapshotId === snapshotData.snapshotId
+          );
+          
+          const initialState = snapshotStoreState && 'data' in snapshotStoreState 
+            ? snapshotStoreState.data 
+            : null;
+          
+          // Access name, version, and schema from snapshotData
+          const { name, version, schema } = snapshotData;
+
+          const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+            initialState,
+            snapshotId: snapshotData.snapshotId,
+            category: category as unknown as Category,
+            categoryProperties: snapshotData.categoryProperties,
+            dataStoreMethods: {
+              // Provide appropriate dataStoreMethods
+            },
+          });
+
+          const categoryProperties = getCategoryProperties(category);
+          const snapshotId = snapshotData.snapshotId;
+          const storeId = await snapshotApi.getSnapshotStoreId(String(snapshotId));
+          
+          // Wrap config in a Promise to match the interface
+          const config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> = 
+            Promise.resolve(snapshotConfig);
+
+          const operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+            operationType: SnapshotOperationType.FindSnapshot
+          };
+
+          if (!name) {
+            // Handle missing name
+            throw new Error(`Snapshot ${snapshotId} is missing name property`);
+          }
+          
+          const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+            storeId, 
+            name, 
+            version, 
+            schema, 
+            category, 
+            options, 
+            config, // Now properly typed as a Promise
+            operation
+          });
+
+          return snapshotStore;
+        } else {
+          // Handle Snapshot or SnapshotWithCriteria types
+          // Explicitly convert category to string if it exists
+          const categoryString = snapshotUnion.category 
+            ? String(snapshotUnion.category) 
+            : 'unknown';
+          
+          console.warn(`Skipping non-SnapshotData type: ${categoryString}`);
+          
+          // Return null or throw based on your needs
+          throw new Error(`Expected SnapshotData but got ${categoryString}`);
+        }
+      }
+    );
+
+    // Filter out null values if needed
+    const results = await Promise.all(snapshotPromises);
+    return results.filter(Boolean) as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  } catch (error) {
+    console.error('Error in getAllSnapshots:', error);
+    throw error;
+  }
+};
 
 // Implement the logic to verify SnapshotWithCriteriaBaseData
-const isSnapshotWithCriteriaBaseData = <  T extends BaseDataEntity,
+const isSnapshotWithCriteriaBaseData = <T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -108,6 +254,10 @@ const isSnapshotWithCriteriaBaseData = <  T extends BaseDataEntity,
   // Implement checks for properties that are specific to SnapshotWithCriteria<BaseData, BaseData>
   return (
     value &&
+    typeof value.data !== "undefined" && // Check if the snapshot has `data`
+    typeof value.criteria !== "undefined" && // Check for the `criteria` property
+    typeof value.matchCriteria === "function" && // Ensures `matchCriteria` exists
+    typeof value.getSnapshotCategory === "function" && // Ensures the presence of `getSnapshotCategory`
     typeof value.snapshot === "function" &&
     typeof value.setCategory === "function" &&
     value.hasOwnProperty("criteria")
@@ -150,7 +300,7 @@ function convertToSnapshotWithCriteria<
     const criteriaSnapshot: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       ...snapshot,
       // Public methods from SnapshotStore
-      get: snapshotStore?.get.bind(snapshotStore),
+      get: snapshotStore?.getSnapshot.bind(snapshotStore),
       initializeOptions: snapshotStore?.initializeOptions.bind(snapshotStore),
       setConfig: snapshotStore?.setConfig.bind(snapshotStore),
       autoSyncData: snapshotStore?.autoSyncData.bind(snapshotStore),
@@ -166,9 +316,9 @@ function convertToSnapshotWithCriteria<
       defaultSaveSnapshotStore: snapshotStore?.defaultSaveSnapshotStore.bind(snapshotStore),
       saveSnapshotStore: snapshotStore?.saveSnapshotStore.bind(snapshotStore),
       consolidateMetadata: snapshotStore?.consolidateMetadata.bind(snapshotStore),
-      getFirstDelegate: snapshotStore?.getFirstDelegate.bind(snapshotStore),
+      getFirstDelegate: snapshotStore?.getInitialDelegate.bind(snapshotStore),
       getInitialDelegate: snapshotStore?.getInitialDelegate.bind(snapshotStore),
-      transformInitialState: snapshotStore?.transformInitialState.bind(snapshotStore),
+      transformInitialState: snapshotStore?.getTransformedInitialState.bind(snapshotStore),
       transformSnapshot: snapshotStore?.transformSnapshot.bind(snapshotStore),
       transformSnapshotStore: snapshotStore?.transformSnapshotStore.bind(snapshotStore),
       transformSnapshotMethod: snapshotStore?.transformSnapshotMethod.bind(snapshotStore),
@@ -205,7 +355,7 @@ function convertToSnapshotWithCriteria<
         type: string,
         event: SnapshotEvents<T, K>,
         snapshotContainer?: T,
-        snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null
+        snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
       ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
         try {
           // Validate required parameters
@@ -369,8 +519,6 @@ function convertToSnapshotWithCriteria<
           throw error; // Re-throw for upstream handling
         }
       },
-      
-      
     };
 
     return criteriaSnapshot;
@@ -414,7 +562,7 @@ function isSnapshotWithCriteria <
   IncludedFields extends keyof T = keyof T
 >(
   data: any
-): data is SnapshotWithCriteria<T, BaseData> {
+): data is SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
     data &&
     typeof data === "object" &&
@@ -434,7 +582,7 @@ function isSnapshotStoreConfig<
   IncludedFields extends keyof T = keyof T
 >(
   item: any
-): item is SnapshotStoreConfig<T, K>[] {
+): item is SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
   return (
     Array.isArray(item) &&
     item.every(
@@ -562,37 +710,69 @@ export const getSnapshotsBySubscriber = async <
 };
 
 
-export const addSnapshotHandler = (
-  snapshot: Snapshot<Data, Data>,
-  subscribers: (snapshot: Snapshot<Data, Data>) => void,
-  delegate: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, BaseData>[]
+export const addSnapshotHandler = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  subscribers: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+  delegate: SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    T, 
+    K, 
+    Meta, 
+    AttachmentType, 
+    ExcludedFields, 
+    IncludedFields
+  >[]
 ) => {
   if (delegate && delegate.length > 0) {
     delegate.forEach((config) => {
       if (typeof config.setSnapshots === "function") {
-        const currentSnapshots: SnapshotUnion<
-          SnapshotWithCriteria<any, BaseData>
-        >[] = config.snapshots
+        // Get current snapshots with proper type guard
+        const currentSnapshots: SnapshotWithCriteria<
+          T, 
+          K, 
+          Meta, 
+          AttachmentType, 
+          ExcludedFields, 
+          IncludedFields
+        >[] = config.snapshots && Array.isArray(config.snapshots)
           ? config.snapshots.filter(isSnapshotStoreCoreData)
           : [];
 
-        if (isSnapshotStoreCoreData(snapshot)) {
-          // Ensure that the snapshot is of the correct type before adding
-          const convertedSnapshot = convertToSnapshotWithCriteria(snapshot);
-          if (convertedSnapshot) {
-            config.setSnapshots([...currentSnapshots, convertedSnapshot]);
-          } else {
-            console.error(
-              "Failed to convert snapshot to SnapshotWithCriteria",
-              snapshot
-            );
+        // Check if snapshot is valid using your type guard
+        if (isSnapshot(snapshot)) {
+          try {
+            // Convert to SnapshotWithCriteria using a type-safe converter
+            const convertedSnapshot = convertToSnapshotWithCriteria(snapshot);
+            
+            if (convertedSnapshot) {
+              // Update snapshots array
+              config.setSnapshots([...currentSnapshots, convertedSnapshot]);
+              
+              // Notify subscribers
+              subscribers(snapshot);
+            } else {
+              console.error(
+                "Failed to convert snapshot to SnapshotWithCriteria",
+                snapshot
+              );
+            }
+          } catch (error) {
+            console.error("Error converting snapshot:", error);
           }
         } else {
           console.error(
-            "Snapshot is not of type SnapshotStore<BaseData>",
+            "Snapshot is not valid type",
             snapshot
           );
         }
+      } else {
+        console.warn("Config does not have setSnapshots function", config);
       }
     });
   } else {
@@ -674,32 +854,58 @@ function isSnapshot<
   return hasCorrectDataStructure && hasCommonProperties && hasMethods;
 }
 
-function isSnapshotData<
+function isSnapshotDataUniversal<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(data: any): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  if (!data || typeof data !== 'object') {
+>(
+  value: any
+): value is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // Basic validation
+  if (!value || typeof value !== 'object') {
     return false;
   }
-  // Check required methods
-  const hasRequiredMethods = 
-    typeof data.validate === 'function' &&
-    typeof data.serialize === 'function' &&
-    typeof data.get === 'function' &&
-    typeof data.set === 'function';
 
-  // Check required properties
-  const hasRequiredProperties = 
-    'storeId' in data &&
-    'config' in data &&
-    'timestamp' in data;
+  // SnapshotData specific checks
+  const isSnapshotDataCandidate = 
+    typeof value.validate === 'function' &&
+    typeof value.serialize === 'function' &&
+    typeof value.get === 'function' &&
+    typeof value.set === 'function' &&
+    'storeId' in value &&
+    'config' in value &&
+    'timestamp' in value &&
+    'core' in value;
 
-  return hasRequiredMethods && hasRequiredProperties;
+  // Ensure it's not Snapshot or SnapshotWithCriteria
+  const isNotSnapshot = !('baseData' in value);
+  const isNotSnapshotWithCriteria = !('criteria' in value);
+
+  return isSnapshotDataCandidate && isNotSnapshot && isNotSnapshotWithCriteria;
 }
+
+// Usage examples:
+const data: any = getData();
+
+if (isSnapshotDataUniversal(data)) {
+  // TypeScript now knows this is SnapshotData
+  data.validate(); // OK
+  data.serialize(); // OK
+  console.log(data.storeId); // OK
+}
+
+// For SnapshotUnion specifically:
+const unionValue: SnapshotUnion<any, any, any, any, any, any> = getUnionValue();
+
+if (isSnapshotDataUniversal(unionValue)) {
+  // TypeScript narrows to SnapshotData
+  unionValue.get('someKey'); // OK
+}
+
+
 
 const isArrayOfTypeT = <T extends  BaseDataEntity>(array: any[]): array is T[] => {
   return array.every(item => {
@@ -768,31 +974,48 @@ const defaultCategory: Category = {
   name: 'Default Category',
   description: 'Default category description',
   type: 'default',
-  properties: {}
+  properties: {} as CategoryProperties<BaseDataRoot, BaseDataRoot>
 };
 
-const defaultSnapshotConfig: SnapshotConfig<any, any> = {
+const defaultSnapshotConfig: SnapshotConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
   storeConfig: {
     storeId: 'default-store',
     name: 'Default Store',
     version: '1.0.0'
   },
-  additionalData: {},
+  additionalData: {} as CustomSnapshotData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   autoSync: true,
   validationRules: []
 };
 
-const defaultSnapshotEvent: SnapshotEvent<any, any> = {
+const defaultSnapshotEvent: SnapshotEvent<
+  SnapshotEntity,
+  SnapshotK,
+  SnapshotMeta,
+  SnapshotAttachment,
+  SnapshotExcludedFields,
+  SnapshotIncludedFields
+> = {
   type: 'snapshotCreated',
-  metadata: { timestamp: new Date().toISOString() }
+  snapshot: defaultSnapshotValue,
+  context: {} as EventContext<
+    SnapshotEntity,
+    SnapshotK,
+    SnapshotMeta,
+    SnapshotAttachment,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields
+  >,
+  timestamp: new Date()
 };
 
-const defaultSnapshotValue: Snapshot<any, any> = {
+const defaultSnapshotValue: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields
+> = {
   id: 'default-snapshot',
-  data: new Map(),
+  data: {} as Data<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   category: defaultCategory,
   properties: {},
-  metadata: {} as any,
+  metadata: {} as SnapshotMeta,
   createdAt: new Date(),
   updatedAt: new Date(),
   version: '1.0.0',
@@ -800,19 +1023,18 @@ const defaultSnapshotValue: Snapshot<any, any> = {
   validate: () => true
 };
 
+
 // Get values from hooks and context
 const notification = useNotification();
 const snapshotIdValue = useSecureSnapshotId();
 
-type SnapshotEvent<T extends BaseDataEntity = BaseDataRoot, K extends T = T> = SnapshotEvents<T, K>;
 
-// Get current values from context or state
-const categoryValue: Category | undefined = defaultCategory; // Replace with actual category from your state/context
-const snapshotValue: Snapshot<any, any> = defaultSnapshotValue; // Replace with actual snapshot
-const typeValue = 'snapshotOperation'; // Replace with actual type
-const eventValue: SnapshotEvent<any, any> = defaultSnapshotEvent; // Replace with actual event
-const snapshotConfigValue: SnapshotConfig<any, any> = defaultSnapshotConfig; // Replace with actual config
- 
+const categoryValue: Category = defaultCategory;
+const snapshotValue = defaultSnapshotValue;
+const typeValue = 'snapshotOperation';
+const eventValue = defaultSnapshotEvent;
+const snapshotConfigValue = defaultSnapshotConfig;
+
 // Get current snapshot from store or context
 const currentSnapshot = snapshotValue; // Replace with actual current snapshot
 
@@ -859,6 +1081,10 @@ export const category = snapshotApi.getSnapshotsAndCategory(
   additionalHeaders      // Record<string, string> (optional)
 );
 
+export const snapshotEvent: SnapshotEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> ={
+
+}
+
 export const snapshot = snapshotApi.getSnapshot(
   String(snapshotId), 
   Number(storeId), 
@@ -870,12 +1096,36 @@ export const snapshot = snapshotApi.getSnapshot(
 );
 
 export {
-    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
-    isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
-    isSnapshotConfig, isSnapshotContainer, isSnapshotData,
-    isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
-    isSnapshotStoreCoreData, isSnapshotUnionBaseData,
-    isSnapshotWithCriteria, isSubscriberCallback
+  castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
+  isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
+  isSnapshotConfig, isSnapshotContainer, isSnapshotData,
+  isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
+  isSnapshotStoreCoreData, isSnapshotUnionBaseData,
+  isSnapshotWithCriteria, isSubscriberCallback
 };
 
 export const snapshots = snapshotApi.getSnapshots(category)
+
+
+
+
+
+
+
+
+
+
+
+// 📦 Total Import Issues: 3249
+// 📁 Files Affected: 1141
+// 🎯 By Error Type:
+//    • ESM Runtime: 1804
+//    • TypeScript: 0
+//    • Missing Files: 1445
+//    • Circular: 0
+// ⚠️  By Severity:
+//    • High: 1416
+//    • Medium: 39
+//    • Low: 1794
+// ✅ Ready for fix phase
+// ══════════════════════════════

@@ -1,6 +1,8 @@
 // notificationHelpers.ts
-import { NotificationChannelHelper } from '@/app/notifications/NotificationChannels';
+import { NotificationChannelHelper } from '@/app/notifications/NotificationChannelHelper';
 import { NotificationChannels } from '@/app/notifications/NotificationChannels';
+import { NotificationData } from '@/app/hooks/useNotificationSystem';
+import { createSuccessNotification, createErrorNotification, createWarningNotification } from '@/app/libraries/ui/components/Component'
 
 export const createChannelAwareNotification = (
   message: string,
@@ -8,27 +10,39 @@ export const createChannelAwareNotification = (
   channels: NotificationChannels,
   additionalData?: Partial<NotificationData>
 ): NotificationData => {
-  const baseNotification = type === 'success' 
+  const baseNotification = type === 'success'
     ? createSuccessNotification(message)
-    : type === 'error' 
-    ? createErrorNotification(message)
-    : createWarningNotification(message);
-  
-  // Enhance with channel information
+    : type === 'error'
+      ? createErrorNotification(message)
+      : createWarningNotification(message);
+
   const channelData: any = {};
+
+  // Handle advanced channels separately
+  if (channels.advanced) {
+    const advancedChannels = Object.keys(channels.advanced) as AdvancedChannelKeys[];
+    
+    advancedChannels.forEach(advancedChannel => {
+      if (NotificationChannelHelper.isAdvancedEnabled(channels, advancedChannel)) {
+        const settings = NotificationChannelHelper.getAdvancedSettings(channels, advancedChannel);
+        channelData[`${advancedChannel}Settings`] = settings;
+      }
+    });
+  }
+
+  // Handle basic channels (non-advanced)
+  const basicChannels = ['email', 'push', 'sms', 'inApp', 'webhook'] as const;
   
-  // Check which channels are enabled and add their settings
-  (Object.keys(channels) as Array<keyof NotificationChannels>).forEach(channel => {
-    if (NotificationChannelHelper.isAdvancedEnabled(channels, channel)) {
-      const settings = NotificationChannelHelper.getAdvancedSettings(channels, channel);
-      channelData[`${channel}Settings`] = settings;
+  basicChannels.forEach(basicChannel => {
+    if (channels[basicChannel]) {
+      channelData[basicChannel] = channels[basicChannel];
     }
   });
-  
+
   return {
     ...baseNotification,
     ...channelData,
     ...additionalData,
-    channels: Object.keys(channelData), // List of active channels
+    channels: Object.keys(channelData),
   };
 };

@@ -1,6 +1,6 @@
 // TaskDetailsComponent.tsx
 // TaskDetails.ts
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // using commong detais we genrate details for components by mapping through the objects.

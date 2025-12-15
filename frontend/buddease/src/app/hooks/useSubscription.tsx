@@ -1,17 +1,15 @@
 // useSubscription.tsx
-import { SubscriptionActions } from "@/app/actions/SubscriptionActions";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SubscriptionActions, SubscriptionPayload } from "@/app/actions/SubscriptionActions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Snapshot } from "@/app/snapshots";
-import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { fetchPortfolioUpdatesLastUpdated } from "@/utils/trading/TradingUtils";
 import { LiveEvent } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
-
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { fetchPortfolioUpdatesLastUpdated } from "@/utils/trading/TradingUtils";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 
 interface UseSubscriptionOptions {
   channel: string;
@@ -29,9 +27,14 @@ const portfolioUpdatesLastUpdated = async (): Promise<number | ModifiedDate | nu
   }
 }; 
 
+// Helper type to extract Snapshot properties
+type SnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+  [P in keyof Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]: 
+    Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[P];
+};
 
 const useSubscription = <
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -46,7 +49,6 @@ const useSubscription = <
   const [isSubscribed, setIsSubscribed] = useState(false);
   const dispatch = useDispatch();
   
-  // Define unsubscribe payload type that matches the generic structure
   type UnsubscribePayload = {
     subscriberId: string;
     unsubscribeDetails: {
@@ -62,8 +64,6 @@ const useSubscription = <
 
   const subscribe = (subscriptionData: SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     setIsSubscribed(true);
-    
-    // Dispatch subscribe action with generic payload
     dispatch(SubscriptionActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>().subscribe(subscriptionData));
   };
 
@@ -79,7 +79,6 @@ const useSubscription = <
     },
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => {
-    // Filter out the subscriber
     const updatedSubscribers = subscribers.filter(
       (subscriber) => subscriber.getSubscriberId() !== subscriberId
     );
@@ -87,27 +86,22 @@ const useSubscription = <
     setIsSubscribed(false);
     setSubscribers(updatedSubscribers);
 
-    // Create the unsubscribe payload with proper generic types
     const unsubscribePayload: UnsubscribePayload = {
       subscriberId,
       unsubscribeDetails: {
         ...unsubscribeDetails,
-        // Include the snapshot if we can create it
         snapshot: createSnapshotFromUnsubscribeDetails(unsubscribeDetails)
       }
     };
 
-    // Dispatch unsubscribe action with properly typed payload
     dispatch(SubscriptionActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>().unsubscribe(unsubscribePayload));
   
-    // If callback provided, invoke it with the snapshot
     if (callback) {
       const snapshot = createSnapshotFromUnsubscribeDetails(unsubscribeDetails);
       callback(snapshot);
     }
   };
 
-  // Helper function to create properly typed snapshot from unsubscribe details
   const createSnapshotFromUnsubscribeDetails = (
     unsubscribeDetails: {
       userId: string;
@@ -120,7 +114,8 @@ const useSubscription = <
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     const snapshotData = unsubscribeDetails.unsubscribeData as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
-    return {
+    // Create base snapshot object
+    const baseSnapshot: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
       // Core snapshot identification
       snapshotId: unsubscribeDetails.snapshotId,
       snapshotData: snapshotData,
@@ -131,13 +126,13 @@ const useSubscription = <
       initialState: snapshotData?.initialState,
       isCore: snapshotData?.isCore || false,
       
-      // Configuration
-      initialConfig: snapshotData?.initialConfig,
-      config: snapshotData?.config || {},
-      
-      // Lifecycle handlers
-      onInitialize: snapshotData?.onInitialize,
-      onError: snapshotData?.onError,
+      // Lifecycle handlers - only include if they exist and are functions
+      ...(typeof snapshotData?.onInitialize === 'function' && { 
+        onInitialize: snapshotData.onInitialize 
+      }),
+      ...(typeof snapshotData?.onError === 'function' && { 
+        onError: snapshotData.onError 
+      }),
       
       // Task management
       taskIdToAssign: snapshotData?.taskIdToAssign,
@@ -149,44 +144,64 @@ const useSubscription = <
       
       // Storage and versioning
       storeId: snapshotData?.storeId || 'default',
-      versionInfo: snapshotData?.versionInfo || { version: '1.0.0' },
+      versionInfo: snapshotData?.versionInfo || null, // Use null instead of default object
       initializedState: snapshotData?.initializedState || false,
       snapshotContainer: snapshotData?.snapshotContainer || {},
       
       // Metadata and timestamps
       timestamp: new Date(),
       metadata: snapshotData?.metadata || {},
-      
-      // Add any other required snapshot properties with appropriate defaults
-      ...(snapshotData || {})
     };
+
+    // Add config only if it exists in the Snapshot type
+    // First check what properties the Snapshot type actually has
+    if ('config' in baseSnapshot && snapshotData?.config) {
+      // Handle config based on its type
+      const configValue = snapshotData.config;
+      if (configValue instanceof Promise) {
+        (baseSnapshot as any).config = configValue;
+      } else if (typeof configValue === 'function') {
+        (baseSnapshot as any).config = (configValue as () => Promise<any>)();
+      } else {
+        (baseSnapshot as any).config = Promise.resolve(configValue);
+      }
+    }
+
+    // Add initialConfig only if it exists in the Snapshot type
+    if ('initialConfig' in baseSnapshot && snapshotData?.initialConfig) {
+      (baseSnapshot as any).initialConfig = Promise.resolve(snapshotData.initialConfig);
+    }
+
+    // Return with type assertion, converting through unknown first
+    return baseSnapshot as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   };
 
-  // Method to handle live events with proper typing
   const handleLiveEvent = (event: LiveEvent) => {
     if (onLiveEvent) {
       onLiveEvent(event);
     }
     
-    // Update subscribers state if needed
+    // Check if Subscriber has handleEvent method before calling it
     setSubscribers(prev => 
-      prev.map(subscriber => 
-        subscriber.handleEvent ? subscriber.handleEvent(event) : subscriber
-      )
+      prev.map(subscriber => {
+        // Use type assertion to check if handleEvent exists
+        const sub = subscriber as any;
+        if (typeof sub.handleEvent === 'function') {
+          return sub.handleEvent(event) || subscriber;
+        }
+        return subscriber;
+      })
     );
   };
 
-  // Method to add a new subscriber
   const addSubscriber = (subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     setSubscribers(prev => [...prev, subscriber]);
   };
 
-  // Method to get subscriber by ID
   const getSubscriber = (subscriberId: string): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
     return subscribers.find(subscriber => subscriber.getSubscriberId() === subscriberId);
   };
 
-  // Method to check if specific subscriber exists
   const hasSubscriber = (subscriberId: string): boolean => {
     return subscribers.some(subscriber => subscriber.getSubscriberId() === subscriberId);
   };

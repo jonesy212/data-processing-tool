@@ -7,13 +7,12 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
+import { Member } from '@/app/models/members/Members';
 import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { Task } from "@/app/models/tasks/Task";
-import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
@@ -155,7 +154,7 @@ export class PhaseImpl<
   archived?: boolean;
   relatedUsers?: string[];
   deadline?: Date | string;
-  currentMeta: PhaseMeta = {} as any;
+  currentMeta: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as any;
   label: Label = { text: "", color: "#000000" };
   title: string = "";
@@ -258,7 +257,7 @@ export interface CustomPhaseHooks<
 export const customPhaseHooks = {
   // ✅ CLEAN: No repetitive 6 parameters
   canTransitionTo: (currentPhase: AppPhase, nextPhase: AppPhase): boolean => {
-    return currentPhase.isComplete && !nextPhase.isActive;
+    return (currentPhase.isComplete ?? false) && !(nextPhase.isActive ?? false);
   },
 
   onPhaseStart: (phase: AppPhase): void => {
@@ -272,9 +271,27 @@ export const customPhaseHooks = {
   },
 
   validatePhase: (phase: AppPhase): ValidationResult => {
+    const errors = [];
+    
+    if (!phase.name) {
+      errors.push({
+        field: 'name',
+        message: 'Phase name is required',
+        rule: 'required'
+      });
+    }
+    
+    if (!phase.id) {
+      errors.push({
+        field: 'id',
+        message: 'Phase ID is required',
+        rule: 'required'
+      });
+    }
+    
     return {
-      isValid: !!phase.name && !!phase.id,
-      errors: phase.name ? [] : ['Phase name is required']
+      isValid: errors.length === 0,
+      errors: errors
     };
   },
 
@@ -292,24 +309,142 @@ const saveCurrentPhaseData = async <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(phaseData: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> => {
+>(
+  phaseData: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<void> => {
   try {
     // Use the addPhase API function to save the current phase
     await addPhase(phaseData);
-  } catch (error) {
-    // If the error is handled inside addPhase, we can just log or handle it here
+    
+    // Success notification (optional - if addPhase doesn't already notify)
+    const { notify } = useNotification();
+    notify({
+      id: `phase_save_success_${phaseData.id || 'new'}_${Date.now()}`,
+      message: "Phase data saved successfully",
+      data: {
+        entityType: 'phase',
+        entityId: phaseData.id || 'new',
+        action: 'save',
+        phaseType: phaseData.type,
+        phaseName: phaseData.name,
+        phaseData: {
+          id: phaseData.id,
+          type: phaseData.type,
+          name: phaseData.name,
+          status: phaseData.status,
+          order: phaseData.order
+        },
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_SUCCESS,
+      level: 'success' as const
+    });
+    
+  } catch (error: any) {
     console.error('Failed to save current phase data:', error);
     
-    // Optionally notify the user about the error
-    const notification = useNotification();
-    notification.notify(
-      'PhaseError', // This could be a custom notification type
-      'Failed to save phase data. Please try again.',
-      null,
-      new Date(),
-      "PhaseApiError" as NotificationType
-    );
-
+    // Enhanced error notification
+    const { notify } = useNotification();
+    const axiosError = error as AxiosError;
+    
+    let userMessage = "Failed to save phase data";
+    let errorType = "PHASE_SAVE_ERROR";
+    
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 400:
+          userMessage = "Invalid phase data format";
+          errorType = "PHASE_VALIDATION_ERROR";
+          break;
+        case 401:
+          userMessage = "Authentication required to save phase data";
+          errorType = "PHASE_AUTH_ERROR";
+          break;
+        case 403:
+          userMessage = "Permission denied to save phase data";
+          errorType = "PHASE_PERMISSION_ERROR";
+          break;
+        case 409:
+          userMessage = "Phase conflict detected";
+          errorType = "PHASE_CONFLICT_ERROR";
+          break;
+        case 422:
+          userMessage = "Phase data validation failed";
+          errorType = "PHASE_DATA_VALIDATION_ERROR";
+          break;
+        case 500:
+          userMessage = "Server error while saving phase data";
+          errorType = "PHASE_SERVER_ERROR";
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = "Network error: Unable to save phase data";
+      errorType = "PHASE_NETWORK_ERROR";
+    }
+    
+    // Send notification using consistent object format
+    notify({
+      id: `phase_save_error_${phaseData.id || 'new'}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'phase',
+        entityId: phaseData.id || 'new',
+        action: 'save',
+        phaseType: phaseData.type,
+        phaseName: phaseData.name,
+        phaseData: {
+          id: phaseData.id,
+          type: phaseData.type,
+          name: phaseData.name,
+          status: phaseData.status
+        },
+        errorDetails: {
+          originalError: axiosError.message,
+          errorType: errorType,
+          statusCode: axiosError.response?.status,
+          errorData: axiosError.response?.data,
+          timestamp: new Date().toISOString()
+        }
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const,
+      metadata: {
+        isPhaseError: true,
+        phaseType: phaseData.type,
+        requiresRetry: true,
+        retryAction: () => saveCurrentPhaseData(phaseData)
+      },
+      action: {
+        label: "Retry Save",
+        onClick: () => saveCurrentPhaseData(phaseData)
+      }
+    });
+    
+    // Optional: Provide guidance for common phase save errors
+    if (errorType === 'PHASE_CONFLICT_ERROR') {
+      notify({
+        id: `phase_conflict_guidance_${Date.now()}`,
+        message: "Phase already exists. Try updating instead?",
+        data: {
+          entityType: 'phase',
+          entityId: phaseData.id,
+          action: 'conflict_guidance'
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.INFO,
+        level: 'info' as const,
+        action: {
+          label: "Update Phase",
+          onClick: () => {
+            // Call update function instead
+            console.log("Navigate to phase update");
+          }
+        }
+      });
+    }
+    
     // Re-throw the error if you want to handle it further up the call stack
     throw error;
   }

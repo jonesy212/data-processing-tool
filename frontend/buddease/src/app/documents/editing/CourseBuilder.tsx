@@ -1,25 +1,24 @@
 // CourseBuilder.tsx
-import { BasicUserInfo }  from '@/app/typings/entities/UserEntity'
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { VisibilityLevel } from '@/app/permissions/PermissionEnums';
+import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
+import { createMeta } from "@/app/config/metadata/createMeta";
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { PhaseAttachment, PhaseK, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import {
+  BaseEntityProperties,
+  SharedSnapshotProperties,
+  SharedStatusFlags,
+  SharedTimestamps
+} from '@/app/documents/RelatedProps';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase, PhaseData } from '@/app/models/phases/Phase';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { createMeta } from "@/app/config/metadata/createMeta";
-import { 
-  BaseEntityProperties, 
-  SharedIdentifiers, 
-  SharedSnapshotProperties, 
-  SharedStatusFlags, 
-  SharedTimestamps 
-} from '@/app/documents/RelatedProps';
-import { CourseEntity, CourseK, CourseMeta, CourseAttachment, CourseExcludedFields, CourseIncludedFields } from '@/app/typings/entities/CourseEntity'
+import { VisibilityLevel } from '@/app/permissions/PermissionEnums';
+import { CourseAttachment, CourseEntity, CourseExcludedFields, CourseIncludedFields, CourseK, CourseMeta } from '@/app/typings/entities/CourseEntity';
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from "@/app/typings/entities/PhaseEntity";
+import { BasicUserInfo } from '@/app/typings/entities/UserEntity';
 
 
 // Interfaces for course structure
@@ -336,4 +335,4 @@ advancedBuilder.addQuizPhase("Assessment", 10);
 const cryptocurrencyCourse = courseBuilder.generateCourse();
 console.log(cryptocurrencyCourse);
 
-export type { Lesson, Course };
+export type { Course, Lesson };

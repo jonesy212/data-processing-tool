@@ -1,14 +1,13 @@
 // ChatRoomComponent.tsx
 // ChatRoom.tsx
-import axiosInstance from '@/app/api/csrfToken'
-import { ChatLogger } from "@/app/libraries/logging/Logger";
-import DynamicTextArea from "@/app/ts/DynamicTextArea";
-import React, { useEffect, useState } from "react";
-import { Params } from "react-router-dom";
+import axiosInstance from '@/app/api/csrfToken';
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
+import { ChatLogger } from '@/app/logging/Logger';
+import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import connectToChatWebSocket, { retryConfig } from "@/app/WebSocket";
-import ChatMessageData from "./ChatRoomDashboard";
+import React, { useEffect, useState } from "react";
 import ChatMessage from "./ChatMessage";
+import ChatMessageData from "./ChatRoomDashboard";
 
 interface ChatRoomProps  {
   roomId: string;
