@@ -6,7 +6,7 @@ import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { AuthenticationProvider, BaseAuthService } from '@/app/server/auth/BasicAuthService';
 import { DatabaseServiceFactory } from '@/app/server/database/DatabaseServiceFactory';
-import { DatabaseType } from '@/app/typings/database'
+import { DatabaseType } from '@/app/server/database/DatabaseServiceFactory'
 import { LoginResult } from '@/app/typings/authTypes';
 
 

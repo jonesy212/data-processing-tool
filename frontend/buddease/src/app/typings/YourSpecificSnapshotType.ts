@@ -11,7 +11,7 @@ import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteriaConfig } from '@/app/snapshots/SnapshotStoreProps';
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SampleSnapshot } from '@/app/snapshots/SampleSnapshot';
 import { snapshot, Snapshot } from '@/app/snapshots/Snapshot';

@@ -5,7 +5,7 @@ import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotWithCriteriaAsBase } from "[object Object]";
+import { SnapshotWithCriteriaAsBase } from "@/app/snapshots/SnapshotStoreOptions";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 

@@ -13,7 +13,7 @@ import DetailsProps from "@/app/components/models/data/Details";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import DataPreview from "@/app/users/DataPreview";
-import { PersonaData, PersonaTypeEnum } from "[object Object]";
+import { PersonaData, PersonaTypeEnum } from "@/app/pages/personas/Persona";
 import PersonaPanel from "./PersonaPanel";
 import React from "react";
 

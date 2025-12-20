@@ -10,7 +10,7 @@ import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessin
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
-import { Snapshot, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import { Snapshot, SnapshotConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';

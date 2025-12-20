@@ -1,7 +1,7 @@
 // PaymentGateways.tsx
 
 // Import necessary functions
-import { handleCryptoPaymentSelect } from '@/app/payment/PaymentGateways'
+import { handleCryptoPaymentSelect } from '@/app/typings/eventHandlers/domEventHandlers'
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Persona } from '@/app/pages/personas/Persona';

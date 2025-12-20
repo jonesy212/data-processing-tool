@@ -1,5 +1,5 @@
 // Payments.tsx
-import { handleCryptoPaymentSelect } from '@/app/payment/PaymentGateways'
+import { handleCryptoPaymentSelect } from '@/app/typings/eventHandlers/domEventHandlers'
 import React from 'react';
 
 const Payments: React.FC = () => {

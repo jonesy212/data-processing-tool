@@ -1,4 +1,5 @@
 // Version.ts
+import { Comment } from '@/app/models/comments/Comments';
 import HashGenerator from '@/app/generators/HashGenerator';
 import SharedContent from '@/app/versions/Version';
 
@@ -89,6 +90,7 @@ SharedContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   buildNumber: number | string;
   versionNumber: string | number;
   name: string;
+  comments?: Comment[]
   description: string;
   documentId: string | number;
   appVersion: string;
@@ -1158,7 +1160,7 @@ static createVersion<
     parentVersionNumber: string;
     isLatest: boolean;
     isPublished: boolean;
-    publishedAt: Date | null;
+    publishedAt?: Date | null;
     source: string;
     status: string;
     workspaceId: string;

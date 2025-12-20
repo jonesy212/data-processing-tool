@@ -63,6 +63,7 @@ import TreeView from "./dashboards/TreeView";
 import ChangePasswordForm from "./forms/ChangePasswordForm";
 import ForgotPasswordForm from "./forms/ForgotPasswordForm";
 import LoginForm from "./forms/LoginForm";
+import { MetadataEntry } from '@/app/config/StructuredMetadata';
 import RegisterForm from "./forms/RegisterForm";
 import UserSettingsForm from "./forms/UserSettingsForm";
 import Layout from "./layouts/Layouts";
@@ -145,7 +146,7 @@ const phases: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExclud
     },
     currentMeta: {
       metadataEntries: {},
-      version: {},
+      version: {} as AppVersionImpl<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>,
       lastUpdated: createLastUpdatedWithVersion(),
       isActive: false,
       config: {},

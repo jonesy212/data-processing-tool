@@ -47,7 +47,7 @@ import { TaskAttachment, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta
 import { VideoData } from '@/app/typings/videoTypes/Video';
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 import { AxiosResponse } from "axios";
 import { object } from "prop-types";
 

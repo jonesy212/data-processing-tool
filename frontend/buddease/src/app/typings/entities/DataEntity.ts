@@ -1,6 +1,7 @@
 // DataEntity.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UnifiedMetadata } from "@/app/config/MetaDataOptions"
 
 interface DataEntity extends BaseDataEntity {
   id: string;                        // required for uniqueness
@@ -21,4 +22,23 @@ type DataIncludedFields = keyof DataEntity;
 type DataExcludedFields = DefaultExcludedFields<DataEntity>;
 
 
-export type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta };
+type DataUnifiedMetadata = UnifiedMetadata<
+  DataEntity,
+  DataK,
+  DataMeta,
+  DataAttachment,
+  DataExcludedFields,
+  DataIncludedFields
+>;
+
+type DataStructuredMetadata = StructuredMetadata<
+  DataEntity,
+  DataK,
+  DataMeta,
+  DataAttachment,
+  DataExcludedFields,
+  DataIncludedFields,
+  DataUnifiedMetadata
+>;
+
+export type { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta, DataStructuredMetadata };

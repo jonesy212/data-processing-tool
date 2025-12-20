@@ -1,8 +1,5 @@
 // DynamicIntroTooltip.tsx
-//TODO: IMPlEMENTATION IN MOBX AN INTRO TIP
-import IntroJs from 'intro.js';
-import { IntroStep } from 'intro.js/src/core/steps';
-
+import introJs, { Step } from 'intro.js';
 import React, { useEffect } from 'react';
 
 interface DynamicIntroTooltipProps {
@@ -41,7 +38,10 @@ export default DynamicIntroTooltip;
 
 
 //TODO CREATE a button with the id 
-// voiceControlButton that triggers the voice - controlled navigation feature.You would customize the steps and integration points based on your specific application architecture and requirements.
+// voiceControlButton that triggers the voice - controlled 
+// navigation feature. You would customize the steps and 
+// integration points based on your specific application 
+// architecture and requirements.
 
 
 

@@ -8,7 +8,7 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreConfig, snapshotFunction } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreConfig, snapshotFunction } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from "@/app/models/data/Data";
 import { isSnapshot, snapshotId, isSnapshotDataType } from "@/utils/snapshotUtils";

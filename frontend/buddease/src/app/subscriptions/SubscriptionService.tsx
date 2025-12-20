@@ -1,6 +1,6 @@
 // SubscriptionService.tsx
 import { action, observable } from 'mobx';
-import { AuthenticationProvider } from "[object Object]";
+import { AuthenticationProvider } from "@/app/interfaces/provider/AuthenticationProvider";
 import { ModifiedDate } from "@/app/documents/DocType";
 import Web3Provider from "@/app/components/web3/Web3Provider";
 

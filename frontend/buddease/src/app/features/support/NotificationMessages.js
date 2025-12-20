@@ -864,5 +864,6 @@ const NOTIFICATION_MESSAGES = {
         // Add more messages for the TokenUtils type
     },
 };
+
 const _default = NOTIFICATION_MESSAGES;
 export { _default as default , handleDynamicNotificationMessage, setDynamicNotificationMessageWrapper };

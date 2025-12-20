@@ -136,7 +136,7 @@ interface DataDetails<
   _id?: string;
   title?: string;
   description?: string;
-  details?: DetailsItem<T>;
+  details?: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   completed?: boolean;
   startDate?: string | Date;
   endDate?: string | Date;

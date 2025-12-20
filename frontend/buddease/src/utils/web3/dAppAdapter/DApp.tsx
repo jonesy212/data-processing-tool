@@ -19,7 +19,7 @@ import UserRoles from '@/app/models/UserRoles';
 import { authToken } from "@/app/server/auth/authToken";
 import Connection from "@/app/server/database/Connection";
 import isValidAuthToken from "@/app/server/security/AuthValidation";
-import { DatabaseType } from '@/app/typings/database'
+import { DatabaseType } from '@/app/server/database/DatabaseServiceFactory'
 import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typings/entities/ExtendedDappEntity';
 import { UserData } from "@/app/users/User";

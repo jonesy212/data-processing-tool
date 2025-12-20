@@ -16,6 +16,10 @@ export interface FixRecord {
 export class SafeFixer {
   private records: FixRecord[] = [];
   private backupDir: string;
+  private pendingFiles: Map<string, {
+    fixes: Array<{ originalImport: string; newImport: string; line: number }>;
+    backupPath: string | null;
+  }> = new Map();
   
   constructor(backupDir: string = './.import-fix-backups') {
     this.backupDir = backupDir;
@@ -30,25 +34,55 @@ export class SafeFixer {
   
   // Simplified method for batching
   recordFix(fix: { file: string; originalImport: string; newImport: string; line: number }): void {
-    const timestamp = Date.now();
-    const backupPath = path.join(this.backupDir, `${path.basename(fix.file)}.${timestamp}.bak`);
+    const filePath = path.resolve(fix.file);
     
-    this.records.push({
-      timestamp: new Date(timestamp).toISOString(),
-      file: fix.file,
-      originalImport: fix.originalImport,
-      newImport: fix.newImport,
-      line: fix.line,
-      backupPath,
-      resolved: false
-    });
+    if (!this.pendingFiles.has(filePath)) {
+      this.pendingFiles.set(filePath, {
+        fixes: [],
+        backupPath: null
+      });
+    }
+    
+    const fileData = this.pendingFiles.get(filePath)!;
+    fileData.fixes.push(fix);
   }
   
   createBackup(filePath: string): string {
+    const resolvedPath = path.resolve(filePath);
+    
+    // Check if we already have a backup for this file
+    if (this.pendingFiles.has(resolvedPath)) {
+      const fileData = this.pendingFiles.get(resolvedPath)!;
+      if (fileData.backupPath && fs.existsSync(fileData.backupPath)) {
+        return fileData.backupPath; // Return existing backup
+      }
+    }
+    
+    // Create new backup
     const timestamp = Date.now();
-    const backupPath = path.join(this.backupDir, `${path.basename(filePath)}.${timestamp}.bak`);
-    fs.copyFileSync(filePath, backupPath);
-    return backupPath;
+    const fileName = path.basename(filePath);
+    const backupFileName = `${fileName}.${timestamp}.bak`;
+    const backupPath = path.join(this.backupDir, backupFileName);
+    
+    // Copy file
+    if (fs.existsSync(filePath)) {
+      fs.copyFileSync(filePath, backupPath);
+      
+      // Store backup path
+      if (this.pendingFiles.has(resolvedPath)) {
+        this.pendingFiles.get(resolvedPath)!.backupPath = backupPath;
+      } else {
+        this.pendingFiles.set(resolvedPath, {
+          fixes: [],
+          backupPath
+        });
+      }
+      
+      console.log(`📁 Created backup: ${backupFileName}`);
+      return backupPath;
+    }
+    
+    throw new Error(`File not found: ${filePath}`);
   }
   
   // Keep the old method for backward compatibility
@@ -88,19 +122,32 @@ export class SafeFixer {
   }
   
   // Save fix records
-  saveRecords(outputPath: string = './reports/fix-records.json'): void {
+  saveRecords(outputPath: string = './reports/fix-records.json', sessionId?: string): void {
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     
-    fs.writeFileSync(outputPath, JSON.stringify({
+    const sessionInfo = {
+      sessionId: sessionId || Date.now().toString(),
       generated: new Date().toISOString(),
       totalFixes: this.records.length,
       records: this.records
-    }, null, 2));
+    };
     
-    console.log(`📝 Fix records saved to ${outputPath}`);
+    fs.writeFileSync(outputPath, JSON.stringify(sessionInfo, null, 2));
+    
+    console.log(`📝 Fix records saved to ${outputPath} (${this.records.length} records)`);
+    
+    // Clear after saving to prevent accumulation
+    this.clearAll();
+  }
+
+    // Save session-specific records
+  saveSessionRecords(sessionId: string): string {
+    const outputPath = path.join('./reports', `fix-records-${sessionId}.json`);
+    this.saveRecords(outputPath, sessionId);
+    return outputPath;
   }
   
   // Load fix records
@@ -110,5 +157,152 @@ export class SafeFixer {
       return data.records || [];
     }
     return [];
+  }
+
+    
+  // Clear pending fixes
+  clearPending(): void {
+    this.pendingFiles.clear();
+  }
+
+    // Apply all pending fixes for a file
+  applyPendingFixes(filePath: string): boolean {
+    const resolvedPath = path.resolve(filePath);
+    
+    if (!this.pendingFiles.has(resolvedPath)) {
+      return false;
+    }
+    
+    const fileData = this.pendingFiles.get(resolvedPath)!;
+    
+    if (fileData.fixes.length === 0) {
+      return false;
+    }
+    
+    try {
+      // Read the file
+      const content = fs.readFileSync(filePath, 'utf8');
+      const lines = content.split('\n');
+      
+      // Track which lines we've modified
+      const modifiedLines = new Set<number>();
+      let hasChanges = false;
+      
+      // Apply each fix
+      for (const fix of fileData.fixes) {
+        const lineIndex = fix.line - 1;
+        
+        // Skip if line is out of bounds or already modified
+        if (lineIndex < 0 || lineIndex >= lines.length || modifiedLines.has(lineIndex)) {
+          continue;
+        }
+        
+        const lineContent = lines[lineIndex];
+        const importPattern = new RegExp(`(['"])${fix.originalImport.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(['"])`);
+        
+        if (importPattern.test(lineContent)) {
+          const newLine = lineContent.replace(importPattern, `$1${fix.newImport}$2`);
+          lines[lineIndex] = newLine;
+          modifiedLines.add(lineIndex);
+          hasChanges = true;
+          
+          // Add to records
+          this.records.push({
+            timestamp: new Date().toISOString(),
+            file: filePath,
+            originalImport: fix.originalImport,
+            newImport: fix.newImport,
+            line: fix.line,
+            backupPath: fileData.backupPath || '',
+            resolved: true
+          });
+        }
+      }
+      
+      // Write back if there were changes
+      if (hasChanges) {
+        const newContent = lines.join('\n');
+        fs.writeFileSync(filePath, newContent);
+        console.log(`✅ Applied ${modifiedLines.size} fixes to ${path.basename(filePath)}`);
+        return true;
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error applying fixes to ${filePath}:`, error);
+    }
+    
+    return false;
+  }
+  
+  // Apply all pending fixes across all files
+  applyAllPendingFixes(): { fixed: number; files: number } {
+    let totalFixed = 0;
+    let totalFiles = 0;
+    
+    for (const [filePath, fileData] of this.pendingFiles) {
+      if (fileData.fixes.length > 0) {
+        const fixedCount = this.applyPendingFixes(filePath) ? fileData.fixes.length : 0;
+        if (fixedCount > 0) {
+          totalFixed += fixedCount;
+          totalFiles++;
+        }
+      }
+    }
+    
+    return { fixed: totalFixed, files: totalFiles };
+  }
+  
+  
+  // Get all backup files for a specific source file
+  getBackupsForFile(filePath: string): string[] {
+    const fileName = path.basename(filePath);
+    const backups: string[] = [];
+    
+    if (fs.existsSync(this.backupDir)) {
+      const files = fs.readdirSync(this.backupDir);
+      backups.push(...files
+        .filter(f => f.startsWith(fileName + '.'))
+        .map(f => path.join(this.backupDir, f))
+        .sort((a, b) => {
+          // Sort by timestamp (newest first)
+          const timeA = parseInt(path.basename(a).split('.').slice(-2)[0]) || 0;
+          const timeB = parseInt(path.basename(b).split('.').slice(-2)[0]) || 0;
+          return timeB - timeA;
+        })
+      );
+    }
+    
+    return backups;
+  }
+
+  clearAll(): void {
+    this.records = [];
+    this.pendingFiles.clear();
+    console.log('🧹 Cleared all fix records and pending files');
+  }
+  
+  // Get only new records since last clear
+  getNewRecords(): FixRecord[] {
+    return [...this.records];
+  }
+  
+  // Restore from the latest backup
+  restoreLatestBackup(filePath: string): boolean {
+    const backups = this.getBackupsForFile(filePath);
+    
+    if (backups.length === 0) {
+      console.log(`❌ No backups found for ${filePath}`);
+      return false;
+    }
+    
+    try {
+      const latestBackup = backups[0];
+      fs.copyFileSync(latestBackup, filePath);
+      console.log(`✅ Restored ${filePath} from ${path.basename(latestBackup)}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ Error restoring ${filePath}:`, error);
+      return false;
+    }
   }
 }

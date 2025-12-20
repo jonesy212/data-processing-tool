@@ -72,6 +72,33 @@ const currentMetadata: AppUnifiedMetadata = useMetadata('notification-area');
 const currentMeta: AppStructuredMetadata = useMeta(area);
 
 type NotificationMessageKey = string | keyof typeof apiNotificationMessages; // adjust to your messages type
+interface NotificationParams {
+  id?: string | null;
+  content: string;
+  date?: Date;
+  type?: NotificationType | string;
+  messageKey?: keyof typeof NOTIFICATION_MESSAGES;
+  position?: NotificationPosition;
+  options?: {
+    additionalOptions?: readonly string[] | string | number | any[] | undefined;
+    additionalDocumentOptions?: DocumentOptions;
+    additionalOptionsLabel?: string;
+    dataTypeEnum?: string;
+    data?: NotificationDataPayload;
+    error?: string;
+    duration?: number;
+    onClose?: () => void;
+    channels?: NotificationChannels;
+    metadata?: Record<string, any>;
+    component?: string;
+    completionMessageLog?: any;
+    level?: "info" | "success" | "warning" | "error";
+    sendStatus?: "pending" | "sent" | "delivered" | "failed";
+    topics?: string[];
+    dataId?: string;
+  };
+  userName?: string;
+}
 
 class NotificationStore {
   @observable notifications: NotificationData<

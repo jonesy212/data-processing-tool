@@ -53,6 +53,7 @@ interface NotificationDataPayload<T = unknown> {
   entityId?: string | number;
   action?: string;
   entityType?: string;
+  errorType?: string;
   userId?: string;
   extra?: T;
   count?: number;
@@ -68,7 +69,7 @@ interface NotificationDataPayload<T = unknown> {
   method?: string;
   updatedFields?: Record<string, any>;
   responseData?: any;
-
+  details?: string | Record<string, any>;
 }
 
 interface NotificationOptions {
@@ -280,6 +281,63 @@ const useNotification = <
     IncludedFields
   >;
 
+  // Define cleaner interface for store.notify parameters
+  interface StoreNotifyParams {
+    id?: string | null;
+    content: string;
+    date?: Date;
+    type?: NotificationType | string;
+    messageKey?: keyof typeof NOTIFICATION_MESSAGES;
+    position?: NotificationPosition;
+    options?: {
+      additionalOptions?: readonly string[] | string | number | any[] | undefined;
+      additionalDocumentOptions?: DocumentOptions;
+      additionalOptionsLabel?: string;
+      dataTypeEnum?: string;
+      data?: NotificationDataPayload;
+      error?: string;
+      duration?: number;
+      onClose?: () => void;
+      channels?: NotificationChannels;
+      metadata?: Record<string, any>;
+      component?: string;
+      completionMessageLog?: any;
+      level?: "info" | "success" | "warning" | "error";
+      sendStatus?: "pending" | "sent" | "delivered" | "failed";
+      topics?: string[];
+      dataId?: string;
+      // Add any other options that might come from NotificationOptions
+      [key: string]: any;
+    };
+    userName?: string;
+  }
+
+  // Create a clean wrapper for store.notify
+  const storeNotify = (params: StoreNotifyParams) => {
+    const {
+      id = null,
+      content,
+      date = new Date(),
+      type = "INFO",
+      messageKey,
+      position = NotificationPosition.TopRight,
+      options = {},
+      userName,
+    } = params;
+
+    store.notify(
+      id,
+      content,
+      date,
+      type,
+      messageKey,
+      position,
+      type, // Pass the same type for both type and notificationType parameters
+      options,
+      userName
+    );
+  };
+
   return {
     notify: (options: NotificationOptions) => {
       const {
@@ -303,40 +361,39 @@ const useNotification = <
         sendStatus,
         topics,
         dataId,
+        messageKey, // Add this if NotificationOptions has it
       } = options;
 
-      // Convert type to proper NotificationType
       const notificationType = getNotificationType(type);
-
-      const additionalOptions = {
-        additionalOptions: action ? [action.label] : undefined,
-        additionalDocumentOptions: undefined,
-        additionalOptionsLabel: persistent ? "persistent" : undefined,
-        data,
-        error,
-        duration,
-        onClose,
-        channels,
-        user,
-        metadata,
-        component,
-        completionMessageLog,
-        level,
-        sendStatus,
-        topics,
-        dataId,
-      };
-
+      
       store.notify(
         id,
-        message,
-        timestamp,
-        position,
-        notificationType,
-        additionalOptions
+        message,           // content
+        timestamp,         // date
+        notificationType,  // type (4th param)
+        messageKey,        // messageKey (5th param) - use when available
+        position,          // position (6th param)
+        notificationType,  // notificationType (7th param)
+        {
+          additionalOptions: action ? [action.label] : undefined,
+          additionalOptionsLabel: persistent ? "persistent" : undefined,
+          data,
+          error,
+          duration,
+          onClose,
+          channels,
+          metadata,
+          component,
+          completionMessageLog,
+          level,
+          sendStatus,
+          topics,
+          dataId,
+        },
+        user               // userName (9th param)
       );
     },
-
+    
     // Store methods with proper typing
     removeNotification: store.removeNotification,
     clearNotifications: store.clearNotifications,

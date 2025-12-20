@@ -2,7 +2,7 @@
 
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { PhaseDefault } from '@/app/typings/phaseTypes';
-import { ProjectPhaseTypeEnum } from "./StatusType";
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 // Define the interface for BookmarkData
 interface BookmarkData {
     _id?: string;

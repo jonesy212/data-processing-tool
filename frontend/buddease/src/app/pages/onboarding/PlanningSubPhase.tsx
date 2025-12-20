@@ -210,18 +210,6 @@ export function createPlanningSubPhase<
   return new PlanningSubPhase(planningData, options);
 }
 
-// Example usage:
-/*
-interface ProjectEntity extends BaseDataEntity {
-  id: string;
-  name: string;
-  description: string;
-  projectScope?: string;
-  timeline?: { startDate: Date; endDate: Date };
-  resources?: any[];
-  teamMembers?: any[];
-  initialTasks?: any[];
-}
 
 const planningData: PhaseData<ProjectEntity> = {
   id: "planning_1",

@@ -2,7 +2,7 @@
 // roadmapService
 // services/roadmapService.ts
 
-import { RoadmapItem, RoadmapAudience } from '@/app/scripts/devCorrectionRoadmap'
+import { RoadmapItem, RoadmapAudience } from '@/app/typings/roadmap'
 import { AnalysisNode } from '@/app/typings/AnalysisNode'
 import { RoadmapAudience } from '@/app/server/repository/roadmapMapper'
 

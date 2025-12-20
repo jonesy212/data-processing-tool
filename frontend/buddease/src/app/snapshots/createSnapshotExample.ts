@@ -1,5 +1,5 @@
 // createSnapshotExample.ts
-// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotData';
+// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 

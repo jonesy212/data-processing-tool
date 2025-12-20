@@ -2,7 +2,7 @@
 
 import { MigrationEvent } from '@/app/components/database/SchemaEvolutionManager';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
-import { DatabaseType } from '@/app/typings/database'
+import { DatabaseType } from '@/app/server/database/DatabaseServiceFactory'
 import {
     MigrationContext,
     MigrationDefinition

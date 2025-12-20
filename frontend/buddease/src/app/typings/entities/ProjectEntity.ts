@@ -1,4 +1,6 @@
 // ProjectEntity.ts
+import { ProjectData } from '@/app/typings/projectTypes'
+import { Resource } from '@/app/state/redux/slices/CollaborationSlice';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
@@ -35,15 +37,18 @@ type ProjectEntity = BaseDataEntity & {
   permissions?: string[];
   customFields?: Record<string, any>;
   title: string;
+  projectScope?: string;
+  resources?: Resource[];
+  initialTasks?: any[];
 };
 
 
-type AppProject = Project<
-  ProjectEntity,
-  ProjectEntity,
-  DefaultMeta<ProjectEntity, ProjectEntity>,
-  Attachment,
-  DefaultExcludedFields<ProjectEntity>
+type AppProject = Project<ProjectEntity, 
+  ProjectK, 
+  ProjectMeta, 
+  ProjectAttachment, 
+  ProjectExcludedFields, 
+  ProjectIncludedFields
 >;
 
 // -------------------
@@ -130,12 +135,10 @@ type ProjectSnapshotData = SnapshotData<ProjectEntity, ProjectK, ProjectMeta, Pr
 type ProjectSubscriberCollection = SubscriberCollection<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
-
 // -------------------
 // Config Types
 // -------------------
 type ProjectSnapshotStoreConfig = SnapshotStoreConfig<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
-
 
 export type {
   ProjectEntity,

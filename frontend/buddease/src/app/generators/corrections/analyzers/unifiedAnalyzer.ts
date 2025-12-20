@@ -1,5 +1,5 @@
 // utils/unifiedAnalyzer.ts
-import { ComprehensiveFrontendAnalyzer } from './frontendAnalyzer';
+import { ComprehensiveFrontendAnalyzer } from '@/app/generators/corrections/analyzers/ComprehensiveFrontendAnalyzer';
 
 /**
  * Unified analyzer that provides all frontend analysis capabilities

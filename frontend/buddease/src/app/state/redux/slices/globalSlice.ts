@@ -542,7 +542,7 @@ export const {
   toggleDebugMode,
   resetConfig,
   resetPreferences,
-  resetAll,
+  resetAll, 
   saveState
 } = globalSlice.actions;
 

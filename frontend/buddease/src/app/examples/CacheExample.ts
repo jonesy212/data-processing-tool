@@ -5,7 +5,7 @@ import { initializeAppData } from '@/app/api/service/ApiService';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
-import { backendStructure } from '@/app/config/appStructure/BackendStructure';
+import { backendStructure } from '@/app/server/database/BackendStructure';
 import { backendConfig } from '@/app/config/BackendConfig';
 import { frontendConfig } from '@/app/config/FrontendConfig';
 import userSettings from "@/app/config/UserSettings";

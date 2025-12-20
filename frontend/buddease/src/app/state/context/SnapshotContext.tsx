@@ -3,15 +3,15 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import {
-  createCompleteSnapshot
-} from '@/app/snapshots/createSnapshotStoreOptions';
+import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { createCompleteSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+
 const fetchSnapshotFromAPI = async <  
   T extends BaseDataEntity,
   K extends T = T,
@@ -95,7 +95,8 @@ export const SnapshotProvider = <
   }, [snapshots]);
 
   // Function to create a new snapshot using Promise with resolve and reject
-  const createNewSnapshot = ( // ← RENAMED from createSnapshot to avoid recursion
+  const createNewSnapshot = (
+     // ← RENAMED from createSnapshot to avoid recursion
     id: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category,
@@ -183,7 +184,7 @@ export const SnapshotProvider = <
               getSnapshotConfig: "",
               createSnapshot: "",
               configureSnap: "",
-              multipleCallbacks: "",
+              multipleCallbacks: {} as MultipleEventsCallbacks<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
               handleSnapshotOperation: "",
               handleSnapshotStoreOperation: "",
               displayToast: "",
@@ -210,14 +211,16 @@ export const SnapshotProvider = <
   };
 
   // Return the provider context value
-  const contextValue = useMemo(() => ({
+  const contextValue: SnapshotContextType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMemo(() => ({
     snapshot,
     snapshots,
     snapshotMap,
-    createSnapshot: createNewSnapshot, // Export the renamed function
+    snapshotStore: snapshotStore!,
+    createSnapshot: createNewSnapshot,
+    fetchSnapshot,
     setSnapshot,
     setSnapshots,
-  }), [snapshot, snapshots, snapshotMap]);
+  }), [snapshot, snapshots, snapshotMap, snapshotStore, fetchSnapshot]);
 
   return (
     <SnapshotContext.Provider value={contextValue}>

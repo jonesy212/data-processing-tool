@@ -16,7 +16,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotBase, SnapshotData } from "@/app/snapshots/SnapshotContainer";
+import { SnapshotBase, SnapshotData } from "@/app/snapshots/SnapshotData";
 
 import { Label } from "@/app/branding/BrandingSettings";
 import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

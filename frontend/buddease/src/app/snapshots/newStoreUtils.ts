@@ -10,7 +10,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { snapshot, Snapshot } from "@/app/snapshots/Snapshot";
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';

@@ -82,7 +82,7 @@ type ImportIssue = {
   line: number;
   importPath: string;
   reason: string;
-  suggestedFix?: string;
+  suggestedFix?: string | { path?: string; confidence?: number; suggestedFix?: string };
   validated?: boolean;
   validationMessage?: string;
   confidenceScore?: number; 
@@ -781,7 +781,7 @@ function fixMissingExportsImport(issue: ImportIssue): ImportIssue[] {
       suggestedFix: suggestedPath,
       reason: `Keep exported symbols: ${exportedSymbols.join(', ')}`,
       confidenceScore: 90,
-      validationMessage: `Found in ${suggestedPath}`
+      validationMessage: `Found in ${typeof suggestedPath === 'object' ? suggestedPath.path || suggestedPath.suggestedFix : suggestedPath}`
     });
     
     // Additional fixes for non-exported symbols
@@ -1102,20 +1102,94 @@ async function runTypeScriptCheck(): Promise<string[]> {
 }
 
 
+
+// Add this helper function (somewhere near other export-related functions)
+function getExportsFromPath(filePath: string | { path?: string; confidence?: number; suggestedFix?: string }, fromFile: string): string[] {
+  let actualPath: string;
+  
+  // Extract string path from object if needed
+  if (typeof filePath === 'object' && filePath !== null) {
+    if (typeof filePath.path === 'string') {
+      actualPath = filePath.path;
+    } else if (typeof filePath.suggestedFix === 'string') {
+      actualPath = filePath.suggestedFix;
+    } else {
+      return [];
+    }
+  } else if (typeof filePath === 'string') {
+    actualPath = filePath;
+  } else {
+    return [];
+  }
+  
+  // Resolve the path
+  let resolvedPath: string | undefined;
+  
+  if (actualPath.startsWith('@/')) {
+    const relativePath = actualPath.replace(/^@\//, '');
+    const possibleBases = ['src/app', 'app', 'src'];
+    
+    for (const base of possibleBases) {
+      const testPath = path.join(PROJECT_ROOT, base, relativePath);
+      const exts = ['.ts', '.tsx', '.js', '.jsx', '/index.ts', '/index.tsx'];
+      
+      for (const ext of exts) {
+        if (fs.existsSync(testPath + ext)) {
+          resolvedPath = testPath + ext;
+          break;
+        }
+      }
+      if (resolvedPath) break;
+    }
+  } else {
+    // Handle relative paths
+    const fromDir = path.dirname(fromFile);
+    let basePath = path.resolve(fromDir, actualPath);
+    
+    const exts = ['.ts', '.tsx', '.js', '.jsx', '/index.ts', '/index.tsx'];
+    let found = false;
+    
+    for (const ext of exts) {
+      if (fs.existsSync(basePath + ext)) {
+        resolvedPath = basePath + ext;
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      return [];
+    }
+  }
+  
+  if (!resolvedPath) {
+    return [];
+  }
+  
+  try {
+    return getExportsCached(resolvedPath);
+  } catch (error) {
+    console.warn(`Could not get exports from ${resolvedPath}:`, error);
+    return [];
+  }
+}
+
 // In the autoFixAliases function or when deciding which fixes to apply:
+// In the shouldApplyFix function
 function shouldApplyFix(fix: ImportFix | ImportIssue): boolean {
   // Extract suggested path from fix
   let suggestedFix: any;
   let confidenceScore: number | undefined;
   
-  if ('confidenceScore' in fix) {
+  // Check if it's ImportFix or ImportIssue
+  if ('targetImportPath' in fix) {
     // This is ImportFix
-    confidenceScore = fix.confidenceScore;
-    suggestedFix = fix.targetImportPath;
+    confidenceScore = (fix as ImportFix).confidenceScore;
+    suggestedFix = (fix as ImportFix).targetImportPath;
   } else {
     // This is ImportIssue
-    confidenceScore = (fix as any).confidenceScore;
-    suggestedFix = (fix as any).suggestedFix;
+    confidenceScore = (fix as ImportIssue).confidenceScore;
+    suggestedFix = (fix as ImportIssue).suggestedFix;
   }
   
   // Extract string from object if needed
@@ -1137,7 +1211,7 @@ function shouldApplyFix(fix: ImportFix | ImportIssue): boolean {
   }
   
   // Additional validation - check if the suggestion makes sense
-  const issue = fix as any;
+  const issue = fix as ImportIssue;
   
   // Don't apply fixes that change component names to completely different components
   if (issue.importPath && suggestedFix) {
@@ -1168,26 +1242,14 @@ function shouldApplyFix(fix: ImportFix | ImportIssue): boolean {
 
 function filterProblematicFixes(issues: ImportIssue[]): ImportIssue[] {
   return issues.filter(issue => {
-    // Extract the actual suggested path (might be an object)
-    let suggestedFix: any = issue.suggestedFix;
-    
-    if (suggestedFix && typeof suggestedFix === 'object') {
-      if (typeof suggestedFix.path === 'string') {
-        suggestedFix = suggestedFix.path;
-      } else if (typeof suggestedFix.suggestedFix === 'string') {
-        suggestedFix = suggestedFix.suggestedFix;
-      } else {
-        // If we can't extract a string path, skip this fix
-        console.log(`⚠️  Skipping: Cannot extract string path from object`, suggestedFix);
-        return false;
-      }
-    }
+    // Extract the actual suggested path
+    const suggestedFixString = extractStringFromSuggestedFix(issue.suggestedFix || '');
     
     // Skip fixes that are clearly wrong
-    if (suggestedFix) {
+    if (suggestedFixString) {
       // Only reject if we have a better suggestion already
       const importName = path.basename(issue.importPath, path.extname(issue.importPath));
-      const suggestedName = path.basename(suggestedFix, path.extname(suggestedFix));
+      const suggestedName = path.basename(suggestedFixString, path.extname(suggestedFixString));
       
       // Don't reject just because names don't match exactly
       // Only reject if the suggestion makes no sense at all
@@ -1197,16 +1259,16 @@ function filterProblematicFixes(issues: ImportIssue[]): ImportIssue[] {
       }
       
       // Don't reject directory changes if they make sense
-      if (issue.importPath.startsWith('@/utils/') && suggestedFix.startsWith('@/app/')) {
+      if (issue.importPath.startsWith('@/utils/') && suggestedFixString.startsWith('@/app/')) {
         // Check if the app version actually exists
-        const appVersionExists = checkIfFileExists(suggestedFix, issue.file);
+        const appVersionExists = checkIfFileExists(suggestedFixString, issue.file);
         const utilsVersionExists = checkIfFileExists(
           issue.importPath.replace('@/utils/', '@/app/'), 
           issue.file
         );
         
         if (!appVersionExists && utilsVersionExists) {
-          console.log(`⚠️  Skipping: ${issue.importPath} → ${suggestedFix} (@/utils version exists)`);
+          console.log(`⚠️  Skipping: ${issue.importPath} → ${suggestedFixString} (@/utils version exists)`);
           return false;
         }
       }
@@ -1216,23 +1278,13 @@ function filterProblematicFixes(issues: ImportIssue[]): ImportIssue[] {
   });
 }
 
-function checkIfFileExists(importPath: any, fromFile: string): boolean {
+function checkIfFileExists(importPath: string | { path?: string; confidence?: number; suggestedFix?: string }, fromFile: string): boolean {
   const exts = ['', '.ts', '.tsx', '.js', '.jsx'];
   
   // Extract string from object if needed
-  let pathString: string;
+  const pathString = extractStringFromSuggestedFix(importPath);
   
-  if (typeof importPath === 'object' && importPath !== null) {
-    if (typeof importPath.path === 'string') {
-      pathString = importPath.path;
-    } else if (typeof importPath.suggestedFix === 'string') {
-      pathString = importPath.suggestedFix;
-    } else {
-      return false;
-    }
-  } else if (typeof importPath === 'string') {
-    pathString = importPath;
-  } else {
+  if (!pathString) {
     return false;
   }
   
@@ -1253,6 +1305,19 @@ function checkIfFileExists(importPath: any, fromFile: string): boolean {
   return false;
 }
 
+// Add this helper function
+function extractStringFromSuggestedFix(suggestedFix: string | { path?: string; confidence?: number; suggestedFix?: string }): string | undefined {
+  if (typeof suggestedFix === 'string') {
+    return suggestedFix;
+  } else if (suggestedFix && typeof suggestedFix === 'object') {
+    if (typeof suggestedFix.path === 'string') {
+      return suggestedFix.path;
+    } else if (typeof suggestedFix.suggestedFix === 'string') {
+      return suggestedFix.suggestedFix;
+    }
+  }
+  return undefined;
+}
 
 // ---------------------
 // Auto-fix Aliases (WITH VALIDATION)
@@ -1262,7 +1327,7 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
   let failed = 0;
   const total = issues.length;
   
-  console.log(`🔧 Starting to fix ${total} issues...`);
+  console.log(`🔧 Starting to fix ${total} issues with batch processing...`);
   
   // Group issues by file for batch processing
   const issuesByFile = new Map<string, ImportIssue[]>();
@@ -1274,119 +1339,57 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
     issuesByFile.get(issue.file)!.push(issue);
   }
   
-  console.log(`📊 Processing ${issuesByFile.size} files with multiple fixes each`);
+  console.log(`📊 Processing ${issuesByFile.size} files with batch updates`);
   
-  let fileIndex = 0;
-  const totalFiles = issuesByFile.size;
-  
+  // Phase 1: Collect all fixes
   for (const [filePath, fileIssues] of issuesByFile) {
-    fileIndex++;
-    
-    // Show progress
-    if (fileIndex % 10 === 0 || fileIndex === totalFiles) {
-      console.log(`📊 File progress: ${fileIndex}/${totalFiles} (${Math.round((fileIndex / totalFiles) * 100)}%)`);
-    }
-    
     if (!fs.existsSync(filePath)) {
       console.log(`❌ File not found: ${filePath}`);
       failed += fileIssues.length;
       continue;
     }
     
+    // Create backup once per file
     try {
-      // Read file once
-      const startTime = Date.now();
-      let content = fs.readFileSync(filePath, 'utf8');
-      const lines = content.split('\n');
+      safeFixer.createBackup(filePath);
       
-      let fileFixed = 0;
-      let fileFailed = 0;
-      
-      // Process all issues for this file
+      // Record each fix
       for (const issue of fileIssues) {
-        // Validate the issue
-        if (!shouldApplyFix(issue)) {
-          fileFailed++;
+        if (!shouldApplyFix(issue) || !issue.suggestedFix || !issue.validated) {
+          failed++;
           continue;
         }
         
-        if (!issue.suggestedFix || !issue.validated) {
-          fileFailed++;
+        // Extract suggested fix from object if needed
+        const suggestedFixString = extractStringFromSuggestedFix(issue.suggestedFix);
+        
+        if (!suggestedFixString) {
+          failed++;
           continue;
         }
         
-        // Check if line exists and contains the import
-        if (issue.line - 1 >= lines.length) {
-          console.log(`❌ Line ${issue.line} out of bounds in ${filePath}`);
-          fileFailed++;
-          continue;
-        }
-        
-        const lineIndex = issue.line - 1;
-        let lineContent = lines[lineIndex];
-        
-        // Check if the import path exists in this line
-        if (!lineContent.includes(issue.importPath)) {
-          // Try to find which line actually has this import
-          const foundLineIndex = lines.findIndex(line => line.includes(issue.importPath));
-          if (foundLineIndex === -1) {
-            console.log(`❌ Import path '${issue.importPath}' not found in ${filePath}`);
-            fileFailed++;
-            continue;
-          }
-          // Update the issue with the correct line
-          issue.line = foundLineIndex + 1;
-          lineContent = lines[foundLineIndex];
-        }
-        
-        // Perform the replacement
-        const importPattern = new RegExp(`(['"])${issue.importPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(['"])`);
-        
-        if (!importPattern.test(lineContent)) {
-          console.log(`❌ Could not match import pattern in ${filePath}:${issue.line}`);
-          fileFailed++;
-          continue;
-        }
-        
-        const newLine = lineContent.replace(importPattern, `$1${issue.suggestedFix}$2`);
-        lines[lineIndex] = newLine;
-        fileFixed++;
-        
-        // Record the fix (simplified version for batching)
         safeFixer.recordFix({
           file: filePath,
           originalImport: issue.importPath,
-          newImport: issue.suggestedFix,
+          newImport: suggestedFixString,
           line: issue.line
         });
       }
-      
-      // Write file once with all changes
-      if (fileFixed > 0) {
-        // Create backup
-        const backupPath = safeFixer.createBackup(filePath);
-        
-        // Write the modified content
-        const newContent = lines.join('\n');
-        fs.writeFileSync(filePath, newContent);
-        
-        const elapsed = Date.now() - startTime;
-        console.log(`✅ Fixed ${fileFixed} imports in ${path.basename(filePath)} (${elapsed}ms)`);
-        fixed += fileFixed;
-      }
-      
-      failed += fileFailed;
-      
     } catch (error) {
-      console.error(`❌ Error processing ${filePath}:`, error);
+      console.error(`❌ Error preparing ${filePath}:`, error);
       failed += fileIssues.length;
     }
   }
   
-  console.log(`\n📊 Final results: ${fixed} fixed, ${failed} failed out of ${total} total`);
+  // Phase 2: Apply all fixes in batch
+  const result = safeFixer.applyAllPendingFixes();
+  fixed = result.fixed;
   
-  // Save all records at once
+  // Save records
   safeFixer.saveRecords(path.join('./reports', `fix-records-${Date.now()}.json`));
+  safeFixer.clearPending();
+  
+  console.log(`\n📊 Final results: ${fixed} fixed, ${failed} failed out of ${total} total`);
   return { fixed, failed };
 }
 
@@ -1896,12 +1899,18 @@ function createSmartImportFixes(issues: ImportIssue[]): ImportIssue[] {
     // Check if this is a "Missing exports" issue
     if (issue.reason?.includes('Missing exports:')) {
       // Already handled by fixMissingExportsImport
-      smartFixes.push(issue);
+      const fixes = fixMissingExportsImport(issue);
+      smartFixes.push(...fixes);
       continue;
     }
     
-    // Check if the suggested file exports all needed symbols
-    const importMatch = issue.importPath.match(/import\s+(?:([\w*\s{},]+)\s+from\s+)?['"]([^'"]+)['"]/);
+    // Extract import clause from the original line
+    const originalContent = fs.readFileSync(issue.file, 'utf8');
+    const lines = originalContent.split('\n');
+    const lineContent = lines[issue.line - 1];
+    
+    // Try to extract import clause from the line
+    const importMatch = lineContent.match(/import\s+(?:([\w*\s{},]+)\s+from\s+)?['"]([^'"]+)['"]/);
     if (!importMatch) {
       smartFixes.push(issue);
       continue;
@@ -1933,14 +1942,28 @@ function createSmartImportFixes(issues: ImportIssue[]): ImportIssue[] {
     
     // If some symbols are missing, create multiple fixes
     if (exportedSymbols.length > 0) {
-      // First fix: keep exported symbols
-      smartFixes.push({
-        ...issue,
-        suggestedFix: issue.suggestedFix,
-        reason: `Keep exported symbols: ${exportedSymbols.join(', ')}`,
-        confidenceScore: Math.max(issue.confidenceScore || 30, 85),
-        validationMessage: `${exportedSymbols.length} of ${importedSymbols.length} symbols found`
-      });
+      // Extract string from suggestedFix object if needed
+      let suggestedFixString: string | undefined;
+      if (typeof issue.suggestedFix === 'string') {
+        suggestedFixString = issue.suggestedFix;
+      } else if (issue.suggestedFix && typeof issue.suggestedFix === 'object') {
+        if (typeof issue.suggestedFix.path === 'string') {
+          suggestedFixString = issue.suggestedFix.path;
+        } else if (typeof issue.suggestedFix.suggestedFix === 'string') {
+          suggestedFixString = issue.suggestedFix.suggestedFix;
+        }
+      }
+      
+      if (suggestedFixString) {
+        // First fix: keep exported symbols
+        smartFixes.push({
+          ...issue,
+          suggestedFix: suggestedFixString,
+          reason: `Keep exported symbols: ${exportedSymbols.join(', ')}`,
+          confidenceScore: Math.max(issue.confidenceScore || 30, 85),
+          validationMessage: `${exportedSymbols.length} of ${importedSymbols.length} symbols found`
+        });
+      }
     }
     
     // Find files for missing symbols

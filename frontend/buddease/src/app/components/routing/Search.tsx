@@ -7,7 +7,7 @@ import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import SearchComponent, {
   SearchComponentProps,
 } from "@/app/pages/searches/SearchComponent";
-import { sanitizeInput } from "[object Object]";
+import { sanitizeInput } from "@/app/components/crypto/ClientSanitization";
 import React, { useEffect, useState } from "react";
 import { Entity } from "@/app/config/BaseConfig";
 import SearchResult from "./SearchResult";

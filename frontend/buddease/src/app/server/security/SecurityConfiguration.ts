@@ -2,7 +2,7 @@
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 
 import LazyLoadScriptConfigImpl from '@/app/config/LazyLoadScriptConfig';
-import { ApiConfig, ConfigurationOptions, ConfigurationService } from "@/app/services/ConfigurationService";
+import { ApiConfig, ConfigurationOptions, ConfigurationService } from "@/app/api/ApiConfigService";
 import LoggerConfig from "@/app/config/LoggerConfig";
 
   // Define Security Configuration Interface

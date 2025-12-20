@@ -2,7 +2,7 @@
 /// <reference types="react-speech-recognition" />
 
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
-import { generateDynamicPrompts } from '@/prompts/promptGenerator';
+import { generateDynamicPrompts } from '@/app/prompts/promptGenerator';
 import React, { useState } from 'react';
 import { useSpeechRecognition } from 'react-speech-recognition';
 

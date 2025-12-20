@@ -1,5 +1,5 @@
 // EventPriorityClassification.ts
-import { PriorityTypeEnum } from "./StatusType";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 
 
 

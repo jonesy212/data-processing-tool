@@ -2,7 +2,7 @@
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
 import { snapshotApi } from '@/app/api/SnapshotApi';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseConfig } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -497,7 +497,6 @@ const handleSnapshot = <
       id,
       category: category ?? undefined,
       timestamp: new Date(),
-      snapshotStore,
       data: snapshotData as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       initialState: snapshotData,
       isCore: false,
@@ -522,7 +521,7 @@ const handleSnapshot = <
         set: "",
         processEvent: "",
         shared: "",
-        operations: "",
+        operations: {} as SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       
         base: "",
         sharedMetadata: "",
@@ -796,7 +795,7 @@ const getSnapshot = <
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotConfig: SnapshotConfig<any>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   additionalHeaders?: Record<string, string>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise((resolve, reject) => {
@@ -811,27 +810,36 @@ const getSnapshot = <
       // Usage in getSnapshot:
       const mockSnapshot = createMockSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
       
-      // Create proper StructuredMetadata object instead of a Map
+      // Check the actual type of `meta` property in the Snapshot interface
+      // If `meta` should be StructuredMetadata object (not a Map), create it directly
       const structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        baseConfig: {},
+        baseConfig: {} as BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         sharedMetadata: {},
         sharedBaseData: {},
         taggable: {},
-        // Add the missing 4 properties (check your StructuredMetadata interface for exact names)
+        // Add the other required properties based on the StructuredMetadata interface
+        // Check your actual interface definition for exact property names
         // For example:
-        metadata: {} as Meta,
+        metadata: {} as any, // Use proper type based on your interface
         attachments: [] as AttachmentType[],
         excludedFields: [] as ExcludedFields[],
         includedFields: [] as IncludedFields[],
         // Add any other properties from the interface
+        permissions: [] as string[],
+        customFields: {} as Record<string, any>
       };
       
-      // If mockSnapshot.meta should be a Map with StructuredMetadata as values
-      mockSnapshot.meta = new Map<string, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
-      mockSnapshot.meta.set("meta1", structuredMetadata);
+      // If `meta` in Snapshot is meant to be a Map (check your Snapshot interface)
+      // Then you need to see what type of Map it is:
       
-      // OR if mockSnapshot.meta IS the StructuredMetadata object directly
-      // mockSnapshot.meta = structuredMetadata;
+      // Option 1: If meta is StructuredMetadata (not Map)
+      mockSnapshot.meta = structuredMetadata;
+      
+      // Option 2: If meta is a Map<string, StructuredMetadata>
+      // You need to check the Snapshot interface definition
+      // If it's Map<string, StructuredMetadata>, then:
+      // mockSnapshot.meta = new Map<string, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
+      // mockSnapshot.meta.set("meta1", structuredMetadata);
       
       resolve(mockSnapshot);
     }, 100);
@@ -859,13 +867,7 @@ const getLatestSnapshot = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshotProvider?: (id: string) => Promise<{
-    category: any;
-    timestamp: any;
-    id: any;
-    snapshot: EnhancedSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  }>
+  snapshotProvider?: (id: string) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise((resolve, reject) => {
     if (!snapshotProvider) {
@@ -873,16 +875,14 @@ const getLatestSnapshot = <
       return;
     }
 
-    // In a real implementation, you might have logic to determine the "latest" ID
-    // For this example, we'll simulate getting the latest ID
     const latestId = 'latest_' + Date.now();
 
     snapshotProvider(latestId)
-      .then(result => {
-        if (!result || !result.snapshot) {
+      .then(snapshot => {
+        if (!snapshot) {
           throw new Error('Failed to retrieve latest snapshot');
         }
-        resolve(result.snapshot);
+        resolve(snapshot);
       })
       .catch(error => {
         console.error('Error fetching latest snapshot:', error);
@@ -1066,7 +1066,7 @@ const configureSnapshot = <
   callback?: ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void),
   snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
   if (!id || !snapshot) {

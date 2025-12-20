@@ -1,5 +1,4 @@
 // lifecycleMethods.ts
-// snapshotStore/methods/LifecycleMethods.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Content } from '@/app/models/content/AddContent';
@@ -8,19 +7,13 @@ import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import type {
-  SnapshotManager,
-  SnapshotStoreProps,
-  SnapshotUnion,
-  Subscriber,
-} from "@/app/types";
-
-
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotManager } from '@/app/hooks/useSnapshotManager'
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-
-
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { convertToSnapshotUnion } from "@/app/snapshots/ConvertSnapshotUnion";
 import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
@@ -28,105 +21,61 @@ import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { isSnapshot } from '@/utils/snapshotUtils';
 
+// Add these imports that were missing
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { Data } from '@/app/models/data/Data';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
+import { SnapshotWithCriteriaAsBase } from '@/app/snapshots/SnapshotStoreOptions'
+import { snapshotApi } from '@/app/api/SnapshotApi';
+import { useSnapshotManager } from '@/app/hooks/useSnapshotManager';
+
+// -------------------------------
+// Lifecycle Methods
+// -------------------------------
 
 export const LifecycleMethods = {
 
-    initSnapshot(
-      snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-      snapshotId: string,
-      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category?: Category,    categoryProperties: CategoryProperties | undefined,
-      snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      callback: (snapshotStore: SnapshotStore<any, any>) => void
-    ): void {
-      this.handleDelegate(
-        (delegate) => delegate.initSnapshot.bind(delegate),
-        snapshot,
-        snapshotId,
-        snapshotData,
-        category,
-        snapshotConfig,
-        callback
-      );
-    },
-  
+  // ---------- Initialization Methods ----------
 
-  /**
-   * Deletes a snapshot from the store with proper type safety
-   * 
-   * @template T - Base data type
-   * @template K - Extended data type (defaults to T)
-   * @template Meta - Metadata type
-   * @template ExcludedFields - Fields to exclude
-   * @param {string} snapshotId - ID of snapshot to delete
-   * @param {boolean} [permanent=false] - Whether to permanently delete
-   * @returns {Promise<boolean>} - True if deletion was successful
-   */
-  deleteSnapshot(
+  initSnapshot: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotId: string,
-    permanent: boolean = false
-  ): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      try {
-        // Validate input
-        if (!snapshotId) {
-          throw new Error('Snapshot ID is required');
-        }
-
-        // Find the snapshot in storage
-        const snapshot = this.snapshots.get(snapshotId);
-        if (!snapshot) {
-          resolve(false); // Not found = considered successful
-          return;
-        }
-
-        // Handle deletion based on type
-        if (permanent) {
-          // Permanent deletion
-          this.snapshots.delete(snapshotId);
-          this.deletedSnapshots.delete(snapshotId); // Remove from deleted set
-          
-          // Notify subscribers
-          this.notifySubscribers({
-            type: 'delete',
-            snapshotId,
-            permanent: true
-          });
-
-          resolve(true);
-        } else {
-          // Soft deletion
-          snapshot.deleted = true;
-          snapshot.updatedAt = new Date();
-          this.deletedSnapshots.add(snapshotId);
-
-          // Mark versions as deleted
-          if (snapshot.versions) {
-            snapshot.versions.forEach(version => {
-              version.deleted = true;
-            });
-          }
-
-          // Notify subscribers
-          this.notifySubscribers({
-            type: 'delete',
-            snapshotId,
-            permanent: false
-          });
-
-          resolve(true);
-        }
-      } catch (error) {
-        console.error(`Error deleting snapshot ${snapshotId}:`, error);
-        reject(error);
-      }
-    });
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    categoryProperties: CategoryProperties | undefined,
+    snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    callback: (snapshotStore: SnapshotStore<any, any>) => void,
+    category?: Category
+  ): void {
+    this.executeDelegateMethod(
+      (delegate) => delegate.initSnapshot.bind(delegate),
+      snapshot,
+      snapshotId,
+      snapshotData,
+      category,
+      snapshotConfig,
+      callback
+    );
   },
 
-
-
-
-  createInitSnapshot(
+  createInitSnapshot: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string,
     initialData: T,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -138,34 +87,33 @@ export const LifecycleMethods = {
           return reject(new Error("snapshotData is null or undefined"));
         }
 
-        let data: Data;
+        let data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         if ("data" in snapshotData && snapshotData.data) {
-          data = snapshotData.data;
+          data = snapshotData.data as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         } else if (snapshotData.data && "data" in snapshotData.data) {
-          data = snapshotData.data.data;
+          data = (snapshotData.data as any).data;
         } else {
           return reject(new Error("snapshotData does not have a valid 'data' property"));
         }
 
-        id =
-          typeof data.id === "string"
-            ? data.id
-            : String(
-                UniqueIDGenerator.generateID(
-                  "SNAP",
-                  "defaultID",
-                  NotificationTypeEnum.GeneratedID
-                )
-              );
+        const snapshotId = typeof data.id === "string"
+          ? data.id
+          : String(
+              UniqueIDGenerator.generateID(
+                "SNAP",
+                "defaultID",
+                NotificationTypeEnum.GENERATED_ID
+              )
+            );
 
         const snapshot: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-          id,
+          id: snapshotId,
           data,
           timestamp: snapshotData.timestamp || new Date(),
           category: this.category,
           topic: this.topic,
           initializedState: {},
-          criteria: {}, // Example placeholder for search criteria
+          criteria: {},
           unsubscribe: function () {
             throw new Error("Function not implemented.");
           },
@@ -177,26 +125,23 @@ export const LifecycleMethods = {
           },
           events: undefined,
           meta: {},
-        };
+        } as SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
         const storeId = snapshotApi.getSnapshotStoreId(String(this.snapshotId));
-        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId);
+        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId, storeProps);
 
-        this.snapshots.push(snapshot);
+        this.snapshots.push(snapshot as any);
 
-        if (this.delegate && this.delegate.length > 0) {
-          for (const delegateConfig of this.delegate) {
-            if (
-              delegateConfig &&
-              typeof delegateConfig.createSnapshotSuccess === "function"
-            ) {
+        if (this.executeDelegateMethodAsync && this.executeDelegateMethodAsync.length > 0) {
+          for (const delegateConfig of this.executeDelegateMethodAsync) {
+            if (delegateConfig && typeof delegateConfig.createSnapshotSuccess === "function") {
               await delegateConfig.createSnapshotSuccess(
                 id,
                 snapshotManager,
                 snapshot,
                 initialData
               );
-              return resolve(snapshot); // Correctly resolve the promise with the snapshot
+              return resolve(snapshot);
             }
           }
           return reject(new Error("No valid delegate found for createSnapshotFailure"));
@@ -204,18 +149,14 @@ export const LifecycleMethods = {
           return reject(new Error("Delegate is undefined or empty"));
         }
       } catch (error) {
-        reject(error); // Handle unexpected errors
+        reject(error);
       }
     });
   },
 
+  // ---------- CRUD Operations ----------
 
-
-
-
-
-  // New lifecycle-specific props/methods
-  set: function <
+  deleteSnapshot: function <
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -224,69 +165,65 @@ export const LifecycleMethods = {
     IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: any | Map<string, any>,
-    type: string,
-    event: Event
-  ): void | null {
-    // Implementation example:
-    if (data instanceof Map) {
-      // Handle Map data
-      data.forEach((value, key) => {
-        this.setData(key, value);
-      });
-    } else {
-      // Handle single data item
-      this.setData('default', data);
-    }
-    return null;
-  },
-
-  setStore: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: any | Map<string, SnapshotStore<any, any, any, any>>,
-    type: string,
-    event: Event
-  ): void | null {
-    // Implementation example:
-    if (data instanceof Map) {
-      // Handle multiple stores
-      data.forEach((store, key) => {
-        this.addNestedStore(key, store);
-      });
-    } else if (typeof data === 'object' && data !== null) {
-      // Handle single store
-      this.addNestedStore('default', data);
-    }
-    return null;
-  },
-
-
-  onSnapshot: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
     snapshotId: string,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
-  ): void {
-    
+    permanent: boolean = false
+  ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!snapshotId) {
+          throw new Error('Snapshot ID is required');
+        }
+
+        // Find the snapshot in storage
+        const snapshot = this.snapshots.find(s => s.id === snapshotId);
+        if (!snapshot) {
+          resolve(false);
+          return;
+        }
+
+        if (permanent) {
+          // Permanent deletion
+          this.snapshots = this.snapshots.filter(s => s.id !== snapshotId);
+          this.deletedSnapshots.delete(snapshotId);
+          
+          // Notify subscribers
+          this.notifySubscribers({
+            type: 'delete',
+            snapshotId,
+            permanent: true
+          } as any);
+
+          resolve(true);
+        } else {
+          // Soft deletion
+          (snapshot as any).deleted = true;
+          (snapshot as any).updatedAt = new Date();
+          this.deletedSnapshots.add(snapshotId);
+
+          // Mark versions as deleted
+          if ((snapshot as any).versions) {
+            (snapshot as any).versions.forEach((version: any) => {
+              version.deleted = true;
+            });
+          }
+
+          // Notify subscribers
+          this.notifySubscribers({
+            type: 'delete',
+            snapshotId,
+            permanent: false
+          } as any);
+
+          resolve(true);
+        }
+      } catch (error) {
+        console.error(`Error deleting snapshot ${snapshotId}:`, error);
+        reject(error);
+      }
+    });
   },
-  
-  
-  createSnapshots: function <
+
+  createSnapshots: async function <
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -303,37 +240,50 @@ export const LifecycleMethods = {
     callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     category?: Category,
-     categoryProperties?: CategoryProperties
-  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    categoryProperties?: CategoryProperties
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     const snapshotsArray = Array.isArray(snapshots) ? snapshots : [snapshots];
 
-    const createdSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = snapshotsArray.map(
-      (snapshot) => {
-        // Use createSnapshot to build a full snapshot
-        const completeSnapshot = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
-          baseData: snapshot.data,
-          baseMeta: new Map(), // you can pass existing snapshot map if needed
-          snapshotId: snapshotId ? String(snapshotId) : null,
-          category,
-          snapshotStore: this,
-          snapshotManager,
-          snapshotStoreConfig: snapshotDataConfig ? snapshotDataConfig[0] || null : null,
-          isSubscribed: false,
-          storeProps: this.storeProps,
-          storeOptions: this.storeOptions,
-        });
+    // Use Promise.all to wait for all async createSnapshot calls
+    const createdSnapshotsPromises = snapshotsArray.map(
+      async (snapshot) => {
+        const completeSnapshot = await createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          snapshot.data, // baseData
+          new Map(), // baseMeta
+          snapshotId ? String(snapshotId) : null, // snapshotId
+          this, // snapshotStore
+          snapshotManager, // snapshotManager
+          snapshotDataConfig ? snapshotDataConfig[0] || null : null, // snapshotStoreConfig
+          false, // isSubscribed
+          category, // category
+          this.storeProps, // storeProps
+          this.storeOptions, // storeOptions
+          categoryProperties, // categoryProperties
+          undefined, // dataStore (optional)
+          undefined, // dataStoreMethods (optional)
+          undefined, // metadata (optional)
+          undefined, // subscriberId (optional)
+          undefined, // endpointCategory (optional)
+          undefined, // subscription (optional)
+          undefined, // snapshotConfigData (optional)
+          undefined // snapshotContainer (optional)
+        );
 
         return completeSnapshot;
       }
     );
+
+    // Wait for all promises to resolve
+    const createdSnapshots = await Promise.all(createdSnapshotsPromises);
 
     if (callback) callback(createdSnapshots);
 
     return createdSnapshots;
   },
   
-    // INITIALIZATION & CONFIG TYPE DECLARATIONS
-  initializeStores: function <
+  // ---------- State Management ----------
+
+  set: function <
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -342,14 +292,79 @@ export const LifecycleMethods = {
     IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+    data: any | Map<string, any>,
+    type: string,
+    event: Event
+  ): void | null {
+    if (data instanceof Map) {
+      data.forEach((value, key) => {
+        this.setData(key, value);
+      });
+    } else {
+      this.setData('default', data);
+    }
+    return null;
+  },
+
+  addNestedStore: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    key: string,
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
-    // Type assertion to access protected method
-    const protectedThis = this as unknown as {
-      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
-    };
+    // Implementation of addNestedStore
+    if (!this.getNestedStores) {
+      this.getNestedStores = [];
+    }
     
-    protectedThis.setSnapshotStores(stores);
+    // Check if store already exists
+    const existingIndex = this.getNestedStores.findIndex(s => 
+      s.storeId === store.storeId || s.id === store.id
+    );
+    
+    if (existingIndex >= 0) {
+      // Update existing store
+      this.getNestedStores[existingIndex] = store;
+    } else {
+      // Add new store
+      this.getNestedStores.push(store);
+    }
+    
+    // Update the store's parent reference if it exists
+    if (store && typeof store === 'object') {
+      (store as any).parentSnapshotStore = this;
+    }
+    
+    console.log(`Added nested store with key: ${key}, storeId: ${store.storeId}`);
+  },
+
+  setStore: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    data: any | Map<string, SnapshotStore<any, any, any, any>>,
+    type: string,
+    event: Event
+  ): void | null {
+    if (data instanceof Map) {
+      data.forEach((store, key) => {
+        this.addNestedStore(key, store);
+      });
+    } else if (typeof data === 'object' && data !== null) {
+      this.addNestedStore('default', data);
+    }
+    return null;
   },
 
   updateState: function <
@@ -369,6 +384,9 @@ export const LifecycleMethods = {
       initializationContext?: Record<string, unknown>;
     }
   ): void {
+    if (!this.states) {
+      this.states = [];
+    }
     this.states.push(newState);
     this.currentState = newState;
   },
@@ -380,8 +398,10 @@ export const LifecycleMethods = {
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
-    return this.currentState;
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    return this.currentState || null;
   },
 
   getStates: function <
@@ -391,186 +411,10 @@ export const LifecycleMethods = {
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    return this.states;
-  },
-
-  hasSnapshots: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<boolean> {
-    return Promise.resolve(this.snapshots.length > 0);
-  },
-
-  equals: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-    >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      otherStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ): Promise<boolean> {
-    return Promise.resolve(JSON.stringify(this.snapshots) === JSON.stringify(otherStore.snapshots));
-  },
-
-  initializeWithData: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-  ): void {
-    this.snapshots = data; // initialize snapshots
-  },
-
-  addToSnapshotList: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    const results: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
-    for (const snapshot of snapshots) {
-
-      const storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-        storeId: 123,
-        name: "MyStore",
-        version: "1.0.0",
-        schema: {},
-        options: {} as any,
-        category: "example",
-        config: Promise.resolve(null),
-        operation: {} as any,
-        expirationDate: new Date(),
-        payload: { error: "", meta: {} as any },
-        callback: () => {},
-        storeProps: {},
-        endpointCategory: "default",
-        metadata: {} as any,
-      };
-      const result = await this.addToSnapshotList(snapshot, subscribers, storeProps);
-      if (result) results.push(result);
-    }
-    return results;
-  },
-
-    getSnapshotsBySubscriber: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    subscriber: string
-  ): Promise<any[]> {
-    const snapshots = await this.getAllSnapshots?.(
-      this.storeId,
-      this.event,
-      this.getSnapshotOptions(),
-      (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => snapshot?.subscribers?.includes(subscriber)
-    );
-    return snapshots?.map(s => s.data) ?? [];
-  },
-
-  emit: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    event: string,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotId: string,
-    subscribers: any,
-    type: string,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    dataItems: any[],
-    criteria: any,
-    category?: string | symbol | Category
-  ) {
-    // Implementation placeholder
-  },
-
-  removeChild: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childId: string,
-    parentId: string,
-    parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) {
-    // Implementation placeholder
-  },
-
-  getChildren: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    id: string,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    return [];
-  },
-
-  hasChildren: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: string): boolean {
-    return false;
-  },
-
-  isDescendantOf: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childId: string,
-    parentId: string,
-    parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): boolean {
-    return false;
+    return this.states || [];
   },
 
   getInitialState: function <
@@ -580,43 +424,17 @@ export const LifecycleMethods = {
     AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-    return {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return this.states && this.states.length > 0 
+      ? this.states[0] 
+      : {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   },
 
-  /**
-   * Get a config option by key
-   */
-  getConfigOption: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, optionKey: string): Record<string, any> {
-    return { key: optionKey, value: null }; // Placeholder logic
-  },
+  // ---------- Store Management ----------
 
-
-  /**
-   * Return current timestamp
-   */
-  getTimestamp: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Date {
-    return new Date();
-  },
-
-  /**
- * Get snapshot stores by id or snapshot
- */
-  getData: async function <
+  initializeStores: function <
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -625,38 +443,149 @@ export const LifecycleMethods = {
     IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    id: string | number,
-    snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
-    const snapshotStores = this.snapshotStores;
-    
-    if (!snapshotStores) {
-      throw new Error("No snapshot stores are initialized.");
-    }
+    stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): void {
+    this.snapshotStores = stores;
+  },
 
-    if (snapshot) {
-      const result: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
-      for (const [, store] of snapshotStores) {
-        if (store.snapshots.some((s: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => s.id === snapshot.id)) {
-          result.push(store);
+  addStore: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    storeId: number,
+    snapshotId: string | null,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    type: string,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    try {
+      if (!storeId || !snapshotStore || !snapshot) {
+        console.warn("Invalid parameters provided to addStore");
+        return null;
+      }
+
+      if (!this.snapshotStores) {
+        this.snapshotStores = new Map();
+      }
+
+      this.snapshotStores.set(storeId, snapshotStore);
+
+      if (snapshotId && snapshot) {
+        if (!(snapshot as any).associatedStores) {
+          (snapshot as any).associatedStores = new Map();
+        }
+        (snapshot as any).associatedStores.set(storeId, snapshotStore);
+      }
+
+      this.lastUpdated = new Date();
+
+      if (event && typeof (event as any).trigger === 'function') {
+        try {
+          (event as any).trigger('store_added', {
+            storeId,
+            snapshotId,
+            store: snapshotStore,
+            snapshot,
+            type,
+            timestamp: this.lastUpdated
+          });
+        } catch (eventError) {
+          console.warn('Failed to trigger store added event:', eventError);
         }
       }
-      return result.length ? result : undefined;
-    }
 
-    if (typeof id === "number") {
-      const store = snapshotStores.get(id);
-      return store ? [store] : undefined;
-    }
-
-    const matchedStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
-    for (const store of snapshotStores.values()) {
-      if (store.snapshots.some((s: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => s.id === id)) {
-        matchedStores.push(store);
+      if (this.executeDelegateMethodAsync && typeof (this.executeDelegateMethodAsync as any).onStoreAdded === 'function') {
+        try {
+          (this.executeDelegateMethodAsync as any).onStoreAdded(storeId, snapshotStore, snapshotId);
+        } catch (delegateError) {
+          console.warn('Delegate onStoreAdded failed:', delegateError);
+        }
       }
-    }
 
-    return matchedStores.length ? matchedStores : undefined;
+      return snapshotStore;
+    } catch (error) {
+      console.error(`Failed to add store ${storeId}:`, error);
+      return null;
+    }
+  },
+
+  removeStore: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    storeId: number,
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotId: string,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    type: string,
+    event: Event
+  ): boolean {
+    try {
+      if (!storeId) {
+        console.warn("Store ID is required for removal");
+        return false;
+      }
+
+      if (!this.snapshotStores || !this.snapshotStores.has(storeId)) {
+        console.warn(`Store with ID ${storeId} not found`);
+        return false;
+      }
+
+      const removed = this.snapshotStores.delete(storeId);
+
+      if (removed) {
+        if (snapshotId && snapshot && (snapshot as any).associatedStores) {
+          (snapshot as any).associatedStores.delete(storeId);
+          
+          if ((snapshot as any).associatedStores.size === 0) {
+            delete (snapshot as any).associatedStores;
+          }
+        }
+
+        this.lastUpdated = new Date();
+
+        if (event && typeof (event as any).trigger === 'function') {
+          try {
+            (event as any).trigger('store_removed', {
+              storeId,
+              snapshotId,
+              store,
+              snapshot,
+              type,
+              timestamp: this.lastUpdated
+            });
+          } catch (eventError) {
+            console.warn('Failed to trigger store removed event:', eventError);
+          }
+        }
+
+        if (this.executeDelegateMethodAsync && typeof (this.executeDelegateMethodAsync as any).onStoreRemoved === 'function') {
+          try {
+            (this.executeDelegateMethodAsync as any).onStoreRemoved(storeId, snapshotId);
+          } catch (delegateError) {
+            console.warn('Delegate onStoreRemoved failed:', delegateError);
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error(`Failed to remove store ${storeId}:`, error);
+      return false;
+    }
   },
 
   getStore: function <    
@@ -677,14 +606,12 @@ export const LifecycleMethods = {
     event?: Event
   ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     if (snapshotId) {
-      const existingSnapshot = this.snapshots.find((s: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-        return isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(s) && s.id === snapshotId;
-      });
+      const existingSnapshot = this.snapshots.find((s: any) => s.id === snapshotId);
 
       if (existingSnapshot) {
         if (snapshot) {
           existingSnapshot.data = snapshot.data;
-          existingSnapshot.metadata = snapshot.metadata;
+          (existingSnapshot as any).metadata = (snapshot as any).metadata;
           existingSnapshot.category = snapshot.category;
         }
 
@@ -713,7 +640,7 @@ export const LifecycleMethods = {
 
     return null;
   },
- 
+
   getStores: function <
     T extends BaseDataEntity,
     K extends T = T,
@@ -732,8 +659,8 @@ export const LifecycleMethods = {
     const processReference = (ref: SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
       try {
         if (ref instanceof SnapshotStore) return ref;
-        if (typeof ref === 'string' || typeof ref === 'number') return this.snapshotStores.get(Number(ref)) || null; // ✅ Use public getter
-        if (ref?.storeId) return this.snapshotStores.get(ref.storeId) || null; // ✅ Use public getter
+        if (typeof ref === 'string' || typeof ref === 'number') return this.snapshotStores.get(Number(ref)) || null;
+        if ((ref as any)?.storeId) return this.snapshotStores.get(Number((ref as any).storeId)) || null;
         return null;
       } catch (error) {
         console.error('Error processing store reference:', error);
@@ -757,7 +684,9 @@ export const LifecycleMethods = {
     if (snapshotStoreConfigs?.length) {
       for (const config of snapshotStoreConfigs) {
         if (config.storeId) {
-          const store = this.snapshotStores.get(config.storeId); // ✅ Use public getter
+          // Convert storeId to number before using with Map.get()
+          const storeIdNumber = Number(config.storeId);
+          const store = this.snapshotStores.get(storeIdNumber);
           if (store) results.push(store);
         }
       }
@@ -765,151 +694,23 @@ export const LifecycleMethods = {
 
     if (!snapshotStores && !snapshotStoreConfigs) {
       if (storeId) {
-        const store = this.snapshotStores.get(storeId); // ✅ Use public getter
+        const store = this.snapshotStores.get(storeId);
         if (store) results.push(store);
       } else {
-        for (const [, store] of this.snapshotStores) { // ✅ Use public getter
+        for (const [, store] of this.snapshotStores) {
           results.push(store);
         }
       }
     }
 
-    // Deduplicate
     return results.filter(
       (store, index, self) => index === self.findIndex(s => s.storeId === store.storeId)
     );
   },
 
-  findSnapshots: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = never,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    criteria?: {
-      ids?: (string | number)[];
-      categories?: string[];
-      tags?: string[];
-      status?: string[];
-      createdAfter?: Date;
-      createdBefore?: Date;
-      updatedAfter?: Date;
-      updatedBefore?: Date;
-      limit?: number;
-      offset?: number;
-      sortBy?: 'createdAt' | 'updatedAt' | 'id' | 'category';
-      sortOrder?: 'asc' | 'desc';
-      // Custom filter function for complex queries
-      filter?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean;
-    }
-  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    try {
-      // Validate snapshots array exists
-      if (!this.snapshots || !Array.isArray(this.snapshots)) {
-        return [];
-      }
+  // ---------- Data Operations ----------
 
-      let results = [...this.snapshots];
-
-      // Apply ID filter
-      if (criteria?.ids && criteria.ids.length > 0) {
-        const idSet = new Set(criteria.ids.map(id => id.toString()));
-        results = results.filter(snapshot => idSet.has(snapshot.id));
-      }
-
-      // Apply category filter
-      if (criteria?.categories && criteria.categories.length > 0) {
-        const categorySet = new Set(criteria.categories);
-        results = results.filter(snapshot => 
-          snapshot.category && categorySet.has(snapshot.category)
-        );
-      }
-
-      // Apply tag filter
-      if (criteria?.tags && criteria.tags.length > 0) {
-        const tagSet = new Set(criteria.tags);
-        results = results.filter(snapshot => 
-          snapshot.tags && snapshot.tags.some(tag => tagSet.has(tag))
-        );
-      }
-
-      // Apply status filter
-      if (criteria?.status && criteria.status.length > 0) {
-        const statusSet = new Set(criteria.status);
-        results = results.filter(snapshot => 
-          snapshot.status && statusSet.has(snapshot.status)
-        );
-      }
-
-      // Apply date filters
-      if (criteria?.createdAfter) {
-        results = results.filter(snapshot => 
-          snapshot.createdAt && new Date(snapshot.createdAt) >= criteria.createdAfter!
-        );
-      }
-
-      if (criteria?.createdBefore) {
-        results = results.filter(snapshot => 
-          snapshot.createdAt && new Date(snapshot.createdAt) <= criteria.createdBefore!
-        );
-      }
-
-      if (criteria?.updatedAfter) {
-        results = results.filter(snapshot => 
-          snapshot.updatedAt && new Date(snapshot.updatedAt) >= criteria.updatedAfter!
-        );
-      }
-
-      if (criteria?.updatedBefore) {
-        results = results.filter(snapshot => 
-          snapshot.updatedAt && new Date(snapshot.updatedAt) <= criteria.updatedBefore!
-        );
-      }
-
-      // Apply custom filter function
-      if (criteria?.filter) {
-        results = results.filter(criteria.filter);
-      }
-
-      // Apply sorting
-      if (criteria?.sortBy) {
-        results.sort((a, b) => {
-          const order = criteria.sortOrder === 'desc' ? -1 : 1;
-          
-          switch (criteria.sortBy) {
-            case 'createdAt':
-              return order * (new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
-            case 'updatedAt':
-              return order * (new Date(a.updatedAt || 0).getTime() - new Date(b.updatedAt || 0).getTime());
-            case 'id':
-              return order * a.id.localeCompare(b.id);
-            case 'category':
-              return order * (a.category || '').localeCompare(b.category || '');
-            default:
-              return 0;
-          }
-        });
-      }
-
-      // Apply pagination
-      if (criteria?.offset !== undefined) {
-        results = results.slice(criteria.offset);
-      }
-
-      if (criteria?.limit !== undefined && criteria.limit > 0) {
-        results = results.slice(0, criteria.limit);
-      }
-
-      return results;
-
-    } catch (error) {
-      console.error('Error finding snapshots:', error);
-      throw new Error(`Failed to find snapshots: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  },
-  addStore: function <
+  getData: async function <
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -918,252 +719,81 @@ export const LifecycleMethods = {
     IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    storeId: number,
-    snapshotId: string | null,
-    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
-    try {
-      // Validate input parameters
-      if (!storeId || !snapshotStore || !snapshot) {
-        console.warn("Invalid parameters provided to addStore");
-        return null;
-      }
-
-      // Ensure stores collection exists
-      if (!this.stores) {
-        this.stores = new Map();
-      }
-
-      // Check if store already exists
-      if (this.stores.has(storeId)) {
-        console.warn(`Store with ID ${storeId} already exists. Updating instead.`);
-        // Optionally update existing store or return null
-        // return null; // Or update existing
-      }
-
-      // Validate the snapshot store has the required properties
-      if (!snapshotStore.id || !snapshotStore.snapshotStore) {
-        throw new Error("Invalid snapshot store provided");
-      }
-
-      // Add the store to the collection
-      this.stores.set(storeId, snapshotStore);
-
-      // Link snapshot to store if snapshotId provided
-      if (snapshotId && snapshot) {
-        if (!snapshot.associatedStores) {
-          snapshot.associatedStores = new Map();
-        }
-        snapshot.associatedStores.set(storeId, snapshotStore);
-      }
-
-      // Update timestamps
-      this.lastUpdated = new Date();
-      snapshotStore.lastUpdated = this.lastUpdated;
-
-      // Trigger event if provided
-      if (event && typeof event.trigger === 'function') {
-        try {
-          event.trigger('store_added', {
-            storeId,
-            snapshotId,
-            store: snapshotStore,
-            snapshot,
-            type,
-            timestamp: this.lastUpdated
-          });
-        } catch (eventError) {
-          console.warn('Failed to trigger store added event:', eventError);
-        }
-      }
-
-      // Handle delegate if exists
-      if (this.delegate && typeof this.delegate.onStoreAdded === 'function') {
-        try {
-          this.delegate.onStoreAdded(storeId, snapshotStore, snapshotId);
-        } catch (delegateError) {
-          console.warn('Delegate onStoreAdded failed:', delegateError);
-        }
-      }
-
-      console.log(`Successfully added store ${storeId}`);
-      return snapshotStore;
-
-    } catch (error) {
-      console.error(`Failed to add store ${storeId}:`, error);
-      return null;
-    }
-  },
-
-  removeStore: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    storeId: number,
-    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotId: string,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: Event
-  ): boolean {
-    try {
-      // Validate input parameters
-      if (!storeId) {
-        console.warn("Store ID is required for removal");
-        return false;
-      }
-
-      // Check if stores collection exists and has the store
-      if (!this.stores || !this.stores.has(storeId)) {
-        console.warn(`Store with ID ${storeId} not found`);
-        return false;
-      }
-
-      // Remove the store from collection
-      const removed = this.stores.delete(storeId);
-
-      if (removed) {
-        // Remove store reference from snapshot if provided
-        if (snapshotId && snapshot && snapshot.associatedStores) {
-          snapshot.associatedStores.delete(storeId);
-          
-          // Clean up empty associatedStores map
-          if (snapshot.associatedStores.size === 0) {
-            delete snapshot.associatedStores;
-          }
-        }
-
-        // Update timestamp
-        this.lastUpdated = new Date();
-
-        // Trigger event if provided
-        if (event && typeof event.trigger === 'function') {
-          try {
-            event.trigger('store_removed', {
-              storeId,
-              snapshotId,
-              store,
-              snapshot,
-              type,
-              timestamp: this.lastUpdated
-            });
-          } catch (eventError) {
-            console.warn('Failed to trigger store removed event:', eventError);
-          }
-        }
-
-        // Handle delegate if exists
-        if (this.delegate && typeof this.delegate.onStoreRemoved === 'function') {
-          try {
-            this.delegate.onStoreRemoved(storeId, snapshotId);
-          } catch (delegateError) {
-            console.warn('Delegate onStoreRemoved failed:', delegateError);
-          }
-        }
-
-        console.log(`Successfully removed store ${storeId}`);
-        return true;
-      }
-
-      return false;
-
-    } catch (error) {
-      console.error(`Failed to remove store ${storeId}:`, error);
-      return false;
-    }
-  },
-
-  /**
-   * Subscribe to snapshot updates
-   */
-  onSnapshot: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotId: string,
-    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
-  ): void {
-    if (!(this as any).snapshotSubscribers) {
-      (this as any).snapshotSubscribers = new Map<
-        string,
-        Array<(snap: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>
-      >();
-    }
-
-    if (!(this as any).snapshotSubscribers.has(snapshotId)) {
-      (this as any).snapshotSubscribers.set(snapshotId, []);
-    }
-
-    (this as any).snapshotSubscribers.get(snapshotId)!.push(callback);
-
-    callback(snapshot);
-
-    if (event && typeof event === "object" && (event as any).type === type) {
-      const subscribers = (this as any).snapshotSubscribers.get(snapshotId);
-      subscribers?.forEach(cb => cb(snapshot));
-    }
-  },
-
-  initializeStore: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = never,
-    IncludedFields extends keyof T = keyof T
-  >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-  ): void {
-    // Type assertion to access protected method
-    const protectedThis = this as unknown as {
-      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
-    };
+    id: string | number,
+    snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
+    const snapshotStores = this.snapshotStores;
     
-    protectedThis.setSnapshotStores(stores);
+    if (!snapshotStores) {
+      throw new Error("No snapshot stores are initialized.");
+    }
+
+    if (snapshot) {
+      const result: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+      for (const [, store] of snapshotStores) {
+        if (store.snapshots.some((s: any) => s.id === snapshot.id)) {
+          result.push(store);
+        }
+      }
+      return result.length ? result : undefined;
+    }
+
+    if (typeof id === "number") {
+      const store = snapshotStores.get(id);
+      return store ? [store] : undefined;
+    }
+
+    const matchedStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+    for (const store of snapshotStores.values()) {
+      if (store.snapshots.some((s: any) => s.id === id)) {
+        matchedStores.push(store);
+      }
+    }
+
+    return matchedStores.length ? matchedStores : undefined;
   },
 
-  initializeOptions: async function<
+  // ---------- Configuration ----------
+
+  getConfigOption: function <
     T extends BaseDataEntity,
     K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = never,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<void> {
-    const config = await this.config;
-    if (config?.logging) console.log('Logging is enabled for this SnapshotStore.');
-    if (config?.autoSync) this.autoSyncData();
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    optionKey: string
+  ): Record<string, any> {
+    return { key: optionKey, value: null };
   },
 
-  setConfigfunction: async function <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, config: Promise<any>): Promise<void> {
+  setConfigfunction: async function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    config: Promise<any>
+  ): Promise<void> {
     this.config = config;
     await this.initializeOptions();
   },
 
-  initializeDefaultConfig<
+  initializeDefaultConfig: function <
     T extends BaseDataEntity,
     K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     AttachmentType extends Attachment = Attachment,
-    ExcludedFields extends keyof T = never,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
     IncludedFields extends keyof T = keyof T
-  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any[] {
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): any[] {
     return [
       {
         id: "default",
@@ -1191,53 +821,353 @@ export const LifecycleMethods = {
     ];
   },
 
-ensureDelegate: function <
-  T extends BaseDataEntity,
-  K extends T = T,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
-  IncludedFields extends keyof T = keyof T
->(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any {
-    if (!this.delegate || this.delegate.length === 0) {
-      throw new Error("Delegate is not defined or is empty.");
-    }
-    return this.delegate[0];
+  // ---------- Utility Methods ----------
+
+  hasSnapshots: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<boolean> {
+    return Promise.resolve(this.snapshots.length > 0);
   },
 
+  equals: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    otherStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<boolean> {
+    return Promise.resolve(JSON.stringify(this.snapshots) === JSON.stringify(otherStore.snapshots));
+  },
+
+  getTimestamp: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Date {
+    return new Date();
+  },
+
+  ensureDelegate: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): any {
+    if (!this.executeDelegateMethodAsync || this.executeDelegateMethodAsync.length === 0) {
+      throw new Error("Delegate is not defined or is empty.");
+    }
+    return this.executeDelegateMethodAsync[0];
+  },
 
   /**
    * Default subscription handler for snapshots
    */
-  defaultSubscribeToSnapshots: function <U, K, Meta>(
+  defaultSubscribeToSnapshots: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    callback: (snaps: Snapshots<U, K, Meta>) => Subscriber<U, K> | null,
-    snapshot: Snapshot<U, K> | null
+    callback: (snaps: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ): void {
-    throw new Error("defaultSubscribeToSnapshots is not implemented.");
+    try {
+      // Validate input
+      if (!snapshotId) {
+        throw new Error('Snapshot ID is required');
+      }
+
+      // Get snapshots for this ID
+      const relevantSnapshots = this.snapshots.filter(s => s.id === snapshotId);
+      
+      if (relevantSnapshots.length === 0) {
+        console.warn(`No snapshots found for ID: ${snapshotId}`);
+        callback([] as unknown as Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+        return;
+      }
+
+      // Call the callback with the snapshots
+      const result = callback(relevantSnapshots as unknown as Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+      
+      // If callback returns a subscriber, register it
+      if (result) {
+        this.addSubscriber(result, snapshotId);
+      }
+
+      // If snapshot provided, notify about subscription
+      if (snapshot) {
+        this.onSnapshot(snapshotId, snapshot, 'subscribe', { type: 'subscription', timestamp: new Date() } as SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+          (subscribedSnapshot) => {
+            console.log(`Subscribed to snapshot: ${subscribedSnapshot.id}`);
+          });
+      }
+
+    } catch (error) {
+      console.error('Error in defaultSubscribeToSnapshots:', error);
+      throw error;
+    }
   },
 
   /**
    * Notify lifecycle event to store or external subscribers
    */
-  notify: function <U, K>(
+  notify: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string,
     message: string,
-    content: Content<U, K>,
+    content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: any,
     date: Date,
     type: NotificationType
   ): void {
-    throw new Error("notify is not implemented.");
-  },
+    try {
+      // Create notification payload
+      const notificationPayload = {
+        id,
+        message,
+        content,
+        data,
+        date,
+        type,
+        source: 'SnapshotStore',
+        storeId: this.storeId,
+        timestamp: new Date()
+      };
 
+      // Store the notification
+      if (!this.notifications) {
+        this.notifications = [];
+      }
+      this.notifications.push(notificationPayload);
+
+      // Notify internal subscribers
+      this.notifySubscribers({
+        type: 'notification',
+        id,
+        message,
+        content,
+        data,
+        date,
+        notificationType: type,
+        storeId: this.storeId
+      } as any);
+
+      // If there's a delegate, forward notification
+      if (this.executeDelegateMethodAsync && this.executeDelegateMethodAsync.length > 0) {
+        for (const delegate of this.executeDelegateMethodAsync) {
+          if (delegate && typeof (delegate as any).handleNotification === 'function') {
+            try {
+              (delegate as any).handleNotification(notificationPayload);
+            } catch (delegateError) {
+              console.warn('Delegate notification handler failed:', delegateError);
+            }
+          }
+        }
+      }
+
+      // Log the notification (if logging is enabled)
+      const config = this.config as any;
+      if (config?.logging?.notifications) {
+        console.log(`[Notification] ${type}: ${message}`, notificationPayload);
+      }
+
+    } catch (error) {
+      console.error('Error in notify method:', error);
+      // Don't throw - notifications should not break the application
+    }
+  },
 
   /**
    * Get subscribers tied to a snapshot set
    */
-  getSubscribers: async function <U, K, Meta>(
-    subscribers: Subscriber<U, K>[],
-    snapshots: Snapshots<U, K, Meta>
-  ): Promise<{ subscribers: Subscriber<U, K>[]; snapshots: Snapshots<U, K, Meta> }> {
-    throw new Error("getSubscribers is not implemented.");
+  getSubscribers: async function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<{ subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
+    try {
+      // Filter subscribers based on snapshot criteria
+      const filteredSubscribers = subscribers.filter(subscriber => {
+        // Check if subscriber is interested in any of these snapshots
+        if (!subscriber.criteria) return true; // No criteria means interested in all
+        
+        // Convert snapshots to array if needed
+        const snapshotsArray = Array.isArray(snapshots) ? snapshots : [];
+        
+        // Check each snapshot against subscriber criteria
+        return snapshotsArray.some(snapshot => {
+          // Apply subscriber criteria to snapshot
+          if (typeof subscriber.criteria === 'function') {
+            return subscriber.criteria(snapshot);
+          }
+          
+          // If criteria is an object with specific fields
+          if (typeof subscriber.criteria === 'object') {
+            return Object.entries(subscriber.criteria).every(([key, value]) => {
+              return (snapshot as any)[key] === value;
+            });
+          }
+          
+          return true;
+        });
+      });
+
+      // Return both subscribers and snapshots for convenience
+      return {
+        subscribers: filteredSubscribers,
+        snapshots: Array.isArray(snapshots) ? snapshots : []
+      };
+
+    } catch (error) {
+      console.error('Error in getSubscribers:', error);
+      
+      // Return empty/default values on error
+      return {
+        subscribers: [],
+        snapshots: Array.isArray(snapshots) ? snapshots : []
+      };
+    }
+  },
+
+  // Helper method to notify subscribers
+  notifySubscribers: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    event: any
+  ): void {
+    try {
+      // Ensure subscribers collection exists
+      if (!this.subscribers) {
+        this.subscribers = [];
+      }
+
+      // Notify each subscriber
+      this.subscribers.forEach(subscriber => {
+        try {
+          if (typeof subscriber.update === 'function') {
+            subscriber.update(event);
+          }
+        } catch (subscriberError) {
+          console.warn(`Failed to notify subscriber ${subscriber.id}:`, subscriberError);
+        }
+      });
+
+      // Also check if there are snapshot-specific subscribers
+      if (this.snapshotSubscribers && event.snapshotId) {
+        const snapshotSubscribers = this.snapshotSubscribers.get(event.snapshotId);
+        if (snapshotSubscribers) {
+          snapshotSubscribers.forEach(callback => {
+            try {
+              callback(event.snapshot);
+            } catch (callbackError) {
+              console.warn(`Failed to execute snapshot subscriber callback:`, callbackError);
+            }
+          });
+        }
+      }
+
+    } catch (error) {
+      console.error('Error in notifySubscribers:', error);
+    }
+  },
+
+  // Helper method to add a subscriber
+  addSubscriber: function <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotId?: string
+  ): void {
+    try {
+      // Ensure subscribers collection exists
+      if (!this.subscribers) {
+        this.subscribers = [];
+      }
+
+      // Add to general subscribers
+      this.subscribers.push(subscriber);
+
+      // If snapshotId provided, add to snapshot-specific subscribers
+      if (snapshotId) {
+        if (!this.snapshotSubscribers) {
+          this.snapshotSubscribers = new Map();
+        }
+
+        if (!this.snapshotSubscribers.has(snapshotId)) {
+          this.snapshotSubscribers.set(snapshotId, []);
+        }
+
+        this.snapshotSubscribers.get(snapshotId)!.push(
+          (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+            if (typeof subscriber.update === 'function') {
+              subscriber.update({ snapshot, snapshotId, type: 'snapshot_update' });
+            }
+          }
+        );
+      }
+
+      // Notify subscriber of current state
+      if (typeof subscriber.update === 'function') {
+        subscriber.update({
+          type: 'initial_state',
+          storeId: this.storeId,
+          snapshotCount: this.snapshots.length,
+          timestamp: new Date()
+        });
+      }
+
+    } catch (error) {
+      console.error('Error adding subscriber:', error);
+    }
   },
 };

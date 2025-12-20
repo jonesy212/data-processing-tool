@@ -40,7 +40,7 @@ import { Project } from "@/app/models/projects/Project";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-import { data, SnapshotConfig, SnapshotDataType } from "@/app/snapshots/SnapshotWithCriteria";
+import { data, SnapshotConfig, SnapshotDataType } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 
 import { Snapshot } from "@/app/snapshots/Snapshot";

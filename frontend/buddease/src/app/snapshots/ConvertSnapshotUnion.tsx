@@ -33,7 +33,7 @@ function convertToSnapshotUnion<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotUnion<T, K, DefaultMeta<T, K>> {
+>(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Create a proper SnapshotUnion by ensuring it has BaseDataEntity properties
   const snapshotUnion: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     ...snapshot,
@@ -41,7 +41,7 @@ function convertToSnapshotUnion<
     id: snapshot.id,
     createdAt: snapshot.createdAt || new Date(),
     updatedAt: snapshot.updatedAt || new Date(),
-  } as SnapshotUnion<T, K, DefaultMeta<T, K>>;
+  } as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   return snapshotUnion;
 }

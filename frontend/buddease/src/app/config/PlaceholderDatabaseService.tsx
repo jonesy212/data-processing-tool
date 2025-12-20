@@ -1,6 +1,6 @@
 // PlaceholderDatabaseService.tsx
 
-import { ClientDatabaseService } from "@/app/server/database/ClientDatabaseService";
+import { ClientDatabaseService } from "@/app/config/DatabaseTypes";
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 // Placeholder implementation for demonstration purposes (replace with your actual database logic)
 class PlaceholderDatabaseService implements ClientDatabaseService{

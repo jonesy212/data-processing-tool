@@ -2,7 +2,7 @@
 import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots/SnapshotData';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { DataStore } from "@/app/state/stores/DataStore";

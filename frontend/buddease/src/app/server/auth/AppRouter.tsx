@@ -7,7 +7,7 @@ import RegisterForm from "@/app/pages/forms/RegisterForm";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import LoginForm from "@/app/pages/forms/LoginForm";
-import { LoginResult } from "[object Object]";
+import { LoginResult } from "@/app/typings/authTypes";
 import { RouteGuard } from "@/app/components/routing/RouteGuard";
 import Unauthorized from "@/app/pages/Unauthorized";
 import AccessDenied from "@/app/pages/AccessDenied";

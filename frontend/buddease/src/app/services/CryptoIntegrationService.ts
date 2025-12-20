@@ -2,7 +2,7 @@
 // src/services/CryptoIntegrationService.ts
 import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
 import internalApiService from '@/app/api/ApiClient';
-import { executeTrade, TradeAction } from '@/app/api/PortfolioService';
+import { executeTrade, TradeAction } from '@/app/components/crypto/CryptoPortfolio';
 import { getMarketPrice } from '@/app/api/service/PriceApiService';
 import { TradeLogger } from "@/app/logging/TradeLogger";
 import { CryptoPortfolio } from '@/app/components/crypto/CryptoPortfolio'

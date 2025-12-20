@@ -1,7 +1,7 @@
 // DynamicPromptHookGenerator.tsx
 // DynamicPromptHook.ts
 import createDynamicHook, { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
-import { processAutoGPTOutputWithSpaCy } from '@/intelligence/AutoGPTSpaCyIntegration';
+import { processAutoGPTOutputWithSpaCy } from '@/app/intelligence/AutoGPTSpaCyIntegration';
 import { useEffect } from 'react';
 
 interface DynamicPromptConfig {
@@ -9,7 +9,16 @@ interface DynamicPromptConfig {
   asyncEffect: () => Promise<() => void>;
 }
 
-const createDynamicPromptHook = (config: DynamicPromptConfig & DynamicHookParams) => {
+const createDynamicPromptHook = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  config: DynamicPromptConfig & DynamicHookParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+) => {
   return createDynamicHook({
     ...config,
     resetIdleTimeout: () => {

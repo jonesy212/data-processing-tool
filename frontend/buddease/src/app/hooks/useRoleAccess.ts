@@ -3,9 +3,9 @@
 import React from "react";
 import { useState, useEffect } from 'react';
 import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
-import { useAuth } from "[object Object]";
+import { useAuth } from "@/app/state/context/AuthContext";
 import { UserRoleEnum } from "@/app/models/UserRoles";
-import { BaseDataEntity, DefaultMeta, Attachment, DefaultExcludedFields } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultMeta, Attachment, DefaultExcludedFields } from "@/app/config/BaseConfig";
 
 export type Permission = 
   | 'view:file-structure'

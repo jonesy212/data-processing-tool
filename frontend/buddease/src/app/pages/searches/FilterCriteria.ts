@@ -1,7 +1,7 @@
 
 // FilterCriteria.ts
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { extractCriteria } from '@/app/api/snapshotApi';
+import { extractCriteria } from '@/app/api/SnapshotApi';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

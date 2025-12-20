@@ -18,6 +18,7 @@ import { VersionHistory } from '@/app/versions/VersionData';
 
 import getSnapshotStoreConfig from '@/app/api/SnapshotApi';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { ProjectMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -259,7 +260,7 @@ class SnapshotStore<
   storeId: number = 0;
   videos?: Video[];
   maxAge: string | number | undefined = undefined;
-
+  snapshotCount: number = 0
   // For storing store references
   stores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
@@ -980,8 +981,9 @@ async processBatch(
 
 
   private delegate: Array<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
-
-  private securityService: SecurityService;
+  protected snapshotSubscribers: Map<string, Array<(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>> = new Map();
+  
+  private securityService: SecurityService = {} as SecurityService;
   private syncInProgress: boolean = false;
   
   // private sync-related properties
@@ -1059,11 +1061,11 @@ processSnapshotData = async (
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   timestamp: Date,
   payload: UpdateSnapshotPayload<T>,
-  category?: Category,
   categoryProperties: CategoryProperties | undefined,
   payloadData: T | K,
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  category?: Category,
   snapshotId?: string | number | null,
   storeId?: number,
   store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -4464,6 +4466,119 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
     }
     return undefined;
   }
+
+  /**
+ * Public method to execute delegate methods by name
+ */
+public executeDelegateMethod<R = any>(
+  methodName: string,
+  ...args: any[]
+): R | undefined {
+  // Check if delegate exists and is not empty
+  if (!this.delegate || this.delegate.length === 0) {
+    console.warn("executeDelegateMethod: Delegate is undefined or empty");
+    return undefined;
+  }
+
+  // Try to find and execute the method on each delegate
+  for (const delegate of this.delegate) {
+    // Check if delegate has the method
+    if (delegate && delegate[methodName] && typeof delegate[methodName] === "function") {
+      try {
+        // Bind the method to the delegate and execute with provided arguments
+        const method = delegate[methodName].bind(delegate);
+        const result = method(...args);
+        
+        // Handle async methods
+        if (result instanceof Promise) {
+          // Return the promise as-is, let caller handle it
+          return result as R;
+        }
+        
+        return result as R;
+      } catch (error) {
+        console.error(`Error executing delegate method '${methodName}':`, error);
+        // Continue to next delegate if this one fails
+        continue;
+      }
+    }
+  }
+
+  // If we get here, no delegate had the method or all executions failed
+  console.warn(`Method '${methodName}' not found on any delegate or failed to execute`);
+  return undefined;
+}
+
+// Alternative implementation with better error handling and async support:
+public async executeDelegateMethodAsync<R = any>(
+  methodName: string,
+  ...args: any[]
+): Promise<R | undefined> {
+  if (!this.delegate || this.delegate.length === 0) {
+    console.warn("executeDelegateMethodAsync: Delegate is undefined or empty");
+    return undefined;
+  }
+
+  let lastError: Error | undefined;
+  
+  for (const delegate of this.delegate) {
+    if (delegate && delegate[methodName] && typeof delegate[methodName] === "function") {
+      try {
+        const method = delegate[methodName].bind(delegate);
+        const result = method(...args);
+        
+        // Handle both sync and async methods
+        if (result instanceof Promise) {
+          return await result as R;
+        } else {
+          return result as R;
+        }
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`Delegate method '${methodName}' failed on one delegate, trying next...`, error);
+        // Continue to next delegate
+        continue;
+      }
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+  
+  console.warn(`Method '${methodName}' not found on any delegate`);
+  return undefined;
+}
+
+// You might also want to add a version that throws an error if method not found:
+public executeDelegateMethodOrThrow<R = any>(
+  methodName: string,
+  ...args: any[]
+): R {
+  if (!this.delegate || this.delegate.length === 0) {
+    throw new Error(`executeDelegateMethodOrThrow: Delegate is undefined or empty`);
+  }
+
+  for (const delegate of this.delegate) {
+    if (delegate && delegate[methodName] && typeof delegate[methodName] === "function") {
+      try {
+        const method = delegate[methodName].bind(delegate);
+        const result = method(...args);
+        
+        if (result instanceof Promise) {
+          // For async methods, return the promise
+          return result as R;
+        }
+        
+        return result as R;
+      } catch (error) {
+        throw new Error(`Failed to execute delegate method '${methodName}': ${error}`);
+      }
+    }
+  }
+
+  throw new Error(`Method '${methodName}' not found on any delegate`);
+}
 
   private notifySuccess(message: string): void {
     notify(

@@ -1,5 +1,5 @@
 // StructuredMetadata.ts
-import { Contributor } from '@/app/collaborators/Collaborator';
+import { Contributor } from '@/app/models/teams/Contributor';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
