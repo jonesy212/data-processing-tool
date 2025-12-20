@@ -1,6 +1,5 @@
 // Task.tsx
 
-// Task.ts
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

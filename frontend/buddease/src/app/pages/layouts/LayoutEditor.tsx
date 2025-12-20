@@ -1,6 +1,6 @@
 // LayoutEditor.tsx
 import React from'react';
-import DraggableDiv from '@/app/components/libraries/ui/DraggableDiv';
+import DraggableDiv from '@/app/libraries/ui/DraggableDiv';
 import { useState } from 'react';
 
 const LayoutEditor = ({ elements }) => {

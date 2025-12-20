@@ -7,12 +7,12 @@ import { SettingsState } from "@/app/state/redux/slices/SettingsSlice";
 import { TaskState } from "@/app/state/redux/slices/TaskSlice";
 import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
 import { User } from "@/app/users/User";
-import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 // Define the StateType interface
 interface StateType {
     projects: Project[];
-    users: User[];
-    tasks: Task[];
+    users: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     notifications: Notification[];
     settings: Settings;
     errors: Error[];

@@ -1,7 +1,7 @@
 // DataBaseMethods.ts
 // src/server/database/DataBaseMethods.ts
 
-import { DatabasePool } from '@/DatabasePool';
+import { DatabasePool } from '@/app/server/database/DatabasePool';
 
 const dbConfig = {
   host: 'your-database-host',

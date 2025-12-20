@@ -1,6 +1,6 @@
 // UserSupportFeedbackPreferencesSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@/RootSlice';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
 
 interface UserSupportFeedbackPreferencesState {
   receiveFeedbackEmails: boolean;

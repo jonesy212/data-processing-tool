@@ -8,7 +8,7 @@ import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import DocumentBuilder, { DocumentData } from '@/app/documents/editing/DocumentBuilder'; // Import the DocumentBuilder component
 import { setCurrentPhase } from '@/app/hooks/phaseHooks/EnhancePhase';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
-import { ComponentActions } from '@/app/libraries/ui/components/ComponentActions';
+import { ComponentActions } from '@/app/actions/ComponentActions';
 import {
     BorderStyle,
     DocumentSize,
@@ -32,9 +32,9 @@ import { ContentState, Editor, EditorState } from 'draft-js';
 import { IHydrateResult } from 'mobx-persist';
 import React, { SetStateAction, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { options } from 'sanitize-html';
-import { ModifiedDate } from './DocType';
-import { DocumentOptions, getDocumentPhase } from './DocumentOptions';
+import { options } from '@/app/generators/GenerateUniqueIds';
+import { ModifiedDate } from '@/app/documents/DocType';
+import { DocumentOptions, getDocumentPhase } from '@/app/documents/DocumentOptions';
 
 const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"] }) => {
   const dispatch = useDispatch();

@@ -9,7 +9,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { NotificationPosition } from '@/app/models/data/StatusType';
-import { NotificationService } from '@/app/services/NotificationService';
+import { NotificationService } from '@/app/state/stores/NotificationServiceClass';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError } from 'axios';

@@ -2,7 +2,7 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import axiosInstance from '@/app/api/csrfToken';
 import { AxiosResponse } from "axios";
-import { Config } from "@/app/api/ApiConfig";
+import { Config } from "[object Object]";
 
 // 1. Define interfaces for dependencies
 interface EventDataService {

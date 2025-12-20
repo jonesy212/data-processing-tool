@@ -1,5 +1,5 @@
 // AppDevelopmentPhase.tsx
-import { useAuth } from "@/app/auth/context/AuthContext";
+import { useAuth } from "@/app/state/context/AuthContext";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import FeatureImplementationSubPhase from "@/app/pages/onboarding/FeatureImplementationSubPhase";
 import InitialSetupSubPhase from "@/app/pages/onboarding/InitialSetupSubPhase";

@@ -1,6 +1,6 @@
 // ContentDetailsListItem.tsx
-import { DetailsItemExtended } from '@/app/components/state/stores/DetailsListStore';
-import { Member } from '@/teams/TeamMembers';
+import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
+import { Member } from "@/app/models/members/Member";
 import React from 'react';
 
 interface ContentDetailsListItemProps {

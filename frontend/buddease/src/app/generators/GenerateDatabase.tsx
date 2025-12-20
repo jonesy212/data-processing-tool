@@ -1,11 +1,11 @@
 // GenerateDatabase.tsx
 import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
-import { databaseQuery }  from '@/app/server/database/DatabaseService'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { databaseService } from "@/app/server/database/DatabaseOperations";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-
+import { AxiosResponse, AxiosError } from 'axios';
+import { databaseConnection } from '@/app/config/databaseConnection';
 import axios from "axios";
 import React, { useState } from "react";
 
@@ -124,5 +124,6 @@ const DatabaseGenerator: React.FC = () => {
 
 export default DatabaseGenerator;
 
-const database = await databaseService.createDatabase(databaseConfig, String(databaseQuery));
+const databaseQuery: DatabaseQuery = {} as DatabaseQuery;
+const database = await databaseService.createDatabase(databaseConnection, String(databaseQuery));
 export { database };

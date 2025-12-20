@@ -1,8 +1,8 @@
 // featureSaga.ts
 // Example Redux Saga for a Feature
 import { call, put, takeLatest } from "redux-saga/effects";
-import { fetchFeatureData } from "./api";
-import { fetchFeatureDataFailure, fetchFeatureDataSuccess } from "./featureSlice";
+import { fetchFeatureData } from "@/app/state/redux/sagas/apiSagas";
+import { fetchFeatureDataFailure, fetchFeatureDataSuccess } from "@/app/users/featureSlice";
 
 function* handleFetchFeatureData(action) {
   try {

@@ -1,5 +1,5 @@
 // config/endpoints/notificationsConfig.ts
-import { ChannelSettings } from '@/types/channels';
+import { ChannelSettings } from '@/app/notifications/NotificationChannelManager';
 
 export const notificationsConfig = {
   // Basic notification endpoints

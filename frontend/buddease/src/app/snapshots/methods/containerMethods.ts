@@ -1,11 +1,11 @@
 // containerMethods.ts
 
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import SnapshotStore from "@/app/snapshotstore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
-import { SnapshotContainer, SnapshotData } from "..";
+import { SnapshotContainer, SnapshotData } from "@/app/snapshots/SnapshotContainer";
 
 // src/methods/containerMethods.ts
 export const ContainerMethodsImplementation = {

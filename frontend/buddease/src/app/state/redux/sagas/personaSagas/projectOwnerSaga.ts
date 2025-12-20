@@ -1,7 +1,7 @@
 // projectOwnerSaga.ts
 import { ProjectOwnerActions } from "@/app/actions/ProjectOwnerActions";
 import projectOwnerApiService from "@/app/api/ProjectOwnerApi";
-import { Team } from "@/app/components/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { ProjectType } from '@/app/models/projects/Project';
 import { TeamMember } from '@/app/models/teams/TeamMembers';

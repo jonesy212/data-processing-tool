@@ -7,8 +7,8 @@ import TodoProgress from "@/app/projects/projectManagement/TodoProgress";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
 import { Data } from '@/app/models/data/Data';
-import { Task } from "@/app/tasks/Task";
-import { Team as BackendTeam } from "./Team";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Team as BackendTeam } from "@/app/components/teams/Team";
 
 interface TeamComponentProps {
   teamId: string;

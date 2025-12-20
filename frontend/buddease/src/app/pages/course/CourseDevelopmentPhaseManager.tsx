@@ -1,10 +1,10 @@
 // CourseDevelopmentPhaseManager.tsx
-import { fetchDataWithToken } from '@/app/api/ExternalApiAuth';
+import { fetchDataWithToken } from '@/app/state/context/AuthContext';
 import { Data } from '@/app/models/data/Data';
 import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
-import CourseLearningPhase from '@/app/pages/CourseLearningPhase';
-import CoursePlanningPhase from '@/app/pages/CoursePlanningPhase';
-import CourseSetupPhase from '@/app/pages/CourseSetupPhase';
+import CourseLearningPhase from '@/app/pages/course/CourseLearningPhase';
+import CoursePlanningPhase from '@/app/pages/course/CoursePlanningPhase';
+import CourseSetupPhase from '@/app/pages/course/CourseSetupPhase';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { useNotification } from '@/app/state/context/NotificationContext';

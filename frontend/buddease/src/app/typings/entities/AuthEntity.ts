@@ -8,7 +8,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums';
 import { AuthenticationProvider } from '@/app/server/auth/AuthService';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -19,8 +19,8 @@ import { DashboardConfig } from '@/app/typings/authTypes';
 import { PublicUserProfile } from '@/app/typings/entities/UserEntity';
 import { UserPreferences } from '@/app/typings/userTypes';
 import { User } from "@/app/users/User";
-import { RealtimeDataItem } from '../realtimeTypes';
-import { ApplyFieldFilters } from './AppEntity';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { ApplyFieldFilters } from '@/app/typings/entities/AppEntity';
 
 // Define sensitive fields that should never be exposed
 const SensitiveAuthFields = [

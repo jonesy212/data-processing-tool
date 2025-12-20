@@ -18,9 +18,10 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { Subscribers } from '@/app/subscribers/Subscriber';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { Snapshot } from './Snapshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { default as SnapshotStore } from './SnapshotStore';
 
+import { StoreMethods } from '@/app/models/tasks/StoreMethods'
 // Utility: flatten map
 function flatMap<
   T extends BaseDataEntity,
@@ -107,6 +108,7 @@ function defaultSnapshotBuilder<
       props: storeProps,
       options: storeOptions || {},
       id, category, mappedSnapshot, mappedMeta, 
+      criteria, storeConfig, initialState, isCore
       
     }),
 

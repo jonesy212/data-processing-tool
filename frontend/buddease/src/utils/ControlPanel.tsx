@@ -12,7 +12,7 @@ import AnimationDial from "@/app/libraries/animations/AnimationDial";
 import FadeInAnimation from "@/app/libraries/animations/FadeInAnimation";
 import RotateAnimation from "@/app/libraries/animations/RotateAnimation";
 import SlideUpAnimation from "@/app/libraries/animations/SlideUpAnimation";
-import { themeConfig } from "@/app/pages/_app";
+import { themeConfig } from "@/app/config/endpoints/themeConfig";
 import { createCustomEvent } from "@/app/services/EventService";
 import {
     NotificationContextProps,

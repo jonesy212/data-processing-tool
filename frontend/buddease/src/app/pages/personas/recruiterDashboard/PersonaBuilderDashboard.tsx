@@ -2,8 +2,8 @@
 import axios from "axios"; // Import Axios library
 import { useEffect, useState } from "react";
 
-import { OrganizedCardLoaderProps } from "@/app/components/cards/DummyCardLoader";
-import { PersonaCard } from "@/app/components/cards/PersonaCard";
+import { OrganizedCardLoaderProps } from "@/app/cards/DummyCardLoader";
+import { PersonaCard } from "@/app/cards/PersonaCard";
 import DetailsList from "@/app/components/lists/DetailsList";
 import {
     SupportedData,
@@ -13,7 +13,7 @@ import DetailsProps from "@/app/components/models/data/Details";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import DataPreview from "@/app/users/DataPreview";
-import { PersonaData, PersonaTypeEnum } from "@/app/PersonaBuilder";
+import { PersonaData, PersonaTypeEnum } from "[object Object]";
 import PersonaPanel from "./PersonaPanel";
 import React from "react";
 

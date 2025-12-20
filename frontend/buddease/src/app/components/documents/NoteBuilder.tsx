@@ -6,11 +6,11 @@ import { UserData } from '@/app/users/User';
 import { Version } from '@/app/versions/Version';
 
 
-import { createMetaState } from '@/app/config/metadata/MetadataHooks';
+import { createMetaState } from '@/app/config/MetadataStateManager';
 import { VersionHistory } from '@/app/versions/VersionData';
 import { Editor, EditorState, RichUtils } from 'draft-js';
 import React, { useState } from 'react';
-import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from '../../documents/NoteData'; // Assuming you have a NoteData interface
+import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from '@/app/documents/NoteData'; // Assuming you have a NoteData interface
 
 if (typeof window !== 'undefined') {
   import("draft-js/dist/Draft.css");

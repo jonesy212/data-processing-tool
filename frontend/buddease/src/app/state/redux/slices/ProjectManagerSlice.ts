@@ -1,5 +1,5 @@
 // ProjectManagerSlice.ts
-import Milestone from "@/app/components/calendar/CalendarSlice";
+import Milestone from "@/app/state/redux/slices/CalendarSlice";
 import { Task } from "@/app/components/models/tasks/Task";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
@@ -8,7 +8,7 @@ import { Progress } from "@/app/models/tracker/ProgressBar";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { ProjectManagementAttachment, ProjectManagementEntity, ProjectManagementExcludedFields, ProjectManagementIncludedFields, ProjectManagementK, ProjectManagementMeta } from '@/app/typings/entities/ProjectManagementEntity';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ProjectState } from "./ProjectSlice";
+import { ProjectState } from "@/app/state/redux/slices/ProjectSlice";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

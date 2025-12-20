@@ -1,8 +1,8 @@
 // UserRepo.ts
 // server/repository/UserRepo.ts
-import db from './db';
-import { CacheData } from '@/app/models/data/CacheData';
-import { userToDatabase, userFromDatabase } from './userMapper';
+import db from '@/app/server/repository/CacheDataRepository';
+import { CacheData } from '@/app/generators/GenerateCache';
+import { userToDatabase, userFromDatabase } from '@/app/server/repository/entityMapper';
 
 export async function saveUserData(user: CacheData) {
   const dbObj = userToDatabase(user);

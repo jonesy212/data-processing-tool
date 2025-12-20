@@ -1,7 +1,7 @@
 // RetrieveSnapshotData.tsx
 // // //RetrieveSnapshotData.tsx
-// import { StructuredMetadata } from "@/configs/StructuredMetadata";
-// import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
+// import { StructuredMetadata } from "@/app/config/StructuredMetadata";
+// import { RetrievedSnapshot } from '@/utils/retrieveSnapshotData';
 // import { BaseData } from '@/app/models/data/Data'
 // import axiosInstance from '@/app/api/csrfToken';
 // import { Snapshot } from '@/app/snapshots/Snapshot';

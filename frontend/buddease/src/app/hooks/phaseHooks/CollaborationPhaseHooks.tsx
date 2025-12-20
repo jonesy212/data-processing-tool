@@ -5,7 +5,7 @@ import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
-import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from '@/app/hooks/phases/DynamicPromptPhaseHook';
+import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from '@/app/hooks/phaseHooks/DynamicPromptPhaseHook';
 
 
 type DynamicPromptPhaseHookConfig = {

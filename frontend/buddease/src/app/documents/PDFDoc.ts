@@ -1,7 +1,7 @@
 // PDFDoc.ts
-// import { PDFDocument as PdfLibDocument, rgb } from 'pdf-lib';
+// import { PDFDocument as PdfLibDocument, rgb } from '@/app/documents/editing/PDFDocument';
 import { PDFDocument } from '@/app/documents/editing/PDFDocument'
-import { PDFDocument as PdfLibDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument as PdfLibDocument, rgb, StandardFonts } from '@/app/documents/editing/PDFDocument';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

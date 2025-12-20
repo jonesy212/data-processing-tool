@@ -7,7 +7,7 @@ import { SharedPhaseData, SharedRelationshipData } from '@/app/models/data/Data'
 import SnapshotStore from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SharedProperties } from '@/app/snapshots/SnapshotEvents';
-import { SharedContent } from '@/app/versions/Version';
+import { SharedContent } from '@/app/versions/VersionData';
 import { SharedAuditInfo, SharedUpdateHistory, SharedVersioning } from '@/app/versions/VersionData';
 
 interface Shared<

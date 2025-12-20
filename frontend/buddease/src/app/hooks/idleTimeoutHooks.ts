@@ -2,14 +2,12 @@
 import EXTENDED_NOTIFICATION_MESSAGES from "@/app/features/support/ExtendedNotificationMessages";
 import { IdleTimeoutType } from "@/app/config/UserSettings";
 import { DynamicHookParams } from "./DynamicHookParams";
-import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
+import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "@/app/hooks/commHooks/idleTimeoutUtils";
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 
-// Platform-agnostic timeout type
-type TimeoutHandle = ReturnType<typeof setTimeout>;
-
+// Use NodeJS.Timeout instead of custom TimeoutHandle
 const useIdleTimeout = (name?: string | undefined, props?: any): IdleTimeoutType => {
-  let timeoutId: TimeoutHandle | null = null;
+  let timeoutId: NodeJS.Timeout | null = null; // Change to NodeJS.Timeout
 
   const onTimeout = () => {
     clearUserData();
@@ -19,7 +17,7 @@ const useIdleTimeout = (name?: string | undefined, props?: any): IdleTimeoutType
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(onTimeout, timeoutDuration) as unknown as number;
+    timeoutId = setTimeout(onTimeout, timeoutDuration); // No type casting needed
   };
 
   const resetIdleTimeout = async (): Promise<void> => {
@@ -46,7 +44,7 @@ const useIdleTimeout = (name?: string | undefined, props?: any): IdleTimeoutType
     idleTimeoutId,
     startIdleTimeout,
   }: {
-    idleTimeoutId: TimeoutHandle | null;
+    idleTimeoutId: NodeJS.Timeout | null; // Change to NodeJS.Timeout
     startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
   }): Promise<() => void> => {
     showModalOrNotification(

@@ -1,6 +1,6 @@
 // DIDManager.ts
 
-import { generateDID, isValidDID } from '@/didUtils';
+import { generateDID, isValidDID } from '@/utils/web3/didUtils';
 
 /**
  * DIDManager class provides functionalities related to managing Decentralized Identifiers (DIDs).

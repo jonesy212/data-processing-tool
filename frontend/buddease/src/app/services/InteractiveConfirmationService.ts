@@ -1,5 +1,5 @@
 // confirmation/InteractiveConfirmationService.ts
-import { ConfirmationService } from './ConfirmationService';
+import { ConfirmationService } from '@/app/services/ConfirmationService';
 import { ImportFix } from '@/app/generators/corrections/ImportFixServicies'
 import { ConsoleConfirmationService } from '@/app/services/ConsoleConfirmationService';
 

@@ -1,8 +1,8 @@
 // SubscriptionService.tsx
 import { action, observable } from 'mobx';
-import { AuthenticationProvider } from "@/app/auth/AuthService";
+import { AuthenticationProvider } from "[object Object]";
 import { ModifiedDate } from "@/app/documents/DocType";
-import Web3Provider from "@/app/web3/Web3Provider";
+import Web3Provider from "@/app/components/web3/Web3Provider";
 
 class SubscriptionService {
   @observable subscribers: Record<string, ((data: any) => void)[]> = {};

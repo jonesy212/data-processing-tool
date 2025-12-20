@@ -16,7 +16,7 @@ import {
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SearchOptions } from "@/app/pages/searches/SearchOptions";
 import { SortCriteria } from "@/app/settings/SortCriteria";
-import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/teamTypes';
+import { TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/teamTypes';
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode

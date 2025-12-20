@@ -4,7 +4,7 @@ import { LifecycleManager } from '@/app/hooks/phases/LifecycleManager';
 import { Phase } from "@/app/models/phases/Phase";
 import { useButtonGeneratorProps } from '@/app/generators/GenerateButtons';
 import { Schema, DatabaseSchema as BaseDatabaseSchema } from '@/app/typings/database';
-import { IDatabaseService, DatabaseType } from '@/app/typings/database';
+import { BackendDatabaseService, DatabaseType } from '@/app/typings/database';
 import { PhaseEntity,
 PhaseK,
 PhaseMeta,
@@ -12,7 +12,7 @@ PhaseAttachment,
 PhaseExcludedFields,
 PhaseIncludedFields } from '@/app/typings/entities/PhaseEntity'
 // Extend the base interfaces with migration-specific types
-export interface Database extends IDatabaseService {
+export interface Database extends BackendDatabaseService {
   type: DatabaseType;
   config: DatabaseConfig;
   migrateSchema(schema: DatabaseSchema): Promise<void>;

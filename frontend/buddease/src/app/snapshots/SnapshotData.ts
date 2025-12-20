@@ -30,11 +30,11 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
-import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotMethods } from "./SnapshotMethods";
-import { SnapshotSecurity } from "./SnapshotSecurity";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
+import { SnapshotSecurity } from "@/app/snapshots/SnapshotSecurity";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 interface SnapshotBaseProperties<
   T extends BaseDataEntity,
@@ -57,7 +57,7 @@ interface SnapshotBaseProperties<
   isCore: boolean;
   // Common methods
   isExpired: () => boolean | undefined;
-
+  currentCategory?: Category;
   getSnapshotData: (
     id: string | number | undefined,
     snapshotId: number,
@@ -91,6 +91,65 @@ interface SnapshotBaseProperties<
   methods?: any[];
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+
+
+
+  items: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Record<string, any>;
+  currentCategory: Category | string | undefined;
+  find: <SearchType = T>(
+    predicate: (item: T) => boolean,
+    options?: {
+      limit?: number;
+      offset?: number;
+      sortBy?: keyof T;
+      sortOrder?: 'asc' | 'desc';
+    }
+  ) => SearchType[] | Promise<SearchType[]>;
+  
+  // Common methods
+  isExpired: () => boolean | undefined;
+
+  getSnapshotData: (
+    id: string | number | undefined,
+    snapshotId: number,
+    snapshotData: T,
+    dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    categoryProperties?: CategoryProperties,
+    category?: Category
+  ) => Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
+  
+  deleteSnapshot: (id: string) => void;
+
+    snapshotData: (
+    id: string | number | null,
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    timestamp: Date,
+    payload: UpdateSnapshotPayload<T>,
+    payloadData: T | K,
+    mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
+    snapshotId?: string | number | null,
+  ) => { 
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  };
+  
+  core?: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  shared?: SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  identity?: SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  security?: SnapshotSecurity;
+  versioning?: SnapshotVersioning<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  storage?: SnapshotStorage<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  operations?: SnapshotOperations<T, K>;
+  base?: BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  sharedMetadata?: SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Optional: If you need type-safe methods

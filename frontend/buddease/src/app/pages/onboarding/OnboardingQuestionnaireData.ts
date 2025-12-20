@@ -1,7 +1,7 @@
 // OnboardingQuestionnaireData.ts
 
 // onboardingQuestionnaireData.ts
-import { Question } from "./Question";
+import { Question } from "@/app/pages/onboarding/Question";
 
 const onboardingQuestionnaireData: {
   forEach(arg0: (question: any) => void): unknown;

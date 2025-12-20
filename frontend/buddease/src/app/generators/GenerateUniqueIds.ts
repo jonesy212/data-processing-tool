@@ -936,7 +936,7 @@ const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta
 
 
 // Dynamically set the FetchOptions using properties from the `area` object
-const options: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+export const options: FetchOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   elementId: area.id, // Use `area.id` as the `elementId`
   listenForResize: true, // Set to true to listen for resize
   onChange: (dimensions: AreaDimensions) => {

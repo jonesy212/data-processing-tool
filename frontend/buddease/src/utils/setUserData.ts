@@ -1,6 +1,6 @@
 import useSettingManagerStore from "@/app/state/stores/SettingsStore";
 import { useDispatch } from "react-redux";
-import { UserManagerState } from "@/app/users/UserSlice";
+import { UserManagerState } from "@/app/state/redux/slices/UserSlice";
 
 // Redux implementation
 const setUserDataRedux = (userData: UserManagerState) => {

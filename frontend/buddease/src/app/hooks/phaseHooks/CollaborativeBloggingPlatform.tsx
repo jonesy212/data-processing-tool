@@ -3,71 +3,62 @@ import CollaborationDashboard from '@/app/pages/dashboards/CollaborationDashboar
 import React, { useState } from 'react';
 import DynamicContent from '@/app/documents/DynamicContent';
 import BlogAndContentEditor from '@/app/components/models/content/BlogAndContentEditor';
-import AdapterContent from '@/app/components/web3/dAppAdapter/AdapterContent';
+import AdapterContent from '@/utils/web3/dAppAdapter/AdapterContent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';
 
-
-
-
 interface ScreenElementProps {
-    // Define the properties of a screen element
-    // For example:
-    id: string;
-    type: string;
-    // Add more properties as needed
-  }
-
-  
-
+  id: string;
+  type: string;
+  // Add more properties as needed
+}
 
 const CollaborativeBloggingPlatform: React.FC = () => {
-  // State for managing collaboration features, if needed
-  const [collaborationState, setCollaborationState] = useState(/* Initial state */);
+  // State for managing collaboration features
+  const [collaborationState, setCollaborationState] = useState<ColorSwatchProps[]>([]);
 
-  // Define functions or state updates for collaboration features, if needed
-  // const handleCollaborationUpdate = (newState: any) => {
-  //   setCollaborationState(newState);
-    // };
-    
+  // Handler for animation settings (extend type if needed)
+  const handleAnimationSettingsChange = (newSettings: ColorSwatchProps[]) => { 
+    setCollaborationState(newSettings);
+  };
 
-
-
-    const handleAnimationSettingsChange = (newSettings: any) => { 
-        setCollaborationState(newSettings);
-    }
-
-    const handleBrandingSwatchesChange = (swatches: ColorSwatchProps[]) => {
-        setCollaborationState(swatches);
-    }
-
-
+  // Handler for branding swatches
+  const handleBrandingSwatchesChange = (swatches: ColorSwatchProps[]) => {
+    setCollaborationState(swatches);
+  };
 
   return (
     <div>
-      {/* Integrate BlogAndContentEditor component */}
-      <BlogAndContentEditor />
+      {/* Blog & Content Editor */}
+      <BlogAndContentEditor  
+        contentItemId={""} 
+        editorState={""} 
+        initialContent={""} 
+        activeDashboard={""} 
+      />
 
-      {/* Integrate AdapterContent component */}
-          <AdapterContent
-              selectedDevice={"desktop"}
-              animationSettings={[]}
-              handleAnimationSettingsChange={handleAnimationSettingsChange}
-              handleBrandingSwatchesChange={handleBrandingSwatchesChange}
-              headerElements={{} as ScreenElementProps[]}
-              footerElements={{} as ScreenElementProps[]}
-              panelElements={{} as ScreenElementProps[]}
-              buttonElements={{} as ScreenElementProps[]}
-              layoutElements={{} as ScreenElementProps[]}
-              linkElements={{} as ScreenElementProps[]}
-              cardElements={{} as ScreenElementProps[]}
-              // Destructure other props as needed
-              />
-          
+      {/* Adapter Content for dynamic configuration */}
+      <AdapterContent
+        selectedDevice="desktop"
+        animationSettings={[]}
+        handleAnimationSettingsChange={handleAnimationSettingsChange}
+        handleBrandingSwatchesChange={handleBrandingSwatchesChange}
+        headerElements={[] as ScreenElementProps[]}
+        footerElements={[] as ScreenElementProps[]}
+        panelElements={[] as ScreenElementProps[]}
+        buttonElements={[] as ScreenElementProps[]}
+        layoutElements={[] as ScreenElementProps[]}
+        linkElements={[] as ScreenElementProps[]}
+        cardElements={[] as ScreenElementProps[]}
+      />
 
-      {/* Integrate DynamicContent component */}
-      <DynamicContent fontSize="16px" fontFamily="Arial" content={<p>This is dynamic content.</p>} />
+      {/* Dynamic content display */}
+      <DynamicContent
+        fontSize="16px"
+        fontFamily="Arial"
+        content={<p>This is dynamic content.</p>}
+      />
 
-      {/* Integrate CollaborationDashboard component */}
+      {/* Collaboration dashboard */}
       <CollaborationDashboard />
     </div>
   );

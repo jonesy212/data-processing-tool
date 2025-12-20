@@ -1,6 +1,6 @@
 // configureCollaborationPreferences.ts
 
-import { CollaborationPreferences } from "@/app/components/interfaces/settings/CollaborationPreferences";
+import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 
  
 const configureCollaborationPreferences = async (): Promise<CollaborationPreferences> => {

@@ -25,7 +25,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const lazy = state.isAuthenticated
     ? undefined
     : async () => {
-        const protectedRoute = await import("@/forms/LoginForm");
+        const protectedRoute = await import("@/app/pages/forms/LoginForm");
         const Component = protectedRoute.default;
         return {
           default: (props: any) => <Component onSubmit={() => {}} {...props} />,

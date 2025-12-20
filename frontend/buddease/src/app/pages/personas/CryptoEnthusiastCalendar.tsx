@@ -1,5 +1,5 @@
 // CryptoEnthusiastCalendar.tsx
-import { CustomEvent } from "@/app/events/BaseCustomEvent";
+import { CustomEvent } from "@/app/typings/eventHandlers/eventTypes";
 import EventService from "@/app/services/EventService";
 import React, { useState } from "react";
 import ProfessionalTraderCalendar from "./ProfessionalTraderCalendar"; // Import ProfessionalTraderCalendar component

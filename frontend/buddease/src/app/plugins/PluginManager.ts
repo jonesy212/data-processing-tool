@@ -3,7 +3,7 @@ import { CallbackRegistry } from "@/app/libraries/eventSystem/callbackRegistry";
 import loadPlugins from "@/utils/web3/pluginSystem/plugins/loader";
 import { DAppPlugin } from "@/utils/web3/pluginSystem/plugins/PluginInterface";
 
-import { PluginError } from "@/app/components/dapp/DAppAdapter"; // adjust import path if needed
+import { PluginError } from "@/utils/web3/crossPlatformLayer/platform/DAppAdapter"; // adjust import path if needed
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 export interface PluginManagerOptions {
@@ -94,6 +94,58 @@ export class PluginManager {
     }
 
     return this.plugins.delete(id);
+  }
+
+    list(): Array<{ id: string; name: string; enabled: boolean; description?: string }> {
+    const result = [];
+    for (const [id, loadedPlugin] of this.plugins.entries()) {
+      result.push({
+        id,
+        name: loadedPlugin.instance.name || id,
+        enabled: loadedPlugin.enabled,
+        description: loadedPlugin.instance.description || loadedPlugin.instance.metadata?.description
+      });
+    }
+    return result;
+  }
+
+  async enable(id: string): Promise<boolean> {
+    const loadedPlugin = this.plugins.get(id);
+    if (!loadedPlugin) return false;
+
+    if (!loadedPlugin.enabled) {
+      loadedPlugin.enabled = true;
+      
+      // Re-initialize if needed
+      if (loadedPlugin.instance.initialize) {
+        try {
+          await loadedPlugin.instance.initialize();
+        } catch (error) {
+          console.error(`[PluginManager] Error re-initializing plugin ${id}:`, error);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  disable(id: string): boolean {
+    const loadedPlugin = this.plugins.get(id);
+    if (!loadedPlugin) return false;
+
+    if (loadedPlugin.enabled) {
+      loadedPlugin.enabled = false;
+      
+      // Clean up if needed
+      if (loadedPlugin.instance.destroy) {
+        try {
+          loadedPlugin.instance.destroy();
+        } catch (error) {
+          console.error(`[PluginManager] Error destroying plugin ${id}:`, error);
+        }
+      }
+    }
+    return true;
   }
 
   /**

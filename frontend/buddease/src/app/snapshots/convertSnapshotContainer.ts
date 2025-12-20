@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotContainerType } from "@/app/snapshots/SnapshotContainerType";
+import { SnapshotContainerType } from "@/app/snapshots/SnapshotContainer";
 
 /**
  * Converts a SnapshotContainerType into a Snapshot instance.

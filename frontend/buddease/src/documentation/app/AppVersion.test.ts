@@ -1,7 +1,7 @@
 // AppVersion.test.ts
 // Test file: src/app/core/versioning/__tests__/AppVersion.test.ts
-import { AppVersionImpl } from '../AppVersionImpl';
-import { BaseDataEntity } from '@/app/core/types';
+import { AppVersionImpl } from '@/app/pages/_app';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 
 describe('AppVersion System with Generics', () => {
   test('should initialize with generic parameters', async () => {

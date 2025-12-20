@@ -3,7 +3,7 @@
 
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { BaseDatabaseService } from '@/app/server/database/DatabaseService'
-import { Client } from "pg";
+import { Client } from "@/app/client/Client";
 
 export class PostgresDatabaseService extends BaseDatabaseService {
   private client: Client;

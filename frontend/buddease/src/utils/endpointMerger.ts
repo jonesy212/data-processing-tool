@@ -1,7 +1,7 @@
 // endpointMerger.ts
 import { EndpointConfigurations } from '@/app/config/EndpointConfig';
 import mergeConfigurations from './mergeConfigurations';
-import { generateEndpointUrl } from './urlGenerator';
+import { generateEndpointUrl } from '@/utils/urlGenerator';
 
 // Import React hooks dependencies (these might need to be handled differently)
 // const { handleFilterTasks } = useSearchOptions();

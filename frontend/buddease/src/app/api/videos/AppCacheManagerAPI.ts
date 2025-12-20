@@ -5,7 +5,7 @@ import { FrontendConfig } from '@/app/config/FrontendConfig';
 import { UserSettings } from '@/app/config/UserSettings';
 import BackendStructure from '@/app/server/database/BackendStructure'
 import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { AsyncHook } from 'async_hooks';
+import { AsyncHook } from '@/app/hooks/useAsyncHookLinker';
 import axios from 'axios';
 import { RealtimeData } from '@/app/typings/realtimeTypes'
 import { CustomPhaseHooks } from '@/app/models/phases/Phase';

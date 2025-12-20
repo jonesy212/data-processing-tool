@@ -3,7 +3,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { generateTransferToken } from '@/app/generators/GenerateTokens';
 import dynamicHooks from '@/app/hooks/dynamicHooks/dynamicHooks';
-import { loadDashboardState } from '@/dashboards/LoadDashboard';
+import { loadDashboardState } from '@/app/api/ApiDashboard';
 import React, { FormEvent, useState } from "react";
 
 const API_BASE_URL = endpoints.auth.admin

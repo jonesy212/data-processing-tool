@@ -1,6 +1,6 @@
 // useDynamicNavigation.ts
 import { useEffect, useRef } from "react";
-import { useNavigation } from "./NavigationContext";
+import { useNavigation } from "@/app/state/context/NavigationContext";
 
 /**
  * condition: a boolean OR a function returning boolean

@@ -1,5 +1,5 @@
 // utils/BuildErrorHandler.ts
-import { ErrorReporter } from './ErrorReporter';
+import { ErrorReporter } from '@/utils/ErrorReporter';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 

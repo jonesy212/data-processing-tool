@@ -10,13 +10,13 @@ export interface ColorSwatchProps {
 }
 
 interface ColorPaletteProps {
+  colors: string[]
   swatches: ColorSwatchProps[]; // Add the swatches prop
   colorCodingEnabled: boolean; 
   brandingSwatches: ColorSwatchProps[]; // Add brandingSwatches prop
 }
 
   // Define default customizable areas
-  // Define dynamic customizable areas
 const defaultCustomizableAreas: Record<string, string | Record<string, string>> = {
   "Header": {
     "Background": "",

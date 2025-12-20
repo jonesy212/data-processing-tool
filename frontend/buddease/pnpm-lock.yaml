@@ -8,6 +8,15 @@ dependencies:
   '@ant-design/icons':
     specifier: ^6.1.0
     version: 6.1.0(react-dom@19.2.0)(react@19.2.0)
+  '@babel/parser':
+    specifier: ^7.28.5
+    version: 7.28.5
+  '@babel/traverse':
+    specifier: ^7.28.5
+    version: 7.28.5
+  '@babel/types':
+    specifier: ^7.28.5
+    version: 7.28.5
   '@emoji-mart/data':
     specifier: ^1.2.1
     version: 1.2.1
@@ -377,6 +386,9 @@ dependencies:
   web3-eth-contract:
     specifier: ^4.7.2
     version: 4.7.2(typescript@5.9.3)(zod@4.1.12)
+  web3-utils:
+    specifier: ^4.3.3
+    version: 4.3.3
   winston:
     specifier: ^3.18.3
     version: 3.18.3
@@ -421,6 +433,9 @@ devDependencies:
   '@types/animejs':
     specifier: ^3.1.13
     version: 3.1.13
+  '@types/babel__traverse':
+    specifier: ^7.28.0
+    version: 7.28.0
   '@types/chalk':
     specifier: ^2.2.4
     version: 2.2.4

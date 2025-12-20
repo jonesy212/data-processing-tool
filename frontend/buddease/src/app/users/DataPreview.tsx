@@ -1,5 +1,5 @@
 // DataPreview.tsx
-import { UserData } from '@/app/components/users/User';
+import { UserData } from '@/app/users/User';
 import React from 'react';
 
 interface DataPreviewProps {

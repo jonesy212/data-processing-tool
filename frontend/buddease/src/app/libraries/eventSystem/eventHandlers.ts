@@ -1,26 +1,120 @@
 // eventHandlers.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { EventEmitter } from '@/app/libraries/eventSystem/eventEmitter'
+import { EventHandler } from '@/app/typings/eventHandlers/eventTypes'
 import { 
   SnapshotEvent, 
   BatchSnapshotEvent, 
   ErrorEvent, 
   SubscriptionEvent,
   EventContext,
-  EventHandler
-} from '@/app/typings/eventHandlers/eventTypes'
-
+} from '@/app/typings/snapshotTypes'
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
 
+
+export interface EventHandlers<
+  T,
+  K,
+  Meta,
+  AttachmentType,
+  ExcludedFields,
+  IncludedFields
+> {
+  /* ---------- Emitters ---------- */
+  emitSnapshotAdded(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    previousState?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitSnapshotUpdated(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    previousState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitSnapshotRemoved(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitBatchSnapshot(
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitSubscriptionAdded(
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitSubscriptionRemoved(
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitError(
+    error: Error,
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    recoveryAttempt?: number
+  ): Promise<void>;
+
+  emitStoreInitialized(
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  emitStoreDisposed(
+    context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void>;
+
+  /* ---------- Listeners ---------- */
+  onSnapshotAdded(
+    handler: EventHandler<SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): string;
+
+  onSnapshotRemoved(
+    handler: EventHandler<SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): string;
+
+  onSnapshotUpdated(
+    handler: EventHandler<SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): string;
+
+  onError(
+    handler: EventHandler<ErrorEvent>
+  ): string;
+
+  onStoreInitialized(
+    handler: EventHandler<{ context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>
+  ): string;
+
+  /* ---------- Utilities ---------- */
+  removeListener(
+    event: keyof SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    listenerId: string
+  ): boolean;
+
+  removeAllListeners(
+    event?: keyof SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): void;
+
+  getListenerCount(
+    event?: keyof SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): number;
+}
+
 export interface  SnapshotEventMap<
-  T extends BaseDataEntity = BaseDataRoot,               // ← add
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T> {
+  IncludedFields extends keyof T = keyof T
+> {
   'snapshot:added': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   'snapshot:updated': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   'snapshot:removed': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -32,7 +126,14 @@ export interface  SnapshotEventMap<
   'store:disposed': { context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
 }
 
-export class SnapshotEventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+export class SnapshotEventHandlers<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   private eventEmitter: EventEmitter<SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
   constructor() {

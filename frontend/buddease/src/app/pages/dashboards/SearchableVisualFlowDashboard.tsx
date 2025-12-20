@@ -1,9 +1,9 @@
 // SearchableVisualFlowDashboard.tsx
 
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 import React, { useState } from 'react';
-import TreeView from '@/TreeView'; // Assuming you have the TreeView component
-import VisualFlowDashboard from '@/VisualFlowDashboard';
+import TreeView from '@/app/pages/dashboards/TreeView'; // Assuming you have the TreeView component
+import VisualFlowDashboard from '@/app/pages/dashboards/VisualFlowDashboard';
 
 const SearchableVisualFlowDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

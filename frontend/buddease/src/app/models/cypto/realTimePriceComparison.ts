@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
-import { DEXEnum, ExchangeEnum } from '@/app/models/crypto/exchangeIntegration';
+import { DEXEnum, ExchangeEnum } from '@/app/models/cypto/exchangeIntegration';
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { processExchangeData } from '@/app/models/data/fetchExchangeData';

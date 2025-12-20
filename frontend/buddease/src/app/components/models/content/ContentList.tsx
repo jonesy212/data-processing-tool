@@ -2,7 +2,7 @@
 import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
 import { Data } from '@/app/models/data/Data';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { ContentItem } from '@/ContentItem';
+import { ContentItem } from '@/app/components/models/content/ContentItem';
 import React from 'react';
 
 interface ContentListProps {

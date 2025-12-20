@@ -1,6 +1,6 @@
 // DrawingSlice.ts
 import { DrawingActions } from "@/app/actions/DrawingActions";
-import Tracker, { TrackerProps } from '@/app/components/models/tracker/Tracker';
+import Tracker, { TrackerProps } from '@/app/models/tracker/Tracker';
 import { autosaveDrawing } from "@/app/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import FolderData from '@/app/models/data/FolderData';

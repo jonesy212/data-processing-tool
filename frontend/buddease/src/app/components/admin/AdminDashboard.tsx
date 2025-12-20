@@ -25,7 +25,7 @@ import SecurityAudit from "@/app/server/security/SecurityAudit";
 import NotificationManager from '@/app/features/support/NotificationManager';
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";
-import { ConfigCard } from "./DashboardConfigCard";
+import { ConfigCard } from "@/app/components/admin/AdminDashboard";
 
 interface AdminDashboardProps<
   T extends BaseDataEntity,

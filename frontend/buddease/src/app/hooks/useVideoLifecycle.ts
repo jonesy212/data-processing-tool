@@ -1,9 +1,9 @@
 // useVideoLifecycle.ts
 import { useCallback, useEffect } from "react";
-import { useLifecycle } from "../hooks/useLifecycle";
-import { videoLifecycleConfig } from "./VideoLifecycleConfig";
-import { VideoLifecyclePhase } from "./VideoLifecyclePhase";
-import useVideoStore from "../store/useVideoStore"; // ← connects to your state store
+import { useLifecycle } from "@/app/hooks/useLifecycle.ts";
+import { videoLifecycleConfig } from "@/app/config/VideoLifecycleConfig";
+import { VideoLifecyclePhase } from "@/app/phases/VideoLifecyclePhase";
+import useVideoStore from "@/app/state/stores/VideoStore"; // ← connects to your state store
 
 export const useVideoLifecycle = () => {
   const videoStore = useVideoStore(); // centralized store

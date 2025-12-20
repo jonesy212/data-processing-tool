@@ -5,7 +5,7 @@ import { VideoActions } from "@/app/actions/VideoActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNotification } from "@/app/state/context/NotificationContext";
-import { select } from "redux-saga/effects";
+import { select } from "@/app/state/redux/sagas/UndoRedoSaga";
 import { Video } from '@/app/typings/videoTypes/Video';
 import { call, put, takeLatest } from "redux-saga/effects";
 import { AxiosError, AxiosResponse } from 'axios';

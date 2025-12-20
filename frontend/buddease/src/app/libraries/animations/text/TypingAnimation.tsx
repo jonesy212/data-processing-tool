@@ -1,5 +1,5 @@
 // TypingAnimation.tsx
-import { AnimatedComponentProps } from "@/app/styling/AnimationsAndTansitions";
+import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import React, { useEffect, useState } from "react";
 
 const AnimatedComponent: React.FC<AnimatedComponentProps> = ({ children }) => {

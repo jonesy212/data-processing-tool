@@ -1,6 +1,6 @@
 // TrackerSlice.tsx
 // TrackerSlice.ts
-import Milestone from "@/app/components/calendar/CalendarSlice";
+import Milestone from "@/app/state/redux/slices/CalendarSlice";
 import { Tracker } from "@/app/models/tracker/Tracker";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 

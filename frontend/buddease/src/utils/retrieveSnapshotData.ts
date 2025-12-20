@@ -1,7 +1,7 @@
 import { SnapshotOperation, SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import internalApiService from '@/app/api/ApiClient';
 import axiosInstance from '@/app/api/csrfToken';
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { environmentAwareEndpointManager } from '@/app/config/endpoints/EnvironmentAwareEndpointManager';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';

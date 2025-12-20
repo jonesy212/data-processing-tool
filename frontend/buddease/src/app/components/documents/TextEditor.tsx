@@ -1,5 +1,6 @@
 // TextEditor.tsx
-import { getToolbarOptions, ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
+import { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
+import { getToolbarOptions } from '@/app/documents/getToolbarOptions'
 import {
   DocumentBuilderConfig,
   getDefaultDocumentBuilderConfig,

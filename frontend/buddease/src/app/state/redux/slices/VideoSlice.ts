@@ -1,20 +1,20 @@
-// VideoSlice.ts
+
+// video/VideoSlice.ts
 import { DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
-// video/VideoSlice.ts
 import { VideoMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Channel } from "@/app/interfaces/chat/Channel";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { implementThen } from '@/app/state/stores/CommonEvent';
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
-import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
+import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoMeta } from '@/app/typings/entities/VideoEntity';
 import { Video, VideoData } from '@/app/typings/videoTypes/Video';
 import { User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createDraft } from "immer";
-import { ApiManagerState } from "./ApiSlice";
-import { CustomComment } from "./BlogSlice";
+import { ApiManagerState } from "@/app/state/redux/slices/ApiSlice";
+import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 
 
 // Define the generateCaptions function
@@ -56,7 +56,7 @@ interface VideoState<
     videoTags: { [videoId: string]: string[] }; // Map of video ID to an array of tags
 }
 
-const initialState: VideoState = {
+const initialState: VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields> = {
   video: null,
   videos: [],
   currentVideoId: null,
@@ -541,7 +541,7 @@ export const useVideoManagerSlice = createSlice({
     integrateVirtualCollaborationSpaces: (
       state,
       action: PayloadAction<{ videos: Video[], videoId: string, spaces: string[] }>
-    ): WritableDraft<VideoState> => {
+    ): WritableDraft<VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>> => {
       // Extract necessary data from the action payload
       const { videos, videoId, spaces } = action.payload;
 
@@ -759,7 +759,7 @@ export const useVideoManagerSlice = createSlice({
     autoGenerateVideoTrailers: (
       state,
       action: PayloadAction<{ videoId: string, trailer: string[] }>
-    ): WritableDraft<VideoState> => {
+    ): WritableDraft<VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>> => {
       const { videoId, trailer } = action.payload;
       // Find the video with the given videoId
       const updatedVideos = state.videos.map(video => {
@@ -779,7 +779,7 @@ export const useVideoManagerSlice = createSlice({
     predictiveAnalyticsForVideoEngagement: (
       state,
       action: PayloadAction<{ videoId: string; engagement: string[] }>
-    ): WritableDraft<VideoState> => {
+    ): WritableDraft<VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>> => {
       const { videoId, engagement } = action.payload;
       const updatedVideos = state.videos.map((video) => {
         if (video.id === videoId) {
@@ -797,7 +797,7 @@ export const useVideoManagerSlice = createSlice({
     adaptiveBitrateStreaming: (
       state,
       action: PayloadAction<{ videoId: string, streaming: string[] }>
-    ): WritableDraft<VideoState> => {
+    ): WritableDraft<VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>> => {
       const { videoId, streaming } = action.payload;
       // Find the video with the given videoId
       const updatedVideos = state.videos.map(video => {
@@ -817,7 +817,7 @@ export const useVideoManagerSlice = createSlice({
     VRbasedVideoConferencing: (
       state,
       action: PayloadAction<{ videoId: string, conferencing: string[] }>
-    ): WritableDraft<VideoState> => {
+    ): WritableDraft<VideoState<VideoEntity, VideoK, VideoMeta, VideoAttachment, VideoExcludedFields, VideoIncludedFields>> => {
     
       const { videoId, conferencing } = action.payload;
       // Find the video with the given videoId

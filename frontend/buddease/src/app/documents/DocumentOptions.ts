@@ -38,7 +38,7 @@ import { VersionData } from "@/app/versions/VersionData";
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import * as docx from "docx";
 import { ContentState } from "draft-js";
-import { ModifiedDate } from "./DocType";
+import { ModifiedDate } from "@/app/documents/DocType";
 
 
 export interface CustomDocument extends docx.Document {

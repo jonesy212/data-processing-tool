@@ -1,11 +1,11 @@
 // FileSharingComponent.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { brandingSettings } from "@/app/branding/BrandingSettings";
+import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { DataDetailsComponent } from "@/app/components/teams/Team";
+import { DataDetailsComponent } from "@/app/models/data/Data";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import CustomBox from "@/app/containers/CustomBox";
+import CustomBox from "@/app/components/containers/CustomBox";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import useFileUpload from "@/app/hooks/commHooks/useFileUpload";
 import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";
@@ -15,7 +15,7 @@ import { SupportedData } from "@/app/models/CommonData";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import DynamicTypography from "@/app/styling/DynamicTypography";
+import DynamicTypography from "@/app/components/styling/DynamicTypography";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import MenuDivider from "antd/es/menu/MenuDivider";
 import { Router, useRouter } from "next/router";

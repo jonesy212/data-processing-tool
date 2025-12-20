@@ -1,7 +1,7 @@
 // Encryption.ts
 
 import { decryptedData } from "@/app/server/security/decryptedData";
-import { encryptData } from "./encryptedData";
+import { encryptData } from "@/app/server/security/encryptedData";
 
 // Define the Encryption interface for representing encryption data
 interface Encryption {

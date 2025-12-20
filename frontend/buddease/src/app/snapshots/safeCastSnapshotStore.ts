@@ -8,11 +8,11 @@ import { SnapshotUnion, SnapshotsArray } from '@/app/snapshots/LocalStorageSnaps
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedState } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
-import { StructuredMetadata } from '@/config/s/StructuredMetadata';
-import { SnapshotData } from './SnapshotData';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from './SnapshotStore';
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
 // A safe casting function to ensure type compatibility
 function safeCastSnapshotStore<

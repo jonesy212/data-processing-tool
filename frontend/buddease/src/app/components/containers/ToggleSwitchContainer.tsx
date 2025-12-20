@@ -1,7 +1,7 @@
 // ToggleSwitchContainer.tsx
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ToggleSwitch from "./../../components/libraries/menu/ToggleSwitch"
+import ToggleSwitch from "@/app/libraries/menu/ToggleSwitch"
 import { toggleTask } from "@/app/api/TasksApi"
 import Task from "@/app/components/models/tasks/Task";
 import { RootState } from "@/app/state/redux/slices/RootSlice";

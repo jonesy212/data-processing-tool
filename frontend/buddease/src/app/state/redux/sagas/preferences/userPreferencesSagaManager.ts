@@ -3,10 +3,10 @@ import useApiUserPreferences from '@/app/api/preferences/ApiUserPreferences';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { all, call, put } from 'redux-saga/effects';
 
-import { communicationPreferencesSaga } from '@/app/communicationPreferencesSaga';
-import brandingPreferencesSaga from '@/brandingPreferencesSaga';
-import userPreferencesSagas from '@/userPreferencesSaga';
-import visualPreferencesSaga from '@/visualPreferencesSaga';
+import { communicationPreferencesSaga } from '@/app/state/redux/sagas/preferences/communicationPreferencesSaga';
+import brandingPreferencesSaga from '@/app/state/redux/sagas/preferences/brandingPreferencesSaga';
+import userPreferencesSagas from '@/app/state/redux/sagas/userPreferencesSaga';
+import visualPreferencesSaga from '@/app/state/redux/sagas/preferences/visualPreferencesSaga';
 // Import other preference saga files...
 
 // Worker Saga: Fetch User Preferences

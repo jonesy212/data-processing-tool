@@ -1,8 +1,8 @@
 // TeamManagementApp.tsx
 import React, { useState } from 'react';
 import RandomWalkVisualization from '@/app/hooks/userInterface/RandomWalkVisualization';
-import { CollaborationPreferences } from '@/app/components/interfaces/settings/CollaborationPreferences';
-import TeamData from '@/TeamData';
+import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
+import TeamData from '@/app/components/models/teams/TeamData';
 
 const TeamManagementApp: React.FC = () => {
   const [teamData, setTeamData] = useState<TeamData>({

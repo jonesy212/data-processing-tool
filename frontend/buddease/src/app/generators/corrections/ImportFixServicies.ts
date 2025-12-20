@@ -17,6 +17,7 @@ export interface ImportFix {
     targetImportPath: string;
     reason?: string;
     confidence?: 'high' | 'medium' | 'low';
+    confidenceScore: number;
 }
 
 export interface ParsedImport {
@@ -83,6 +84,29 @@ export class ImportFixerService {
         // Add more mappings as needed
     ]);
 
+    private scoreFix(fix: {
+    originalPath: string;
+    suggestedPath: string;
+    symbolMatch: boolean;
+    exactFileMatch: boolean;
+    aliasUsed: boolean;
+    }): number {
+    let score = 0;
+
+    if (fix.exactFileMatch) score += 50;          // file exists exactly
+    if (fix.symbolMatch) score += 30;             // export symbol confirmed
+    if (fix.aliasUsed) score += 10;               // @/ alias consistent
+    if (fix.originalPath.includes('..')) score -= 10; // risky relative import
+
+    return Math.min(100, Math.max(0, score));
+    }
+
+    private classifyConfidence(score: number): 'high' | 'medium' | 'low' {
+    if (score >= 85) return 'high';
+    if (score >= 60) return 'medium';
+    return 'low';
+    }
+
     private readonly IMPORT_PATTERNS = {
         // Pattern 1: import { A, B } from 'path';
         NAMED_IMPORT: /import\s+{([^}]+)}\s+from\s+['"]([^'"]+)['"];?/,
@@ -121,10 +145,6 @@ export class ImportFixerService {
                 this.confirmationService = new ConsoleConfirmationService();
         }
     }
-
-
-
-    
 
 
     /**
@@ -326,6 +346,7 @@ export class ImportFixerService {
         // ... implementation returns array of strings
         return duplicates;
     }
+
     private async analyzeSmartFixes(content: string, filePath: string, existingImports: ParsedImport[]): Promise<ImportFix[]> {
         const fixes: ImportFix[] = [];
         const lines = content.split('\n');
@@ -337,41 +358,64 @@ export class ImportFixerService {
             // Check for mixed import patterns
             for (const pattern of this.MIXED_IMPORT_PATTERNS) {
                 if (pattern.pattern.test(trimmedLine)) {
+                    // Extract import path from the line
+                    const importMatch = trimmedLine.match(/from\s+['"]([^'"]+)['"]/);
+                    const originalPath = importMatch ? importMatch[1] : '';
+                    const suggestedPath = 'multiple';
+                    
+                    // Calculate score for this fix
+                    const score = this.calculateSmartFixScore(originalPath, suggestedPath, trimmedLine);
+                    
                     fixes.push({
                         filePath,
                         originalLine: trimmedLine,
                         newLine: pattern.corrections.join('\n'),
                         missingTypes: [],
-                        targetImportPath: 'multiple',
+                        targetImportPath: suggestedPath,
                         reason: pattern.reason,
-                        confidence: 'high'
+                        confidence: this.classifyConfidence(score),
+                        confidenceScore: score,
                     });
                 }
             }
 
             // Check for common API import mistakes
             if (trimmedLine.includes('@/app/api/SnapshotApi') && trimmedLine.includes('handleApiError')) {
+                const originalPath = '@/app/api/SnapshotApi';
+                const suggestedPath = '@/app/api/ApiLogs';
+                
+                // Calculate score for this fix
+                const score = this.calculateSmartFixScore(originalPath, suggestedPath, trimmedLine);
+                
                 fixes.push({
                     filePath,
                     originalLine: trimmedLine,
                     newLine: "import { handleApiError } from '@/app/api/ApiLogs'",
                     missingTypes: ['handleApiError'],
-                    targetImportPath: '@/app/api/ApiLogs',
+                    targetImportPath: suggestedPath,
                     reason: 'handleApiError should be imported from ApiLogs, not SnapshotApi',
-                    confidence: 'high'
+                    confidence: this.classifyConfidence(score),
+                    confidenceScore: score,
                 });
             }
 
             // Check for header config mistakes
             if (trimmedLine.includes('@/app/api/headers/HeadersConfig') && trimmedLine.includes('headersConfig')) {
+                const originalPath = '@/app/api/headers/HeadersConfig';
+                const suggestedPath = '@/app/components/shared/SharedHeaders';
+                
+                // Calculate score for this fix
+                const score = this.calculateSmartFixScore(originalPath, suggestedPath, trimmedLine);
+                
                 fixes.push({
                     filePath,
                     originalLine: trimmedLine,
                     newLine: "import { headersConfig } from '@/app/components/shared/SharedHeaders'",
                     missingTypes: ['headersConfig'],
-                    targetImportPath: '@/app/components/shared/SharedHeaders',
+                    targetImportPath: suggestedPath,
                     reason: 'headersConfig should be imported from SharedHeaders, not HeadersConfig',
-                    confidence: 'high'
+                    confidence: this.classifyConfidence(score),
+                    confidenceScore: score,
                 });
             }
         });
@@ -379,6 +423,34 @@ export class ImportFixerService {
         return fixes;
     }
 
+    /**
+     * Calculate score for smart fixes based on heuristics
+     */
+    private calculateSmartFixScore(originalPath: string, suggestedPath: string, originalLine: string): number {
+        let score = 50; // Base score for smart fixes
+        
+        // Higher score if we're replacing a known problematic pattern
+        if (originalPath.includes('SnapshotApi') && originalLine.includes('handleApiError')) {
+            score += 40; // High confidence for this specific pattern
+        }
+        
+        // Higher score for header config fixes
+        if (originalPath.includes('HeadersConfig') && originalLine.includes('headersConfig')) {
+            score += 40;
+        }
+        
+        // Lower score for "multiple" suggestions (more complex changes)
+        if (suggestedPath === 'multiple') {
+            score -= 20;
+        }
+        
+        // Bonus if using proper @/ alias
+        if (suggestedPath.startsWith('@/')) {
+            score += 10;
+        }
+        
+        return Math.min(100, Math.max(0, score));
+    }
     /**
      * Check for circular imports (simplified check)
      */
@@ -862,6 +934,21 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             newTargetLine = `import { ${missingType} } from '${targetPath}';`;
         }
 
+        // Calculate confidence score
+        const exactFileMatch = true; // We have a target path
+        const symbolMatch = true; // We're importing a specific symbol
+        const aliasUsed = targetPath.startsWith('@/');
+        const originalPath = problematicImport.importPath;
+        const suggestedPath = targetPath;
+
+        const score = this.scoreFix({
+            originalPath,
+            suggestedPath,
+            symbolMatch,
+            exactFileMatch,
+            aliasUsed
+        });
+
         return {
             filePath,
             originalLine: problematicImport.fullLine,
@@ -869,7 +956,8 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             missingTypes: [missingType],
             targetImportPath: targetPath,
             reason: `Move ${missingType} from ${problematicImport.importPath} to ${targetPath}`,
-            confidence: 'high'
+            confidenceScore: score,
+            confidence: this.classifyConfidence(score),
         };
     }
 
@@ -884,43 +972,59 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
     ): ImportFix {
 
         const targetImport = allImports.find(imp => imp.importPath === targetPath);
+        let originalLine = '';
+        let newLine = '';
 
         if (targetImport) {
+            originalLine = targetImport.fullLine;
             const newImports = [...targetImport.namedImports, missingType].sort();
-            let newLine = '';
-
+            
             if (targetImport.defaultImport) {
                 newLine = `import ${targetImport.defaultImport}, { ${newImports.join(', ')} } from '${targetPath}';`;
             } else {
                 newLine = `import { ${newImports.join(', ')} } from '${targetPath}';`;
             }
-
-            return {
-                filePath,
-                originalLine: targetImport.fullLine,
-                newLine,
-                missingTypes: [missingType],
-                targetImportPath: targetPath,
-                reason: `Add ${missingType} to existing import from ${targetPath}`,
-                confidence: 'medium'
-            };
         } else {
-            const newLine = `import { ${missingType} } from '${targetPath}';`;
-
-            return {
-                filePath,
-                originalLine: '',
-                newLine,
-                missingTypes: [missingType],
-                targetImportPath: targetPath,
-                reason: `Add new import for ${missingType} from ${targetPath}`,
-                confidence: 'medium'
-            };
+            originalLine = '';
+            newLine = `import { ${missingType} } from '${targetPath}';`;
         }
+
+        // Calculate confidence score
+        const exactFileMatch = true; // We have a target path
+        const symbolMatch = true; // We're importing a specific symbol
+        const aliasUsed = targetPath.startsWith('@/');
+        const originalPath = ''; // No original import path
+        const suggestedPath = targetPath;
+
+        const score = this.scoreFix({
+            originalPath,
+            suggestedPath,
+            symbolMatch,
+            exactFileMatch,
+            aliasUsed
+        });
+
+        const reason = targetImport 
+            ? `Add ${missingType} to existing import from ${targetPath}`
+            : `Add new import for ${missingType} from ${targetPath}`;
+
+        return {
+            filePath,
+            originalLine,
+            newLine,
+            missingTypes: [missingType],
+            targetImportPath: targetPath,
+            confidenceScore: score,
+            confidence: this.classifyConfidence(score),
+            reason
+        };
     }
 
     // Smart scan with confidence filtering
-    async scanProjectWithConfidence(rootDir: string = process.cwd()): Promise<{ analyses: ImportAnalysis[], fixesByConfidence: { high: ImportFix[], medium: ImportFix[], low: ImportFix[] } }> {
+    async scanProjectWithConfidence(rootDir: string = process.cwd()): Promise<{ 
+        analyses: ImportAnalysis[], 
+        fixesByConfidence: { high: ImportFix[], medium: ImportFix[], low: ImportFix[] } 
+    }> {
         const analyses = await this.scanProject(rootDir);
         const allFixes = analyses.flatMap(analysis => analysis.suggestedFixes);
 
@@ -938,9 +1042,10 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         const confidenceLevels = { high: 3, medium: 2, low: 1 };
         const minLevel = confidenceLevels[minConfidence];
 
-        const filteredFixes = fixes.filter(fix =>
-            confidenceLevels[fix.confidence || 'medium'] >= minLevel
-        );
+        const filteredFixes = fixes.filter(fix => {
+            const fixLevel = confidenceLevels[fix.confidence || 'medium'];
+            return fixLevel >= minLevel;
+        });
 
         return this.applyFixesWithConfirmation(filteredFixes);
     }
@@ -1642,7 +1747,7 @@ export async function testImportFixes() {
     console.log(`✅ Applied ${applied} import corrections using complex fix system`);
 }
 
-// Export helper functions
+
 export function isImportCorrection(correction: Correction): correction is ImportCorrection {
     return (correction as ImportCorrection).fixType === 'import';
 }
@@ -1650,4 +1755,3 @@ export function isImportCorrection(correction: Correction): correction is Import
 export function hasComplexFix(correction: Correction): correction is Correction & { complexFix: ComplexFix } {
     return !!(correction as any).complexFix;
 }
-

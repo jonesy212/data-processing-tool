@@ -1,9 +1,10 @@
 // CalendarPhase.tsx
 import React, { useEffect, useState } from "react";
 import { createPhaseHook, idleTimeoutDuration } from "@/app/hooks/phaseHooks/PhaseHooks";
-import { navigateToCalendarPage } from "@/app/navigation/navigateToCalendar";
+import { navigateToCalendarPage } from "@/app/components/navigation/navigateToCalendar";
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
-import axiosInstance from '@/app/api/csrfToken';
+import { AppPhase } from '@/app/typings/entities/PhaseEntity';
+import internalApiService from '@/app/api/ApiClient';
 
 /**
  * Function to update state with additional data
@@ -52,14 +53,14 @@ export const handleTransitionToCalendarPhase = async () => {
     const additionalData = await fetchDataUsingAxios();
 
 
-    const initialState: Phase = {
+    const initialState: Phase<AppPhase> = {
       id: "",
       name: "",
       startDate: new Date(),
       endDate: new Date(),
       subPhases: [],
       component: {} as React.FC,
-      hooks: {} as CustomPhaseHooks,
+      hooks: {} as CustomPhaseHooks<AppPhase>,
       lessons: [],
       duration: 0
     };
@@ -82,7 +83,7 @@ const fetchDataUsingAxios = async () => {
     const API_BASE_URL = 'http://your-backend-api-base-url';
 
     // Implement this method based on your actual backend API endpoint
-    const response = await axiosInstance.get(`${API_BASE_URL}/api/data`, {
+    const response = await internalApiService.get(`${API_BASE_URL}/api/data`, {
       headers: { Accept: 'application/vnd.yourapp.v1+json' },
     });
 
@@ -96,7 +97,7 @@ const fetchDataUsingAxios = async () => {
 
 
 // Define the calendar phase configuration
-export const calendarPhase: Phase = {
+export const calendarPhase: Phase<AppPhase> = {
   id: "calendar",
   name: "Calendar Phase",
   startDate: new Date(),
@@ -151,7 +152,7 @@ export const calendarPhase: Phase = {
       // Return the promise for the cleanup function
       return asyncTask;
     },
-  }) as unknown as CustomPhaseHooks,
+  }) as unknown as CustomPhaseHooks<AppPhase>,
 };
 
 

@@ -1,10 +1,10 @@
 // useRealtimeExchangeData.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ExchangeEnum } from "@/app/crypto/exchangeIntegration";
-import { RealtimeData } from "@/app/models/realtime/RealtimeData";
+import { ExchangeEnum } from "@/app/models/cypto/exchangeIntegration";
+import { RealtimeData } from "@/app/typings/realtimeTypes";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
-import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
+import useRealtimeData, { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useRealtimeData";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

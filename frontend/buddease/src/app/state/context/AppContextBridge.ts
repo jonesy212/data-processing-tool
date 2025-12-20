@@ -1,6 +1,6 @@
 // AppContextBridge.ts
 // context/AppContextBridge.ts
-import { appStores } from './AppStoresContext';
+import { appStores } from '@/app/pages/_app';
 
 export const AppContextBridge = {
   get projectStore() {

@@ -2,8 +2,8 @@
 // selectDocumentEditingPermissionsExample.ts
 
 import { only } from "node:test";
-import { canEditDocumentContent, selectDocumentEditingPermissions, useDocumentEditingPermissions, assignDocumentPermissions } from "../components/documents/selectDocumentEditingPermissions";
-import { UserRoleEnum } from "../components/users/UserRoles";
+import { canEditDocumentContent, selectDocumentEditingPermissions, useDocumentEditingPermissions, assignDocumentPermissions } from "@/app/components/documents/selectDocumentEditingPermissions";
+import { UserRoleEnum } from "@/app/models/UserRoles";
 
 // Example 1: Check if user can edit document
 const userRole = UserRoleEnum.CryptoAnalyst;

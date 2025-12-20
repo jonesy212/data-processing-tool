@@ -1,47 +1,46 @@
 // FeatureStore.ts
 import { makeAutoObservable } from "mobx";
-import { Data } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
-// Define the interface for a feature
-interface Feature extends Data{
+export interface Feature
+  extends BaseDataEntity {
   id: string;
   name: string;
   description: string;
 }
 
-class FeatureStore {
-  features: Feature[] = []; // Array to store features
+export class FeatureStore<
+  T extends BaseDataEntity = Feature,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  features: T[] = [];
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  addFeature(name: string, description: string): void {
-    const newFeature: Feature = {
-      id: Date.now().toString(),
-      name: name,
-      description: description,
-    };
-    this.features.push(newFeature);
+  addFeature(feature: T): void {
+    this.features.push(feature);
   }
 
   removeFeature(featureId: string): void {
-    this.features = this.features.filter((feature) => feature.id !== featureId);
+    this.features = this.features.filter((f) => f.id !== featureId);
   }
 
-  // Method to set the current feature (if needed)
   setCurrentFeature(featureId: string): void {
-    const selectedFeature = this.features.find(feature => feature.id === featureId);
+    const selectedFeature = this.features.find((f) => f.id === featureId);
     if (selectedFeature) {
-      // Perform any actions related to setting the current feature
-      // For example, you might update some state or trigger some events
-      console.log(`Current feature set to: ${selectedFeature.name}`);
+      console.log(`Current feature set to: ${selectedFeature.id}`);
     } else {
       console.error(`Feature with ID ${featureId} not found.`);
     }
   }
 }
 
-const featureStore = new FeatureStore();
-export default FeatureStore; featureStore;
-export type { Feature };
+export const featureStore = new FeatureStore();
+export default FeatureStore;

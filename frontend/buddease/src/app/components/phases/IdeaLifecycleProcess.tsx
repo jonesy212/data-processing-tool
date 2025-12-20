@@ -8,7 +8,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import IdeaValidation from "@/app/users/userJourney/IdeaValidation";
 import ProofOfConcept from "@/app/users/userJourney/ProofOfConcept";
-import { IdeaLifecyclePhase } from "./ideaPhase/IdeaLifecyclePhase";
+import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
 
 const IdeaLifecycleProcess: React.FC = () => {
   const { notify } = useNotification();

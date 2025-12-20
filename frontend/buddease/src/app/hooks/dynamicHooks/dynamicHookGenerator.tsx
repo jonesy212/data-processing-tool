@@ -7,9 +7,18 @@ import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-export type DynamicHookParams<T> = {
-  condition: (idleTimeoutDuration: number) => Promise<boolean>;
+export type DynamicHookParams<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> = {
+    condition: (idleTimeoutDuration: number) => Promise<boolean>;
   asyncEffect: ({
     idleTimeoutId,
     startIdleTimeout,
@@ -39,7 +48,15 @@ export type DynamicHookResult = {
   toggleActivation: (accessToken?: string | null | undefined) => void;
 };
 
-const createDynamicHook = ({
+const createDynamicHook = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>({
+
   condition,
   asyncEffect,
   resetIdleTimeout,
@@ -47,8 +64,7 @@ const createDynamicHook = ({
   isActive: initialIsActive,
   startIdleTimeout,
   initialStartIdleTimeout,
-}: DynamicHookParams<RootState>): AsyncHook<RootState> => {
-
+}: DynamicHookParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): AsyncHook<RootState> => {
   let isActive = initialIsActive !== undefined ? initialIsActive : false;
 
   // Define the disposeResource function
@@ -108,8 +124,10 @@ const createDynamicHook = ({
 
         const initialData: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
-        const { fetchData } = useRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(initialData, updateCallback);
-
+        const { fetchData } = useRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          initialData, 
+          updateCallback as RealtimeUpdateCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        );
         const intervalId = setInterval(() => {
           fetchData("userId", (action) => {}).catch(console.error);
         }, 5000);

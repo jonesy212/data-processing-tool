@@ -1,4 +1,5 @@
 // AuthSlice.ts
+
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UserPreferences } from "@/app/config/UserPreferences";
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -45,11 +46,102 @@ interface AuthState<
   ) => void;
 }
 
-const initialState: AuthState<AuthEntity, AuthK, AuthMeta, AuthAttachment, AuthExcludedFields, AuthIncludedFields> = {
-  isAuthenticated: false,
+const initialState: AuthState<
+  AuthEntity,
+  AuthK,
+  AuthMeta,
+  AuthAttachment,
+  AuthExcludedFields,
+  AuthIncludedFields
+> = {
+  id: "0",
+
+  user: null,
+  token: null,
+  authToken: null,
   accessToken: null,
   userId: null,
+
+  store: new AuthStore(),
+
+  userRoles: [],
+  userNFTs: [],
+
+  timestamp: 0,
+  isAuthenticated: false,
+  isLoading: false,
+
+  authenticationProviders: undefined,
+
+  async integrateAuthenticationProviders(
+    provider: AuthenticationProvider
+  ): Promise<void> {
+    try {
+      this.authenticationProviders = [
+        ...(this.authenticationProviders ?? []),
+        provider
+      ];
+    } catch (error) {
+      console.error("Failed to integrate authentication provider:", error);
+      throw error;
+    }
+  },
+
+  getUserPreferences(): UserPreferences | null {
+    if (this.user && this.user.preferences) {
+      return this.user.preferences;
+    }
+    return null;
+  },
+
+  resetAuthState(): void {
+    this.id = "0";
+    this.user = null;
+    this.token = null;
+    this.authToken = null;
+    this.accessToken = null;
+    this.userId = null;
+
+    this.userRoles = [];
+    this.userNFTs = [];
+    this.timestamp = 0;
+
+    this.isAuthenticated = false;
+    this.isLoading = false;
+
+    this.authenticationProviders = undefined;
+    this.store = new AuthStore();
+  },
+
+  loginWithRoles(
+    user: User<
+      AuthEntity,
+      AuthK,
+      AuthMeta,
+      AuthAttachment,
+      AuthExcludedFields,
+      AuthIncludedFields
+    >,
+    roles: string[],
+    nfts: NFT[],
+    authToken: string
+  ): void {
+    this.id = user.id?.toString() ?? "0";
+    this.user = user;
+    this.userId = user.id?.toString() ?? null;
+
+    this.userRoles = roles;
+    this.userNFTs = nfts;
+
+    this.authToken = authToken;
+    this.accessToken = authToken;
+
+    this.isAuthenticated = true;
+    this.timestamp = Date.now();
+    this.isLoading = false;
+  }
 };
+
 
 export const useAuthSlice = createSlice({
   name: 'auth',
@@ -85,3 +177,4 @@ export const selectUserId = createSelector(
 
 export const { loginSuccess, logout } = useAuthSlice.actions;
 export default useAuthSlice.reducer;
+export type { AuthState }

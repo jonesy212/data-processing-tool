@@ -7,9 +7,9 @@ import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import SearchComponent, {
   SearchComponentProps,
 } from "@/app/pages/searches/SearchComponent";
-import { sanitizeInput } from "@/app/security/SanitizationFunctions";
+import { sanitizeInput } from "[object Object]";
 import React, { useEffect, useState } from "react";
-import { Entity } from "../../routing/FuzzyMatch";
+import { Entity } from "@/app/config/BaseConfig";
 import SearchResult from "./SearchResult";
 
 const SearchPage: React.FC<SearchComponentProps> = ({

@@ -1,7 +1,7 @@
 // TaskForm.tsx
 import DynamicTextArea from '@/app/ts/DynamicTextArea';
 import React, { useState } from 'react';
-import { Task } from '@/Task';
+import { Task } from '@/app/components/models/tasks/Task';
 
 
 interface TaskFormProps {

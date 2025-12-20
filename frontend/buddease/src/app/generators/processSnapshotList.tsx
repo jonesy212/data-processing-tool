@@ -1,20 +1,25 @@
-// processSnapshotList.tsx
-import DynamicEventHandlerExample from "@/app/components/documents/screenFunctionality/ShortcutKeys";
-import DynamicEventHandlerService from "@/app/components/event/DynamicEventHandlerExample";
-import SnapshotList from "@/app/snapshots/SnapshotList";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import SnapshotList from '@/app/snapshots/SnapshotList';
+import DynamicEventHandlerExample from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
 
-const processSnapshotList = (snapshotList: SnapshotList) => {
+const processSnapshotList = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshotList: SnapshotList<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+) => {
   // Implement your logic to process the snapshot list here
-  // For example:
-  snapshotList.sortByDate(); // Sort the snapshot list by date
-  snapshotList.filterByCategory("important"); // Filter snapshots by category
+  snapshotList.sortByDate();
+  snapshotList.filterByCategory("important");
 
-  // Call handleSorting function with the snapshotList as an argument
   DynamicEventHandlerExample.handleSorting(snapshotList, null);
 
-  // Perform any other necessary processing actions
-
-  return snapshotList; // Return the processed snapshot list if needed
+  return snapshotList;
 };
 
 export default processSnapshotList;

@@ -1,7 +1,7 @@
 // ReportTester.ts
 
-import { ReportGenerators } from './ReportGenerators';
-import { CorrectionReport } from './CorrectionGenerator';
+import { ReportGenerators } from '@/app/generators/corrections/ReportGenerators';
+import { CorrectionReport } from '@/app/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';
 

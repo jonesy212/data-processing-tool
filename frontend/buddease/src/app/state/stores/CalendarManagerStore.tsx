@@ -2,8 +2,9 @@
 // CalendarEvent.tsx
 
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { SnapshotEntity, SnapshotK } from "@/app/typings/entities/SnapshotEntity";
 import { snapshotApi } from '@/app/api/SnapshotApi';
-import { subscriptionApi } from "@/app/api/subscriberApi";
+import { getSubscriberId, extractCriteria } from "@/app/api/subscriberApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -40,9 +41,9 @@ import {
   useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
-import { implementThen } from "./CommonEvent";
+import { implementThen } from "@/app/state/stores/CommonEvent";
 import { AllStatus } from "./DetailsListStore";
-import { useStore } from "./StoreProvider";
+import { useStore } from "@/app/hooks/useStore";
 
 import { EventActions } from "@/app/actions/EventActions";
 import {
@@ -66,7 +67,8 @@ import {
   SetEventStatusPayload,
   UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
-import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
+import { SnapshotContainer, snapshotContainer } from "@/app/snapshots/SnapshotContainer";
+import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots/Snapshot";
 import { useDispatch } from "react-redux";
 
 import {
@@ -89,8 +91,8 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 import { EventRecord } from "@/app/state/stores/DataStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { Document, DocumentStore } from "./DocumentStore";
-import { MobXRootState } from "./RootStores";
+import { Document, DocumentStore } from "@/app/state/stores/DocumentStore";
+import { MobXRootState } from "@/app/state/stores/RootStores";
 
 const dispatch = useDispatch()
 const { subscriber, tempSubscriber } = createSubscriber();
@@ -1016,7 +1018,7 @@ const fetchSnapshotData = async (): Promise<
         videoUrl: "",
         videoThumbnail: "",
         videoDuration: 0,
-        videoData: {} as VideoData,
+        videoData: {} as VideoData<SnapshotEntity, SnapshotK>,
         ideas: [],
         eventRecords,
         callbacks: [

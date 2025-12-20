@@ -18,7 +18,7 @@ import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionInclude
 import { convertSnapshotContainerToStore } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, default as VersionImpl } from "./Version";
-import { VersionData, VersionHistory } from "./VersionData";
+import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 
 const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
 

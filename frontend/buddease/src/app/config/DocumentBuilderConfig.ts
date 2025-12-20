@@ -26,7 +26,7 @@ import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionInclude
 import { UserIdea } from '@/app/users/Ideas';
 import { Version, Versions } from '@/app/versions/Version';
 import { VersionData } from '@/app/versions/VersionData';
-import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 import { IHydrateResult } from 'mobx-persist';
 
 export interface DocumentBuilderConfig<
@@ -403,14 +403,17 @@ const versionInfo: Version<VersionEntity, VersionK, VersionMeta, VersionAttachme
   workspaceViewers: [],
   workspaceAdmins: [],
   workspaceMembers: [],
-  updatedAt, generateChecksum, transformToStructureItems, bumpVersion,
+  updatedAt: '',
+  generateChecksum: '',
+  transformToStructureItems: '',
+  bumpVersion: '',
   data: {} as Data<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
   _structure: {} as Record<string, AppStructureItem<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>[]>,
   versionHistory: {
     versionData: {},
     timestamp: new Date(),
     currentVersionIndex: 0, 
-    versions: {} as Versions<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>,
+    versions: {} as Versions<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>[],
   },
   currentHash: "",
   structureData: "",

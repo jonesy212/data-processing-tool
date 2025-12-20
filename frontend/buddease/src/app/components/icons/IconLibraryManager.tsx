@@ -1,7 +1,7 @@
 // IconLibraryManager.tsx
 import React from "react";
 import { IconLoader } from "./IconLoader";
-import { IconLibrary, loadIconLibrary } from "./iconLibraryLoader";
+import { IconLibrary, loadIconLibrary } from "@/app/components/icons/iconLibraryLoader";
 
 export const createDynamicIconLoader = (iconName: string, library: IconLibrary): IconLoader => {
   const iconPath = `path/to/icons/${iconName}.png`;

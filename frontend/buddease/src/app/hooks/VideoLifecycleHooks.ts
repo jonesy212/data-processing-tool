@@ -1,6 +1,6 @@
 // VideoLifecycleHooks.ts
-import { PhaseOptions } from "../Lifecycle";
-import { VideoLifecyclePhase } from "./VideoLifecyclePhase";
+import { PhaseOptions } from "@/app/hooks/phases/lifecycles";
+import { VideoLifecyclePhase } from "@/app/phases/VideoLifecyclePhase";
 
 export const videoLifecyclePhases: PhaseOptions[] = [
   {

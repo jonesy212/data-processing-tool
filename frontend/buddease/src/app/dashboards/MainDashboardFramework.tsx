@@ -1,7 +1,7 @@
 // MainDashboardFramework.tsx
 import React from "react";
-import DashboardPanel from "./DashboardPanel";
-import VideoFramework from "./VideoFramework";
+import DashboardPanel from "@/app/hooks/userInterface/DashboardPanel";
+import VideoFramework from "@/app/components/video/VideoFramework";
 
 const MainDashboardFramework: React.FC = () => {
   return (

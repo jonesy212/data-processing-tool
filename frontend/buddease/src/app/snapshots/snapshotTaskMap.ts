@@ -1,5 +1,5 @@
 // snapshotTaskMap.ts
-import { Snapshot } from ".";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from "@/app/typings/entities/TaskEntity";
 
 //snapshotTaskMap.ts

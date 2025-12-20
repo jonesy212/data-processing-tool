@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
 import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";
 import PromptComponent from "./PromptComponent";
-import { PromptPageProps } from "./PromptPage";
+import { PromptPageProps } from "@/app/prompts/PromptPage";
 
 const YourParentComponent: React.FC = () => {
   // Define interface for PromptPageProps

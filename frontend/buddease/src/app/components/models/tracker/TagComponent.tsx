@@ -13,9 +13,7 @@ import React from 'react';
 interface TagProps<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 > { 
   tagOptions: TagOptions<T>,
   excludedFields?: ExcludedFields,
@@ -26,15 +24,12 @@ interface TagProps<
 const TagComponent = <
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >({
   tagOptions,
   excludedFields,
   meta
-}: TagProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+}: TagProps<T, K, Meta>) => {
   // Function to display tag options
   const display = () => {
     console.log(`Tag Name: ${tagOptions.name}`);

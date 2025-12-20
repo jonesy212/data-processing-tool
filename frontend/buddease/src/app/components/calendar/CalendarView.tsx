@@ -1,7 +1,7 @@
 // CalendarView.tsx
 
 import React from 'react';
-import DayView from '@/ap/components/calendar/CalendarDay';
+import DayView from '@/app/components/calendar/CalendarDay';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { Project } from '@/app/models/projects/Project';

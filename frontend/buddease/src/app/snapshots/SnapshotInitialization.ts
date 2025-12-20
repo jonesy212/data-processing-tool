@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { InitializedState } from "@/app/state/stores/DataStore";
-import { InitializedConfig } from "./SnapshotStoreConfig";
+import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 interface SnapshotInitialization<
   T extends BaseDataEntity,

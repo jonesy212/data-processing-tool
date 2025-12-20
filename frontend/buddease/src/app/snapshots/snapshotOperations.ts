@@ -6,6 +6,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Version } from '@/app/versions/Version';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
@@ -83,8 +84,8 @@ interface SnapshotOperations<
     dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: UpdateSnapshotPayload<Data<T>>,
-    store: SnapshotStore<any, BaseData>
-  ) => Promise<{ snapshot: Snapshot<any, Data<T>>; }>;
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }>;
   getSnapshots: (category: string, data: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   getSnapshotItems: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<{ snapshots: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; }>;
   getSnapshotContainer: (
@@ -452,8 +453,8 @@ const handleSnapshot = <
           user,
           notes,
           changes,
-          version: snapshotStoreConfig.version.version || "0.0.0",
-        } as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
+          version: snapshotStoreConfig.version || "0.0.0",
+        } as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       } else {
         versionInfo = createVersionInfo("0.0.0");
       }
@@ -461,7 +462,7 @@ const handleSnapshot = <
       snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
         storeId: "",
         name: "",
-        version: "",
+        version: {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         schema: {} as Record<string, SchemaField>,
         options: {} as SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         category: "",
@@ -471,11 +472,11 @@ const handleSnapshot = <
         operation: {} as SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         storeProps: {} as Partial<SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 
-        payload: "",
+        payload: {} as Payload,
         callback: "",
         endpointCategory: "",
 
-        initialState: "",
+        initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 
       });
     } else {
@@ -792,7 +793,7 @@ const getSnapshot = <
 >(
   snapshotId: string | number | null,
   storeId: number,
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Use the appropriate type for T
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfig: SnapshotConfig<any>,
@@ -809,19 +810,29 @@ const getSnapshot = <
       // Only mock what you actually use in your test
       // Usage in getSnapshot:
       const mockSnapshot = createMockSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
-      mockSnapshot.meta = new Map().set("meta1", {
-        getDataStore: async () => ({
-          id: "mock-store",
-          baseConfig: {},
-          sharedMetadata: {},
-          sharedBaseData: {},
-          taggable: {},
-          data: {} as T,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          
-        })
-      });
+      
+      // Create proper StructuredMetadata object instead of a Map
+      const structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+        baseConfig: {},
+        sharedMetadata: {},
+        sharedBaseData: {},
+        taggable: {},
+        // Add the missing 4 properties (check your StructuredMetadata interface for exact names)
+        // For example:
+        metadata: {} as Meta,
+        attachments: [] as AttachmentType[],
+        excludedFields: [] as ExcludedFields[],
+        includedFields: [] as IncludedFields[],
+        // Add any other properties from the interface
+      };
+      
+      // If mockSnapshot.meta should be a Map with StructuredMetadata as values
+      mockSnapshot.meta = new Map<string, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
+      mockSnapshot.meta.set("meta1", structuredMetadata);
+      
+      // OR if mockSnapshot.meta IS the StructuredMetadata object directly
+      // mockSnapshot.meta = structuredMetadata;
+      
       resolve(mockSnapshot);
     }, 100);
   });
@@ -853,7 +864,7 @@ const getLatestSnapshot = <
     timestamp: any;
     id: any;
     snapshot: EnhancedSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    data: Data<T>;
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise((resolve, reject) => {

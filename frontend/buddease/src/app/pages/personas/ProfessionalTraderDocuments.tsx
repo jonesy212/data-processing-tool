@@ -1,5 +1,5 @@
 // ProfessionalTraderDocuments.tsx
-import CustomFile from '@/app/components/documents/File';
+import CustomFile from '@/app/documents/File';
 import React, { useState, ChangeEvent } from 'react';
 
 const ProfessionalTraderDocuments = () => {

@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks } from '@/app/models/phases/Phase';
 import { ReactNode } from "react";
-import { Phase } from "./Phase";
+import { Phase } from "@/app/models/phases/Phase";
 
 
 // Generic helper with defaults (Case 3)

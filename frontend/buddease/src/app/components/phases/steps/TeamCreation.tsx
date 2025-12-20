@@ -9,7 +9,7 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnaire";
 import { useNotification } from "@/app/state/context/NotificationContext";
-import { TeamCreationPhase } from "./TeamCreationManager";
+import { TeamCreationPhase } from "@/app/components/phases/steps/TeamCreation";
 import { TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity';
 
 type ConcreteTeamData = TeamData<

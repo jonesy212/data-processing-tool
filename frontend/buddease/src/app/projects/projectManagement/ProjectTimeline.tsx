@@ -1,6 +1,6 @@
 // ProjectTimeline.tsx
 import ProjectCard from "@/app/cards/ProjectCard";
-import { Project } from "@/app/Project";
+import { Project } from "@/app/models/projects/Project";
 import React from "react";
 
 const ProjectTimeline = () => {

@@ -1,8 +1,8 @@
 // createCustomTransaction.ts
 // createCustomTransaction
 
-import { Transaction } from "ethers";
-import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
+import { Transaction } from "@/app/payment/Transaction";
+import { CustomTransaction } from "@/app/typings/cryptoTypes/SmartContractInteraction";
 
 function createCustomTransaction(
   data: Partial<CustomTransaction>

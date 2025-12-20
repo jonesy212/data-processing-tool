@@ -1,7 +1,7 @@
 // makeRoadmapsFromAnalysis.ts
 // scripts/makeRoadmapsFromAnalysis.ts
 
-import { RoadmapAudience } from '@/app/typings/roadmap';
+import { RoadmapAudience } from '@/app/server/repository/roadmapMapper'
 import fs from 'fs';
 import path from 'path';
 import roadmapMapper from '@/app/server/repository/roadmapMapper';

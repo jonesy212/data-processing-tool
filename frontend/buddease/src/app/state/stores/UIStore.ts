@@ -1,19 +1,19 @@
 // UIStore.ts
-import { UserProfile } from '@/app/snapshots/userSnapshotData';
+import { UserProfile } from '@/app/api/ApiUser';
 
 import { UIActions } from '@/app/actions/UIActions';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import safeParseData from '@/app/crypto/SafeParseData';
+import safeParseData from '@/app/dataIntegration/SafeParseData';
 import { ParsedData } from '@/app/dataIntegration/parseData';
 import { Theme } from '@/app/libraries/ui/theme/Theme';
 import { FileLogger } from '@/app/logging/Logger';
 import { displayToast } from '@/app/models/display/ShowToast';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { YourResponseType } from '@/app/typings/types';
-import { createMessage } from '@/app/utils/createMessage';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import { createMessage } from '@/utils/web3/createMessage';
 import { action, makeObservable, observable } from 'mobx';
-import { ErrorInfo } from 'react';
+import { ErrorInfo } from '@/app/shared/ErrorHandler';
 
 class UIStore {
   @observable theme = {

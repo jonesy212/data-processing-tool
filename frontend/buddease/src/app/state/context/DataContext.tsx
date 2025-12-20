@@ -1,6 +1,6 @@
 // DataContext.tsx
 import { BaseData } from '@/app/models/data/Data';
-import { SnapshotStoreConfig } from "@/app/snapshots";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
     DataStore,
     useDataStore,

@@ -9,7 +9,7 @@ import { STORE_KEYS } from '@/app/libraries/cache/client/constants';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { currentAppName } from "@/app/versions/AppVersion";
 import { AxiosRequestConfig } from "axios";
-import { Style as DocxStyle } from 'docx';
+import { Style as DocxStyle } from '@/app/documents/DocumentOptions';
 
 // Define the API base URL - fix this based on your actual endpoint structure
 // Assuming endpoints.data.baseUrl or similar structure

@@ -1,5 +1,5 @@
 // Payments.tsx
-import { handleCryptoPaymentSelect } from '@/app/documents/screenFunctionality/ShortcutKeys';
+import { handleCryptoPaymentSelect } from '@/app/payment/PaymentGateways'
 import React from 'react';
 
 const Payments: React.FC = () => {

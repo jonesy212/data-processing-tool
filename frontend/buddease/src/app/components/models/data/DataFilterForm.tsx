@@ -1,4 +1,4 @@
-// DataFilterForm.tsx
+// DataFilterForm.tsx - Fixed version
 import userService, { userId } from "@/app/api/ApiUser";
 import processSnapshotList from "@/app/generators/processSnapshotList";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
@@ -8,13 +8,11 @@ import snapshotStore from "@/app/snapshots/SnapshotStore";
 import {
   DataAnalysisAction,
   DataAnalysisDispatch,
-} from "@/app/typings/phasses/dataAnalysisTypes";
+} from "@/app/typings/phases/dataAnalysisTypes";
 import { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-// import  DataFrameAPI  from '@/app/api/DataframeApi';
-// import DataFrameComponent from '@/DataFrameComponent';
 import ListGenerator from "@/app/generators/ListGenerator";
 import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 import { Phase } from '@/app/models/phases/Phase';
@@ -31,7 +29,6 @@ interface DataFilterFormProps {
     transform: string
   ) => void;
   options: FilterOptions;
-
   onSearch: (
     filters: Record<string, { operation: string; value: string | number }>,
     transform: string
@@ -45,78 +42,135 @@ interface FilterOptions {
   topN?: number; // Fetch top N results
 }
 
-const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
+const DataFilterForm: React.FC<DataFilterFormProps> = ({ onSubmit }) => { // Removed async from component
   const [filters, setFilters] = useState<
     Record<string, { operation: string; value: string | number }>
   >({});
   const [transform, setTransform] = useState("none");
   const [options, setOptions] = useState<FilterOptions>({});
-
   const [column, setColumn] = useState("");
   const [operation, setOperation] = useState("==");
   const [value, setValue] = useState("");
+  
   const { realtimeData, fetchData } = useRealtimeData(
     snapshotStore,
     updateCallback
   );
-  // Use processed snapshot data in your component logic
+  
   const [snapshotList, setSnapshotList] = useState<SnapshotList<
-  SnapshotEntity,           // T
-  SnapshotK,                // K  
-  SnapshotMeta,             // Meta
-  SnapshotAttachment,       // AttachmentType
-  SnapshotExcludedFields,   // ExcludedFields
-  SnapshotIncludedFields    // IncludedFields
->>(new SnapshotList<
-  SnapshotEntity,
-  SnapshotK, 
-  SnapshotMeta,
-  SnapshotAttachment,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields
->());
+    SnapshotEntity,
+    SnapshotK,
+    SnapshotMeta,
+    SnapshotAttachment,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields
+  >>(new SnapshotList());
   
+  const [snapshotListArray, setSnapshotListArray] = useState<DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
-  const snapshotDetails: DetailsItem<SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
-    id: "",
-    title: "",
-    label: "",
-    value: "",
-    status: "pending",
-    description: "",
-    subtitle: "",
-    phase: {} as Phase<SnapshotEntity, SnapshotK,  SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-    // Add other properties as needed
-    updatedAt: undefined
-  }
+  const dispatch: DataAnalysisDispatch = useDispatch<Dispatch<DataAnalysisAction>>();
 
-  
-const snapshotListArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = Array.from(snapshotList).map(
-  (value: unknown) => {
-    const snapshot = value as Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null;
-    const snapshotDetails: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
-      id: "",
-      subtitle: "",
-      label: "",
-      value: "",
-      status: snapshot?.status,
+  // Load user data on component mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const userData = await userService.fetchUser(String(userId), authToken);
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
     };
+    
+    loadUserData();
+  }, []);
 
-    if (snapshot?.data && typeof snapshot.data === 'object') {
-      const data = snapshot.data as Data;  // type assertion to `Data`
-      snapshotDetails.label = data.label || "";
-      snapshotDetails.value = data.value || "";
-    }
+  // Process data and generate snapshot list
+  useEffect(() => {
+    const processData = async () => {
+      if (!userId) return;
+      
+      setIsLoading(true);
+      try {
+        // Fetch raw data - handle the Promise properly
+        const rawData = await fetchData(userId, dispatch); // Add await here
+        
+        if (rawData && Array.isArray(rawData)) {
+          const generator = new SnapshotListGenerator();
+          const processedSnapshotList = generator.generateSnapshotList(rawData);
+          
+          // Process the snapshot list
+          await processSnapshotList(processedSnapshotList);
+          
+          // Update component state with processed snapshot data
+          setSnapshotList(processedSnapshotList);
+          
+          // Convert snapshot list to array for display
+          const snapshotArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = Array.from(processedSnapshotList).map(
+            (value: unknown) => {
+              const snapshot = value as Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null;
+              const snapshotDetails: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> = {
+                id: snapshot?.id || "",
+                title: snapshot?.title || "",
+                label: snapshot?.label || "",
+                value: snapshot?.value || "",
+                status: snapshot?.status || "pending",
+                description: snapshot?.description || "",
+                subtitle: snapshot?.subtitle || "",
+                phase: snapshot?.phase as Phase<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> || {} as any,
+                updatedAt: snapshot?.updatedAt || undefined
+              };
+              
+              if (snapshot?.data && typeof snapshot.data === 'object') {
+                const data = snapshot.data as Data;
+                snapshotDetails.label = data.label || snapshotDetails.label;
+                snapshotDetails.value = data.value || snapshotDetails.value;
+              }
+              
+              return snapshotDetails;
+            }
+          );
+          
+          setSnapshotListArray(snapshotArray);
+        }
+      } catch (error) {
+        console.error("Error processing data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    processData();
+  }, [userId, dispatch, fetchData]);
 
-    return snapshotDetails;
-  }
-);
-  
+  // Start streaming when the component mounts
+  useEffect(() => {
+    const streamDataToBackend = () => {
+      const stream = new EventSource("/stream_data");
 
-  const dispatch: DataAnalysisDispatch =
-    useDispatch<Dispatch<DataAnalysisAction>>();
+      stream.onmessage = (event) => {
+        const receivedData = JSON.parse(event.data);
+        console.log("Received data:", receivedData);
+      };
 
-  const user = await userService.fetchUser(userId, authToken);
+      stream.onerror = (error) => {
+        console.error("Error with SSE:", error);
+        stream.close();
+      };
+
+      return stream;
+    };
+    
+    const stream = streamDataToBackend();
+    
+    // Clean up the EventSource when the component unmounts
+    return () => {
+      stream.close();
+    };
+  }, []);
+
+  // Rest of your component functions remain the same...
   const addFilter = () => {
     if (
       column.trim() === "" ||
@@ -134,7 +188,7 @@ const snapshotListArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, Sn
 
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [column]: newFilter, // use columnName instead of column
+      [column]: newFilter,
     }));
 
     // Clear form fields
@@ -142,56 +196,8 @@ const snapshotListArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, Sn
     setOperation("==");
     setValue("");
 
-    const clearAllFilters = () => {
-      setFilters({});
-      setTransform("none");
-    };
-
     onSubmit(filters, transform);
-
-    // Clear all filters
-    clearAllFilters();
   };
-
-  const streamDataToBackend = () => {
-    const stream = new EventSource("/stream_data");
-
-    stream.onmessage = (event) => {
-      const receivedData = JSON.parse(event.data);
-      // Process the received data as needed
-      console.log("Received data:", receivedData);
-    };
-
-    stream.onerror = (error) => {
-      console.error("Error with SSE:", error);
-      stream.close();
-    };
-
-    return stream; // Return the stream object for cleanup
-  };
-
-  // Usage in useEffect
-  useEffect(() => {
-    // Process raw data and generate snapshot list
-    const generator = new SnapshotListGenerator();
-    if (userId) {
-      const rawData = fetchData(userId, dispatch); // Fetch raw data from API or local storage
-      const processedSnapshotList = generator.generateSnapshotList(rawData);
-      // Perform data transformation actions
-      processSnapshotList(processedSnapshotList);
-      
-      // Update component state with processed snapshot data
-      setSnapshotList(processedSnapshotList);
-      
-      // Start streaming when the component mounts
-    const stream = streamDataToBackend();
-    
-    // Clean up the EventSource when the component unmounts
-    return () => {
-      stream.close();
-    };
-  }
-  }, []);
 
   const clearAllFilters = () => {
     setFilters({});
@@ -215,67 +221,6 @@ const snapshotListArray: DetailsItem<SnapshotEntity, SnapshotK, SnapshotMeta, Sn
     clearOptions();
   };
 
-  //  Convert filters to data-forge query object
-  const query = Object.keys(filters).reduce((queryObj: any, columnName) => {
-    queryObj[columnName] = {
-      [filters[columnName].operation]: filters[columnName].value,
-    };
-    return queryObj;
-  }, {});
-// Fetch data using data-forge DataFrame
-const dataFrame = new DataFrame([]); // Replace this with your actual data frame
-
-// Apply filters
-let filteredDataFrame = dataFrame
-  .where(query)
-  .map((row: any) => {
-    // Apply transformations if needed
-    return row;
-  });
-
-// Apply options
-if (options.sort) {
-  filteredDataFrame = filteredDataFrame.orderBy((row: any) => row[options.sort as keyof any]);
-}
-
-if (options.limit) {
-  filteredDataFrame.head(options.limit);
-}
-// Continue with other options...
-
-
-if (options.random) {
-  const dataArray = filteredDataFrame.toArray(); // Convert DataFrame to an array
-  shuffleArray(dataArray); // Shuffle the array
-  filteredDataFrame = new DataFrame(dataArray); // Convert the shuffled array back to a DataFrame
-}
-
-  if (options.topN) {
-    filteredDataFrame.tail(options.topN);
-  }
-
-  // Convert data-forge DataFrame to an array of objects
-  const filteredData: Record<string, { operation: string; value: string | number; }> = filteredDataFrame.toArray()[0];
-
-  onSubmit(filteredData, transform);
-
-  // Clear all filters
-  clearAllFilters();
-
-  setFilters((prevFilters) => {
-    const updatedFilters = { ...prevFilters };
-    updatedFilters[column] = {
-      operation: "==",
-      value: "",
-    } as { operation: string; value: string | number };
-    return updatedFilters;
-  });
-
-  // Clear form fields
-  setColumn("");
-  setOperation("==");
-  setValue("");
-
   const removeFilter = (columnName: string) => {
     setFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -284,9 +229,58 @@ if (options.random) {
     });
   };
 
+  // Filter processing logic (separate from UI)
+  const processFilterData = () => {
+    // Convert filters to data-forge query object
+    const query = Object.keys(filters).reduce((queryObj: any, columnName) => {
+      queryObj[columnName] = {
+        [filters[columnName].operation]: filters[columnName].value,
+      };
+      return queryObj;
+    }, {});
+
+    // Fetch data using data-forge DataFrame
+    const dataFrame = new DataFrame([]); // Replace this with your actual data frame
+
+    // Apply filters
+    let filteredDataFrame = dataFrame
+      .where(query)
+      .map((row: any) => {
+        // Apply transformations if needed
+        return row;
+      });
+
+    // Apply options
+    if (options.sort) {
+      filteredDataFrame = filteredDataFrame.orderBy((row: any) => row[options.sort as keyof any]);
+    }
+
+    if (options.limit) {
+      filteredDataFrame.head(options.limit);
+    }
+
+    if (options.random) {
+      const dataArray = filteredDataFrame.toArray();
+      shuffleArray(dataArray);
+      filteredDataFrame = new DataFrame(dataArray);
+    }
+
+    if (options.topN) {
+      filteredDataFrame.tail(options.topN);
+    }
+
+    // Convert data-forge DataFrame to an array of objects
+    const filteredData = filteredDataFrame.toArray();
+
+    return filteredData;
+  };
+
   return (
     <div>
       <h2>Data Filter Form</h2>
+      
+      {isLoading && <div>Loading data...</div>}
+      
       {Object.keys(filters).map((columnName) => (
         <div key={columnName}>
           <span>
@@ -298,14 +292,16 @@ if (options.random) {
           </span>
         </div>
       ))}
+      
       <label>
         Column:
         <input
           type="text"
           value={column}
-          onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColumn(e.target.value)}
+          onChange={(e) => setColumn(e.target.value)}
         />
       </label>
+      
       <label>
         Operation:
         <select
@@ -316,9 +312,9 @@ if (options.random) {
           <option value="!=">!=</option>
           <option value="<">{"<"}</option>
           <option value=">">{">"}</option>
-          {/* Add more operators as needed */}
         </select>
       </label>
+      
       <label>
         Value:
         <input
@@ -327,9 +323,11 @@ if (options.random) {
           onChange={(e) => setValue(e.target.value)}
         />
       </label>
+      
       <br />
       <button onClick={addFilter}>Add Filter</button>
       <br />
+      
       <label>
         Transformation:
         <select
@@ -340,7 +338,6 @@ if (options.random) {
           <option value="sum">Sum</option>
           <option value="mean">Mean</option>
           <option value="count">Count</option>
-          {/* Add more transformations as needed */}
         </select>
       </label>
       <br />
@@ -357,6 +354,7 @@ if (options.random) {
         </select>
       </label>
       <br />
+      
       <label>
         Dataset Limit:
         <input
@@ -368,6 +366,7 @@ if (options.random) {
         />
       </label>
       <br />
+      
       <label>
         Return Random Data:
         <input
@@ -377,6 +376,7 @@ if (options.random) {
         />
       </label>
       <br />
+      
       <label>
         Top N Results:
         <input
@@ -388,18 +388,31 @@ if (options.random) {
         />
       </label>
       <br />
-      {/* Use 'realtimeData' in your component logic */}
+      
+      {/* Display realtime data */}
       <div>
         <h3>Real-time Data:</h3>
-        {realtimeData.map((dataPoint: any, index: any) => (
-          <div key={index}>{JSON.stringify(dataPoint)}</div>
-        ))}
+        {realtimeData.length > 0 ? (
+          realtimeData.map((dataPoint: any, index: any) => (
+            <div key={index}>{JSON.stringify(dataPoint)}</div>
+          ))
+        ) : (
+          <div>No real-time data available</div>
+        )}
       </div>
       <br />
+      
+      {/* Display snapshot list */}
       <div>
-        <ListGenerator items={snapshotListArray} />
+        <h3>Snapshot List:</h3>
+        {snapshotListArray.length > 0 ? (
+          <ListGenerator items={snapshotListArray} />
+        ) : (
+          <div>No snapshot data available</div>
+        )}
       </div>
       <br />
+      
       <button onClick={clearAllFilters}>Clear All Filters</button>
       <br />
       <button onClick={handleSubmit}>Apply Filters</button>

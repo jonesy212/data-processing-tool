@@ -1,6 +1,6 @@
 // useNotifier.ts
-import { useNotification } from '@/app/hooks/useNotificationSystem';
-import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 
 type NotificationMessageMap = Record<string, string>;
 

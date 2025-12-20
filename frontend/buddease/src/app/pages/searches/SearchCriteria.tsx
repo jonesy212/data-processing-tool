@@ -1,44 +1,65 @@
-// SearchCriteria.tsx
-import { debounce } from "@/app/pages/searches/Debounce";
-import { MessageType } from "@/app/generators/MessaageType";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import { FileTypeEnum } from "@/app/documents/FileType";
-import FormatEnum from "@/app/form/FormatEnum";
-import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
+// src/app/pages/searches/SearchCriteria.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import debounce from 'lodash/debounce';
+
+// Import necessary components and utilities
+import { SearchComponent } from '@/app/pages/searches/SearchComponent';
+import { SearchResult } from "@/app/components/routing/SearchResult";
+import LoadingSpinner from '@/app/components/models/tracker/LoadingSpinner';
+import { useSearchOptions } from '@/app/pages/searches/useSearchOptions';
+import { useSearchPagination } from '@/app/hooks/commHooks/useSearchPagination';
+import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { SearchLogger } from '@/app/logging/Logger';
-import  { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, DocumentSize, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
-import { ContentManagementPhaseEnum } from "@/app/phases/ContentManagementPhase";
-import { FeedbackPhaseEnum } from "@/app/phases/FeedbackPhase";
-import { TaskPhaseEnum } from "@/app/phases/TaskProcess";
-import { TenantManagementPhaseEnum } from "@/app/phases/TenantManagementPhase";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { SecurityFeatureEnum } from "@/app/security/SecurityFeatureEnum";
-import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { userService } from "@/app/api/ApiUser";
-import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
-import { Entity, fuzzyMatchEntities } from "../../routing/FuzzyMatch";
-import { BaseData, Data } from '@/app/models/data/Data';
-import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
-import { searchDocuments } from "@/app/api/ApiDocument";
-import SearchComponent from "@/app/pages/searches/SearchComponent";
-import useSearchOptions from "@/app/pages/searches/useSearchOptions";
-import { sanitizeInput } from "@/app/security/SanitizationFunctions";
-import { setLoading, clearError } from "@/app/state/stores/UISlice";
-import SearchResult, { SearchResultWithQuery } from "../../components/routing/SearchResult";
-import { useErrorHandling } from "@/app/hooks/useErrorHandling";
-import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
-import { selectEventLoading } from "@/app/state/redux/slices/EventSlice";
-import { DocumentData } from "@/app/documents/DocumentBuilder";
-import { SupportedData } from "@/app/models/CommonData";
+import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
+import { searchDocuments } from "@/app/api/ApiDocument"
+import { fuzzyMatchEntities } from '@/app/routing/FuzzyMatch'
+import { userService } from '@/app/api/ApiUser';
+import { SupportedData } from '@/app/models/CommonData';
+
+// Import types
+import { Entity } from '@/app/config/BaseConfig';
+import { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
+import { RootState } from '@/app/state/redux/slices/RootSlice'
+import { selectEventLoading } from '@/app/state/redux/slices/EventSlice';
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { BaseData } from '@/app/models/data/Data';
 import { User } from "@/app/users/User";
-import { Progress } from "@/app/models/tracker/ProgressBar";
-import { Team } from "@/app/components/teams/Team";
+import { Team } from '@/app/components/teams/Team';
 import { Project } from "@/app/models/projects/Project";
+import { Progress } from "@/app/models/tracker/ProgressBar";
+import { DocumentSize, StatusType } from '@/app/models/data/StatusType'
+import {   
+  ActivityActionEnum,
+  ActivityTypeEnum, BookmarkStatus,
+  BorderStyle,
+  CalendarStatus, CalendarViewType, ChatType,
+  CollaborationOptionType,
+  ComponentStatus,
+  DataStatus, DocumentPhaseEnum, DocumentSize,
+  IncludeType,
+  Layout, NotificationPosition, NotificationStatus,
+  Orientation,
+  OutcomeType,
+  PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
+  StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
+  TodoStatus, MeetingStatus, PriorityTypeEnum, DevelopmentPhaseEnum,
+  PhaseDocumentEnum } from '@/app/models/data/StatusType'
+import {LanguageEnum, CodingLanguageEnum} from '@/app/communications/LanguageEnum'
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType'
+import { DocumentTypeEnum } from '@/app/typings/documentTypes'
+import { FileTypeEnum } from '@/app/documents/FileType'
+import { TenantManagementPhaseEnum } from '@/app/components/phases/TenantManagementPhase'
+import { IdeaCreationPhaseEnum } from '@/app/users/userJourney/IdeaCreationPhase'
+import { SecurityFeatureEnum } from '@/app/server/security/SecurityFeatureEnum'
+import { FeedbackPhaseEnum } from '@/app/components/phases/FeedbackPhase'
+import { ContentManagementPhaseEnum } from '@/app/components/phases/ContentManagementPhase'
+import { TaskPhaseEnum } from '@/app/components/phases/TaskProcess'
+import { AnimationTypeEnum } from '@/app/libraries/animations/AnimationLibrary'
+import { FormatEnum } from '@/app/components/form/FormatEnum'
+import { MessageType } from '@/app/generators/MessaageType'
 
 interface SearchCriteria extends BaseData {
   startDate?: Date;
@@ -92,7 +113,7 @@ type EnhancedSupportedData<T extends  BaseData<any>> = SupportedData<T, K, Meta>
 
 
 // Example usage
-const exampleData: EnhancedSupportedData = {
+const exampleData: EnhancedSupportedData<T> = {
   id: '123',
   name: 'Sample Document',
   createdAt: new Date(),
@@ -113,52 +134,54 @@ const SearchCriteriaComponent: React.FC<{
   const [criteria, setCriteria] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  
   const dispatch = useDispatch();
   const entities = useSelector((state: RootState) => state.entityManager);
   const { searchOptions, handleFilterTasks, handleSortTasks } = useSearchOptions();
   const { currentPage, nextPage, previousPage, pageSize, changePageSize } = useSearchPagination();
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const { handleError } = useErrorHandling()
-  const [error, setError] = useState<string | null>(null);
+  const { handleError } = useErrorHandling();
+  
+  const isLoading = useSelector(selectEventLoading);
+  const { userId } = useParams<{ userId: string }>();
 
-  const loading = useSelector(selectEventLoading);
-
-  // Function to perform fuzzy search with debounce
-  const { userId } = useParams()
-
-  setEffect(() => {
-    if (searchQuery || searchTerm) {
-      performSearch(searchQuery || searchTerm);
-    }
-  }, [searchQuery, searchTerm, currentPage]);
-
-  const performSearch = async (query: string) => {
+  // Function to perform search
+  const performSearch = useCallback(async (query: string) => {
     try {
       setLoading(true);
       const sanitizedQuery = sanitizeInput(query);
       const results = await searchDocuments(sanitizedQuery);
       setSearchResults(results);
-      setLoading(false);
-      SearchLogger.logSearchResults(query, results.length, String(userId));
+      SearchLogger.logSearchResults(query, results.length, userId || "Unknown");
       setError(null);
     } catch (error: any) {
       handleError("Failed to fetch search results. Please try again.");
-      SearchLogger.logSearchError(query, error.message, String(userId));
-      setLoading(false);
+      SearchLogger.logSearchError(query, error.message, userId || "Unknown");
       setError("Failed to fetch search results. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [userId, handleError]);
+
+  // Effect for search
+  useEffect(() => {
+    if (searchQuery || searchTerm) {
+      performSearch(searchQuery || searchTerm);
+    }
+  }, [searchQuery, searchTerm, currentPage, performSearch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    SearchLogger.logSearch(query, userId);
+    SearchLogger.logSearch(query, userId || "Unknown");
   };
 
   const handleCriteriaUpdate = (criteria: string) => {
     setSearchQuery(criteria);
   };
 
-
+  // Debounced search for fuzzy matching
   const debouncedSearch = debounce(async (term: string) => {
     try {
       const matchedEntities = await fuzzyMatchEntities(
@@ -166,30 +189,18 @@ const SearchCriteriaComponent: React.FC<{
         Object.values(entities)
       );
       setSearchResults(matchedEntities);
-      if (userId !== undefined) {
-        // Log search results along with the user ID
-        const fetchedUserId: string | undefined =
-          await userService.fetchUserById(userId);
-        if (fetchedUserId !== undefined) {
-          // User ID is defined, proceed with logging
-          SearchLogger.logSearchResults(
-            term,
-            matchedEntities.length,
-            fetchedUserId
-          );
-        } else {
-          // User ID is undefined, handle accordingly (e.g., provide a default value)
-          SearchLogger.logSearchResults(
-            term,
-            matchedEntities.length,
-            "Unknown"
-          );
-        }
+      
+      if (userId) {
+        const fetchedUserId: string | undefined = await userService.fetchUserById(userId);
+        SearchLogger.logSearchResults(
+          term,
+          matchedEntities.length,
+          fetchedUserId || "Unknown"
+        );
       }
     } catch (error: any) {
       console.error("Error occurred while performing search:", error);
-      // Log search error
-      if (userId !== undefined) {
+      if (userId) {
         SearchLogger.logSearchError(term, error.message, userId);
       }
     }
@@ -202,8 +213,8 @@ const SearchCriteriaComponent: React.FC<{
     const { value } = event.target;
     setSearchTerm(value);
     debouncedSearch(value);
-    // Log search query
-    if (userId !== undefined) {
+    
+    if (userId) {
       SearchLogger.logSearch(value, userId);
     }
   };
@@ -222,6 +233,16 @@ const SearchCriteriaComponent: React.FC<{
   const handleDispatchExample = () => {
     dispatch({ type: "EXAMPLE_ACTION" });
   };
+
+  // Filter results for local and global sources
+  const localResults = searchResults.filter((result) => 
+    'source' in result && result.source === "local"
+  );
+  
+  const globalResults = searchResults.filter((result) => 
+    'source' in result && result.source === "global"
+  );
+
   return (
     <div>
       {/* Search Input */}
@@ -267,12 +288,12 @@ const SearchCriteriaComponent: React.FC<{
       </div>
 
       {/* Loading and Error Handling */}
-      <LoadingSpinner loading={loading} />
-      {error && <div>Error: {error}</div>}
+      <LoadingSpinner loading={loading || isLoading} />
+      {error && <div className="error-message">Error: {error}</div>}
 
       {/* Search Results */}
       <div className="search-results">
-      {searchResults.map((result, index) => {
+        {searchResults.map((result, index) => {
           if ('query' in result) {
             // Handle SearchResultWithQuery rendering
             return (
@@ -280,160 +301,156 @@ const SearchCriteriaComponent: React.FC<{
                 <h3>{result.title}</h3>
                 <p>Query: {result.query}</p>
                 <p>Total Count: {result.totalCount}</p>
-                {result.items.map((item, subIndex) => (
-                  <SearchResult key={`${index}-${subIndex}`} result={item} />
-                ))}
+                  {result.items.map((item: any, subIndex: number) => (
+                    <SearchResult key={`${index}-${subIndex}`} result={item} />
+                  ))}
               </div>
             );
           } else {
             // Handle Entity rendering
-            const entityResult = result as Entity & SearchResultWithQuery<any>;
-            return <SearchResult key={index} result={entityResult} />;
+            return <SearchResult key={index} result={result} />;
           }
         })}
+        
         <SearchComponent
-          label={}
-          date={}
-          componentSpecificData={searchResults
-            .filter((result) => result.source === "local")
-            .map((result) => ({
-              id: result.id !== undefined && result.id !== null ? Number(result.id) : 0, // Ensure id is a number
-              title: result.name !== undefined && result.name  !== null ? result.name.toString() : "",  // Map 'name' to 'title'
-              description: result.description !== undefined && result.description !== null ? result.description.toString(): "",
-              source: result.source !== undefined && result.source !== null ? result.source.toString(): "",
-            }))}
-          documentData={
-            searchResults
-              .filter((result) => result.source === "global")
-              .map((result) => ({
-                createdAt: result.createdAt || new Date(), // Use the actual value or default to now
-                createdBy: result.createdBy || "", // Default to an empty string if not available
-                updatedBy: result.updatedBy || "", // Default to an empty string if not available
-                filePathOrUrl: result.filePathOrUrl || "", // Default to an empty string if not available
-                uploadedBy: '',
-                tagsOrCategories: '',
-                format: "",
-                uploadedByTeamId: 0,
-                uploadedByTeam: {
-                  team: {
-                    id: "",
-                    current: 0,
-                    name: "",
-                    color: null,
-                    max: 0,
-                    min: 0,
-                    label: "",
-                    percentage: 0,
-                    value: 0,
-                    description: "",
-                    done: false
-                  },
-                  
-                  _id: "",
-                  id: "",
-                  color: "",
-                  teamName: "",
-                   
-                  projects: [],
-                  creationDate: new Date(),
-                  isActive: false,
-                   
-                  leader: {} as User,
-                  progress: {} as Progress,
-                  percentage: 0,
-                  assignedProjects: [],
-                   
-                  reassignedProjects: [],
-                  assignProject: (team: Team, project: Project, assignedDate: Date) => { },
-                  reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => { },
-                  unassignProject: (team: Team, project: Project) => { },
-                  updateProgress: (team: Team, project: Project) => { },
-                },
-                
-                selectedDocument: {} as DocumentData<BaseData<any>>,
-                id: result.id,  // Assuming this can be a number or string
-                _id: result.id.toString(), // Assuming you convert it to string
-                // Map 'name' to 'title'
-                title: result.name !== undefined && result.name !== null ? result.name.toString() : "",
-                content: "", // Provide a default or fetch appropriate content
-                documents: [], // Default to empty array or map documents if available
-                permissions: undefined, // Or assign based on your logic
-                topics: [], // Default to empty array or fetch topics if available
-                highlights: [], // Default to empty array or fetch highlights if available
-                keywords: [], // Default to empty array or fetch keywords if available
-                load: undefined, // Provide implementation if needed
-                file: undefined, // Assign if available
-                files: [], // Default to empty array or map files if available
-                folder: undefined, // Assign if available
-                folders: [], // Default to empty array or map folders if available
-                filePath: undefined, // Assign if available
-                status: undefined, // Assign based on your logic
-                type: undefined, // Assign based on your logic
-                locked: false, // Default value
-                category: undefined, // Assign based on your logic
-                changes: false, // Default value
-                timestamp: new Date(), // Default to now or fetch actual timestamp
-                source: result.source,
-                report: undefined, // Assign if available
-                options: undefined, // Assign if available
-                folderPath: "", // Provide a default or fetch appropriate folder path
-                previousContent: undefined, // Assign if available
-                currentContent: undefined, // Assign if available
-                previousMetadata: undefined, // Assign if available
-                currentMetadata: undefined, // Assign if available
-                accessHistory: [], // Default to empty array or fetch access history if available
-                documentPhase: undefined, // Assign if available
-                version: undefined, // Assign if available
-                versionData: undefined, // Assign if available
-                visibility: undefined, // Assign based on your logic
-                url: undefined, // Assign if available
-                updatedDocument: undefined, // Assign if available
-                documentSize: DocumentSize.A4, // Provide appropriate structure
-                lastModifiedDate: undefined, // Assign if available
-                lastModifiedBy: "", // Default value
-                lastModifiedByTeamId: null, // Default value
-                lastModifiedByTeam: undefined, // Assign if available
-                name: result.name, // Keep name
-                descriptionRenamed: null, // Default or assign if available
-                createdByRenamed: "", // Default value
-                createdDate: new Date(), // Default to now or fetch actual created date
-                documentType: "", // Default value or assign as needed
-                documentData: undefined, // Assign if available
-                document: undefined, // Assign if available
-                _rev: undefined, // Assign if available
-                _attachments: undefined, // Assign if available
-                _links: undefined, // Assign if available
-                _etag: undefined, // Assign if available
-                _local: false, // Default value
-                _revs: [], // Default to empty array
-                _source: undefined, // Assign if available
-                _shards: undefined, // Assign if available
-                _size: undefined, // Assign if available
-                _version: undefined, // Assign if available
-                _version_conflicts: 0, // Default value
-                _seq_no: undefined, // Assign if available
-                _primary_term: undefined, // Assign if available
-                _routing: undefined, // Assign if available
-                _parent: undefined, // Assign if available
-                _parent_as_child: false, // Default value
-                _slices: [], // Default to empty array
-                _highlight: undefined, // Assign if available
-                _highlight_inner_hits: undefined, // Assign if available
-                _source_as_doc: false, // Default value
-                _source_includes: [], // Default to empty array
-                _routing_keys: [], // Default to empty array
-                _routing_values: [], // Default to empty array
-                _routing_values_as_array: [], // Default to empty array
-                _routing_values_as_array_of_objects: [], // Default to empty array
-                _routing_values_as_array_of_objects_with_key: [], // Default to empty array
-                _routing_values_as_array_of_objects_with_key_and_value: [], // Default to empty array
-                _routing_values_as_array_of_objects_with_key_and_value_and_value: [], // Default to empty array
-              }
-              ))
-            }
-          }
+          label="Search Results"
+          date={new Date()}
+          componentSpecificData={localResults.map((result) => ({
+            id: 'id' in result && result.id !== undefined && result.id !== null 
+              ? Number(result.id) 
+              : 0,
+            title: 'name' in result && result.name !== undefined && result.name !== null 
+              ? result.name.toString() 
+              : "",
+            description: 'description' in result && result.description !== undefined && result.description !== null 
+              ? result.description.toString()
+              : "",
+            source: 'source' in result && result.source !== undefined && result.source !== null 
+              ? result.source.toString()
+              : "",
+          }))}
+          documentData={globalResults.map((result) => ({
+            createdAt: 'createdAt' in result ? result.createdAt || new Date() : new Date(),
+            createdBy: 'createdBy' in result ? result.createdBy || "" : "",
+            updatedBy: 'updatedBy' in result ? result.updatedBy || "" : "",
+            filePathOrUrl: 'filePathOrUrl' in result ? result.filePathOrUrl || "" : "",
+            uploadedBy: '',
+            tagsOrCategories: '',
+            format: "",
+            uploadedByTeamId: 0,
+            uploadedByTeam: {
+              team: {
+                id: "",
+                current: 0,
+                name: "",
+                color: null,
+                max: 0,
+                min: 0,
+                label: "",
+                percentage: 0,
+                value: 0,
+                description: "",
+                done: false
+              },
+              _id: "",
+              id: "",
+              color: "",
+              teamName: "",
+              projects: [],
+              creationDate: new Date(),
+              isActive: false,
+              leader: {} as User,
+              progress: {} as Progress,
+              percentage: 0,
+              assignedProjects: [],
+              reassignedProjects: [],
+              assignProject: (team: Team, project: Project, assignedDate: Date) => { },
+              reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => { },
+              unassignProject: (team: Team, project: Project) => { },
+              updateProgress: (team: Team, project: Project) => { },
+            },
+            selectedDocument: {} as DocumentData<BaseData<any>>,
+            id: 'id' in result ? result.id : 0,
+            _id: 'id' in result ? result.id.toString() : "0",
+            title: 'name' in result && result.name !== undefined && result.name !== null 
+              ? result.name.toString() 
+              : "",
+            content: "",
+            documents: [],
+            permissions: undefined,
+            topics: [],
+            highlights: [],
+            keywords: [],
+            load: undefined,
+            file: undefined,
+            files: [],
+            folder: undefined,
+            folders: [],
+            filePath: undefined,
+            status: undefined,
+            type: undefined,
+            locked: false,
+            category: undefined,
+            changes: false,
+            timestamp: new Date(),
+            source: 'source' in result ? result.source : undefined,
+            report: undefined,
+            options: undefined,
+            folderPath: "",
+            previousContent: undefined,
+            currentContent: undefined,
+            previousMetadata: undefined,
+            currentMetadata: undefined,
+            accessHistory: [],
+            documentPhase: undefined,
+            version: undefined,
+            versionData: undefined,
+            visibility: undefined,
+            url: undefined,
+            updatedDocument: undefined,
+            documentSize: DocumentSize.A4,
+            lastModifiedDate: undefined,
+            lastModifiedBy: "",
+            lastModifiedByTeamId: null,
+            lastModifiedByTeam: undefined,
+            name: 'name' in result ? result.name : undefined,
+            descriptionRenamed: null,
+            createdByRenamed: "",
+            createdDate: new Date(),
+            documentType: "",
+            documentData: undefined,
+            document: undefined,
+            _rev: undefined,
+            _attachments: undefined,
+            _links: undefined,
+            _etag: undefined,
+            _local: false,
+            _revs: [],
+            _source: undefined,
+            _shards: undefined,
+            _size: undefined,
+            _version: undefined,
+            _version_conflicts: 0,
+            _seq_no: undefined,
+            _primary_term: undefined,
+            _routing: undefined,
+            _parent: undefined,
+            _parent_as_child: false,
+            _slices: [],
+            _highlight: undefined,
+            _highlight_inner_hits: undefined,
+            _source_as_doc: false,
+            _source_includes: [],
+            _routing_keys: [],
+            _routing_values: [],
+            _routing_values_as_array: [],
+            _routing_values_as_array_of_objects: [],
+            _routing_values_as_array_of_objects_with_key: [],
+            _routing_values_as_array_of_objects_with_key_and_value: [],
+            _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
+          }))}
           searchQuery={searchQuery || searchTerm}
-          />
+        />
       </div>
 
       {/* Pagination Controls */}
@@ -456,7 +473,6 @@ const SearchCriteriaComponent: React.FC<{
     </div>
   );
 };
-
 
 export default SearchCriteriaComponent;
 export type { SearchCriteria };

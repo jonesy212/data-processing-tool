@@ -3,7 +3,7 @@ import ChartComponent from "@/app/components/charts/ChartComponent";
 import { NextApiRequest, NextApiResponse } from "next";
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
-import { ImageCard } from "@/app/cards";
+import { ImageCard } from "@/app/cards/index";
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 
 interface VisualizationProps {

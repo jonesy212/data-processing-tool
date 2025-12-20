@@ -1,5 +1,5 @@
 // ImportTasksPayload.ts
-import { Task } from "./Task";
+import { Task } from "@/app/models/tasks/Task";
 
 // ImportTasksPayload.tsx
 interface ImportTasksPayload {

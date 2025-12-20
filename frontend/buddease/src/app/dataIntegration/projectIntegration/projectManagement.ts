@@ -13,7 +13,7 @@ import {
   ProjectK,
   ProjectMeta
 } from '@/app/typings/entities/ProjectEntity';
-import { ProjectConversionResult, ProjectConverter } from "./projectConverter";
+import { ProjectConversionResult, ProjectConverter } from "@/app/dataIntegration/projectIntegration/projectConverter";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

@@ -5,7 +5,7 @@ import FeedbackReportGenerator, {
     FeedbackReport,
 } from "@/app/generators/FeedbackReportGenerator";
 import { Feedback } from "@/app/features/support/Feedback";
-import TradingStrategy, { MarketData, TradingStrategyOptions } from "./TradingStrategy";
+import TradingStrategy, { MarketData, TradingStrategyOptions } from "@/app/trading/TradingStrategy";
 
 const calculateHistoricalVolatility = (prices: number[]): number => {
   // Calculate logarithmic returns

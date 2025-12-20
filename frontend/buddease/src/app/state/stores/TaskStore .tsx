@@ -17,7 +17,7 @@ import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Task, tasksDataSource } from "@/app/models/tasks/Task";
+import { Task, tasksDataSource } from "@/app/components/models/tasks/TaskDataSource";
 import FilterTasksRequest from "@/app/pages/searches/FilterTasksRequest";
 import { taskService } from "@/app/services/TaskService";
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -26,7 +26,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
-import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
+import { clearSnapshots, removeSnapshot } from '@/app/snapshots/snapshotOperations';
 import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
@@ -35,7 +35,7 @@ import { User } from "@/app/users/User";
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
-import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
+import { AssignTaskStore, useAssignTaskStore } from "@/app/state/stores/AssignTaskStore";
 
 export interface TaskManagerStore<
   T extends BaseDataEntity,

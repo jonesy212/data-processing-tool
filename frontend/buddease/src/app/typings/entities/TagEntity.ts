@@ -3,10 +3,10 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotsArray } from '@/app/snapshots';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { RoadmapAudience } from '@/app/typings/roadmap';
+import { RoadmapAudience } from '@/app/server/repository/roadmapMapper'
 // --- Core Tag Type Definitions ---
 
 type TagEntity = BaseDataEntity;

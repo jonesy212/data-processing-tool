@@ -2,7 +2,7 @@
 import { DetailsItemCommon } from "@/app/generators/ListGenerator";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { ContentItem } from "@/app/models/content/ContentItem";
+import { ContentItem } from "@/app/components/models/content/ContentItem";
 import { Data } from '@/app/models/data/Data';
 
 

@@ -1,6 +1,6 @@
 // DocumentManagement.tsx
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { DappProps } from "@/app/DAppAdapterConfig";
+import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData, } from "@/app/documents/editing/DocumentBuilder";
 import DocumentGenerator, { DocumentTypeEnum } from "@/app/server/ServerDocumentGenerator";

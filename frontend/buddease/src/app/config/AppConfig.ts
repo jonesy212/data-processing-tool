@@ -9,7 +9,7 @@ import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import { User } from "@/app/users/User";
 import { AppVersion, currentAppName } from '@/app/versions/AppVersion';
-import { RetryConfig, configServiceInstance } from "../services/ConfigurationService";
+import { RetryConfig, configServiceInstance } from "@/app/services/ConfigurationService";
 
 // Define the API version header constant
 const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader();

@@ -9,7 +9,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typiings/entities/BlogEntity';
+import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typings/entities/BlogEntity';
 import React from "react";
 // Define a type representing the data structure for blog posts
 interface BlogData<

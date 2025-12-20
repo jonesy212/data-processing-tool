@@ -5,7 +5,7 @@ import { ThemeService } from "@/app/libraries/theme/ThemeService";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { all, put, takeLatest } from "redux-saga/effects";
-import { fetchUserPreferencesSaga } from "./userPreferencesSagaManager";
+import { fetchUserPreferencesSaga } from "@/app/state/redux/sagas/preferences/userPreferencesSagaManager";
 
 function* handleSetFontSize(action: PayloadAction<string>) {
   try {

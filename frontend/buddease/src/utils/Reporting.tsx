@@ -3,7 +3,7 @@
 
 import { generateReportFilename, validateReport } from "@/utils/reportUtils";
 import React from "react";
-import { Report } from "./report/Report";
+import { Report } from "@/app/documents/Report";
 
 interface ReportingProps {
   reports: Report[];

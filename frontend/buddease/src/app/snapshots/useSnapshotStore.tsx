@@ -21,7 +21,7 @@ import {
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
 
-import { useSecureUserId } from '@/app/hooks/useSecureStoreId';
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import {

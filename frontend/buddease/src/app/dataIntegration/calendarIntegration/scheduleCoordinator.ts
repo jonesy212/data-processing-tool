@@ -5,7 +5,7 @@ import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectL
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { CalendarEventManager } from '@/calendarEventManager';
+import { CalendarEventManager } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 
 export interface ScheduleConflict {
   eventId: string;

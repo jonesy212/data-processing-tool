@@ -2,13 +2,13 @@
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from '@/app/state/stores/DataStore';
-import { SnapshotData, SnapshotDataType } from '@/app/snapshots';
+import { SnapshotData, SnapshotDataType } from '@/app/snapshots/SnapshotData';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -20,14 +20,14 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { isRealtimeDataItemArray } from '@/app/utils/dataTypeGuards';
+import { isRealtimeDataItemArray } from '@/app/hooks/isRealtimeDataItemArray';
 import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
-import { SnapshotConfig } from "./SnapshotConfig";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 
 const snapshotDelegate = <
@@ -211,7 +211,7 @@ const snapshotDelegate = <
           dataCallback?: (
             subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
             snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
+          ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
           category?: Category
         ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
         setData: (id: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;

@@ -1,20 +1,20 @@
 // DetailsEntity.ts
 
-import { DetailsItem } from '@/app/api/ApiDetails';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Content, ContentData } from "@/app/content/Content";
+import { Content, ContentData } from "[object Object]";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { AppEntity } from '@/app/typings/entities/AppEntity';
-import { RealtimeDataItem } from '../realtimeTypes';
-import { ApplyFieldFilters } from './AppEntity';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { ApplyFieldFilters } from '@/app/typings/entities/AppEntity';
 
 // Define the actual DetailsEntity interface
 interface DetailsEntity extends AppEntity {

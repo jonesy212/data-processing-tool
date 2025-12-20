@@ -1,8 +1,8 @@
 // ProjectManagement.tsx
 // Example usage in a parent component
 import React, { useState } from 'react';
-import ProjectCreationForm from './ProjectCreationForm';
-import { ClientProjectEntity } from '@/projects/Project';
+import ProjectCreationForm from '@/app/pages/forms/ProjectCreationForm';
+import { ClientProjectEntity } from '@/app/models/projects/Project';
 
 const ProjectManagement: React.FC = () => {
   const [showForm, setShowForm] = useState(false);

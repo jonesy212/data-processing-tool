@@ -5,7 +5,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { SnapshotStoreConfig } from "@/app/snapshots/snapshotstoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedState } from "@/app/state/stores/DataStore";
 
 

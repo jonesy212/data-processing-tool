@@ -1,6 +1,6 @@
 // EmailConfirmationPhase.tsx
-import RequestEmailPhase from '@/app/communications/email/RequestEmailPhase';
-import VerifyEmailPhase from '@/app/communications/email/VerifyEmailPhase';
+import RequestEmailPhase from '@/app/components/communications/email/RequestEmailPhase';
+import VerifyEmailPhase from '@/app/components/communications/email/VerifyEmailPhase';
 import { useState } from "react";
 
 enum EmailConfirmationPhaseEnum {

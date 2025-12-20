@@ -3,7 +3,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import VersionImpl, { Version } from "@/app/versions/Version";
-import { VersionHistory } from "./VersionData";
+import { VersionHistory } from "@/app/versions/VersionData";
 
 // ✅ Clean, type-safe default version generator
 export function createLatestVersion<

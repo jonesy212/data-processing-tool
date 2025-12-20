@@ -1,7 +1,7 @@
 // FeedbackLoop.tsx
 //FeedbackLoop.tsx
 import React from 'react';
-import { Feedback } from '@/support/Feedback';
+import { Feedback } from '@/app/features/support/Feedback';
 
 interface FeedbackLoopProps {
   feedback: Feedback[];

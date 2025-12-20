@@ -8,7 +8,7 @@ import {
 } from "@/app/api/ApiData";
 import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CreateSnapshotStoresPayload } from "@/app/database/Payload";
+import { CreateSnapshotStoresPayload } from "@/app/interfaces/payload/payloadTypes";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useSubscription from "@/app/hooks/useSubscription";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -16,12 +16,12 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import * as SubscriptionMethods from '@/methods/subscriptionMethods';
+import * as SubscriptionMethods from '@/app/snapshots/methods/subscriptionMethods';
 import { notify } from "@/utils/snapshotUtils";
-import { SnapshotConfig } from "./SnapshotConfig";
-import { flatMap } from "./defaultSnapshotBuilder";
-import { defaultSubscribeToSnapshot } from "./defaultSnapshotSubscribeFunctions";
-import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { flatMap } from "@/app/snapshots/defaultSnapshotBuilder";
+import { defaultSubscribeToSnapshot } from "@/app/snapshots/defaultSnapshotSubscribeFunctions";
+import { defaultSubscribeToSnapshots } from "@/app/snapshots/defaultSubscribeToSnapshots";
 import {
   addDataStatus,
   addDataSuccess,
@@ -35,8 +35,8 @@ import {
   updateDataTitle
 } from "./methods/dataMethods";
 import * as VersionMethods from "./methods/snapshotMethods";
-import { TransformMethods } from "./methods/transformMethods";
-import { UtilMethods } from "./methods/utilMethods";
+import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
+import { UtilMethods } from "@/app/snapshots/methods/utilMethods";
 import {
   addSnapshotSuccess,
   batchFetchSnapshots,
@@ -60,7 +60,7 @@ import {
   updateSnapshotsSuccess,
   updateSnapshotSuccess
 } from "./snapshotHandlers";
-import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "./snapshotOperations";
+import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "@/app/snapshots/snapshotOperations";
 
 type Params<
   T extends BaseDataEntity,

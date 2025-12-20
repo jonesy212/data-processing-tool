@@ -1,6 +1,6 @@
 // middlewareManager.ts
-import { MiddlewareFunction, MiddlewarePipeline, MiddlewareContext } from '@/types';
-import { createMiddlewarePipeline } from '@/createMiddlewarePipeline';
+import { MiddlewareFunction, MiddlewarePipeline, MiddlewareContext } from '@/app/middleware/core/types';
+import { createMiddlewarePipeline } from '@/app/middleware/pipeline/createMiddlewarePipeline';
 
 export class MiddlewareManager implements MiddlewarePipeline {
   private middlewares: MiddlewareFunction[] = [];

@@ -11,7 +11,7 @@ import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { Drawing } from "@/app/libraries/drawing/generateDrawingJSON";
-import { databaseConfig } from '@/src/app/config/databaseConnection';
+import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
 import { useAuth } from "@/app/state/context/AuthContext";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { DatasetModel } from "@/app/todos/tasks/DataSetModel";

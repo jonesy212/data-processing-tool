@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
 import { UserRole } from "@/app/models/UserRole";
 import { TaskEntity } from '@/app/typings/entities/TaskEntity';
-import { CreationPhase } from "./appTypes";
+import { CreationPhase } from "@/app/typings/appTypes";
 
 // Define TaskUnion similar to SnapshotUnion
 type TaskUnion<  

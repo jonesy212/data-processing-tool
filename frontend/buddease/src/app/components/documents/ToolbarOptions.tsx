@@ -4,7 +4,7 @@ import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import CustomModifier from "@/app/documents/CustomModifier";
 import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
-import { toolbarOptions } from "./Toolbar";
+import { toolbarOptions } from "@/app/components/documents/Toolbar";
 import ToolbarItem from "./ToolbarItem";
 
 

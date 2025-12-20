@@ -1,7 +1,7 @@
 // ReducerGenerator.tsx
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CollaboratorEntity } from '@/app/typings/entites/CollaboratorEntity';
+import { CollaboratorEntity } from '@/app/typings/entities/CollaboratorEntity';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
 

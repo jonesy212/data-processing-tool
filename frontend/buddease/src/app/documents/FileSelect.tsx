@@ -2,7 +2,7 @@
 import { FileActions } from '@/app/actions/FileActions';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import CustomFile from '@/File';
+import CustomFile from '@/app/documents/File';
 
 interface FileSelectProps { 
   onChange: (files: FileList | null) => void;

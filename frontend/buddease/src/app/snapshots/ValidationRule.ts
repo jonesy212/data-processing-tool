@@ -3,7 +3,7 @@
 // Base types for context
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { StorePropEntityTemplate } from '@/app/typings/entities/StorePropEntity'
-import { SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields } from '@/app/typings/entities/SnapshotEntity'
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";

@@ -1,6 +1,6 @@
 // UserQuestionnaire.tsx
-import { Question } from '@/onboarding/Question';
-import QuestionnairePage from '@/onboarding/QuestionnairePage';
+import { Question } from '@/app/pages/onboarding/Question';
+import QuestionnairePage from '@/app/pages/onboarding/QuestionnairePage';
 import axios from 'axios';
 import React from 'react';
 

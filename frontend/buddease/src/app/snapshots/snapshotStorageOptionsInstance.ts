@@ -5,7 +5,7 @@ import { Data } from '@/app/models/data/Data';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { Result } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta } from '@/app/typings/entities/SnapshotStorageEntity';
+import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta } from '@/app/typings/entities/SnapshotStorageOptionsEntity';
 
 import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -20,7 +20,7 @@ import { NotificationPosition, PriorityTypeEnum, StatusType } from '@/app/models
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/interfaces/payload/payloadTypes";
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer, SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
@@ -40,13 +40,13 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
-import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { SnapshotActionType } from "./SnapshotActionType";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotItem } from "./SnapshotList";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // Define a specific set of options for snapshot storage
 interface SnapshotStorageOptions<
@@ -1445,6 +1445,5 @@ SnapshotStorageIncludedFields>
 
 export {
 	snapshotConfigOptions
-};
 };
 

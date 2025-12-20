@@ -26,7 +26,7 @@ import {
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotContainer } from '@/app/snapshots';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
@@ -51,10 +51,10 @@ import {
 } from "@/utils/trading/TradingUtils";
 import { triggerIncentives } from "@/utils/web3/applicationUtils";
 import { useParams } from "next/navigation";
-import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
+import { InitializedData, SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
 
 import { SnapshotCallback } from '@/app/components/event/EventManager';
-import { BaseDatabaseService } from '@/app/config/DatabaseConfig';
+import { BaseDatabaseService } from '@/app/server/database/DatabaseService';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
   Snapshots,
@@ -67,10 +67,10 @@ import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { internalCache } from '@/utils/cache/InternalCache';
-import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
-import { SnapshotItem } from "./SnapshotList";
+import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreProps } from "./useSnapshotStore";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 
 interface RetentionPolicy {
   retentionPeriod: number; // in days

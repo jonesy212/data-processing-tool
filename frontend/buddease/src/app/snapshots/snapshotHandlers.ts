@@ -47,11 +47,11 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { snapshotCache } from '@/utils/cache/InternalCache';
 import { addToSnapshotList, generateSnapshotId } from "@/utils/snapshotUtils";
-import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
-import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { useSnapshotStore } from "./useSnapshotStore";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
+import { createSnapshotItem, SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 
 const { notify } = useNotification();
 const dispatch = useDispatch()

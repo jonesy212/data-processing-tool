@@ -1,7 +1,8 @@
 // DocumentCreator.tsx
-// DocumentCreator.ts
 'use client';
-import { ClientDocumentGenerator, DocumentTypeEnum } from '@/app/lib/documents/client/DocumentGenerator';
+
+import { ClientDocumentGenerator } from '@/app/libraries/cache/client/DocumentGenerator'
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 
 export default function DocumentCreator() {
   const handleCreateDocument = async () => {

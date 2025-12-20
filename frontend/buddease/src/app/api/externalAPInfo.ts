@@ -1,5 +1,5 @@
 // externalAPInfo.ts
-import { externalAPIs } from "./externalAPIs";
+import { externalAPIs } from "@/app/api/externalAPIs";
 
 // Accessing information about the Wix API
 const wixAPI = externalAPIs.wix;

@@ -4,7 +4,7 @@
 import { Permission } from "@/app/permissions/Permission";
 import { useAuthStore } from "@/app/state/stores/AuthStore";
 import { useAuthorizationStore } from "@/app/state/stores/AuthorizationStore";
-import { AuthProvider } from "@refinedev/core";
+import { AuthProvider } from "@/app/components/Provider";
 
 interface CustomAuthProvider extends AuthProvider {
   // Method to set permissions (example)

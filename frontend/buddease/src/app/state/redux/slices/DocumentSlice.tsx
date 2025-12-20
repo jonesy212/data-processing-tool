@@ -35,7 +35,7 @@ import { Version, version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { data } from '@tensorflow/tfjs';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()

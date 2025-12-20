@@ -1,7 +1,7 @@
 // UIPhase.ts
 // DefaultNotification.ts
 // UIPhase.tsx
-import { fetchData } from "@/app/api/ApiData";
+import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useEffect } from "react";
@@ -13,13 +13,13 @@ import useUIRealtimeData from "@/app/hooks/commHooks/useUIRealtimeData";
 import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
 import useDarkModeToggle from "@/app/hooks/userInterface/useDarkModeToggle";
 import { logData } from "@/app/services/NotificationService";
-import { updateCallback } from "@/app/state/stores/CalendarEvent";
+import { updateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import NotificationMessagesFactory from "@/app/features/support/NotificationMessagesFactory";
 
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/models/data/BaseConfig';
-import { FileAttachment } from '@/app/models/data/Attachment';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/config/BaseConfig';
+import { FileAttachment } from '@/app/documents/attachment/Attachment';
 
 // Default alias for generic NotificationData
 export type DefaultNotificationData = NotificationData<

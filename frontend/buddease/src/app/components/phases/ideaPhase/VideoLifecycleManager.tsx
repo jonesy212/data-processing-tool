@@ -1,8 +1,8 @@
 // VideoLifecycleManager.tsx
 import React, { useEffect } from "react";
-import { useVideoLifecycle } from "./useVideoLifecycle";
+import { useVideoLifecycle } from "@/app/hooks/useVideoLifecycle";
 import useVideoStore from "../store/useVideoStore";
-import { VideoLifecyclePhase } from "./VideoLifecyclePhase";
+import { VideoLifecyclePhase } from "@/app/phases/VideoLifecyclePhase";
 
 const VideoLifecycleManager: React.FC = () => {
   const videoStore = useVideoStore();

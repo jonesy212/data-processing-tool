@@ -15,7 +15,8 @@ export enum DocumentTypeEnum {
   FinancialReport = 'financialReport',
   MarketAnalysis = 'marketAnalysis',
   ClientPortfolio = 'clientPortfolio',
-  Template = 'template'
+  Template = 'template',
+  PDF = 'pdf'
 }
 
 export enum DocumentStatusEnum {

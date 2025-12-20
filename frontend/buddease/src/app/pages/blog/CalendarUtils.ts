@@ -1,6 +1,6 @@
 // CalendarUtils.ts
 
-import { CalendarEvent } from "@/app/state/stores/CalendarEvent";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { useState } from "react";
 
 

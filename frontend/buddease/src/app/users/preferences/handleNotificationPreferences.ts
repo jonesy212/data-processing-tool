@@ -1,7 +1,7 @@
 // handleNotificationPreferences.ts
 import { GestureHandlerGestureEvent } from "react-native-gesture-handler";
-import { NotificationPreferences } from "@/app/communications/chat/ChatSettingsModal";
-import { CustomEventListener } from "@/app/event/DynamicEventHandlerExample";
+import { NotificationPreferences } from "@/app/cards/modal/ChatSettingsModal";
+import { CustomEventListener } from "[object Object]";
 
 
 // Define functions to set up and remove event listeners for notification types

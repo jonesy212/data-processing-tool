@@ -1,6 +1,6 @@
 // SwingCard.tsx
 import React, { useEffect, useState } from "react";
-import { useDrag } from "react-dnd";
+import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 
 interface SwingCardProps {
   onDragStart: () => void;

@@ -6,12 +6,13 @@ import {
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/scripts/migrateUserData';
+import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/components/database/SchemaEvolutionManager';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { ValidationRule } from '@/app/snapshots/ValidationRule';
-import { DatabaseType, IDatabaseService } from '@/app/typings/database';
+import { DatabaseType, BackendDatabaseService } from '@/app/typings/database'
 
 import { DatabaseMigrationDefinition } from '@/app/components/database/MigrationSystem';
+
 export interface MigrationEvent {
   type: 'start' | 'progress' | 'error' | 'warning' | 'complete' | 'rollback';
   timestamp: Date;
@@ -329,7 +330,7 @@ interface MigrationContext<
   
   // Database Migration Operations from migrateUserData
   // Schema extraction and transformation
-  extractDatabaseSchema(database: IDatabaseService, dbType: DatabaseType): Promise<DatabaseSchema>;
+  extractDatabaseSchema(database: BackendDatabaseService, dbType: DatabaseType): Promise<DatabaseSchema>;
   transformSchema(
     sourceSchema: DatabaseSchema, 
     sourceType: DatabaseType, 
@@ -338,7 +339,7 @@ interface MigrationContext<
   
   // Data migration
   fetchDataBatch(
-    database: IDatabaseService, 
+    database: BackendDatabaseService, 
     tableName: string, 
     offset: number, 
     limit: number,
@@ -346,7 +347,7 @@ interface MigrationContext<
   ): Promise<T[]>;
   
   insertDataBatch(
-    database: IDatabaseService, 
+    database: BackendDatabaseService, 
     tableName: string, 
     data: T[],
     dbType: DatabaseType
@@ -360,18 +361,18 @@ interface MigrationContext<
   ): Promise<T[]>;
   
   // Backup and restore
-  createBackup(database: IDatabaseService, dbType: DatabaseType): Promise<string>;
-  restoreBackup(database: IDatabaseService, backupId: string, dbType: DatabaseType): Promise<void>;
+  createBackup(database: BackendDatabaseService, dbType: DatabaseType): Promise<string>;
+  restoreBackup(database: BackendDatabaseService, backupId: string, dbType: DatabaseType): Promise<void>;
   
   // Validation
   validateDataConsistency(source: T[], target: T[]): Promise<ValidationResult[]>;
-  getRecordCount(database: IDatabaseService, tableName: string, dbType: DatabaseType): Promise<number>;
+  getRecordCount(database: BackendDatabaseService, tableName: string, dbType: DatabaseType): Promise<number>;
   
   // MongoDB-specific operations from migrateUserData
-  extractMongoDBSchema(database: IDatabaseService): Promise<DatabaseSchema>;
+  extractMongoDBSchema(database: BackendDatabaseService): Promise<DatabaseSchema>;
   inferMongoDBColumns(documents: any[]): ColumnSchema[];
   inferMongoDBRelationships(
-    database: IDatabaseService,
+    database: BackendDatabaseService,
     collectionName: string,
     sampleDocs: any[]
   ): Promise<RelationshipSchema[]>;
@@ -696,7 +697,7 @@ export class SchemaEvolutionManager<
               constraintId: constraint.id,
               message: constraint.errorMessage || `Constraint ${constraint.name} failed`,
               severity: 'error',
-              entityId: snapshot.id
+              entityId: snapshot.id != null ? String(snapshot.id) : undefined
             });
           }
         } catch (error) {
@@ -705,7 +706,7 @@ export class SchemaEvolutionManager<
             constraintId: constraint.id,
             message: `Error validating constraint ${constraint.name}: ${error}`,
             severity: 'error',
-            entityId: snapshot.id
+            entityId: snapshot.id != null ? String(snapshot.id) : undefined
           });
         }
       }
@@ -767,8 +768,8 @@ export class SchemaEvolutionManager<
   // DATABASE MIGRATION METHODS from migrateUserData
   async executeDatabaseMigration(
     migrationId: string,
-    sourceDatabase: IDatabaseService,
-    targetDatabase: IDatabaseService
+    sourceDatabase: BackendDatabaseService,
+    targetDatabase: BackendDatabaseService
   ): Promise<MigrationProgress> {
     const migration = this.migrations.find(m => m.id === migrationId);
     if (!migration) {
@@ -824,8 +825,8 @@ export class SchemaEvolutionManager<
   private async executeMigrationLifecycle(
     migration: MigrationDefinition<T, K, Meta>,
     context: MigrationContext<T, K, Meta>,
-    sourceDatabase: IDatabaseService,
-    targetDatabase: IDatabaseService,
+    sourceDatabase: BackendDatabaseService,
+    targetDatabase: BackendDatabaseService,
     progress: MigrationProgress
   ): Promise<void> {
     progress.status = 'running';
@@ -878,8 +879,8 @@ export class SchemaEvolutionManager<
   private async migrateDatabaseData(
     migration: MigrationDefinition<T, K, Meta>,
     context: MigrationContext<T, K, Meta>,
-    sourceDatabase: IDatabaseService,
-    targetDatabase: IDatabaseService,
+    sourceDatabase: BackendDatabaseService,
+    targetDatabase: BackendDatabaseService,
     progress: MigrationProgress
   ): Promise<void> {
     const batchSize = migration.batchSize || 1000;
@@ -933,7 +934,7 @@ export class SchemaEvolutionManager<
   }
   
   // MONGODB SPECIFIC METHODS from migrateUserData
-  private async extractMongoDBSchema(database: IDatabaseService): Promise<DatabaseSchema> {
+  private async extractMongoDBSchema(database: BackendDatabaseService): Promise<DatabaseSchema> {
     // Implementation from migrateUserData
     const tables: TableSchema[] = [];
     const indexes: IndexSchema[] = [];
@@ -1125,7 +1126,7 @@ export class SchemaEvolutionManager<
   }
   
   private async inferMongoDBRelationships(
-    database: IDatabaseService,
+    database: BackendDatabaseService,
     collectionName: string,
     sampleDocs: any[]
   ): Promise<RelationshipSchema[]> {
@@ -1188,7 +1189,7 @@ export class SchemaEvolutionManager<
   }
   
   private async guessTargetCollection(
-    database: IDatabaseService,
+    database: BackendDatabaseService,
     fieldName: string,
     referenceValue: any
   ): Promise<string | null> {
@@ -1211,7 +1212,7 @@ export class SchemaEvolutionManager<
   }
   
   // HELPER METHODS for database operations
-  private async createDatabaseBackup(database: IDatabaseService, dbType: DatabaseType): Promise<void> {
+  private async createDatabaseBackup(database: BackendDatabaseService, dbType: DatabaseType): Promise<void> {
     switch (dbType) {
       case DatabaseType.MYSQL:
       case DatabaseType.POSTGRES:
@@ -1226,7 +1227,7 @@ export class SchemaEvolutionManager<
   }
   
   private async applySchemaToDatabase(
-    database: IDatabaseService,
+    database: BackendDatabaseService,
     schema: DatabaseSchema,
     dbType: DatabaseType
   ): Promise<void> {
@@ -1238,8 +1239,8 @@ export class SchemaEvolutionManager<
   private async validateMigrationResults(
     migration: MigrationDefinition<T, K, Meta>,
     context: MigrationContext<T, K, Meta>,
-    sourceDatabase: IDatabaseService,
-    targetDatabase: IDatabaseService
+    sourceDatabase: BackendDatabaseService,
+    targetDatabase: BackendDatabaseService
   ): Promise<void> {
     // Implementation from migrateUserData
     const sourceCount = await context.getRecordCount(sourceDatabase, 'users', migration.sourceDatabaseType!);
@@ -1252,8 +1253,8 @@ export class SchemaEvolutionManager<
   
   private async rollbackMigration(
     migration: MigrationDefinition<T, K, Meta>,
-    sourceDatabase: IDatabaseService,
-    targetDatabase: IDatabaseService
+    sourceDatabase: BackendDatabaseService,
+    targetDatabase: BackendDatabaseService
   ): Promise<void> {
     // Implementation would restore from backup
     console.log('Rolling back migration');

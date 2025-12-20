@@ -1,5 +1,6 @@
 // roadmapOutline.ts
-import { RoadmapNode, RoadmapAudience } from '@/app/typings/roadmap';
+import { RoadmapAudience } from '@/app/server/repository/roadmapMapper'
+
 
 export function generateOutline<T>(nodes: RoadmapNode<T>[], audience: RoadmapAudience): string {
   switch (audience) {

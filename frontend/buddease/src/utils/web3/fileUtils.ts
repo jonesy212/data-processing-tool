@@ -1,5 +1,5 @@
 // fileUtils.ts
-import { FileMetadata } from "@/app/typings/file/FileManager";
+import { FileMetadata } from "@/app/interfaces/provider/CloudStorageProvider";
 
 interface MyFile extends File {
   id: string;

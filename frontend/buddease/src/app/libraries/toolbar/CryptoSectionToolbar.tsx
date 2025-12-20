@@ -2,7 +2,7 @@
 // CryptoSectionToolbar.ts
 import React from 'react';
 import ToolbarItem from '@/app/components/documents/ToolbarItem';
-import { useCryptoStore } from '@/app/state/stores/CryptoStore';
+import { useCryptoStore } from '@/app/state/context/AppContext';
 
 const CryptoSectionToolbar: React.FC = () => {
   const cryptoStore = useCryptoStore();

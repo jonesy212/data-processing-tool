@@ -1,5 +1,5 @@
 // HighlightEventMetadata.ts
-import { Attachment } from "@/app/components/documents/Attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 

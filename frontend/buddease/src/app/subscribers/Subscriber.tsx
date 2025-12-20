@@ -76,7 +76,7 @@ import {
 } from '@/app/typings/entities/SnapshotEntity';
 import { SubscriberAttachment, SubscriberEntity, SubscriberExcludedFields, SubscriberIncludedFields, SubscriberK, SubscriberMeta } from '@/app/typings/entities/SubscriberEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { BaseDatabaseService } from "@/config/DatabaseService";
+import { BaseDatabaseService } from "@/app/server/database/DatabaseService";
 import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
 import { config } from "process";
 import { AllStatus } from "../state/stores/DetailsListStore";

@@ -40,8 +40,8 @@ import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { User } from "@/app/users/User";
 import { fluenceApiKey } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
-import { BumpVersionOptions } from "./BumpVersionOptions";
-import { VersionData, VersionHistory } from "./VersionData";
+import { BumpVersionOptions } from "@/app/versions/BumpVersionOptions";
+import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 
 interface ExtendedVersion<
   T extends BaseDataEntity,
@@ -80,7 +80,8 @@ interface Version<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends SharedRelationshipData<K>,
+SharedContent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number;
   major: number;
   minor: number;
@@ -705,7 +706,7 @@ static createVersion<
       isLatest: boolean;
       isPublished: boolean;
       publishedAt: Date | null;
-      releaseDate: string | Date;
+      releaseDate: string | Date | null;
       isDeleted: boolean;
       publishedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['username'] | null;
       lastModifiedBy: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['username'] | null;

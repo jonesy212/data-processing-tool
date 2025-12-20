@@ -1,13 +1,13 @@
 // MultimediaContentCustomization.tsx
-import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
+import { isProject, isTask, isTodo } from "@/app/libraries/ui/ContentHelpers";
 import { Task } from "@/app/components/models/tasks/Task";
 import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import ColorPalette, {
   ColorSwatchProps,
 } from "@/app/components/styling/ColorPalette";
-import { Todo } from "@/app/components/todos/Todo";
-import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
+import { Todo } from "@/app/todos/Todo";
+import AdapterContent from "@/utils/web3/dAppAdapter/AdapterContent";
 import { ChildComponentProps } from "@/app/hooks/ChildComponent";
 import NavigationGenerator, {
   NavigationItem,
@@ -15,13 +15,13 @@ import NavigationGenerator, {
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
-import ContentDetailsListItem from "@/app/models/content/ContentDetailsListItem";
+import ContentDetailsListItem from "@/app/components/models/content/ContentDetailsListItem";
 import { Project } from '@/app/models/projects/Project';
 import { Button } from "antd";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ContentCreationPage from "./ContentCreationPage";
-import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
+import useDeviceDimensions, { DeviceDimensions } from "@/app/models/display/DeviceDimensions";
 
 interface MultimediaContentCustomizationProps extends ChildComponentProps{
   // Add any necessary props here

@@ -1,6 +1,6 @@
 // BlogGroup.tsx
 import React from "react";
-import { BlogPost } from "@/app/components/community/DiscussionForumComponent";
+import { BlogPost } from "@/app/pages/blog/BlogPost";
 import GroupGenerator from "@/app/generators/GroupGenerator";
 import Group from "@/app/components/communications/chat/Group";
 import ListGenerator from "@/app/generators/ListGenerator";

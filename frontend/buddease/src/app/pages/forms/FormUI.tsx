@@ -1,7 +1,7 @@
 // FormUI.tsx
 import React, { useState } from "react";
-import CreateComponentForm from "@/app/components/libraries/ui/components/CreateComponentForm";
-import { ComponentActions } from '@/app/components/libraries/ui/components/ComponentActions';
+import CreateComponentForm from "@/app/libraries/ui/components/CreateComponentForm";
+import { ComponentActions } from '@/app/actions/ComponentActions';
 
 interface FormUIProps {
   onSubmit: (userIdea: string) => void;

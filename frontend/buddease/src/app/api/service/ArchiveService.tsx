@@ -1,5 +1,5 @@
 // ArchiveService.tsx
-import { FileMetadata } from '@/app/components/models/file/FileManager';
+import { FileMetadata } from '@/app/interfaces/provider/CloudStorageProvider';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { LocalStorageAdapter, PersistenceLayer } from '@/app/dataIntegration/persistenceLayer';
 import { Attachment } from '@/app/documents/attachment/Attachment';

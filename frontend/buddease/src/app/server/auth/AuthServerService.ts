@@ -2,7 +2,7 @@
 import { generateToken } from '@/app/generators/generateTokens';
 import { JWT_SECRET } from '@/app/server/JwtConfig';
 import * as jwt from 'jsonwebtoken';
-import { DatabaseService } from '@/app/config/DatabaseTypes';
+import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { AuthenticationProvider, BaseAuthService } from '@/app/server/auth/BasicAuthService';
 import { DatabaseServiceFactory } from '@/app/server/database/DatabaseServiceFactory';
@@ -28,7 +28,7 @@ interface AdminLoginResult extends LoginResult {
 }
 
 class AuthServerService extends BaseAuthService {
-  private databaseService: DatabaseService;
+  private databaseService: ClientDatabaseService;
   private databaseType: DatabaseType;
   private currentAccessToken: string | null = null;
 

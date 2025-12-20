@@ -14,7 +14,7 @@ const generateStoreKey = (storeName: string): string => {
 
 
   // Example usage in cache management
-// import generateStoreKey from '@/store_key_generator';
+// import generateStoreKey from '@/app/state/stores/StoreGenerator';
 
 const storeName = 'YourStore';
 const storeKey = generateStoreKey(storeName);

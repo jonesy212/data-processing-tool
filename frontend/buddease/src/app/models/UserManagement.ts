@@ -1,6 +1,6 @@
 // UserManagement.ts
 import { userService } from '@/app/api/ApiUser';
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 import { UserRole } from "@/app/models/UserRole";
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 

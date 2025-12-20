@@ -39,8 +39,8 @@ import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/utils/snapshotUtils";
 import { updateFileMetadata } from "@/utils/web3/fileUtils";
 import { id, Signature } from "ethers";
-import { refreshUI, refreshUIForFile } from "./refreshUI";
-import { SnapshotConfigProps } from "./SnapshotConfigProps";
+import { refreshUI, refreshUIForFile } from "@/app/snapshots/refreshUI";
+import { SnapshotConfigProps } from "@/app/snapshots/SnapshotConfigProps";
 import {
   defaultAddDataStatus,
   defaultRemoveData,
@@ -51,7 +51,7 @@ import {
   defaultUpdateDataTitle
 } from "./snapshotDefaults";
 import SnapshotStore from "./SnapshotStore";
-import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
   snapshotStoreConfigInstance
 } from "./snapshotStoreConfigInstance";
@@ -94,24 +94,24 @@ import { SnapshotEvent, SnapshotEvents } from "@/app/typings/snapshotTypes";
 import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 import operation from "antd/es/transfer/operation";
-import { version } from "os";
+import { version } from "@/app/versions/Version";
 import { config } from "process";
-import { options } from "sanitize-html";
+import { options } from "@/app/generators/GenerateUniqueIds";
 import {
   CustomSnapshotData,
   SnapshotContainer,
   SnapshotData
 } from ".";
-import { createSnapshot } from "./createSnapshot";
-import { getData } from "./methods/dataMethods";
+import { createSnapshot } from "@/app/snapshots/createSnapshot";
+import { getData } from "@/app/snapshots/methods/dataMethods";
 import {
   ConfigureSnapshotStorePayload,
   SnapshotConfig,
 } from "./SnapshotConfig";
-import { SnapshotSecurity } from "./SnapshotSecurity";
-import { storeProps } from "./SnapshotStoreProps";
-import { SnapshotContext } from "./SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotSecurity } from "@/app/snapshots/SnapshotSecurity";
+import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotContext } from "@/app/state/context/SnapshotContext";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 
 type SnapshotFromParams<

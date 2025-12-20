@@ -75,6 +75,7 @@ type AudioOptions = {
 };
 
 type VideoOptions = {
+  id?: string
   enableVideo: boolean;
   videoInputDevice: string;
   // Other video-related options

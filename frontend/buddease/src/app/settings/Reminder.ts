@@ -1,5 +1,5 @@
 // Reminder.ts
-import { EscalationAction } from "./EscalationAction";
+import { EscalationAction } from "@/app/settings/EscalationAction";
 import { CustomAction } from '@/app/settings/CustomAction';
 import { NotificationChannels, RetryPolicy } from '@/app/notifications/NotificationChannels';
 import { ReminderCondition } from '@/app/settings/ReminderConditionEngine'

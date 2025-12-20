@@ -57,7 +57,7 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from '@/app/state/stores/DataStore';
 import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/DynamicEventHandlerExample';
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from '@/app/typings/YourSpecificSnapshotType';
 import { Version } from '@/app/versions/Version';
@@ -78,7 +78,7 @@ import { SnapshotWithCriteriaContract, data } from '@/app/snapshots/SnapshotWith
 
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { SnapshotStoreProps, useSnapshotStore } from './useSnapshotStore';
+import { SnapshotStoreProps, useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 
 
 import { searchAPI } from "@/app/api/ApiSearch";
@@ -105,7 +105,7 @@ import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { notify } from '@/utils/snapshotUtils';
-import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from './methods/advancedTransform';
+import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from '@/app/snapshots/methods/advancedTransform';
 
 interface UnsubscribeEvent extends UnsubscribeDetails {
   id: string;
@@ -295,6 +295,93 @@ class SnapshotStore<
   mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined = undefined;
   tags?: TagsRecord<T>| string[] | undefined;
   priority?: PriorityValue 
+
+    getLatestSnapshot(): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    if (this.snapshots.length === 0) {
+      return null;
+    }
+
+    // Sort by timestamp descending to get the latest
+    const sortedSnapshots = [...this.snapshots].sort((a, b) => {
+      const timeA = a.timestamp?.getTime?.() ?? 0;
+      const timeB = b.timestamp?.getTime?.() ?? 0;
+      return timeB - timeA;
+    });
+
+    const latestSnapshot = sortedSnapshots[0];
+    
+    // Convert to SnapshotData using your conversion function
+    return this.convertSnapshotToSnapshotData(latestSnapshot);
+  }
+
+  // Helper conversion method specific to the store
+  private convertSnapshotToSnapshotData(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    const snapshotId = snapshot.id ?? this.generateSnapshotId();
+    
+    // Check cache first
+    if (this.snapshotDataCache.has(snapshotId)) {
+      return this.snapshotDataCache.get(snapshotId)!;
+    }
+
+    // Create SnapshotData from Snapshot
+    const snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      // Core properties
+      id: snapshotId,
+      entityId: snapshot.entityId,
+      timestamp: snapshot.timestamp ?? new Date(),
+      version: snapshot.version ?? 1,
+      
+      // Data sections
+      core: { ...snapshot.core },
+      shared: { ...snapshot.shared },
+      identity: { ...snapshot.identity },
+      security: { ...snapshot.security },
+      versioning: { ...snapshot.versioning },
+      storage: { ...snapshot.storage },
+      operations: { ...snapshot.operations },
+      base: { ...snapshot.base },
+      sharedMetadata: { ...snapshot.sharedMetadata },
+      
+      // Store reference
+      snapshotStore: this,
+      
+      // Required methods
+      serialize: snapshot.serialize?.bind(snapshot) ?? (() => JSON.stringify({})),
+      validate: snapshot.validate?.bind(snapshot) ?? (() => true),
+      get: snapshot.get?.bind(snapshot) ?? ((key: string) => undefined),
+      
+      // Additional properties with defaults
+      ...snapshot,
+      versionInfo: snapshot.versionInfo ?? "",
+      storeId: snapshot.storeId ?? this.id ?? 0,
+      set: snapshot.set?.bind(snapshot) ?? ((key: string, value: any) => {}),
+      isExpired: snapshot.isExpired?.bind(snapshot) ?? (() => false),
+      
+      // Snapshot methods
+      setSnapshotCategory: snapshot.setSnapshotCategory?.bind(snapshot) ?? ((category: string) => {}),
+      getSnapshotCategory: snapshot.getSnapshotCategory?.bind(snapshot) ?? (() => undefined),
+      getSnapshotData: snapshot.getSnapshotData?.bind(snapshot) ?? (() => undefined),
+      deleteSnapshot: snapshot.deleteSnapshot?.bind(snapshot) ?? (() => {}),
+      processEvent: snapshot.processEvent?.bind(snapshot) ?? 
+        ((data: any, type: string, event: Event) => {}),
+      
+      // Collections with defaults
+      subscribers: snapshot.subscribers ?? [],
+      auditTrail: snapshot.auditTrail ?? [],
+      snapshotIds: snapshot.snapshotIds ?? [],
+      methods: snapshot.methods ?? [],
+      attachments: snapshot.attachments ?? [],
+      metadata: snapshot.metadata ?? {},
+      tags: snapshot.tags ?? [],
+    };
+
+    // Cache the result
+    this.snapshotDataCache.set(snapshotId, snapshotData);
+    
+    return snapshotData;
+  }
 
   
   // Then provide proper type guards

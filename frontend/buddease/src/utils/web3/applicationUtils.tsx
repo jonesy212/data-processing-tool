@@ -29,7 +29,7 @@ import { updateProject } from '@/app/state/redux/slices/ProjectManagerSlice';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { AxiosResponse } from 'axios';
 import { useDispatch } from 'react-redux';
-
+import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import {
   BaseDataEntity,
   DefaultExcludedFields,
@@ -45,7 +45,9 @@ import {
   useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
-import { snapshot, SnapshotData, SnapshotStoreProps } from "@/app/snapshots";
+import { snapshot } from "@/utils/snapshotUtils";
+import { snapshot, SnapshotData } from "@/utils/snapshotUtils";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { createSnapshot } from "@/app/snapshots/createSnapshot";
 import { useDataStore } from "@/app/state/stores/DataStore";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
@@ -299,6 +301,7 @@ const notifyEventSystem = <
         getData: async function (): Promise<
           Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         > {
+
           // Prepare the necessary inputs
           const snapshotManager = await useSnapshotManager<
             T,
@@ -307,18 +310,12 @@ const notifyEventSystem = <
             AttachmentType,
             ExcludedFields,
             IncludedFields
-          >(storeId);
+          >(storeId, storeProps);
           const snapshotId = await snapshot.store.snapshotId;
-          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = {
+          const eventData: BaseDataEntity = {
             /* your event data */
           };
           const category = "EventSystem"; // Your category
-          const storeProps: SnapshotStoreProps<
-            BaseData<any, any>,
-            BaseData<any, any>
-          > = {
-            /* your store props */
-          };
 
           // Create a snapshot instance using createSnapshot
           const newSnapshot = createSnapshot<
@@ -609,26 +606,23 @@ const isValidStatus = (status: StatusType): boolean => {
 };
 
 // Helper function to validate tasks array
-const isValidTasks = (
+const isValidTasks = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 ): boolean => {
-  // Check if tasks array is not empty
-  if (tasks.length === 0) {
-    return false;
-  }
-
-  // Check if all tasks have valid properties
+  if (tasks.length === 0) return false;
   for (const task of tasks) {
-    // Check if task has a title
-    if (!task.title || task.title.trim() === "") {
-      return false;
-    }
-    // Add more validations as needed for other task properties
+    if (!task.title?.trim()) return false;
   }
-
-  // All tasks are valid
   return true;
 };
+
 
 // Helper function to validate project details
 const isValidProjectDetails = (
@@ -764,7 +758,14 @@ const tradeExections = ({
 
 const userId = useSecureUserId();
 
-const unsubscribe = (
+const unsubscribe = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: number,
   unsubscribeDetails: UnsubscribeDetails,
   callback: SubscriberCallbackType<

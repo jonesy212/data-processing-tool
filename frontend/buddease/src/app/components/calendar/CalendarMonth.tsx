@@ -1,17 +1,26 @@
 // CalendarMonth.tsx
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import React, { useEffect } from "react";
-import { CommonCalendarProps } from "./Calendar";
+import { CommonCalendarProps } from "@/app/components/calendar/Calendar";
 import { useCryptoManager } from "@/app/components/crypto/CryptoManager";
 import { Task } from "@/app/components/models/tasks/Task";
 import { YearInfo } from "@/app/components/calendar/CalendarYear";
 import { Month, MonthInfo } from "@/app/components/calendar/Month";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-interface CalendarMonthProps extends CommonCalendarProps {
+interface CalendarMonthProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> extends CommonCalendarProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   year?: YearInfo[] | number;
   month?: MonthInfo[] | number;
-  events: CalendarEvent[];
-  tasks: Task[];
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 const CalendarMonth: React.FC<CalendarMonthProps> = ({

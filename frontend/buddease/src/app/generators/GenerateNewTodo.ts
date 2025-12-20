@@ -1,6 +1,6 @@
 // GenerateNewTodo.ts
 
-import { Todo } from "@/app/components/todos/Todo";
+import { Todo } from "@/app/todos/Todo";
 let currentTodoId = 1;
 
 export const generateNewTodo = (projectId: string): Todo => {

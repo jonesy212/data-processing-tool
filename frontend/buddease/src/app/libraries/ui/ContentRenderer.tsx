@@ -4,7 +4,7 @@ import { Task } from "@/app/models/tasks/Task";
 import { Project, ProjectDetails } from '@/app/models/projects/Project';
 import { Todo } from "@/app/todos/Todo";
 import React from "react";
-import { isProject, isTask } from "./ContentHelpers";
+import { isProject, isTask } from "@/app/libraries/ui/ContentHelpers";
  
 interface ButtonProps {
   label: string;

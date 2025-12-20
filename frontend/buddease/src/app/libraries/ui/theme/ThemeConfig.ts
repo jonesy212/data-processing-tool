@@ -1,6 +1,6 @@
 // ThemeConfig.ts
 import { AliasToken } from "antd/es/theme/internal";
-import { ThemeEnum } from "./Theme";
+import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 
 
 // Define the MappingAlgorithm type

@@ -1,7 +1,7 @@
 // ProjectFeedbackSlice.tsx
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '@/RootSlice';
-import { ProjectFeedback } from '@/app/support/ProjectFeedback';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { ProjectFeedback } from '@/app/features/support/ProjectFeedback';
 
 
 interface ProjectFeedbackState {

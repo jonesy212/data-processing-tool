@@ -1,9 +1,9 @@
 // CorrectionGenerator.ts
 import { PatternAnalyzer } from '@/app/generators/corrections/analyzers/PatternAnalyzer'
-import { ReactNativeAnalyzer } from './analyzers/ReactNativeAnalyzer';
-import { ReactWebAnalyzer } from './analyzers/ReactWebAnalyzer';
-import { BuildAnalyzer } from './analyzers/BuildAnalyzer';
-import { PlatformDetector } from './analyzers/PlatformDetector';
+import { ReactNativeAnalyzer } from '@/app/generators/corrections/analyzers/ReactNativeAnalyzer';
+import { ReactWebAnalyzer } from '@/app/generators/corrections/analyzers/ReactWebAnalyzer';
+import { BuildAnalyzer } from '@/app/generators/corrections/analyzers/BuildAnalyzer';
+import { PlatformDetector } from '@/app/generators/corrections/analyzers/PlatformDetector';
 import { CircularDependencyDetector } from '@/app/generators/corrections/CircularDependencyDetector';
 import { MetroConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/MetroConfigAnalyzer';
 import { MetroLogAnalyzer } from '@/app/generators/corrections/analyzers/react-native/errors/MetroLogAnalyzer';
@@ -15,12 +15,12 @@ import { ErrorTracker } from '@/app/generators/corrections/ErrorTracker';
 import { SecurityAuditor } from '@/app/generators/corrections/SecurityAuditor';
 import { TypeHierarchy } from '@/app/generators/corrections/TypeRelationshipMapper';
 import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
-import { ErrorAnalyzer } from './ErrorAnalyzer';
+import { ErrorAnalyzer } from '@/app/generators/corrections/ErrorAnalyzer';
 import { ImportFix } from '@/app/generators/corrections/ImportFixServicies';
-import { ReportGenerators } from './ReportGenerators';
-import { SnapshotAnalyzer } from './SnapshotAnalyzer';
-import { StructureValidator } from './StructureValidator';
-import { TypeRelationshipMapper } from './TypeRelationshipMapper';
+import { ReportGenerators } from '@/app/generators/corrections/ReportGenerators';
+import { SnapshotAnalyzer } from '@/app/generators/corrections/SnapshotAnalyzer';
+import { StructureValidator } from '@/app/generators/corrections/StructureValidator';
+import { TypeRelationshipMapper } from '@/app/generators/corrections/TypeRelationshipMapper';
 import { BuildErrorHandler } from '@/utils/BuildErrorHandler'
 import { FileHeaderManager } from '@/utils/fileHeaderManager';
 import { readFileSync, statSync } from 'fs';
@@ -509,7 +509,7 @@ export class CorrectionGenerator {
             case 'import':
                 return `// Fix import paths for snapshot utilities
 // Ensure all snapshot-related imports use correct paths
-import { snapshotUtils } from '@/utils/snapshot';`;
+import { snapshotUtils } from '@/app/snapshots/Snapshot';`;
 
             case 'type':
                 return `// Align snapshot types with main application types

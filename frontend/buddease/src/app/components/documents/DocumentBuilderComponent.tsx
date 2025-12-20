@@ -9,7 +9,7 @@ import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import AccessHistory from '@/app/versions/AccessHistory';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DocumentFormattingOptions } from "./DocumentFormattingOptionsComponent";
+import { DocumentFormattingOptions } from "@/app/components/documents/DocumentFormattingOptionsComponent";
 
 const dispatch = useDispatch()
 

@@ -2,7 +2,7 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
  
-import ApiConfig from '@/app/api/ApiConfig';
+import ApiConfig from '@/app/api/ApiConfigManager';
 import appTreeApiService from "@/app/api/appTreeApi";
 import getSnapshotId from "@/app/api/SnapshotApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
@@ -12,7 +12,7 @@ import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from "@/app/models/data/StatusType";
 import { ComponentMethods } from '@/app/page';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typings/entties/CalendarEntity';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typings/entities/CalendarEntity';
 
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";

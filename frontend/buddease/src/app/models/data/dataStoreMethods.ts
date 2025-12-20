@@ -2,7 +2,7 @@
 import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots';
+import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots/SnapshotConfig';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { DataStore } from "@/app/state/stores/DataStore";
@@ -26,7 +26,7 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { User } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";
-import { BaseData, Data } from "./Data";
+import { BaseData, Data } from "@/app/models/data/Data";
 
 // Assuming T is defined in your context
 type T = BaseDataEntity; // Replace with the appropriate type if necessary

@@ -1,6 +1,6 @@
 // ApiBackend.ts
 import { NextApiRequest, NextApiResponse } from 'next';
-import { backendStructure } from '@/app/config/declarations/traverseBackend'
+import { backendStructure } from '@/app/server/database/BackendStructure'
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

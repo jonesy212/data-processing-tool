@@ -1,6 +1,6 @@
 // UpdateProjectDetails.tsx
 import React from 'react';
-import { Project, ProjectDetails } from '@/Project';
+import { Project, ProjectDetails } from '@/app/models/projects/Project';
 import { StatusType } from "@/app/models/data/StatusType";
 
 interface UpdatedProjectDetailsProps {

@@ -28,7 +28,7 @@ import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { SimulatedDataSource } from "./createSnapshotOptions";
+import { SimulatedDataSource } from "@/app/snapshots/createSnapshotOptions";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";

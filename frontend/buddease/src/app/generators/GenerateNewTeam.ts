@@ -1,6 +1,6 @@
 // GenerateNewTeam.ts
 
-import { Team } from "@/app/components/models/teams/Team";
+import { Team } from "@/app/components/teams/Team";
 import { Project } from '@/app/models/projects/Project';
 
 let currentTeamId = 1;

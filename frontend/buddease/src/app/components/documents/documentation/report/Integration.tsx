@@ -3,9 +3,9 @@
 
 import { addReport, fetchReports, removeReport } from "@/app/api/ApiReport";
 import DataProcessingComponent from '@/app/components/models/data/DataProcessingComponent';
-import { dataset } from "@/app/components/todos/tasks/DataSetModel";
+import { dataset } from "@/app/todos/tasks/DataSetModel";
 import Visualization from '@/app/hooks/userInterface/Visualization';
-import { DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
+import { DataProcessingResult } from "@/app/api/service/DataProcessingService";
 import { validateReport } from "@/utils/reportUtils";
 
 // Import necessary functions and components

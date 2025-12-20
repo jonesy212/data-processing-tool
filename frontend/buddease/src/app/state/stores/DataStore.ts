@@ -27,7 +27,7 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethods, SnapshotStoreProps } from '@/app/snapshots';
+import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethods, SnapshotStoreProps } from '@/app/snapshots/SnapshotConfig';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { retrievedSnapshot } from "@/app/snapshots/RetrieveSnapshotData";
@@ -41,7 +41,7 @@ import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriber
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseSnapshotProps } from "@/app/snapshots/createBaseSnapshot";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import isSnapshotsArray, { isSnapshotArrayState } from '@/app/snapshots/createSnapshotOptions';
+import isSnapshotsArray, { isSnapshotArrayState } from '@/app/snapshots/createSnapshotStoreOptions';
 import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';

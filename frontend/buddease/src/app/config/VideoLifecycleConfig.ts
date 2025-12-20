@@ -1,7 +1,7 @@
 // VideoLifecycleConfig.ts
 import { LifecycleConfig } from '@/app/hooks/phases/lifecycles'
 import { videoLifecyclePhases } from "@/app/hooks/VideoLifecycleHooks";
-import { VideoLifecyclePhase } from "@/app/hooks/VideoLifecyclePhase";
+import { VideoLifecyclePhase } from "@/app/phases/VideoLifecyclePhase";
 
 export const videoLifecycleConfig: LifecycleConfig = {
   phases: videoLifecyclePhases,

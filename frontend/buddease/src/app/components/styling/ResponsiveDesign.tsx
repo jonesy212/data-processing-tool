@@ -10,7 +10,7 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
-import { ColorSwatchProps } from "./ColorPalette";
+import { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
 
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {

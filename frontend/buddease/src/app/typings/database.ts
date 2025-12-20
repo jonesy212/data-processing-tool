@@ -1,7 +1,7 @@
 // database.ts
 import { DatabaseConfig } from '@/app/config/DatabaseConfig';
 
-export interface IDatabaseService {
+export interface BackendDatabaseService {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   query(sql: string, params?: any[]): Promise<any>;

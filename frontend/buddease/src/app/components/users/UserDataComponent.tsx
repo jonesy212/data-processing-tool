@@ -1,7 +1,7 @@
 // UserDataComponent.tsx
 import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
-import UserDetails, { User } from '@/User';
-import UserRoles from '@/UserRoles';
+import UserDetails, { User } from '@/app/users/User';
+import UserRoles from '@/app/models/UserRoles';
 
 const UserDataComponent = () => {
   const timeBasedCode = generateTimeBasedCode();

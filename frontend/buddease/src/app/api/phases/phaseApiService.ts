@@ -2,7 +2,7 @@
 import internalApiService from '@/app/api/ApiClient';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
 import { UnifiedPhaseType } from '@/app/typings/phaseTypes';
-import { ProjectPhaseTypeEnum, ProgressPhase, DocumentPhaseTypeEnum } from '@/app/models/data/StatusType';
+import { ProjectPhaseTypeEnum, ProgressPhase, DocumentPhaseTypeEnum } from '@/app/models/tracker/ProgressBar';
 
 // Define the structure for phase data initialization
 interface PhaseInitialData {

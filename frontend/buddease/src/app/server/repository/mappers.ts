@@ -2,7 +2,7 @@
 // /app/server/repository/mappers.ts
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CacheData } from '@/app/models/CacheData';
+import { CacheData } from '@/app/generators/GenerateCache';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

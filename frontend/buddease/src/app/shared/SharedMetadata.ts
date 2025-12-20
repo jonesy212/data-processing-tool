@@ -1,5 +1,5 @@
 // SharedMetadata.ts
-import { CoreMetadata } from '@/app/confg/MetadataStateManager';
+import { CoreMetadata } from '@/app/config/MetadataStateManager';
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -8,9 +8,9 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { Permission } from '@/app/permissions/Permission';
-import { RolePermissions } from '@/app/server/security/getPermission';
-import { Version } from '../versions/Version';
-import { VersionHistory } from '../versions/VersionData';
+import { RolePermissions } from '@/app/server/security/getPermissions';
+import { Version } from '@/app/versions/Version';
+import { VersionHistory } from '@/app/versions/VersionData';
 
 interface SharedMetadata<
   T extends BaseDataEntity,

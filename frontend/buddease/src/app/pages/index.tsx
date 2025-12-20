@@ -16,7 +16,7 @@ import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
-import { Persona } from "./personas/Persona";
+import { Persona } from "@/app/pages/personas/Persona";
 
  // pages/index.tsx
 

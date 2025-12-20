@@ -5,7 +5,7 @@ import {
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useUIRealtimeData';
+import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 
 export interface RealtimeServiceConfig<
   T extends BaseDataEntity,

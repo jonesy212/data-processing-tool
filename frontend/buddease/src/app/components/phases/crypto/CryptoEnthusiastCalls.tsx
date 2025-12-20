@@ -1,13 +1,13 @@
 // CryptoEnthusiastCalls.tsx
 import userService from '@/app/api/ApiUser';
-import { authToken } from '@/app/components/auth/authToken';
+import { authToken } from '@/app/server/auth/authToken';
 import DataFilterForm from '@/app/components/models/data/DataFilterForm';
-import { TraderCallsProps } from '@/app/components/trading/Trades';
+import { TraderCallsProps } from '@/app/trading/Trades';
 import ListGenerator from '@/app/generators/ListGenerator';
 import processSnapshotList from '@/app/generators/processSnapshotList';
 import useTwoFactorAuthentication from '@/app/hooks/authentication/useTwoFactorAuthentication';
 import SnapshotList from '@/app/snapshots/SnapshotList';
-import { DataAnalysisAction, DataAnalysisDispatch } from '@/app/typings/dataAnalysisTypes';
+import { DataAnalysisAction, DataAnalysisDispatch } from '@/app/typings/phases/dataAnalysisTypes';
 import { Dispatch } from '@reduxjs/toolkit';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';

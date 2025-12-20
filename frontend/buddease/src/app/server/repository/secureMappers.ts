@@ -1,8 +1,8 @@
 // secureMappers.ts
 // secureMappers.ts
-import { CacheData } from '@/app/types/CacheData';
+import { CacheData } from '@/app/generators/GenerateCache';
 import { VersionEntityDataInterface } from '@/app/typings/entities/VersionEntity';
-import { DocumentData } from '@/app/typings/entities/Document';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DefaultExcludedFields } from '@/app/config/BaseConfig';
 
 /** -------------------------

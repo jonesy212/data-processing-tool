@@ -1,7 +1,7 @@
 // AnalyticsTool.ts
 
 import { fetchData } from "@/utils/web3/dataAnalysisUtils";
-import { DataAnalysis } from "./DataAnalysis";
+import { DataAnalysis } from "@/app/projects/DataAnalysisPhase/DataAnalysis";
 
 
 export class AnalyticsTool {

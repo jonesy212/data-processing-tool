@@ -1,6 +1,6 @@
 // validationSagas.ts
-import Logger from '@/app/libraries/logging/Logger';
-import { ValidationActionTypes, validationFailure, validationSuccess } from '@/app/components/security/ValidationActions';
+import Logger from '@/app/logging/Logger';
+import { ValidationActionTypes, validationFailure, validationSuccess } from '@/app/actions/ValidationActions';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 //  validation saga

@@ -7,9 +7,9 @@ import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import useDocumentStore from "@/app/state/stores/DocumentStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { BaseData } from '@/app/models/data/Data'
 import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -117,7 +117,7 @@ const fetchInitialSnapshotData = async  <
         return Promise.resolve(undefined); // Return a Promise that resolves to an array of strings or undefined
       },
       getAllValues: () => [],
-      getAllItems: (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> | => {},
+      getAllItems: (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> => {},
       getSnapshotEntries: () => [],
       getAllSnapshotEntries: () => [],
       addDataStatus: () => {},

@@ -1,12 +1,12 @@
 // createSystemMessage.ts
-import { ExtendedUser, User } from '@/app/components/users/User';
+import { ExtendedUser, User } from '@/app/users/User';
 import userSettings from '@/app/config/UserSettings';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import { ActivityStatus } from '@/app/pages/profile/Profile';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
 import { DataSharingPreferences } from '@/settings/PrivacySettings';
-import UserRoles from '@/UserRoles';
+import UserRoles from '@/app/models/UserRoles';
 
 // Function to transform friends into the required format
 const transformFriends = (friends: User[]): User[] => {

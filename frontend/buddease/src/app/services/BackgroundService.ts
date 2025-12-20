@@ -3,7 +3,7 @@ import { ChangeLogManager } from '@/app/logging/ChangeLogEntry';
 import ApiSynchronizationScript from '@/app/scripts/ApiSynchronizationScript'
 import { useServerFileSystem } from '@/app/hooks/useServerFileSystem';
 import DatabaseClient from '@/app/api/DatabaseClient';
-import { PersistenceConfig } from '@/app/config/PersistenceConfig'; // Import if needed
+import { PersistenceConfig } from '@/app/typings/persistenceTypes'; // Import if needed
 
 interface BackupService {
   saveLogs: (logs: any[]) => Promise<void>;

@@ -13,7 +13,7 @@ import { useNotification } from '@/app/state/context/NotificationContext';
 
 import { UserData } from '@/app/users/User';
 import { AxiosError, AxiosResponse } from 'axios';
-import { ErrorInfo } from 'react';
+import { ErrorInfo } from '@/app/shared/ErrorHandler';
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;

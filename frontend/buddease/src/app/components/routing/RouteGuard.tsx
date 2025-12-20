@@ -12,7 +12,8 @@ interface RouteGuardProps {
   enableFuzzyAuth?: boolean;
 }
 
-export const RouteGuard: React.FC<RouteGuardProps> = ({
+// Main component as default export
+const RouteGuard: React.FC<RouteGuardProps> = ({
   children,
   requiredPermissions = [],
   requiredRoles = [],
@@ -80,7 +81,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
   return <>{children}</>;
 };
 
-// Higher Order Component version
+// Higher Order Component version (named export)
 export const withRouteGuard = (
   Component: React.ComponentType,
   guardOptions: Omit<RouteGuardProps, 'children'> = {}
@@ -93,3 +94,6 @@ export const withRouteGuard = (
     );
   };
 };
+
+// Export RouteGuard as default
+export default RouteGuard;

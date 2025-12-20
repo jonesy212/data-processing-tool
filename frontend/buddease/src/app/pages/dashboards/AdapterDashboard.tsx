@@ -9,17 +9,17 @@ import ColorPalette, {
   ColorSwatchProps,
 } from "@/app/components/styling/ColorPalette";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
+import AdapterContent from "@/utils/web3/dAppAdapter/AdapterContent";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import useLayoutGenerator, {
   DocumentGenerationResult,
 } from "@/app/hooks/GenerateUserLayout";
-import CommonLayout from "@/app/layouts/CommonLayout";
+import CommonLayout from "@/app/pages/layouts/CommonLayout";
 import {
   AnimatedComponent,
   AnimatedComponentRef,
 } from "@/app/libraries/animations/AnimationComponent";
-import DashboardLoader from "@/dashboards/DashboardLoader";
+import DashboardLoader from "@/app/pages/dashboards/DashboardLoader";
 import Image from 'next/image';
 import React, { ReactNode, useRef } from "react";
 // Import specific icons for each platform

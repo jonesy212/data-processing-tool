@@ -3,7 +3,7 @@
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
-import { saveDocumentToDatabase } from "./../configs/database/updateDocumentInDatabase";
+import { saveDocumentToDatabase } from "@/app/config/database/updateDocumentInDatabase";
 
 
 export async function buildDocument(

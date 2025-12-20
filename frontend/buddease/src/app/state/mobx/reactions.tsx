@@ -1,8 +1,8 @@
 // reactions.tsx
 import { Task } from '@/app/components/models/tasks/Task';
-import { Todo } from '@/app/components/todos/Todo';
-import { useTaskManagerStore } from '@/stores/TaskStore ';
-import useTodoManagerStore from '@/stores/TodoStore';
+import { Todo } from '@/app/todos/Todo';
+import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
+import useTodoManagerStore from '@/app/state/stores/TodoStore';
 import { reaction } from 'mobx';
 
 // Function to set up reaction for a specific store

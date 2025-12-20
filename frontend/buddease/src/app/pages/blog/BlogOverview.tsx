@@ -3,7 +3,7 @@
 import React from 'react';
 // Import CSS for styling
 if (typeof window !== 'undefined') {
-  import('@/app/pages/blog/BlogOverview.css');
+  import('@/app/pages/blog/BlogOverview');
 }
 
 interface BlogOverviewProps {

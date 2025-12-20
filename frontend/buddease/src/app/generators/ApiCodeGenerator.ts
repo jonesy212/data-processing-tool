@@ -69,7 +69,7 @@ const endpointCode = Object.keys(endpoints).map(group => {
   // Define imports
   const imports = `
 import axios from 'axios';
-import { BASE_URL } from '@/app/api/config'; // Assuming you have a config file defining BASE_URL`;
+import { BASE_URL } from '@/app/api/baseUrl'; // Assuming you have a config file defining BASE_URL`;
 
   // Define service methods
   let serviceMethods = '';

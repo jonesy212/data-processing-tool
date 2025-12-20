@@ -3,7 +3,7 @@ import baseQuestionnaireData from "@/app/hooks/baseQuestionnaireData";
 import generateDynamicQuestions from "@/app/hooks/dynamicHooks/dynamicQuestionGenerator";
 import { UserData } from "@/app/users/User";
 import React from "react";
-import { Question } from "./Question"; // Adjust the import path as needed
+import { Question } from "@/app/pages/onboarding/Question"; // Adjust the import path as needed
 
 interface QuestionnairePageProps {
   title: string;

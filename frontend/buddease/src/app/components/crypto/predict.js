@@ -3,7 +3,7 @@
 import { createInterface } from 'readline';
 
 
-import MachineLearningModel from '@/machineLearningModel';
+import MachineLearningModel from '@/app/components/crypto/machineLearning';
 
 // Create an instance of the machine learning model
 const model = new MachineLearningModel();

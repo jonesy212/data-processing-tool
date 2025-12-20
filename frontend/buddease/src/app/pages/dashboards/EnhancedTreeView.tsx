@@ -3,7 +3,7 @@ import DummyCard from "@/app/cards/DummyCard";
 import useSearchPagination from "@/app/hooks/commHooks/useSearchPagination";
 import { useSearch } from "@/app/state/context/SearchContext";
 import React, { useEffect, useMemo, useState } from "react";
-import { FileTreeNode, FileTreeService } from "./FileTreeService";
+import { FileTreeNode, FileTreeService } from "@/app/services/FileTreeService";
 
 interface EnhancedTreeViewProps {
   onFileSelect?: (file: FileTreeNode) => void;

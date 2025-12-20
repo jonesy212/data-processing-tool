@@ -1,5 +1,5 @@
 // TradingPhaseConfig.tsx
-import VerificationProcess from "@/app/phases/crypto/VerificationProcess";
+import VerificationProcess from "@/app/components/phases/crypto/VerificationProcess";
 
 let verificationDone: boolean = false;
 // TradingPhaseConfig.ts

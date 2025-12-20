@@ -6,7 +6,7 @@ import HighlightEvent from '@/app/highlighting/screenFunctionality/HighlightEven
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { YourResponseType } from '@/app/typings/responseTypes';
 import { AxiosError, AxiosResponse } from 'axios';
-import { handleApiErrorAndNotify, removeData, updateData } from '@/app/api/ApiData';
+import { handleApiErrorAndNotify, removeData, updateData } from '@/app/snapshots/methods/dataMethods';
 import { endpoints } from '@/app/api/endpointConfigurations';
 
 const API_BASE_URL = endpoints.highlights;

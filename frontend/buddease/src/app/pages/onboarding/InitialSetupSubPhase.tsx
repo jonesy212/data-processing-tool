@@ -1,12 +1,12 @@
 // InitialSetupSubPhase.tsx
-import { useAuth } from '@/app/components/auth/AuthContext';
-import { sanitizeData, validateUserData } from '@/app/components/crypto/SanitizationFunctions';
+import { useAuth } from '@/app/state/context/AuthContext';
+import { sanitizeData, validateUserData } from '@/app/models/cypto/SanitizationFunctions';
 import { AppDevelopmentPhase } from '@/app/components/phases/AppDevelopmentPhase';
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useNotification } from "@/app/state/context/NotificationContext";
-import DynamicForm from '@/forms/DynamicForm';
-import TempUserData from '@/OnboardingPhase';
+import DynamicForm from '@/app/pages/forms/DynamicForm';
+import TempUserData from '@/app/pages/onboarding/OnboardingPhase';
 import { AxiosError } from 'axios'; // Import AxiosError
 import React, { useEffect } from 'react';
 

@@ -7,7 +7,7 @@ interface DatabaseQuery {
   params?: any[];
 }
 
-interface DatabaseService {
+interface ClientDatabaseService {
   createDatabase(config: DatabaseConfig, databaseQuery: string): Promise<any>;
   insertData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
   updateData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
@@ -31,4 +31,4 @@ interface DatabaseService {
 }
 
 
-export type { DatabaseQuery, DatabaseService };
+export type { DatabaseQuery, ClientDatabaseService };

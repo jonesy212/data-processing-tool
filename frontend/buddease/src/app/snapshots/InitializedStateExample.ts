@@ -22,11 +22,11 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { category } from "@/utils/snapshotUtils";
-import { SnapshotData } from "./SnapshotData";
-import { SnapshotIdentity } from "./SnapshotIdentity";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotIdentity } from "@/app/snapshots/SnapshotIdentity";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 // Helper function to generate unique IDs
 export function generateId(prefix: string = 'snapshot'): string {

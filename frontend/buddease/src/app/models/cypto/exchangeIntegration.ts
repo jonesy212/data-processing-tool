@@ -13,7 +13,7 @@ import {
 } from "@/app/typings/exchangeTypes";
 import OrderBookUpdater from "../../components/crypto/OrderBookUpdater";
 import TickerUpdater from "../../components/crypto/TickerUpdater";
-import { ClientSubscriber } from './../../subscriptions/ClientSubscriber';
+import { ClientSubscriber } from '@/app/subscriptions/ClientSubscriber';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {

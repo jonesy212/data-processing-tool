@@ -3,7 +3,7 @@
 import { Data } from '@/app/models/data/Data';
 import { UserRole } from "@/app/models/UserRole";
 import { Persona } from "@/app/pages/personas/Persona";
-import { UserProfile } from "@/app/snapshots/userSnapshotData";
+import { UserProfile } from "@/app/api/ApiUser";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { createAction } from "@reduxjs/toolkit";
 import { User, UserData } from "@/app/users/User";

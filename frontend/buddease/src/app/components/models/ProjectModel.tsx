@@ -1,7 +1,7 @@
 // ProjectModel.tsx
 import DatabaseClient from '@/app/api/DatabaseClient';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
-import { DatabaseService } from '@/app/config/DatabaseTypes';
+import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -41,7 +41,7 @@ class ProjectModel <
   private readonly dbClient: DatabaseClient; // Keep this as an instance property
   static dbClient: any;
   
-  private static dbService: DatabaseService; // Database service instance
+  private static dbService: ClientDatabaseService; // Database service instance
   
   constructor(dbClient: DatabaseClient) {
     this.dbClient = dbClient; // Instance property can use the dbClient passed in the constructor

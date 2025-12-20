@@ -3,8 +3,8 @@
 import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
 import internalApiService from '@/app/api/ApiClient';
 import { executeTrade, TradeAction } from '@/app/api/PortfolioService';
-import { getMarketPrice } from '@/app/api/PriceApiService';
-import { TradeLogger } from "@/app/libraries/logging/TradeLogger";
+import { getMarketPrice } from '@/app/api/service/PriceApiService';
+import { TradeLogger } from "@/app/logging/TradeLogger";
 import { CryptoPortfolio } from '@/app/components/crypto/CryptoPortfolio'
 
 export interface TradeRequest {

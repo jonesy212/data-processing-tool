@@ -1,6 +1,6 @@
 // SyncWithExternalCalendars.tsx
 import React, { useState } from "react";
-import authService from "@/app/auth/AuthService";
+import authService from "@/app/server/auth/AuthService";
 
 interface SyncWithExternalCalendarsProps {
   // Props for connecting to Google Calendar

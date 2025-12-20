@@ -1,5 +1,5 @@
 // GroupChat.ts
- import ChatMessage from "@/app/communications/chat/ChatMessage";
+ import ChatMessage from "@/app/components/communications/chat/ChatMessage";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 
 interface GroupChat {

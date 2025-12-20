@@ -7,16 +7,15 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
 import { LoginCredentials } from '@/app/server/auth/AuthServerService';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { AppEntity } from '@/app/typings/entities/AppEntity';
 import { UserPreferences } from '@/app/typings/userTypes';
 import { User, UserData } from "@/app/users/User";
-import { RealtimeDataItem } from '../realtimeTypes';
-import { ApplyFieldFilters } from './AppEntity';
-
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { ApplyFieldFilters } from '@/app/typings/entities/AppEntity';
 // Define the actual UserEntity interface
 interface UserEntity extends AppEntity {
   id: string;

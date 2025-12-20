@@ -1,5 +1,5 @@
 // TeamProgress.tsx
-import TeamProgressBar from '@/TeamProgressBar';
+import TeamProgressBar from '@/app/projects/projectManagement/TeamProgressBar';
 import React from "react";
 
 const TeamProgress = () => {

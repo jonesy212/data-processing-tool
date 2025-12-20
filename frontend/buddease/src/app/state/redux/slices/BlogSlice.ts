@@ -2,7 +2,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BlogPost } from '@/app/pages/blog/BlogPost';
-import { VideoComment, BlogComment, CustomComment, EntityComments } from '@/app/components/models/data/Comments';
+import { VideoComment, BlogComment, CustomComment, EntityComments } from '@/app/models/comments/Comments';
 
 interface BlogState {
   posts: BlogPost[];

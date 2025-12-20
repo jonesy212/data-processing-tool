@@ -1,6 +1,6 @@
 // MarkerActions.ts
 // marker/MarkerActions.ts
-import { Marker } from "@/app/components/models/data/Marker";
+import { Marker } from "@/app/models/data/Marker";
 import { createAction } from "@reduxjs/toolkit";
 
 export const MarkerActions = {

@@ -13,7 +13,7 @@ import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import {
@@ -40,7 +40,8 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+2import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
 import { IHydrateResult } from "mobx-persist";
 

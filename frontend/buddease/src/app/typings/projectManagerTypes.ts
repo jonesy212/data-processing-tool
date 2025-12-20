@@ -1,6 +1,6 @@
 // projectManagerTypes.ts
 // ProjectManagerTypes.ts
-import { ProjectManagerBaseParams } from './ProjectManagerEntity';
+import { ProjectManagerBaseParams } from '@/app/typings/entities/ProjectManagerEntity';
 import { Project } from '@/app/models/projects/Project';
 
 // Core type alias for Project with all 6 parameters

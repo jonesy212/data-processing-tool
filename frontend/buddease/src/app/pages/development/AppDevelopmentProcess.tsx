@@ -1,5 +1,5 @@
 // AppDevelopmentProcess.tsx
-import { AndroidBlogPosts, IoSBlogPosts } from '@/blog/AIoSBlogPosts';
+import { AndroidBlogPosts, IoSBlogPosts } from '@/app/pages/blog/AIoSBlogPosts';
 import React from 'react';
 
 const AppDevelopmentProcess: React.FC = () => {

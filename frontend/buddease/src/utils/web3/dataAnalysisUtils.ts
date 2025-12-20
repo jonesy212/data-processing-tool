@@ -1,4 +1,4 @@
-import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
+import { DataAnalysisDispatch } from '@/app/typings/phases/dataAnalysisTypes'
 import axiosInstance from '@/app/api/csrfToken';
 
 // dataAnalysisUtils.ts

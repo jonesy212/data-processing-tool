@@ -9,17 +9,17 @@ import {
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
-import { Input } from "antd";
+import { Input } from "@/app/hooks/userInterface/InputFields";
 import { Router, useRouter } from "next/router";
 import React, { ReactNode, useRef } from "react";
-import DynamicNamingConventions from "@/app/DynamicNamingConventions";
+import DynamicNamingConventions from "@/utils/DynamicNamingConventions";
 import InputLabel from "@/app/hooks/userInterface/InputFields";
 import CustomSlider from "@/app/libraries/ui/buttons/CustomSlider";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
-import { brandingSettings } from "@/app/branding/BrandingSettings";
-import DynamicComponent from "@/app/styling/DynamicComponents";
-import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
-import DynamicTypography from "@/app/styling/DynamicTypography";
+import { brandingSettings } from "@/app/libraries/theme/BrandingService";
+import DynamicComponent from "@/app/components/styling/DynamicComponents";
+import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
+import DynamicTypography from "@/app/components/styling/DynamicTypography";
 
 interface CustomBoxProps extends ResizablePanelsProps {
   children: ReactNode[];

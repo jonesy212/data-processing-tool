@@ -3,7 +3,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";

@@ -1,9 +1,12 @@
 interface DAppPlugin {
-  // Add a 'name' property to the interface
   name: string;
+  description?: string; // Added
 
   // Method to initialize the plugin
-  initialize: () => void;
+  initialize: () => void | Promise<void>;
+
+  // Method to execute actions
+  execute?: (action: string, payload?: any) => any | Promise<any>;
 
   // Method to perform actions when the plugin is enabled
   enable: () => Promise<void>;
@@ -20,8 +23,7 @@ interface DAppPlugin {
   // Method to provide information about the plugin (metadata, version, etc.)
   getInfo: () => Record<string, any>;
 
-  // Add more methods as needed
-
+ 
   // Load and initialize plugins
   loadPlugins: () => any;
   

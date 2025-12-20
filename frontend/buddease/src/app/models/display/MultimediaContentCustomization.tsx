@@ -2,7 +2,7 @@
 // MultimediaContentCustomization.ts
 import { getDataFrameInfo } from "@/app/api/DataDashboardApi";
 import React from "react";
-import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
+import useDeviceDimensions, { DeviceDimensions } from "@/app/models/display/DeviceDimensions";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import { ChildComponentProps } from "@/app/hooks/ChildComponent";

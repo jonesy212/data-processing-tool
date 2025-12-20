@@ -1,6 +1,6 @@
 // FeedbackAggregator.tsx
 import React, { useState } from 'react';
-import { Feedback } from '@/app/suppport/Feedback';
+import { Feedback } from '@/app/features/support/Feedback';
 
 import FeedbackService from "@/app/api/service/FeedbackService";
 import FeedbackForm from '@/app/pages/forms/FeedbackForm';

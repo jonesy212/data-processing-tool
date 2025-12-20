@@ -32,7 +32,7 @@ import { v4 as uuidv4 } from "uuid";
 
 // Import your AppTask / TaskCollection types (6-param)
 import { UserManagerState } from "@/app/state/redux/slices//UserSlice";
-import { AuthState } from '@/app/state/redux/slices/AuthSlice';
+import { AuthState } from '@/app/state/redux/slices/AuthSlice'
 import { FilteredEventsState } from "@/app/state/stores/FilterStore";
 import { DrawingAttachment, DrawingEntity, DrawingExcludedFields, DrawingIncludedFields, DrawingK, DrawingMeta } from '@/app/typings/entities/DrawingEntity';
 import { AppTask, TaskCollection } from "@/app/typings/entities/TaskEntity";

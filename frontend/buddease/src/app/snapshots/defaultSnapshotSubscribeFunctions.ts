@@ -4,7 +4,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Callback } from "./subscribeToSnapshotsImplementation";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 // Function to unsubscribe from snapshots
 export const defaultUnsubscribeFromSnapshots = <

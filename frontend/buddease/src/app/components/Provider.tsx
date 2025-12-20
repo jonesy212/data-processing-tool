@@ -17,7 +17,7 @@ import {
 import { useAuthStore } from "@/app/state/stores/AuthStore";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { AuthContext } from '@/app/state/context/AuthContext';
-import { authReducer, initialState } from '@/app/state/context/AuthContext';
+import { authReducer, initialState } from '@/app/state/redux/slices/FilteredEventsSlice';
 
 export interface AuthProviderProps {
   children: React.ReactNode;

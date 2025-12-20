@@ -1,8 +1,8 @@
 // TeamBuildingPhaseManagement.tsx
 // TeamBuildingPhase.tsx
 import React, { useState } from 'react';
-import ConceptValidation from '@/ConceptValidation';
-import RequirementsGathering from '@/RequirementsGathering';
+import ConceptValidation from '@/app/users/userJourney/ConceptValidation';
+import RequirementsGathering from '@/app/users/userJourney/RequirementsGathering';
 
 export enum TeamBuildingPhase {
   REQUIREMENTS_GATHERING,

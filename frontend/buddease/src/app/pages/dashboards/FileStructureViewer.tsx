@@ -2,7 +2,7 @@
 import TreeView from "@/app/pages/dashboards/TreeView";
 import React from "react";
 import { useAccessControl } from '@/app/hooks/useAccessControl';
-import AccessDenied from '@/app/components/AccessDenied';
+import AccessDenied from '@/app/pages/AccessDenied';
 import { useRoleAccess, useCurrentUser } from '@/app/hooks/useRoleAccess';
 
 const fetchFileStructure = async (userRole: string) => {

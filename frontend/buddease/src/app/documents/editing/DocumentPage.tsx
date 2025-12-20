@@ -3,7 +3,7 @@
 import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
 import DocumentBuilder from "@/app/documents/editing/DocumentBuilder";
 import { ReactNode, useState } from "react";
-import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 
 interface DynamicHooks {
   [key: string]: {

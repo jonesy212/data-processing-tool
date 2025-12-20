@@ -1,7 +1,7 @@
 // notificationSaga.ts
 // notification/NotificationSaga.ts
 import useNotificationManagerService from "@/app/services/NotificationService";
-import { NotificationActions } from "@/app/support/NotificationActions";
+import { NotificationActions } from "@/app/actions/NotificationActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { call, put, takeLatest } from "redux-saga/effects";
 

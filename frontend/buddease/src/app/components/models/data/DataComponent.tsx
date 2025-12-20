@@ -1,6 +1,6 @@
 // DataComponent.tsx
-import { useAuth } from '@/app/components/auth/AuthContext';
-import { RootState } from '@/app/components/state/redux/slices/RootSlice';
+import { useAuth } from '@/app/state/context/AuthContext';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
 import DocumentFormattingOptions from '@/app/documents/DocumentFormattingOptions';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';

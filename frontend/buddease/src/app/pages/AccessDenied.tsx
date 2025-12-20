@@ -1,7 +1,7 @@
 // AccessDenied.tsx
 // components/AccessDenied.tsx
 import React from 'react';
-import { UserRole } from '@/app/hooks/useAccessControl';
+import { UserRole } from '@/app/models/UserRole';
 import { UserRoleEnum } from '@/app/models/UserRoles';
 
 interface CustomAction {

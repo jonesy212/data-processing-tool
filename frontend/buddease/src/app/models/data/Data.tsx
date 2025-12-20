@@ -19,6 +19,7 @@ import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import userSettings from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { ModuleType } from '@/app/config/UserPreferences';
 import {
   SharedIdentifiers,
   SharedStatusFlags,
@@ -77,7 +78,7 @@ import { Version } from '@/app/versions/Version';
 import { VersionData } from "@/app/versions/VersionData";
 import { cleanEmptyStrings } from "@/utils/web3/cleanEmptyStrings";
 import { AxiosResponse } from "axios";
-import { Comment } from "../comments/Comments";
+import { Comment } from "@/app/models/comments/Comments";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,
@@ -413,6 +414,7 @@ const area = fetchUserAreaDimensions().toString();
 const currentMetadata: AppUnifiedMetadata = useMetadata('data-area');
 const currentMeta: AppStructuredMetadata = useMeta(area)
 
+type TaskType = Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>;
 const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields> = {
   _id: "1",
   id: "data1",
@@ -696,7 +698,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
         (this as typeof coreData.preferences).stroke = newStroke;
         (this as typeof coreData.preferences).fillColor = newFillColor;
       },
-      modules: [],
+      modules: {} as ModuleType,
       refreshUI: () => {},
     },
 
@@ -1059,7 +1061,7 @@ const coreData: Data<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFi
           try {
             const response = await taskService.getTaskById(taskId);
             if (response?.data) {
-              return response.data as Task<DataEntity, DataK, DataMeta, DataAttachment, DataExcludedFields, DataIncludedFields>; // Cast to the expected type
+              return response.data as TaskType; // Cast to the expected type
             }
             throw new Error("No task data found");
           } catch (error) {

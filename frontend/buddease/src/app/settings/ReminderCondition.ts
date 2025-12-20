@@ -96,5 +96,5 @@ export async function evaluateAndExecute(
 }
 
 // Usage example in another file:
-// import { evaluateAndExecute, condition, context } from './ReminderCondition';
+// import { evaluateAndExecute, condition, context } from '@/app/settings/ReminderCondition';
 // const result = await evaluateAndExecute(conditionEngine, actionEngine, action);

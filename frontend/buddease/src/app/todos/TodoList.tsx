@@ -9,7 +9,7 @@ import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import useTodoManagerStore from "@/app/state/stores/TodoStore";
-import { Todo } from "./Todo";
+import { Todo } from "@/app/todos/Todo";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;

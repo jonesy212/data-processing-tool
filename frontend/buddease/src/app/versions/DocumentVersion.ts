@@ -1,5 +1,5 @@
 // DocumentVersion.ts
-import Logger from '@/app/libraries/logging/Logger';
+import Logger from '@/app/logging/Logger';
 import * as path from 'path';
 
 let fs: any;

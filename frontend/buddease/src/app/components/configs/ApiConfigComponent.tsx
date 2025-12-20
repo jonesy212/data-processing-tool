@@ -1,9 +1,9 @@
 // ApiConfigComponent.tsx
 
-import { Button, Form, Input } from "antd";
+import Button, Form, { Input } from "@/app/hooks/userInterface/InputFields";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-
+import { ComponentActions } from '@/app/actions/ComponentActions';
 import ApiConfig from "@/app/api/ApiConfigService";
 import axiosInstance from '@/app/api/csrfToken';
 import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
@@ -44,7 +44,7 @@ import {
     TrackerExcludedFields,
     TrackerIncludedFields,
     TrackerProps
-} from "@/app/typings/entities/TrackEntity";
+} from "@/app/typings/entities/TrackerEntity";
 
 // ✅ Plugin & Callback Registry imports
 import { CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry'
@@ -108,7 +108,7 @@ const ApiConfigComponent: React.FC = () => {
   );
 
   const getDynamicTrackerProps = (
-    userPreferences: UserPreferences<TrackerEntity, TrackerK, TrackerMeta, TrackerAttachment, TrackerExcludedFields, TrackerIncludedFields>
+    userPreferences: UserPreferences<TrackerEntity, TrackerK>
   ): TrackerProps<any> => ({
     id: userPreferences.trackerId || generateTrackerID,
     name: userPreferences.trackerName || "dynamic-task-tracker",

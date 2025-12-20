@@ -2,8 +2,8 @@
 // Import type declarations from the corresponding .d.ts file
 import path from 'path';
 import 'drawingLibrary';
-import { DrawingFunctions, DrawingOptions } from 'drawingLibrary';
-import { Drawing } from '@/generateDrawingJSON';
+import { DrawingFunctions, DrawingOptions } from '@/app/libraries/drawing/drawingLibrary';
+import { Drawing } from '@/app/libraries/drawing/generateDrawingJSON';
 
 // Class implementation for DrawingError
 export class DrawingError extends Error {

@@ -9,20 +9,21 @@ import baseMeta from "@/app/server/database/baseMeta";
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotEvents } from '@/app/typings/eventHandlers/eventTypes';
-import { ExcludedFields } from "../components/routing/Fields";
-import { K, Meta, T } from "../models/data/dataStoreMethods";
-import { StoreMethods } from "../models/tasks/StoreMethods";
-import { criteria } from "../pages/searches/FilterCriteria";
-import { initialState } from "../state/redux/slices/FilteredEventsSlice";
-import { SnapshotMeta } from "../typings/entities/SnapshotEntity";
-import { SnapshotConfig } from "./SnapshotConfig";
-import { generateId } from "./SnapshotIdentity";
-import { InitializedData, SnapshotInstanceProps } from "./SnapshotStoreOptions";
-import { storeProps } from "./SnapshotStoreProps";
-import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { ExcludedFields } from "@/app/components/routing/Fields";
+import { StoreMethods } from "@/app/models/tasks/StoreMethods";
+import { Data } from '@/app/models/data/Data'
+import { criteria } from "@/app/pages/searches/FilterCriteria";
+import { initialState } from "@/app/state/redux/slices/FilteredEventsSlice";
+import { SnapshotMeta } from "@/app/typings/entities/SnapshotEntity";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { generateId } from "@/app/snapshots/InitializedStateExample";
+import { InitializedData, SnapshotInstanceProps } from "@/app/snapshots/SnapshotStoreOptions";
+import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
+import { EventHandlers } from '@/app/libraries/eventSystem/eventHandlers'
 
 interface SnapshotLifecycle<T extends BaseDataEntity> {
   initializeWithData<T>(data: SnapshotUnion<T, any, any, any, any, any>[]): void;
@@ -116,9 +117,22 @@ export type { SnapshotConfigParams, SnapshotLifecycle };
 const builder: SnapshotConfigBuilder<SnapshotConfigParams> = {
   buildBaseConfig: async (params) => ({
 
-    deleted, initialConfig, onInitialize, taskIdToAssign,
-    latestVersion, schema, currentCategory, mappedSnapshotData,
-
+    deleted: '',
+    initialConfig: '',
+    onInitialize: '',
+    taskIdToAssign: '',
+  
+    latestVersion: '',
+    schema: '',
+    currentCategory: '',
+    mappedSnapshotData: '',
+  
+    storeId: '',
+    versionInfo: '',
+    initializedState: '',
+    snapshotContainer: '',
+    config: '',
+  
 
     id: generateId?.('prefix', 'name', NotificationTypeEnum.Default) || 'default-id',
     description: 'Snapshot description',

@@ -1,13 +1,13 @@
 // BugTrackingDashboard.tsx
 
-import { fetchBugData } from '@/app/components/api/api'; // Function to fetch bug data from API
+import { fetchBugData } from '@/app/components/configs/ApiConfigComponent'; // Function to fetch bug data from API
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
 import { useErrorHandling } from '@/app/hooks/useErrorHandling';
 import { usePagination } from '@/app/hooks/userInterface/usePagination';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
-import BugFilter from '@/BugFilter';
-import BugSort from '@/BugSort';
-import BugTable from '@/BugTable';
+import BugFilter from '@/app/pages/dashboards/BugFilter';
+import BugSort from '@/app/pages/dashboards/BugSort';
+import BugTable from '@/app/pages/dashboards/BugTable';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

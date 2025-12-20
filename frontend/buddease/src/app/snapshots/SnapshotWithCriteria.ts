@@ -28,8 +28,8 @@ import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { handleSnapshotSuccess } from "./snapshotHandlers";
-import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
+import { handleSnapshotSuccess } from "@/app/snapshots/index";
+import SnapshotStore, { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
 import { SchemaField } from "@/app/config/metadata/SchemaField";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
@@ -39,7 +39,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
-import { ExcludedFields } from '@/app/routing/Fields';
+import { ExcludedFields } from '@/app/components/routing/Fields';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import {
   SnapshotAttachment,
@@ -53,8 +53,8 @@ import {
 } from "@/app/typings/entities/SnapshotEntity";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from '@/app/versions/VersionData';
-import { SnapshotOperation } from "../actions/SnapshotActions";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotOperation } from "@/app/snapshots/index";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 export type SortDirection = "asc" | "desc";
 

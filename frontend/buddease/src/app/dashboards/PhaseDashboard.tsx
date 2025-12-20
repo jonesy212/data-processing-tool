@@ -3,7 +3,7 @@ import React from "react";
 
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { useRef, useState } from "react";
-import { DndProvider, useDrag } from "react-dnd";
+import { DndProvider, useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import EmailSetupForm from "@/app/components/communications/email/EmailSetUpForm";
 import ProjectManagerComponent from "@/app/projects/projectManagement/ProjectManager";

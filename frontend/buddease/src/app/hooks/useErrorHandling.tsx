@@ -7,7 +7,7 @@ import { FileLogger } from "@/app/logging/Logger";
 import ErrorHandler from "@/app/shared/ErrorHandler";
 import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { YourResponseType } from '@/app/typings/responseTypes';
-import { ErrorInfo, useState } from "react";
+import { ErrorInfo, useState } from "@/app/shared/ErrorHandler";
 
 // Most practical solution
 // Create a factory function that returns configured hooks

@@ -21,6 +21,15 @@ import {
   ExtendedDappProps
 } from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
+import { TestPhaseHookConfig, TestScenario, TestResult, TestPhaseHooks, ValidationResult, TransitionTestResult } from '@/app/hooks/useTestPhaseHooks'
+import { 
+  AppPhaseEntity, 
+  PhaseK, 
+  PhaseMeta, 
+  PhaseAttachment, 
+  PhaseExcludedFields, 
+  PhaseIncludedFields 
+} from '@/app/typings/entities/PhaseEntity';
 
 const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
 let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -71,13 +80,49 @@ let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
 }
 
 
-interface TestPhaseHooks {
-  createTestPhaseHook(config: TestPhaseHookConfig): void;
+
+export interface TestPhaseHooks<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  createTestPhaseHook: (
+    config: TestPhaseHookConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  runTestScenarios: (
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    scenarios: TestScenario<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ) => Promise<TestResult[]>;
+  
+  validatePhaseForTesting: (
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => ValidationResult;
+  
+  mockPhase: (
+    mockData: Partial<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ) => Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  createTransitionTest: (
+    fromPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    toPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => Promise<TransitionTestResult>;
 }
+
 
 // TestPhaseHookConfig.ts
 
-export interface TestPhaseHookConfig {
+export interface TestPhaseHookConfig<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   name: string;
   condition: (idleTimeoutDuration: number) => Promise<boolean>
   asyncEffect: () => Promise<() => void>;
@@ -87,9 +132,8 @@ export interface TestPhaseHookConfig {
 }
 
 export const idleTimeoutDuration = 10000; 
-
-// Define additional methods for managing test phases
-const useTestPhaseHooks = <
+// Implementation matching your existing structure
+export const useTestPhaseHooks = <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -102,23 +146,26 @@ const useTestPhaseHooks = <
   let idleTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   const createTestPhaseHook = (
-    config: TestPhaseHookConfig
+    config: TestPhaseHookConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
     const customHooks: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       condition: config.condition,
-
-      onStart: () => {
+      
+      // Your existing methods
+      onStart: config.onStart || (() => {
         console.log("Test phase started");
-      },
-      onEnd: () => {
+      }),
+      onEnd: config.onEnd || (() => {
         console.log("Test phase ended");
-      },
+      }),
 
-      canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true,
-      handleTransitionTo: async (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-        throw new Error("Function not implemented.");
-      },
+      canTransitionTo: config.canTransitionTo || ((nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true),
+      
+      handleTransitionTo: config.handleTransitionTo || (async (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+        console.log(`Transitioning to phase: ${nextPhase.name}`);
+        // Default implementation
+      }),
 
       resetIdleTimeout: async () => {
         if (idleTimeoutId) {
@@ -137,19 +184,182 @@ const useTestPhaseHooks = <
           onTimeout();
         }, timeoutDuration);
       },
+      
       clearIdleTimeout: () => {
         if (idleTimeoutId) clearTimeout(idleTimeoutId);
         idleTimeoutId = null;
       },
+
+      // Additional test-specific methods (optional)
+      asyncEffect: config.asyncEffect,
+      duration: config.duration,
+      retryCount: config.retryCount || 0,
+      onTestError: config.onError,
+      onTestSuccess: config.onSuccess,
+      cleanupTest: config.cleanup,
+      validateTest: config.validate,
     };
 
     return customHooks;
   };
 
+  // Additional methods (optional - keep if you need them)
+  const runTestScenarios = async (
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    scenarios: TestScenario<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): Promise<TestResult[]> => {
+    const results: TestResult[] = [];
+    
+    for (const scenario of scenarios) {
+      const startTime = Date.now();
+      
+      try {
+        // Setup
+        await scenario.setup(phase);
+        
+        // Execute
+        const result = await scenario.execute(phase);
+        
+        // Validate expected result
+        const success = JSON.stringify(result.data) === JSON.stringify(scenario.expectedResult);
+        
+        results.push({
+          success,
+          message: success ? `Scenario "${scenario.name}" passed` : `Scenario "${scenario.name}" failed`,
+          data: result.data,
+          duration: Date.now() - startTime,
+          timestamp: new Date()
+        });
+        
+        // Teardown if provided
+        if (scenario.teardown) {
+          await scenario.teardown(phase);
+        }
+        
+      } catch (error: any) {
+        results.push({
+          success: false,
+          message: `Scenario "${scenario.name}" errored: ${error.message}`,
+          errors: [error.message],
+          duration: Date.now() - startTime,
+          timestamp: new Date()
+        });
+      }
+    }
+    
+    return results;
+  };
+
+  const validatePhaseForTesting = (
+    phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): ValidationResult => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    
+    // Required validations
+    if (!phase.id) {
+      errors.push("Phase ID is required");
+    }
+    
+    if (!phase.name) {
+      errors.push("Phase name is required");
+    }
+    
+    if (phase.startDate && phase.endDate && phase.startDate > phase.endDate) {
+      errors.push("Start date cannot be after end date");
+    }
+    
+    // Warning validations
+    if (!phase.description) {
+      warnings.push("Phase description is missing");
+    }
+    
+    if (!phase.tasks || phase.tasks.length === 0) {
+      warnings.push("Phase has no tasks assigned");
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  };
+
+  const mockPhase = (
+    mockData: Partial<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  ): Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+    const basePhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      id: `test_phase_${Date.now()}`,
+      name: "Test Phase",
+      description: "A test phase for validation",
+      projectId: "test_project",
+      isActive: false,
+      isComplete: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...mockData
+    };
+    
+    return basePhase;
+  };
+
+  const createTransitionTest = async (
+    fromPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    toPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<TransitionTestResult> => {
+    const startTime = Date.now();
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    
+    try {
+      // Validate phases
+      const fromValidation = validatePhaseForTesting(fromPhase);
+      const toValidation = validatePhaseForTesting(toPhase);
+      
+      if (!fromValidation.isValid) {
+        errors.push(...fromValidation.errors.map(e => `From phase: ${e}`));
+      }
+      if (!toValidation.isValid) {
+        errors.push(...toValidation.errors.map(e => `To phase: ${e}`));
+      }
+      
+      // Check transition conditions
+      const canTransition = errors.length === 0 && 
+        fromPhase.isComplete && 
+        !toPhase.isActive &&
+        (!fromPhase.endDate || !toPhase.startDate || fromPhase.endDate <= toPhase.startDate);
+      
+      if (!canTransition && errors.length === 0) {
+        errors.push("Cannot transition - phases are not in a valid state for transition");
+      }
+      
+      return {
+        success: errors.length === 0,
+        canTransition,
+        transitionErrors: errors,
+        transitionWarnings: [...fromValidation.warnings, ...toValidation.warnings],
+        duration: Date.now() - startTime
+      };
+      
+    } catch (error: any) {
+      return {
+        success: false,
+        canTransition: false,
+        transitionErrors: [`Transition test failed: ${error.message}`],
+        transitionWarnings: [],
+        duration: Date.now() - startTime
+      };
+    }
+  };
+
+  // Return object matching your interface
   return {
-    createTestPhaseHook(config: TestPhaseHookConfig) {
-      return createTestPhaseHook(config);
-    },
+    createTestPhaseHook,
+    // Include additional methods as optional
+    runTestScenarios,
+    validatePhaseForTesting,
+    mockPhase,
+    createTransitionTest
   };
 };
 
@@ -239,7 +449,16 @@ const additionalPhaseNames = [
   "Additional Phase 2",
 ];
 
-const additionalPhaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity> } = {};
+const additionalPhaseHooks: { 
+  [key: string]: CustomPhaseHooks<
+    AppPhaseEntity, 
+    PhaseK, 
+    PhaseMeta, 
+    PhaseAttachment, 
+    PhaseExcludedFields, 
+    PhaseIncludedFields
+  > 
+} = {};
 
 // First block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {
@@ -279,7 +498,14 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
       animateIn: () => {},
       toggleActivation: () => {},
       cleanup: undefined,
-    } as unknown as PhaseHookConfig) as unknown as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    }) as CustomPhaseHooks<
+      AppPhaseEntity, 
+      PhaseK, 
+      PhaseMeta, 
+      PhaseAttachment, 
+      PhaseExcludedFields, 
+      PhaseIncludedFields
+    >;
 });
 
 
@@ -315,7 +541,14 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
         subPhases: [],
         component: IdeationPhaseComponent,
         hooks: [ideationPhaseHook],
-      } as unknown as Phase,
+      } as unknown as Phase<
+        AppPhaseEntity, 
+        PhaseK, 
+        PhaseMeta, 
+        PhaseAttachment, 
+        PhaseExcludedFields, 
+        PhaseIncludedFields
+      >,
       isActive: true,
       initialStartIdleTimeout: () => {},
       resetIdleTimeout: async () => {},
@@ -566,25 +799,42 @@ async function fetchPhaseData(storageClient: any, keys: string[]) {
   };
 }
 
+
 // Example: Initialize all phases in the app
-export async function initializeAllPhases() {
+export async function initializeAllPhases<
+  T extends BaseDataEntity = AppPhaseEntity,
+  K extends T = PhaseK,
+  Meta extends DefaultMeta<T, K> = PhaseMeta,
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+>() {
   // Replace with your logic to initialize all phases
   console.log("Initializing all phases");
 
   const allPhaseNames = Object.keys(allPhaseHooks);
+  
   // Example: Initialize collaboration preferences
   const collaborationPreferences = await initializeCollaborationPreferences(); // Wait for the promise to resolve
   applyCollaborationPreferences(collaborationPreferences);
 
   // Example: Initialize web3 and decentralized storage
   const web3Instance = initializeWeb3();
-  const unsubscribeFromBlockchainEvents =
-    subscribeToBlockchainEvents(web3Instance);
+  const unsubscribeFromBlockchainEvents = subscribeToBlockchainEvents(web3Instance);
   const storageClient = initializeDecentralizedStorage();
 
+  // Create a type for your phase hooks dictionary
+  type PhaseHookDict = {
+    [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  };
+
+  // Cast your allPhaseHooks to the proper type
+  const typedAllPhaseHooks = allPhaseHooks as PhaseHookDict;
+
   // Fetch data from storage for each phase
-  allPhaseNames.forEach(async (phaseName: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["name"]) => {
-    const phaseHook = allPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"];
+  allPhaseNames.forEach(async (phaseHookKey: string) => {
+    // Remove the TypeScript error by using proper type assertion
+    const phaseHook = typedAllPhaseHooks[phaseHookKey];
     if (phaseHook) {
       const fetchDataResult = await fetchDataFromStorage(storageClient, [
         ...phaseHook.keys,
@@ -593,8 +843,14 @@ export async function initializeAllPhases() {
       // Assuming fetchDataResult is an object with keys, find the cleanup function
       const fetchDataCleanup: () => void = fetchDataResult.cleanup;
 
-      phaseHook.asyncEffect(); // Trigger the async effect for each phase
-      fetchDataCleanup(); // Cleanup after fetching data
+      // Check if asyncEffect exists and is a function before calling
+      if (typeof phaseHook.asyncEffect === 'function') {
+        await phaseHook.asyncEffect(); // Trigger the async effect for each phase
+      }
+      
+      if (typeof fetchDataCleanup === 'function') {
+        fetchDataCleanup(); // Cleanup after fetching data
+      }
     }
   });
 
@@ -604,7 +860,7 @@ export async function initializeAllPhases() {
     "projectMembers",
     "projectFiles",
   ];
-  const projectManagement = fetchPhaseData(
+  const projectManagement = await fetchPhaseData(
     storageClient,
     projectManagementKeys
   ); // Now storageClient is properly declared
@@ -615,11 +871,51 @@ export async function initializeAllPhases() {
     "pastMeetingNotes",
     "meetingAttendees",
   ];
-  const meetings = fetchPhaseData(storageClient, meetingsKeys);
+  const meetings = await fetchPhaseData(storageClient, meetingsKeys);
 
   // Brainstorming Phase
   const brainstormingKeys = ["brainstormingIdeas", "brainstormingComments"];
-  const brainstorming = fetchPhaseData(storageClient, brainstormingKeys);
+  const brainstorming = await fetchPhaseData(storageClient, brainstormingKeys);
+
+  // Return all initialized data
+  return {
+    collaborationPreferences,
+    web3Instance,
+    unsubscribeFromBlockchainEvents,
+    storageClient,
+    projectManagement,
+    meetings,
+    brainstorming,
+    // Return typed phase hooks for reference
+    allPhaseHooks: typedAllPhaseHooks
+  };
+}
+
+// Helper function to properly type allPhaseHooks
+function createTypedPhaseHooks<
+  T extends BaseDataEntity = AppPhaseEntity,
+  K extends T = PhaseK,
+  Meta extends DefaultMeta<T, K> = PhaseMeta,
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+>(): { [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } {
+  return {};
+}
+
+// Example of how to define allPhaseHooks with proper typing
+const allPhaseHooks = createTypedPhaseHooks();
+
+// Alternative: If you're getting allPhaseHooks from elsewhere, create a typed version
+function getTypedAllPhaseHooks<
+  T extends BaseDataEntity = AppPhaseEntity,
+  K extends T = PhaseK,
+  Meta extends DefaultMeta<T, K> = PhaseMeta,
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+>(phaseHooks: any): { [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } {
+  return phaseHooks as { [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
 }
 
 export default initializeDecentralizedStorage;

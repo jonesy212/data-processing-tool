@@ -1,6 +1,6 @@
 // MappingConfig.tsx
 
-import { CommonData } from "@/app/components/models/details/CommonDetails";
+import { CommonData } from "@/app/models/CommonData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CryptoData, ParsedData } from "@/app/dataIntegration/parseData";
 import { SupportedData } from "@/app/models/CommonData";

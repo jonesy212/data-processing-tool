@@ -1,7 +1,7 @@
 // ProjectManagerEntity.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseEntity } from '@/app/routing/FuzzyMatch'
+import { BaseEntity } from '@/app/config/BaseConfig'
 
 // Define the actual ProjectManagerEntity interface
 interface ProjectManagerEntity extends BaseDataEntity, BaseEntity {

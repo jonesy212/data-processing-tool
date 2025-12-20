@@ -1,5 +1,5 @@
 // ArtPersona.ts
-import { Persona } from "./Persona";
+import { Persona } from "@/app/pages/personas/Persona";
 import { PersonaTypeEnum } from "./PersonaBuilder";
 
 class ArtPersona extends Persona {

@@ -2,7 +2,7 @@
 import React from "react";
 import { MouseEvent } from "react";
 import onSubmit from "@/app/libraries/ui/buttons/onSubmit"; // Adjust the import path as necessary
-import { TradeData } from "@/app/trading/TradeData";
+import { TradeData } from "@/app/components/trading/TradeData";
 import { ButtonProps } from "@/app/libraries/ui/buttons/ReusableButton";
 
 interface StepProps {

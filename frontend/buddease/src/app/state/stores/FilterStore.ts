@@ -4,7 +4,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
+import HighlightEvent from "@/app/highlighting/screenFunctionality/HighlightEvent";
 import {
   clearFilteredEvents as clearFilteredEventsAction
 } from "@/app/state/redux/slices/FilteredEventsSlice";

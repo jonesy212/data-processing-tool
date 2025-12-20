@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
 import { PackageJson } from '@/app/scripts/generate-commands-doc'
+import { FileNode } from '@/app/components/frontend/TraverseFrontendComponent';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -695,6 +696,24 @@ function suggestPotentialIntegrations(report: AnalysisReport) {
 // === RUN IF DIRECTLY CALLED ===
 if (process.argv[1] === new URL(import.meta.url).pathname) {
   main().catch(console.error);
+}
+
+export function generateTree(data: any): FileNode {
+  if (!data) return null;
+  
+  const convertToFileNode = (item: any): FileNode => {
+    return {
+      name: path.basename(item.path || item.name),
+      path: item.path || item.name,
+      type: item.type || (item.children ? 'directory' : 'file'),
+      size: item.size,
+      extension: item.extension || path.extname(item.path || item.name),
+      lastModified: item.lastModified ? new Date(item.lastModified) : undefined,
+      children: item.children ? item.children.map(convertToFileNode) : []
+    };
+  };
+  
+  return convertToFileNode(data);
 }
 
 export { mappersFile };

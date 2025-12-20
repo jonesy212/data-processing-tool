@@ -3,7 +3,7 @@
 
 // Import necessary libraries
 import * as tf from "@tensorflow/tfjs";
-import { MarketData } from "./TradingStrategy";
+import { MarketData } from "@/app/trading/TradingStrategy";
 
 // Define the machine learning model class
 class MachineLearningModel {

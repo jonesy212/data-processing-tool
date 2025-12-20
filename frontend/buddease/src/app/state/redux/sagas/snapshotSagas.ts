@@ -1,7 +1,6 @@
 // snapshotSagas.ts
-// sagas/snapshotSagas.ts
 import { SnapshotActions } from '@/app/actions/SnapshotActions';
-import { YourResponseType } from '@/app/components/typings/types';
+import { YourResponseType } from '@/app/typings/responseTypes';
 import { Data } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { call, put, takeLatest } from 'redux-saga/effects';

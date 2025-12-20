@@ -3,8 +3,8 @@ import React from 'react';
 import { useStepNavigation } from '@/app/hooks/useStepNavigation';
 import { GenericStepContainer } from '@/app/components/shared/steps/GenericStepContainer';
 import { CorrectionGenerator } from '@/app/generators/corrections/CorrectionGenerator';
-import { AnalysisStep } from '@/app/components/analysis/AnalysisStep';
-import { CorrectionList } from '@/app/components/corrections/CorrectionList';
+import { AnalysisStep } from '@/app/components/phases/steps/AnalysisStep';
+import { CorrectionList } from '@/app/components/lists/CorrectionList';
 
 export const CorrectionWizard: React.FC = () => {
   const handleAnalysisComplete = async () => {

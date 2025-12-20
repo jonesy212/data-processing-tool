@@ -1,9 +1,9 @@
 // StructureValidator.ts
-import { ConfigurationValidator } from './validators/ConfigurationValidator';
-import { FileStructureValidator } from './validators/FileStructureValidator';
-import { PackageJsonValidator } from './validators/PackageJsonValidator';
-import { MultiPlatformDirectoryValidator } from './validators/MultiPlatformDirectoryValidator';
-import { PackageJsonAnalyzer } from './analyzers/react-native/errors/PackageJsonAnalyzer';
+import { ConfigurationValidator } from '@/app/generators/corrections/validators/ConfigurationValidator';
+import { FileStructureValidator } from '@/app/generators/corrections/validators/FileStructureValidator';
+import { PackageJsonValidator } from '@/app/generators/corrections/validators/PackageJsonValidator';
+import { MultiPlatformDirectoryValidator } from '@/app/generators/corrections/validators/MultiPlatformDirectoryValidator';
+import { PackageJsonAnalyzer } from '@/app/generators/corrections/analyzers/react-native/errors/PackageJsonAnalyzer';
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import SecureFieldManager from "@/app/server/security/SecureFieldManager";
 import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer'

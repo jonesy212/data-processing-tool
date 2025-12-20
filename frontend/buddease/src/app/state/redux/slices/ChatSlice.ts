@@ -5,7 +5,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Channel } from "@/app/interfaces/chat/Channel";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { AllTypes } from "@/app/typings/PropTypes";
 import {
   AppUser,

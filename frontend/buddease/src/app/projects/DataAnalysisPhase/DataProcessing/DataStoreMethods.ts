@@ -13,7 +13,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { DataStore } from "../../../state/stores/DataStore";
+import { DataStore } from "@/app/state/stores/DataStore";
 
 interface DataStoreWithSnapshotMethods<
   T extends BaseDataEntity,

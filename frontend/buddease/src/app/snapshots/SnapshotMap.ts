@@ -6,14 +6,14 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot, SnapshotData } from '@/app/snapshots';
+import { Snapshot, SnapshotData } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { DataStore } from "@/app/state/stores/DataStore";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { SnapshotConfig } from "./SnapshotConfig";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreProps } from "./useSnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 
 // Function to remove a snapshot from the map
 function removeSnapshotFromMap<

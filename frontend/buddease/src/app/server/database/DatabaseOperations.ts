@@ -2,7 +2,7 @@
 // Function to perform database operation
 
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
-import { DatabaseService } from '@/app/config/DatabaseTypes';
+import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { PostgresDatabaseService } from '@/app/server/database/PostgresDatabaseService';
 import { MysqlDatabaseService } from '@/app/server/database/MysqlDatabaseService';
 
@@ -11,7 +11,7 @@ const performDatabaseOperation = async (
   config: DatabaseConfig,
   databaseQuery: any
 ): Promise<any> => {
-  let databaseService: DatabaseService;
+  let databaseService: ClientDatabaseService;
 
   // Determine which database service to use based on the configuration
   if (config.url.includes('postgres')) {
@@ -43,5 +43,5 @@ const performDatabaseOperation = async (
   
 
 export default performDatabaseOperation;
-export let databaseService: DatabaseService;
+export let databaseService: ClientDatabaseService;
 

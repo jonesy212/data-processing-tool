@@ -20,7 +20,7 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { handleSnapshotOperation } from "./handleSnapshotOperation";
+import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
 
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
@@ -28,12 +28,12 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotStoreProps } from "@/app/snapshots/useSnapshotStore";
 import { Callback, MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { addToSnapshotList } from "@/utils/snapshotUtils";
-import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
 import {
     InitializedDelegate,
     MetaDataOptions,

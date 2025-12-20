@@ -1,8 +1,10 @@
 // LoadAquaState.tsx
 // components/dashboards/LoadAquaState.tsx
 import { useAquaStore } from '@/app/state/stores/AquaStore';
-import { AquaConfig, AquaState } from '@/aqua/types';
-import { cleanupAquaSession, initializeAquaSession, loadAquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import { AquaState } from '@/app/state/AquaState';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import { initializeAquaSession, loadAquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import cleanupAquaSession from '@/utils/web3/webConfigs/aqua/AquaConfig';
 import React, { useEffect, useState } from 'react';
 
 interface LoadAquaStateProps {

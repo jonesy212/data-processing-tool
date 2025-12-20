@@ -1,7 +1,7 @@
 // generateFinancialReportContent.tsx
 import { BaseData } from '@/app/models/data/Data';
-import { DocumentData } from "@/app/DocumentBuilder";
-import { DocumentOptions } from "@/app/DocumentOptions";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 
 const generateFinancialReportContent = (
   options: DocumentOptions,

@@ -1,7 +1,7 @@
 // FeatureTogglePage.tsx
 import React, { useState } from 'react';
 import { Switch } from 'antd'; // Assuming the use of Ant Design for UI components
-import featureStore from '@/app/components/state/featureStateManagement';
+import featureStore from '@/app/state/featureStateManagement';
 
 const FeatureTogglePage: React.FC = () => {
   const [featureEnabled, setFeatureEnabled] = useState<boolean>(true);

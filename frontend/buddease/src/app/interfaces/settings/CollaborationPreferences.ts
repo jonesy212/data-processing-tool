@@ -1,7 +1,7 @@
 // CollaborationPreferences.ts
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
-import { BrainstormingSettings } from "./BrainstormingSettings";
-import { TeamBuildingSettings } from "./TeamBuildingSettings";
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
+import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
+import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
 
 interface CollaborationPreferences {
     teamBuilding: TeamBuildingSettings;

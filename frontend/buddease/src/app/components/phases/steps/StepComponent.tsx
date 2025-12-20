@@ -1,7 +1,7 @@
 // StepComponent.tsx
 import React from "react";
-import { useStepContext } from "./../../../../app/context/StepContext";
-import { StepProps } from "./steps";
+import { useStepContext } from "@/app/state/context/StepContext";
+import { StepProps } from "@/app/phases/steps/steps";
 
 
 interface StepComponentProps extends StepProps {

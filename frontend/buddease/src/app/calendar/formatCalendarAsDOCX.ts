@@ -4,7 +4,7 @@ import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext';
 import { MyPropertiesOptions } from '@/app/config/declarations/global';
 import { CustomDocument } from '@/app/documents/DocumentOptions';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
+import { AppCalendarEvent } from '@/app/typings/meetingTypes';
 import * as docx from 'docx';
 
 

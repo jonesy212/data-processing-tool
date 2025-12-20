@@ -1,7 +1,7 @@
 // FileImportData.tsx
 import { useState } from "react";
 import CustomFile from "./File";
-import FileSelect from '@/FileSelect';
+import FileSelect from '@/app/documents/FileSelect';
 import React from "react";
 
 function FileImportData() {

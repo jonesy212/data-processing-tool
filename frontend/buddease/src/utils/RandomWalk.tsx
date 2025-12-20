@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { RandomWalkActions } from "./RandomWalkActions";
-import { addNotification } from "@/app/support/NotificationsSlice";
+import { RandomWalkActions } from "@/app/hooks/userInterface/RandomWalkActions";
+import { addNotification } from '@/app/state/redux/slices/NotificationSlice'
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 

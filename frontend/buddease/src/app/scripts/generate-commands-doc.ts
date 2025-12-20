@@ -1,7 +1,7 @@
 // generate-commands-doc.ts
 import fs from 'fs';
 import path from 'path';
-import { StructureValidator } from './src/app/generators/corrections/StructureValidator';
+import { StructureValidator } from '@/app/generators/corrections/StructureValidator';
 
 interface PackageJson {
   // Core identification

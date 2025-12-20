@@ -2,7 +2,7 @@
 import { Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import React, { useState } from 'react';
-import { CourseDevelopmentPhase } from '@/CourseDevelopmentPhaseManager';
+import { CourseDevelopmentPhase } from '@/app/pages/course/CourseDevelopmentPhaseManager';
 
 interface CourseLearningPhaseProps {
   onSubmit: (data: any) => void;

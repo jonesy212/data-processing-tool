@@ -3,7 +3,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CustomHydrateResult } from '@/app/config/DocumentBuilderConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { options } from '@/app/documents/editing/DocumentBuilder';
+import { options } from '@/app/generators/GenerateUniqueIds';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
@@ -41,7 +41,7 @@ import {
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/utils/web3/applicationUtils";
-import { CustomSnapshotData, data, SnapshotItem } from '.';
+import { CustomSnapshotData, data, SnapshotItem } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "./SnapshotStore";
 
 export const defaultDelegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = [];

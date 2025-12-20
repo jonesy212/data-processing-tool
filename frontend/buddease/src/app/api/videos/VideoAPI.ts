@@ -59,7 +59,7 @@ class VideoAPI {
     }
   }
 
-  static async openVideoOptionsMenu(videoOptions: VideoOptions[], roomId: string, videoId: string): Promise<void> {
+  static async openVideoOptionsMenu(videoOptions: VideoOptions, roomId: string, videoId: string): Promise<void> {
     try {
       // Call backend to open video options menu
       await axiosInstance.post(`${this.baseURL}/${videoId}/open-options`);

@@ -1,7 +1,7 @@
 // UserSupport.tsx
-import LazyIcon from '@/LazyIconProps'; // Adjust the path accordingly
+import LazyIcon from '@/app/components/LazyIconProps'; // Adjust the path accordingly
 import { useStore } from '@/app/hooks/useStore';
-import { loadDuckDuckGoIcon, loadLinkedInIcon, loadXIcon, loadYandexIcon } from '@/icons/IconLoader'; // Adjust the path accordingly
+import { loadDuckDuckGoIcon, loadLinkedInIcon, loadXIcon, loadYandexIcon } from '@/app/components/icons/IconLoader'; // Adjust the path accordingly
 import React, { useEffect } from 'react';
 
 const UserSupport: React.FC = () => {

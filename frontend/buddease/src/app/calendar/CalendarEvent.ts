@@ -27,7 +27,7 @@ import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/typings/entities/AppMetadataEntity";
 import { VersionAttachment, VersionEntity, VersionExcludedFields, VersionIncludedFields, VersionK, VersionMeta } from '@/app/typings/entities/VersionEntity';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { Attendee } from "../components/calendar/Attendee";
+import { Attendee } from "@/app/components/calendar/Attendee";
 
 type CalendarEventBase = BaseDataEntity & {
   title: string;

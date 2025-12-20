@@ -12,7 +12,7 @@ import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { getLastActivityTimeForPhase } from '@/app/hooks/phases/PhaseActivity';
 import { CustomPhaseHooks, Phase } from "@/app/models/phases/Phase";
 import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
-import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntiity';
+import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntity'
 
 export interface PhaseOptions<
   T extends BaseDataEntity,
@@ -171,10 +171,10 @@ const generateGenericPhase = <
   IncludedFields extends keyof T = keyof T
 >(name: string, subPhases: string[]): PhaseOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return {
-    id, 
-    description, 
-    projectId, 
-    date,
+    id: 'generated-phase-id',
+    description: 'generated phase description',
+    projectId: 'project-phase-01',
+    date: new Date(),
     name,
     startDate: new Date(),
     endDate: new Date(),
@@ -183,6 +183,9 @@ const generateGenericPhase = <
     duration: 0,
     lessons: {} as Lesson[],
     hooks: {
+      name: '',
+      color: '',
+      description: '',
       canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         return !!enhancedPhaseHook.canTransitionTo(
           nextPhase as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & PhaseHookConfig
@@ -200,11 +203,10 @@ const generateGenericPhase = <
       progress: {
         id: '',
         value: 0,
-        label: '',
-        current: 0,
-        max: 0,
-        percentage: 0,
-                label: `${name} Progress`,
+        name: '',
+        color: '',
+        description: '',
+        label: `${name} Progress`,
         current: 0,
         max: 100,
         percentage: 0,
@@ -220,15 +222,14 @@ const generateGenericPhase = <
         const isIdle = (currentTime - lastActivityTime) >= idleTimeoutDuration;
         return isIdle;
       }
-    } as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    } 
+    // as CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   };
 };
 
-
 const lifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generatePhase("Idea Lifecycle", ["Idea", "Team Building", "Ideation"]),
-  // Add more phases as needed using the generatePhase function
-  generateGenericPhase("UI Design", ["Wireframing", "Visual Design", "Prototyping", "User Testing"]),
+  generatePhase("UI Design", ["Wireframing", "Visual Design", "Prototyping", "User Testing"]),
 ];
 
 const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
@@ -269,7 +270,7 @@ const ideaLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAtt
 
 
 // Define Unique Phases
-const appPlanningLifecyclePhases: PhaseOptions[] = [
+const appPlanningLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generateGenericPhase("App Planning", ["Idea Validation", "Feature Planning", "Timeline Setup"]),
   generateGenericPhase("Development", ["Coding", "Testing", "Debugging", "Deployment"]),
   generateGenericPhase("UX/UI Design", ["User Research", "Wireframing", "Prototyping", "Testing"]),
@@ -279,13 +280,13 @@ const appPlanningLifecyclePhases: PhaseOptions[] = [
   generateGenericPhase("End of Life", ["Deprecation", "Sunsetting", "Archival"]),
 ];
 
-const genericLifecyclePhases: PhaseOptions[] = [
+const genericLifecyclePhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   ...appPlanningLifecyclePhases,
   generateGenericPhase("Maintenance", ["Bug Fixing", "Feature Enhancement", "Performance Optimization"]),
   generateGenericPhase("End of Life", ["Deprecation", "Sunsetting", "Archival"]),
 ];
 
-const projectLifecycleManagementPhases: PhaseOptions[] = [
+const projectLifecycleManagementPhases: PhaseOptions<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>[] = [
   generateGenericPhase("Team Formation", ["Recruitment", "Roles Assignment", "Onboarding"]),
   generateGenericPhase("Brainstorming", ["Idea Generation", "Concept Evaluation", "Feature Prioritization"]),
   generateGenericPhase("Prototyping", ["Mockups", "Interactive Prototypes", "User Feedback"]),

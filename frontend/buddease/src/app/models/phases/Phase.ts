@@ -10,13 +10,13 @@ import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
-import { Member } from '@/app/models/members/Members';
+import { Member } from '@/app/models/members/Member'
 import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { Task } from "@/app/models/tasks/Task";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
-import { ValidationResult } from '@/app/snapshots/ValidationRule';
+import { ValidationResult } from '@/app/components/database/SchemaEvolutionManager';
 import { useNotification } from '@/app/state/context/NotificationContext';
 
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";

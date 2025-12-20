@@ -3,7 +3,7 @@ import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import React, { SetStateAction } from "react";
-import { TableStyle } from "./TableStyle";
+import { TableStyle } from "@/app/hooks/userInterface/TableStyle";
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
   infoColor: string;

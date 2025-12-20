@@ -1,7 +1,7 @@
 // NotificationManagerService.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationContainer } from '@/app/features/support/NotificationContainer';
+import { NotificationContainer } from '@/app/services/NotificationService';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 
 /**

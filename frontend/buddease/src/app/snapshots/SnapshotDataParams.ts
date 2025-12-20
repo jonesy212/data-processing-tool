@@ -8,7 +8,7 @@ import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 

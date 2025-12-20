@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import ConceptDevelopment from '@/app/users/userJourney/ConceptDevelopment';
 import IdeaValidation from '@/app/users/userJourney/IdeaValidation';
 import ProofOfConcept from '@/app/users/userJourney/ProofOfConcept';
-import { IdeaLifecyclePhase } from '@/IdeaLifecyclePhase';
+import { IdeaLifecyclePhase } from '@/app/models/phases/PhaseManager';
 
 
 const IdeaLifecycleManager: React.FC = () => {

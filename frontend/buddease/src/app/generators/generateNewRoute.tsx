@@ -1,13 +1,13 @@
 // generateNewRoute.tsx
-import safeParseData from '@/app/components/crypto/SafeParseData';
-import ConditionalRouteComponent from '@/app/components/libraries/ui/components/ConditionalRouteComponent';
-import DynamicRouteComponent from '@/app/components/libraries/ui/components/DynamicRouteComponent';
-import { Data } from '@/app/components/models/data/Data';
+import safeParseData from '@/app/dataIntegration/SafeParseData';
+import ConditionalRouteComponent from '@/app/components/routing/ConditionalRouteComponent';
+import DynamicRouteComponent from '@/app/libraries/ui/components/DynamicRouteComponent';
+import { Data } from '@/app/models/data/Data';
 import { ParsedData } from '@/app/dataIntegration/parseData';
-import { FileLogger } from '@/app/libraries/logging/Logger';
+import { FileLogger } from '@/app/logging/Logger';
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { YourResponseType } from '@/components/typings/types';
-import DynamicErrorBoundary from '@/shared/DynamicErrorBoundary';
+import { YourResponseType } from '@/app/typings/responseTypes';
+import DynamicErrorBoundary from '@/app/shared/DynamicErrorBoundary';
 
 // Define a mapping between JSX elements and route strings
 const routeMappings: Record<string, JSX.Element> = {

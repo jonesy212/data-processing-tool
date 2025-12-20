@@ -16,7 +16,7 @@ import { NotificationType } from '@/app/features/support/UnifiedNotificationType
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, snapshotConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
@@ -33,11 +33,11 @@ import { ExtendedVersionData } from "@/app/versions/VersionData";
 import { generateSnapshotId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/utils/web3/applicationUtils";
-import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { TransformMethods } from "./methods/transformMethods";
-import { SnapshotStoreReference } from "./SnapshotStoreReference";
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
+import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
+import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
-import { fetchData } from "@/app/api/ApiData";
+import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
@@ -55,13 +55,13 @@ import {
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotConfigParams } from "./SnapshotConfigBuilder";
-import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess, handleSnapshotSuccess } from "./snapshotHandlers";
-import SnapshotList, { SnapshotItem } from "./SnapshotList";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotConfigParams } from "@/app/snapshots/SnapshotConfigBuilder";
+import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess, handleSnapshotSuccess } from "@/app/snapshots/index";
+import SnapshotList, { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { storeProps } from "./SnapshotStoreProps";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import SnapshotStoreSubset from "./SnapshotStoreSubset";
 
 function createSnapshotStoreConfig<

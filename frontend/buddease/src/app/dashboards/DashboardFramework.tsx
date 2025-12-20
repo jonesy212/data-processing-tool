@@ -1,5 +1,5 @@
 // DashboardFramework.tsx
-import { AdminDashboard, AdminDashboardProps } from "@/app/admin/AdminDashboard";
+import { AdminDashboard, AdminDashboardProps } from "@/app/components/admin/AdminDashboard";
 import {
   AppTree,
   generateInitialAppTree,
@@ -12,13 +12,13 @@ import DataDashboard from "@/app/pages/dashboards/DataDashboard";
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
-import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
+import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import MeetingScheduler from "./../communications/scheduler/MeetingScheduler";
+import MeetingScheduler from "@/app/components/communications/scheduler/Meeting";
 import {
   default as MeetingSchedulerToolbar,
   default as TeamOverview,

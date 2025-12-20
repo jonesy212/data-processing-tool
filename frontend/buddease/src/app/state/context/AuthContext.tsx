@@ -5,6 +5,7 @@ import {
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { UserPreferences } from "@/app/config/UserPreferences";
+import {WeekView} from '@/app/state/redux/slices/AuthSlice'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NFT } from "@/app/models/cypto/NFT";
 import { AuthenticationProvider } from '@/app/server/auth/AuthService';
@@ -246,7 +247,7 @@ const fetchDataWithToken = async () => {
   }
 };
 
-const useAuth = (): AuthContextProps<AppAuth> => {
+const useAuth = (): AuthContextPropss<AuthEntity, AuthEntity, AuthMeta, Attachment, AuthExcludedFields, AuthIncludedFields> => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

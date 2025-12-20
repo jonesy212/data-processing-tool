@@ -3,9 +3,7 @@ import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Data } from '@/app/models/data/Data';
-import {
-    DocumentTypeEnum
-} from "@/app/typings/documents";
+import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { useSearch } from '@/app/state/context/SearchContext';
 import React, { useEffect, useState } from "react";
 

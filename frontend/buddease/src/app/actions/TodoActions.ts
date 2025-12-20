@@ -1,7 +1,7 @@
 // TodoActions.ts
 // todo/TodoActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { Todo } from "../todos/Todo";
+import { Todo } from "@/app/todos/Todo";
 
 export const TodoActions = {
   toggle: createAction<string>("toggle"),

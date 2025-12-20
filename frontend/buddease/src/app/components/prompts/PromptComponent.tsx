@@ -1,6 +1,6 @@
 // PromptComponent.tsx
 import React from "react";
-import { Prompt, PromptPageProps } from "./PromptPage";
+import { Prompt, PromptPageProps } from "@/app/prompts/PromptPage";
 
 interface PromptComponentProps {
   prompts: Prompt[]; // Array of prompts based on the phase and user input

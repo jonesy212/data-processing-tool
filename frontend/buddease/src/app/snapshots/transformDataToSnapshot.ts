@@ -8,7 +8,7 @@ import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { SnapshotEvents } from '@/app/typings/eventTypes';
+import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 
 const transformDataToSnapshot =  <  T extends BaseDataEntity,
   K extends T = T,

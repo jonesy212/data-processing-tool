@@ -6,7 +6,7 @@ import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { VersionData } from "@/app/versions/VersionData";
 import { ContentState } from "draft-js";
-import { DocumentSize, Layout } from "./StatusType";
+import { DocumentSize, Layout } from "@/app/models/data/StatusType";
 
 const documentBuilderConfig: DocumentBuilderConfig = {
     levels: [],

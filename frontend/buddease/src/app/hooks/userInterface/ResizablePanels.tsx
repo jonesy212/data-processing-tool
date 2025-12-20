@@ -4,7 +4,7 @@ import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 
 if (typeof window !== 'undefined') {
-  import('@/react-resizable/css/styles.css');
+  import('@/app/components/form/FormElementStyles');
 }
 // Define the props interface for the ResizablePanels component
 interface ResizablePanelsProps {

@@ -1,8 +1,8 @@
 // TradingSummaryStep.tsx
 import React from "react";
-import { TradeData } from "@/app/trading/TradeData";
+import { TradeData } from "@/app/components/trading/TradeData";
 import SummaryStep from "@/app/phases/steps/SummaryStep";
-import { StepProps } from "./steps";
+import { StepProps } from "@/app/phases/steps/steps";
 
 
 interface TradingSummaryStep extends StepProps {

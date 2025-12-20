@@ -3,7 +3,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { initialState } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FilterState } from "./FilterState";
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 
 // Define a selector function to get filtered events from the state
 // Define your selector to get the filtered events from the state

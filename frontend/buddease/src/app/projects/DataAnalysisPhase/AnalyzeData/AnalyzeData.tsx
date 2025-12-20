@@ -1,9 +1,9 @@
 // AnalyzeData.tsx
 // src/components/DataAnalysisPhase/AnalyzeData.tsx
 
-import { DataProcessingTask } from '@/app/components/todos/tasks/DataProcessingTask';
-import { DatasetModel } from '@/app/components/todos/tasks/DataSetModel';
-import { dataAnalysisService } from '@/app/components/typings/dataAnalysisTypes';
+import { DataProcessingTask } from '@/app/todos/tasks/DataProcessingTask';
+import { DatasetModel } from '@/app/todos/tasks/DataSetModel';
+import { dataAnalysisService } from '@/app/typings/phases/dataAnalysisTypes';
 import React, { useEffect, useState } from 'react';
 
 interface AnalyzeDataProps {

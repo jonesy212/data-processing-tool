@@ -1,6 +1,6 @@
 // ClearFiltersButton.tsx
 import React from "react";
-import { ButtonProps } from "@/app/ui/buttons/ReusableButton";
+import { ButtonProps } from "@/app/libraries/ui/buttons/ReusableButton";
 
 interface ClearFiltersButtonProps extends ButtonProps {
   onClick: () => void;

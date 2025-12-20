@@ -2,11 +2,11 @@
 import React from 'react';
 
 // imports for layout and multimedia content customization components
-import LayoutCustomization from '@/config//LayoutCustomization';
+import LayoutCustomization from '@/app/components/configs/LayoutCustomization';
 import MultimediaContentCustomization, { MultimediaContentCustomizationProps } from '@/app/pages/content/MultimediaContentCustomization';
 import { useThemeCustomization } from '@/app/hooks/useThemeCustomization';
 import ThemeCustomization from '@/app/hooks/userInterface/ThemeCustomization';
-import { ThemeState } from '@/app/components/state/redux/slices/ThemeSlice';
+import { ThemeState } from '@/app/state/redux/slices/ThemeSlice';
 import { AnimatedComponentProps } from '@/app/components/styling/AnimationsAndTansitions';
 
 

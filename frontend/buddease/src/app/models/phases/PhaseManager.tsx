@@ -6,7 +6,7 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import React, { useState } from "react";
-import { Phase } from "./Phase";
+import { Phase } from "@/app/models/phases/Phase";
 // Function to get a phase component based on the selected phase name
 function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
   const selectedPhase = genericLifecyclePhases.find(

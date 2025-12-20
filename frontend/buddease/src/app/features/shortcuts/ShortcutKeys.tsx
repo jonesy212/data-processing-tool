@@ -9,9 +9,9 @@ import { addMessage } from "@/app/state/redux/slices/ChatSlice";
 import { TooltipActions } from "@/app/actions/TooltipActions";
 import { GesterEvent, UIActions } from "@/app/actions/UIActions";
 
-import { saveCryptoPortfolioData } from "@/app/editing/autosave";
-import { CustomEventListener, ReactiveEventHandler } from "@/app/event/DynamicEventHandlerExample";
-import { sanitizeData } from "@/app/components/crypto/SanitizationFunctions";
+import { saveCryptoPortfolioData } from "@/app/documents/editing/autosave";
+import { CustomEventListener, ReactiveEventHandler } from "[object Object]";
+import { sanitizeData } from "@/app/models/cypto/SanitizationFunctions";
 
 
 const ShortCutKeys: CustomEventListener = {

@@ -1,6 +1,6 @@
 // fileSagas.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
-// import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/app/api/ApiFiles';
+// import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/app/components/configs/DetermineFileType';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { DataFrameActions } from '@/app/actions/DataFrameActions';
 import { FileActions } from '@/app/actions/FileActions';
@@ -10,8 +10,9 @@ import { DataActions } from '@/app/actions/DataActions';
 import axios, { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/api/DataframeApi';
-import { fetchDataFrameSuccess } from '@/slices/DataFrameSlice';
-import { updateDataTitle } from '@/slices/DataSlice';
+import { fetchDataFrameSuccess } from '@/app/state/redux/slices/DataFrameSlice';
+import { updateDataTitle } from '@/app/state/redux/sagas/fileSagas';
+
 const { handleError } = useErrorHandling();
 
 import { default as archiveFile, default as batchRemoveFiles, default as createFileVersion, default as determineFileType, default as exportFile, default as fetchFiles, default as fetchFileVersions, default as importFile, default as markFileAsComplete, default as receiveFileUpdate, default as requestAccessToFile, default as shareFile, default as startCollaborativeEdit, default as uploadFile } from '@/app/api/ApiFiles';

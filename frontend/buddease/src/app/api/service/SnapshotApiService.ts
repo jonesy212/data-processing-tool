@@ -2,12 +2,13 @@
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot, SnapshotDataType } from '@/app/snapshots';
+import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { useCallback } from 'react';
 
 import {
@@ -18,7 +19,7 @@ import {
   GetConfigOptions
 } from '@/app/snapshots/SnapshotOptions';
 
-import { SnapshotConfig } from '@/app/snapshots';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 
 class SnapshotApiService {
   private baseUrl: string;

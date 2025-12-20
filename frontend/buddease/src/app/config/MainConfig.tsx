@@ -8,8 +8,8 @@ import BackendStructure from "@/app/server/database/BackendStructure";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { Button, Card, Divider, Tabs, Typography } from "antd";
 import React, { useState } from "react";
-import { BackendConfig } from "./BackendConfig";
-import { FrontendConfig } from "./FrontendConfig";
+import { BackendConfig } from "@/app/config/BackendConfig";
+import { FrontendConfig } from "@/app/config/FrontendConfig";
 import FrontendStructure from "./appStructure/FrontendStructure";
 import getAppPath from "./appStructure/appPath";
 

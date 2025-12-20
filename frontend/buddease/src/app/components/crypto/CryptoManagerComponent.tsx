@@ -1,9 +1,9 @@
 // CryptoManagerComponent.tsx
-import { useSecureUserId } from '@/app/hooks/useSecureStoreId';
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { SearchLogger } from '@/app/logging/Logger';
 import React, { useEffect, useState } from "react";
-import { CryptoHolding } from "./CryptoHolding";
-import { useCryptoManager } from "./CryptoManager";
+import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
+import { useCryptoManager } from "@/app/components/crypto/CryptoManager";
 
 const CryptoManagerComponent: React.FC = () => {
   const {

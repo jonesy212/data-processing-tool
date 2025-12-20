@@ -68,6 +68,7 @@ interface ButtonGeneratorProps<
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;
   timestamp?: string | Date;
+  htmlType?: string;
   onSubmit?: () => void;
   onReset?: () => void;
   onCancel?: () => void;

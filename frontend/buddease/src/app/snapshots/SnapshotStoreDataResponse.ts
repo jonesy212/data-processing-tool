@@ -15,8 +15,8 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotDataResponse } from "@/utils/retrieveSnapshotData";
 
-import { SnapshotItem } from "./SnapshotList";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 
 type OptionalSnapshotProps<

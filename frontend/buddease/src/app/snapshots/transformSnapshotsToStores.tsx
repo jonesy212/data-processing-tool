@@ -1,12 +1,12 @@
 // transformSnapshotsToStores.tsx
-// import { initialSnapshot } from "@/app/crypto/exchangeIntegration";
+// import { initialSnapshot } from "@/app/models/cypto/exchangeIntegration";
 // import { BaseData } from '@/app/models/data/Data';
 // import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
-// import { data } from "@/app/versions/Version";
+// import { data } from "@/app/snapshots/SnapshotWithCriteria";
 // import { Snapshot } from '@/app/snapshots/Snapshot';
-// import { SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
+// import { SnapshotStoreConfig, snapshotConfig } from "@/app/snapshots/SnapshotStoreConfig";
 // import SnapshotStore from "./SnapshotStore";
-// import { delegate, subscribeToSnapshots } from "./snapshotHandlers";
+// import { delegate, subscribeToSnapshots } from "@/app/snapshots/index";
 
 // function transformSnapshotsToStores(snapshots: Snapshot<BaseData>[] | null): SnapshotStore<any>[] | null {
 //     if (!snapshots) return null;

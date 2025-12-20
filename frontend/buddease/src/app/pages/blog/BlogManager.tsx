@@ -1,11 +1,11 @@
 // BlogManager.tsx
-import { AndroidBlogPosts } from '@/AIoSBlogPosts';
+import { AndroidBlogPosts } from '@/app/pages/blog/AIoSBlogPosts';
 import BlogOverview from '@/app/pages/blog/BlogOverview';
 import { logData } from '@/app/services/NotificationService';
 import { NotificationContext, NotificationType } from '@/app/state/context/NotificationContext';
 import { addNotification } from '@/app/state/redux/slices/NofiticationsSlice';
-import NewBlogPostForm from '@/NewBlogPostForm';
-import NotificationDisplay from '@/NotificationDisplay';
+import NewBlogPostForm from '@/app/pages/blog/NewBlogPostForm';
+import NotificationDisplay from '@/app/pages/blog/NotificationDisplay';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 

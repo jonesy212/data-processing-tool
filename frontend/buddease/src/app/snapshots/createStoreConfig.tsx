@@ -16,8 +16,8 @@ import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/D
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { InitializedState } from "@/app/state/stores/DataStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { convertMetadata } from '@/convertMetadata';
-import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
+import { convertMetadata } from '@/app/snapshots/convertMetadata';
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 
 // SnapshotStore.ts
 

@@ -1,5 +1,5 @@
 import AppCacheManagerStore from "@/app/state/stores/AppCacheManagerStore";
-import { ExtendedData } from "@/app/utils/AppCacheManager";
+import { ExtendedData } from "@/utils/cache/AppCacheManager";
 import AppCacheManagerExtended from "@/utils/cache/AppCacheManagerExtended";
 import { makeAutoObservable } from "mobx";
 

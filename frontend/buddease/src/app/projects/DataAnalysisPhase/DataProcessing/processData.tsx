@@ -1,5 +1,5 @@
 // processData.tsx
-import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/DataProcessingService';
+import dataProcessingService, { DataProcessing, DataProcessingResult } from '@/app/api/service/DataProcessingService';
 
 // Usage
 async function processData() {

@@ -12,7 +12,7 @@ import { observable, runInAction } from "mobx";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ArticleAttachment, ArticleEntity, ArticleExcludedFields, ArticleIncludedFields, ArticleK, ArticleMeta } from '@/app/typings/entities/ArticleEntity';
-import internalApiService, { clientNotificationMessages } from './ApiClient';
+import internalApiService, { clientNotificationMessages } from '@/app/api/ApiClient';
 
 const API_BASE_URL = endpoints.apiConfig;
 

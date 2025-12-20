@@ -1,5 +1,5 @@
 // ExportTasksPayload.tsx
-import { Task } from "./Task";
+import { Task } from "@/app/components/models/tasks/Task";
 
 interface ExportTasksPayload {
     tasks: Task[]; // Array of tasks to be exported

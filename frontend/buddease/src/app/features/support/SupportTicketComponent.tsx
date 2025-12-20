@@ -3,9 +3,9 @@
 // app/features/support/SupportTicketComponent.tsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/app/state/store';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
 import { provideCustomerSupport, addressUserInquiries } from '@/app/state/slices/ApiManagerSlice';
-import { UserSupportPhase } from '@/UserSupportPhaseComponent';
+import UserSupportPhase from '@/app/features/support/UserSupportPhaseComponent';
 
 // Support Ticket Types
 export interface SupportTicket {

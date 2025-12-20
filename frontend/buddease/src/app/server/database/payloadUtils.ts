@@ -1,5 +1,5 @@
 // payloadUtils.ts 
-import { Payload, UpdateSnapshotPayload } from '@/app/server/database/Payload';
+import { Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 
 const mapToPayload = (updatePayload: UpdateSnapshotPayload<Data<BaseData<any>>>): Payload => {
     return {

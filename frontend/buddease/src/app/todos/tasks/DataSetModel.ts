@@ -1,5 +1,5 @@
 // DataSetModel.ts
-import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
+import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
 import { Team } from "@/app/components/teams/Team";
 import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';

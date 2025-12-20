@@ -1,5 +1,5 @@
 // BaseStoreWithCallbacks.ts
-import { globalCallbackRegistry, CallbackRegistry } from './callbackRegistry';
+import { globalCallbackRegistry, CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry';
 import { EventHandler } from '@/app/typings/eventHandlers/eventTypes'
 
 export abstract class BaseStoreWithCallbacks {

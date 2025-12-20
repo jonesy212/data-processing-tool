@@ -1,8 +1,8 @@
 // continuousMonitoringAndImprovement.ts
-import { getCurrentPrice } from "@/app/api/ApiCrypto";
-import { automatedDecisionMaking } from "@/app/utils/automatedDecisionMakingUtils";
-import { MarketData } from "./TradingStrategy";
-import MachineLearningModel from "./machineLearning";
+import { getCurrentPrice } from '@/app/api/ApiCrypto';
+import { automatedDecisionMaking } from '@/utils/web3/automatedDecisionMakingUtils'
+import { MarketData } from '@/app/trading/TradingStrategy';
+import MachineLearningModel from './machineLearning';
 
 interface RegulatoryUpdate {
   date: Date; // Date of the regulatory update
@@ -20,11 +20,11 @@ const analyzeMarketTrends = (marketData: MarketData[]): void => {
   const previousPrice = marketData[marketData.length - 2].price; // Get the price before the latest one
 
   if (latestPrice > previousPrice) {
-    console.log("Market trend: Upward");
+    console.log('Market trend: Upward');
   } else if (latestPrice < previousPrice) {
-    console.log("Market trend: Downward");
+    console.log('Market trend: Downward');
   } else {
-    console.log("Market trend: Stable");
+    console.log('Market trend: Stable');
   }
 };
 
@@ -34,32 +34,32 @@ const fetchRecentMarketData = (): MarketData[] => {
   return [
     {
       timestamp: new Date(), price: 100, volume: 200, target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
       timestamp: new Date(), price: 105, volume: 180, target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
       timestamp: new Date(), price: 102, volume: 250, target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
       timestamp: new Date(), price: 98, volume: 220, target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
       timestamp: new Date(), price: 104, volume: 210, target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
   ];
@@ -75,10 +75,10 @@ const optimizeTradingStrategies = (): void => {
   const winRate = calculateWinRate(historicalData); // Calculate win rate based on historical data
 
   if (winRate > 60) {
-    console.log("Strategy performance is good. No optimization needed.");
+    console.log('Strategy performance is good. No optimization needed.');
   } else {
     console.log(
-      "Strategy performance can be improved. Analyzing for optimizations..."
+      'Strategy performance can be improved. Analyzing for optimizations...'
     );
     // Additional logic for optimization can be added here
   }
@@ -89,45 +89,45 @@ const fetchHistoricalMarketData = (): MarketData[] => {
   // Simulated historical market data
   return [
     {
-      timestamp: new Date("2023-01-01"),
+      timestamp: new Date('2023-01-01'),
       price: 100,
       volume: 200,
       target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
-      timestamp: new Date("2023-01-02"),
+      timestamp: new Date('2023-01-02'),
       price: 105,
       volume: 180,
       target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
-      timestamp: new Date("2023-01-03"),
+      timestamp: new Date('2023-01-03'),
       price: 102,
       volume: 250,
       target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
-      timestamp: new Date("2023-01-04"), price: 98, volume: 220, target: null,
-      symbol: "",
-      type: "",
+      timestamp: new Date('2023-01-04'), price: 98, volume: 220, target: null,
+      symbol: '',
+      type: '',
       quantity: 0
     },
     {
-      timestamp: new Date("2023-01-05"),
+      timestamp: new Date('2023-01-05'),
       price: 104,
       volume: 210,
       target: null,
-      symbol: "",
-      type: "",
+      symbol: '',
+      type: '',
       quantity: 0
     },
   ];
@@ -155,12 +155,12 @@ const adaptToRegulatoryChanges = (regulatoryUpdates: RegulatoryUpdate[] ): void 
 
   if (recentRegulatoryUpdates.length > 0) {
     console.log(
-      "Recent regulatory updates detected. Adapting trading strategies..."
+      'Recent regulatory updates detected. Adapting trading strategies...'
     );
     // Additional logic to adapt trading strategies based on regulatory changes
   } else {
     console.log(
-      "No recent regulatory updates detected. Continuing with current strategies."
+      'No recent regulatory updates detected. Continuing with current strategies.'
     );
   }
 };
@@ -170,12 +170,12 @@ const fetchRecentRegulatoryUpdates = (): RegulatoryUpdate[] => {
   // Simulated recent regulatory updates
   return [
     {
-      date: new Date("2024-03-25"),
-      update: "New regulations on cryptocurrency trading",
+      date: new Date('2024-03-25'),
+      update: 'New regulations on cryptocurrency trading',
     },
     {
-      date: new Date("2024-03-28"),
-      update: "Changes in tax policies for trading income",
+      date: new Date('2024-03-28'),
+      update: 'Changes in tax policies for trading income',
     },
   ];
 };
@@ -202,16 +202,16 @@ const continuousMonitoringAndImprovement = async (): Promise<void> => {
       const regulatoryUpdates: RegulatoryUpdate[] = fetchRecentRegulatoryUpdates();
 
       // Logic to monitor market conditions and gather relevant data
-      console.log("Monitoring market conditions...");
+      console.log('Monitoring market conditions...');
 
       // Refine the trading system based on gathered data
-      console.log("Refining trading system...");
+      console.log('Refining trading system...');
 
       // Adapt to changing dynamics in cryptocurrency markets
-      console.log("Adapting to changing dynamics...");
+      console.log('Adapting to changing dynamics...');
 
       // Stay updated with industry developments and technological advancements
-      console.log("Staying updated with industry developments and technological advancements...");
+      console.log('Staying updated with industry developments and technological advancements...');
 
       // Analyze market trends with in-depth data analysis
       analyzeMarketTrends(marketData);
@@ -240,7 +240,7 @@ const continuousMonitoringAndImprovement = async (): Promise<void> => {
       automatedDecisionMaking(marketData, winRate);
 
       // Stay updated with industry developments and technological advancements
-      console.log("Staying updated with industry developments and technological advancements...");
+      console.log('Staying updated with industry developments and technological advancements...');
     }, 60000); // Execute every 60 seconds (adjust as needed)
   } catch (error) {
     console.error('Error in continuousMonitoringAndImprovement:', error);

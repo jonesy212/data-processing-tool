@@ -1,7 +1,7 @@
 // TodoService.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
 import axios from "axios";
-import { Todo } from "./Todo";
+import { Todo } from "@/app/todos/Todo";
 
 const BASE_URL = endpoints.todos
 

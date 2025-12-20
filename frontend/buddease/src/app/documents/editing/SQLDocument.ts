@@ -2,7 +2,7 @@
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CommonDocumentPropertiesAndMethods } from '@/app/documents/editing/MarkdownDocument';
+import { CommonDocumentPropertiesAndMethods } from '@/app/documents/CommonDocumentPropertiesAndMethods';
 
 export interface SQLDocument<
   T extends BaseDataEntity,

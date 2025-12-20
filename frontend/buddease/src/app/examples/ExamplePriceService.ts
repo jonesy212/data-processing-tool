@@ -1,6 +1,6 @@
 // ExamplePriceService.ts
 // Example usage in your trade execution
-import { getMarketPrice, priceService } from './priceService';
+import { getMarketPrice, priceService } from '@/app/api/service/PriceApiService';
 
 // In your executeTrade function
 const marketPrice = await getMarketPrice('BTC');

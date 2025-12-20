@@ -1,9 +1,9 @@
 // phaseSaga.ts
 
-import { PhaseActions } from '@/app/components/phases/PhaseActions';
+import { PhaseActions } from '@/app/actions/phases/PhaseActions';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { call, put, takeLatest } from 'redux-saga/effects';
-import PhaseService from '@/phases/PhaseService';
+import PhaseService from '@/app/api/service/PhaseService';
 
 // Worker Saga: Fetch Phase
 function* fetchPhaseSaga(action: any) {

@@ -998,7 +998,7 @@ function CalendarApp<
           leader: {
             username: "Charlie Brown",
             role: UserRoles.TeamLeader,
-          } 
+          },
           pointOfContact: {
             username: "Dana White",
             role: UserRoles.Coordinator,

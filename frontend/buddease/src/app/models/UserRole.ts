@@ -10,5 +10,3 @@ export interface UserRole {
     salary?: number; // Example salary for Moderator
     includes: string[]; // Example includes for Moderator
 }
-
-    

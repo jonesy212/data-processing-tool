@@ -1,8 +1,8 @@
 // useFetchUser.ts
 import { userService } from '@/app/api/ApiUser';
 import { sendNotification } from '@/app/state/redux/slices/UserSlice';
-import isValidAuthToken from '@/security/AuthValidation';
-import { UserActions } from '@/users/UserActions';
+import isValidAuthToken from '@/app/server/security/AuthValidation';
+import { UserActions } from '@/app/actions/UserActions';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 

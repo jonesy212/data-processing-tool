@@ -21,7 +21,7 @@ import { TeamActions } from '@/app/actions/TeamActions';
 import { ToolbarActions } from '@/app/actions/ToolbarActions';
 import { UserActions } from '@/app/actions/UserActions';
 import { UserListActions } from '@/app/actions/UserListActions';
-import { CommonPersonaActions } from '@/app/actions/PersonaActions
+import { CommonPersonaActions } from '@/app/actions/PersonaActions'
 import { TenantActions } from '@/app/actions/TenantActions';
 import { ChatActions } from '@/app/actions/ChatActions';
 import { DataAnalysisActions } from '@/app/actions/DataAnalysisActions';

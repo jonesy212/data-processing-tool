@@ -1,7 +1,7 @@
 // SearchResultItem.tsx
 import { BaseEntity } from '@/app/config/BaseConfig';
 import ListGenerator from '@/app/generators/ListGenerator';
-import { Data } from '@/app/modes/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import React from 'react';
 

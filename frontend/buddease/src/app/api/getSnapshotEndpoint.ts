@@ -3,7 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { EndpointConfig } from "@/app/config/EndpointConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { endpointConfigurations } from "./endpointConfigurations";
+import { endpointConfigurations } from "@/app/api/endpointConfigurations";
 
 type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" |  "Project" |
     "Note" |

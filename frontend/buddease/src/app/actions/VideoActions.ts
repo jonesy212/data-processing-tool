@@ -7,7 +7,7 @@ import { createAction } from "@reduxjs/toolkit";
 export const VideoActions = {
   // General Video Actions
   createVideo: createAction<{ id: string, updatedVideo: Video }>("createVideo"),
-  updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData<any, any, any, any, any, any> }>("updateVideo"),
+  updateVideo: createAction<{ id: string; title: string, description: string, newData: VideoData<any, any> }>("updateVideo"),
   deleteVideo: createAction<{id: string}>("deleteVideo"),
   fetchVideoByUserId: createAction<{ userId: string }>("fetchVideoByUserId"),
   setVideos: createAction<Video[]>("setVideos"),
@@ -21,7 +21,7 @@ export const VideoActions = {
     "updateMetadata"
   ),
 
-  showOptionsMenu: createAction<{id: string, options: VideoOptions[]}>("showOptionsMenu"),
+  showOptionsMenu: createAction<{id: string, options: VideoOptions}>("showOptionsMenu"),
   
   // Notification Actions
   sendVideoNotification: createAction<{ id: string; notification: string }>("sendVideoNotification"),
@@ -45,7 +45,7 @@ export const VideoActions = {
 
 
 
-  getSelectedVideoOptions: createAction<VideoOptions[]>("getSelectedVideoOptions"),
+  getSelectedVideoOptions: createAction<VideoOptions>("getSelectedVideoOptions"),
   // Subscription Actions
   subscribeToVideo: createAction<string>("subscribeToVideo"),
   unsubscribeFromVideo: createAction<string>("unsubscribeFromVideo"),

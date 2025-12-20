@@ -10,7 +10,7 @@ import { produce } from 'immer';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { FilterAttachment, FilterBaseParams, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/app/typiings/entities/FilterEntity';
+import { FilterAttachment, FilterBaseParams, FilterEntity, FilterExcludedFields, FilterIncludedFields, FilterK, FilterMeta } from '@/app/typings/entities/FilterEntity';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

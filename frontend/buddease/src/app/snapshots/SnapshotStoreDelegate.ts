@@ -1,5 +1,5 @@
 // SnapshotStoreDelegate.ts
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // // SnapshotStoreDelegate.ts
 // Assuming you have the correct configuration for T and K

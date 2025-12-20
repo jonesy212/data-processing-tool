@@ -1,7 +1,7 @@
 // BlogPostHistory.tsx
 
-import { BlogPost } from "@/app/community/DiscussionForumComponent";
-import { HistoryEntry } from '@/app/components/state/stores/HistoryStore';
+import { BlogPost } from "@/app/pages/blog/BlogPost";
+import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import Version from "./Version";
 
 interface BlogPostHistory extends BlogPost {

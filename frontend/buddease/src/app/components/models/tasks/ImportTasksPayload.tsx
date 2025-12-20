@@ -1,5 +1,5 @@
 // ImportTasksPayload.tsx
-import { Task } from "./Task";
+import { Task } from "@/app/components/models/tasks/Task";
 
 interface ImportTasksPayload {
     data: string; // Data containing tasks to be imported, e.g., JSON data

@@ -20,11 +20,13 @@ interface Theme {
   headerColor: string;
   footerColor: string;
   bodyColor: string;
+  backgroundColor?: string;
+  textColor?: string;
   borderColor: string;
   borderStyle: string;
   padding: string;
   margin: string;
-
+  logoUrl: string;
   brandIcon: string;
   brandName: string;
 

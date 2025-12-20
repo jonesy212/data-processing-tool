@@ -29,7 +29,7 @@ import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
 import {
   DocumentTypeEnum
 } from "@/app/typings/documentTypes";
-import { FilterCriteria } from "./FilterCriteria";
+import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 
 
 enum EffortLevelEnum {

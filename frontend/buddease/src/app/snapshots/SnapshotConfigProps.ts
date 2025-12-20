@@ -7,10 +7,10 @@ import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessin
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { DataStore } from "@/app/state/stores/DataStore";
-import { SnapshotConfig } from "./SnapshotConfig";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreProps } from "./useSnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
 interface SnapshotCommonProps<

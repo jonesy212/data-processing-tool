@@ -1,6 +1,6 @@
 // TradingAssetsStep.tsx
 import React, { useState } from 'react';
-import { BlockchainAsset } from '@/app/components/users/BlockchainAsset';
+import { BlockchainAsset } from '@/app/typings/cryptoTypes/BlockchainAsset';
 
 // Import the BlockchainAsset interface
 

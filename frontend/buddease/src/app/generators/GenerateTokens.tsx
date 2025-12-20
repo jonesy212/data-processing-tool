@@ -1,7 +1,7 @@
 // GenerateTokens.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { useNotification } from '@/app/context/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 

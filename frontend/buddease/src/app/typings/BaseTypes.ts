@@ -48,12 +48,12 @@ export type ExtractEntityTypes<T extends BaseDataEntity> = {
 
 // Common type combinations for your entities
 export type EntityTypeCombinations = {
-  task: ExtractEntityTypes<import('@/app/tyings/entities/TaskEntity').TaskEntity>;
-  project: ExtractEntityTypes<import('@/app/tyings/entities/ProjectEntity').ProjectEntity>;
-  user: ExtractEntityTypes<import('@/app/tyings/entities/UserEntity').UserEntity>;
-  team: ExtractEntityTypes<import('@/app/tyings/entities/TeamEntity').TeamEntity>;
-  snapshot: ExtractEntityTypes<import('@/app/tyings/entities/SnapshotEntity').SnapshotEntity>;
-  app: ExtractEntityTypes<import('@/app/tyings/entities/AppEntity').AppEntity>;
+  task: ExtractEntityTypes<import('@/app/typings/entities/TaskEntity').TaskEntity>;
+  project: ExtractEntityTypes<import('@/app/typings/entities/ProjectEntity').ProjectEntity>;
+  user: ExtractEntityTypes<import('@/app/typings/entities/UserEntity').UserEntity>;
+  team: ExtractEntityTypes<import('@/app/typings/entities/TeamEntity').TeamEntity>;
+  snapshot: ExtractEntityTypes<import('@/app/typings/entities/SnapshotEntity').SnapshotEntity>;
+  app: ExtractEntityTypes<import('@/app/typings/entities/AppEntity').AppEntity>;
 };
 
 // Helper to get specific entity types

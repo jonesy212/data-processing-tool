@@ -2,7 +2,7 @@
 'use client';
 
 import { createContext, useContext } from "react";
-import DatabaseClient from "@/app/database/DatabaseClient";
+import DatabaseClient from "@/app/api/DatabaseClient";
 
 export interface DatabaseContextType {
   client: DatabaseClient;

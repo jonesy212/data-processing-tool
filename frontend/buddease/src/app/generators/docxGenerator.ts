@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentAttachment, DocumentEntity, DocumentExcludedFields, DocumentIncludedFields, DocumentK, DocumentMeta } from '@/app/typings/entities/DocumentEntity';
 import { User, UserData } from "@/app/users/User";
 import Docxtemplater from "docxtemplater";
-import { saveAs } from 'file-saver';
+import { saveAs } from '@/app/documents/editing/autosave';
 import JSZip from "jszip";
 
 // Make the interface generic

@@ -1,6 +1,6 @@
 // BreakdownReportGenerator.ts
 import { ComprehensiveBreakdown, ComponentBreakdown, MethodBreakdown, InterfaceBreakdown } from '@/app/generators/corrections/analyzers/ComprehensiveBreakdownAnalyzer'
-import { CorrectionReport } from './CorrectionGenerator';
+import { CorrectionReport } from '@/app/generators/corrections/CorrectionGenerator';
 
 export class BreakdownReportGenerator {
     private static processComponent(component: ComponentBreakdown): string {

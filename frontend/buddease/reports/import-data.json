@@ -3111,7 +3111,7 @@
         "import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/scripts/migrateUserData';",
         "import { Snapshot } from '@/app/snapshots/Snapshot';",
         "import { ValidationRule } from '@/app/snapshots/ValidationRule';",
-        "import { DatabaseType, IDatabaseService } from '@/app/typings/database';",
+        "import { DatabaseType, BackendDatabaseService } from '@/app/typings/database';",
         "import { DatabaseMigrationDefinition } from '@/app/components/database/MigrationSystem';"
       ],
       "issues": [
@@ -3171,7 +3171,7 @@
         "import { useRoleAccess, useCurrentUser } from '@/app/hooks/useRoleAccess';",
         "import AccessDenied from '@/app/components/AccessDenied';",
         "import { UserRoleEnum } from '@/app/models/UserRoles';",
-        "import { UserRole } from '@/app/hooks/useAccessControl';"
+        "import { UserRole } from '@/app/models/UserRole';"
       ],
       "issues": [
         "@/app/components/AccessDenied  –  ESM resolution failure",
@@ -17763,7 +17763,7 @@
       "duplicateImports": [],
       "importLines": [
         "import React from 'react';",
-        "import { UserRole } from '@/app/hooks/useAccessControl';",
+        "import { UserRole } from '@/app/models/UserRole';",
         "import { UserRoleEnum } from '@/app/models/UserRoles';"
       ],
       "issues": [
@@ -20081,7 +20081,7 @@
         "import React, { useEffect } from \"react\";",
         "import { BackendStructureWrapper } from '@/app/components/backend/BackendStructureWrapper';",
         "import { selectApiConfigs } from '@/app/store/slices/apiConfigSlice';",
-        "import { getAppPath } from '@/app/utils/pathUtils';",
+        "import getAppPath from "@/app/config/appStructure/appPath";",
         "import { useSelector } from 'react-redux';"
       ],
       "issues": [

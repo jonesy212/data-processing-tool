@@ -1,12 +1,12 @@
 // DynamicRenderer.tsx
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import React, { useEffect, useState } from "react";
-import { useDynamicComponents } from "@/app/DynamicComponentsContext";
+import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
 import { Task } from "@/app/models/tasks/Task";
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import { Todo } from "@/app/todos/Todo";
 import DynamicTable from "@/app/documents/DynamicTable";
-import DynamicEventHandlerService from "@/app/event/DynamicEventHandlerExample";
+import DynamicEventHandlerService from "@/app/typings/eventHandlers/DynamicEventHandlerExample";
 
 interface DynamicRendererProps {
   handleTodoClick?: (todoId: Todo) => void;

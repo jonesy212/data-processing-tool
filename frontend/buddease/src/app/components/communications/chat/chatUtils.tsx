@@ -23,8 +23,8 @@ import { PrivacySettings } from '@/app/settings/PrivacySettings';
 import { configureSecuritySettings } from '@/app/settings/configureSecuritySettings';
 import { saveSecuritySettings } from '@/app/settings/saveSecuritySettings';
 import { DocumentActions } from '@/app/tokens/DocumentActions';
-import { openPrivacySettingsMenu } from '@/app/utils/video/openPrivacySettingsMenu';
-import { openVideoOptionsMenu } from '@/app/utils/video/openVideoOptionsMenu';
+import { openPrivacySettingsMenu } from '@/utils/videos/openPrivacySettingsMenu';
+import { openVideoOptionsMenu } from '@/utils/videos/openVideoOptionsMenu';
 import {
     NotificationContextProps,
     NotificationType,

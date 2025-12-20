@@ -1,6 +1,6 @@
 // generateDynamicDummyHook.tsx
 // useDynamicDummyGenerator.tsx
-import useDynamicHook, { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
+import useDynamicHook, { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
 
 
 const generateDynamicDummyHook = (hookName: string) => {

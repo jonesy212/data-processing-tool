@@ -6,18 +6,18 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { apiSagas } from '@/app/state/redux/sagas/apiSagas'
-import { calendarSagas } from '@/app/state/redux/sagas/calendarSagas';
+import { calendarSagas } from '@/app/components/calendar/Calendar';
 import { clientSagas } from '@/app/state/redux/sagas/clientSaga';
 import { dataAnalysisSagas } from '@/app/state/redux/sagas/dataAnalysisSagas';
 import { dataSagas } from '@/app/state/redux/sagas/dataSaga';
-import { detailsSagas } from '@/app/state/redux/sagas/detailsSaga';
+import { detailsSagas } from '@/app/components/models/data/Details';
 import { documentSagas } from '@/app/state/redux/sagas/documentSagas';
 import { markerSagas } from '@/app/state/redux/sagas/markerSagas';
 import { phaseSagas } from '@/app/state/redux/sagas/personaSagas/phaseSaga';
 import promptSagas from '@/app/state/redux/sagas/promptSagas';
 import { snapshotSagas } from '@/app/state/redux/sagas/snapshotSagas';
 import { taskSagas } from '@/app/state/redux/sagas/taskSagas';
-import { teamSagas } from '@/app/state/redux/sagas/teamSagas';
+import { teamSagas } from '@/app/components/teams/Team';
 import { tenantSagas } from '@/app/state/redux/sagas/tenantSags';
 import { todoSagas } from '@/app/state/redux/sagas/todoSagas';
 import { undoRedoSagas } from '@/app/state/redux/sagas/UndoRedoSaga';

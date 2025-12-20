@@ -32,11 +32,11 @@ import { ExcludedFields } from '@/app/components/routing/Fields';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
 import { Team } from '@/app/components/teams/Team';
-import { Snapshot } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity';
-import { options } from 'sanitize-html';
+import { options } from '@/app/generators/GenerateUniqueIds';
 import { useFiltering } from '@/app/hooks/useFiltering'
 const timeBasedCode = generateTimeBasedCode();
 const { addFilter } = useFiltering(options);

@@ -17,7 +17,7 @@ import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import Version from '@/app/versions/Version';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';
-import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from 'docx';
+import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from '@/app/documents/DocumentOptions';
 import { action, makeAutoObservable } from 'mobx';
 import { useDispatch } from 'react-redux';
 

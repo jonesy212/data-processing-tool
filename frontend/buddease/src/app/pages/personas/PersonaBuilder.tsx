@@ -1,5 +1,5 @@
 // PersonaBuilder.tsx
-import { PersonaData } from "./Persona";
+import { PersonaData } from "@/app/pages/personas/Persona";
 import ProjectManagerPersona from "./ProjectManagerPersona";
 
 

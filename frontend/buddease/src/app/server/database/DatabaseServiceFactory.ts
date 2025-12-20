@@ -38,4 +38,4 @@ export class DatabaseServiceFactory {
 }
 
 
-export type { DatabaseType };
+export { DatabaseType };

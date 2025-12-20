@@ -1,5 +1,5 @@
 // SnapshotList.test.tsx
-// import { SnapshotItem } from "./SnapshotList";
+// import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
 // it('should sort snapshots by name in ascending order', () => {
 //   const snapshotList = new SnapshotList<any>();

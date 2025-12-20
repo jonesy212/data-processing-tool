@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { EditorState } from 'draft-js';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore'
 import SnapshotStore from '@/app/snapshots/SnapshotStore'; 
-import BrowserBehaviorManager from '@/app/components/state/BrowserBehaviorManager'; 
+import BrowserBehaviorManager from '@/app/state/BrowserBehaviorManager'; 
 
 // Custom hook for editor state management
 const useEditorState = (

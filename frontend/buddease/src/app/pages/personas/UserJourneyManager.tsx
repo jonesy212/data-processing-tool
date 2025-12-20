@@ -12,7 +12,7 @@ import FeedbackProcess, {
     FeedbackPhaseEnum,
 } from "@/app/components/phases/FeedbackPhase";
 import IdeaLifecycleProcess from '@/app/components/phases/IdeaLifecycleProcess';
-import { IdeaLifecyclePhase } from "@/app/components/phases/ideaPhase/IdeaLifecyclePhase";
+import { IdeaLifecyclePhase } from "@/app/models/phases/PhaseManager";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
 import { TeamCreationPhase } from "@/app/components/phases/steps/TeamCreation";

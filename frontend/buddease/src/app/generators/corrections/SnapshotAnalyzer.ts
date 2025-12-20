@@ -119,7 +119,7 @@ export class SnapshotAnalyzer {
       case 'import':
         return `// Fix import paths for snapshot utilities
 // Ensure all snapshot-related imports use correct paths
-import { snapshotUtils } from '@/app/utils/snapshot';
+import { snapshotUtils } from '@/app/snapshots/Snapshot';
 
 // Check the import path and ensure the file exists
 // or install missing dependency if it's from node_modules`;

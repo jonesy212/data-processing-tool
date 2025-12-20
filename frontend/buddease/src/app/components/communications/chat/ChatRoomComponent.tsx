@@ -4,7 +4,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { ChatLogger } from '@/app/logging/Logger';
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
-import connectToChatWebSocket, { retryConfig } from "@/app/WebSocket";
+import connectToChatWebSocket, { retryConfig } from "@/app/components/communications/WebSocket";
 import React, { useEffect, useState } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatMessageData from "./ChatRoomDashboard";

@@ -1,6 +1,6 @@
 // RNDependencyAnalyzer.ts
 // react-native/dependencies/RNDependencyAnalyzer.ts
-import { BaseAnalyzer } from '../../BaseAnalyzer';
+import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 import fs from 'fs';
 import path from 'path';

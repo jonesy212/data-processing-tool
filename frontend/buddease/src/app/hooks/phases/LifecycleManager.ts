@@ -1,5 +1,5 @@
 // LifecycleManager.ts
-import { PhaseOptions, LifecycleState, LifecycleConfig, LifecycleTransition } from './Lifecycle';
+import { PhaseOptions, LifecycleState, LifecycleConfig, LifecycleTransition } from '@/app/hooks/phases/lifecycles';
 
 export class LifecycleManager {
   private phases: Map<string, PhaseOptions>;

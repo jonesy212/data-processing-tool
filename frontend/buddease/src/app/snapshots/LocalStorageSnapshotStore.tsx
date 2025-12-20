@@ -99,11 +99,11 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import baseMeta from '@/app/server/database/baseMeta';
 import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
 import { FC } from 'react';
-import { ExcludedFields } from '../components/routing/Fields';
-import { NoteAttachment } from '../documents/NoteData';
-import { subscription } from '../subscriptions/SubscriptionService';
-import { SnapshotIdentity } from './SnapshotIdentity';
-import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { NoteAttachment } from '@/app/documents/NoteData';
+import { subscription } from '@/app/subscriptions/SubscriptionService';
+import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
+import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 
 const SNAPSHOT_URL = endpoints.snapshots;
 

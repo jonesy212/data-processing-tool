@@ -1,6 +1,6 @@
 // WelcomePhase.tsx
 import React, { useState } from 'react';
-import DynamicNamingConventions from '@/app/components/DynamicNamingConventions';
+import DynamicNamingConventions from '@/utils/DynamicNamingConventions';
 
 const WelcomePhase: React.FC<{ onNextPhase: () => void }> = ({ onNextPhase }) => {
   const [name, setName] = useState('');

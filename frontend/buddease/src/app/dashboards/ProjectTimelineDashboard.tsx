@@ -1,7 +1,7 @@
 // ProjectTimelineDashboard.tsx
 import React from "react";
-import ProjectTimeline from '@/ProjectTimeline';
-import TeamProgress from '@/TeamProgress';
+import ProjectTimeline from '@/app/projects/projectManagement/ProjectTimeline';
+import TeamProgress from '@/app/projects/projectManagement/TeamProgress';
 
 const ProjectTimelineDashboard = () => {
   return (

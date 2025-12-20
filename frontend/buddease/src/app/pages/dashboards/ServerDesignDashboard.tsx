@@ -1,33 +1,51 @@
 // ServerDesignDashboard.tsx
-// ServerDesignDashboard.ts
 import { DesignDashboardBaseProps } from '@/app/pages/dashboards/DesignDashboard';
-import { ApiConfig } from '@/app/services/ConfigurationService';
-
+import { ApiConfig } from '@/app/api/ApiConfigService';
+import { backendConfig } from "@/app/config/BackendConfig";
+import { frontendConfig } from "@/app/config/FrontendConfig";
 import Documentation from "@/app/components/styling/Documentation";
 import MainConfig from "@/app/config/MainConfig";
-import UserPreferences from "@/app/config/UserPreferences";
 import UserSettings from "@/app/config/UserSettings";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import BatchProcessingAndCache from "@/utils/BatchProcessingAndCache";
-import React, { useEffect } from "react";
-
-interface ServerDesignDashboardProps extends DesignDashboardBaseProps {
-    // Server-specific props
-    apiConfigs: ApiConfig[];
-    onConfigUpdate: (configs: ApiConfig[]) => void;
-    // Other server-only props...
-}
-  
-
-import { BackendStructureWrapper } from '@/app/components/backend/BackendStructureWrapper';
-import { selectApiConfigs } from '@/app/store/slices/apiConfigSlice';
-import { getAppPath } from '@/app/utils/pathUtils';
+import { View, Text, StyleSheet } from 'react-native';
+import BackendStructureWrapper from '@/app/config/appStructure/BackendStructureWrapper';
+import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
+import getAppPath from "@/app/config/appStructure/appPath";
+import useFilePath from "@/app/hooks/useFilePath";
 import { useSelector } from 'react-redux';
+import React, { useEffect } from "react";
+import { lazyLoadScriptConfig } from '@/app/config/LazyLoadScriptConfig'
+import { DocumentBuilderConfig } from "@/app/config/DocumentBuilderConfig";
+import BackendConfigComponent from '@/app/components/configs/BackendConfigComponent'
+import FrontendConfigComponent from '@/app/components/configs/FrontendConfigComponent'
+import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
+import FrontendStructureViewer from '@/app/components/development/FrontendStructureViewer'
+import BackendStructureViewer from '@/app/components/development/BackendStructureViewer'
+import ApiConfigComponent from '@/app/components/configs/ApiConfigComponent'
+import DocumentBuilderConfigComponent from '@/app/components/documents/DocumentBuilderConfigComponent'
+import { CacheManager } from '@/app/libraries/cache/client/CacheManager';
+import { CacheUtils } from '@/utils/cache/CacheUtils'
+import FrontendCacheManager from '@/utils/cache/FrontendCacheManager'
+import ReadAndWriteCache from '@/utils/ReadAndWriteCache'
+import DataProcessingComponent from '@/app/components/models/data/DataProcessingComponent'
+import MetadataViewer from '@/app/components/development/MetadataViewer'
+import VersioningComponent from '@/src/app/hooks/VersioningComponent'
+import AppCacheManagerBase from '@/src/utils/cache/AppCacheManager';
+import GenerateComponent from '@/app/api/generateComponent';
+import DetermineFileType from '@/app/components/configs/DetermineFileType';
+import { GenerateUserPreferences } from '@/app/config/GenerateUserPreferences';
+import { UserPreferences } from '@/app/typings/userTypes';
+import UserPreference from '@/app/users/preferences/UserPreference';
+import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
+import BackendStructure from "@/app/server/database/BackendStructure";
 
-interface ServerDesignDashboardProps extends DesignDashboardBaseProps {
+interface ServerDesignDashboardProps {
   // Server-specific props
   apiConfigs?: ApiConfig[];
-  onConfigUpdate?: (configs: ApiConfig[]) => void;
+  onConfigUpdate?: ((configs: ApiConfig[]) => void) | undefined;
+  frontendStructure?: any; // Use any or a specific type
+  backendStructure?: any;
 }
 
 const ServerDesignDashboard: React.FC<ServerDesignDashboardProps> = ({
@@ -38,6 +56,9 @@ const ServerDesignDashboard: React.FC<ServerDesignDashboardProps> = ({
   const versionNumber = backendConfig.versionNumber;
   const appVersion = backendConfig.appVersion;
   const apiConfigs = useSelector(selectApiConfigs);
+
+  const filePath = useFilePath();
+
   const backendStructureWrapper = new BackendStructureWrapper(
     getAppPath(versionNumber, appVersion)
   );
@@ -83,14 +104,14 @@ const ServerDesignDashboard: React.FC<ServerDesignDashboardProps> = ({
 
       {/* Data Processing */}
       <DataProcessingComponent datasetPath="" onDataProcessed={() => {}} />
-      <DetermineFileType />
+      <DetermineFileType filePath={filePath}/>
       <GenerateCache />
       <GenerateComponent />
       <GenerateChatInterfaces />
       <GeneratedInterfaces />
 
       {/* Metadata & Preferences */}
-      <MetadataViewer metadata={{}} />
+      <MetadataViewer metadata={{} as UnifiedMetadata<>} />
       <UserPreference />
       <GenerateUserPreferences />
       <UserPreferences />

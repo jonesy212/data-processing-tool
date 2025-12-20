@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import React from "react";
-import { sendEmail } from "./sendEmail"; // 👈 clean import
+import { sendEmail } from "@/app/api/sendEmail"; // 👈 clean import
 
 export const SendEmail = ({
   recipient,

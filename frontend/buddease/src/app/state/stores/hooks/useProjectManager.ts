@@ -2,7 +2,7 @@
 // state/stores/hooks/useProjectManager.ts
 
 import { useEffect } from "react";
-import { projectManagerStore } from "../mobx/ProjectManagerStore";
+import { projectManagerStore } from "@/app/state/hybrid/ProjectManagerStore";
 
 /**
  * Custom React hook for accessing the ProjectManagerStore.

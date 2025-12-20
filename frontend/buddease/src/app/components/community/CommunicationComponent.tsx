@@ -1,8 +1,8 @@
 // CommunicationComponent.tsx
-import Communication from '@/app/communications/Communication';
+import Communication from '@/app/components/community/CommunicationComponent';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { ChatRoom } from '@/app/communications/ChatRoom';
-import { CommunicationActions } from '@/CommunicationActions';
+import { CommunicationActions } from '@/app/actions/CommunicationActions';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 

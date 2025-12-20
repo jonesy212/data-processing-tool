@@ -2,7 +2,7 @@
 // Assuming the calendar system is managed locally within the application state
 
 import React from "react";
-import { setCalendarEvents } from "./CalendarUtils";
+import { setCalendarEvents } from "@/app/pages/blog/CalendarUtils";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 
 // Function to inject simulated events into the calendar system

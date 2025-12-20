@@ -1,8 +1,8 @@
 // CommunityData.tsx
 import { Project } from "@/app/models/projects/Project";
-import { Data } from "./data/Data";
-import { Team } from "../components/teams/Team";
-import { TeamMember } from "./teams/TeamMembers";
+import { Data } from "@/app/models/data/Data";
+import { Team } from "@/app/components/teams/Team";
+import { TeamMember } from "@/app/models/teams/TeamMembers";
 
 
 export interface CommunityData extends Data {

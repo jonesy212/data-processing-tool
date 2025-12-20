@@ -1,6 +1,6 @@
 // AppStore.ts
 import { UserProfile } from '@/app/api/ApiUser';
-import { CalendarManagerState } from '@/app/components/calendar/CalendarSlice';
+import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
 import { ProjectData } from '@/app/models/projects/Project';
 import { PagingState } from '@/app/pages/Paging';
 import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';

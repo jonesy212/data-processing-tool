@@ -2,10 +2,10 @@
 //client/CacheManager.ts
 'use client';
 
-import { STORE_KEYS } from '@/constants';
+import { STORE_KEYS } from '@/app/libraries/cache/client/constants';
 import { create } from "mobx-persist";
 import axios from "axios";
-import { CacheWriteOptions } from '@/types';
+import { CacheWriteOptions } from '@/app/libraries/cache/client/index';
 
 // Client-side storage implementation
 const getStorage = () => {

@@ -9,7 +9,7 @@ import { Task } from '@/app/models/tasks/Task';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigBuilder, SnapshotLifecycle } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotMeta } from '@/app/snapshots/SnapshotMeta';
+import { SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 

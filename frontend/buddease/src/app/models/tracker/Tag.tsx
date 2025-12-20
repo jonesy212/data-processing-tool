@@ -60,7 +60,7 @@ const tag1: Tag<BaseDataEntity> = {
   createdAt: new Date(),
   updatedAt: new Date(),
   createdBy: "system",
-  timestamp: Date.now(),
+  timestamp: new Date(),
   nulltype: {} as AllTypes,
   tags: {
     createdAt: new Date(),
@@ -79,7 +79,7 @@ const tag1: Tag<BaseDataEntity> = {
       createdAt: new Date(),
       updatedAt: new Date(),
       createdBy: "system",
-      timestamp: Date.now(),
+      timestamp: new Date(),
       nulltype: {} as AllTypes
     }
   } as TagsRecord<BaseDataEntity>
@@ -97,7 +97,7 @@ const tagOptions2: TagOptions<TagEntity> = {
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
-  timestamp: 0,
+  timestamp: new Date(),
   nulltype: {} as AllTypes
 };
 
@@ -157,7 +157,7 @@ export const createTag = <T extends BaseDataEntity>(
     createdAt?: Date;
     updatedAt?: Date;
     createdBy?: string;
-    timestamp?: number;
+    timestamp?: Date;
     nulltype?: AllTypes;
   } = {}
 ): Tag<T> & { tags?: TagsRecord<T> } => {
@@ -172,7 +172,7 @@ export const createTag = <T extends BaseDataEntity>(
     createdAt,
     updatedAt,
     createdBy = "user",
-    timestamp = Date.now(),
+    timestamp = new Date(),
     nulltype = {} as AllTypes
   } = options;
 

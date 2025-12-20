@@ -1,7 +1,7 @@
 // ProjectDashboard.tsx
 // In your main component or layout
 import FileStructureViewer from './FileStructureViewer';
-import FrontendStructureViewer from './FrontendStructureViewer';
+import FrontendStructureViewer from '@/app/components/development/FrontendStructureViewer';
 import AccessGuard from './AccessGuard';
 
 const ProjectDashboard = () => {

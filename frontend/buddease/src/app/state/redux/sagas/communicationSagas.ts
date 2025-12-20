@@ -2,8 +2,8 @@
 import { CommunicationActions } from "@/app/actions/CommunicationActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { all, call, put, takeLatest } from "redux-saga/effects";
-import { watchIdeationPhase } from "./watchers/onboarding/watchIdeationPhase";
-import { watchTeamCreationPhase } from "./watchers/watchTeamCreationPhase";
+import { watchIdeationPhase } from "@/app/state/redux/sagas/watchers/onboarding/watchIdeationPhase";
+import { watchTeamCreationPhase } from "@/app/state/redux/sagas/watchers/watchTeamCreationPhase";
 
 type CustomError = {
   message: string;

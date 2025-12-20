@@ -1,7 +1,7 @@
 // icons.ts
 
 import { IconLoader } from "./IconLoader";
-import { createDynamicIconLoader } from "./iconLoaderFactory";
+import { createDynamicIconLoader } from "@/app/components/icons/IconLibraryManager";
 
 // Use createDynamicIconLoader dynamically for each icon
 export const loadDuckDuckGoIcon: IconLoader = createDynamicIconLoader('duckduckgo-icon');

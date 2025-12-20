@@ -3,7 +3,7 @@ import NotificationManager from "@/app/features/support/NotificationManager";
 import { ThemeConfigProvider } from "@/app/hooks/userInterface/ThemeConfigContext";
 import ThemeCustomization from "@/app/hooks/userInterface/ThemeCustomization";
 import { DynamicPromptProvider } from "@/app/state/context/DynamicPromptContext";
-import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { NotificationData } from "@/app/hooks/useNotificationSystem";
 import { NotificationState, initialNotificationState } from "@/app/state/redux/slices/NotificationSlice";
 import { ThemeState, initialThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { BytesLike } from "ethers";

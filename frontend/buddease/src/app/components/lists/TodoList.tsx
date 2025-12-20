@@ -2,7 +2,7 @@
 // import { observer } from "mobx-react-lite";
 // import React from "react";
 // import { Link } from "react-router-dom";
-// import TodoList from '@/app/components/todos/TodoList'; // Correct the import statement
+// import TodoList from '@/app/components/lists/TodoList'; // Correct the import statement
 
 // interface TodoListProps {
 //   todoists?: TodoList[]; // Correct the type for todoists

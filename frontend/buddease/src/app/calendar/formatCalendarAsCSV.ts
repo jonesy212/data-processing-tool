@@ -2,7 +2,7 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext'
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
+import { AppCalendarEvent } from '@/app/typings/meetingTypes';
 
 // Function to format calendar data as CSV string
 export const formatCalendarAsCSV = (

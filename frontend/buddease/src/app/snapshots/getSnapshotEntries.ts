@@ -1,6 +1,6 @@
 // getSnapshotEntries.ts
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T } from "./SnapshotConfig";
+import { K, T } from "@/app/models/data/dataStoreMethods";
 
 // Implement the getSnapshotEntries method
 const getSnapshotEntries: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['getSnapshotEntries'] = (snapshotId: string) => {

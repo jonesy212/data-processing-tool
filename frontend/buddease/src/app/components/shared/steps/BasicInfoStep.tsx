@@ -1,6 +1,6 @@
 // BasicInfoStep.tsx
 import React, { useState } from 'react';
-import { GenericStepContainer } from '@/GenericStepContainer';
+import { GenericStepContainer } from '@/app/components/shared/steps/GenericStepContainer';
 import { StepComponentProps } from '@/app/hooks/useStepNavigation';
 
 interface BasicInfoStepProps extends StepComponentProps {

@@ -5,12 +5,12 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { RealtimeDataItem } from '../realtimeTypes';
-import { ApplyFieldFilters } from './AppEntity';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { ApplyFieldFilters } from '@/app/typings/entities/AppEntity';
 
 // Define sensitive fields for assignments
 const SensitiveAssignFields = [

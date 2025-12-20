@@ -1,5 +1,5 @@
 // ProjectOwnerSlice.ts
-import { Meeting } from "@/app/communications/scheduler/Meeting";
+import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { Team } from "@/app/components/teams/Team";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';

@@ -1,6 +1,6 @@
 // usePhaseWithLoad.ts
-import { usePhaseMeta } from '@/usePhaseMeta';
-import { waitForLoad } from '@/waitForLoad';
+import { usePhaseMeta } from '@/app/config/metadata/usePhaseMeta';
+import { waitForLoad } from '@/app/pages/layouts/waitForLoad';
 
 export const usePhaseWithLoad = <
     T extends BaseData<any>, 

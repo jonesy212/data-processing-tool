@@ -1,5 +1,5 @@
 // SnapshotApi.ts
-import createSnapshot from '@/app/api/SnapshotApi';
+import createSnapshot from '@/app/snapshots/createSnapshot';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -247,6 +247,10 @@ const apiCall = <
 
 class SnapshotApi {
   // Core CRUD Operations
+  getSnapshot = getSnapshot; // Reference to imported function
+  getSnapshotCriteria = getSnapshotCriteria; // Reference to local function
+  getSnapshotId = getSnapshotId; // Reference to local function
+
   async create<
     T extends BaseDataEntity,
     K extends T = T,
@@ -2173,8 +2177,7 @@ function createSnapshotContainer<
   }
 
 
-
-function extractCriteria<
+export function extractCriteria<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -2182,16 +2185,18 @@ function extractCriteria<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
   properties: Array<keyof FilterState>
 ): Partial<FilterState> {
   return properties.reduce((criteria, prop) => {
     if (snapshot && prop in snapshot) {
-      (criteria as any)[prop] = (snapshot as any)[prop];
+      (criteria as Partial<FilterState>)[prop] =
+        (snapshot as any)[prop];
     }
     return criteria;
   }, {} as Partial<FilterState>);
 }
+
 
 const getSnapshotCriteria = async <
   T extends BaseDataEntity = BaseDataRoot,
@@ -2205,8 +2210,9 @@ const getSnapshotCriteria = async <
   snapshot?: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
+    category?: Category,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainerData?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
@@ -3160,3 +3166,9 @@ const mapSnapshots = async <
 export const snapshotApi = new SnapshotApi();
 export default snapshotApi;
 
+export {
+  getSnapshot,
+  getSnapshotCriteria,
+  getSnapshotId,
+  // ... other exports
+};

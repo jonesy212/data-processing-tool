@@ -1,6 +1,6 @@
 // Registration.tsx
 import React from 'react';
-import RegistrationPhase from '@/RegistrationPhase';
+import RegistrationPhase from '@/app/pages/onboarding/RegistrationPhase';
 
 const Registration: React.FC = () => {
   const handleSuccess = async (userData: any) => {

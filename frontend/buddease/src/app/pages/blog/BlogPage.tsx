@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import createDynamicHook, { DynamicHookParams } from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
 import { BlogActions } from "@/app/components/models/blogs/BlogAction";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import BlogPostComponent, { BlogPost } from "./BlogPost";
+import BlogPostComponent, { BlogPost } from "@/app/pages/blog/BlogPost";
 import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
 
 // Define a typed version of useSelector using the root state type

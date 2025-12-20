@@ -1,6 +1,6 @@
 // DynamicIconsAndImages.tsx
 // components/DynamicIconsAndImages.tsx
-import LazyIcon from '@/LazyIconProps';
+import LazyIcon from '@/app/components/LazyIconProps';
 import React from 'react';
 
 interface IconProps {

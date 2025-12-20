@@ -1,8 +1,8 @@
 // TodoItem.tsx
 import { ItemTypes } from '@/app/models/content/ItemTypes';
-import { Todo } from '@/Todo'; // Adjust import path based on your file structure
+import { Todo } from '@/app/todos/Todo'; // Adjust import path based on your file structure
 import React, { useRef } from 'react';
-import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
+import { DropTargetMonitor, useDrag, useDrop } from '@/app/libraries/animations/DraggableAnimation/useDrag';
 
 interface DragItem {
   type: string;

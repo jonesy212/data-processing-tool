@@ -3,7 +3,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import React, { useState } from "react";
 
 import * as TradingAPI from '@/app/api/ApiTradeCore'
-import { useStepContext } from "@/app/context/StepContext";
+import { useStepContext } from "@/app/state/context/StepContext";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
 import ProfessionalTraderCalls from "@/app/pages/personas/ProfessionalTraderCalls";
@@ -20,7 +20,7 @@ import {
   useNotification,
 } from '@/app/state/context/NotificationContext';
 import TradingPreferencesStep from "./TradingPreferencesStep";
-import { TradingPhase } from "./crypto/CryptoTradingPhase";
+import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
 import TraderTypesSelection from "./crypto/TraderTypesSelection";
 
 const TradingProcess: React.FC = () => {

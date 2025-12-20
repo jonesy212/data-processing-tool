@@ -2,7 +2,7 @@
 // AppTreeService.ts - Enhanced Version
 import { ProjectTreeAnalyzer } from '@/app/scripts/generateTree';
 import DirectoryExplorer from '@/app/pages/dashboards/DirectoryExplorer';
-import { FileTreeService, FileTreeNode } from './FileTreeService';
+import { FileTreeService, FileTreeNode } from '@/app/services/FileTreeService';
 import appTreeApiService from '@/app/api/appTreeApi';
 import { DocumentTree } from "@/app/users/User";
 

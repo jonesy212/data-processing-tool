@@ -1,15 +1,16 @@
 // useEventSystem.ts
 import { useCallback, useRef, useEffect } from 'react';
 import { SnapshotEventHandlers } from '@/app/libraries/eventSystem/eventHandlers';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry';
 import { 
   EventContext, 
   EventHandler,
   SnapshotEvent,
   ErrorEvent
-} from '@/app/types/eventTypes';
-import { BaseDataEntity, DefaultMeta } from '@/types/baseTypes';
-import { Attachment } from '@/types/attachmentTypes';
+} from '@/app/typings/eventHandlers/eventTypes'
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export const useEventSystem = <
   T extends BaseDataEntity = BaseDataEntity,
@@ -19,10 +20,8 @@ export const useEventSystem = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >() => {
-  const eventHandlersRef = useRef<
-    SnapshotEventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  >();
-  const callbackRegistryRef = useRef<CallbackRegistry>();
+  const eventHandlersRef = useRef<SnapshotEventHandlers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
+  const callbackRegistryRef = useRef<CallbackRegistry | null>(null);
   const contextRef = useRef<Partial<EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>({});
 
   // Initialize event system
@@ -160,6 +159,7 @@ const mapSnapshotData = useCallback(async (
     // Update timestamp
     mappedData.timestamp = new Date();
     
+    const eventSystem = useEventSystem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>()
     // Emit events as needed
     await eventSystem.emitSnapshotMapped(mappedData, {
       operation: 'mapSnapshotData',

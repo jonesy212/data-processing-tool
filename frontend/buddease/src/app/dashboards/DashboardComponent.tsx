@@ -14,8 +14,8 @@ import UserDashboard from "@/app/pages/dashboards/UserDashboard";
 import UserPreferencesDashboard from "@/app/pages/dashboards/UserPreferencesDashboard";
 import VisualFlowDashboard from "@/app/pages/dashboards/VisualFlowDashboard";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
-import MediaDashboard from "@/app/socialMedia/MediaDashboard";
-import { DashboardSettings, DashboardTypeEnum } from "./DashboardSettings";
+import MediaDashboard from "@/app/components/socialMedia/MediaDashboard";
+import { DashboardSettings, DashboardTypeEnum } from "@/app/dashboards/DashboardSettings";
 import PricingDashboard from "./PricingDashboard";
 import RecruiterSeekerDashboard from "./RecruiterSeekerDashboard";
 

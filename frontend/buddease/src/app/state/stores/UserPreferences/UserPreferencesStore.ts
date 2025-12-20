@@ -1,7 +1,7 @@
 // UserPreferencesStore.ts
 // src/app/state/stores/UserPreferences/UserPreferencesStore.ts
 
-import themeSettings from '@/app/components/libraries/ui/theme/ThemeConfig';
+import themeSettings from '@/app/config/endpoints/themeConfig';
 import { action, makeObservable, observable } from 'mobx';
 
 class UserPreferencesStore {

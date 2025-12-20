@@ -1,12 +1,12 @@
 // sampleSnapshotInstance.ts
-import { SnapshotEvent } from '@/app/typings/appEventTypes'
+import { SnapshotEvent } from '@/app/typings/snapshotTypes'
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { getDataVersions } from '@/app/api/ApiData';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
@@ -23,7 +23,7 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreProps  } from '@/app/snapshots/SnapshotStoreProps';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotWithCriteria } from '@/app/snapshots/';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
@@ -39,7 +39,7 @@ const sampleSnapshot: Snapshot<
   AppEntity,                // T — base entity
   AppK,                     // K — potentially derived or extended entity
   AppMeta,                  // Meta — matches T and K
-  AppAttachment,               // AttachmentType
+  AppAttachment,             // AttachmentType
   AppExcludedFields,        // ExcludedFields
   AppIncludedFields         // IncludedFields
 > = {
@@ -47,7 +47,10 @@ const sampleSnapshot: Snapshot<
   value: "42",
   category: "sample snapshot",
   snapshotStoreConfig: {} as SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>,
-  getSnapshotItems: function (): (SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | SnapshotItem<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>)[] {
+  getSnapshotItems: function (): (
+    SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> | SnapshotItem<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
+
+  )[] {
     throw new Error("Function not implemented.");
   },
   defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>) => Subscriber<AppEntity,
@@ -610,9 +613,15 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
   },
   
   
-  removeStore: function (storeId: number, store: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, snapshotId: string, snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, type: string, event: Event): void | null {
+  removeStore: function (
+    storeId: number, 
+    store: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, 
+    snapshotId: string, snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, type: string, 
+    event: Event
+  ): void | null {
     throw new Error("Function not implemented.");
   },
+
   unsubscribe: function (
     unsubscribeDetails: {
     userId: string; 
@@ -653,7 +662,9 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
   addSnapshotFailure: function (snapshotManager: SnapshotManager<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, payload: { error: Error; }): void {
     throw new Error("Function not implemented.");
   },
-  configureSnapshotStore: function (snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, snapshotId: string, data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>>, events: Record<string, CalendarEvent<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[]>, dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[], newData: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, store: SnapshotStore<any, any>, callback: (snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>) => void): void | null {
+  configureSnapshotStore: function (snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, 
+    snapshotId: string, 
+    data: Map<string, Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>>, events: Record<string, CalendarEvent<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[]>, dataItems: RealtimeDataItem<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[], newData: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, store: SnapshotStore<any, any>, callback: (snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>) => void): void | null {
     throw new Error("Function not implemented.");
   },
   updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, snapshot: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>, payload: { error: Error; }): void | null {

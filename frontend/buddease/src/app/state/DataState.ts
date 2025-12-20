@@ -1,7 +1,7 @@
 // DataState.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
 type DataState<

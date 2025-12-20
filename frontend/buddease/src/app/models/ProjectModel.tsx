@@ -1,20 +1,13 @@
 // ProjectModel.tsx
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
-import { DatabaseService } from '@/app/config/DatabaseTypes';
+import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import DatabaseClient from '@/app/todos/tasks/DatabaseClient';
+import DatabaseClient from '@/app/api/DatabaseClient';
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta, ProjectDataType } from '@/app/typings/entities/ProjectEntity';
 
 
-
-type AppProject = Project<
-  ProjectEntity,
-  ProjectEntity,
-  DefaultMeta<ProjectEntity, ProjectEntity>,
-  Attachment,
-  DefaultExcludedFields<ProjectEntity>
->;
 
 // Project-bound helpers
 type ProjectEntity = BaseDataEntity; // or your real Project shape
@@ -23,8 +16,6 @@ type ProjectMeta = DefaultMeta<ProjectEntity, ProjectK>;
 type ProjectExcludedFields = DefaultExcludedFields<ProjectEntity>;
 
 // Concrete aliases
-type ProjectSnapshot = Snapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
-type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 class ProjectModel <
   T extends BaseDataEntity,
@@ -40,14 +31,14 @@ class ProjectModel <
   private readonly dbClient: DatabaseClient; // Keep this as an instance property
   static dbClient: any;
   
-  private static dbService: DatabaseService; // Database service instance
+  private static dbService: ClientDatabaseService; // Database service instance
   
   constructor(dbClient: DatabaseClient) {
     this.dbClient = dbClient; // Instance property can use the dbClient passed in the constructor
   }
   
   // Update the method to accept an object with a `where` property
-  static findOne(criteria: { tableName?: string; where: { id: string } }): Promise<Project<any, any, any, any> | null> {
+  static findOne(criteria: { tableName?: string; where: { id: string } }): Promise<Project<any, any, any, any, any, any> | null> {
     return new Promise(async (resolve, reject) => {
       try {
         // Ensure the tableName is provided in the criteria or fall back to the default
@@ -58,7 +49,7 @@ class ProjectModel <
           query: criteria.where  // Use the `where` condition from the criteria
         });
         
-        resolve(result ? (result as Project<any, any, any, any>) : null);
+        resolve(result ? (result as Project<any, any, any, any, any, any>) : null);
       } catch (error) {
         console.error("Error finding project:", error);
         resolve(null);
@@ -66,16 +57,16 @@ class ProjectModel <
     });
   }
 
-  static async update(projectData: ProjectData<any, any, any, any>, whereClause: any): Promise<void> {    // Use the database service to update the project with the provided whereClause
-    await ProjectModel.dbService.update(projectData, whereClause);
+  static async update(projectData: ProjectData<any, any, any, any, any, any>, whereClause: any): Promise<void> {    // Use the database service to update the project with the provided whereClause
+    await ProjectModel.dbService.update('projects', projectData, whereClause);
   }
 
-  static async create(projectData: ProjectData<any, any, any, any>): Promise<void> {
+  static async create(projectData: ProjectData<any, any, any, any, any, any>): Promise<void> {
     // Use the database service to create the project
     await ProjectModel.dbService.create(projectData);
   }
 
-  static async findAll(): Promise<Project<any, any, any, any>[]> {
+  static async findAll(): Promise<Project<any, any, any, any, any, any>[]> {
     return await ProjectModel.dbService.findAll(ProjectModel.tableName); // Use static tableName
   }
 
@@ -103,7 +94,7 @@ class ProjectModel <
     });
   }
 
-  static getProjectById(projectId: number): Promise<Project<any, any, any, any> | null> {
+  static getProjectById(projectId: number): Promise<Project<any, any, any, any, any, any> | null> {
     return new Promise(async (resolve) => {
         try {
             const queryResult = await (this.dbClient.query as any)(

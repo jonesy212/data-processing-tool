@@ -1,6 +1,6 @@
 // ApiConfigService.ts
 // ApiConfig.ts
-import { Endpoints } from './ApiEndpoints';
+import { Endpoints } from '@/app/api/ApiEndpoints';
 import { EndpointConfig, EndpointConfigurations } from '@/app/config/EndpointConfig';
 import { RetryConfig } from "@/app/services/ConfigurationService";
 import { CacheConfig } from "@/app/config/CacheConfig";

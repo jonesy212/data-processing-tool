@@ -1,7 +1,7 @@
 // ConfigurationService.ts
 import ApiConfigService, { ApiConfig } from '@/app/api/ApiConfigService';
 import { getConfigsData } from '@/app/api/getConfigsApi';
-import { endpoints as mergedEndpoints } from './endpointConfigurations';
+import { endpoints as mergedEndpoints } from '@/app/api/endpointConfigurations';
 
 import { createSystemConfigs } from '@/app/api/systemConfigs';
 import { UserConfigs } from '@/app/api/userConfigs';

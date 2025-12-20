@@ -1,4 +1,4 @@
-import { MarketData } from "@/app/crypto/TradingStrategy";
+import { MarketData } from "@/app/trading/TradingStrategy";
 
 // Function for automated decision making
 const automatedDecisionMaking = (marketData: MarketData[], winRate: number): void => {

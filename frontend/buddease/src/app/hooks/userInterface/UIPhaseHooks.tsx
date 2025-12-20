@@ -1,6 +1,6 @@
 // UIPhaseHooks.tsx
 import { UIActions } from "@/app/actions/UIActions";
-import { fetchData } from "@/app/api/ApiData";
+import { fetchData } from "@/utils/web3/dataAnalysisUtils";
 import UserService from "@/app/api/ApiUser";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import * as userApi from "@/app/api/UsersApi";

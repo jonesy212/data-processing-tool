@@ -1,5 +1,5 @@
 // ActivityLog.tsx
-import { ActivityLogEntry } from "./UserSlice";
+import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";
 class ActivityLog {
   private entries: ActivityLogEntry[];
 

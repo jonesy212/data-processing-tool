@@ -56,7 +56,7 @@ import {
 } from '@/app/models/data/StatusType';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';
 import { LogData } from '@/app/models/LogData';
-import { Member } from '@/app/models/members/Members';
+import { Member } from '@/app/models/members/Member'
 import { Task } from '@/app/models/tasks/Task';
 import { Tag } from '@/app/models/tracker/Tag';
 import { initiateDataAnalysis } from '@/app/services/dataAnalysisOrchestrator';

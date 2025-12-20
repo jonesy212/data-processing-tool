@@ -8,7 +8,7 @@ import {
   selectParticipants,
   updateParticipant,
 } from "@/app/store/participantSlice";
-import { Participant } from "@/app/models/Participant";
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 
 const ParticipantComponent = () => {
   const dispatch = useDispatch();

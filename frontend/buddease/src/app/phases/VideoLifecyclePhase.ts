@@ -1,6 +1,6 @@
 // VideoLifecyclePhase.ts
 // VideoLifecycleHooks.ts
-import { PhaseOptions } from "../Lifecycle";
+import { PhaseOptions } from "@/app/hooks/phases/lifecycles";
 import { VideoLifecyclePhase } from "./VideoLifecyclePhase";
 
 export enum VideoLifecyclePhase {

@@ -1,7 +1,7 @@
 // getCategoryFromFilePath.ts
 import { FileCategory, fileMapping } from "@/app/documents/FileType";
-import { fileCategoryMapping } from "@/app/components/libraries/categories/fileCategoryMapping";
-import { determineFileCategoryLogger } from "@/app/components/logging/determineFileCategoryLogger";
+import { fileCategoryMapping } from "@/app/libraries/categories/fileCategoryMapping";
+import { determineFileCategoryLogger } from "@/app/logging/determineFileCategoryLogger";
 
 // Function to extract category from a file path
 function getCategoryFromFilePath(filePath: string): FileCategory | null {

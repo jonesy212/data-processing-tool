@@ -1,9 +1,9 @@
 // TaskSnapshotStore.ts
 // // TaskSnapshotStore.ts
 
-// import { Task } from "react-native";
-// import { SnapshotStoreConfig } from "./SnapshotConfig";
-// import SnapshotStore, { Snapshot } from "./SnapshotStore";
+// import { Task } from "@/app/models/tasks/Task";
+// import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+// import SnapshotStore, { Snapshot } from "@/app/snapshots/Snapshot";
 
 // // Define the TaskSnapshotStore interface that extends SnapshotStore
 // interface TaskSnapshotStore<Data> extends SnapshotStore<Data> {

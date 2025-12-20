@@ -3,12 +3,12 @@
 import FrontendStructure from '@/app/config/appStructure/FrontendStructureComponent';
 import React, { useState } from 'react';
 import { useRoleAccess, useCurrentUser } from '@/app/hooks/useRoleAccess';
-import AccessDenied from '@/app/components/AccessDenied';
-import { UserRoleEnum } from '@/app/models/UserRoles';
-import { UserRole } from '@/app/hooks/useAccessControl';
+import AccessDenied from '@/app/pages/AccessDenied';
+import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
+import { UserRole } from '@/app/models/UserRole';
 
 interface FrontendStructureViewerProps {
-  frontendStructure: FrontendStructure;
+  frontendStructure: any
   showSensitiveFiles?: boolean;
   onEditRequest?: (fileName: string) => void;
   onMoveRequest?: (fileName: string) => void;
@@ -78,12 +78,12 @@ const FrontendStructureViewer: React.FC<FrontendStructureViewerProps> = ({
   // Show access denied if user cannot view frontend structure
   if (!canView) {
     const allowedRoles: UserRole[] = [
-      UserRoleEnum.UXUIDesigner,
-      UserRoleEnum.Developer,
-      UserRoleEnum.Administrator,
-      UserRoleEnum.System,
-      UserRoleEnum.Contributor,
-      UserRoleEnum.Editor
+      UserRoles[UserRoleEnum.UXUIDesigner],
+      UserRoles[UserRoleEnum.Developer],
+      UserRoles[UserRoleEnum.Administrator],
+      UserRoles[UserRoleEnum.System],
+      UserRoles[UserRoleEnum.Contributor],
+      UserRoles[UserRoleEnum.Editor]
     ];
 
     return (
@@ -132,10 +132,17 @@ const FrontendStructureViewer: React.FC<FrontendStructureViewerProps> = ({
       'edit-structure': 'modify:file-structure'
     };
 
+    // For action-level denied, use UserRole objects
+    const requiredRoles: UserRole[] = [
+      UserRoles[UserRoleEnum.Developer],
+      UserRoles[UserRoleEnum.Administrator],
+      UserRoles[UserRoleEnum.System]
+    ];
+
     return (
       <AccessDenied 
         feature={`Ability to ${actionMessages[showActionDenied as keyof typeof actionMessages]}`}
-        requiredRole={[UserRoleEnum.Developer, UserRoleEnum.Administrator, UserRoleEnum.System]}
+        requiredRole={requiredRoles}
         userRole={userRole}
         message={`Your current role (${userRole}) does not have permission to ${actionMessages[showActionDenied as keyof typeof actionMessages]}.`}
         type="permission"
@@ -163,12 +170,15 @@ const FrontendStructureViewer: React.FC<FrontendStructureViewerProps> = ({
   const structure = frontendStructure.getStructure();
   
   // Filter structure entries based on permissions and sensitive file settings
-  const structureEntries = Object.entries(structure).filter(([_, fileInfo]) => {
-    if (fileInfo.isSensitive && !canEdit && !showSensitiveFiles) {
-      return false;
+  const structureEntries = Object.entries(structure).filter(
+    ([_, fileInfo]) => {
+      // fileInfo is now strongly typed
+      if (fileInfo.isSensitive && !canEdit && !showSensitiveFiles) {
+        return false;
+      }
+      return true;
     }
-    return true;
-  });
+  );
 
   // Determine access level for display
   const getAccessLevel = () => {

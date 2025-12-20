@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { default as CustomFile, default as File } from "@/app/documents/File";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
+import { AppCalendarEvent } from '@/app/typings/meetingTypes';
 import { AppNotificationData } from '@/app/typings/entities/CommonEntities';
 import { createAction } from "@reduxjs/toolkit";
 
@@ -154,7 +154,7 @@ export const CalendarActions = <
   
   attachFileToEvent: createAction<{
     eventId: string;
-    attachment: File<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string; // File object or URL
+    attachment: File<T> | string; // File object or URL
     // Additional parameters as needed
   }>("attachFileToEvent"),
 
@@ -192,7 +192,7 @@ export const CalendarActions = <
     // Additional parameters as needed
   }>("createEventTemplate"),
 
-  importEvents: createAction<File<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>("importEvents"),
+  importEvents: createAction<File<T>>("importEvents"),
   exportEvents: createAction("pexportEvents"),
 
   viewEventHistory: createAction<string>("viewEventHistory"),
@@ -244,7 +244,8 @@ export const CalendarActions = <
   }>("editRecurringEventInstance"),
 
 
-  collaborativeEditingOfCalendarEventDetails: createAction<{   eventId: string;
+  collaborativeEditingOfCalendarEventDetails: createAction<{   
+    eventId: string;
     updatedProperties: Partial<DefaultCalendarEvent>; // Assuming CalendarEvent is the type of your event object
   }>("collaborativeEditingOfCalendarEventDetails"),
 

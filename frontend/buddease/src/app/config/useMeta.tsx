@@ -9,8 +9,8 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { EventManager } from "@/app/state/stores/DataStore";
 import VersionImpl, { Version } from "@/app/versions/Version";
 import { useMemo } from "react";
-import { frontendStructure } from "./appStructure/FrontendStructure";
-import { StructuredMetadata } from "./StructuredMetadata";
+import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 function useMeta<
   T extends BaseDataEntity,

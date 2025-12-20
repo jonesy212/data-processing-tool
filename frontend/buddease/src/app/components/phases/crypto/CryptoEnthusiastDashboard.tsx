@@ -1,7 +1,7 @@
 // CryptoEnthusiastDashboard.tsx
 import { tradeApi } from '@/app/api/ApiTrade';
 import { useEffect, useState } from 'react';
-import { MarketData } from '@/app/components/crypto/TradingStrategy';
+import { MarketData } from '@/app/trading/TradingStrategy';
 import { CryptoActions } from '@/app/actions/CryptoActions';
 import React from "react";
 

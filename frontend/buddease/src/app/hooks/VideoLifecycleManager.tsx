@@ -1,6 +1,6 @@
 // VideoLifecycleManager.tsx
 import React from "react";
-import { useVideoLifecycle } from "./useVideoLifecycle";
+import { useVideoLifecycle } from "@/app/hooks/useVideoLifecycle";
 
 const VideoLifecycleManager: React.FC = () => {
   const {

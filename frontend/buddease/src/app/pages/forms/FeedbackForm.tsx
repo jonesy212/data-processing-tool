@@ -1,5 +1,5 @@
 // FeedbackForm.tsx
-import { Feedback } from '@/app/components/support/Feedback';
+import { Feedback } from '@/app/features/support/Feedback';
 import React, { useState } from 'react';
 
 const FeedbackForm: React.FC<{ onSubmit: (feedback: Feedback) => void }> = ({ onSubmit }) => {

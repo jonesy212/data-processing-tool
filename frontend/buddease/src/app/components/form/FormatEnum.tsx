@@ -10,7 +10,7 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
     CustomDocxtemplater,
     DocumentPath,
-} from "@/app/typings/documents";
+} from "@/app/typings/documentTypes";
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 

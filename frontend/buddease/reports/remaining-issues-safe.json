@@ -1,0 +1,122 @@
+[
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/notifications/NotificationComponent.tsx",
+    "line": 11,
+    "importPath": "@/NotificationComponent.css",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/components/notifications/NotificationComponent",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/components/notifications/NotificationComponent"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/routing/ProtectedRoute.tsx",
+    "line": 28,
+    "importPath": "@/forms/LoginForm",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/pages/forms/LoginForm",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/pages/forms/LoginForm"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/userInterface/ResizablePanels.tsx",
+    "line": 7,
+    "importPath": "@/react-resizable/css/styles.css",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/components/form/FormElementStyles",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/components/form/FormElementStyles"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/blog/BlogOverview.tsx",
+    "line": 6,
+    "importPath": "@/app/pages/blog/BlogOverview.css",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/pages/blog/BlogOverview",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/pages/blog/BlogOverview"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/forms/PreviewForm.tsx",
+    "line": 7,
+    "importPath": "@/app/pages/forms/PreviewForm.css",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/pages/forms/PreviewForm",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/pages/forms/PreviewForm"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 51,
+    "importPath": "@/app/tyings/entities/TaskEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/TaskEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/TaskEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 52,
+    "importPath": "@/app/tyings/entities/ProjectEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/ProjectEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/ProjectEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 53,
+    "importPath": "@/app/tyings/entities/UserEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/UserEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/UserEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 54,
+    "importPath": "@/app/tyings/entities/TeamEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/TeamEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/TeamEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 55,
+    "importPath": "@/app/tyings/entities/SnapshotEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/SnapshotEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/SnapshotEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/BaseTypes.ts",
+    "line": 56,
+    "importPath": "@/app/tyings/entities/AppEntity",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/typings/entities/AppEntity",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/typings/entities/AppEntity"
+  },
+  {
+    "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/index.ts",
+    "line": 7,
+    "importPath": "@/styles/main.css",
+    "reason": "Dynamic ESM import failure",
+    "suggestedFix": "@/app/config/MainConfig",
+    "confidenceScore": 80,
+    "validated": true,
+    "validationMessage": "Semantic fallback: @/app/config/MainConfig"
+  }
+]

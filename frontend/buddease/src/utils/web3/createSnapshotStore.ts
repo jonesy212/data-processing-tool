@@ -9,7 +9,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotData } from '@/app/snapshots';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";

@@ -1,6 +1,6 @@
 // iOsIcons.ts
 // iosIcons.ts
-import { IconLoader, createIconLoader } from "./IconLoader";
+import { IconLoader, createIconLoader } from "@/app/components/icons/IconLoader";
 
 // iOS IO
 // App Store Icon

@@ -1,12 +1,12 @@
 // newsFeedIntegration.tsx
 // Example function to update state with news feed data
 
-import internalApiService from "@/app/api/ApiClient";
+import internalApiService from '@/app/api/ApiClient';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import { updateFilteredNewsUI } from "@/app/features/news/updateFilteredNewsUI'
+import { updateFilteredNewsUI } from '@/app/features/news/updateFilteredNewsUI'
 import { useNotification } from '@/app/state/context/NotificationContext';
 
-import { categorizeNews, identifyTrendingTopics } from "./articleKeywords";
+import { categorizeNews, identifyTrendingTopics } from "@/app/components/community/articleKeywords";
 
 import { useState } from "react";
 

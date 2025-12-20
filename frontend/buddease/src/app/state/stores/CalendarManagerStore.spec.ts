@@ -1,14 +1,14 @@
 // CalendarManagerStore.spec.ts
-import { NotificationType } from '@/app/components/context/NotificationContext';
-import { Member } from '@/app/components/models/teams/Contributor';
-import { useSecureDocumentId } from '@/app/components/utils/useSecureDocumentId';
+import { NotificationType } from '@/app/state/context/NotificationContext';
+import { Member } from '@/app/models/members/Member';
+import { useSecureDocumentId } from '@/app/hooks/useSecureDocumentId';
 import { useSecureStoreId } from "@/app/hooks/useSecureStoreId";
 import generateFakeData, { FakeDataPartial } from "@/app/intelligence/FakeDataGenerator";
 import { metadata } from '@/app/layout';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import SnapshotStore, { Snapshot } from "@/app/snapshots/SnapshotStore";
-import { ReassignEventResponse } from '@/AssignEventStore';
+import SnapshotStore, { Snapshot } from "@/app/snapshots/Snapshot";
+import { ReassignEventResponse } from '@/app/state/stores/AssignEventStore';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import CalendarManagerStoreClass, {
   CalendarEvent,

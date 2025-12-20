@@ -37,6 +37,15 @@ type ProjectEntity = BaseDataEntity & {
   title: string;
 };
 
+
+type AppProject = Project<
+  ProjectEntity,
+  ProjectEntity,
+  DefaultMeta<ProjectEntity, ProjectEntity>,
+  Attachment,
+  DefaultExcludedFields<ProjectEntity>
+>;
+
 // -------------------
 // Type Aliases for Six Arguments
 // -------------------
@@ -119,6 +128,7 @@ type ProjectSnapshotStore = SnapshotStore<ProjectEntity, ProjectK, ProjectMeta, 
 type ProjectSnapshotWithCriteria = SnapshotWithCriteria<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 type ProjectSnapshotData = SnapshotData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 type ProjectSubscriberCollection = SubscriberCollection<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 
 // -------------------
@@ -128,8 +138,30 @@ type ProjectSnapshotStoreConfig = SnapshotStoreConfig<ProjectEntity, ProjectK, P
 
 
 export type {
-  ProjectAttachment, ProjectEntity, ProjectExcludedFields,
-  ProjectIncludedFields, ProjectK,
-  ProjectMeta
+  ProjectEntity,
+  ProjectK,
+  ProjectMeta, 
+  ProjectAttachment, 
+  ProjectExcludedFields,
+  ProjectIncludedFields, 
+  ProjectDataType,
+  ProjectSnapshot,
+  ProjectSnapshotStore,
+  ProjectSnapshotWithCriteria,
+  ProjectSnapshotData,
+  ProjectSubscriberCollection,
+  ProjectFull,
+  ProjectSnapshotFull,
+  ProjectSnapshotDataFull,
+  ProjectSnapshotStoreFull,
+  ProjectSnapshotWithCriteriaFull,
+  ProjectSubscriberCollectionFull,
+  ProjectRealtimeDataItemFull,
+  ProjectSnapshotStoreConfigFull,
+  ProjectSnapshotsArrayFull,
+  ProjectParams,
+  ProjectSnapshotFromParams,
+  ProjectSnapshotStoreConfig,
+  ProjectSnapshotUnionFromParams
 };
 

@@ -24,8 +24,8 @@ import {
   generateDrawingJSON,
 } from "@/app/libraries/drawing/generateDrawingJSON";
 import { generatePresentationJSON } from "@/app/libraries/presentations/generatePresentationJSON";
-import { loadCryptoWatchlistFromDatabase } from "@/app/models/crypto/CryptoWatchlist";
-import { generateCryptoWatchlistJSON } from "@/app/models/crypto/generateCryptoWatchlistJSON";
+import { loadCryptoWatchlistFromDatabase } from "@/app/models/cypto/CryptoWatchlist";
+import { generateCryptoWatchlistJSON } from "@/app/models/cypto/generateCryptoWatchlistJSON";
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
@@ -38,11 +38,11 @@ import {
   DocumentTypeEnum,
 } from "@/app/typings/documentTypes";
 import Papa from "papaparse";
-import { PDFDocument } from "pdf-lib";
-import { AppType } from "vite";
-import { extractTextFromPage } from "./CustomPDFPage";
-import { ModifiedDate, ParsedData, YourPDFType } from "./DocType";
-import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
+import { PDFDocument } from "@/app/documents/editing/PDFDocument";
+import { AppType } from "@/app/documents/parsePDF";
+import { extractTextFromPage } from "@/app/documents/CustomPDFPage";
+import { ModifiedDate, ParsedData, YourPDFType } from "@/app/documents/DocType";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

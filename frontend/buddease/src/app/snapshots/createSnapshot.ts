@@ -10,14 +10,14 @@ import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessin
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
-import { Snapshot, SnapshotConfig } from '@/app/snapshots/Snapshot';
+import { Snapshot, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
-import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { internalCache } from '@/utils/cache/InternalCache';
 import { deepEqual } from 'assert';
@@ -189,8 +189,12 @@ export const createCompleteSnapshot = async <
 
     // Build base snapshot using builder
     const builder = defaultSnapshotBuilder(baseData, baseMeta, storeProps, storeOptions);
-    const { data: baseBuiltSnapshot } = await builder.buildBaseConfig();
-    
+    const result = await builder.buildBaseConfig();
+
+    if (!result || !result.data) {
+      throw new Error("Failed to build base snapshot configuration");
+    }
+    const baseBuiltSnapshot = result.data;
     // Create basic snapshot from built data - ADD MISSING PROPS
     const basicSnapshot = createBasicSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       id,

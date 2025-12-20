@@ -1,7 +1,7 @@
 // dynamicFormGenerator.ts
 
 import { Question } from '@/app/pages/onboarding/Question'; // Import the Question interface
-import generateDynamicQuestions from '@/dynamicQuestionGenerator';
+import generateDynamicQuestions from '@/app/hooks/dynamicHooks/dynamicQuestionGenerator';
 
 interface FormQuestion {
     id: string;

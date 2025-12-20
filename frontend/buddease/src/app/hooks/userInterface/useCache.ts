@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CacheManager } from '@/lib/cache';
+import { CacheManager } from '@/app/libraries/cache/client/CacheManager';
 
 export const useCache = (key: string) => {
   const [data, setData] = useState<any>(null);

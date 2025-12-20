@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { ProjectStore } from '@/app/state/stores/ProjectStore';
 import { CryptoStore } from '@/app/state/stores/CryptoStore';
-import { TaskManagerStore } from '@/app/state/stores/TaskStore';
-import { PhaseStore } from '../stores/PhaseStore';
+import { TaskManagerStore } from '@/app/state/stores/TaskStore ';
+import { PhaseStore } from '@/app/state/stores/PhaseStore';
 import { useDispatch } from 'react-redux';
 import { hydrateSnapshot, persistSnapshot } from '@/app/api/persistSnapshot/route'; // <- add your snapshot helpers
 import { RootState } from '@/app/state/redux/slices/RootSlice'

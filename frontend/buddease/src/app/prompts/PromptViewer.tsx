@@ -1,7 +1,7 @@
 // PromptViewer.tsx
 
 import React from "react";
-import { Prompt } from "./PromptPage";
+import { Prompt } from "@/app/prompts/PromptPage";
 
 interface PromptViewerProps{
     prompts: Prompt[];

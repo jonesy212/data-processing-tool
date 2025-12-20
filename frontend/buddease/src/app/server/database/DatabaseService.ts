@@ -1,14 +1,15 @@
-// DatabaseService.ts
+// ClientDatabaseService.ts
 // SERVER-SIDE ONLY - This goes in /server/ directory
 import { Pool } from 'pg';
-import { DatabaseQuery, DatabaseService } from '@/app/config/DatabaseTypes';
+import { DatabaseQuery, ClientDatabaseService } from '@/app/config/DatabaseTypes';
+import { BackendDatabaseService } from '@/app/typings/database';
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { sanitizeInput } from '@/app/models/cypto/SanitizationFunctions'
 import performDatabaseOperation from '@/app/server/database/DatabaseOperations';
 import { database } from '@/app/generators/GenerateDatabase'; 
 
-export abstract class BaseDatabaseService implements DatabaseService {
+export abstract class BaseDatabaseService implements ClientDatabaseService {
   protected pool: any;
   protected client: any;
   
@@ -481,5 +482,5 @@ initializeDatabase().then(success => {
 });
 
 
-export type { DatabaseConfig, DatabaseService };
+export type { DatabaseConfig, ClientDatabaseService };
 

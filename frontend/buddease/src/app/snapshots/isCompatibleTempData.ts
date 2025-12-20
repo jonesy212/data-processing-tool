@@ -1,6 +1,6 @@
 // isCompatibleTempData.ts
 //isCompatibleTempData.ts
-import { TempData } from "@/app/components/models/data/TempData";
+import { TempData } from "@/app/models/data/TempData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -15,10 +15,10 @@ import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { Callback } from "./subscribeToSnapshotsImplementation";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 type U = T;
 type WrappedU = U extends BaseDataEntity ? U : BaseData<U, U, StructuredMetadata<U, U>, Attachment>;

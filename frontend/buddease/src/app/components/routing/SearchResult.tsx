@@ -7,7 +7,7 @@ import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import ListGenerator from '@/app/generators/ListGenerator';
 import FolderData from '@/app/models/data/FolderData';
-import { Entity } from '@/app/routing/FuzzyMatch';
+import { Entity } from '@/app/config/BaseConfig';
 import SearchHistory from '@/app/versions/SearchHistory';
 import { Version } from '@/app/versions/Version';
 import * as React from 'react';

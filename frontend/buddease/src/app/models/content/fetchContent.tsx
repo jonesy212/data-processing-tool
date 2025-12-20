@@ -24,7 +24,7 @@ interface ContentNotificationMessages extends DataNotificationMessages {
 
 // Function to fetch content by contentId
 
-import { contentApiService } from './contentApiService';
+import { contentApiService } from '@/app/api/service/ContentApiService';
 
 export const fetchContentById = async (contentId: number): Promise<ContentResponseType | null> => {
   return await contentApiService.fetchContentById(contentId);

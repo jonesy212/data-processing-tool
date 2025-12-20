@@ -17,7 +17,7 @@ import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { BaseData, coreData, Data } from '@/app/models/data/Data';
 import { Meta } from "@/app/models/data/dataStoreMethods";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { Member } from '@/app/models/members/Members';
+import { Member } from '@/app/models/members/Member'
 import { Phase } from '@/app/models/phases/Phase';
 import { Task } from "@/app/models/tasks/Task";
 import { TrackerProps } from "@/app/models/tracker/Tracker";
@@ -25,7 +25,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { taskService } from "@/app/services/TaskService";
 import { PrivacySettings, selectedSettings } from "@/app/settings/PrivacySettings";
-import { TaskEntity } from '@/app/snapshots/SnapshotActoins';
+import { TaskEntity } from '@/app/typings/entities/TaskEntity';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { resetState } from "@/app/state/redux/slices/AppSlice";

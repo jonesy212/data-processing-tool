@@ -1,8 +1,8 @@
 // stakeholderRoadmap.ts
 // services/stakeholderRoadmap.ts
-import { RoadmapNode } from '@/types/roadmap';
+import { RoadmapNode } from '@/app/typings/roadmap';
 import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { AnalysisNode } from './analysisTypes';
+import { AnalysisNode } from '@/app/typings/AnalysisNode'
 
 export function buildStakeholderRoadmap<T extends BaseDataEntity>(
   analysis: AnalysisNode<T>[]

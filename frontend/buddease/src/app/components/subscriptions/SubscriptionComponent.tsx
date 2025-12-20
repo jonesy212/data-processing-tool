@@ -11,7 +11,7 @@ import {
   SubscriptionTypeEnum,
 } from "@/app/models/data/StatusType";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T } from "@/app/snapshots/SnapshotConfig";
+import { K, T } from "@/app/models/data/dataStoreMethods";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useUser } from "@/app/state/context/UserContext";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -24,7 +24,7 @@ import {
   updateProjectState,
 } from "@/utils/web3/applicationUtils";
 import React, { useEffect, useState } from "react";
-import { subscriptionServiceInstance } from "./SubscriptionService";
+import { subscriptionServiceInstance } from "@/app/subscriptions/SubscriptionService";
 
 interface Props {
   initialData: RealtimeDataItem[];

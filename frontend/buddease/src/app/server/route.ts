@@ -1,6 +1,6 @@
 // route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { readServerCache, writeServerCache } from '@/app/components/lib/cache/server/CacheManager';
+import { readServerCache, writeServerCache } from '@/app/server/CacheManager';
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { DocumentOptions } from '@/app/documents/DocumentOptions';

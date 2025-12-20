@@ -186,24 +186,25 @@ export const snapshotContainer = async <
 >(
   snapshotId: string,
   storeId: number,
-  config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>,
+  config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | 
+          Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>,
   snapConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     // Step 1: Resolve configuration
-    const resolvedConfig = await config;
+    const resolvedConfig = config instanceof Promise ? await config : config;
     if (!resolvedConfig) {
       throw new Error("SnapshotStoreConfig could not be resolved");
     }
 
     // Step 2: Create or fetch the snapshot manager
-    const snapshotManager = new SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
+    const snapshotManager = createSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
 
     // Step 3: Initialize a snapshot store for this container
     const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(resolvedConfig);
 
-    // Step 4: Create the snapshot using your reusable builder
-    const baseData = snapConfig?.data || ({} as T);
+    // Step 4: Create the snapshot
+    const baseData = (snapConfig?.data as T) || ({} as T);
     const baseMeta = snapConfig?.metaMap || new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
     const snapshot = await createCompleteSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
       baseData,
@@ -213,24 +214,102 @@ export const snapshotContainer = async <
       snapshotStore,
       snapshotManager,
       resolvedConfig,
-      true, // subscribed by default
+      true,
       snapConfig?.storeProps,
       snapConfig?.storeOptions
     );
 
-    // Step 5: Build SnapshotContainer
+    // Step 5: Build SnapshotContainer with the EXACT interface signature
     const container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       id: snapshotId,
       storeId,
       snapshot,
       store: snapshotStore,
       manager: snapshotManager,
-      config: resolvedConfig,
+      config: Promise.resolve(resolvedConfig), 
       initialized: true,
       getSnapshot: () => snapshot,
       getConfig: () => resolvedConfig,
-      updateSnapshot: (snapshotId: string | number | null, updatedData: Partial<T>) => {
-        snapshot.data = { ...snapshot.data, ...updatedData };
+      updateSnapshot: (
+        snapshotId: string | number | null,
+        snapshotIdOrParams: string | number | null | UpdateSnapshotParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+        newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        timestamp: Date,
+        category?: Category,
+        events?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+        snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        payloadData?: T | K,
+        mappedSnapshotData?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+        delegate?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        payload?: UpdateSnapshotPayload<T>,
+        store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+        snapshotManager?: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      ) => {
+        // Handle the update based on parameter type
+        if (typeof snapshotIdOrParams === 'object' && snapshotIdOrParams !== null && 'data' in snapshotIdOrParams) {
+          // It's UpdateSnapshotParams
+          const params = snapshotIdOrParams;
+          
+          // Update the snapshot with params.data (which is a Map)
+          if (params.data) {
+            // Merge data from the Map into the snapshot
+            const mergedData = { ...snapshot.data };
+            params.data.forEach((snap, key) => {
+              if (snap.data) {
+                Object.assign(mergedData, snap.data);
+              }
+            });
+            snapshot.data = mergedData;
+          }
+          
+          // Update timestamp if provided
+          if (params.timestamp) {
+            snapshot.timestamp = params.timestamp;
+          }
+          
+          // Update other properties from params
+          if (params.category) {
+            category = params.category;
+          }
+          if (params.events) {
+            events = params.events;
+          }
+        } else if (newData) {
+          // Use newData if provided
+          snapshot.data = { ...snapshot.data, ...newData.data };
+          snapshot.timestamp = timestamp;
+        }
+        
+        // Update category if provided
+        if (category) {
+          snapshot.category = category;
+        }
+        
+        // Update the data map
+        if (snapshotId && data) {
+          data.set(String(snapshotId), snapshot);
+        }
+        
+        // Update mappedSnapshotData if provided
+        if (snapshotId && mappedSnapshotData) {
+          mappedSnapshotData.set(String(snapshotId), snapshot);
+        }
+        
+        // Handle events
+        if (events) {
+          Object.entries(events).forEach(([eventName, eventData]) => {
+            console.log(`Snapshot update event: ${eventName}`, eventData);
+          });
+        }
+        
+        // Call callback if provided
+        if (callback) {
+          callback(snapshot);
+        }
+        
         return snapshot;
       },
     };
@@ -241,7 +320,6 @@ export const snapshotContainer = async <
     throw error;
   }
 };
-
 
 export type {
   ItemUnion, SnapshotBase,

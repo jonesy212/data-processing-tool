@@ -1,6 +1,6 @@
 // ShoppingCenterConfig.ts
-import { ShippingOption } from "./ShippingOption";
-import { AffiliateMarketingConfig } from "./shopping_config/AffiliateMarketingConfig";
+import { ShippingOption } from "@/app/shoppingCenter/ShippingOption";
+import { AffiliateMarketingConfig } from "@/app/shoppingCenter/shopping_config/AffiliateMarketingConfig";
 
 interface ShoppingCenterConfig {
     name: string;

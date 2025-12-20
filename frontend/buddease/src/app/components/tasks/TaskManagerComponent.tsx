@@ -12,7 +12,7 @@ import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { Member } from '@/app/models/members/Members';
+import { Member } from '@/app/models/members/Member'
 import { Phase } from "@/app/models/phases/Phase";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
@@ -23,7 +23,7 @@ import TaskProgress from "@/app/projects/projectManagement/TaskProgress";
 import TeamProgress from "@/app/projects/projectManagement/TeamProgress";
 import TodoProgress from "@/app/projects/projectManagement/TodoProgress";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { createMilestone } from "@/app/state/redux/slices/TrackerSlice";
+import { createMilestone } from "@/app/typings/milestoneTypes";
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { rootStores } from "@/app/state/stores/RootStores";
 import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";

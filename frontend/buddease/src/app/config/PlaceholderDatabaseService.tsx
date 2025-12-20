@@ -1,9 +1,9 @@
 // PlaceholderDatabaseService.tsx
 
-import { DatabaseService } from "./DatabaseTypes";
+import { ClientDatabaseService } from "@/app/server/database/ClientDatabaseService";
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 // Placeholder implementation for demonstration purposes (replace with your actual database logic)
-class PlaceholderDatabaseService implements DatabaseService{
+class PlaceholderDatabaseService implements ClientDatabaseService{
     async createDatabase(config: DatabaseConfig): Promise<any> {
       console.log("Database created (placeholder)");
       // Simulate successful database creation

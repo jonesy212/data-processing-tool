@@ -7,13 +7,13 @@ import RegisterForm from "@/app/pages/forms/RegisterForm";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import LoginForm from "@/app/pages/forms/LoginForm";
-import { LoginResult } from "@/app/containers/LoginContainer";
+import { LoginResult } from "[object Object]";
 import { RouteGuard } from "@/app/components/routing/RouteGuard";
 import Unauthorized from "@/app/pages/Unauthorized";
 import AccessDenied from "@/app/pages/AccessDenied";
 import ProfilePage from "@/app/pages/profile/ProfilePage"; // Add these imports
 import VerificationPage from "@/app/pages/profile/VerificationPage";
-import TeamManagementPage from "@/app/pages/team/TeamManagementPage";
+import TeamManagementPage from "@/app/pages/teams/TeamManagementPage";
 
 const AppRouter: React.FC = () => {
   const handleLoginSubmit = async (

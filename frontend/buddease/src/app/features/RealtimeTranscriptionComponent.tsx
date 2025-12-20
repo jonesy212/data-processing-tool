@@ -1,10 +1,10 @@
 // RealtimeTranscriptionComponent.tsx
 import React from "react";
 import { useCallback, useEffect } from "react";
-import useRealtimeData from "./hooks/commHooks/useRealtimeData";
-import useRealtimeEditing from "./hooks/useRealtimeEditing";
-import useDocumentStore, { Document } from "./state/stores/DocumentStore";
-import calculateKPMBasedOnEditorChanges from "./strategy/calculateKPMBasedOnEditorChanges";
+import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
+import useRealtimeEditing from "@/app/hooks/useRealtimeEditing";
+import useDocumentStore, { Document } from "@/app/state/stores/DocumentStore";
+import calculateKPMBasedOnEditorChanges from "@/app/components/strategy/calculateKPMBasedOnEditorChanges";
 import * as apiDocument from '@/app/api/ApiDocument'
 
 

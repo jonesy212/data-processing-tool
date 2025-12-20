@@ -1,11 +1,11 @@
 // validationMethods.ts
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
-import { Snapshot } from "@/app/snapshot/Snapshot";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
-import SnapshotStore from "@/app/snapshotstore";
-import { SnapshotWithCriteriaAsBase } from "@/app/snapshotstoreOptions";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotWithCriteriaAsBase } from "[object Object]";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 

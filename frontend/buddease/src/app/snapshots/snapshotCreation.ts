@@ -1,7 +1,7 @@
 // snapshotCreation.ts
 // In snapshotOperations/snapshotCreation.ts
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Content } from '@/app/components/models/content/AddContent';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Content } from '@/app/models/content/AddContent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -12,7 +12,7 @@ import {
 
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
-import { Snapshot } from "@/snaphots/Snapshot";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 
 export const takeSnapshot = async <
   T extends BaseDataEntity,

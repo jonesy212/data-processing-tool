@@ -1,5 +1,5 @@
 // userMapper.ts
-import { CacheData } from '@/app/types/CacheData';
+import { CacheData } from '@/app/generators/GenerateCache';
 import { DefaultExcludedFields } from '@/app/config/BaseConfig';
 
 // Explicit sensitive fields that should never be exposed

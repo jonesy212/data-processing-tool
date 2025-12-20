@@ -2,7 +2,9 @@
 // roadmapService
 // services/roadmapService.ts
 
-import { AnalysisNode, RoadmapItem, RoadmapAudience } from '@/types/roadmap';
+import { RoadmapItem, RoadmapAudience } from '@/app/scripts/devCorrectionRoadmap'
+import { AnalysisNode } from '@/app/typings/AnalysisNode'
+import { RoadmapAudience } from '@/app/server/repository/roadmapMapper'
 
 /**
  * Main function to generate roadmap from analysis tree.
@@ -65,10 +67,11 @@ function simplifyForCommunity<T>(nodes: AnalysisNode<T>[]): RoadmapItem[] {
 
 
 import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { AnalysisNode } from './analysisTypes';
-import { RoadmapNode, RoadmapAudience } from './roadmapTypes';
-import { generateRoadmap } from './roadmapGenerator';
-import { VersionData } from '@/app/typings/entities/VersionEntity';
+import { AnalysisNode } from '@/app/typings/AnalysisNode'
+import { RoadmapNode } from '@/app/typings/roadmap';
+import { RoadmapAudience } from '@/app/server/repository/roadmapMapper';
+import { generateRoadmap } from '@/app/services/roadmapService';
+import { VersionData } from '@/app/versions/VersionData';
 
 export class RoadmapService {
     /**

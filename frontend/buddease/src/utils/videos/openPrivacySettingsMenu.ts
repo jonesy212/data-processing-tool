@@ -2,7 +2,7 @@ import SettingsAPI from "@/app/api/SettingsAPI";
 import { displayPrivacySettingsModal } from "@/app/cards/modal/displayPrivacySettingsModal";
 import { showToast } from "@/app/models/display/ShowToast";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import VideoAPI from "./VideoAPI";
+import VideoAPI from "@/app/api/videos/VideoAPI";
 
 
 // Define a type guard function to check if an object conforms to PrivacySettings interface

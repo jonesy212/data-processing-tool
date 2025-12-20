@@ -16,8 +16,8 @@ import {
 import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 import { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
-import { getStoreId } from "./ApiData";
-import { getEndpoint } from "./getEndpoint";
+import { getStoreId } from "@/app/api/service/ApiService";
+import { getEndpoint } from "@/app/api/getEndpoint";
 
 const API_BASE_URL = endpoints.teamManagement; // Update to the correct endpoint
 

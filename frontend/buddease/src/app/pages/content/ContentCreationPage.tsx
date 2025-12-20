@@ -1,6 +1,6 @@
 // ContentCreationPage.tsx
 
-import AddContent from '@/app/components/models/content/AddContent';
+import AddContent from '@/app/models/content/AddContent';
 import { ButtonGenerator, buttonGeneratorProps } from '@/app/generators/GenerateButtons';
 import React from 'react';
 

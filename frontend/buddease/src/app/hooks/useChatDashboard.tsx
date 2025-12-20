@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 import { ChatMessage } from '@/app/communications';
-import createDynamicHook from '@/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
 import TypingAnimation from '@/libraries/animations/text/TypingAnimation';
 
 

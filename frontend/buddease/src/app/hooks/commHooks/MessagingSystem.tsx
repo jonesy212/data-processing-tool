@@ -1,7 +1,7 @@
 // MessagingSystem.tsx
 // DynamicHooks.tsx
 import { useEffect } from "react";
-import createDynamicHook from "@/app/dynamicHooks/dynamicHookGenerator";
+import createDynamicHook from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
 
 const createCommonDynamicHook = (name: string) => createDynamicHook({
   condition: async () => true,

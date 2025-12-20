@@ -3,7 +3,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 import getAppPath from "./appPath";
-import BackendStructure from "./BackendStructure";
+import BackendStructure from "@/app/server/database/BackendStructure";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {

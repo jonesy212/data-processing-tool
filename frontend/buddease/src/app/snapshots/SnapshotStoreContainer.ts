@@ -1,5 +1,5 @@
 // SnapshotStoreContainer.ts
-import { snapshotStoreConfig, SnapshotStoreProps } from '.';
+import { snapshotStoreConfig, SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
@@ -14,11 +14,11 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import { DataStore } from '@/app/state/stores/DataStore';
-import { SimulatedDataSource } from '@/createSnapshotOptions';
+import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
 interface SnapshotStoreContainer<
     T extends BaseDataEntity,
     K extends T = T,

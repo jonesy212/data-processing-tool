@@ -1,14 +1,16 @@
 // openVideoOptionsMenu.ts
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { useContext } from "react";
-import { ChatRoomContext, useChatRoom } from "@/app/communications/chat/ChatRoomContext";
-import { VideoOptions } from "@/app/communications/chat/ChatSettingsModal";
-import { showToast } from "@/app/models/display/ShowToast";
-import VideoAPI from "./VideoAPI";
-import { VideoActions } from "@/app/users/VideoActions";
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { useContext } from 'react';
+import { ChatRoomContext, useChatRoom } from '@/app/components/communications/chat/ChatRoomContext'
+import { VideoOptions } from '@/app/cards/modal/ChatSettingsModal';
+import { showToast } from '@/app/models/display/ShowToast';
+import VideoAPI from '@/app/api/videos/VideoAPI';
+import { VideoActions } from '@/app/actions/VideoActions';
 
-const videoId = UniqueIDGenerator.generateVersionNumber(); // Generate a unique video ID
-const videoOptions: VideoOptions[] = []; // Provide the list of video options if needed
+const videoOptions: VideoOptions = {
+  enableVideo: false,
+  videoInputDevice: 'default',
+};
 const roomId = useContext(ChatRoomContext); // Get the room ID from context
 
 export const openVideoOptionsMenu = async (): Promise<VideoOptions | null> => {
@@ -20,7 +22,15 @@ export const openVideoOptionsMenu = async (): Promise<VideoOptions | null> => {
     await VideoAPI.openVideoOptionsMenu(videoOptions, roomId, videoId);
 
     // Retrieve the selected options using the action creator
-    const selectedOptionsAction = VideoActions.getSelectedVideoOptions({ id: videoId });
+    const selected: VideoOptions = {
+      id: videoId,
+      enableVideo: videoOptions.enableVideo ?? false,
+      videoInputDevice: videoOptions.videoInputDevice ?? 'default',
+    };
+
+    // 2. dispatch
+    const selectedOptionsAction = VideoActions.getSelectedVideoOptions(selected);
+    return selectedOptionsAction.payload;
 
     // Check if the action contains payload (selected options)
     if ('payload' in selectedOptionsAction) {

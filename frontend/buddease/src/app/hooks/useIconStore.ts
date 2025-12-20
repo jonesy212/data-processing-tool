@@ -1,7 +1,7 @@
 // useIconStore.ts
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { iconStore, IconStoreImpl } from './IconStore';
-import { IconStore } from './IconStore';
+import { iconStore, IconStoreImpl } from '@/app/state/stores/IconStore';
+import { IconStore } from '@/app/state/stores/IconStore';
 
 // Optional: Add custom hook options
 interface UseIconStoreOptions {

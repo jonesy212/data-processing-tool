@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import FeedbackLoop from '@/app/features/feedback/FeedbackLoop';
 import { Feedback } from '@/app/features/support/Feedback';
 import FeedbackService from "@/app/api/service/FeedbackService";
-import ChatRoom from '@/app/communications/chat/ChatRoom'; // Import the ChatRoom component
+import ChatRoom from '@/app/communications/ChatRoom'; // Import the ChatRoom component
 import { Channel, ChannelRole, ChannelType } from '@/app/interfaces/chat/Channel';
 import ChatMessageData from '@/app/components/communications/chat/ChatRoomDashboard'
 import ChatEventService from '@/app/services/ChatEventService';

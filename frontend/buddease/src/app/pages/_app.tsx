@@ -13,6 +13,7 @@ import { NotificationProvider } from '@/app/features/support/NotificationProvide
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
+import { ProjectData } from "@/app/models/projects/Project";
 import generateAppTree, { AppTree } from "@/app/generators/generateAppTree";
 import ChildComponent from "@/app/hooks/ChildComponent";
 import { handleLogin } from "@/app/hooks/dynamicHooks/dynamicHooks";
@@ -26,7 +27,7 @@ import {
   default as ThemeCustomization,
   default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { useTheme } from "@/app/libraries/ui/useTheme";
 import { LogData } from "@/app/models/LogData";
 import { BaseData } from '@/app/models/data/Data';
@@ -37,7 +38,7 @@ import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
 import ErrorHandler from "@/app/shared/ErrorHandler";
 import { AppStoresProvider } from "@/app/state/context/AppContext";
-import { AuthProvider } from "@/app/state/context/AuthContext";
+import { AuthProvider } from "@/app/components/Provider";
 import { DynamicPromptProvider } from "@/app/state/context/DynamicPromptContext";
 import { PhaseActivityProvider } from '@/app/state/context/PhaseActivityContext';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
@@ -45,7 +46,7 @@ import { StoreProvider } from "@/app/state/stores/StoreProvider";
 import { AppContentEntity, ContentAttachment, ContentExcludedFields, ContentIncludedFields, ContentK, ContentMeta } from '@/app/typings/entities/ContentEntity';
 import { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 import { DocumentTree } from "@/app/users/User";
-import { DataProvider, Refine } from "@refinedev/core";
+import { DataProvider, Refine } from "@/app/state/context/DataContext";
 import { BytesLike, uuidV4 } from "ethers";
 import { AppProps } from "next/app";
 import { useParams } from "next/navigation";
@@ -73,7 +74,7 @@ import DetermineFileType from "@/app/components/configs/DetermineFileType";
 import FilePreview from "@/app/components/documents/FilePreview";
 import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
 import StepComponent from "@/app/components/phases/steps/StepComponent";
-import { RouteGuard } from "@/app/components/routing/RouteGuard";
+import RouteGuard from "@/app/components/routing/RouteGuard";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
@@ -161,7 +162,7 @@ const phases: Phase<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExclud
           author: "Author Name",
           timestamp: new Date(), // Phase-level timestamp for creation
            area: 'phase-area', 
-           metadataEntries: []
+           metadataEntries: {} as Record<string, MetadataEntry<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>>
         },
         releaseDate: "2024-11-24", // Original release date may now reflect a phase-specific release
         major: 1, // Phase-level semantic versioning
@@ -235,14 +236,13 @@ async function MyApp({
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(true); // Example state for user login status
   const [filePath, setFilePath] = useState<string>("");
   const [file, setFile] = useState<File>();
-  const idleTimeout = useIdleTimeout({
-    /* pass any required props here */
-  });
+  const idleTimeout = useIdleTimeout("MyAppIdleTimeout");
+  
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
 
-  const { theme, tokens, updateTheme, switchTheme } = useTheme();
+  const { tokens, updateTheme, switchTheme } = useTheme();
   
   const [activeDashboard, setActiveDashboard] = useState<
     | "communication"

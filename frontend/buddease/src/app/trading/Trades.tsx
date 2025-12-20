@@ -1,5 +1,5 @@
 // Trades.tsx
-import { TradingPlatform } from "@/app/crypto/TradingPlatform";
+import { TradingPlatform } from "@/app/components/crypto/TradingPlatform";
 
 interface TraderCallsProps {
     // Define props here, if any

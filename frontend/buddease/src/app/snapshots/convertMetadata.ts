@@ -54,7 +54,7 @@ function convertMetadata<
       timestamp: "",
       author: "",
       isActive: true, 
-      meta: {} as StructuredMetadata<, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      meta: {} as StructuredMetadata<, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       mappedSnapshot: {} as Map<string, Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       events: {} as EventManager<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       latestVersion: createLatestVersion<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),

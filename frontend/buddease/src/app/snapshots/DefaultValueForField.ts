@@ -1,7 +1,7 @@
 // DefaultValueForField.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // Assume you have a way to get default values based on type U
 function getDefaultValueForField<  T extends BaseDataEntity,

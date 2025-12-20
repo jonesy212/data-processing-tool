@@ -1,6 +1,6 @@
 // ThemeService.ts
 
-import { themeChangeAction } from "@/app/actions/themeChangeAction";
+import { themeChangeAction } from "@/app/libraries/actions/themeChangeAction";
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { DocumentFormattingOptions } from "@/app/components/documents/DocumentFormattingOptionsComponent";

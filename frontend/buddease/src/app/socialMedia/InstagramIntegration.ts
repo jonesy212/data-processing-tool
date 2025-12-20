@@ -1,7 +1,7 @@
 // InstagramIntegration.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
 import InstagramAPI from "@/app/api/InstagramAPI";
-import { authToken } from "@/app/auth/authToken";
+import { authToken } from "@/app/server/auth/authToken";
 import axiosInstance from "@/app/server/security/axiosInstance";
 
 

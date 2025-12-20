@@ -4,7 +4,7 @@ import axiosInstance from "@/app/api/csrfToken";
 import { SearchResult } from "@/app/components/routing/SearchResult";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Note } from "./ApiNote";
+import { Note } from "@/app/api/ApiNote";
 
 // Define the base URL for your search endpoint
 const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your actual API endpoint

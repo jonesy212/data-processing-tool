@@ -1,8 +1,8 @@
 // TeamSlice.ts
-import { CollaborationPreferences } from "@/app/components/interfaces/settings/CollaborationPreferences";
+import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { Project } from '@/app/models/projects/Project';
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 

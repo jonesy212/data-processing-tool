@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import BrowserCheck from "@/app/BrowserCheck";
 import BrowserCheckStore from "./BrowserCheckStore";
-import { RootStores } from "./RootStores";
+import { RootStores } from "@/app/state/stores/RootStores";
 import generateStoreKey from "./StoreKeyGenerator";
 import useTodoManagerStore from "./TodoStore";
 import TrackerStore from "./TrackerStore";

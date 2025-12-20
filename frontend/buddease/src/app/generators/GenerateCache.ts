@@ -35,13 +35,14 @@ import { Data } from '@/app/models/data/Data';
 import { RealtimeDataAttachment, RealtimeDataEntity, RealtimeDataExcludedFields, RealtimeDataIncludedFields, RealtimeDataK, RealtimeDataMeta } from '@/app/typings/entities/RealtimeDataEntity';
 import { RealtimeData } from "@/app/typings/realtimeTypes";
 import { VersionHistory } from "@/app/versions/VersionData";
-
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
+import { sanitizeInitialData, sanitizeCallback } from '@/app/server/security/DOMPurify'
 
 const initialData: any = {}; 
 
 export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
-export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
+// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
 
 // Updated cache data structure based on the provided tree structure
 export interface CacheData<  

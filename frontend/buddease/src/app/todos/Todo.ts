@@ -30,8 +30,8 @@ import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { default as initialState, default as SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { SnapshotWithCriteria, TagsRecord } from '@/app/models/tracker/Tag';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
@@ -47,7 +47,7 @@ import { User } from '@/app/users/User';
 import operation from 'antd/es/transfer/operation';
 import { config } from 'process';
 import { FC } from 'react';
-import { options } from 'sanitize-html';
+import { options } from '@/app/generators/GenerateUniqueIds';
 
 export type UserAssignee = Pick<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>
 & {

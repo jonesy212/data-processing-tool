@@ -1,6 +1,8 @@
 // GenerateComponent.tsx
 import { Label } from '@/app/branding/BrandingSettings';
-import { createMetaState } from '@/app/config/metadata/MetadataHooks';
+import { NestedCategoryKeys } from '@/app/pages/personas/ScenarioBuilder'
+import { createMetaState } from '@/app/config/MetadataStateManager';
+import { UnifiedMetaDataOptions } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { ModifiedDate } from "@/app/documents/DocType";
@@ -11,7 +13,8 @@ import {
 } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { buildDocument } from '@/app/components/documents/editing/DocumentBuilderComponent';
+import { VersionHistory } from '@/app/versions/VersionData';
+import { buildDocument } from '@/app/services/documentService'
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
 import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
@@ -24,8 +27,7 @@ import { generateValidationRulesCode } from "@/app/server/security/validationRul
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
 import { UserData } from '@/app/users/User';
-import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppEntity'
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity'
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import fs from "fs";
@@ -160,7 +162,16 @@ function generateComponent(
 }
 
 // Define function to create user scenarios and map out user journey
-async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode: string) {
+async function createUserScenarios<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(props: any, type: PersonaTypeEnum, reactCode: string,
+    document?: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+) {
     const [options, setOptions] = useState(getDefaultDocumentOptions());
 
     // Create instances of UserPersonaBuilder and DocumentBuilder
@@ -250,7 +261,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
 
     const content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       // Initialize with appropriate values for UserData and StructuredMetadata
-      metadata: {/* initialize StructuredMetadata properties */},
+      metadata: {area: 'content metadata', metadataEntries: []},
       userData: {/* initialize UserData properties */},
     };    
     // Example usage of buildDocument function
@@ -306,8 +317,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       folderPath: '',
       previousMetadata: undefined,
       currentMeta: currentMeta,
-      currentMetadata: {} as UnifiedMetaDataOptions<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K>,
-        StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K>>, never>,
+      currentMetadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       accessHistory: [],
       documentPhase: undefined,
       version: undefined,
@@ -345,7 +355,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     // Instead, include the DocumentBuilder component in your JSX markup with the required props:
     const docPermissions = new DocumentPermissions(true, true);
 
-    const documents: DocumentData<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>[] = [
+    const documents: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [
       {
         id: "1",
         documentSize: DocumentSize.A4,
@@ -383,11 +393,11 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
          
           items: [],
           data: {},
-          latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
+          latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
           schema: {},
 
           apiEndpoint, apiKey, timeout, retryAttempts,
-         } as Content<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>,
+         } as Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         highlights: ["highlighted phrase 1", "tagged item 2"],
         topics: ["topic 1", "topic 2"],
         files: [
@@ -441,7 +451,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
           [], // tags: tags associated with the metadata
           undefined, // metadata: metadata object, can be undefined initially
           undefined, // initialState: initial state of the metadata, can be undefined
-          {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+          {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // meta: additional metadata, can be an empty array if not needed
           { eventRecords: {} }, // events: event manager data, initializing with an empty event record
           [], // relatedData: related data associated with metadata, empty array for now
           {} as Version, // version: version information, can be undefined if not applicable
@@ -466,7 +476,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
           [], // tags: tags associated with the metadata
           {}, // metadata: metadata object, can be undefined initially
           undefined, // initialState: initial state of the metadata, can be undefined
-          {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+          {} as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // meta: additional metadata, can be an empty array if not needed
           { eventRecords: {} }, // events: event manager data, initializing with an empty event record
           {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // version: version information, can be undefined if not applicable
           {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
@@ -521,7 +531,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         createdByRenamed: "user1",
         createdAt: new Date(),
         updatedBy: "user1",
-        currentMeta: "",
+        currentMeta: {},
         phaseType: PhaseTypeEnums,
         label: "",
         date: new Date()

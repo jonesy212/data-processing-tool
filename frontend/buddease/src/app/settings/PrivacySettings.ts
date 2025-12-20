@@ -1,6 +1,8 @@
 // PrivacySettings.ts
 import { UserRole } from "@/app/models/UserRole";
 import { User } from "@/app/users/User";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 interface SharingPreferences {
@@ -60,7 +62,14 @@ interface DataSharingPreferences {
 }
 
 
-export interface PrivacySettings {
+export interface PrivacySettings<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = UserExcludedFields,
+  IncludedFields extends keyof T = keyof UserEntity
+> {
   // Profile Visibility (from first interface)
   profileVisibility?: 'public' | 'private' | 'friends';
   activityVisibility?: boolean;
@@ -77,7 +86,7 @@ export interface PrivacySettings {
   // Access Control (from second interface)
   accessControl?: {
     roles?: UserRole[];
-    users?: User[];
+    users?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     accessControlEnabled: boolean;
     accessControlType: string;
     accessControlList: string[];
@@ -106,7 +115,7 @@ export interface PrivacySettings {
 }
 
 
-const selectedSettings: PrivacySettings = {
+const selectedSettings: PrivacySettings<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   encryptData: true, // Indicates whether the data should be encrypted.
   accessControl: {
     roles: [], // List of roles with access, e.g., ["admin", "editor"]

@@ -2,9 +2,9 @@
 import * as apiFile from '@/api/ApiFiles';
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { AppStructureItem } from '@/appStructure/AppStructure';
-import { backend } from '@/appStructure/BackendStructure';
-import { frontend } from '@/appStructure/FrontendStructure';
+import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import { backend } from '@/app/server/database/BackendStructure';
+import { frontend } from '@/app/config/appStructure/FrontendStructure';
 import * as path from 'path';
 
 

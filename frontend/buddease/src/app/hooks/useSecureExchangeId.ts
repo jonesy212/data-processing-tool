@@ -1,8 +1,8 @@
 // useSecureExchangeId.ts
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/app/auth/AuthContext";
-import { sanitizeData } from "@/app/security/SanitizationFunctions";
+import { useAuth } from "@/app/state/context/AuthContext";
+import { sanitizeData } from "@/app/models/cypto/SanitizationFunctions";
 
 export const useSecureExchangeId = () => {
   const [exchangeId, setExchangeId] = useState<number | null>(null); // Initialize exchangeId as null or number

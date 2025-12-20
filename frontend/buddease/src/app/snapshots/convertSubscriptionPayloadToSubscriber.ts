@@ -10,7 +10,7 @@ import { CustomPayload } from '@/app/snapshots/CustomPayload';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/utils/web3/applicationUtils";
-import { CustomSnapshotData } from "./SnapshotData";
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 

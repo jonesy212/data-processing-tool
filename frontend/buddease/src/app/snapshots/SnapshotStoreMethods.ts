@@ -1,10 +1,10 @@
 // SnapshotStoreMethods.ts
 // SnapshotSttoreMethods.ts
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { CategoryProperties } from '@/app/personas/ScenarioBuilder';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { SnapshotData } from '@/app/snapshots';
-import { SnapshotConfig } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
@@ -12,9 +12,9 @@ import { Subscription } from '@/app/subscriptions/Subscription';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot, SnapshotStoreConfig } from ".";
+import { Snapshot, SnapshotStoreConfig } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreProps } from "./useSnapshotStore";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 
 // Separate interface for store operations
 interface SnapshotStoreMethods<

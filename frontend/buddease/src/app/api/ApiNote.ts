@@ -26,7 +26,7 @@ import AccessHistory from '@/app/versions/AccessHistory';
 import SearchHistory from '@/app/versions/SearchHistory';
 import { Version } from '@/app/versions/Version';
 import { AxiosError } from 'axios';
-import { SearchResponseData } from './ApiSearch';
+import { SearchResponseData } from '@/app/api/ApiSearch';
 import { useNotification } from '@/app/state/context/NotificationContext';
 
 // Define the API base URL

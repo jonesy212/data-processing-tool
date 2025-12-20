@@ -1,8 +1,8 @@
 // CollaborationDisplay.tsx
 // components/collaborations/CollaborationDisplay/CollaborationDisplay.tsx
 import React, { useRef, useState } from 'react';
-import { useDrag } from '@/app/components/libraries/animations/DraggableAnimation/useDrag';
-import { useCollaboration } from '@/CollaborationContext';
+import { useDrag } from '@/app/libraries/animations/DraggableAnimation/useDrag';
+import { useCollaboration } from '@/app/state/context/CollaborationContext';
 
 interface CollaborationDisplayProps {
   // Add any additional props as needed

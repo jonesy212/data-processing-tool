@@ -30,13 +30,13 @@ import { UserData } from "@/app/users/User";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 import React from "react";
-import { CommunityData } from "./CommunityData";
-import { LogData } from "./LogData";
-import { BaseData, DataDetails, DataWithOmittedFields } from "./data/Data";
+import { CommunityData } from "@/app/models/CommunityData";
+import { LogData } from "@/app/models/LogData";
+import { BaseData, DataDetails, DataWithOmittedFields } from "@/app/models/data/Data";
 import FolderData from "./data/FolderData";
-import { BookmarkStatus, CalendarStatus, DataStatus, NotificationStatus, PriorityTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "./data/StatusType";
-import { Task } from "./tasks/Task";
-import { TeamData } from "./teams/TeamData";
+import { BookmarkStatus, CalendarStatus, DataStatus, NotificationStatus, PriorityTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
+import { Task } from "@/app/models/tasks/Task";
+import { TeamData } from "@/app/models/teams/TeamData";
  
 interface Timestamped {
   timestamp?: string | number | Date | undefined;

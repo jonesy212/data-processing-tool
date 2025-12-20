@@ -4,7 +4,7 @@ import React from "react";
 import RefactoringRebrandingPhase from "@/app/projects/RefactoringRebrandingPhase";
 import ColorPalette from "./ColorPalette";
 import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
-import { T } from '@/a'
+import { T } from '@/app/models/data/dataStoreMethods'
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";

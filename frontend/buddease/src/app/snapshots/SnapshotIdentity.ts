@@ -24,7 +24,7 @@ export interface SnapshotIdentity<
   name?: string;
   description?: string | null;
   type?: string | AllTypes;
-  category?: symbol | string | Category | undefined;
+  category?: Category;
   currentCategory?: Category;
   createdBy?: string | undefined;
   ownerId?: string;

@@ -1,9 +1,9 @@
 // CallSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllStatus } from "@/app/stores/DetailsListStore";
-import { WritableDraft } from "@/app/ReducerGenerator";
+import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import updateCall from "@/app/state/redux/slices/CollaborationSlice";
-import  {Tag}  from "@/app/components/models/tracker/Tag";
+import  {Tag}  from "@/app/models/tracker/Tag";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 
 export interface Call {

@@ -43,7 +43,7 @@ import { determineDocumentType } from "@/app/libraries/categories/determineDocum
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CustomContentState } from "@/app/libraries/ui/CustomContentState";
 import { CommonData } from "@/app/models/CommonData";
-import { PhaseDocumentEnum } from "@/app/models/StatusType";
+import { PhaseDocumentEnum } from "@/app/models/data/StatusType";
 import { Content } from "@/app/models/content/AddContent";
 import { Data, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";

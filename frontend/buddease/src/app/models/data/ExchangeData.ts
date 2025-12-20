@@ -3,7 +3,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields } from "@/app/confi
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { SharedTimestamps } from "@/app/models/CommonData";
-import { ExchangeDataTypeEnum } from "@/app/models/crypto/exchangeIntegration";
+import { ExchangeDataTypeEnum } from "@/app/models/cypto/exchangeIntegration";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 
 export interface ExchangeData<

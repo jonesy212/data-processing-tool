@@ -1,6 +1,6 @@
 // DynamicErrorBoundary.tsx
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { ErrorBoundaryContext } from '@/app//errorBoundaryProvider';
+import React, { Component, ErrorInfo, ReactNode } from '@/app/shared/ErrorHandler';
+import { ErrorBoundaryContext } from '@/app/shared/ErrorBoundaryProvider';
 
 interface DynamicErrorBoundaryProps {
   children: ReactNode;

@@ -1,5 +1,5 @@
 // dataProviderInstance.ts
-import axiosInstance from "@/app/api/axiosInstance";
+import axiosInstance from "@/app/server/security/axiosInstance";
 import {
     CreateManyResponse, CreateResponse,
     CustomBaseRecord, CustomCreateManyParams,

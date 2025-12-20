@@ -158,7 +158,7 @@ interface ExtendedVersionData<
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   comments?: (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[];
   versionHistory: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  releaseDate?: string | Date;
+  releaseDate?: string | Date | null;
   lastUpdated?: Date | VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   buildVersions?: BuildVersion;
   currentHash: string | undefined;
@@ -263,7 +263,7 @@ interface VersionData<
   services?: Record<string, any>;
 
   // Structure
-  source: string;
+  source: string | undefined;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
   backend?: IBackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -305,7 +305,7 @@ const transformToStructureItems = <
   }
 
   // Transform the data into AppStructureItem objects
-  const structureItems: { [key: string]: AppStructureItem } = {};
+  const structureItems: { [key: string]: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>} = {};
 
   for (const [key, value] of Object.entries(data)) {
     // Ensure the value is an object
@@ -324,7 +324,7 @@ const transformToStructureItems = <
       permissions: value.permissions || undefined, // Use provided permissions or undefined
       versions: value.versions || undefined, // Use provided versions or undefined
       versionData: value.versionData || null, // Use provided versionData or null
-      items: value.items ? transformToStructureItems(value.items) : null, // Recursively transform nested items
+      items: value.items ? transformToStructureItems(value.items) : undefined, // Recursively transform nested items
     };
   }
 
@@ -415,7 +415,10 @@ const createDefaultVersionData = <
     data: undefined,
     _structure: {},
     transformToStructureItems: (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] =>
-      Object.values(transformToStructureItems(data)),
+      Object.values(transformToStructureItems(data)).map(item => ({
+        ...item,
+        userId: item.userId ?? null // Convert undefined to null
+      })) as AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     getVersionNumber: () => "0.0.0",
     updateStructureHash: async () => { },
     setStructureData: () => { },

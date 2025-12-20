@@ -1,5 +1,5 @@
 // RealTimeDataStore.tsx
-import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
 import { RealtimeData } from "@/app/typings/realtimeTypes";
 
 

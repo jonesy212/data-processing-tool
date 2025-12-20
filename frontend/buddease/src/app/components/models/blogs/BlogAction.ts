@@ -1,7 +1,7 @@
 // BlogAction.ts
 // blogActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { BlogPost } from "@/app/community/DiscussionForumComponent";
+import { BlogPost } from "@/app/pages/blog/BlogPost";
 import { BlogComment } from "@/app/state/redux/slices/BlogSlice";
 
 export const BlogActions = {

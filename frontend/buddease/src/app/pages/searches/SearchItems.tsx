@@ -6,7 +6,7 @@ import useAsyncHookLinker, {
 import { useErrorHandling } from "@/app/hooks/useErrorHandling";
 import { SearchLogger } from '@/app/logging/Logger';
 import React, { useEffect, useState } from "react";
-import { debounce } from "./Debounce";
+import { debounce } from "@/app/pages/searches/Debounce";
 
 export interface SearchItemProps {
   userId: string;

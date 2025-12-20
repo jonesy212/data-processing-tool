@@ -4,9 +4,9 @@ import { NotificationPosition } from "@/app/models/data/StatusType";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import React, { useEffect, useState } from 'react';
 import NavigationMenu from './NavigationMenu';
-import PhasesNavigation from './PhasesNavigation';
-import { Step, useStepNavigation } from './useStepNavigation';
-import VoiceControlledNavigation from './VoiceControlledNavigation';
+import PhasesNavigation from '@/app/models/phases/Phase';
+import { Step, useStepNavigation } from '@/app/hooks/useStepNavigation';
+import VoiceControlledNavigation from '@/app/components/intelligence/VoiceControlledNavigation';
 
 export type NavigationView = 
   | 'projectManagement'

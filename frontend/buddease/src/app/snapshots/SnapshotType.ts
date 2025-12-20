@@ -8,16 +8,16 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreConfig, snapshotFunction } from ".";
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/app/ysis/frontend/buddease/src/app/components/models/data/Data";
-import { isSnapshot, snapshotId, isSnapshotDataType } from "@/app/ysis/frontend/buddease/src/app/utils/snapshotUtils";
-import useSecureStoreId from "@/app/ysis/frontend/buddease/src/app/components/utils/useSecureStoreId";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/ysis/frontend/buddease/src/app/configs/BaseConfig";
-import { SnapshotData } from "./SnapshotData";
+import { SnapshotStoreConfig, snapshotFunction } from "@/app/snapshots/SnapshotStoreConfig";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseData } from "@/app/models/data/Data";
+import { isSnapshot, snapshotId, isSnapshotDataType } from "@/utils/snapshotUtils";
+import useSecureStoreId from "@/app/hooks/useSecureStoreId";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/config/BaseConfig";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import snapshotDelegate from "./snapshotDelegate";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 
 const snapshotType = <

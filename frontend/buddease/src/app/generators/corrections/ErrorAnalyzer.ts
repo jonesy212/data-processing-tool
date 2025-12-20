@@ -1,29 +1,29 @@
 // ErrorAnalyzer.ts
 
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { ReactNativeAnalyzer } from './analyzers/ReactNativeAnalyzer';
-import { BabelConfigAnalyzer } from './analyzers/react-native/config/BabelConfigAnalyzer';
-import { ReactWebAnalyzer } from './analyzers/ReactWebAnalyzer';
-import { TypeScriptAnalyzer } from './analyzers/TypeScriptAnalyzer';
-import { BuildAnalyzer } from './analyzers/BuildAnalyzer';
+import { ReactNativeAnalyzer } from '@/app/generators/corrections/analyzers/ReactNativeAnalyzer';
+import { BabelConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/BabelConfigAnalyzer';
+import { ReactWebAnalyzer } from '@/app/generators/corrections/analyzers/ReactWebAnalyzer';
+import { TypeScriptAnalyzer } from '@/app/generators/corrections/analyzers/TypeScriptAnalyzer';
+import { BuildAnalyzer } from '@/app/generators/corrections/analyzers/BuildAnalyzer';
 import { DependencyAnalyzer } from '@/app/generators/corrections/analyzers/react-native/dependencies/DependencyAnalyzer';
-import { PatternAnalyzer } from './analyzers/PatternAnalyzer';
-import { PlatformDetector } from './analyzers/PlatformDetector';
-import { BaseAnalyzer } from './analyzers/BaseAnalyzer';
+import { PatternAnalyzer } from '@/app/generators/corrections/analyzers/PatternAnalyzer';
+import { PlatformDetector } from '@/app/generators/corrections/analyzers/PlatformDetector';
+import { BaseAnalyzer } from '@/app/generators/corrections/analyzers/BaseAnalyzer';
 import { ConfigFileAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/ConfigFileAnalyzer';
 
 // Config Analyzers
-import { TsConfigAnalyzer } from './analyzers/react-native/config/TsConfigAnalyzer';
-import { AppConfigAnalyzer } from './analyzers/react-native/config/AppConfigAnalyzer';
-import { AppJsonAnalyzer } from './analyzers/react-native/config/AppJsonAnalyzer';
-import { MetroConfigAnalyzer } from './analyzers/react-native/config/MetroConfigAnalyzer';
-import { RNConfigAnalyzer } from './analyzers/react-native/config/RNConfigAnalyzer';
-import { PackageJsonAnalyzer } from './analyzers/react-native/errors/PackageJsonAnalyzer';
-import { MetroLogAnalyzer } from './analyzers/react-native/errors/MetroLogAnalyzer';
+import { TsConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/TsConfigAnalyzer';
+import { AppConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/AppConfigAnalyzer';
+import { AppJsonAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/AppJsonAnalyzer';
+import { MetroConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/MetroConfigAnalyzer';
+import { RNConfigAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/RNConfigAnalyzer';
+import { PackageJsonAnalyzer } from '@/app/generators/corrections/analyzers/react-native/errors/PackageJsonAnalyzer';
+import { MetroLogAnalyzer } from '@/app/generators/corrections/analyzers/react-native/errors/MetroLogAnalyzer';
 
 // Native Analyzers
-import { AndroidManifestAnalyzer } from './analyzers/react-native/native/AndroidManifestAnalyzer';
-import { IosPlistAnalyzer } from './analyzers/react-native/native/IosPlistAnalyzer';
+import { AndroidManifestAnalyzer } from '@/app/generators/corrections/analyzers/react-native/native/AndroidManifestAnalyzer';
+import { IosPlistAnalyzer } from '@/app/generators/corrections/analyzers/react-native/native/IosPlistAnalyzer';
 
 import path from 'path';
 import fs from 'fs';

@@ -1,11 +1,11 @@
 // ProjectManagementToolbar.tsx
   import * as snapshotApi from '@/app/api/SnapshotApi';
-  import ProjectEventEmitter from '@/app/libraries/eventSystem/eventEmitter'
+  import ProjectEventEmitter from '@/app/libraries/eventSystem/ProjectEventEmitter'
   
   import React from 'react';
   import { Task } from '@/app/models/tasks/Task';
   import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-  import { useCalendarManagerStore } from '@/app/state/stores/CalendarStore';
+  import { useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
   import { rootStores } from '@/app/state/stores/RootStores';
   import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
   import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
@@ -16,7 +16,7 @@
   import { showModalOrNotification } from '@/app/hooks/commHooks/idleTimeoutUtils';
   import useSecureStoreId from '@/app/hooks/useSecureStoreId';
   import { TaskEntity, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
-  import { TaskEntityExtended } from 'app/typings/taskTypes'
+  import { TaskEntityExtended } from '@/app/typings/taskTypes'
 
   const ProjectManagementToolbar: React.FC<{ 
     task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>  

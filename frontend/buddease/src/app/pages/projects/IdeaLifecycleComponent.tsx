@@ -1,5 +1,5 @@
 // IdeaLifecycleComponent.tsx
-import { allLifecyclePhases } from '@/app/components/phases/lifecycles';
+import { allLifecyclePhases } from '@/app/hooks/phases/lifecycles';
 import React from 'react';
 
 const IdeaLifecycleComponent: React.FC = () => {

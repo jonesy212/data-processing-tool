@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import PromptComponent from "@/app/components/prompts/PromptComponent";
 import DynamicComponent from "@/app/components/styling/DynamicComponents";
 import UserFormComponent from "./UserFormComponent";
-import TempUserData from "@/app/onboarding/OnboardingPhase";
+import TempUserData from "@/app/pages/onboarding/OnboardingPhase";
 import { AppDevelopmentPhase } from "@/app/components/phases/AppDevelopmentPhase";
 
 

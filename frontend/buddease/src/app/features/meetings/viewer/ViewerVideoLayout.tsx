@@ -1,7 +1,7 @@
 // ViewerVideoLayout.tsx
 
-import VideoAPI from '@/VideoAPI';
-import VideoViewer from '@/VideoViewer';
+import VideoAPI from '@/app/api/videos/VideoAPI';
+import VideoViewer from '@/app/state/redux/sagas/VideoViewer';
 import { Video } from '@/app/typings/videoTypes/Video';
 import React, { useEffect, useState } from 'react';
 

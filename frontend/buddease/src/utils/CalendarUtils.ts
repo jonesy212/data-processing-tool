@@ -1,95 +1,112 @@
-// Type guard to check if the given value is of type CalendarEventWithCriteria
 // CalendarUtils.ts
+
 import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
+import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-function isCalendarEventWithCriteria<T>(
-    data: T | CalendarEventWithCriteria
-    ): data is CalendarEventWithCriteria {
-    // Perform necessary checks to ensure the data conforms to CalendarEventWithCriteria
-    return (
-        typeof (data as CalendarEventWithCriteria).id !== 'undefined' &&
-        typeof (data as CalendarEventWithCriteria).version !== 'undefined' &&
-        typeof (data as CalendarEventWithCriteria).criteria !== 'undefined'
-    );
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
+
+/* ============================================================
+ * Type Guard
+ * ============================================================ */
+
+export function isCalendarEventWithCriteria(
+  value: unknown
+): value is CalendarEventWithCriteria {
+  if (typeof value !== 'object' || value === null) return false;
+
+  return (
+    'id' in value &&
+    'version' in value &&
+    'criteria' in value
+  );
 }
 
+/* ============================================================
+ * Assertion Helpers (ONE TARGET EACH — REQUIRED)
+ * ============================================================ */
 
-function validateSnapshotStoreProps<T>(
-    options: SnapshotStoreOptions<T, T, StructuredMetadata<T, T>>,
-    config: SnapshotStoreConfig<T, T, StructuredMetadata<T, T>>,
-    callback: (data: T) => void
-  ): asserts options is SnapshotStoreOptions<CalendarEventWithCriteria, CalendarEventWithCriteria> & 
-              config is SnapshotStoreConfig<CalendarEventWithCriteria, CalendarEventWithCriteria> & 
-              callback is (data: CalendarEventWithCriteria) => void {
-  
-    if (!isCalendarEventWithCriteria(options)) {
-      throw new Error("Options must be of type CalendarEventWithCriteria");
-    }
-  
-    if (!isCalendarEventWithCriteria(config)) {
-      throw new Error("Config must be of type CalendarEventWithCriteria");
-    }
-  
-    if (typeof callback !== "function") {
-      throw new Error("Callback must be a function");
-    }
+function assertCalendarStoreOptions(
+  options: SnapshotStoreOptions<any, any, any, any, any, any, any, any, any>
+): asserts options is SnapshotStoreOptions<
+  CalendarEventWithCriteria,
+  CalendarEventWithCriteria,
+  StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
+> {
+  if (!isCalendarEventWithCriteria((options as any)?.payload)) {
+    throw new Error(
+      'SnapshotStoreOptions payload must be CalendarEventWithCriteria'
+    );
   }
-  
+}
 
-  function getCalendarSnapshotStoreData(): Promise<CalendarEventWithCriteria[]> {
-    // Validate if options are of type SnapshotStoreOptions<CalendarEventWithCriteria>
-    if (!isCalendarEventWithCriteria(options)) {
-      throw new Error('Options provided are not of type CalendarEventWithCriteria.');
-    }
-  
-    // Validate if config is of type SnapshotStoreConfig<CalendarEventWithCriteria>
-    if (!isCalendarEventWithCriteria(config)) {
-      throw new Error('Config provided is not of type CalendarEventWithCriteria.');
-    }
-  
-    // Validate if callback is of type (data: CalendarEventWithCriteria) => void
-    if (typeof callback !== 'function') {
-      throw new Error('Callback provided is not a function.');
-    }
-  
-    // Assuming we know that the type of callback needs to be validated further
-    const calendarCallback = (data: any) => {
-      if (!isCalendarEventWithCriteria(data)) {
-        throw new Error('Callback data is not of type CalendarEventWithCriteria.');
-      }
-      callback(data); // Execute the original callback
-    };
-  
-    // Now create the snapshot store after validating all necessary parameters
-    const snapshotStore = new SnapshotStore<
-      CalendarEventWithCriteria,
-      CalendarEventWithCriteria
-    >({
-      storeId,
-      name,
-      version,
-      schema,
-      options: options as SnapshotStoreOptions<
-        CalendarEventWithCriteria,
-        CalendarEventWithCriteria,
-        StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
-      >,
-      category,
-      config: config as SnapshotStoreConfig<
-        CalendarEventWithCriteria,
-        CalendarEventWithCriteria,
-        StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
-      >,
-      operation,
-      expirationDate,
-      payload,
-      currentMeta,
-      callback: calendarCallback,
-      storeProps,
-      endpointCategory,
-    });
-  
-    return snapshotStore.getAllData(); // Example function to fetch all snapshot data
+function assertCalendarStoreConfig(
+  config: SnapshotStoreConfig<any, any, any, any, any, any, any, any, any>
+): asserts config is SnapshotStoreConfig<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields> {
+  if (!isCalendarEventWithCriteria((config as any)?.payload)) {
+    throw new Error(
+      'SnapshotStoreConfig payload must be CalendarEventWithCriteria'
+    );
   }
+}
 
+function assertCalendarCallback(
+  callback: unknown
+): asserts callback is (data: CalendarEventWithCriteria) => void {
+  if (typeof callback !== 'function') {
+    throw new Error('Callback must be a function');
+  }
+}
+
+/* ============================================================
+ * Store Factory
+ * ============================================================ */
+
+export function getCalendarSnapshotStoreData(
+  options: SnapshotStoreOptions<any, any, any, any, any, any>,
+  config: SnapshotStoreConfig<any, any, any, any, any, any>,
+  callback: (data: any) => void
+): Promise<CalendarEventWithCriteria[]> {
+
+  /* ---------- Assertions (narrow types safely) ---------- */
+
+  assertCalendarStoreOptions(options);
+  assertCalendarStoreConfig(config);
+  assertCalendarCallback(callback);
+
+  /* ---------- Wrapped callback with runtime validation ---------- */
+
+  const calendarCallback = (data: unknown) => {
+    if (!isCalendarEventWithCriteria(data)) {
+      throw new Error(
+        'Callback received non-CalendarEventWithCriteria data'
+      );
+    }
+    callback(data);
+  };
+
+  /* ---------- Snapshot store creation ---------- */
+
+  const snapshotStore = new SnapshotStore<
+    CalendarEventWithCriteria,
+    CalendarEventWithCriteria
+  >({
+    storeId,
+    name,
+    version,
+    schema,
+    options,
+    category,
+    config,
+    operation,
+    expirationDate,
+    payload,
+    currentMeta,
+    callback: calendarCallback,
+    storeProps,
+    endpointCategory
+  });
+
+  return snapshotStore.getAllData();
+}

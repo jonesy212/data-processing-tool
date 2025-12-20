@@ -11,13 +11,13 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { SendStatus } from "@/app/state/redux/slices/NofiticationsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { AppCalendarEvent } from '@/app/typings/entities/CalendarEntity';
+import { AppCalendarEvent } from '@/app/typings/meetingTypes';
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
-import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
-import { formatCalendarAsXLSX } from "./formatCalendarAsXLSX";
+import { formatCalendarAsCSV } from "@/app/calendar/formatCalendarAsCSV";
+import { formatCalendarAsXLS } from "@/app/calendar/formatCalendarAsXLS";
+import { formatCalendarAsXLSX } from "@/app/calendar/formatCalendarAsXLSX";
 
 // Define a union type for calendar events
 type CalendarEventUnion = SimpleCalendarEvent<AppCalendarEvent> | CalendarEvent<AppCalendarEvent>;

@@ -1,25 +1,29 @@
 // ProjectManager.tsx
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import {
-  addSnapshot,
-  deleteSnapshotStore,
-  mapSnapshots,
-  mergeSnapshots,
-  snapshotContainer,
-  takeSnapshot,
-  updateSnapshotStore
-} from "@/app/api/SnapshotApi";
+import addSnapshot from "@/app/api/SnapshotApi";
+import mergeSnapshots from '@/app/api/SnapshotApi'
+import deleteSnapshotStore from "@/app/api/SnapshotApi";
+import mapSnapshots from "@/app/api/SnapshotApi";
+import takeSnapshot from "@/app/api/SnapshotApi";
+import snapshotContainer from "@/app/api/SnapshotApi";
+import { getSnapshotCriteria, getSnapshotId } from "@/app/api/SnapshotApi";
+import { getSnapshot } from '@/app/snapshots/snapshotOperations';
+import updateSnapshotStore from "@/app/api/SnapshotApi";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useStorageManager from "@/app/hooks/useStorageManager";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Task } from "@/app/models/tasks/Task";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { Snapshot, SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/snapshots";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotContainer } from "@/app/snapshots/SnapshotContainer";
+import { ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields } from "@/app/typings/entities/ProjectEntity";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import {
   deleteSnapshot,
@@ -48,14 +52,14 @@ interface ProjectData<
   IncludedFields extends keyof T = keyof T
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   currentPhase: ProjectPhase;
-  tasks: Task<T, K>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 interface ProjectManagerProps {
   storeProps: SnapshotStoreProps<ProjectDataManagement>;
 }
 
-type ProjectDataManagement = ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+type ProjectDataManagement = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
 
 interface ProjectSnapshot<
   T extends BaseDataEntity,
@@ -68,8 +72,13 @@ interface ProjectSnapshot<
   projectData: ProjectDataManagement;
 }
 
+// Create type aliases for concrete types for better readability
+type ConcreteTask = Task<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type ConcreteProjectSnapshot = ProjectSnapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+type ConcreteSnapshot = Snapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>;
+
 // -------------------- Component --------------------
-const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) => {
+const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }: ProjectManagerProps) => {
   const {
     storeId,
     initialState,
@@ -94,11 +103,15 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
     initialData?.currentPhase || ProjectPhase.PHASE_1
   );
 
-  const [states, setStates] = useState<ProjectSnapshot[]>([]);
-  const [currentState, setCurrentState] = useState<ProjectSnapshot | null>(null);
-  const [tasks, setTasks] = useState<Task<T, K>[]>(initialData?.tasks || []);
+  // Use concrete types instead of generics
+  const [states, setStates] = useState<ConcreteProjectSnapshot[]>([]);
+  const [currentState, setCurrentState] = useState<ConcreteProjectSnapshot | null>(null);
+  const [tasks, setTasks] = useState<ConcreteTask[]>(initialData?.tasks || []);
 
   const snapshotStoreRef = useRef<SnapshotStore<ProjectDataManagement> | null>(null);
+
+  // Define snapshotContainer (you'll need to provide this value)
+  const snapshotContainer: SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>> = /* define or get this */ {} as any;
 
   // -------------------- Async Snapshot Initialization --------------------
   useEffect(() => {
@@ -107,30 +120,49 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
         // 1️⃣ Initialize snapshot store
         const snapshotStore = await useSnapshotStore(
           async (snapshot, subscribers, storeProps) => {
-            return Promise.resolve(null); // TODO: implement snapshot addition logic
+            return Promise.resolve(null);
           },
           storeProps
         );
         snapshotStoreRef.current = snapshotStore;
 
-        // 2️⃣ Fetch initial snapshot from API
-        const snapshot = await snapshotApi.getSnapshot("", Number(storeId), additionalHeaders);
+        // 2️⃣ Fetch initial snapshot from API - Use concrete types
+        const snapshot = await getSnapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>(
+          "", // snapshotId
+          Number(storeId),
+          {} as ConcreteSnapshot,
+          "fetch",
+          {} as SnapshotEvent<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>,
+          {} as SnapshotConfig<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>,
+          additionalHeaders
+        );
 
         // 3️⃣ Get snapshot criteria
-        const criteria: CriteriaType = await snapshotApi.getSnapshotCriteria(
-          snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>>,
+        const criteria: CriteriaType = await getSnapshotCriteria(
+          snapshotContainer,
           snapshot
         );
 
         // 4️⃣ Get snapshot ID (sync from criteria)
-        const snapshotId = snapshotApi.getSnapshotId(criteria).toString();
+        const snapshotId = getSnapshotId(criteria).toString();
 
         // 5️⃣ Get all snapshots from snapshot manager
-        const entityActions = useSnapshotManager<ProjectDataManagement>(Number(storeId));
+        const entityActions = useSnapshotManager<ProjectDataManagement>(Number(storeId), storeProps);
         if (entityActions.snapshotManager) {
           const rawSnapshots = await entityActions.snapshotManager.getAllSnapshots(snapshotStoreRef.current);
-          setStates(rawSnapshots);
-          setCurrentState(rawSnapshots[0] || null);
+                    
+          // Convert Snapshot to ProjectSnapshot by adding projectData
+          const projectSnapshots = rawSnapshots.map(snapshot => ({
+            ...snapshot,
+            projectData: initialData || {
+              currentPhase: ProjectPhase.PHASE_1,
+              tasks: [],
+              // Add other default properties as needed
+            } as ProjectDataManagement
+          })) as ConcreteProjectSnapshot[];
+
+          setStates(projectSnapshots);
+          setCurrentState(projectSnapshots[0] || null);
         }
       } catch (error) {
         console.error("Error initializing snapshots:", error);
@@ -138,7 +170,7 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
     };
 
     initSnapshots();
-  }, [storeId, storeProps]);
+  }, [storeId, storeProps, initialData]);
 
   // -------------------- Task/Phase Handlers --------------------
   const advanceToNextPhase = () => {
@@ -161,7 +193,7 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
     updateLocalStorage(currentPhase, updatedTasks);
   };
 
-  const updateLocalStorage = (phase: ProjectPhase, taskList: Task<T, K>[]) => {
+  const updateLocalStorage = (phase: ProjectPhase, taskList: ConcreteTask[]) => {
     storageManager.setItem({ currentPhase: phase, tasks: taskList });
   };
 
@@ -178,15 +210,19 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
   };
 
   // -------------------- Async Undo Action --------------------
-  const getActionHistory = async (): Promise<SnapshotStoreConfig<ProjectSnapshot, ProjectDataManagement>> => {
-    const entityActions = useSnapshotManager<ProjectDataManagement>(Number(storeId));
+  const getActionHistory = async (): Promise<SnapshotStoreConfig<ConcreteProjectSnapshot, ProjectDataManagement>> => {
+    const entityActions = useSnapshotManager<ProjectDataManagement>(Number(storeId), storeProps);
     if (!entityActions.snapshotManager) throw new Error("Snapshot manager not initialized");
 
     const rawSnapshots = await entityActions.snapshotManager.getAllSnapshots(snapshotStoreRef.current);
 
-    const mappedSnapshots: ProjectSnapshot[] = rawSnapshots.map((data: ProjectSnapshot) => ({
+    const mappedSnapshots: ConcreteProjectSnapshot[] = rawSnapshots.map((data: ConcreteProjectSnapshot) => ({
       ...data,
-      projectData: data,
+      projectData: initialData || {
+        currentPhase: ProjectPhase.PHASE_1,
+        tasks: [],
+        // Add other default properties
+      } as ProjectDataManagement
     }));
 
     const actions = {
@@ -203,7 +239,7 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
     return {
       snapshots: mappedSnapshots,
       actions,
-    } as SnapshotStoreConfig<ProjectSnapshot, ProjectDataManagement>;
+    };
   };
 
   const undoLastAction = async () => {
@@ -218,6 +254,8 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
       if (Array.isArray(actions) && actions.length > 0) {
         const lastAction = actions.pop();
         console.log("Last action undone:", lastAction);
+        // You can now use storeProps here if needed
+        console.log("Store props:", storeProps);
       } else {
         console.log("No actions to undo.");
       }
@@ -239,7 +277,7 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            {task.description} - {task.completed ? "Completed" : "Incomplete"}
+            {task.description} - {task.isCompleted ? "Completed" : "Incomplete"}
             <button onClick={() => markTaskAsComplete(task.id as string)}>Mark as Complete</button>
           </li>
         ))}

@@ -1,11 +1,13 @@
-// FilterCriteria.ts
 
-import extractCriteria from '@/app/api/SnapshotApi';
+// FilterCriteria.ts
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { extractCriteria } from '@/app/api/snapshotApi';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
-
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import {
   CodingLanguageEnum,
   LanguageEnum,
@@ -42,7 +44,7 @@ import {
 import UserRoles from '@/app/models/UserRoles';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Filter } from "@/app/pages/searches/Filter";
-import { CategoryProperties } from "@/app/personas/ScenarioBuilder";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
@@ -54,6 +56,7 @@ import {
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { Pagination } from '@refinedev/core';
 
+import { Sort } from '@/app/settings/SortCriteria'
 
 
 interface FilterCriteria extends Timestamped, StatusTrackable {
@@ -363,36 +366,6 @@ const criteria: FilterCriteria = {
 
 
 
-
-  // Dynamically set the FetchOptions using properties from the `area` object
-  const options: FetchOptions = {
-    elementId: area.id, // Use `area.id` as the `elementId`
-    listenForResize: true, // Set to true to listen for resize
-    onChange: (dimensions) => {
-      console.log(`Updated dimensions for area "${area.name}":`, dimensions);
-    }
-  };
-  // Call the fetchUserAreaDimensions function using the dynamically created options
-  const areaDimensions = fetchUserAreaDimensions(options);
-
-  // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-  const currentMetadata = useMetadata<
-    T, 
-    K, 
-    StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    never, 
-    Attachment
-  >({
-    area: 'calendar-area',
-    relatedKeys: ['key1', 'key2'], // optional array of keys
-    overrides: {
-      versionData: { /* your version data */ },
-      latestVersion: '1.0.0'
-    },
-    projectId: 123 // optional project ID
-  });
-
-
 interface DateRannge {
   to: Date,
   from: Date
@@ -429,6 +402,8 @@ type CalendarEventWithCriteria = BaseCalendarEvent &
 
 
 
+const { latestVersion = createLatestVersion<VersionEntity, VersionK, VersionMeta, VersionAttachment, VersionExcludedFields, VersionIncludedFields>(), ...rest } = data;
+
 
 // Sample CalendarEvent data
 const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>[] = [
@@ -451,10 +426,10 @@ const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtt
     developmentPhase: "coding",
     subscriberType: "premium",
     subscriptionType: "monthly",
-    latestVersion: {},
-    currentMeta: {},
-    currentMetadata: {},
-    currentMetadata: {},
+    latestVersion: latestVersion,
+    currentMeta: currentMeta,
+    currentMetadata: currentMetadata,
+    
     
     analysisType: AnalysisTypeEnum.STATISTICAL,
     documentType: "pdf",
@@ -485,6 +460,7 @@ const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtt
       bannerUrl: "",
       preferences: {
         refreshUI: () => {},
+        modules: []
       }, 
       storeId: 0,
       username: "",
@@ -589,17 +565,17 @@ const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtt
         resolve(data);
       });
       },
-    meta:{} as Data<T>,
-      getData(): Promise<SnapshotWithCriteria<BaseData, BaseData>> {
+      meta: {} as UnifiedMetadata<CalendarEntity, CalendarEntity, CalendarMeta, Attachment, CalendarExcludedFields, CalendarIncludedFields>,
+      getData(): Promise<Snapshot<CalendarEntity, CalendarEntity, CalendarMeta, Attachment, CalendarExcludedFields, CalendarIncludedFields>> {
       return new Promise((resolve, reject) => {
         try {
           // Sample data implementing SnapshotWithCriteria
-          const data: SnapshotWithCriteria<BaseData, BaseData>[] = [
+          const data: SnapshotWithCriteria<CalendarEntity, CalendarEntity, CalendarMeta, Attachment, CalendarExcludedFields, CalendarIncludedFields>[] = [
           {
             description: "This is a sample event",
             id: "event1",
             title: "Sample Event",
-            content: {},
+            content: 'Sample Event Content',
             topics: [],
             highlights: [],
             files: [],
@@ -612,7 +588,7 @@ const events: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtt
             initialState: {},
             isCore: true,
             initialConfig: {},
-            metadata: {} as UnifiedMetadata<BaseData, BaseData>,
+            metadata: {} as UnifiedMetadata<CalendarEntity, CalendarEntity, CalendarMeta, Attachment, CalendarExcludedFields, CalendarIncludedFields>,
             createdAt: new Date(),
             updatedAt: new Date(),
             version: "1.0.0",
@@ -709,7 +685,8 @@ then: function <  T extends BaseDataEntity,
     snapshotId: undefined,
     categoryProperties: undefined,
     // ... any other required properties
-  } as T;
+  } 
+  // as T;
 
   // Create metadata
   const baseMeta: Meta = {
@@ -720,7 +697,7 @@ then: function <  T extends BaseDataEntity,
   } as Meta;
 
   // Use createCompleteSnapshot to create a proper snapshot
-  const snapshotPromise = createCompleteSnapshot<T, K, Meta>(
+  const snapshotPromise = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
     baseCalendarData,
     new Map(), // baseMeta map (empty for now)
     "snapshot-id", // provide a proper ID
@@ -751,12 +728,12 @@ then: function <  T extends BaseDataEntity,
     metadata: baseMeta,
     // Add minimal required properties
     onInitialize: () => {},
-    taskIdToAssign: null,
+    taskIdToAssign: undefined,
     schema: {},
     currentCategory: undefined,
     deleted: false,
-    status: 'active' as const,
-    meta: new Map(),
+    status: StatusType.Active,
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     state: {} as any,
     dataStores: [],
     auditRecords: {} as any,
@@ -788,7 +765,7 @@ const filterCriteria: FilterCriteria = {
   assignedUser: "John Doe",
   description: "This is a sample event",
   filters: [], 
-  sort:{}, 
+  sort: [], 
   date : new Date("2025-12-25"),
   todoStatus: TodoStatus.Completed,
   taskStatus: TaskStatus.InProgress, // Updated to enum value

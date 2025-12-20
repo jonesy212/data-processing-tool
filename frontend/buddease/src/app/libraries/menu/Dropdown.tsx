@@ -1,6 +1,6 @@
 // Dropdown.tsx
 import React, { useState } from "react";
-import { Option } from "@/app/animations/DynamicSelectionControls";
+import { Option } from "@/app/libraries/animations/DynamicSelectionControls";
 interface DropDownProps {
   options: string[];
   selectedOption: string;

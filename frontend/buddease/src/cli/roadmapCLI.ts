@@ -9,7 +9,7 @@ import { buildStakeholderRoadmap } from '@/app/services/stakeholderRoadmap';
 import { handleCombinedRoadmap } from '@/cli/combinedRoadmap';
 import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { AnalysisNode } from '@/app/typings/AnalysisNode';
-import { generateOutline } from './roadmapOutline';
+import { generateOutline } from '@/cli/roadmapOutline';
 
 const rl = readline.createInterface({
   input: process.stdin,

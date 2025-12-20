@@ -20,7 +20,7 @@ import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { TransactionData } from '@/app/payment/Transaction';
 import { Permission } from '@/app/permissions/Permission';
-import { CoreMetadata } from '@/app/server/metadata/MetadataStateManager';
+import { CoreMetadata } from '@/app/config/MetadataStateManager';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
 import { Snapshot } from '@/app/snapshots/Snapshot';

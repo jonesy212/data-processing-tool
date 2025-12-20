@@ -1,5 +1,5 @@
 // SecurityAuditor.ts
-import { CorrectionMessageGenerator } from './CorrectionMessageGenerator';
+import { CorrectionMessageGenerator } from '@/app/generators/corrections/CorrectionMessageGenerator';
 import path from 'path';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { ProjectStructure } from '@/app/scripts/generateRoadmaps'

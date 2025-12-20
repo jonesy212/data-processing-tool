@@ -1,7 +1,7 @@
 // useSecureDocumentId.ts
 import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
 import { DocumentNode } from '@/app/users/User';
-import { sanitizeData } from '@/security/SanitizationFunctions';
+import { sanitizeData } from '@/app/models/cypto/SanitizationFunctions';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

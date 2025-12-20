@@ -1,5 +1,5 @@
 // BlogUtils.ts
-import { Blog } from "./Blog";
+import { Blog } from "@/app/pages/blog/Blog";
 
 /**
  * Utility function to filter blogs by a specific category.

@@ -7,7 +7,7 @@ import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/Collabora
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import DynamicComponentWrapper from "@/utils/DynamicComponentWrapper";
 import React, { useState } from "react";
-import { ResponsiveDesign } from "./ResponsiveDesign"; // Import the ResponsiveDesign component
+import { ResponsiveDesign } from "@/app/components/styling/ResponsiveDesign"; // Import the ResponsiveDesign component
 
 const EnhancedDesignDashboard: React.FC = () => {
   const [colors, setColors] = useState<string[]>([

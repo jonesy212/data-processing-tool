@@ -27,9 +27,9 @@ import {
 import MemberEntity, { MemberExcludedFields } from '@/app/typings/entities/MemberEntity';
 import { AppMetadata } from '@/app/typings/metadataTypes';
 import { AllTypes } from '@/app/typings/PropTypes';
-import { StructuredMetadata } from './StructuredMetadata';
-import { useMeta } from './useMeta';
-import { useMetadata } from './useMetadata';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { useMeta } from '@/app/config/useMeta';
+import { useMetadata } from '@/app/config/useMetadata';
 
 type BaseDataEntity = BaseDataRoot;
 

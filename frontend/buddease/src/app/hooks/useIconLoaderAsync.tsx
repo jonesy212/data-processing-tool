@@ -2,9 +2,9 @@
 // useIconLoaderAsync.ts
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useState } from "react";
-import { getFAIcon, loadFontAwesomeIcon } from "@/app/icons/fontAwesomeIconLoader";
-import { FontAwesomeIconOptions } from "@/app/icons/fontAwesomeIconOptions";
-import { IconLibrary, loadIconLibrary } from "@/app/icons/iconLibraryLoader";
+import { getFAIcon, loadFontAwesomeIcon } from "@/app/components/icons/fontAwesomeIconLoader";
+import { FontAwesomeIconOptions } from "@/app/components/icons/fontAwesomeIconOptions";
+import { IconLibrary, loadIconLibrary } from "@/app/components/icons/iconLibraryLoader";
 
 
 type IconOptions = { library: IconLibrary; icon: string };

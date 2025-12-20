@@ -4,7 +4,7 @@ import React from "react";
 
 
 import { fireEvent } from '@testing-library/react';
-import DetailsList from '@/DetailsList';
+import DetailsList from '@/app/components/lists/DetailsList';
 
 describe('DetailsList component', () => {
   test('renders "Add Detail" button', () => {
@@ -51,7 +51,7 @@ describe('DetailsList component', () => {
 
 
 import { render } from '@testing-library/react';
-import BlogList from '@/app/pages/blog/BlogList';
+import BlogList from '@/app/components/lists/BlogList';
 import { render } from '@testing-library/react';
 
 describe('BlogList component', () => {

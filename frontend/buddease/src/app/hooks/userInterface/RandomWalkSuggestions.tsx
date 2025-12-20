@@ -4,7 +4,7 @@ import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
-import { RandomWalkActions } from "./RandomWalkActions";
+import { RandomWalkActions } from "@/app/hooks/userInterface/RandomWalkActions";
 
 const RandomWalkSuggestions = () => {
   const dispatch = useDispatch();

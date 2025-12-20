@@ -1,18 +1,18 @@
 // AnimatedDashboard.tsx
-import DynamicIntroTooltip from "@/app/components/DynamicIntroTooltip";
+import DynamicIntroTooltip from "@/app/DynamicIntroTooltip";
 import { AnimatedComponent } from "@/app/libraries/animations/AnimationComponent";
 
-import SwingCard from "@/app/components/cards/animation/SwingCard";
+import SwingCard from "@/app/cards/animation/SwingCard";
 import React, { useEffect, useState } from "react";
 
 import ClickableList from "@/app/actions/ClickableList";
-import { ImageCard } from "@/app/cards";
+import { ImageCard } from "@/app/cards/index";
 import { loadDuckDuckGoIcon } from "@/app/components/icons/IconLoader";
 import TaskList from "@/app/components/lists/TaskList";
 import ContentItemComponent, {
   ContentItem,
 } from "@/app/components/models/content/ContentItem";
-import TodoList from "@/app/components/todos/TodoList";
+import TodoList from "@/app/components/lists/TodoList";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import {
@@ -25,10 +25,10 @@ import {
 } from "@/app/hooks/userInterface/UIPhaseHooks";
 import useDarkModeToggle from "@/app/hooks/userInterface/useDarkModeToggle";
 import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";
-import responsiveDesignStore from "@/app/ponents/styling/ResponsiveDesign";
+import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
 import useTodoManagerStore from "@/app/state/stores/TodoStore";
-import { useLayout } from "./LayoutContext";
+import { useLayout } from "@/app/pages/layouts/LayoutContext";
 
 interface ClickableListItem {
   id: number;

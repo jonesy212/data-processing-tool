@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import NavigationGenerator from "@/app/hooks/userInterface/NavigationGenerator";
 import DraggableAnimation from "@/app/libraries/animations/DraggableAnimation";
-import Link from "@/app/routing/Link";
+import Link from "@/app/components/routing/Link";
 import {
   AnimatedComponentProps,
-} from "@/app/styling/AnimationsAndTansitions";
-import ColorPalette, { ColorSwatchProps } from "@/app/styling/ColorPalette";
+} from "@/app/components/styling/AnimationsAndTansitions";
+import ColorPalette, { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
 import { AnimatedComponent } from "@/app/libraries/animations/AnimationComponent";
 import { Card } from "antd";
+
 interface ScreenElementProps {
   id: string;
   // Add other properties as needed, such as styles, content, etc.

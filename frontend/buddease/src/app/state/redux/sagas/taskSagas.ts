@@ -1,5 +1,5 @@
 // taskSagas.ts
-import { taskService } from "@/app/components/tasks/TaskService";
+import { taskService } from "@/app/services/TaskService";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import { TaskActions } from "@/app/actions/TaskActions";

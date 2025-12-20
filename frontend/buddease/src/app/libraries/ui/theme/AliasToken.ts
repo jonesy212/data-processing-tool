@@ -1,6 +1,6 @@
 // AliasToken.ts
 import type * as React from 'react';
-import { DesignSystemConfig } from '@/MapProperties';
+import { DesignSystemConfig } from '@/app/libraries/ui/theme/MapProperties';
 
 export interface AliasProperties extends DesignSystemConfig {
     colorFillContentHover: string;

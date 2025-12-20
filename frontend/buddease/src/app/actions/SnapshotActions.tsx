@@ -29,8 +29,8 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
-import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "../snapshots/SnapshotConfig";
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 
 const dispatch = useDispatch()
 

@@ -1,6 +1,6 @@
 // DynamicPromptingLogic.tsx
 import React, { useState } from "react";
-import { generateDynamicPrompts } from "./promptGenerator";
+import { generateDynamicPrompts } from "@/app/prompts/promptGenerator";
 
 const DynamicPromptingLogic: React.FC = () => {
   const [generatedPrompts, setGeneratedPrompts] = useState<string[]>([]);

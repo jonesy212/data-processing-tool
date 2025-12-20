@@ -1,7 +1,7 @@
 // LoginContainer.tsx
 import Dashboard from "@/app/pages/dashboards/RecruiterSeekerDashboard";
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
-import LoginForm from "@/forms/LoginForm";
+import LoginForm from "@/app/pages/forms/LoginForm";
 import React, { lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -2,12 +2,22 @@
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { Project } from '@/app/models/projects/Project';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
-import MonthView from '@/CalendarMonthView';
-import { YearInfo } from '@/CalendarYear';
-import { Month } from '@/Month';
+import MonthView from '@/app/components/calendar/CalendarMonthView';
+import { YearInfo } from '@/app/components/calendar/CalendarYear';
+import { Month } from '@/app/components/calendar/Month';
 import React, { Fragment } from "react";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
-interface YearViewProps extends CommonCalendarProps {
+
+interface YearViewProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> extends CommonCalendarProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   year: YearInfo[];
   getSelectedProject: (state: RootState, projectId: string) => Project | null;
 }

@@ -1,13 +1,16 @@
+import { BackendStructure } from '@/app/server/database/BackendStructure';
 // CacheExample.ts
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { initializeAppData } from '@/app/api/service/ApiService';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { frontendStructure } from '@/app/config/appStructure/FrontendStructure';
+import { backendStructure } from '@/app/config/appStructure/BackendStructure';
 import { backendConfig } from '@/app/config/BackendConfig';
 import { frontendConfig } from '@/app/config/FrontendConfig';
 import userSettings from "@/app/config/UserSettings";
 import { ModifiedDate } from "@/app/documents/DocType";
+import { CacheData } from '@/app/generators/GenerateCache';
 import { CustomStyle } from '@/app/api/service/ApiService';
 import { realtimeData } from '@/app/generators/GenerateCache';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -21,8 +24,16 @@ import { versionHistory } from '@/app/versions/VersionData';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { ContentState } from "draft-js";
 import { useState } from "react";
-import { defaultMetadata } from '@/app/frontend/buddease/src/app/layout'
-import { DataSharingPreferences } from 'app/settings/PrivacySettings'
+import { defaultMetadata } from '@/app/layout'
+import { DataSharingPreferences } from '@/app/settings/PrivacySettings'
+import { CacheResponse } from '@/app/libraries/cache/CacheResponse'
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore'
+import { createDefaultVersionData } from '@/app/versions/VersionData';
+import { DocumentAnimationOptions } from '@/app/documents/SharedDocumentProps';
+import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
+import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
+import determineFileType from '@/app/components/configs/DetermineFileType';
+
 // Usage
 initializeAppData().then(appData => {
   console.log(appData);
@@ -56,7 +67,7 @@ const additionalHeaders: Record<string, string> = generateAllHeaders({ additiona
 
 
 // Usage example:
-const cacheData: Partial<SupportedData> = {
+const cacheData: Partial<SupportedData<>> = {
 
   options: {
     previousContent: {} as ContentState,

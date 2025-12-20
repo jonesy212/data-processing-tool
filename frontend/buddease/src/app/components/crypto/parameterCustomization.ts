@@ -1,7 +1,7 @@
 // parameterCustomization.ts
 
 import { endpoints } from '@/app/api/endpointConfigurations';
-import ApiService from "@/app/api/ApiService";
+import ApiService from "@/app/api/service/ApiService";
 import { AxiosResponse } from "axios";
 
 // Define the type or interface for the request data

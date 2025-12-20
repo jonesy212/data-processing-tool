@@ -3,8 +3,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
-import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
+import { subscribeToSnapshot, subscribeToSnapshots } from "@/app/snapshots/index";
+import { SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
 
 class SnapshotManagerOptions<
     T extends BaseDataEntity,

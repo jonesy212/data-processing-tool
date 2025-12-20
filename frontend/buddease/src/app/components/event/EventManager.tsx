@@ -17,7 +17,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { CustomEventExtension } from "../../events/BaseCustomEvent";
+import { CustomEventExtension } from "@/app/events/BaseCustomEvent";
 
 // Define the thunk actions
 const fetchEvents = createAsyncThunk<CustomEventExtension[]>(

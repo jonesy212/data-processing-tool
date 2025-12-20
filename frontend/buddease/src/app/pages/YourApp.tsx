@@ -3,7 +3,7 @@ import BasicStopwatchComponent from '@/app/components/stopwatches/BasicStopwatch
 import CountdownTimerComponent from '@/app/components/stopwatches/CountdownTimerComponent';
 import createDynamicHook from "@/app/hooks/phaseHooks/DynamicPromptPhaseHook";
 import authService from '@/app/server/auth/AuthService';
-import UserFormComponent from '@/forms/UserFormComponent';
+import UserFormComponent from '@/app/libraries/ui/components/Component';
 import React, { useEffect, useState } from 'react';
 
 const YourApp: React.FC = () => {

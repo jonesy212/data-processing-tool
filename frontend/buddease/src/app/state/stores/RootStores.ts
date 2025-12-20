@@ -15,10 +15,10 @@ import { DataStore, useDataStore } from '@/app/state/stores/DataStore';
 import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStore';
 import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
 import NotificationStore from '@/app/state/stores/NotificationStore';
-import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
-import { globalCallbackRegistry } from './../../libraries/eventSystem/callbackRegistry';
+import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/hybrid/ProjectManagerStore';
+import { globalCallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry';
 
-import { SettingManagerStore } from '@/app/state/hybrid/SettingManagerStore';
+import { SettingManagerStore } from '@/app/state/hybrid/SettingsManagerStore';
 import { SettingsStore } from '@/app/state/stores/SettingsStore';
 import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';

@@ -1,3 +1,25 @@
+
+export type SortDirection = 'asc' | 'desc';
+
+export interface Sort {
+  field: SortCriteria;
+  direction: SortDirection;
+
+  /**
+   * Optional:
+   * - for multi-sort priority
+   * - for stable sorting
+   */
+  priority?: number;
+
+  /**
+   * Optional:
+   * How null / undefined values are handled
+   */
+  nulls?: 'first' | 'last';
+}
+
+
 // SortCriteria.tsx
 enum SortCriteria {
   Title = "title",

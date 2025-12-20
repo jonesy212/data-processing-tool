@@ -10,7 +10,8 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { AppStructure } from '@/app/config/appStructure/AppStructure'
+import AppStructure from '@/app/config/appStructure/AppStructure';
+
 // Core App type definitions
 interface AppEntity extends BaseDataEntity {
   // Common app-level properties

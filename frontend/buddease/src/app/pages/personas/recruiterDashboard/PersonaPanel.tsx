@@ -1,8 +1,8 @@
 // PersonaPanel.tsx
-import DynamicContentProps from '@/app/components/cards/DummyCardLoader';
-import { PersonaTypeEnum } from '@/PersonaBuilder';
+import DynamicContentProps from '@/app/cards/DummyCardLoader';
+import { PersonaTypeEnum } from '@/app/pages/personas/PersonaBuilder';
 import React from "react";
-import { PersonaData } from "./PersonaData";
+import { PersonaData } from "@/app/pages/personas/Persona";
 
 interface PersonaPanelProps {
   persona: string;

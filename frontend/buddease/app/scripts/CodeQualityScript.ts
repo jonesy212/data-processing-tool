@@ -405,22 +405,47 @@ class CodeQualityScript {
     console.log(`📦 Found ${issues.length} import-related issues`);
     return issues;
   }
-
+  
   // Fix generation logic
   private generateFixes(issues: any[]): Correction[] {
     const corrections: Correction[] = [];
 
     issues.forEach(issue => {
       if (this.isMagicNumberIssue(issue)) {
-        corrections.push(this.createMagicNumberCorrection(issue));
+        corrections.push(this.createMagicNumberCorrection({
+          ...issue,
+          message: issue.message || 'Magic number should be replaced with a constant',
+          code: issue.number || 'N/A',
+          fix: issue.fix || `const CONST_${issue.number} = ${issue.number};`
+        }));
       } else if (this.isLongMethodIssue(issue)) {
-        corrections.push(this.createLongMethodCorrection(issue));
+        corrections.push(this.createLongMethodCorrection({
+          ...issue,
+          message: issue.message || 'Method exceeds recommended length',
+          code: issue.code || 'N/A',
+          fix: issue.fix || 'Refactor method into smaller functions'
+        }));
       } else if (this.isDuplicateIssue(issue)) {
-        corrections.push(...this.createDuplicateCorrections(issue));
+        corrections.push(...this.createDuplicateCorrections({
+          ...issue,
+          message: issue.message || 'Duplicate code block detected',
+          code: issue.code || 'N/A',
+          fix: issue.fix || 'Extract into reusable function'
+        }));
       } else if (this.isComplexConditionalIssue(issue)) {
-        corrections.push(this.createComplexConditionalCorrection(issue));
+        corrections.push(this.createComplexConditionalCorrection({
+          ...issue,
+          message: issue.message || 'Conditional logic is too complex',
+          code: issue.code || 'N/A',
+          fix: issue.fix || 'Simplify the conditional logic'
+        }));
       } else if (this.isImportIssue(issue)) {
-        corrections.push(this.createImportCorrection(issue));
+        corrections.push(this.createImportCorrection({
+          ...issue,
+          message: issue.message || 'Import issue detected',
+          code: issue.code || 'N/A',
+          fix: issue.fix || 'Refactor import statements'
+        }));
       }
     });
 

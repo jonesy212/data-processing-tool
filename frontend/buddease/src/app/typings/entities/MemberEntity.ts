@@ -23,7 +23,7 @@ import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { ProjectBudget } from '@/app/typings/projectTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { PhaseMeta } from '../phaseTypes';
+import { PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
   // Only include fields that are fundamentally part of the entity data model

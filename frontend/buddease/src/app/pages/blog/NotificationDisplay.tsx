@@ -1,5 +1,5 @@
 // NotificationDisplay.tsx
-import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice'
+import { NotificationData } from '@/app/hooks/useNotificationSystem'
 import React from 'react';
 
 interface NotificationDisplayProps {

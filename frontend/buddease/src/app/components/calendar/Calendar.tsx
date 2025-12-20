@@ -33,7 +33,7 @@ interface CommonCalendarProps<
 > {
   year?: YearInfo[] | number;
   month?: MonthInfo[] | number;
-  events: CalendarEvent<any, any>[];
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   milestones: Milestone[];
   projectId: string; // Add projectId prop

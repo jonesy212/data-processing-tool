@@ -7,7 +7,7 @@ import {
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Data, DataDetails } from '@/app/models/data/Data';
-import { NotificationType, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';
 import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator

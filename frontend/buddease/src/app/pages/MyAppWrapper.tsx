@@ -10,11 +10,11 @@ import {
   createPhaseHook,
 } from "@/app/hooks/phaseHooks/PhaseHooks";
 import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
-import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import MyApp from "./_app";
 import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
- import { AsyncHook } from "async_hooks";
+ import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
 import { brandingSettings } from '@/app/libraries/theme/BrandingService';
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";

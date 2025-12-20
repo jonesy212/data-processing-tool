@@ -2,11 +2,11 @@
 import apiNotificationsService from "@/app/api/NotificationsService";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/app/auth/AuthContext";
+import { useAuth } from "@/app/state/context/AuthContext";
 import { addFilteredEvent, sortFilteredEvents } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { User, UserData } from "@/app/users/User";
-import { subscribeToRealtimeUpdates } from "@/app/web3/dAppAdapter/functionality/RealtimeUpdates";
+import { subscribeToRealtimeUpdates } from "@/utils/web3/dAppAdapter/functionality/RealtimeUpdates";
 import useFilteredEventsSlice from "@/app/state/redux/slices/FilteredEventsSlice";
 import useSorting from "@/app/hooks/useSorting";
 import { useDispatch, useSelector } from "react-redux";
@@ -172,4 +172,6 @@ const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
       </div>
     </div>
   );
+}
+
 export default ActivityFeedComponent;

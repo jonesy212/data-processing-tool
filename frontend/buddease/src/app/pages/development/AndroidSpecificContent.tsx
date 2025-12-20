@@ -1,8 +1,8 @@
 // AndroidSpecificContent.tsx
 // AndroidSpecificContent.ts
 import { useThemeConfig } from '@/app/hooks/userInterface/ThemeConfigContext';
-import AddContent, { ContentProps } from '@/app/components/models/content/AddContent';
-import ProgressBar, { Progress, ProgressBarProps, ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
+import AddContent, { ContentProps } from '@/app/models/content/AddContent';
+import ProgressBar, { Progress, ProgressBarProps, ProgressPhase } from '@/app/models/tracker/ProgressBar';
 import { Feature } from '@/app/state/stores/FeatureStore';
 import React from 'react';
 

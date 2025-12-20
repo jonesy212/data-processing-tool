@@ -16,7 +16,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotBase, SnapshotData } from ".";
+import { SnapshotBase, SnapshotData } from "@/app/snapshots/SnapshotContainer";
 
 import { Label } from "@/app/branding/BrandingSettings";
 import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -40,16 +40,16 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { User } from "@/app/users/User";
-import { SnapshotOperation } from "../actions/SnapshotActions";
-import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotItem } from "./SnapshotList";
-import { SnapshotMethods } from "./SnapshotMethods";
+import { SnapshotOperation } from "@/app/snapshots/index";
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
 import { default as SnapshotStore } from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreMethods } from "./SnapshotStoreMethods";
-import { InitializedDataStore } from "./SnapshotStoreOptions";
-import { SnapshotCRUD } from "./SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
+import { InitializedDataStore } from "@/app/snapshots/SnapshotStoreOptions";
+import { SnapshotCRUD } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 interface CoreSnapshot<
   T extends BaseDataEntity = BaseDataRoot,

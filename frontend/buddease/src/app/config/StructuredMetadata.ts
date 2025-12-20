@@ -15,11 +15,11 @@ import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Permission } from '@/app/permissions/Permission';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { SnapshotStoreConfig } from '@/app/snapshots';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
-import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta, ProjectStructuredMetadata } from '@/app/typings/entities/ProjectEntity';
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
 import { UserEntity, UserK } from '@/app/typings/entities/UserEntity';
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
 import { Video } from '@/app/typings/videoTypes/Video';
@@ -186,8 +186,8 @@ interface VideoMetadata<
   metadataSource: string;
   data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  childIds: K[]; // Add childIds
-  relatedData: K[]; // Add relatedData
+  childIds: K[]; 
+  relatedData: K[]; 
 }
 
 interface ProjectMetadata<
@@ -371,7 +371,7 @@ function transformProjectToStructured<
       initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       mappedSnapshot,
-      events: {} as EventManager<T, K>,
+      events: {} as EventManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       schema: {},
       latestVersion: projectMetadata.latestVersion
     },
@@ -400,7 +400,7 @@ function transformProjectToStructured<
   return structuredMetadata;
 }
 
-const projectMetadata: ProjectMetadata<ProjectEntity, ProjectK, ProjectStructuredMetadata, ProjectAttachment, ProjectExcludedFields> = {
+const projectMetadata: ProjectMetadata<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields> = {
   projectName: "",
   startDate: new Date(),
   endDate: new Date(),
@@ -535,7 +535,8 @@ const videoMetadata: VideoMetadata<VideoEntity, VideoK, VideoMeta, VideoAttachme
     updatedAt: new Date(),
     childIds: [] as VideoK[],
     relatedData: [],
-    transactionHistory: []
+    transactionHistory: [],
+    latestVersion: latestVersion
   },
   frameRate: 30,
   bitrate: 0,

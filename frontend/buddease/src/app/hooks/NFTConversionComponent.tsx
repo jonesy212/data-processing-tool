@@ -2,7 +2,7 @@
 
 import { observer } from 'mobx-react';
 import React, { useState } from 'react';
-import NFTService from '@/NFTService';
+import NFTService from '@/app/components/nft/NFTService';
 
 const NFTConversionComponent: React.FC = observer(() => {
   const [nftData, setNFTData] = useState<string>('');

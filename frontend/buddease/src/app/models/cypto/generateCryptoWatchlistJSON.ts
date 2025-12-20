@@ -1,5 +1,5 @@
 // generateCryptoWatchlistJSON.ts
-import { CryptoWatchlist } from "./CryptoWatchlist";
+import { CryptoWatchlist } from "@/app/models/cypto/CryptoWatchlist";
 
 // Function to generate JSON from a CryptoWatchlist object
 function generateCryptoWatchlistJSON(cryptoWatchlist: CryptoWatchlist): string {

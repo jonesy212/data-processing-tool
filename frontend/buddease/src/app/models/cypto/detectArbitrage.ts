@@ -1,5 +1,5 @@
 // detectArbitrage.ts
-import { CryptoData, ParsedData } from "./parseData";
+import { CryptoData, ParsedData } from "@/app/dataIntegration/parseData";
 // Function to detect arbitrage opportunities based on price disparities and other factors
 
 

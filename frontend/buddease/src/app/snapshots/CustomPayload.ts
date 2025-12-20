@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
-import { CustomSnapshotData } from '@/app/snapshots';
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 
 // Define CustomPayload that extends Payload and aligns with CustomSnapshotData
 type CustomPayload<  T extends BaseDataEntity,

@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { FileType } from '@/app/documents/attachment/Attachment';
 import { StatusType } from "@/app/models/data/StatusType";
-import { Tag } from "@/app/models/tracker/Tracker";
+import { Tag } from "@/app/models/tracker/Tag";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { useState } from "react";
 

@@ -1,7 +1,7 @@
 // CommunityProjectsPage.tsx
 // app/pages/community/CommunityProjectsPage.tsx
-import { CommunityData } from '@/app/components/models/CommunityData';
-import { Team } from '@/app/components/models/teams/Team';
+import { CommunityData } from '@/app/models/CommunityData';
+import { Team } from '@/app/components/teams/Team';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import ListGenerator from '@/app/generators/ListGenerator';
 import FeedbackForm from '@/app/pages/forms/FeedbackForm';

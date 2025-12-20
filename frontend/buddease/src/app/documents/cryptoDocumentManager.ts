@@ -2,7 +2,7 @@
 // frontend/app/security/CryptoDocumentManager.ts
 
 import { DocumentTree } from "@/app/users/User";
-import { CryptoDocument } from "./cryptoDocument";
+import { CryptoDocument } from "@/app/documents/cryptoDocument";
 import { encryptStringClient } from "@/app/security/clientEncrypt";
 
 // Utility to check if we’re running in a browser

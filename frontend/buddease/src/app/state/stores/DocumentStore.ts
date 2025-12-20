@@ -38,7 +38,7 @@ import { Version } from '@/app/versions/Version';
 import { ContentState } from 'draft-js';
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { VersionData } from './../../versions/VersionData';
+import { VersionData } from '@/app/versions/VersionData';
 import { WritableDraft } from './../redux/ReducerGenerator';
 import { AllStatus } from './DetailsListStore';
 

@@ -1,60 +1,61 @@
 // CustomWeb3Config.ts
-import Web3ConfigEvent from "web3-eth-contract";
-import  { Web3 } from "web3";
+// erc20Balance.ts
 
-// Define a class that implements the Web3Config interface
-class CustomWeb3Config extends Web3Config {
-    on(CONFIG_CHANGE: any, arg1: (event: any) => void) {
-    
-    }
-  config: any;
+import { Web3 } from "web3";
+import type { AbiItem } from "web3-utils";
 
-  // Implement the abstract method _triggerConfigChange
-  protected _triggerConfigChange() {
-    // Trigger the CONFIG_CHANGE event with the updated config
-    this.emit("CONFIG_CHANGE", {
-      name: "CONFIG_CHANGE",
-      oldValue: this.config,
-      newValue: this.config,
-    });
+/* ---------- Web3 Instance ---------- */
+
+const web3 = new Web3("http://127.0.0.1:4545");
+
+/* ---------- Minimal ERC-20 ABI ---------- */
+/* Only what is required for balanceOf */
+
+const erc20Abi = [
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "account",
+        type: "address"
+      }
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        name: "",
+        type: "uint256"
+      }
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
   }
+] as const satisfies readonly AbiItem[];
 
-  emit(CONFIG_CHANGE: any, arg1: { name: any; oldValue: any; newValue: any }) {
-    throw new Error("Method not implemented.");
+/* ---------- Addresses ---------- */
+
+const tokenAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const walletAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+
+/* ---------- Contract Instance ---------- */
+
+const contract = new web3.eth.Contract(erc20Abi, tokenAddress);
+
+/* ---------- Execution Wrapper ---------- */
+
+async function run(): Promise<void> {
+  try {
+    const balance = await contract.methods
+      .balanceOf(walletAddress)
+      .call();
+
+    console.log("Token balance:", balance);
+  } catch (error) {
+    console.error("Failed to fetch balance:", error);
   }
 }
 
-// Usage example
-// Instantiate the custom Web3Config class with appropriate properties
-const timeout = 1000; // Example value for timeout
-const defaultAccount = "0x..."; // Example value for default account
-const defaultBlock = "latest";
-const web3Config = new CustomWeb3Config(timeout, defaultAccount, defaultBlock);
+/* ---------- Start ---------- */
 
-// Set up a listener for the CONFIG_CHANGE event
-web3Config.on("CONFIG_CHANGE", (event) => {
-  console.log(`Config changed:`, event);
-});
-
-
-
-//todo add abi
-
-// Assuming 'abi' is defined elsewhere in your code with the correct ABI for your contract
-
-const web3 = new Web3('https://127.0.0.1:4545');
-const abi = [...] as const; // your contract ABI
-
-let contract = new web3.eth.Contract(abi,'0xdAC17F958D2ee523a2206206994597C13D831ec7');
-await contract.methods.balanceOf('0xdAC17F958D2ee523a2206206994597C13D831ec7').call();
-
-
-// Modify the config
-contract.setConfig({
-  defaultBlock: "pending",
-  transactionPollingInterval: 2000,
-});
-
-// Output:
-// Config changed: { name: 'CONFIG_CHANGE', oldValue: { defaultBlock: 'latest', ... }, newValue: { defaultBlock: 'pending', ... } }
-// (assuming other config properties remain the same)
+run();

@@ -2,7 +2,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
-import { TaskDetails } from '@/app/components/models/tasks/TaskDetailsComponent'
+import { TaskDetails } from '@/app/models/data/index'
 import { AppTask, TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
 import { ValidPriority } from '@/app/pages/searches/CriteriaType'
 import { PriorityValue } from '@/app/pages/searches/CriteriaType'; // Import PriorityValue if needed

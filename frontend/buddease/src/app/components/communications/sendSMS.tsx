@@ -1,7 +1,7 @@
 // SendSMS.tsx
 import { useState } from 'react';
 import React from "react";
-import { sendSMS } from "@/components/communication/sendSMS"; // 👈 clean import
+import { sendSMS } from "@/app/api/sendSMS"; // 👈 clean import
 
 'use client';
 

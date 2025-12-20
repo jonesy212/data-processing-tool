@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryKeys } from "@/app/libraries/categories/CategoryManager";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotConfig } from '@/app/snapshots/';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 

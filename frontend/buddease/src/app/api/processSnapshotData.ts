@@ -9,8 +9,10 @@ import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotVersioning } from '@/app/snapshots/SnapshotVersioning'
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
+import { Snapshot, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotBaseProperties, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
@@ -20,6 +22,7 @@ import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
 import { isSnapshot } from '@/utils/snapshotUtils';
 import { DataWithPriority } from "@/utils/versionUtils";
+import { CustomSnapshot } from '@/app/snapshots/CustomSnapshot'
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,
@@ -95,7 +98,12 @@ function isEnhancedSnapshotData<
     
     // Convert Snapshot to SnapshotData properly
     return {
-      validate, serialize, get, set, processEvent,
+      validate: '',
+      serialize: '',
+      get: '',
+      set: '',
+      processEvent: '',
+    
       // Core nested properties with proper types
       core: firstEntry.core || {} as CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       shared: firstEntry.shared || {} as SharedSnapshotProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -149,7 +157,7 @@ function isEnhancedSnapshotData<
       snapshotStore: firstEntry.snapshotStore || null,
       items: baseEntry.items ?? [],
       config: baseEntry.config,
-      currentCategory: baseEntry.currentCategory,
+      currentCategory: baseEntry.currentCategory ?? undefined,
       find: baseEntry.find,
       
       // Copy all properties from the snapshot
@@ -210,6 +218,7 @@ function getDefaultPermissions(): AppStructurePermissions {
   return {
     userId: 'default',
     permissions: {},
+    type: '',
     permissionType: 'read',
     canView: true,
     canEdit: false,
@@ -219,6 +228,7 @@ function getDefaultPermissions(): AppStructurePermissions {
     share: false,
     execute: false,
     customPermission: false,
+
   };
 }
 
@@ -376,8 +386,14 @@ function convertSnapshotToSnapshotDataType<
     // Add any missing properties or transformations
   } as unknown as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
+// Add a type guard function
+function hasPriorityProperty<T extends BaseDataEntity>(
+  data: any
+): data is T & { priority?: string } {
+  return data && typeof data.priority === 'string';
+}
 
-// Update processPriorityData to accept more types with proper generics
+// In your function
 const processPriorityData = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -388,18 +404,24 @@ const processPriorityData = <
 >(
   snapshotInput: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void => {
-  // Convert to a common type first, then process
   const processedData = convertToProcessableType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotInput);
   if (!processedData) return;
 
-  const dataWithPriority: Partial<DataWithPriority> = {
-    priority: (processedData.data as T & { priority?: string })?.priority,
-  };
+  const data = processedData.data;
+  
+  // Use type guard to check before casting
+  if (hasPriorityProperty<T>(data)) {
+    const dataWithPriority: Partial<DataWithPriority> = {
+      priority: data.priority,
+    };
 
-  if (hasPriority(dataWithPriority)) {
-    console.log('Data has priority:', dataWithPriority.priority);
+    if (hasPriority(dataWithPriority)) {
+      console.log('Data has priority:', dataWithPriority.priority);
+    } else {
+      console.log('No priority data found.');
+    }
   } else {
-    console.log('No priority data found.');
+    console.log('No priority property found in data.');
   }
 };
 

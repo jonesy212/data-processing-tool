@@ -1,7 +1,7 @@
 // confirmation/FileConfirmationService.ts
 import fs from 'fs';
 import { ImportFix } from '@/app/generators/corrections/ImportFixServicies'
-import { ConfirmationService } from './ConfirmationService';
+import { ConfirmationService } from '@/app/services/ConfirmationService';
 
 export class FileConfirmationService implements ConfirmationService {
   private readonly CONFIRMATION_FILE = '.import-fixes-confirm';

@@ -1,5 +1,5 @@
 // WebSocketServer.ts
-import Logger from '@/app/libraries/logging/Logger';
+import Logger from '@/app/logging/Logger';
 import { WebSocketServer } from 'ws'; // Changed import
 
 const wss = new WebSocketServer({ port: 8080 }); // Using WebSocketServer class

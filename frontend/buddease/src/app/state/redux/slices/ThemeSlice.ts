@@ -1,9 +1,9 @@
 // ThemeSlice.ts
 import axiosInstance from '@/app/api/csrfToken'
 import { ThemeCustomizationProps } from "@/app/hooks/userInterface/ThemeCustomization";
-import { Theme } from "@/app/components/libraries/ui/theme/Theme";
+import { Theme } from "@/app/libraries/ui/theme/Theme";
 import { ThemeLogger } from '@/app/logging/Logger';
-import ThemeValidator from "@/app/components/security/validateTheme";
+import ThemeValidator from "@/app/server/security/validateTheme";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import React, { SetStateAction } from "react";
 import { useDispatch } from "react-redux";
@@ -114,11 +114,11 @@ interface ThemeState {
 const initialState: ThemeState = {
   // Core Theme
   colorFontUsage: {
-     themeUsage: {} as ColorFontUsage;
-    themeMetrics: {} as ColorFontUsage;
-    themeSecurity: C{} as olorFontUsage;
-    themeGovernance: {} as ColorFontUsage;
-    themeCompliance: {} as ColorFontUsage;
+    themeUsage: {} as ColorFontUsage,
+    themeMetrics: {} as ColorFontUsage,
+    themeSecurity: {} as ColorFontUsage,
+    themeGovernance: {} as ColorFontUsage,
+    themeCompliance: {} as ColorFontUsage,
   },
   core: {
     theme: {
@@ -126,27 +126,30 @@ const initialState: ThemeState = {
       secondaryColor: "#6c757d",
       fontSize: "16px",
       fontFamily: "Arial, sans-serif",
-      logoUrl: "default.png",
+      logoUrl: "/default.png",
       themeColor: "primary",
-      headerColor: "",
-      footerColor: "",
-      bodyColor: "",
-      borderColor: "",
-      borderStyle: "",
-      padding: "",
-      margin: "",
-      brandIcon: "",
-      brandName: "",
-      borderWidth: "",
-      borderRadius: "",
-      boxShadow: "",
+      headerColor: "#f8f9fa",
+      footerColor: "#343a40",
+      bodyColor: "#ffffff",
+      borderColor: "#dee2e6",
+      borderStyle: "solid",
+      padding: "16px",
+      margin: "0",
+      brandIcon: "/default-icon.svg",
+      brandName: "Brand Name",
+      borderWidth: "1px",
+      borderRadius: { 
+        small: '4px', 
+        medium: '8px', 
+        large: '12px' 
+      },
+      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
     },
     currentTheme: "default",
     selectedTheme: 'light',
     isDarkMode: false,
-    infoColor: "",
+    infoColor: "#17a2b8",
   },
-  
   // State Management
   management: {
     notificationState: {} as React.Dispatch<React.SetStateAction<string | null>>,
@@ -235,130 +238,368 @@ const handleThemeChangeEvent = (theme: Theme) => {
   // Function to handle theme update event
   handleThemeUpdateEvent(theme);
 };
-
 // Utility function to optimize theme performance
 const optimizePerformance = (theme: Theme): Theme => {
   console.log("Optimizing theme performance...");
 
-  // Example optimizations
+  // Helper functions for color validation (from previous answer)
+  const isValidHexColor = (color: string): boolean => {
+    return /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(color);
+  };
+
+  const isValidRgbColor = (color: string): boolean => {
+    return /^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/.test(color) ||
+           /^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(0|1|0?\.\d+)\s*\)$/.test(color);
+  };
+
+  const isValidHslColor = (color: string): boolean => {
+    return /^hsl\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*\)$/.test(color) ||
+           /^hsla\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*,\s*(0|1|0?\.\d+)\s*\)$/.test(color);
+  };
+
+  const isValidColor = (color: string): boolean => {
+    return isValidHexColor(color) || isValidRgbColor(color) || isValidHslColor(color);
+  };
+
+  const isValidCssLength = (value: string): boolean => {
+    return /^(\d+(\.\d+)?)(px|em|rem|vh|vw|vmin|vmax|%|cm|mm|in|pt|pc)$/.test(value) ||
+           /^\d+$/.test(value);
+  };
+
   // 1. Ensure contrast between primary and secondary colors
   const optimizeColors = (primaryColor: string, secondaryColor: string): { primaryColor: string, secondaryColor: string } => {
-    // Simple contrast adjustment logic (you can replace this with a proper algorithm)
-    const isLightColor = (color: string) => {
-      // A basic check to determine if a color is light (can be enhanced)
-      return color === 'white' || color === '#FFFFFF';
+    // Enhanced contrast adjustment logic
+    const getColorLuminance = (color: string): number => {
+      // Simplified luminance calculation for hex colors
+      if (color.startsWith('#')) {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.length === 3 ? hex[0] + hex[0] : hex.substring(0, 2), 16) / 255;
+        const g = parseInt(hex.length === 3 ? hex[1] + hex[1] : hex.substring(2, 4), 16) / 255;
+        const b = parseInt(hex.length === 3 ? hex[2] + hex[2] : hex.substring(4, 6), 16) / 255;
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+      return 0.5; // Default for non-hex colors
     };
 
-    if (isLightColor(primaryColor) && isLightColor(secondaryColor)) {
-      secondaryColor = 'black';
-    } else if (!isLightColor(primaryColor) && !isLightColor(secondaryColor)) {
-      secondaryColor = 'white';
+    const primaryLuminance = getColorLuminance(primaryColor);
+    const secondaryLuminance = getColorLuminance(secondaryColor);
+    const contrastRatio = Math.abs(primaryLuminance - secondaryLuminance);
+
+    // If contrast is too low (< 0.3), adjust secondary color
+    if (contrastRatio < 0.3) {
+      if (primaryLuminance > 0.5) {
+        secondaryColor = '#000000'; // Dark color for light background
+      } else {
+        secondaryColor = '#FFFFFF'; // Light color for dark background
+      }
     }
 
-    return { primaryColor, secondaryColor };
+    return { 
+      primaryColor: isValidColor(primaryColor) ? primaryColor : '#007bff',
+      secondaryColor: isValidColor(secondaryColor) ? secondaryColor : '#6c757d'
+    };
   };
 
   // 2. Standardize font sizes to a set of predefined sizes
   const standardizeFontSize = (fontSize: string): string => {
-    const predefinedSizes = ['12px', '14px', '16px', '18px', '20px'];
-    return predefinedSizes.includes(fontSize) ? fontSize : '16px'; // Default to '16px' if not standard
+    const predefinedSizes = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'];
+    return isValidCssLength(fontSize) && predefinedSizes.includes(fontSize) ? fontSize : '16px';
   };
 
-  // 3. Simplify font family usage
-  const simplifyFontFamily = (fontFamily: string): string => {
-    const commonFonts = ['Arial', 'Helvetica', 'sans-serif'];
-    return commonFonts.includes(fontFamily) ? fontFamily : 'Arial'; // Default to 'Arial' if not common
-  };
-
-  const optimizeLogoUrl = (logoUrl: string): string => {
-    const commonLogoUrls = ['default.png', 'logo.png'];
-    return commonLogoUrls.includes(logoUrl) ? logoUrl : 'default.png'; // Default to 'default.png' if not common
-  };
+  // 3. Optimize font family
   const optimizeFontFamily = (fontFamily: string): string => {
-    const commonFonts = ['Arial', 'Helvetica', 'sans-serif'];
-    return commonFonts.includes(fontFamily) ? fontFamily : 'Arial'; // Default to 'Arial' if not common
+    if (!fontFamily || fontFamily.trim() === '') {
+      return "'Arial', 'Helvetica', sans-serif";
+    }
+    
+    const commonFontStacks: Record<string, string> = {
+      'arial': "'Arial', 'Helvetica', sans-serif",
+      'helvetica': "'Helvetica', 'Arial', sans-serif",
+      'times': "'Times New Roman', Times, serif",
+      'georgia': "Georgia, serif",
+      'verdana': "Verdana, Geneva, sans-serif",
+      'tahoma': "Tahoma, Geneva, sans-serif",
+      'trebuchet': "'Trebuchet MS', Helvetica, sans-serif",
+      'courier': "'Courier New', Courier, monospace",
+      'monospace': "monospace",
+      'sans-serif': "sans-serif",
+      'serif': "serif",
+      'system': "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif",
+    };
+    
+    const normalizedFont = fontFamily.toLowerCase().trim();
+    
+    for (const [key, stack] of Object.entries(commonFontStacks)) {
+      if (normalizedFont.includes(key) || key.includes(normalizedFont)) {
+        return stack;
+      }
+    }
+    
+    if (fontFamily.includes("'") || fontFamily.includes('"')) {
+      return fontFamily;
+    }
+    
+    return `'${fontFamily}', 'Arial', 'Helvetica', sans-serif`;
   };
 
-
-  const optimizeThemeColor = (color: string): string => {
-    // Example logic: Ensure color is valid or transform if needed
-    // Replace with actual optimization logic based on your requirements
-    return color;
+  // Optimize logo URL
+  const optimizeLogoUrl = (logoUrl: string): string => {
+    const commonLogoUrls = ['default.png', 'logo.png', 'logo.svg', 'icon.png', 'icon.svg'];
+    if (!logoUrl || logoUrl.trim() === '') {
+      return '/default.png';
+    }
+    
+    const url = logoUrl.trim();
+    if (commonLogoUrls.some(common => url.includes(common))) {
+      return url;
+    }
+    
+    // Ensure URL starts with / if it's a relative path
+    if (!url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:')) {
+      return `/${url}`;
+    }
+    
+    return url;
   };
+
+  // Optimize theme color
+  const optimizeThemeColor = (color?: string): string => {
+    if (!color || color.trim() === '') {
+      return 'primary';
+    }
+    
+    const validThemeColors = ['primary', 'secondary', 'success', 'warning', 'danger', 'info', 'light', 'dark'];
+    const normalizedColor = color.toLowerCase().trim();
+    
+    if (validThemeColors.includes(normalizedColor)) {
+      return normalizedColor;
+    }
+    
+    if (isValidColor(color)) {
+      return color;
+    }
+    
+    return 'primary';
+  };
+
+  // Optimize general color
   const optimizeColor = (color: string): string => {
-    // Example logic: Ensure color is valid or transform if needed
-    // Replace with actual optimization logic based on your requirements
-    return color;
+    if (!color || color.trim() === '') {
+      return 'transparent';
+    }
+    
+    const colorValue = color.trim();
+    const namedColors = [
+      'transparent', 'currentcolor', 'inherit', 'initial', 'unset',
+      'black', 'white', 'red', 'green', 'blue', 'yellow', 'purple', 'orange',
+      'gray', 'grey', 'silver', 'maroon', 'olive', 'lime', 'aqua', 'teal',
+      'navy', 'fuchsia', 'pink', 'brown', 'tan', 'beige', 'ivory'
+    ];
+    
+    const normalizedColor = colorValue.toLowerCase();
+    if (namedColors.includes(normalizedColor)) {
+      return normalizedColor;
+    }
+    
+    if (isValidHexColor(colorValue) || isValidRgbColor(colorValue) || isValidHslColor(colorValue)) {
+      return colorValue;
+    }
+    
+    console.warn(`Invalid color value: ${colorValue}`);
+    return 'transparent';
   };
     
+  // Optimize border color
   const optimizeBorderColor = (borderColor: string): string => {
-    // Example logic: Ensure border color is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return borderColor;
+    if (!borderColor || borderColor.trim() === '') {
+      return '#dee2e6';
+    }
+    return optimizeColor(borderColor);
   };
 
-  
+  // Optimize border style
   const optimizeBorderStyle = (borderStyle: string): string => {
-    // Example logic: Ensure border style is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return borderStyle;
+    if (!borderStyle || borderStyle.trim() === '') {
+      return 'solid';
+    }
+    
+    const validStyles = ['none', 'hidden', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset'];
+    const normalizedStyle = borderStyle.toLowerCase().trim();
+    
+    if (validStyles.includes(normalizedStyle)) {
+      return normalizedStyle;
+    }
+    
+    return 'solid';
   };
 
+  // Optimize border width
   const optimizeBorderWidth = (borderWidth: string): string => {
-    // Example logic: Ensure border width is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return borderWidth;
+    if (!borderWidth || borderWidth.trim() === '') {
+      return '1px';
+    }
+    
+    const widthValue = borderWidth.trim();
+    const commonWidths = ['thin', 'medium', 'thick'];
+    if (commonWidths.includes(widthValue.toLowerCase())) {
+      return widthValue.toLowerCase();
+    }
+    
+    if (isValidCssLength(widthValue)) {
+      return widthValue;
+    }
+    
+    if (/^\d+$/.test(widthValue)) {
+      return `${widthValue}px`;
+    }
+    
+    return '1px';
   };
 
+  // Optimize padding
   const optimizePadding = (padding: string): string => {
-    // Example logic: Ensure padding is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return padding;
+    if (!padding || padding.trim() === '') {
+      return '0';
+    }
+    
+    const paddingValue = padding.trim();
+    const commonPaddings = ['0', '0px', '0rem', '0em'];
+    if (commonPaddings.includes(paddingValue)) {
+      return '0';
+    }
+    
+    if (isValidCssLength(paddingValue)) {
+      return paddingValue;
+    }
+    
+    if (/^\d+$/.test(paddingValue)) {
+      return `${paddingValue}px`;
+    }
+    
+    return '0';
   };
 
+  // Optimize margin
   const optimizeMargin = (margin: string): string => {
-    // Example logic: Ensure margin is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return margin;
+    if (!margin || margin.trim() === '') {
+      return '0';
+    }
+    
+    const marginValue = margin.trim();
+    const commonMargins = ['0', '0px', '0rem', '0em', 'auto'];
+    if (commonMargins.includes(marginValue.toLowerCase())) {
+      return marginValue.toLowerCase();
+    }
+    
+    if (isValidCssLength(marginValue)) {
+      return marginValue;
+    }
+    
+    if (/^\d+$/.test(marginValue)) {
+      return `${marginValue}px`;
+    }
+    
+    return '0';
   };
 
+  // Optimize brand icon
   const optimizeBrandIcon = (brandIcon: string): string => {
-    // Example logic: Ensure brand icon URL is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return brandIcon;
+    if (!brandIcon || brandIcon.trim() === '') {
+      return '/default-icon.svg';
+    }
+    
+    const iconUrl = brandIcon.trim();
+    
+    // Check if it's a valid URL pattern
+    if (iconUrl.startsWith('http') || iconUrl.startsWith('data:') || 
+        iconUrl.endsWith('.svg') || iconUrl.endsWith('.png') || 
+        iconUrl.endsWith('.jpg') || iconUrl.endsWith('.jpeg')) {
+      return iconUrl;
+    }
+    
+    if (!iconUrl.startsWith('/')) {
+      return `/${iconUrl}`;
+    }
+    
+    return iconUrl;
   };
 
+  // Optimize brand name
   const optimizeBrandName = (brandName: string): string => {
-    // Example logic: Ensure brand name is valid or transform if needed
-    // Replace with actual optimization logic based on your requirements
-    return brandName;
+    if (!brandName || brandName.trim() === '') {
+      return 'Brand';
+    }
+    
+    const name = brandName.trim();
+    if (name.length > 50) {
+      return name.substring(0, 47) + '...';
+    }
+    
+    return name;
   };
 
-  
-  const optimizeBorderRadius = (borderRadius: string): string => {
-    // Example logic: Ensure border radius is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return borderRadius;
+  // Optimize border radius
+  const optimizeBorderRadius = (borderRadius: { small: string; medium: string; large: string }): { small: string; medium: string; large: string } => {
+    const defaultRadius = { small: '4px', medium: '8px', large: '12px' };
+    
+    const validateRadius = (radius: string): string => {
+      if (!radius || radius.trim() === '') {
+        return '';
+      }
+      
+      const radiusValue = radius.trim();
+      if (isValidCssLength(radiusValue)) {
+        return radiusValue;
+      }
+      
+      if (/^\d+$/.test(radiusValue)) {
+        return `${radiusValue}px`;
+      }
+      
+      return '';
+    };
+    
+    return {
+      small: validateRadius(borderRadius.small) || defaultRadius.small,
+      medium: validateRadius(borderRadius.medium) || defaultRadius.medium,
+      large: validateRadius(borderRadius.large) || defaultRadius.large
+    };
   };
-
   
-  const optimizeBoxShadow = (boxShadow: string): string => {
-    // Example logic: Ensure box shadow is valid or use default
-    // Replace with actual optimization logic based on your requirements
-    return boxShadow;
+  // Optimize box shadow
+  const optimizeBoxShadow = (boxShadow?: string): string => {
+    if (!boxShadow || boxShadow.trim() === '') {
+      return '0 2px 4px rgba(0,0,0,0.1)';
+    }
+    
+    const shadow = boxShadow.trim();
+    
+    // Validate basic box shadow syntax
+    const shadowPatterns = [
+      /^none$/i,
+      /^(\d+(\.\d+)?)(px|em|rem)\s+(\d+(\.\d+)?)(px|em|rem)\s+(\d+(\.\d+)?)(px|em|rem)\s+rgba?\([^)]+\)$/,
+      /^(\d+(\.\d+)?)(px|em|rem)\s+(\d+(\.\d+)?)(px|em|rem)\s+(\d+(\.\d+)?)(px|em|rem)\s+(\d+(\.\d+)?)(px|em|rem)\s+rgba?\([^)]+\)$/
+    ];
+    
+    if (shadowPatterns.some(pattern => pattern.test(shadow))) {
+      return shadow;
+    }
+    
+    return '0 2px 4px rgba(0,0,0,0.1)';
   };
-  
-  
-  
 
   // Apply optimizations
-  const optimizedColors = optimizeColors(theme.primaryColor, theme.secondaryColor);
-  const optimizedFontSize = standardizeFontSize(theme.fontSize);
-  const optimizedFontFamily = simplifyFontFamily(theme.fontFamily);
-  const optimizedLogoUrl = optimizeLogoUrl(theme.logoUrl);
+  const optimizedColors = optimizeColors(
+    theme.primaryColor || '#007bff',
+    theme.secondaryColor || '#6c757d'
+  );
+  
+  const optimizedFontSize = standardizeFontSize(theme.fontSize || '16px');
+  const optimizedFontFamily = optimizeFontFamily(theme.fontFamily || 'Arial');
+  const optimizedLogoUrl = optimizeLogoUrl(theme.logoUrl || 'default.png');
 
-   // Optimize specific properties
-   return {
+  // Optimize specific properties
+  return {
     ...theme,
     primaryColor: optimizedColors.primaryColor,
     secondaryColor: optimizedColors.secondaryColor,
@@ -366,30 +607,467 @@ const optimizePerformance = (theme: Theme): Theme => {
     fontFamily: optimizedFontFamily,
     logoUrl: optimizedLogoUrl,
     themeColor: optimizeThemeColor(theme.themeColor),
-    headerColor: optimizeColor(theme.headerColor),
-    footerColor: optimizeColor(theme.footerColor),
-    bodyColor: optimizeColor(theme.bodyColor),
-    borderColor: optimizeBorderColor(theme.borderColor),
-    borderStyle: optimizeBorderStyle(theme.borderStyle),
-    padding: optimizePadding(theme.padding),
-    margin: optimizeMargin(theme.margin),
-    brandIcon: optimizeBrandIcon(theme.brandIcon),
-    brandName: optimizeBrandName(theme.brandName),
-    borderWidth: optimizeBorderWidth(theme.borderWidth),
-    borderRadius: optimizeBorderRadius(theme.borderRadius),
+    headerColor: optimizeColor(theme.headerColor || ''),
+    footerColor: optimizeColor(theme.footerColor || ''),
+    bodyColor: optimizeColor(theme.bodyColor || ''),
+    borderColor: optimizeBorderColor(theme.borderColor || ''),
+    borderStyle: optimizeBorderStyle(theme.borderStyle || ''),
+    padding: optimizePadding(theme.padding || ''),
+    margin: optimizeMargin(theme.margin || ''),
+    brandIcon: optimizeBrandIcon(theme.brandIcon || ''),
+    brandName: optimizeBrandName(theme.brandName || ''),
+    borderWidth: optimizeBorderWidth(theme.borderWidth || ''),
+    borderRadius: optimizeBorderRadius(theme.borderRadius || { small: '4px', medium: '8px', large: '12px' }),
     boxShadow: optimizeBoxShadow(theme.boxShadow),
-    isDarkMode: theme.isDarkMode, 
-    infoColor: theme.infoColor, 
-    notificationState: theme.notificationState, 
-    setThemeState: theme.setThemeState, 
-    // Add more properties as needed
+    isDarkMode: theme.isDarkMode || false,
+    infoColor: optimizeColor(theme.infoColor || ''),
+    notificationState: theme.notificationState || (() => {}),
+    setThemeState: theme.setThemeState || {} as ThemeSetterState,
   };
 };
-
 
 // Utility function to merge the theme state
 const mergeTheme = (currentTheme: Theme, newTheme: Partial<Theme>): Theme => {
   return { ...currentTheme, ...newTheme };
+};
+
+
+
+
+
+
+
+
+// Helper function to apply theme to UI (comprehensive version)
+const applyThemeToUI = (theme: Theme, uiStore?: UIStore) => {
+  if (typeof document === 'undefined') return; // Skip if not in browser
+  
+  console.log("Applying theme to UI:", theme);
+  
+  // Apply to document body
+  if (theme.backgroundColor) {
+    document.body.style.backgroundColor = theme.backgroundColor;
+  }
+  
+  if (theme.textColor) {
+    document.body.style.color = theme.textColor;
+  }
+  
+  // Apply CSS custom properties for comprehensive theming
+  const root = document.documentElement;
+  
+  // Core colors
+  if (theme.primaryColor) {
+    root.style.setProperty('--primary-color', theme.primaryColor);
+  }
+  
+  if (theme.secondaryColor) {
+    root.style.setProperty('--secondary-color', theme.secondaryColor);
+  }
+  
+  if (theme.backgroundColor) {
+    root.style.setProperty('--background-color', theme.backgroundColor);
+  }
+  
+  if (theme.textColor) {
+    root.style.setProperty('--text-color', theme.textColor);
+  }
+  
+  // Layout colors
+  if (theme.headerColor) {
+    root.style.setProperty('--header-color', theme.headerColor);
+  }
+  
+  if (theme.footerColor) {
+    root.style.setProperty('--footer-color', theme.footerColor);
+  }
+  
+  if (theme.bodyColor) {
+    root.style.setProperty('--body-color', theme.bodyColor);
+  }
+  
+  // Status colors
+  if (theme.successColor) {
+    root.style.setProperty('--success-color', theme.successColor);
+  }
+  
+  if (theme.warningColor) {
+    root.style.setProperty('--warning-color', theme.warningColor);
+  }
+  
+  if (theme.errorColor) {
+    root.style.setProperty('--error-color', theme.errorColor);
+  }
+  
+  if (theme.infoColor) {
+    root.style.setProperty('--info-color', theme.infoColor);
+  }
+  
+  if (theme.disabledColor) {
+    root.style.setProperty('--disabled-color', theme.disabledColor);
+  }
+  
+  // Interactive colors
+  if (theme.linkColor) {
+    root.style.setProperty('--link-color', theme.linkColor);
+  }
+  
+  if (theme.buttonColor) {
+    root.style.setProperty('--button-color', theme.buttonColor);
+  }
+  
+  if (theme.buttonTextColor) {
+    root.style.setProperty('--button-text-color', theme.buttonTextColor);
+  }
+  
+  if (theme.hoverColor) {
+    root.style.setProperty('--hover-color', theme.hoverColor);
+  }
+  
+  if (theme.focusColor) {
+    root.style.setProperty('--focus-color', theme.focusColor);
+  }
+  
+  if (theme.activeColor) {
+    root.style.setProperty('--active-color', theme.activeColor);
+  }
+  
+  if (theme.visitedColor) {
+    root.style.setProperty('--visited-color', theme.visitedColor);
+  }
+  
+  if (theme.placeholderColor) {
+    root.style.setProperty('--placeholder-color', theme.placeholderColor);
+  }
+  
+  // Typography
+  if (theme.fontFamily) {
+    root.style.setProperty('--font-family', theme.fontFamily);
+    document.body.style.fontFamily = theme.fontFamily;
+  }
+  
+  if (theme.fontSize) {
+    root.style.setProperty('--font-size', theme.fontSize);
+    document.body.style.fontSize = theme.fontSize;
+  }
+  
+  if (theme.fontWeight) {
+    root.style.setProperty('--font-weight', theme.fontWeight);
+  }
+  
+  if (theme.lineHeight) {
+    root.style.setProperty('--line-height', theme.lineHeight);
+  }
+  
+  if (theme.letterSpacing) {
+    root.style.setProperty('--letter-spacing', theme.letterSpacing);
+  }
+  
+  if (theme.textTransform) {
+    root.style.setProperty('--text-transform', theme.textTransform);
+  }
+  
+  if (theme.textDecoration) {
+    root.style.setProperty('--text-decoration', theme.textDecoration);
+  }
+  
+  // Borders
+  if (theme.borderColor) {
+    root.style.setProperty('--border-color', theme.borderColor);
+  }
+  
+  if (theme.borderStyle) {
+    root.style.setProperty('--border-style', theme.borderStyle);
+  }
+  
+  if (theme.borderWidth) {
+    root.style.setProperty('--border-width', theme.borderWidth);
+  }
+  
+  // Border Radius
+  if (theme.borderRadius && typeof theme.borderRadius === 'object') {
+    if (theme.borderRadius.small) {
+      root.style.setProperty('--border-radius-small', theme.borderRadius.small);
+    }
+    if (theme.borderRadius.medium) {
+      root.style.setProperty('--border-radius-medium', theme.borderRadius.medium);
+    }
+    if (theme.borderRadius.large) {
+      root.style.setProperty('--border-radius-large', theme.borderRadius.large);
+    }
+  } else if (theme.borderRadiusSm) {
+    root.style.setProperty('--border-radius-sm', theme.borderRadiusSm);
+  }
+  
+  if (theme.borderRadiusLg) {
+    root.style.setProperty('--border-radius-lg', theme.borderRadiusLg);
+  }
+  
+  if (theme.borderRadiusPill) {
+    root.style.setProperty('--border-radius-pill', theme.borderRadiusPill);
+  }
+  
+  // Spacing and Layout
+  if (theme.spacingUnit) {
+    root.style.setProperty('--spacing-unit', theme.spacingUnit);
+  }
+  
+  if (theme.padding) {
+    root.style.setProperty('--padding', theme.padding);
+  }
+  
+  if (theme.margin) {
+    root.style.setProperty('--margin', theme.margin);
+  }
+  
+  if (theme.gridGutterWidth) {
+    root.style.setProperty('--grid-gutter-width', theme.gridGutterWidth);
+  }
+  
+  // Component-specific
+  if (theme.inputBorderRadius) {
+    root.style.setProperty('--input-border-radius', theme.inputBorderRadius);
+  }
+  
+  if (theme.inputPadding) {
+    root.style.setProperty('--input-padding', theme.inputPadding);
+  }
+  
+  if (theme.buttonBorderRadius) {
+    root.style.setProperty('--button-border-radius', theme.buttonBorderRadius);
+  }
+  
+  if (theme.buttonPadding) {
+    root.style.setProperty('--button-padding', theme.buttonPadding);
+  }
+  
+  if (theme.cardBorderRadius) {
+    root.style.setProperty('--card-border-radius', theme.cardBorderRadius);
+  }
+  
+  if (theme.cardPadding) {
+    root.style.setProperty('--card-padding', theme.cardPadding);
+  }
+  
+  // Shadows
+  if (theme.boxShadow) {
+    root.style.setProperty('--box-shadow', theme.boxShadow);
+  }
+  
+  if (theme.shadowSm) {
+    root.style.setProperty('--shadow-sm', theme.shadowSm);
+  }
+  
+  if (theme.shadow) {
+    root.style.setProperty('--shadow', theme.shadow);
+  }
+  
+  if (theme.shadowLg) {
+    root.style.setProperty('--shadow-lg', theme.shadowLg);
+  }
+  
+  // Transitions
+  if (theme.transitionSpeed) {
+    root.style.setProperty('--transition-speed', theme.transitionSpeed);
+  }
+  
+  if (theme.transitionTiming) {
+    root.style.setProperty('--transition-timing', theme.transitionTiming);
+  }
+  
+  if (theme.animationDuration) {
+    root.style.setProperty('--animation-duration', theme.animationDuration);
+  }
+  
+  if (theme.animationTimingFunction) {
+    root.style.setProperty('--animation-timing-function', theme.animationTimingFunction);
+  }
+  
+  // Z-index layers
+  if (theme.zIndexDropdown) {
+    root.style.setProperty('--z-index-dropdown', theme.zIndexDropdown);
+  }
+  
+  if (theme.zIndexSticky) {
+    root.style.setProperty('--z-index-sticky', theme.zIndexSticky);
+  }
+  
+  if (theme.zIndexFixed) {
+    root.style.setProperty('--z-index-fixed', theme.zIndexFixed);
+  }
+  
+  if (theme.zIndexModal) {
+    root.style.setProperty('--z-index-modal', theme.zIndexModal);
+  }
+  
+  if (theme.zIndexPopover) {
+    root.style.setProperty('--z-index-popover', theme.zIndexPopover);
+  }
+  
+  if (theme.zIndexTooltip) {
+    root.style.setProperty('--z-index-tooltip', theme.zIndexTooltip);
+  }
+  
+  // Breakpoints
+  if (theme.breakpointXs) {
+    root.style.setProperty('--breakpoint-xs', theme.breakpointXs);
+  }
+  
+  if (theme.breakpointSm) {
+    root.style.setProperty('--breakpoint-sm', theme.breakpointSm);
+  }
+  
+  if (theme.breakpointMd) {
+    root.style.setProperty('--breakpoint-md', theme.breakpointMd);
+  }
+  
+  if (theme.breakpointLg) {
+    root.style.setProperty('--breakpoint-lg', theme.breakpointLg);
+  }
+  
+  if (theme.breakpointXl) {
+    root.style.setProperty('--breakpoint-xl', theme.breakpointXl);
+  }
+  
+  if (theme.breakpointXxl) {
+    root.style.setProperty('--breakpoint-xxl', theme.breakpointXxl);
+  }
+  
+  // Container widths
+  if (theme.containerSm) {
+    root.style.setProperty('--container-sm', theme.containerSm);
+  }
+  
+  if (theme.containerMd) {
+    root.style.setProperty('--container-md', theme.containerMd);
+  }
+  
+  if (theme.containerLg) {
+    root.style.setProperty('--container-lg', theme.containerLg);
+  }
+  
+  if (theme.containerXl) {
+    root.style.setProperty('--container-xl', theme.containerXl);
+  }
+  
+  if (theme.containerXxl) {
+    root.style.setProperty('--container-xxl', theme.containerXxl);
+  }
+  
+  // Grid
+  if (theme.gridColumns) {
+    root.style.setProperty('--grid-columns', theme.gridColumns);
+  }
+  
+  // Custom properties
+  if (theme.customProperties && typeof theme.customProperties === 'object') {
+    Object.entries(theme.customProperties).forEach(([key, value]) => {
+      root.style.setProperty(`--${key}`, String(value));
+    });
+  }
+  
+  // Apply dark mode class if needed
+  if (theme.isDarkMode) {
+    document.body.classList.add('dark-mode');
+    document.body.classList.remove('light-mode');
+  } else {
+    document.body.classList.add('light-mode');
+    document.body.classList.remove('dark-mode');
+  }
+  
+  // Also update UIStore if provided
+  if (uiStore) {
+    // Update UIStore theme
+    uiStore.setTheme(theme);
+    
+    // Update dark mode in UIStore
+    if (theme.isDarkMode !== undefined) {
+      if (theme.isDarkMode) {
+        uiStore.enableDarkMode();
+      } else {
+        uiStore.disableDarkMode();
+      }
+    }
+    
+    // Log the theme application
+    uiStore.setNotificationMessage(`Theme applied: ${theme.themeColor || 'default'}`);
+  }
+  
+  // Log theme application
+  console.log("Theme successfully applied to UI");
+  ThemeLogger.log("Theme Application", "Theme applied to UI", theme);
+  
+  // Dispatch a custom event for other components to listen to
+  const themeAppliedEvent = new CustomEvent('theme-applied', {
+    detail: { theme }
+  });
+  document.dispatchEvent(themeAppliedEvent);
+};
+
+// Also create a function to initialize theme from UIStore
+export const initializeThemeFromUIStore = (uiStore: UIStore): Theme => {
+  return {
+    primaryColor: uiStore.theme.primaryColor,
+    secondaryColor: uiStore.theme.secondaryColor,
+    fontSize: uiStore.theme.fontSize,
+    fontFamily: uiStore.theme.fontFamily,
+    isDarkMode: uiStore.darkModeEnabled,
+    // Add defaults for other properties
+    backgroundColor: uiStore.darkModeEnabled ? '#121212' : '#ffffff',
+    textColor: uiStore.darkModeEnabled ? '#ffffff' : '#000000',
+    themeColor: 'primary',
+    headerColor: uiStore.darkModeEnabled ? '#1e1e1e' : '#f8f9fa',
+    footerColor: uiStore.darkModeEnabled ? '#1e1e1e' : '#343a40',
+    bodyColor: uiStore.darkModeEnabled ? '#121212' : '#ffffff',
+    borderColor: uiStore.darkModeEnabled ? '#333333' : '#dee2e6',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderRadius: { small: '4px', medium: '8px', large: '12px' },
+    boxShadow: uiStore.darkModeEnabled 
+      ? '0 2px 4px rgba(255,255,255,0.1)' 
+      : '0 2px 4px rgba(0,0,0,0.1)',
+    padding: '16px',
+    margin: '0',
+    brandIcon: '/default-icon.svg',
+    brandName: 'Brand Name',
+    logoUrl: '/default.png',
+    infoColor: '#17a2b8',
+    successColor: '#28a745',
+    warningColor: '#ffc107',
+    errorColor: '#dc3545',
+    linkColor: '#007bff',
+    buttonColor: '#007bff',
+    buttonTextColor: '#ffffff',
+    disabledColor: '#6c757d',
+    hoverColor: '#0056b3',
+    focusColor: '#80bdff',
+    activeColor: '#0062cc',
+    visitedColor: '#6610f2',
+    placeholderColor: '#6c757d',
+    fontWeight: '400',
+    lineHeight: '1.5',
+    letterSpacing: 'normal',
+    textTransform: 'none',
+    textDecoration: 'none',
+    spacingUnit: '8px',
+    transitionSpeed: '0.3s',
+    transitionTiming: 'ease',
+    // Add other default properties...
+  };
+};
+
+// Create a MobX action wrapper for applyThemeToUI
+export const applyThemeAction = (theme: Theme, uiStore: UIStore) => {
+  return action(() => {
+    // Update UIStore first
+    uiStore.setTheme(theme);
+    uiStore.toggleDarkMode(); // This will toggle based on theme.isDarkMode
+    
+    // Then apply to UI
+    applyThemeToUI(theme, uiStore);
+    
+    return theme;
+  });
 };
 
 
@@ -406,29 +1084,106 @@ const themeSlice = createSlice({
         primaryColor: "#007bff",
         secondaryColor: "#6c757d",
         fontSize: "16px",
-        fontFamily: "Arial, sans-serif",
-        logoUrl: "default.png",
+        fontFamily: "'Arial', 'Helvetica', sans-serif",
+        logoUrl: "/default.png",
         themeColor: "primary",
-        headerColor: "",
-        footerColor: "",
-        bodyColor: "",
-        borderColor: "",
-        borderStyle: "",
-        padding: "",
-        margin: "",
-        brandIcon: "",
-        brandName: "",
-        borderWidth: "",
-        borderRadius: "",
-        boxShadow: "",
-        // Add default values for other theme properties
+        headerColor: "#f8f9fa",
+        footerColor: "#343a40",
+        bodyColor: "#ffffff",
+        borderColor: "#dee2e6",
+        borderStyle: "solid",
+        padding: "16px",
+        margin: "0",
+        brandIcon: "/default-icon.svg",
+        brandName: "Brand Name",
+        borderWidth: "1px",
+        borderRadius: { 
+          small: "4px", 
+          medium: "8px", 
+          large: "12px" 
+        },
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        isDarkMode: false,
+        infoColor: "#17a2b8",
+        backgroundColor: "#ffffff",
+        textColor: "#212529",
+        linkColor: "#007bff",
+        buttonColor: "#007bff",
+        buttonTextColor: "#ffffff",
+        successColor: "#28a745",
+        warningColor: "#ffc107",
+        errorColor: "#dc3545",
+        disabledColor: "#6c757d",
+        hoverColor: "#0056b3",
+        focusColor: "#80bdff",
+        activeColor: "#0062cc",
+        visitedColor: "#6610f2",
+        placeholderColor: "#6c757d",
+        // Typography
+        fontWeight: "400",
+        lineHeight: "1.5",
+        letterSpacing: "normal",
+        textTransform: "none",
+        textDecoration: "none",
+        // Spacing
+        spacingUnit: "8px",
+        // Transitions
+        transitionSpeed: "0.3s",
+        transitionTiming: "ease",
+        // Z-index layers
+        zIndexDropdown: "1000",
+        zIndexSticky: "1020",
+        zIndexFixed: "1030",
+        zIndexModal: "1040",
+        zIndexPopover: "1050",
+        zIndexTooltip: "1060",
+        // Breakpoints (in pixels)
+        breakpointXs: "0px",
+        breakpointSm: "576px",
+        breakpointMd: "768px",
+        breakpointLg: "992px",
+        breakpointXl: "1200px",
+        breakpointXxl: "1400px",
+        // Container widths
+        containerSm: "540px",
+        containerMd: "720px",
+        containerLg: "960px",
+        containerXl: "1140px",
+        containerXxl: "1320px",
+        // Grid
+        gridColumns: "12",
+        gridGutterWidth: "24px",
+        // Shadows
+        shadowSm: "0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)",
+        shadow: "0 0.5rem 1rem rgba(0, 0, 0, 0.15)",
+        shadowLg: "0 1rem 3rem rgba(0, 0, 0, 0.175)",
+        // Border radius variants
+        borderRadiusSm: "0.2rem",
+        borderRadiusLg: "0.3rem",
+        borderRadiusPill: "50rem",
+        // Component specific
+        inputBorderRadius: "0.25rem",
+        inputPadding: "0.375rem 0.75rem",
+        buttonBorderRadius: "0.25rem",
+        buttonPadding: "0.375rem 0.75rem",
+        cardBorderRadius: "0.25rem",
+        cardPadding: "1.25rem",
+        modalHeaderPadding: "1rem",
+        modalBodyPadding: "1rem",
+        modalFooterPadding: "1rem",
+        // Animation
+        animationDuration: "0.3s",
+        animationTimingFunction: "ease",
+        // Custom properties
+        customProperties: {},
       };
     },
+
     // Add more theme-related reducers as needed
     toggleDarkMode: (state) => {
-      state.isDarkMode = !state.isDarkMode;
+      state.core.isDarkMode = !state.core.isDarkMode;
       const updatedTheme = { ...state.core.theme };
-      if (state.isDarkMode) {
+      if (state.core.isDarkMode) {
         updatedTheme.primaryColor = "#333";
         updatedTheme.secondaryColor = "#666";
       } else {
@@ -488,76 +1243,39 @@ const themeSlice = createSlice({
     },
 
     handleThemeEvents: (state, action: PayloadAction<Partial<Theme>>) => {
+      // Update theme with payload
       state.core.theme = { ...state.core.theme, ...action.payload };
-
-      // Handle theme events
-      handleThemeEvents(state.core.theme);
-
-      // Function to handle theme change event
-      const handleThemeChangeEvent = (theme: Theme) => {
-        // Add logic to handle theme change event
-        console.log("Theme change event handled:", theme);
-
-        // Example logic: Apply theme changes to the UI
-        applyThemeToUI(theme);
-      };
-
-      // Example function to apply theme changes to the UI
-      const applyThemeToUI = (theme: Theme) => {
-        // Apply theme changes to the UI elements
-        document.body.style.backgroundColor = theme.backgroundColor || "";
-        document.body.style.color = theme.textColor || "";
-        // Apply more theme changes as needed
-      };
-
-      // Example usage:
-      // Call handleThemeChangeEvent with the updated theme
-      const updatedTheme: Theme = {
-        primaryColor: "#007bff",
-        secondaryColor: "#6c757d",
-        fontSize: "16px",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#ffffff",
-        textColor: "#000000",
-        headerColor: "",
-        footerColor: "",
-        bodyColor: "",
-        borderColor: "",
-        borderStyle: "",
-        padding: "",
-        margin: "",
-        brandIcon: "",
-        brandName: "",
-        borderWidth: "",
-        borderRadius: "",
-        boxShadow: "",
-        logoUrl: "",
-        themeColor: "",
-      };
-      handleThemeChangeEvent(updatedTheme);
-      // Call any theme event handling functions
-      handleThemeChangeEvent(state.core.theme);
-      // Call theme change event handler function
-
-      // Function to handle theme update event
-      const handleThemeUpdateEvent = (theme: Theme) => {
-        // Add logic to handle theme update event
-        console.log("Theme update event handled:", theme);
-
-        // Example logic: Update theme settings in the database
-        updateThemeInDatabase(theme);
-      };
-
-      // Example function to update theme settings in the database
-      const updateThemeInDatabase = (theme: Theme) => {
-        // Add logic to update theme settings in the database
-        console.log("Theme settings updated in the database:", theme);
-        // Example: Send an API request to update theme settings
-        axiosInstance.put("/api/theme", theme);
-      };
-      handleThemeUpdateEvent(state.core.theme);
-      // Call any theme update handling functions
-      handleThemeUpdateEvent(updatedTheme);
+      
+      // Log the theme update
+      ThemeLogger.logThemeUpdate('Theme Updated via handleThemeEvents', action.payload);
+      
+      // Validate theme
+      const errors = ThemeValidator.validateTheme(state.core.theme);
+      if (errors.length > 0) {
+        console.error("Theme validation errors:", errors);
+        // You could dispatch an error notification here if needed
+        return;
+      }
+      
+      // Apply theme to UI (only in browser environment)
+      if (typeof document !== 'undefined') {
+        applyThemeToUI(state.core.theme);
+      }
+      
+      // Update theme in backend (async - consider moving to thunk/async action)
+      try {
+        // You might want to use a thunk for async operations instead
+        axiosInstance.put("/api/theme", state.core.theme)
+          .then(response => {
+            ThemeLogger.log("Theme Update", "Theme saved successfully to backend", response.data);
+          })
+          .catch(error => {
+            ThemeLogger.error("Theme Update", "Failed to save theme to backend", error);
+            console.error("Failed to save theme:", error);
+          });
+      } catch (error) {
+        console.error("Error updating theme:", error);
+      }
     },
     // Theme Validation
     validateThemeSettings: (
@@ -607,21 +1325,21 @@ const themeSlice = createSlice({
     // Secure Theme Settings
     secureThemeSettings: (state, action: PayloadAction<Partial<Theme>>) => {
       const securityData = secureThemeSettings(action.payload); // Assume this function exists
-      state.analytics.themeSecurity = { ...state.analytics.themeSecurity, ...securityData };
+      state.governance.themeSecurity = { ...state.governance.themeSecurity, ...securityData };
       ThemeLogger.log("Theme Security", "Secured theme settings", securityData);
     },
   
     // Govern Theme Governance
     governThemeGovernance: (state, action: PayloadAction<Partial<Theme>>) => {
       const governanceData = governThemeGovernance(action.payload); // Assume this function exists
-      state.themeGovernance = { ...state.themeGovernance, ...governanceData };
+      state.governance.themeGovernance = { ...state.governance.themeGovernance, ...governanceData };
       ThemeLogger.log("Theme Governance", "Governed theme governance", governanceData);
     },
   
     // Audit Theme Compliance
     auditThemeCompliance: (state, action: PayloadAction<Partial<Theme>>) => {
       const complianceData = auditThemeCompliance(action.payload); // Assume this function exists
-      state.themeCompliance = { ...state.themeCompliance, ...complianceData };
+      state.governance.themeCompliance = { ...state.governance.themeCompliance, ...complianceData };
       ThemeLogger.log("Theme Compliance", "Audited theme compliance", complianceData);
     },
   
@@ -635,7 +1353,7 @@ const themeSlice = createSlice({
     // Collaborate on Theme Development
     collaborateOnThemeDevelopment: (state, action: PayloadAction<Partial<Theme>>) => {
       const developmentData = collaborateOnThemeDevelopment(action.payload); // Assume this function exists
-      state.development.development.themeDevelopment = { ...state.development.themeDevelopment, ...developmentData };
+      state.development.themeDevelopment = { ...state.development.themeDevelopment, ...developmentData };
       ThemeLogger.log("Theme Development", "Collaborated on theme development", developmentData);
     },
   
@@ -885,14 +1603,93 @@ export { initialState as initialThemeState };
 export type { ThemeState };
 
 // Theme selectors
-export const selectThemeCore = (state: { theme: ThemeState }) => state.core.theme.core;
-export const selectCurrentTheme = (state: { theme: ThemeState }) => state.core.theme.core.currentTheme;
-export const selectIsDarkMode = (state: { theme: ThemeState }) => state.core.theme.core.isDarkMode;
-export const selectThemeColors = (state: { theme: ThemeState }) => state.core.theme.core.theme;
-export const selectThemeManagement = (state: { theme: ThemeState }) => state.core.theme.management;
-export const selectThemeAnalytics = (state: { theme: ThemeState }) => state.core.theme.analytics;
-export const selectThemeGovernance = (state: { theme: ThemeState }) => state.core.theme.governance;
-export const selectThemeDevelopment = (state: { theme: ThemeState }) => state.core.theme.development;
-export const selectThemeQuality = (state: { theme: ThemeState }) => state.core.theme.quality;
-export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.core.theme.functionality;
-export const selectFontColor = (state: { theme: ThemeState }) => state.core.theme.colorFontUsage;
+// Theme selectors - Fixed
+export const selectThemeCore = (state: { theme: ThemeState }) => state.theme.core;
+export const selectCurrentTheme = (state: { theme: ThemeState }) => state.theme.core.currentTheme;
+export const selectIsDarkMode = (state: { theme: ThemeState }) => state.theme.core.isDarkMode;
+export const selectThemeColors = (state: { theme: ThemeState }) => state.theme.core.theme;
+export const selectThemeManagement = (state: { theme: ThemeState }) => state.theme.management;
+export const selectThemeAnalytics = (state: { theme: ThemeState }) => state.theme.analytics;
+export const selectThemeGovernance = (state: { theme: ThemeState }) => state.theme.governance;
+export const selectThemeDevelopment = (state: { theme: ThemeState }) => state.theme.development;
+export const selectThemeQuality = (state: { theme: ThemeState }) => state.theme.quality;
+export const selectThemeFunctionality = (state: { theme: ThemeState }) => state.theme.functionality;
+export const selectColorFontUsage = (state: { theme: ThemeState }) => state.theme.colorFontUsage;
+
+// Additional useful selectors
+export const selectTheme = (state: { theme: ThemeState }) => state.theme.core.theme;
+export const selectPrimaryColor = (state: { theme: ThemeState }) => state.theme.core.theme.primaryColor;
+export const selectSecondaryColor = (state: { theme: ThemeState }) => state.theme.core.theme.secondaryColor;
+export const selectFontSize = (state: { theme: ThemeState }) => state.theme.core.theme.fontSize;
+export const selectFontFamily = (state: { theme: ThemeState }) => state.theme.core.theme.fontFamily;
+export const selectLogoUrl = (state: { theme: ThemeState }) => state.theme.core.theme.logoUrl;
+export const selectThemeColor = (state: { theme: ThemeState }) => state.theme.core.theme.themeColor;
+export const selectHeaderColor = (state: { theme: ThemeState }) => state.theme.core.theme.headerColor;
+export const selectFooterColor = (state: { theme: ThemeState }) => state.theme.core.theme.footerColor;
+export const selectBodyColor = (state: { theme: ThemeState }) => state.theme.core.theme.bodyColor;
+export const selectBorderColor = (state: { theme: ThemeState }) => state.theme.core.theme.borderColor;
+export const selectBorderStyle = (state: { theme: ThemeState }) => state.theme.core.theme.borderStyle;
+export const selectBorderWidth = (state: { theme: ThemeState }) => state.theme.core.theme.borderWidth;
+export const selectBorderRadius = (state: { theme: ThemeState }) => state.theme.core.theme.borderRadius;
+export const selectBoxShadow = (state: { theme: ThemeState }) => state.theme.core.theme.boxShadow;
+export const selectPadding = (state: { theme: ThemeState }) => state.theme.core.theme.padding;
+export const selectMargin = (state: { theme: ThemeState }) => state.theme.core.theme.margin;
+export const selectBrandIcon = (state: { theme: ThemeState }) => state.theme.core.theme.brandIcon;
+export const selectBrandName = (state: { theme: ThemeState }) => state.theme.core.theme.brandName;
+export const selectThemeConfig = (state: { theme: ThemeState }) => state.theme.core.theme;
+
+// Selector for all theme properties
+export const selectAllThemeProperties = (state: { theme: ThemeState }) => ({
+  ...state.theme.core.theme,
+  isDarkMode: state.theme.core.isDarkMode,
+  currentTheme: state.theme.core.currentTheme,
+  selectedTheme: state.theme.core.selectedTheme,
+  infoColor: state.theme.core.infoColor,
+});
+
+// Memoized selectors (for performance optimization)
+export const createMemoizedThemeSelectors = () => {
+  const memoizedSelectors = new Map<string, any>();
+  
+  return {
+    selectThemeCore: (state: { theme: ThemeState }) => {
+      const key = 'themeCore';
+      if (!memoizedSelectors.has(key)) {
+        memoizedSelectors.set(key, state.theme.core);
+      }
+      return memoizedSelectors.get(key);
+    },
+    
+    selectThemeColorsMemoized: (state: { theme: ThemeState }) => {
+      const key = 'themeColors';
+      if (!memoizedSelectors.has(key)) {
+        const colors = {
+          primaryColor: state.theme.core.theme.primaryColor,
+          secondaryColor: state.theme.core.theme.secondaryColor,
+          headerColor: state.theme.core.theme.headerColor,
+          footerColor: state.theme.core.theme.footerColor,
+          bodyColor: state.theme.core.theme.bodyColor,
+          borderColor: state.theme.core.theme.borderColor,
+          infoColor: state.theme.core.infoColor,
+        };
+        memoizedSelectors.set(key, colors);
+      }
+      return memoizedSelectors.get(key);
+    },
+    
+    selectTypographyMemoized: (state: { theme: ThemeState }) => {
+      const key = 'typography';
+      if (!memoizedSelectors.has(key)) {
+        const typography = {
+          fontSize: state.theme.core.theme.fontSize,
+          fontFamily: state.theme.core.theme.fontFamily,
+        };
+        memoizedSelectors.set(key, typography);
+      }
+      return memoizedSelectors.get(key);
+    },
+  };
+};
+
+
+export { applyThemeToUI };

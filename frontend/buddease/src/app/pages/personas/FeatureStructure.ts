@@ -1,6 +1,6 @@
 // FeatureStructure.ts
 import FeatureStore from "@/app/state/stores/FeatureStore";
-import { CategoryProperties } from "./ScenarioBuilder";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 
 interface FeatureStructure {

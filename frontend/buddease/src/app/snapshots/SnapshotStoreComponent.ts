@@ -1,10 +1,10 @@
 // SnapshotStoreComponent.ts
 
-// import { SnapshotStoreOptions } from '@/app/hooks/SnapshotStoreOptions';
+// import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 // import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 // import { Data } from '@/app/models/data/Data';
 // import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-// import { MultipleEventsCallbacks } from '@/app/snapshots/index';
+// import { MultipleEventsCallbacks } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 
 

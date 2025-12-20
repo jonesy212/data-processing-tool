@@ -1,5 +1,5 @@
 // Paging.ts
-import { PromptPageProps } from "@/app/components/prompts/PromptPage";
+import { PromptPageProps } from "@/app/prompts/PromptPage";
 
 export interface PagingState {
     currentPage: PromptPageProps;

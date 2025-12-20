@@ -1,5 +1,5 @@
 // RecruiterSeekerDashboard.tsx
-import { useAuth } from '@/app/components/auth/AuthContext';
+import { useAuth } from '@/app/state/context/AuthContext';
 import React from 'react';
 
 const Dashboard: React.FC = () => {

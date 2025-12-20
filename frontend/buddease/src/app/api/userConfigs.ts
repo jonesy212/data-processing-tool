@@ -3,7 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { userPreferences } from "@/app/config/UserPreferences";
 import userSettings, { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UserConfig } from "@/app/snapshots";
+import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { UserData } from "@/app/users/User";
 
 interface UserConfigData<

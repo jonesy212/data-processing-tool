@@ -1,6 +1,6 @@
 // TeamManager.ts
 
-import { TeamFull, createDefaultTeam } from '@/app/typings/entities/TeamEntity';
+import { TeamFull, createDefaultTeam } from '@/app/typings/teamTypes';
 
 const TeamManager = () => {
   const [currentTeam, setCurrentTeam] = useState<TeamFull>(emptyTeam);

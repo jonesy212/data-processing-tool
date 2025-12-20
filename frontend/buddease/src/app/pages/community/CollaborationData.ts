@@ -1,16 +1,16 @@
 // CollaborationData.ts
-import Milestone from '@/app/components/calendar/CalendarSlice';
+import Milestone from '@/app/state/redux/slices/CalendarSlice';
 import { Communication } from '@/app/components/communications/CommunicationPage';
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
-import { CollaborationOptions } from '@/app/components/interfaces/options/CollaborationOptions';
+import { CollaborationOptions } from '@/app/interfaces/options/CollaborationOptions';
 import { Task } from '@/app/components/models/tasks/Task';
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 import { BaseMetaDataOptions } from "@/app/config/MetaDataOptions";
 import { BaseData } from '@/app/models/data/Data';
-import { Member } from '@/app/models/teams/Contributor';
+import { Member } from '@/app/models/members/Member';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
-import { Project } from 'next/dist/build/swc';
-import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';
+import { Project } from '@/app/models/projects/Project';
+import { Resource } from '@/app/state/redux/slices/CollaborationSlice';
 
 // Define CollaborationData interface by extending BaseData and adding specific properties
 interface CollaborationData extends BaseData {

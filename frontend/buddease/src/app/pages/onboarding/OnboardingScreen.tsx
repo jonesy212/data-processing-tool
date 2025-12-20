@@ -1,6 +1,6 @@
 // OnboardingScreen.tsx
 import React from 'react';
-import  { TwoFactorSetupPhase } from '@/UserJourneyManager';
+import  { TwoFactorSetupPhase } from '@/app/pages/personas/UserJourneyManager';
 
 const OnboardingScreen: React.FC = () => {
   // State to track whether two-factor setup is completed

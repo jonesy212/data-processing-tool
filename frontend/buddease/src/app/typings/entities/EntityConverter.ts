@@ -45,7 +45,7 @@ import { UserEntity } from '@/app/typings/entities/UserEntity';
 import { VersionEntity } from '@/app/typings/entities/VersionEntity';
 import { VersionHistoryEntity } from '@/app/typings/entities/VersionHistoryEntity';
 import { VideoEntity } from '@/app/typings/entities/VideoEntity';
-import { conversionRules } from './EntityConversionRules';
+import { conversionRules } from '@/app/typings/entities/EntityConversionRules';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

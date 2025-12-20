@@ -12,6 +12,7 @@ export interface FixRecord {
   resolved: boolean;
 }
 
+
 export class SafeFixer {
   private records: FixRecord[] = [];
   private backupDir: string;
@@ -27,60 +28,61 @@ export class SafeFixer {
     }
   }
   
-  // Safe replacement that only replaces exact matches
+  // Simplified method for batching
+  recordFix(fix: { file: string; originalImport: string; newImport: string; line: number }): void {
+    const timestamp = Date.now();
+    const backupPath = path.join(this.backupDir, `${path.basename(fix.file)}.${timestamp}.bak`);
+    
+    this.records.push({
+      timestamp: new Date(timestamp).toISOString(),
+      file: fix.file,
+      originalImport: fix.originalImport,
+      newImport: fix.newImport,
+      line: fix.line,
+      backupPath,
+      resolved: false
+    });
+  }
+  
+  createBackup(filePath: string): string {
+    const timestamp = Date.now();
+    const backupPath = path.join(this.backupDir, `${path.basename(filePath)}.${timestamp}.bak`);
+    fs.copyFileSync(filePath, backupPath);
+    return backupPath;
+  }
+  
+  // Keep the old method for backward compatibility
   replaceImport(filePath: string, lineNumber: number, oldImport: string, newImport: string): boolean {
+    // This is now a wrapper for the batch method
+    this.recordFix({ file: filePath, originalImport: oldImport, newImport, line: lineNumber });
+    
     try {
-      // Read file
       const content = fs.readFileSync(filePath, 'utf8');
       const lines = content.split('\n');
       
       if (lineNumber < 1 || lineNumber > lines.length) {
-        console.error(`❌ Line ${lineNumber} out of range in ${filePath}`);
         return false;
       }
       
       const lineIndex = lineNumber - 1;
-      const originalLine = lines[lineIndex];
+      const lineContent = lines[lineIndex];
+      const importPattern = new RegExp(`(['"])${oldImport.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(['"])`);
       
-      // Check if line contains the exact import
-      const importPattern = new RegExp(`['"]${oldImport.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`);
-      if (!importPattern.test(originalLine)) {
-        console.error(`❌ Import '${oldImport}' not found on line ${lineNumber} in ${filePath}`);
+      if (!importPattern.test(lineContent)) {
         return false;
       }
       
-      // Create backup
-      const timestamp = Date.now();
-      const backupPath = path.join(this.backupDir, `${path.basename(filePath)}.${timestamp}.bak`);
-      fs.copyFileSync(filePath, backupPath);
-      
-      // Replace only the import, preserving everything else
-      const newLine = originalLine.replace(
-        new RegExp(`(['"])${oldImport.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(['"])`),
-        `$1${newImport}$2`
-      );
-      
+      const newLine = lineContent.replace(importPattern, `$1${newImport}$2`);
       lines[lineIndex] = newLine;
+      
+      // Create backup
+      this.createBackup(filePath);
       
       // Write file
       fs.writeFileSync(filePath, lines.join('\n'));
-      
-      // Record the fix
-      this.records.push({
-        timestamp: new Date(timestamp).toISOString(),
-        file: filePath,
-        originalImport: oldImport,
-        newImport: newImport,
-        line: lineNumber,
-        backupPath,
-        resolved: false
-      });
-      
-      console.log(`✅ Fixed: ${oldImport} → ${newImport} in ${path.basename(filePath)}:${lineNumber}`);
       return true;
       
     } catch (error) {
-      console.error(`❌ Failed to fix import in ${filePath}:`, error);
       return false;
     }
   }

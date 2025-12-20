@@ -4,7 +4,7 @@ import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import useDocumentStore, { Document } from "@/app/state/stores/DocumentStore";
 import { BaseData } from '@/app/models/data/Data';
-import { SnapshotItem } from "@/app/snapshots";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
 interface DocumentSnapshotStoreProps {
   initialState?: Snapshot<Document, any> | null;

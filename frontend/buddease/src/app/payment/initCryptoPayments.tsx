@@ -1,7 +1,7 @@
 // initCryptoPayments.tsx
 
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import DynamicEventHandlerService from "@/app/event/DynamicEventHandlerExample";
+import DynamicEventHandlerService from "@/app/typings/eventHandlers/DynamicEventHandlerExample";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { addMessage } from "@/app/state/redux/slices/ChatSlice";
 

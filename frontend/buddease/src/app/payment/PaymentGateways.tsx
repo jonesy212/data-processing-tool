@@ -1,8 +1,7 @@
 // PaymentGateways.tsx
-// PaymentGateways.ts
 
 // Import necessary functions
-import { handleCryptoPaymentSelect } from '@/app/event/DynamicEventHandlerExample';
+import { handleCryptoPaymentSelect } from '@/app/payment/PaymentGateways'
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { Persona } from '@/app/pages/personas/Persona';
@@ -10,9 +9,9 @@ import { ProfileAccessControl } from '@/app/pages/profile/Profile';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { addMessage } from '@/app/state/redux/slices/ChatSlice';
 import { UserSettings } from '@/app/config/UserSettings';
-import { initiateBitcoinPayment, initiateEthereumPayment } from '@/initCryptoPayments';
-import { NotificationSettings } from '@/support/NotificationSettings';
-import { UserRole } from '@/users/UserRole';
+import { initiateBitcoinPayment, initiateEthereumPayment } from '@/app/payment/initCryptoPayments';
+import { NotificationSettings } from '@/app/features/support/NotificationSettings';
+import { UserRole } from '@/app/models/UserRole';
 
 // Function to handle payment selection and initiate payment process
 export const handlePaymentSelection = (cryptoOption: string) => {

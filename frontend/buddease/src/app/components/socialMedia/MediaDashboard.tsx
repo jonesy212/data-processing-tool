@@ -1,7 +1,7 @@
 // MediaDashboard.tsx
 
 import React from 'react';
-import MediaComponent from '@/MediaComponent';
+import MediaComponent from '@/app/components/socialMedia/MediaComponent';
 
 const MediaDashboard: React.FC = () => {
   return (

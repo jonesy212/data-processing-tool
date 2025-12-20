@@ -1,5 +1,5 @@
 // BugComments.tsx
-import { CommentData, CommentMeta, CommentType } from '@/app/components/models/data/Comments';
+import { CommentData, CommentMeta, CommentType } from '@/app/models/comments/Comments';
 import React, { useState } from 'react';
 
 interface Comment<T = CommentData, Meta = CommentMeta, K = CommentType> {

@@ -1,9 +1,9 @@
 // DashboardLayout.tsx
 
-import CommonLayout from '@/CommonLayout';
-import DashboardLoader from '@/app/components/dashboards/DashboardLoader';
+import CommonLayout from '@/app/pages/layouts/CommonLayout';
+import DashboardLoader from '@/app/pages/dashboards/DashboardLoader';
 import ProjectManagementToolbar from '@/app/components/documents/ProjectManagementToolbar';
-import CryptoSectionToolbar from '@/app/components/libraries/toolbar/CryptoSectionToolbar';
+import CryptoSectionToolbar from '@/app/components/crypto/CryptoSectionToolbar';
 import { Data } from '@/app/models/data/Data';
 import CollaborationToolsToolbar from '@/app/pages/community/CollaborationToolsToolbar';
 import { useAuth } from '@/app/state/context/AuthContext'; // Import auth context

@@ -1,15 +1,15 @@
 // AuthService.ts
-// import JWT_SECRET from "@/configs/JwtConfig";
+// import JWT_SECRET from "@/app/server/JwtConfig";
 import { databaseConfig } from '@/app/config/endpoints/databaseConfig';
 import { PostgresDatabaseService } from "@/app/server/database/PostgresDatabaseService";
-import { DatabaseService } from "@/app/config/DatabaseTypes";
+import { ClientDatabaseService } from "@/app/config/DatabaseTypes";
 import { DatabaseConfig } from "@/app/config/DatabaseConfig";
 
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 
 class AuthService {
   protected accessTokenKey = "accessToken";
-  protected databaseService: DatabaseService; // Add this property
+  protected databaseService: ClientDatabaseService; // Add this property
 
     // Good practice to include even if empty
   constructor(databaseConfig: DatabaseConfig) {

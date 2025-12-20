@@ -1,6 +1,6 @@
 // theme-provider.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { DesignTokens, defaultTokens } from './design-tokens';
+import { DesignTokens, defaultTokens } from '@/app/platform/styles/design-tokens';
 
 interface ThemeContextType {
   tokens: DesignTokens;

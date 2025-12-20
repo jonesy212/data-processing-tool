@@ -1,7 +1,6 @@
 // DynamicPromptPhaseHook.tsx
-// DynamicPromptPhaseHook.ts
 
-import createDynamicHook, { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
+import createDynamicHook, { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator'
 import { useEffect, useState } from 'react';
 
 export type DynamicPromptPhaseHookConfig = {

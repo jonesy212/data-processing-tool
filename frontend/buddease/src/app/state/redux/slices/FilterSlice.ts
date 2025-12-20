@@ -34,7 +34,7 @@ import { PriorityValue } from '@/app/pages/searches/CriteriaType'
 
 import {
   DocumentTypeEnum
-} from "@/app/typings/documentTypess";
+} from "@/app/typings/documentTypes";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";

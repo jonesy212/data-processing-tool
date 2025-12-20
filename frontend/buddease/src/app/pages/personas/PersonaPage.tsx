@@ -2,8 +2,8 @@
 // PersonaPage.ts
 // app/pages/personas/PersonaPage.tsx
 import React from 'react';
-import { Persona, PersonaData } from '@/PersonaData';
-import PersonaTypeEnum from '@/PersonaBuilder';
+import { Persona, PersonaData } from '@/app/pages/personas/Persona';
+import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 
 const PersonaPage: React.FC = () => {
   const [personas, setPersonas] = React.useState<Persona[]>([]);

@@ -62,8 +62,8 @@ export class ApiCommunicationService<
           invalidation: {
             onUpdate: true,
             onDelete: true,
-            pattern?: 'string'
-          };
+            pattern: 'string'
+          }
       },
       responseType: { contentType: "application/json", encoding: "utf-8" },
       withCredentials: false,

@@ -8,10 +8,10 @@ import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot, SnapshotDataType } from '@/app/snapshots';
+import { Snapshot, SnapshotDataType } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethods, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotStoreMethods, SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreMethods";
 
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
@@ -21,8 +21,8 @@ import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/app/typings/YourSpecificSnapshotType";
-import { SnapshotOperation, SnapshotOperationType } from "../actions/SnapshotActions";
-import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
+import { createSnapshotStoreOptions } from "@/app/snapshots/createSnapshotStoreOptions";
 import SnapshotStore from "./SnapshotStore";
 
 function convertBaseDataToK<

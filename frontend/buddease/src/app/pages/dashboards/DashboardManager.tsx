@@ -1,8 +1,8 @@
 // DashboardManager.ts
 // DashboardManager.tsx
 import React, { useState } from 'react';
-import { DashboardOverview, ProjectWorkspace, CommunicationHub } from './DashboardComponents';
-import AppTreeExplorer from './AppTreeExplorer';
+import { DashboardOverview, ProjectWorkspace, CommunicationHub } from '@/app/dashboards/DashboardComponent';
+import AppTreeExplorer from '@/app/services/AppTreeExplorer';
 import TreeView from './TreeView';
 
 export type DashboardView = 

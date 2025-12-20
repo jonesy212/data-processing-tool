@@ -2,7 +2,7 @@
 import { SqlRepository } from '@/app/repositories/SqlRepository';
 import { IndexedDBRepository } from '@/app/repositories/IndexedDBRepository';
 import { DomainObject } from '@/app/typings/DomainObject';
-import { put, call, takeLatest, select } from 'redux-saga/effects';
+import { put, call, takeLatest, select } from '@/app/state/redux/sagas/UndoRedoSaga';
 import { RootState } from '@/app/state/redux/slices/RootSlice'
 
 export class HybridSyncService {

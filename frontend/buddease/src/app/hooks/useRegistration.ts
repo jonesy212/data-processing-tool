@@ -1,6 +1,6 @@
 // useRegistration.ts
 // app/features/registration/hooks/useRegistration.ts
-import { useNotification } from '@/app/state/contexts/NotificationContext';
+import { useNotification } from '@/app/state/context/NotificationContext';
 import { useState } from 'react';
 
 export const useRegistration = () => {

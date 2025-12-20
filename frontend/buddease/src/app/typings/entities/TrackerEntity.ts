@@ -1,5 +1,4 @@
 // TrackerEntity.ts
-// TrackerEntity.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';

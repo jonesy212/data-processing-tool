@@ -4,13 +4,13 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { SnapshotsArray, } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, } from "@/app/snapshots/Snapshot";
-import { SnapshotData, Snapshots } from '@/app/snapshots/SnapshotData';
+import { SnapshotData, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
-import { SnapshotEvent } from "@/app/typings/eventTypes";
-import { Subscriber } from "@/app/users/Subscriber";
+import { SnapshotEvent } from "[object Object]";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 
 
 const NULL_KEY = "__null__";

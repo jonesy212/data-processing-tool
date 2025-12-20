@@ -1,6 +1,6 @@
 // EnvironmentAwareEndpointManager.ts
 // src/config/endpoints/EnvironmentAwareEndpointManager.ts
-import { environments, EnvironmentConfig } from '../environments/EnvironmentConfig';
+import { environments, EnvironmentConfig } from '@/app/config/EnvironmentConfig';
 import { getApiEndpointUrl } from '@/app/api/endpointConfigurations';
 
 export class EnvironmentAwareEndpointManager {

@@ -1,7 +1,7 @@
 // DataStoreComponent.tsx
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { DataStore } from "@/app/state/stores/DataStore";
-import StorageManager from '@/StorageManager';
+import StorageManager from '@/app/server/database/storage/StorageManager';
 
 const DataStoreComponent: React.FC = () => {
   const storageManager = StorageManager({ key: 'your-storage-key' });

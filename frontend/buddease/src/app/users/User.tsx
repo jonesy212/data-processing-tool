@@ -29,7 +29,7 @@ import { Product } from "@/app/products/Product";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
-import { SnapshotStoreConfig } from "@/app/snapshots/";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { ActivityLogEntry } from "@/app/state/redux/slices/UserSlice";

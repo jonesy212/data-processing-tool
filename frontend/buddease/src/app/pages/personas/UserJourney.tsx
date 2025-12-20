@@ -2,7 +2,8 @@
 // UserJourneyManager.tsx
 import React, { useState } from "react";
 import { OnboardingPhase } from "./UserJourneyManager";
-import { TempUserData } from '@/app/pages/onboarding/OnboardinPhase'
+import { TempUserData } from '@/app/models/phases/Phase';
+
 const UserJourneyManager: React.FC = () => {
   const { state } = useAuth();
   const { notify } = useNotification();

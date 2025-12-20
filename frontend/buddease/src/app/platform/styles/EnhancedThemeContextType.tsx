@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Theme, ThemeEnum } from '@/app/libraries/ui/theme/Theme'
-import { DesignTokens, themeToDesignTokens, defaultTokens } from './design-tokens';
+import { DesignTokens, themeToDesignTokens, defaultTokens } from '@/app/platform/styles/design-tokens';
 
 interface EnhancedThemeContextType {
   // Your existing theme properties

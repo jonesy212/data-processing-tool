@@ -14,7 +14,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from '@/app/models/display/ShowToast';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotConfig';
 import {
   Snapshots,
   SnapshotsArray,
@@ -44,7 +44,7 @@ import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { addToSnapshotList, isSnapshot } from '@/utils/snapshotUtils';
-import { version } from "react";
+import { version } from "@/app/versions/Version";
 
 // Base interface for all snapshot store properties
 

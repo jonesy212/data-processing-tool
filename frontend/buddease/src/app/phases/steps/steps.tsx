@@ -2,11 +2,11 @@
 import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
 import { useStepContext } from "@/app/state/context/StepContext";
 import { TradeData } from "@/app/components/trading/TradeData";
-import TradingPreferencesStep from "@/app/components/trading/TradingPreferencesStep";
+import TradingPreferencesStep from "@/app/components/phases/TradingPreferencesStep";
 import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
 import React, { useState } from "react";
-import TradingBasicInfoStep from "@/app/components/trading/TradingBasicInfoStep";
-import TradingSummaryStep from "@/app/components/trading/TradingSummaryStep";
+import TradingBasicInfoStep from "@/app/phases/steps/trading/TradingBasicInfoStep";
+import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 
 
 // BaseStepProps.ts - Common props for all step components

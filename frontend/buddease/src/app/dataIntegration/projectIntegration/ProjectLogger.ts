@@ -1,8 +1,7 @@
 // ProjectLogger.ts
 import { Logger } from '@/app/dataIntegration/projectIntegration/activityLogger';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-// import { createErrorNotificationContent } from '@/app/features/support/ErrorNotificationUtils'; // Add if exists
-
+// import { createErrorNotificationContent, errorLogger } from '@/app/logging/Logger';
 // // If you don't have this function, create a simple version
 // function createErrorNotificationContent(error: Error | any): any {
 //   return {

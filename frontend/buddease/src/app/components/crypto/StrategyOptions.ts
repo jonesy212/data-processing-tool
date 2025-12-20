@@ -1,6 +1,6 @@
 // StrategyOptions.ts
 
-import TradingStrategy from "./TradingStrategy";
+import TradingStrategy from "@/app/trading/TradingStrategy";
 
 const initialCapital: number = 10000; // Example value
 // Now you can use strategyOptions in your code

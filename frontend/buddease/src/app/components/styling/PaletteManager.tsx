@@ -1,7 +1,7 @@
 // PaletteManager.tsx
 // components/PaletteManager.tsx
 import React, { useState } from "react";
-import { Palette } from "./Palette";
+import { Palette } from "@/app/components/styling/Palette";
 
 interface ColorPalette {
   name: string;

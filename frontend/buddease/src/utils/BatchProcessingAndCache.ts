@@ -7,7 +7,7 @@ import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { DataVersions } from '@/app/configs/DataVersionsConfig';
 import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
 import { CacheData } from '@/app/generators/GenerateCache';
-import { writeCache } from '@/utils/cache/ReadAndWriteCache';
+import { writeCache } from '@/utils/ReadAndWriteCache';
 
 interface BatchProcessingResult {
   success: boolean;

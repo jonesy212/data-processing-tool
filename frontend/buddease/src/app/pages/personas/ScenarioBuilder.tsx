@@ -126,7 +126,7 @@ function generateUserJourneyComponent(componentName: string, brand: any, userSce
   // Generate the user interface code
   const userJourneyInterfaceCode = `
     import React from 'react';
-    import { UserJourney } from '@/app/components/UserJourney';
+    import { UserJourney } from '@/app/pages/personas/UserJourney';
   
     interface ${componentName}Props {
       userScenarios: string[]; // Props for user scenarios
@@ -333,8 +333,8 @@ function generateDataVisualizationComponent(componentName: string, dataPropertie
 
   return `
     import React from 'react';
-    import { ChartOptions } from 'chart.js';
-    import ChartComponent from "@/app/forms/ChartComponent"; // Import the ChartComponent
+    import { ChartOptions } from '@/utils/chartUtils';
+    import ChartComponent from "@/app/components/charts/ChartComponent"; // Import the ChartComponent
 
     interface ${componentName}Props {
   ${dataPropsCode}
@@ -376,7 +376,7 @@ function generateFormsComponent(
   const validationRulesCode = generateValidationRulesCode(validationRules); // Generate component code
   const componentCode = `
       import React from 'react';
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 
       interface ${componentName}Props {
         ${formFieldsCode}

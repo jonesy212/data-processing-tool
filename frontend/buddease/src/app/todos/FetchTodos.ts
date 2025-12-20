@@ -1,6 +1,6 @@
 // FetchTodos.ts
-import { TodoActions } from "../actions/TodoActions";
-import { Todo } from "./Todo";
+import { TodoActions } from "@/app/actions/TodoActions";
+import { Todo } from "@/app/todos/Todo";
 
 
 // Fetch todos function (replace this with your actual asynchronous fetch logic)

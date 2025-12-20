@@ -2,7 +2,7 @@
 import { UserRoleEnum } from '@/app/models/UserRoles';
 import { DocumentEditingPermissions } from "@/app/permissions/Permission";
 import { Permission } from '@/app/permissions/Permission';
-import { DocumentPermissions } from '@/app/documents/DocumentPermissions'
+import { DocumentPermissions } from '@/app/typings/entities/DocumentEntity'
 
 // Define document editing permission levels
 export enum DocumentEditLevel {

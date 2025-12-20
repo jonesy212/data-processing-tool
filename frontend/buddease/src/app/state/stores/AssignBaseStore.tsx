@@ -18,10 +18,10 @@ import type { AppUser } from '@/app/typings/entities/UserEntity';
 import { User } from '@/app/users/User';
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { makeAutoObservable } from 'mobx';
-import { ReassignEventResponse } from './AssignEventStore';
-import { useAssignTeamMemberStore } from './AssignTeamMemberStore';
-import { AuthStore } from './AuthStore';
-import { PresentationStore, presentationStore } from './presentationStore';
+import { ReassignEventResponse } from '@/app/state/stores/AssignEventStore';
+import { useAssignTeamMemberStore } from '@/app/state/stores/AssignTeamMemberStore';
+import { AuthStore } from '@/app/state/stores/AuthStore';
+import { PresentationStore, presentationStore } from '@/app/state/stores/presentationStore';
 
 const { notify } = useNotification();
 

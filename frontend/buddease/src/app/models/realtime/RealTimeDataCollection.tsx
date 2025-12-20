@@ -2,12 +2,12 @@
 import {
     BaseDataEntity
 } from "@/app/a_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
-import { DEX } from "@/app/crypto/DEX";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { DEX } from "@/app/models/cypto/DEX";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useRealtimeDextData from "@/app/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/hooks/commHooks/useRealtimeExchangeData";
-import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
+import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useRealtimeData";
 import { Exchange } from "@/app/models/cypto/Exchange";
 import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/models/cypto/exchangeIntegration";
 import { Data } from '@/app/models/data/Data';
@@ -16,7 +16,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux";
-import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
+import { RealtimeData, RealtimeDataItem } from "@/app/typings/realtimeTypes";
 
 
 

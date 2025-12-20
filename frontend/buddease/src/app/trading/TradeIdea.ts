@@ -1,8 +1,8 @@
 // TradeIdea.ts
-import { TradingStrategyOptions } from '@/app/components/crypto/TradingStrategy';
+import { TradingStrategyOptions } from '@/app/trading/TradingStrategy';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
-import { MarketData } from '@/crypto/TradingStrategy';
+import { MarketData } from '@/app/trading/TradingStrategy';
 
 enum FeedbackTradePhaseEnum {
   COLLECTION = 'collection',

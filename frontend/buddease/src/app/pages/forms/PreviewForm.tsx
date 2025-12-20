@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ValidationRule } from '@/app/snapshots/ValidationRule'
 
 if (typeof window !== 'undefined') {
-  import("@/app/pages/forms/PreviewForm.css"); // Import CSS for styling
+  import("@/app/pages/forms/PreviewForm"); // Import CSS for styling
 }
 interface FormData {
   [key: string]: {

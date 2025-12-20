@@ -1,7 +1,7 @@
 // Branding.ts
 import { BrandingSettings } from "@/app/branding/BrandingSettings";
-import { Theme } from "./Theme";
-import { validateHexColor } from "./ThemeConfig";
+import { Theme } from "@/app/libraries/ui/theme/Theme";
+import { validateHexColor } from "@/app/libraries/ui/theme/ThemeConfig";
 
 // Consolidated default branding settings - only one instance
 export const defaultBrandingSettings: BrandingSettings = {

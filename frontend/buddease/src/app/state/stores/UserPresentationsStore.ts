@@ -8,7 +8,7 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { useAssignEventStore } from "./AssignEventStore";
+import { useAssignEventStore } from "@/app/state/stores/AssignEventStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

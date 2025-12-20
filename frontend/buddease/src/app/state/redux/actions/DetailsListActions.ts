@@ -1,7 +1,7 @@
 // DetailsListActions.ts
 import { Data } from '@/app/models/data/Data';
 import { createAction } from '@reduxjs/toolkit';
-import { DetailsItem } from '@/app/components/stores/DetailsListStore';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 
 const PREFIX = 'detailsList';
 

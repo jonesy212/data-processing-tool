@@ -1,5 +1,5 @@
 // generatePresentationJSON.ts
-import { Presentation } from "@/app/documents/Presentation";
+import { Presentation } from "@/app/documents/editing/Presentation";
 
 // Function to generate JSON from a Presentation object
 function generatePresentationJSON(presentation: Presentation): string {

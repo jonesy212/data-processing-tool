@@ -3,7 +3,7 @@ import { SubscriptionActions, SubscriptionPayload } from "@/app/actions/Subscrip
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { fetchPortfolioUpdatesLastUpdated } from "@/utils/trading/TradingUtils";

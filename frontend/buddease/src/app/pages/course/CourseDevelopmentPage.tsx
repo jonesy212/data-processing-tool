@@ -1,5 +1,5 @@
 // CourseDevelopmentPage.tsx
-import { fetchDataWithToken, useAuth } from "@/app/components/auth/AuthContext";
+import { fetchDataWithToken, useAuth } from "@/app/state/context/AuthContext";
 import { Data } from '@/app/models/data/Data';
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import SnapshotStore, {

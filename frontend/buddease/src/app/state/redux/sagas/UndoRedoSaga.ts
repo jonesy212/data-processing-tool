@@ -1,19 +1,19 @@
 // UndoRedoSaga.ts
 // UndoRedoSagas.ts
-import { showErrorMessage, showToast } from "@/app/components/models/display/ShowToast";
-import { addToHistory, redo, undo } from "@/app/slices/UndoRedoSlice";
+import { showErrorMessage, showToast } from "@/app/models/display/ShowToast";
+import { addToHistory, redo, undo } from "@/app/state/redux/slices/UndoRedoSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 
 // Import the Message type from your application
 import { UndoRedoActions } from "@/app/actions/UndoRedoActions";
 import userService from "@/app/api/ApiUser";
-import { authToken } from "@/app/components/auth/authToken";
+import { authToken } from "@/app/server/auth/authToken";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import Logger from '@/app/logging/Logger';
-import { RootState } from "@/app/slices/RootSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { Partial } from "react-spring";
 
 

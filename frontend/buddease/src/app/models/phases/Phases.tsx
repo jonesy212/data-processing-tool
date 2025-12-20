@@ -1,9 +1,9 @@
 // Phases.tsx
 // Phases.ts
 // Import the calendar phase
-import { AsyncHook } from "async_hooks";
-import { calendarPhase } from "@/app/calendar/CalendarPhase";
-import { Lesson } from "@/app/documents/CourseBuilder";
+import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
+import { calendarPhase } from "@/app/components/calendar/CalendarPhase";
+import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker, { AsyncHookLinkerConfig, LibraryAsyncHook } from "@/app/hooks/useAsyncHookLinker";
 import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';

@@ -7,7 +7,7 @@ import { CommonData, Customizations } from '@/app/models/CommonData';
 import { Data } from '@/app/models/data/Data';
 import { CommonEvent } from '@/app/state/stores/CommonEvent';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typiings/entities/CalendarEntity';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typings/entities/CalendarEntity';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 

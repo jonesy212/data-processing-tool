@@ -1,5 +1,5 @@
 // comparePrices.ts
-import { ExchangeData } from '@/app/components/models/data/ExchangeData';
+import { ExchangeData } from '@/app/models/data/ExchangeData';
 
 interface PriceComparisonResult {
   pair: string;

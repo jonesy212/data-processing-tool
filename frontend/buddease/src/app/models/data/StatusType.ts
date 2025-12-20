@@ -180,7 +180,7 @@ enum ProductStatus {
   Launched = StatusType.Completed,
 }
 
-export enum PriorityTypeEnum {
+enum PriorityTypeEnum {
   Low = "low",
   Medium = "medium",
   High = "high",
@@ -190,7 +190,7 @@ export enum PriorityTypeEnum {
   Emergency = "emergency",
 }
 
-export enum ProjectPhaseTypeEnum {
+enum ProjectPhaseTypeEnum {
   Ideation = "ideation",
   Draft = "drafting",
   TeamFormation = "team_formation",
@@ -420,5 +420,5 @@ export {
   PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
   TodoStatus, MeetingStatus,
-  PhaseDocumentEnum
+  PhaseDocumentEnum, PriorityTypeEnum, ProjectPhaseTypeEnum
 };

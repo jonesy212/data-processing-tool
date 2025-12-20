@@ -3,9 +3,9 @@ import React from "react";
 
 import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/app/components/auth/AuthContext';
-import { UserData } from '@/app/components/users/User';
-import { subscribeToRealtimeUpdates } from '@/app/components/web3/dAppAdapter/functionality/RealtimeUpdates';
+import { useAuth } from '@/app/state/context/AuthContext';
+import { UserData } from '@/app/users/User';
+import { subscribeToRealtimeUpdates } from '@/utils/web3/dAppAdapter/functionality/RealtimeUpdates';
 
 
 // Define the type for participant data

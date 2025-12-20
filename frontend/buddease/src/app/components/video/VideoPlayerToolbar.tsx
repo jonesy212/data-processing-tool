@@ -1,7 +1,6 @@
 // VideoPlayerToolbar.tsx
-// VideoPlayerToolbar.ts
 import React from "react";
-import ToolbarItem from "@/app/component/documents/ToolbarItem";
+import ToolbarItem from "@/app/components/documents/ToolbarItem";
 
 interface VideoPlayerToolbarProps {
   onPlay: () => void;

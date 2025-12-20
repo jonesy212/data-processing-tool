@@ -2,7 +2,7 @@
 // server/repository/mappers/userMapper.ts
 
 import { DefaultExcludedFields } from '@/app/config/BaseConfig';
-import { CacheData } from '@/app/typings/CacheData'; // adjust import as needed
+import { CacheData } from '@/app/generators/GenerateCache'; // adjust import as needed
 
 /**
  * Maps User CacheData -> DB-friendly object

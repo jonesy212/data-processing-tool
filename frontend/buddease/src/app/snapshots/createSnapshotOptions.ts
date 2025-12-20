@@ -2,7 +2,7 @@
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SharedIdentifiers } from '@/app/documents/SharedIdentifiers';
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "@/app/libraries/categories/generateCategoryProperties";
 import { displayToast } from "@/app/models/display/ShowToast";
@@ -18,16 +18,16 @@ import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import { DataStore, InitializedState, initializeState, useDataStore } from '@/app/state/stores/DataStore';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { SubscribeResult } from '@/users/Subscriber';
+import { SubscribeResult } from '@/app/subscribers/Subscriber';
 import { addToSnapshotList, category } from '@/utils/snapshotUtils';
-import { SnapshotData } from ".";
-import { SnapshotOperation } from "../actions/SnapshotActions";
-import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
-import { handleSnapshotOperation } from "./handleSnapshotOperation";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotOperation } from "@/app/snapshots/index";
+import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
+import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreReference } from "./SnapshotStoreReference";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 
 interface SimulatedDataSource<
   T extends BaseDataEntity,

@@ -6,6 +6,8 @@ import {
   saveToLocalStorage, 
   saveAppTreeToLocalStorage 
 } from '@/app/hooks/useLocalStorage'
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { useDispatch } from "react-redux";
 
 export interface EmergencyShutdownConfig {
   saveRecoveryState?: boolean;
@@ -346,7 +348,11 @@ export class EmergencyShutdownService {
 
 // Hook version
 export const useEmergencyShutdown = () => {
-  const shutdownService = new EmergencyShutdownService();
+
+  const { notify } = useNotification();
+  const dispatch = useDispatch()
+
+  const shutdownService = new EmergencyShutdownService(dispatch, notify);
 
   const emergencyShutdown = async (
     reason: string, 

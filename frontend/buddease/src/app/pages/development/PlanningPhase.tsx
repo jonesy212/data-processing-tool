@@ -1,6 +1,6 @@
 // PlanningPhase.tsx
 import React from "react";
-import { PhaseUnion } from "./DevelopmentPhase";
+import { PhaseUnion } from "@/app/components/phases/DevelopmentPhase";
 interface PhaseProps {
     onSubmit: () => void;
 

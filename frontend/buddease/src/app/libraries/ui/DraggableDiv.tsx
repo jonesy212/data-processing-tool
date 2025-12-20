@@ -1,8 +1,8 @@
 // DraggableDiv.tsx
 
 import { useRef, useState } from 'react';
-import { useDrag } from 'react-dnd';
-import { useMovementAnimations } from '@/app/components/libraries/animations/movementAnimations/MovementAnimationActions';
+import { useDrag } from '@/app/libraries/animations/DraggableAnimation/useDrag';
+import { useMovementAnimations } from '@/app/libraries/animations/movementAnimations/MovementAnimationActions';
 
 export default function DraggableDiv() {
   const [text, setText] = useState('');

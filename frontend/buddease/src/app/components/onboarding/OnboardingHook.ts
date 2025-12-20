@@ -2,14 +2,14 @@
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 // OnboardingHooks.ts
 
-import { DocumentData } from '@/app/components/documents/DocumentBuilder';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Tracker } from '@/app/models/tracker/Tracker';
-import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.js';
+import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData';
 import { useAuth } from '@/app/state/context/AuthContext';
 import { rootStores } from '@/app/state/stores/RootStores';
 import TrackerStore from '@/app/state/stores/TrackerStore';
-import { User } from '@/users/User.jsx';
+import { User } from '@/app/users/User';
 import { makeAutoObservable } from 'mobx';
 import { useEffect } from 'react';
 

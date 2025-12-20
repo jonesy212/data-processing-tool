@@ -1,9 +1,9 @@
 // usePhaseActivity.ts
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { phaseActivityStore } from "../mobx/PhaseActivityStore";
-import { syncActivities } from "../redux/phaseActivitySlice";
-import { store } from "../redux/store"; // Your root Redux store
+import { phaseActivityStore } from "@/app/state/stores/PhaseActivityStore";
+import { syncActivities } from "@/app/state/redux/slices/phaseActivitySlice";
+import { store } from "@/app/state/stores/useAppDispatch"; // Your root Redux store
 
 export const usePhaseActivity = () => {
   const dispatch = useDispatch();

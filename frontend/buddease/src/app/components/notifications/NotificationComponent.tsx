@@ -5,10 +5,10 @@ import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { randomBytes } from "ethers";
 import React from "react";
-import useNotificationManagerService from "./NotificationService";
+import useNotificationManagerService from "@/app/services/NotificationService";
 
 if (typeof window !== 'undefined') {
-  import('@/NotificationComponent.css');
+  import('@/app/components/notifications/NotificationComponent');
 }
 
 interface CustomNotificationProps {

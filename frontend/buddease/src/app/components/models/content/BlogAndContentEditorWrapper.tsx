@@ -2,11 +2,11 @@
 import { blogApiService } from '@/app/api/BlogAPI';
 import ContentType from '@/app/components/typings/ContentType';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { BlogActions } from '@/blogs/BlogAction';
+import { BlogActions } from '@/app/components/models/blogs/BlogAction';
 import { EditorState } from 'draft-js';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import BlogAndContentEditor from '@/app/pages/blog/BlogAndContentEditor'; // Import the BlogAndContentEditor component
+import BlogAndContentEditor from '@/app/components/models/content/BlogAndContentEditor'; // Import the BlogAndContentEditor component
 
 const BlogAndContentEditorWrapper = async () => {
   const dispatch = useDispatch();

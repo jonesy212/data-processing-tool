@@ -1,7 +1,7 @@
 // useUIRealtimeData.tsx
 import { AppActions, AppActionsType } from '@/app/actions/AppActions';
 import { EventActions } from '@/app/actions/EventActions';
-import { fetchData } from '@/app/api/ApiData';
+import { fetchData } from '@/utils/web3/dataAnalysisUtils';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';

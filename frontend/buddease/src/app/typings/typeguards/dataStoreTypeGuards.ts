@@ -1,8 +1,10 @@
 // dataStoreTypeGuards.ts
 import { Data } from '@/app/models/data/Data';
 import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotStoreMethods } from "@/app/snapshots";
+import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 // Example type guard for checking data store methods
 function isDataStoreMethod<
@@ -51,7 +53,7 @@ function isSnapshotStoreMethods<
 
 
 // Example type guard for `SnapshotStoreMethods`
-function isSnapshotStoreMethods<U extends BaseData,   K extends Data>(
+function isSnapshotStoreMethods<U extends BaseData, K extends Data>(
   value: unknown, K extends
 ): value is SnapshotStoreMethods<U, K, Meta> {
   // Assuming SnapshotStoreMethods is a function or object with specific properties
@@ -60,8 +62,14 @@ function isSnapshotStoreMethods<U extends BaseData,   K extends Data>(
 
 
 // Example type guard for checking DataStoreWithSnapshotMethods
-function isDataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  value: unknown, K extends
+function isDataStoreWithSnapshotMethods <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
+  value: unknown,
 ): value is DataStoreWithSnapshotMethods<T, K> {
   // Ensure the value is an object and not null
   if (typeof value !== 'object' || value === null) {

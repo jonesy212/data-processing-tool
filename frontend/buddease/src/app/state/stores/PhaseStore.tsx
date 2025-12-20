@@ -4,7 +4,7 @@ import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { snapshotStore } from "@/app/snapshots/SnapshotStore";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { VideoData } from "@/app/video/Video";
+import { VideoData } from "@/app/typings/videoTypes/Video";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 

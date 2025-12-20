@@ -1,6 +1,6 @@
 // CalendarEventCollaboratorsState.tsx
 import { CollaborationActions } from "@/app/actions/CollaborationActions";
-import CalendarEventCollaborator from "@/app/components/calendar/CalendarEventCollaborator";
+import CalendarEventCollaborator from "@/app/calendar/CalendarEventCollaborator";
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";

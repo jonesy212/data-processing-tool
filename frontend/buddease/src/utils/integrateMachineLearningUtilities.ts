@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs'; // Import TensorFlow.js library
-import { MarketData } from '@/crypto/TradingStrategy';
+import { MarketData } from '@/app/trading/TradingStrategy';
 
 // Function for machine learning integration
 const integrateMachineLearning = async (historicalData: MarketData[]): Promise<void> => {

@@ -5,6 +5,7 @@ import { UserSettings } from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
+import { UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields } from '@/app/typings/entities/UserEntity'
 import { BaseData } from '@/app/models/data/Data';
 import { Member } from "@/app/models/members/Member";
 import { Phase } from "@/app/models/phases/Phase";
@@ -13,7 +14,7 @@ import { Task } from "@/app/models/tasks/Task";
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { BlockchainPermissions } from "@/app/permissions/BlockchainPermissions";
-import { NFT } from "@/app/service/crypto/NFT";
+import { NFT } from "@/app/models/cypto/NFT";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
@@ -34,7 +35,7 @@ import { CustomTransaction, SmartContractInteraction } from "@/app/typings/crypt
 import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
 import { TaskEntity } from "@/app/typings/entities/TaskEntity";
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
-import { BaseResponseType } from '@/app/typings/responseTypes';
+import { BaseResponseType } from '@/app/typings/baseResponseTypes';
 import { VideoData } from "@/app/typings/videoTypes/Video";
 import { Address, Education, Employment, SocialLinks, User } from "@/app/users/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -62,7 +63,7 @@ export interface UserManagerState<
   bio: string | null;
   profilePicture: string | null;
   notification: { message: string; recipient: string; snapshot: string; } | string;
-  data: BaseResponseType;
+  data: BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   uploadQuota: number;
   nftCollection: NFT[];
   userSupportFeedbackPreferences: ProjectFeedback[];
@@ -178,19 +179,20 @@ export const userManagerSlice = createSlice({
       }
     },
 
-    updateData: (state, action: PayloadAction<WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>>) => {
+    updateData: (state, action: PayloadAction<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>) => {
       state.data = {
         ...state.data,
         ...action.payload,
         securityStamp: action.payload.securityStamp || null,
       }
     },
-    updateQuota: (state: WritableDraft<UserManagerState>, action: PayloadAction<number>) => {
+
+    updateQuota: (state: WritableDraft<UserManagerState>, action: PayloadAction<number>) =>{
       state.uploadQuota = action.payload;
     },
 
-    fetchUsersSuccess: (state: WritableDraft<UserManagerState>, action: PayloadAction<{ users: User[] }>) => {
-      state.users = action.payload.users.map((user) => ({ ...user })) as WritableDraft<User[]>;
+    fetchUsersSuccess: (state: WritableDraft<UserManagerState>, action: PayloadAction<{ users: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>[] }>) =>{
+      state.users = action.payload.users.map((user) => ({ ...user }))
     },
 
 
@@ -230,7 +232,7 @@ export const userManagerSlice = createSlice({
 
     addUserFriend: (
       state,
-      action: PayloadAction<{ userId: string; friendId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
+      action: PayloadAction<{ userId: string; friendId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }>
     ) => {
       const { userId, friendId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -241,7 +243,7 @@ export const userManagerSlice = createSlice({
 
     removeUserFriend: (
       state,
-      action: PayloadAction<{ userId: string; friendId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
+      action: PayloadAction<{ userId: string; friendId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }>
     ) => {
       const { userId, friendId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -254,7 +256,7 @@ export const userManagerSlice = createSlice({
 
     blockUser: (
       state,
-      action: PayloadAction<{ userId: string; blockedUserId: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>> }>
+      action: PayloadAction<{ userId: string; blockedUserId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> }>
     ) => {
       const { userId, blockedUserId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -273,7 +275,7 @@ export const userManagerSlice = createSlice({
         state.users[userIndex].blockedUsers = state.users[
           userIndex
         ].blockedUsers.filter(
-          (blockedUser: WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>) =>
+          (blockedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>) =>
             blockedUser.id !== unblockedUserId
         );
       }
@@ -281,7 +283,7 @@ export const userManagerSlice = createSlice({
 
     updateUserSettings: (
       state,
-      action: PayloadAction<{ userId: string; settings: WritableDraft<UserSettings> }>
+      action: PayloadAction<{ userId: string; settings: UserSettings }>
     ) => {
       const { userId, settings } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -314,7 +316,7 @@ export const userManagerSlice = createSlice({
 
     updateUserPrivacySettings: (
       state,
-      action: PayloadAction<{ userId: string; privacySettings: WritableDraft<PrivacySettings> }>
+      action: PayloadAction<{ userId: string; privacySettings: PrivacySettings }>
     ) => {
       const { userId, privacySettings } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -326,7 +328,7 @@ export const userManagerSlice = createSlice({
 
     updateUserNotifications: (
       state,
-      action: PayloadAction<{ userId: string; notifications: WritableDraft<NotificationSettings> }>
+      action: PayloadAction<{ userId: string; notifications: NotificationSettings }>
     ) => {
       const { userId, notifications } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -337,7 +339,7 @@ export const userManagerSlice = createSlice({
 
     updateUserActivityLog: (
       state,
-      action: PayloadAction<{ userId: string; activityLog: WritableDraft<ActivityLogEntry>[] }>
+      action: PayloadAction<{ userId: string; activityLog: ActivityLogEntry[] }>
     ) => {
       const { userId, activityLog } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -348,7 +350,7 @@ export const userManagerSlice = createSlice({
 
     assignUserToProject: (
       state,
-      action: PayloadAction<{ userId: string; projectId: WritableDraft<Project<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>> }>
+      action: PayloadAction<{ userId: string; projectId: Project<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields> }>
     ) => {
       const { userId, projectId } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -417,39 +419,14 @@ export const userManagerSlice = createSlice({
       }>
     ) => {
       const { userId, projectId, tasks } = action.payload;
-      const userIndex = state.users.findIndex((user) => user.id === userId);
-      if (userIndex !== -1) {
-        const user = state.users[userIndex];
-        const projectIndex = user.projects
-          ? user.projects.findIndex((project) => project.id === projectId)
-          : -1;
-        if (projectIndex !== -1 && user.projects) {
-          // Update tasks immutably using Immer
-          user.projects[projectIndex].tasks = tasks.map((task) => ({
-            ...task,
-            // Ensure each task property is compatible with WritableDraft<Task>
-            assignedTo: task.assignedTo as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | null,
-            dependencies: task.dependencies as WritableDraft<Task>[] | null | undefined,
-            previouslyAssignedTo: task.previouslyAssignedTo as WritableDraft<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>[],
-            data: task.data as WritableDraft<TaskEntity> | null,
-            tags: task.tags as WritableDraft<TagsRecord<T>> | undefined,
-            subtasks: task.subtasks as WritableDraft<TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
-            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | undefined,
-            snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,
-            phase: task.phase as WritableDraft<Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
-            initialState: task.initialState as WritableDraft<InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
-            comments: task.comments as (WritableDraft<Comment> | WritableDraft<CustomComment>)[] | undefined,
-            updatedDetails: task.updatedDetails as WritableDraft<DetailsItem<BaseData>> | undefined,
-            videoData: task.videoData as WritableDraft<VideoData> | undefined,
-            members: task.members as string[] | WritableDraft<Member<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | number[] | undefined,
-            leader: task.leader as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
-            followers: task.followers as WritableDraft<User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
-            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] | undefined,
-            snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
-            // Add other properties here
-          }));
-        }
-      }
+
+      const user = state.users.find((u) => u.id === userId);
+      if (!user || !user.projects) return;
+
+      const project = user.projects.find((p) => p.id === projectId);
+      if (!project) return;
+
+      project.tasks = tasks;
     },
 
     updateUserProjectProgress: (
@@ -493,7 +470,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateUserProjectDeadlines: (
-      state,
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{
         userId: string;
         projectId: string;
@@ -552,7 +529,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateUserProjectReports: (
-      state: WritableDraft<UserManagerState>,
+      state: WritableDraft<UserManagerState>>,
       action: PayloadAction<{ userId: string; projectId: string; reports: Report[] }>
     ) => {
       const { userId, projectId, reports } = action.payload;
@@ -569,7 +546,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateUserProjectNotifications: (
-      state: WritableDraft<UserManagerState>,
+      state: WritableDraft<UserManagerState>>,
       action: PayloadAction<{ userId: string; projectId: string; notifications: Notification[] }>
     ) => {
       const { userId, projectId, notifications } = action.payload;
@@ -597,7 +574,7 @@ export const userManagerSlice = createSlice({
     },
 
     // Action to update user's address
-    updateUserAddress: (state, action: PayloadAction<{ userId: string; address: WritableDraft<Address> }>) => {
+    updateUserAddress: (state, action: PayloadAction<{ userId: string; address: Address }>) => {
       const { userId, address } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
@@ -633,7 +610,7 @@ export const userManagerSlice = createSlice({
     },
 
     // Action to update user's education
-    updateUserEducation: (state, action: PayloadAction<{ userId: string; education: WritableDraft<Education>[] }>) => {
+    updateUserEducation: (state, action: PayloadAction<{ userId: string; education: Education[] }>) => {
       const { userId, education } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
@@ -642,7 +619,7 @@ export const userManagerSlice = createSlice({
     },
 
     // Action to update user's employment
-    updateUserEmployment: (state, action: PayloadAction<{ userId: string; employment: WritableDraft<Employment>[] }>) => {
+    updateUserEmployment: (state, action: PayloadAction<{ userId: string; employment: Employment[] }>) => {
       const { userId, employment } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
       if (userIndex !== -1) {
@@ -718,7 +695,7 @@ export const userManagerSlice = createSlice({
     // Action to update user's profile access control
     updateUserProfileAccessControl: (
       state,
-      action: PayloadAction<{ userId: string; accessControl: WritableDraft<ProfileAccessControl> }>
+      action: PayloadAction<{ userId: string; accessControl: ProfileAccessControl }>
     ) => {
       const { userId, accessControl } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);
@@ -812,7 +789,7 @@ export const userManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         userId: string;
-        transaction: WritableDraft<CustomTransaction>;
+        transaction: CustomTransaction;
       }>
     ) => {
       const { userId, transaction } = action.payload;
@@ -840,7 +817,7 @@ export const userManagerSlice = createSlice({
     // Action to update user's smart contract interactions
     updateUserSmartContractInteractions: (
       state,
-      action: PayloadAction<{ userId: string; interaction: WritableDraft<SmartContractInteraction> }>
+      action: PayloadAction<{ userId: string; interaction: SmartContractInteraction }>
     ) => {
       const { userId, interaction } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);

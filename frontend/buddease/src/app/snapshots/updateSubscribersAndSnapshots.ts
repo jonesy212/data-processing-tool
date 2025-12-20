@@ -2,23 +2,23 @@
 // // updateSubscribersAndSnapshots.ts
 
 // import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-// import { CategoryProperties } from "@/app//personas/ScenarioBuilder";
-// import { Subscriber } from "@/app/users/Subscriber";
+// import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+// import { Subscriber } from "@/app/subscribers/Subscriber";
 // import { Subscription } from "@/app/subscriptions/Subscription";
 // import { useParams } from "react-router-dom";
 // import { ModifiedDate } from "@/app/documents/DocType";
 // import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 // import { BaseData } from '@/app/models/data/Data';
 // import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-// import { NotificationTypeEnum, NotificationType } from '@/app/state/context/NotificationContext';
-// import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/app/utils/trading/TradingUtils";
-// import { userId } from "@/app/users/ApiUser";
-// import { triggerIncentives } from "@/app/utils/web3/applicationUtils";
-// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore'
-// import { SnapshotConfig } from '@/app/snapshots/Snapshot';
-// import { K, T } from "./SnapshotConfig";
+// import { NotificationTypeEnum, NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+// import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/utils/trading/TradingUtils";
+// import { userId } from "@/app/api/ApiUser";
+// import { triggerIncentives } from "@/utils/web3/applicationUtils";
+// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/app/interfaces/payload/payloadTypes'
+// import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+// import { K, T } from "@/app/models/data/dataStoreMethods";
 // import SnapshotStore from "./SnapshotStore";
-// import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+// import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 // import * as snapshotApi from '@/app/api/SnapshotApi';
 // // Example of asynchronous function using async/await
 // const updateSubscribersAndSnapshots = async (

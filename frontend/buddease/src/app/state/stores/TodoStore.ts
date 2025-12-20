@@ -19,7 +19,7 @@ import { useNotification } from '@/app/state/context/NotificationContext';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
-import { AllStatus } from '@/DetailsListStore';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { makeAutoObservable } from "mobx";
 import { useRef, useState } from "react";
 
