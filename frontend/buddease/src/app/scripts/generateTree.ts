@@ -703,6 +703,7 @@ export function generateTree(data: any): FileNode {
   
   const convertToFileNode = (item: any): FileNode => {
     return {
+      id: item.id,
       name: path.basename(item.path || item.name),
       path: item.path || item.name,
       type: item.type || (item.children ? 'directory' : 'file'),

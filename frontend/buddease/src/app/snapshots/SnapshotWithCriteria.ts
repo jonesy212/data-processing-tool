@@ -1,11 +1,19 @@
+// SnapshotWithCriteria.ts
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { BaseData } from '@/app/models/data/Data';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
-// SnapshotWithCriteria.ts
+import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+import { processSnapshot, Snapshot } from '@/app/snapshots/Snapshot';
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { CriteriaType } from '@/app/pages/searches/CriteriaType';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { BaseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { createMetadata } from '@/app/config/metadata/createMetadata';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { sharedMetadata } from '@/app/config/MetadataStateManager';
 import { MetadataEntriesType } from "@/app/config/StructuredMetadata";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
@@ -17,7 +25,7 @@ import { Taggable } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
@@ -29,8 +37,9 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { handleSnapshotSuccess } from "@/app/snapshots/index";
-import SnapshotStore, { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
-
+import  { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { createMeta } from "@/app/config/metadata/createMeta";
 import { SchemaField } from "@/app/config/metadata/SchemaField";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -38,6 +47,7 @@ import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { TagsRecord } from '@/app/models/tracker/Tag';
+import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { FilterCriteria } from "@/app/pages/searches/FilterCriteria";
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -124,7 +134,7 @@ type SnapshotWithCriteria<
   analysisType?: AnalysisTypeEnum;
   events?: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;  // Update as needed based on your schema
   subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];  // Update as needed based on your schema
-  tags?: TagsRecord<T>| string[] | undefined;   // Update as needed based on your schema
+  tags?: TagsRecord<T> | string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStores?: Map<number, SnapshotStoreReference<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // not a Map
@@ -189,7 +199,7 @@ export class SnapshotStoreWithCriteria<
       const hasId = typeof (data as any).id === "string";
       const hasName = typeof (data as any).title === "string";
       const hasType = (data as any).type !== undefined;
-      
+
       // Check for a nested property
       const hasDetails = (data as any).details && typeof (data as any).details === "object";
       const hasItemsArray = Array.isArray((data as any).items) && (data as any).items.length > 0;
@@ -201,17 +211,23 @@ export class SnapshotStoreWithCriteria<
 }
 
 
-// Example data to be added to the store
 
+// Define the example with proper typing
 const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
   deleted: false,
   initialState: {},
   isCore: false,
   initialConfig: {},
-  onInitialize: () => {},
+  onInitialize: () => { },
   taskIdToAssign: "",
   schema: {},
   currentCategory: "Sample Category",
+  startDate: new Date(),
+  endDate: new Date(),
+  status: StatusType.Scheduled,
+  analysisType: AnalysisTypeEnum.DEFAULT,
+  configOption: "default config option",
+  subscribers: [],
 
   data: {
     id: "1",
@@ -221,7 +237,7 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
     category: "Sample category",
   } as SnapshotEntityData,
 
-  meta: createMetadata<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>({
+  meta: createMeta<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>({
     id: "2",
     name: "Sample Meta",
     description: "Sample meta description",
@@ -229,7 +245,6 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
     category: "Sample meta category",
     author: "",
     keywords: [],
-    baseConfig, sharedMetadata, sharedBaseData, taggable, keywords,
     permissions: [],
     customFields: {},
     versionData: {} as VersionData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
@@ -241,80 +256,122 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
     metadataEntries: {} as MetadataEntriesType<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   }),
 
-  startDate: new Date(),
-  endDate: new Date(),
-  status: StatusType.Scheduled,
-  analysisType: AnalysisTypeEnum.DEFAULT,
-  configOption: "default config option",
 
   events: {
     onSnapshotAdded: (
-      event,
-      snapshot,
-      snapshotId,
-      subscribers
-    ) => {},
+      event: string,
+      ctx: SnapshotContext<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+    ) => {
+      // Extract data from context if needed
+      const { snapshot, snapshotId, subscribers, snapshotStore, dataItems, criteria, category } = ctx;
+      console.log("Snapshot added:", { 
+        event, 
+        snapshotId, 
+        category,
+        snapshotTitle: snapshot?.title,
+        storeId: snapshotStore?.id
+      });
+    },
 
     onSnapshotRemoved: (
-      event,
-      snapshot,
-      snapshotId,
-      subscribers,
-      type,
-      snapshotStore,
-      dataItems,
-      criteria,
-      category,
-      snapshotData
-    ) => {},
+      event: string,
+      ctx: SnapshotContext<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> & { 
+        type: string;
+        snapshotData: SnapshotData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
+      }
+    ) => {
+      // Extract data from context
+      const { snapshot, snapshotId, subscribers, snapshotStore, dataItems, criteria, category, type, snapshotData } = ctx;
+      console.log("Snapshot removed:", { 
+        event, 
+        snapshotId, 
+        type,
+        category,
+        snapshotTitle: snapshot?.title
+      });
+    },
 
     onSnapshotUpdated: (
-      event,
-      snapshotId,
-      snapshot,
-      data,
-      events,
-      snapshotStore,
-      dataItems,
-      newData,
-      payload,
-      store
-    ) => {},
+      event: string,
+      ctx: SnapshotContext<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> & {
+        snapshotId: string;
+        data: Map<string, Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>;
+        events: Record<string, CalendarManagerStoreClass<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]>;
+        store: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
+        newData: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
+        payload: UpdateSnapshotPayload<SnapshotEntity>;
+      }
+    ) => {
+      // Extract data from context
+      const { snapshotId, data, events, store, newData, payload } = ctx;
+      console.log("Snapshot updated:", { 
+        event, 
+        snapshotId, 
+        payload: payload?.type,
+        storeId: store?.id,
+        dataSize: data?.size
+      });
+    },
 
-    removeSubscriber: (event, snapshotId, subscriberId) => {},
-
+    removeSubscriber: (
+      event: string,
+      snapshotId: string,
+      subscriberId: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+    ) => {
+      // Note: removeSubscriber doesn't follow the BaseSnapshotEventHandlers pattern
+      // You might need to adapt this or create a separate handler
+      console.log("Subscriber removed:", { event, snapshotId });
+    },
     onError: (
-      event,
-      error,
-      snapshot,
-      snapshotId,
-      snapshotStore,
-      dataItems,
-      criteria,
-      category
-    ) => {},
+      event: string,
+      error: Error,
+      snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      snapshotId: string,
+      snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      dataItems: RealtimeDataItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+      criteria: SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      category: Category
+    ) => {
+      console.error("Snapshot error:", { event, error, snapshotId });
+    },
 
-    once: (event, callback) => {},
+    once: (
+      event: string,
+      callback: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void
+    ) => {
+      console.log("Once event registered:", event);
+    },
 
-    addRecord: (event, record, callback) => {},
+    addRecord: (
+      event: string,
+      record: CalendarManagerStoreClass<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      callback: (snapshot: CalendarManagerStoreClass<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void
+    ) => {
+      console.log("Record added:", { event, record });
+      if (callback) callback(record);
+    },
 
     unsubscribeSimple: (
-      snapshotId,
-      unsubscribeDetails,
-      callback,
-      ctx
-    ) => {},
+      snapshotId: string,
+      unsubscribeDetails: UnsubscribeDetails,
+      callback: SubscriberCallbackType<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null,
+      ctx?: SnapshotContext<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+    ) => {
+      console.log("Unsubscribed:", { snapshotId, unsubscribeDetails });
+      if (callback) callback({ snapshotId, ...unsubscribeDetails });
+    },
 
-    subscribers: [],
 
     trigger: (
-      event,
-      snapshot,
-      snapshotId,
-      subscribers,
-      type,
-      snapshotData
-    ) => {},
+      event: string,
+      snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      type: string,
+      snapshotData: SnapshotData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+    ) => {
+      console.log("Event triggered:", { event, snapshotId, type });
+    },
 
     initialConfig: {} as SnapshotConfig<
       SnapshotEntity,
@@ -327,24 +384,50 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
 
     records: {},
 
-    onInitialize: () => {},
+    onInitialize: () => {
+      console.log("Events initialized");
+    },
 
-    on: (event, callback) => {},
-    off: (event, callback, snapshotId, subscribers, type, snapshotData, unsubscribeDetails) => {},
+    on: (
+      event: string,
+      callback: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void
+    ) => {
+      console.log("Event listener added:", event);
+    },
+
+    off: (
+      event: string,
+      callback: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void,
+      snapshotId: string,
+      subscribers: SubscriberCollection<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      type: string,
+      snapshotData: SnapshotData<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      unsubscribeDetails: UnsubscribeDetails
+    ) => {
+      console.log("Event listener removed:", event);
+    },
 
     emit: (
-      event,
-      snapshot,
-      snapshotId,
-      subscribers,
-      type,
-      snapshotStore,
-      dataItems,
-      criteria,
-      category
-    ) => {},
+      event: string,
+      snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      type: string,
+      snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      dataItems: RealtimeDataItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+      criteria: SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      category: Category
+    ) => {
+      console.log("Event emitted:", { event, snapshotId, type });
+    },
 
-    subscribe: (event, callback) => {},
+    subscribe: (
+      event: string,
+      callback: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void
+    ) => {
+      console.log("Subscribed to event:", event);
+      return () => console.log("Unsubscribed from:", event);
+    },
 
     eventRecords: {
       "1": [
@@ -357,8 +440,10 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
             SnapshotExcludedFields,
             SnapshotIncludedFields
           >,
-          callback: () => {},
-          action: "",
+          callback: () => {
+            console.log("Callback executed");
+          },
+          action: "sample-action",
           timestamp: new Date(),
         },
       ],
@@ -367,16 +452,61 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
     eventIds: ["1"],
 
     callbacks: {
-      onEventClick: [(snapshot) => (event) => console.log("onEventClick", event)],
-      onEventDoubleClick: [(snapshot) => (event) => console.log("onEventDoubleClick", event)],
-      onEventContextMenu: [(snapshot) => (event) => console.log("onEventContextMenu", event)],
-      onEventDrop: [(snapshot) => (event) => console.log("onEventDrop", event)],
-      onEventResize: [(snapshot) => (event) => console.log("onEventResize", event)],
-      onEventSelect: [(snapshot) => (event) => console.log("onEventSelect", event)],
-      onEventDeselect: [(snapshot) => (event) => console.log("onEventDeselect", event)],
-      onEventCreate: [(snapshot) => (event) => console.log("onEventCreate", event)],
-      onEventRemove: [(snapshot) => (event) => console.log("onEventRemove", event)],
-      onEventReceive: [(snapshot) => (event) => console.log("onEventReceive", event)],
+      onEventClick: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventClick", event)
+      ],
+      onEventDoubleClick: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventDoubleClick", event)
+      ],
+      onEventContextMenu: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventContextMenu", event)
+      ],
+      onEventDrop: [
+        (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => {
+            console.log("onEventDrop", event);
+            // Actually use the snapshot
+            if (snapshot.category === 'important') {
+              // Special handling for important snapshots
+              console.log("Important snapshot dropped!");
+            }
+          }
+      ],
+      onEventResize: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventResize", event)
+      ],
+      onEventSelect: [
+        (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => {
+            console.log("onEventSelect", event);
+            // Update selected state in snapshot
+            console.log("Selected snapshot:", snapshot.id);
+          }
+      ],
+      onEventDeselect: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventDeselect", event)
+      ],
+      onEventCreate: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventCreate", event)
+      ],
+      onEventRemove: [
+        (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => {
+            console.log("onEventRemove", event);
+            // Clean up snapshot resources
+            console.log("Cleaning up snapshot:", snapshot.id);
+          }
+      ],
+      onEventReceive: [
+        (_snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) =>
+          (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("onEventReceive", event)
+      ],
     },
   },
 
@@ -385,21 +515,21 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
       "1": {
         id: "1",
         name: "Sample Subscriber",
-        email: "<EMAIL>",
+        email: "sample@example.com",
         enabled: true,
         tags: ["Sample", "Subscriber"],
         subscription: {
-          unsubscribe: () => {},
-          portfolioUpdates: () => {},
-          tradeExecutions: () => {},
-          marketUpdates: () => {},
-          triggerIncentives: () => {},
-          communityEngagement: () => {},
+          unsubscribe: () => console.log("Unsubscribed"),
+          portfolioUpdates: () => console.log("Portfolio updates sent"),
+          tradeExecutions: () => console.log("Trade executions sent"),
+          marketUpdates: () => console.log("Market updates sent"),
+          triggerIncentives: () => console.log("Trigger incentives sent"),
+          communityEngagement: () => console.log("Community engagement sent"),
           portfolioUpdatesLastUpdated: {
             value: new Date(),
             isModified: false,
           } as ModifiedDate,
-          determineCategory: (data) => data ? "SomeCategory" : null,
+          determineCategory: (data: SnapshotEntityData) => data ? "SomeCategory" : null,
         },
       },
     },
@@ -414,10 +544,10 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
       enabled: true,
       tags: ["Sample", "Tag"],
       relatedTags: ["Sample", "Related", "Tag"],
-      type: "",
-      nulltype: "",
-      createdBy: "",
-      timestamp: 0,
+      type: "custom",
+      nulltype: "none",
+      createdBy: "system",
+      timestamp: Date.now(),
     },
   },
 
@@ -432,16 +562,92 @@ const exampleSnapshotWithCriteria: SnapshotEntityWithCriteria = {
         timestamp: new Date(),
         category: "Sample calendar event category",
         status: StatusType.Scheduled,
-        callbacks: (snapshot) => ({
-          onEventAdded: (event) => console.log("Event added:", event),
-          onEventUpdated: (event) => console.log("Event updated:", event),
-          onEventDeleted: (event) => console.log("Event deleted:", event),
-          onEventMoved: (event) => console.log("Event moved:", event),
+        callbacks: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => ({
+          onEventAdded: (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("Event added:", event),
+          onEventUpdated: (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("Event updated:", event),
+          onEventDeleted: (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("Event deleted:", event),
+          onEventMoved: (event: CalendarEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => console.log("Event moved:", event),
         }),
       },
     },
   },
 };
+
+// Also fix the snapshotHandler function to avoid implicit 'any' types
+const snapshotHandler = (
+  id: string | number,
+  snapshotId: string | null,
+  snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null,
+  snapshotData: SnapshotEntity,
+  callback: (snapshot: SnapshotEntity) => void,
+  snapshots: SnapshotsArray<SnapshotEntity>,
+  type: string,
+  event: Event,
+  category?: Category,
+  snapshotContainer?: SnapshotEntity,
+  snapshotStoreConfig?: SnapshotStoreConfig<SnapshotEntity, SnapshotK, StructuredMetadata<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, never> | null
+): Promise<Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null> => {
+
+  // Dynamically create metadata for the current area
+  const metaData = createMetadata<SnapshotEntity, SnapshotK, SnapshotMeta, ExcludeKeys<SnapshotEntity, SnapshotK>>({
+    area: type === 'create' ? 'dashboard' : 'profile',
+    tags: [],
+    overrides: {
+      updatedAt: new Date(),
+      updatedBy: 'event-handler',
+    },
+  });
+
+  if (!snapshotStoreConfig) {
+    throw new Error('Snapshot store configuration is missing.');
+  }
+
+  try {
+    if (snapshot) {
+      const transformedSnapshot = processSnapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>({
+        ...snapshot,
+        ...snapshotData
+      });
+
+      callback(transformedSnapshot);
+
+      return Promise.resolve(
+        createSnapshot(
+          snapshotData,
+          metaData,
+          snapshotId,
+          transformedSnapshot,
+          category,
+          null, // snapshotStore parameter - should be provided from context
+          snapshotStoreConfig
+        )
+      );
+    } else {
+      // Handle case when snapshot is null
+      console.log("No snapshot provided, handling snapshot container");
+      if (snapshotContainer) {
+        callback(snapshotContainer);
+      }
+    }
+  } catch (error) {
+    console.error(`Error handling snapshot: ${error}`);
+    return Promise.reject(new Error("Failed to handle snapshot"));
+  }
+  return Promise.resolve(null);
+};
+
+// Also fix the notify usage issue
+const { notify } = useNotification();
+// Use notify with proper types
+const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  notify({
+    message,
+    type,
+    duration: 3000,
+  });
+};
+
+
 
 // Handling type check for data
 const data = exampleSnapshotWithCriteria.data;
@@ -481,7 +687,7 @@ const exampleSnapshotStore: SnapshotStore<
   type: undefined,
   subscribers: {} as Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields,
     SnapshotIncludedFields>[] & Record<string, Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
-  >,
+    >,
   set: undefined,
   state: null,
   store: null,
@@ -509,27 +715,151 @@ const exampleSnapshotStore: SnapshotStore<
     snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
   ): Promise<DataStore<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
     SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]>> {
-    const { dataStore } = useDataContext();
+    
+    try {
+      const { dataStore } = useDataContext();
+      
+      // Safely extract data from dataStore, checking if it's iterable
+      let sourceData: [string, any][] = [];
+      
+      if (dataStore.data && typeof dataStore.data[Symbol.iterator] === 'function') {
+        // If data is iterable (like Map), convert to array
+        sourceData = Array.from(dataStore.data as Iterable<[string, any]>);
+      } else if (dataStore.data && typeof dataStore.data === 'object' && !Array.isArray(dataStore.data)) {
+        // If data is a plain object, convert to entries
+        sourceData = Object.entries(dataStore.data);
+      } else {
+        // Fallback: create empty array
+        console.warn("dataStore.data is not iterable or is null/undefined");
+        sourceData = [];
+      }
 
-    // Transform the dataStore's data to match the required type
-    const transformedData: [string, SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>][] =
-      [...dataStore.data].map(([key, value]) => [
-        key,
-        {
-          ...value,
-          criteria: [], // Add criteria logic here
-        } as SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-      ]);
+      // Transform the data to match the required type
+      const transformedData: [string, SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>][] =
+        sourceData.map(([key, value]) => [
+          key,
+          {
+            ...value,
+            criteria: [], // Add criteria logic here
+            // Ensure all required properties for SnapshotWithCriteria are present
+            ...(value.id ? { id: value.id } : {}),
+            ...(value.timestamp ? { timestamp: value.timestamp } : {}),
+            ...(value.category ? { category: value.category } : {}),
+            // Add missing required properties for Data type
+            latestVersion: value.latestVersion || createLatestVersion<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>(),
+            // Add other required Data properties if needed
+            ...(value.data ? { data: value.data } : {}),
+            ...(value.meta ? { meta: value.meta } : {}),
+            ...(value.delegate ? { delegate: value.delegate } : {}),
+            ...(value.events ? { events: value.events } : {}),
+            ...(value.subscribers ? { subscribers: value.subscribers } : {}),
+            ...(value.tags ? { tags: value.tags } : {}),
+            ...(value.snapshots ? { snapshots: value.snapshots } : {}),
+            ...(value.snapshotStores ? { snapshotStores: value.snapshotStores } : { snapshotStores: new Map() }),
+            analysisType: value.analysisType || AnalysisTypeEnum.DEFAULT,
+          } as SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+        ]);
 
-    const transformedDataStore: DataStore<
-      SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
-      SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
-    > = {
-      ...dataStore,
-      data: new Map(transformedData), // Ensure transformed data is properly assigned
-    };
+      // Create the transformed data store with all required Data properties
+      const transformedDataStore: DataStore<
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+      > = {
+        ...dataStore,
+        // Ensure data has the proper Data type structure
+        data: {
+          // Spread any existing data properties
+          ...(typeof dataStore.data === 'object' && dataStore.data !== null ? dataStore.data : {}),
+          // Create the Map with transformed data
+          entries: new Map(transformedData),
+          // Add the required latestVersion property
+          latestVersion: dataStore.data?.latestVersion || createLatestVersion<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>(),
+          // Add other required Data properties
+          id: dataStore.data?.id || 'default-data-id',
+          timestamp: dataStore.data?.timestamp || new Date(),
+          category: dataStore.data?.category || 'default-category',
+          // Ensure the data has Symbol.iterator
+          [Symbol.iterator]: function() {
+            const entries = Array.from(this.entries || []);
+            let index = 0;
+            return {
+              next: () => {
+                if (index < entries.length) {
+                  return { value: entries[index++], done: false };
+                }
+                return { value: undefined, done: true };
+              }
+            };
+          }
+        } as Data<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+            SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+            DefaultMeta<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+            SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]>,
+            Attachment,
+            never,
+            keyof SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+          >,
+      };
 
-    return Promise.resolve(transformedDataStore);
+      return Promise.resolve(transformedDataStore);
+    } catch (error) {
+      console.error("Error in getData:", error);
+      
+      // Return a default/fallback DataStore
+      const defaultData: Data<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+        DefaultMeta<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]>,
+        Attachment,
+        never,
+        keyof SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+      > = {
+        id: 'default-data-id',
+        timestamp: new Date(),
+        category: 'default-category',
+        latestVersion: createLatestVersion<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>(),
+        entries: new Map<string, SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>(),
+        [Symbol.iterator]: function() {
+          const entries = Array.from(this.entries || []);
+          let index = 0;
+          return {
+            next: () => {
+              if (index < entries.length) {
+                return { value: entries[index++], done: false };
+              }
+              return { value: undefined, done: true };
+            }
+          };
+        }
+      };
+
+      const fallbackDataStore: DataStore<
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+        SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+      > = {
+        data: defaultData,
+        // Add other required DataStore properties
+        id: 'fallback-store-id',
+        storeId: 0,
+        name: 'Fallback Store',
+        version: { major: 1, minor: 0, patch: 0 } as Version<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>,
+        schema: {},
+        options: {} as SnapshotStoreOptions<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>,
+        snapshots: [],
+        snapshotConfig: [],
+        snapshotItems: [],
+        nestedStores: [],
+        delegate: {} as InitializedDelegate<SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>,
+        initialState: undefined,
+        getData: async () => ({ data: defaultData } as any),
+        addData: () => {},
+        removeData: () => {},
+        updateData: () => {},
+        // Add other required methods with stub implementations
+      };
+
+      return Promise.resolve(fallbackDataStore);
+    }
   },
   // Implement the required methods
   addSnapshotItem: function (item: SnapshotItem<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>): void {
@@ -575,7 +905,7 @@ const exampleSnapshotStore: SnapshotStore<
             type: "",
             relatedTags: [],
             nulltype: "",
-            createdBy: "", 
+            createdBy: "",
             timestamp: new Date()
           },
         },
@@ -607,23 +937,24 @@ const exampleSnapshotStore: SnapshotStore<
             snapshotId: string,
             payload: FetchSnapshotPayload<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | undefined,
             snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-            payloadData: T | BaseData<any>,
+            payloadData: SnapshotEntity | BaseData<any>,
             category: symbol | string | Category | undefined,
             categoryProperties: CategoryProperties | undefined,
             timestamp: Date,
-            data: T,
+            data: SnapshotEntity,
             delegate: SnapshotWithCriteria<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
-          ) =>  Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+          ) => Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
         ): void {
-          console.log("Fetching snapshot:", snapshotId);
+          console.log("Stub fetch snapshot");
         },
+
 
         handleSnapshot: function (
           id: string,
           snapshotId: string | number | null,
-          snapshot: Snapshot<  SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedField>,
+          snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
           categoryProperties: CategoryProperties | undefined,
-          callback: (snapshot: Snapshot<  SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedField>) => void,
+          callback: (snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>) => void,
           snapshots: SnapshotsArray<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
           type: string,
           event: SnapshotEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
@@ -632,9 +963,9 @@ const exampleSnapshotStore: SnapshotStore<
           snapshotStoreConfig?: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null,
           storeConfigs?: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
         ): Promise<Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null> {
-          console.log("Handling snapshot:", snapshotId);
           return Promise.resolve(null);
         },
+
         events: undefined,
         meta: {} as StructuredMetadata<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
       };
@@ -690,11 +1021,11 @@ const exampleSnapshotStore: SnapshotStore<
         snapshotData: T;
         category?: Category;
         categoryProperties: CategoryProperties;
-        dataStoreMethods: DataStore<T, BaseDataEntity>;
+        dataStoreMethods: DataStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
-        snapshot: Snapshot<T, BaseDataEntity>;
-        snapshotStore: SnapshotStore<T, BaseDataEntity>;
+        snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
+        snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
         data: T;
       }>
       | undefined
@@ -714,7 +1045,7 @@ const exampleSnapshotStore: SnapshotStore<
   getDataStoreMethods: undefined,
   getDelegate: undefined,
   determineCategory: undefined,
-  determinePrefix: function <T extends  BaseDataEntity>(
+  determinePrefix: function <T extends BaseDataEntity>(
     snapshot: T | null | undefined, category: string
   ): string {
     throw new Error("Function not implemented.");
@@ -738,7 +1069,7 @@ const exampleSnapshotStore: SnapshotStore<
   takeSnapshotSuccess: undefined,
   takeSnapshotsSuccess: undefined,
   configureSnapshotStore: undefined,
-  flatMap: function <U>(callback: (value: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, index: number, array: SnapshotStoreConfig<Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, BaseDataEntity>[]) => U): U[] {
+  flatMap: function <U>(callback: (value: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, index: number, array: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]) => U): U[] {
     throw new Error("Function not implemented.");
   },
   setData: undefined,
@@ -748,15 +1079,15 @@ const exampleSnapshotStore: SnapshotStore<
   handleSnapshot: function (
     id: string,
     snapshotId: string,
-    snapshot: Snapshot<T, BaseDataEntity> | null,
+    snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields> | null,
     snapshotData: T,
     callback: (snapshot: T) => void,
-    snapshots: Snapshots<T, BaseDataEntity>,
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     type: string,
     event: SnapshotEvent<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-    category?: Category,    
+    category?: Category,
     snapshotContainer?: T,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, BaseDataEntity>,
+    snapshotStoreConfig?: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
   ): void {
     throw new Error("Function not implemented.");
   },
@@ -775,14 +1106,14 @@ const exampleSnapshotStore: SnapshotStore<
     throw new Error("Function not implemented.");
   },
   setSnapshotData: function (
-    data: Map<string, Snapshot<T, BaseDataEntity>>,
+    data: Map<string, Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>,
     subscribers: Subscriber<any, any>[],
-    snapshotData: Partial<SnapshotStoreConfig<T, BaseDataEntity>>
+    snapshotData: Partial<SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>
   ): void {
     throw new Error("Function not implemented.");
   },
   setSnapshots: function (
-    snapshots: Snapshots<Data<T>>): void {
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   setSnapshotStoress: function (
@@ -811,17 +1142,18 @@ const exampleSnapshotStore: SnapshotStore<
     throw new Error("Function not implemented.");
   },
   getSubscribers: function (subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
-    snapshots: Snapshots<BaseDataEntity>
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
   ): Promise<{
     subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[];
-    snapshots: Snapshots<BaseDataEntity>;
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
   }> {
     throw new Error("Function not implemented.");
   },
   notify: function (
     id: string,
     message: string,
-    content: any, date: Date,
+    content: any, 
+    date: Date,
     type: NotificationType,
     notificationPosition?: NotificationPosition | undefined
   ): void {
@@ -838,26 +1170,27 @@ const exampleSnapshotStore: SnapshotStore<
   },
   fetchSnapshot: function (
     snapshotId: string,
-    category?: Category,    timestamp: Date,
+    timestamp: Date,
     snapshot: Snapshot<BaseDataEntity>,
-    data: BaseDataEntity, 
-    delegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+    data: BaseDataEntity,
+    delegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+    category?: Category, 
   ): Promise<{ id: any; category: symbol | string | Category | undefined; timestamp: any; snapshot: Snapshot<BaseDataEntity>; data: BaseDataEntity; getItem?: (snapshot: Snapshot<BaseDataEntity>) => Snapshot<BaseDataEntity> | undefined; }> {
     throw new Error("Function not implemented.");
   },
   fetchSnapshotSuccess: (
     snapshotData: (
-      snapshotManager: SnapshotManager<T, BaseDataEntity>,
-      subscribers: Subscriber<T, BaseDataEntity>[],
-      snapshot: Snapshot<T, BaseDataEntity>
+      snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+      snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
     ) => void
   ) => {
     throw new Error("Function not implemented.");
   },
   fetchSnapshotFailure: function (
     snapshotId: string,
-    snapshotManager: SnapshotManager<T, BaseDataEntity>,
-    snapshot: Snapshot<T, BaseDataEntity>,
+    snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+    snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     date: Date | undefined,
     payload: { error: Error }
   ): void {
@@ -868,9 +1201,9 @@ const exampleSnapshotStore: SnapshotStore<
   },
   getAllSnapshots: function (
     data: (
-      subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[], 
-      snapshots: Snapshots<BaseDataEntity>
-    ) => Promise<Snapshots<BaseDataEntity>>
+      subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
+      snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+    ) => Promise<Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>>
   ): void {
     throw new Error("Function not implemented.");
   },
@@ -879,44 +1212,44 @@ const exampleSnapshotStore: SnapshotStore<
   },
   batchFetchSnapshots: function (
     subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[],
-    snapshots: Snapshots<BaseDataEntity>): void {
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   batchTakeSnapshotsRequest: function (
-    criteria: Criteria,
+    criteria: CriteriaType,
     snapshotData: (
       snapshotIds: string[],
-      snapshots: Snapshots<U, K, Meta>,
-      subscribers: Subscriber<WrappedU, WrappedU, Meta, ExcludedFields>[]
-    ) => Promise<{ subscribers: Subscriber<WrappedU, WrappedU, Meta, ExcludedFields>[] }>
+      snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+      subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]
+    ) => Promise<{ subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] }>
   ): Promise<void> {
     throw new Error("Function not implemented.");
   },
   batchUpdateSnapshotsRequest: function (
     snapshotData: (
-    subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]) => Promise<{
-    subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[];
-    snapshots: Snapshots<BaseDataEntity>;
-  }>): void {
+      subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[]) => Promise<{
+        subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[];
+        snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>;
+      }>): void {
     throw new Error("Function not implemented.");
   },
-  batchFetchSnapshotsSuccess: function (subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[], snapshots: Snapshots<BaseDataEntity>): void {
+  batchFetchSnapshotsSuccess: function (subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[], snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   batchFetchSnapshotsFailure: function (
     date: Date,
-    snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, 
-    snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, 
+    snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
+    snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     payload: { error: Error; }): void {
     throw new Error("Function not implemented.");
   },
-  batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[], snapshots: Snapshots<BaseDataEntity>): void {
+  batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[], snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   batchUpdateSnapshotsFailure: function (
-    date: Date, 
-    snapshotId: string, 
-    snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, 
+    date: Date,
+    snapshotId: string,
+    snapshotManager: SnapshotManager<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
     snapshot: Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>, payload: { error: Error; }
   ): void {
     throw new Error("Function not implemented.");
@@ -924,8 +1257,8 @@ const exampleSnapshotStore: SnapshotStore<
   batchTakeSnapshot: function (
     snapshotId: string,
     snapshotStore: SnapshotStore<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
-    snapshots: Snapshots<BaseDataEntity>
-  ): Promise<{ snapshots: Snapshots<BaseDataEntity>; }> {
+    snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>
+  ): Promise<{ snapshots: Snapshots<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>; }> {
     throw new Error("Function not implemented.");
   },
   handleSnapshotSuccess: handleSnapshotSuccess,
@@ -937,7 +1270,7 @@ const exampleSnapshotStore: SnapshotStore<
       next: () => {
         if (index < snapshots.length) {
           return {
-            value: snapshots[index++] as Snapshot<BaseDataEntity>,
+            value: snapshots[index++] as Snapshot<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>,
             done: false
           };
         } else {

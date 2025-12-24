@@ -27,7 +27,7 @@ import { ToolbarState } from '@/app/state/stores/ToolbarStore';
 import { UIState } from '@/app/state/stores/UISlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { EntityId, EntityState } from '@reduxjs/toolkit';
+import { EntityId, EntityState } from '@/app/state/redux/slices/EntitySlice';
 import { makeAutoObservable } from 'mobx';
 
 // Define the initial state

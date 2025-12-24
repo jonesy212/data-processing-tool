@@ -275,7 +275,7 @@ export const userManagerSlice = createSlice({
         state.users[userIndex].blockedUsers = state.users[
           userIndex
         ].blockedUsers.filter(
-          (blockedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>>) =>
+          (blockedUser: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>) =>
             blockedUser.id !== unblockedUserId
         );
       }
@@ -529,7 +529,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateUserProjectReports: (
-      state: WritableDraft<UserManagerState>>,
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; reports: Report[] }>
     ) => {
       const { userId, projectId, reports } = action.payload;
@@ -546,7 +546,7 @@ export const userManagerSlice = createSlice({
     },
 
     updateUserProjectNotifications: (
-      state: WritableDraft<UserManagerState>>,
+      state: WritableDraft<UserManagerState>,
       action: PayloadAction<{ userId: string; projectId: string; notifications: Notification[] }>
     ) => {
       const { userId, projectId, notifications } = action.payload;

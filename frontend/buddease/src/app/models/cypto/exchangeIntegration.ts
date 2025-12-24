@@ -46,6 +46,9 @@ let orderBookClientSubscribers: ClientSubscriber<
 // Main integration function
 const integrateExchange = async (exchangeData: ExchangeData): Promise<void> => {
   try {
+    // Create subscriber with the exchangeData parameter
+    const { subscriber, tempSubscriber } = createSubscriber(exchangeData);
+    
     switch (exchangeData.type) {
       case ExchangeDataTypeEnum.TRADES:
         await processTradesClient(exchangeData.data.getAll());

@@ -112,7 +112,7 @@ const useProjectManagerStore = (): ProjectManagerStore => {
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
     // Actual state initialization
-  const [settings, setSettings] = useState<YourSettingsResponseType | null>(null);
+  const [settings, setSettings] = useState<YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(false);

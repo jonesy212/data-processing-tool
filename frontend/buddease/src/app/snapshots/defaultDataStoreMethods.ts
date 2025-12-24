@@ -15,7 +15,7 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { category } from '@/app/snapshots/isValidFileCategory';
-import { Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { mapToSnapshotStore } from '@/app/snapshots/mappings/mapToSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
@@ -41,7 +41,7 @@ import {
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/utils/web3/applicationUtils";
-import { CustomSnapshotData, data, SnapshotItem } from '@/app/snapshots/SnapshotWithCriteria';
+import { CustomSnapshotData, data, SnapshotItem } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "./SnapshotStore";
 
 export const defaultDelegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = [];
@@ -373,7 +373,7 @@ const defaultDataStoreMethods = <  T extends BaseDataEntity,
               },
               snapshot(
                 id: string,
-                snapshotData: SnapshotData<any, K>[],
+                snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
                 category?: Category, dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
               ): Promise<{ snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
@@ -501,7 +501,7 @@ const defaultDataStoreMethods = <  T extends BaseDataEntity,
               addSnapshot: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): Promise<void> {
                 throw new Error("Function not implemented.");
               },
-              createInitSnapshot: function (id: string, snapshotData: SnapshotData<any, BaseData>, category: string): Snapshot<Data, Data> {
+              createInitSnapshot: function (id: string, snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, category: string): Snapshot<Data, Data> {
                 throw new Error("Function not implemented.");
               },
               createSnapshotSuccess: function (snapshot: Snapshot<Data, Data>): void {
@@ -952,7 +952,7 @@ const defaultDataStoreMethods = <  T extends BaseDataEntity,
               addSnapshot: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): Promise<void> {
                 throw new Error("Function not implemented.");
               },
-              createInitSnapshot: function (id: string, snapshotData: SnapshotData<any, BaseData>, category: string): Snapshot<Data, Data> {
+              createInitSnapshot: function (id: string, snapshotData: SnapshotDataSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, category: string): Snapshot<Data, Data> {
                 throw new Error("Function not implemented.");
               },
               createSnapshotSuccess: function (snapshot: Snapshot<Data, Data>): void {

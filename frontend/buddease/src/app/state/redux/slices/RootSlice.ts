@@ -55,7 +55,7 @@ export interface RootState<
 > {
   
   // Auth
-  authManager: AuthState
+  authManager: AuthState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // User & UI
   user: UserManagerState;
   // Video & UI Management

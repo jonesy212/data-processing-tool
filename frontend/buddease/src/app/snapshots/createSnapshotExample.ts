@@ -1,5 +1,5 @@
 // createSnapshotExample.ts
-// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotData';
 
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 
@@ -12,7 +12,7 @@
 
 // const createSnapshotExample = async (
 //   id: string,
-//   snapshotData: SnapshotData<any, T>,
+//   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   category: string
 // ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> => {
 //   const currentConfig = snapshotStoreConfigInstance.find(

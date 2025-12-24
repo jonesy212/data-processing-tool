@@ -2,9 +2,14 @@
 import React, { useState } from "react";
 import { Task } from "@/app/models/tasks/Task";
 import LaunchPhase from "@/app/components/phases/onboarding/LaunchPhase";
- import DataAnalysisPhase from "@/app/projects/DataAnalysisPhase/DataAnalysisPhase";
+import DataAnalysisPhase from "@/app/projects/DataAnalysisPhase/DataAnalysisPhase";
 import TaskManagerComponent from '@/app/components/tasks/TaskManagerComponent';
-import  PlanningPhase from "@/app/components/phases/DevelopmentPhase";
+import PlanningPhase from "@/app/components/phases/DevelopmentPhase";
+import TestingPhase from "@/app/components/phases/TestingPhase";
+import ExecutionPhase from "@/app/components/phases/ExecutionPhase";
+import CompletionPhase from "@/app/components/phases/CompletionPhase";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export enum TaskManagementPhase {
   LAUNCH= "LAUNCH",
@@ -13,19 +18,34 @@ export enum TaskManagementPhase {
   EXECUTION = "EXECUTION",
   TESTING = "TESTING",
   COMPLETION = "COMPLETION",
+  TEAM_PLANNING = 'TEAM_PLANNING'
 }
 
-interface TaskManagementManagerProps {
+interface TaskManagementManagerProps<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> {
   taskId: () => string;
   newTitle: () => string;
-  task: Task;
+  task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-const TaskManagementManager: React.FC<TaskManagementManagerProps> = ({
+const TaskManagementManager = <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+>({
   taskId,
   newTitle,
   task,
-}) => {
+}: TaskManagementManagerProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   const [currentPhase, setCurrentPhase] = useState<TaskManagementPhase>(
     TaskManagementPhase.LAUNCH
   );
@@ -43,7 +63,7 @@ const TaskManagementManager: React.FC<TaskManagementManagerProps> = ({
         newTitle={(): string => {
           return "New Task Title";
         }}
-        task={{} as Task}
+        task={{} as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>}
       />
       {currentPhase === TaskManagementPhase.LAUNCH && <LaunchPhase />}
       {currentPhase === TaskManagementPhase.DATA_ANALYSIS && (

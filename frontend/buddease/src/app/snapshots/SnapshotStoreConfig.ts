@@ -2801,7 +2801,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
           // },
           createSnapshot: function (
             id: string,
-            snapshotData: SnapshotData<any, BaseData>,
+            snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>,
             category: string
           ): Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields> {
             throw new Error("Function not implemented.");

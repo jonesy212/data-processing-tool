@@ -6,6 +6,7 @@ import {
   DefaultMeta
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -21,7 +22,7 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 
 // createSnapshotStore.ts
-function createSnapshotStore <
+export function createSnapshotStore <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -147,7 +148,7 @@ function createSnapshotStore <
           data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           events: Record<string, CalendarManagerStoreClass<T, K>[]>,
           snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          dataItems: RealtimeDataItem[],
+          dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           payload: UpdateSnapshotPayload<T>,
           store: SnapshotStore<any, K>

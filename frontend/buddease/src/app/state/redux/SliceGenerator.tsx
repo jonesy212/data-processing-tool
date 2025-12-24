@@ -1,42 +1,61 @@
 // SliceGenerator.tsx
-import { Draft, PayloadAction, createSlice, isDraft } from "@reduxjs/toolkit";
-import { Draft as ImmerDraft } from "immer";
+import { PayloadAction, createSlice, Draft } from "@reduxjs/toolkit";
 
-interface EntityState<T> {
-  entities: { [id: string]: T };
+interface GenericEntityState<T extends { id: string }> {
+  entities: T[];
+  selectedEntityId: string | null;
 }
 
 export const createEntitySlice = <T extends { id: string }>(
   entityName: string
 ) => {
-  const initialState: EntityState<T> = {
-    entities: {},
+  const initialState: GenericEntityState<T> = {
+    entities: [],
+    selectedEntityId: null,
   };
 
   const entitySlice = createSlice({
     name: entityName,
     initialState,
     reducers: {
+      // Solution: Accept Draft<T> or use type assertion
       addEntity: (state, action: PayloadAction<Draft<T>>) => {
-        if (isDraft(state)) {
-          const draft = state as ImmerDraft<EntityState<T>>;
-          draft.entities[action.payload.id] = action.payload;
-        }
+        const entity = action.payload;
+        state.entities.push(entity);
       },
-      updateEntity: (state, action: PayloadAction<Draft<T>>) => {
-        if (isDraft(state)) {
-          const draft = state as ImmerDraft<EntityState<T>>;
-          draft.entities[action.payload.id] = action.payload;
-        }
-      },
+      
+    updateEntity: (state, action: PayloadAction<Partial<T> & { id: string }>) => {
+      const { id, ...rest } = action.payload;
+      const changes: Partial<T> = rest;
+      
+      const index = state.entities.findIndex(entity => entity.id === id);
+      if (index !== -1) {
+        Object.assign(state.entities[index], changes);
+      }
+    },
+      
       removeEntity: (state, action: PayloadAction<string>) => {
-        delete state.entities[action.payload];
+        const id = action.payload;
+        state.entities = state.entities.filter(entity => entity.id !== id);
+        if (state.selectedEntityId === id) {
+          state.selectedEntityId = null;
+        }
       },
-      //todo add update, dupicate entities
-      // Add other actions as needed
+      
+      selectEntity: (state, action: PayloadAction<string>) => {
+        state.selectedEntityId = action.payload;
+      },
+      
+      setEntities: (state, action: PayloadAction<Draft<T>[]>) => {
+        state.entities = action.payload;
+      },
+      
+      clearAllEntities: (state) => {
+        state.entities = [];
+        state.selectedEntityId = null;
+      },
     },
   });
 
   return entitySlice;
 };
-

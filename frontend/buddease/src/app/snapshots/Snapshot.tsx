@@ -1,5 +1,5 @@
 // Snapshot.tsx
-// snapshot
+
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { useMeta } from "@/app/config/useMeta";
@@ -50,7 +50,7 @@ import {
   defaultUpdateDataStatus,
   defaultUpdateDataTitle
 } from "./snapshotDefaults";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
   snapshotStoreConfigInstance
@@ -94,7 +94,8 @@ import { SnapshotEvent, SnapshotEvents } from "@/app/typings/snapshotTypes";
 import { convertSnapshotToMap } from "@/app/typings/YourSpecificSnapshotType";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 import operation from "antd/es/transfer/operation";
-import { version } from "@/app/versions/Version";
+import { version } from '@/app/versions/Version';
+import { Version } from '@/app/versions/Version'
 import { config } from "process";
 import { options } from "@/app/generators/GenerateUniqueIds";
 import {
@@ -143,7 +144,7 @@ SharedTimestamps
   customProperties?: Record<string, unknown>;
   childIds?: K[] | undefined;
   snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  
+  snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   snapshotSubscriberId?: string | undefined;
   customProperty?: string | number | boolean | Date | null | {
   type: string;
@@ -1995,7 +1996,8 @@ const snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields> = {
       config,
       operation,
       expirationDate,
-      payload, callback, storeProps, endpointCategory, initialState
+      payload, callback, storeProps, endpointCategory, initialState,
+      storeId, baseURL, enabled, maxRetries, operationType
     });
   },
   addStore: function (

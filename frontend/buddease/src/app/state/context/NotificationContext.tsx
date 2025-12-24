@@ -5,8 +5,10 @@ import {
   DefaultExcludedFields,
   DefaultMeta,
 } from "@/app/config/BaseConfig";
+import { DocumentOptions } from '@/app/documents/DocumentOptions'
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NOTIFICATION_TYPES } from "@/app/features/support/NotificationTypes";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationType } from "@/app/features/support/UnifiedNotificationTypes";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { LogEntry } from "@/app/hooks/useLogManagement";
@@ -18,6 +20,7 @@ import { LogData } from "@/app/models/LogData";
 import { NotificationChannels } from "@/app/notifications/NotificationChannels";
 import NotificationStore from "@/app/state/stores/NotificationStore";
 import { createContext, ReactNode, useContext } from "react";
+
 // Define missing Notification type
 interface Notification {
   id: string;

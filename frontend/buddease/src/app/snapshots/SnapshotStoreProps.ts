@@ -14,7 +14,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from '@/app/models/display/ShowToast';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotConfig';
 import {
   Snapshots,
   SnapshotsArray,

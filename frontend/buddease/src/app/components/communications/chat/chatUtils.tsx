@@ -13,6 +13,7 @@ import { getUserPreferences } from '@/app/config/UserPreferences';
 import RichTextEditor from '@/app/documents/RichTextEditor';
 import { saveToLocalStorage } from '@/app/hooks/useLocalStorage';
 import { useSecureDocumentId } from '@/app/hooks/useSecureDocumentId';
+import { SecuritySettings } from '@/app/settings/SecuritySettings'
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { CollaborationPreferences } from '@/app/interfaces/settings/CollaborationPreferences';
 import { showErrorMessage, showToast } from '@/app/models/display/ShowToast';

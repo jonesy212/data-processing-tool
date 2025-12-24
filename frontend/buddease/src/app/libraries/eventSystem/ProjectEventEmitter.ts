@@ -1,5 +1,5 @@
 // ProjectEventEmitter.ts
-import { BrandingSettings, brandingSettings } from "@/app/branding/BrandingSettings";
+import { BrandingSettings, brandingSettings } from "@/app/libraries/theme/BrandingService";
 // import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 interface ProjectEventData {
   projectId: string;

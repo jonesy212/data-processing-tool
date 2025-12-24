@@ -14,7 +14,7 @@
 // import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/utils/trading/TradingUtils";
 // import { userId } from "@/app/api/ApiUser";
 // import { triggerIncentives } from "@/utils/web3/applicationUtils";
-// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/app/snapshots/Snapshot'
+// import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from '@/app/interfaces/payload/payloadTypes'
 // import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 // import { K, T } from "@/app/models/data/dataStoreMethods";
 // import SnapshotStore from "./SnapshotStore";

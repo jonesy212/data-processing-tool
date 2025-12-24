@@ -2,8 +2,8 @@
 // utils/ErrorHandler.ts
 import { configNotificationMessages } from '@/app/api/ConfigManager'
 import { cryptoNotificationMessages } from '@/app/api/ApiCrypto';
-import { useNotification, NotificationType } from '@/app/state/context/NotificationContext';
-
+import { useNotification } from '@/app/state/context/NotificationContext';
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 export type ErrorDomain = 'config' | 'crypto' | 'auth' | 'database' | 'general';
 
 export interface ErrorInfo {

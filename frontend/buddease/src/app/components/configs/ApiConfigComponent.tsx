@@ -1,6 +1,7 @@
 // ApiConfigComponent.tsx
 
-import Button, Form, { Input } from "@/app/hooks/userInterface/InputFields";
+import Button, { Input } from "@/app/hooks/userInterface/InputFields";
+import Form from "@/app/hooks/userInterface/InputFields";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ComponentActions } from '@/app/actions/ComponentActions';

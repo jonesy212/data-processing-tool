@@ -2403,7 +2403,7 @@ const specificDependencies = [
 //           createSnapshot: undefined,
 //           createInitSnapshot: function (
 //             id: string,
-//             snapshotData: SnapshotData<any, <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+//             snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //             category: string
 //           ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //             throw new Error("Function not implemented.");
@@ -3144,7 +3144,7 @@ const specificDependencies = [
 //         createSnapshot: undefined,
 //         createInitSnapshot: function (
 //           id: string,
-//           snapshotData: SnapshotData<any, <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+//           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //           category: string
 //         ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //           throw new Error("Function not implemented.");
@@ -3732,7 +3732,7 @@ const specificDependencies = [
 //         createSnapshot: undefined,
 //         createInitSnapshot: function (
 //           id: string,
-//           snapshotData: SnapshotData<any, <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+//           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //           category: string
 //         ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //           throw new Error("Function not implemented.");

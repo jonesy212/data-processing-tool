@@ -17,7 +17,7 @@ import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Task, tasksDataSource } from "@/app/models/tasks/Task";
+import { Task, tasksDataSource } from "@/app/components/models/tasks/TaskDataSource";
 import FilterTasksRequest from "@/app/pages/searches/FilterTasksRequest";
 import { taskService } from "@/app/services/TaskService";
 import { Snapshot } from '@/app/snapshots/Snapshot';

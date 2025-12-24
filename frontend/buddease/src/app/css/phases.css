@@ -1,0 +1,132 @@
+/* phases.css */
+
+.testing-phase,
+.execution-phase,
+.completion-phase {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f9f9f9;
+  margin: 20px 0;
+}
+
+.test-results .result-stats {
+  display: flex;
+  gap: 20px;
+  margin: 15px 0;
+}
+
+.stat {
+  padding: 10px 15px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.stat.passed { background: #d4edda; color: #155724; }
+.stat.failed { background: #f8d7da; color: #721c24; }
+.stat.total { background: #d1ecf1; color: #0c5460; }
+.stat.coverage { background: #fff3cd; color: #856404; }
+
+.progress-bar {
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 15px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #28a745;
+  transition: width 0.3s ease;
+}
+
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-list li.completed {
+  background: #f0fff0;
+  color: #28a745;
+}
+
+.completion-form .form-group {
+  margin: 15px 0;
+}
+
+.completion-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.completion-form input,
+.completion-form textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #ddd;
+  cursor: pointer;
+}
+
+.star.active {
+  color: #ffc107;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.run-tests-btn,
+.execute-btn,
+.submit-btn {
+  background: #007bff;
+  color: white;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+}
+
+.download-btn {
+  background: #28a745;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

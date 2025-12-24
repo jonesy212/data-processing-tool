@@ -1,7 +1,8 @@
 // ArticleStore.ts
 import { createMessage } from "@/utils/web3/createMessage";
 import { handleApiError } from "@/app/api/ApiLogs";
-import { NotificationTypeEnum, useNotification } from '@/app/features/support/UnifiedNotificationTypes';
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import {useNotification } from '@/app/state/context/NotificationContext';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 

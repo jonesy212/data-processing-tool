@@ -1,5 +1,5 @@
 // SnapshotApi.ts
-import createSnapshot from '@/app/snapshots/createSnapshot';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataRoot } from '@/app/config/BaseConfig';
 import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -250,7 +250,12 @@ class SnapshotApi {
   getSnapshot = getSnapshot; // Reference to imported function
   getSnapshotCriteria = getSnapshotCriteria; // Reference to local function
   getSnapshotId = getSnapshotId; // Reference to local function
-
+  getSnapshotStoreId = getSnapshotStoreId;
+  fetchSnapshotById = fetchSnapshotById;
+  addSnapshot = addSnapshot;
+  saveSnapshotToDatabase = saveSnapshotToDatabase;
+  takeSnapshot = takeSnapshot;
+  
   async create<
     T extends BaseDataEntity,
     K extends T = T,
@@ -1296,48 +1301,47 @@ const mergeSnapshots = async (
   }
 };
 
-  // Fetch snapshot by ID
-const fetchSnapshotById = async<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
->(
-    snapshotId: string
-  ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
-    try {
-      const token = localStorage.getItem("accessToken");
-      const userId = localStorage.getItem("userId");
-      const appVersion = configData.currentAppVersion;
+interface SnapshotResponse {
+  id: string;
+  // Add other known properties
+  [key: string]: any;
+}
 
-      const headersArray = [
-        createAuthenticationHeaders(token, userId, appVersion),
-        createCacheHeaders(),
-        createContentHeaders(),
-        generateCustomHeaders({}),
-        createRequestHeaders(token || ""),
-      ];
+// Fetch snapshot by ID
+const fetchSnapshotById = async (
+  snapshotId: string
+): Promise<SnapshotResponse | undefined> => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const appVersion = configData.currentAppVersion;
 
-      const headers = Object.assign({}, ...headersArray);
-      const response = await axiosInstance.get(`/snapshots/${snapshotId}`, {
-        headers: headers as Record<string, string>,
-      });
+    const headersArray = [
+      createAuthenticationHeaders(token, userId, appVersion),
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(token || ""),
+    ];
 
-      if (response.status === 200) {
-        return response.data;
-      } else {
-        throw new Error("Failed to fetch snapshot by ID");
-      }
-    } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to fetch snapshot by ID"
-      );
-      throw error; // Re-throw the error to maintain the promise rejection
+    const headers = Object.assign({}, ...headersArray);
+    const response = await axiosInstance.get(`/snapshots/${snapshotId}`, {
+      headers: headers as Record<string, string>,
+    });
+
+    if (response.status === 200) {
+      return response.data as SnapshotResponse;
+    } else {
+      throw new Error("Failed to fetch snapshot by ID");
     }
-  };
+  } catch (error) {
+    handleApiError(
+      error as AxiosError<unknown>,
+      "Failed to fetch snapshot by ID"
+    );
+    throw error;
+  }
+};
 
 const fetchSnapshotIds = async (category: string): Promise<string[]> => {
   try {

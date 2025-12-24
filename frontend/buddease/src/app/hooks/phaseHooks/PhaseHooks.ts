@@ -573,6 +573,23 @@ const allPhaseHooks = {
   ...additionalPhaseHooks,
 };
 
+
+// Helper function to properly type allPhaseHooks
+function createTypedPhaseHooks<
+  T extends BaseDataEntity = AppPhaseEntity,
+  K extends T = PhaseK,
+  Meta extends DefaultMeta<T, K> = PhaseMeta,
+  AttachmentType extends Attachment = PhaseAttachment,
+  ExcludedFields extends keyof T = PhaseExcludedFields,
+  IncludedFields extends keyof T = PhaseIncludedFields
+>(): { [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } {
+  return {};
+}
+
+// Example of how to define allPhaseHooks with proper typing
+// const allPhaseHooks = createTypedPhaseHooks();
+
+
 export const {
   calendarPhaseHook,
   authenticationPhaseHook,
@@ -890,21 +907,6 @@ export async function initializeAllPhases<
     allPhaseHooks: typedAllPhaseHooks
   };
 }
-
-// Helper function to properly type allPhaseHooks
-function createTypedPhaseHooks<
-  T extends BaseDataEntity = AppPhaseEntity,
-  K extends T = PhaseK,
-  Meta extends DefaultMeta<T, K> = PhaseMeta,
-  AttachmentType extends Attachment = PhaseAttachment,
-  ExcludedFields extends keyof T = PhaseExcludedFields,
-  IncludedFields extends keyof T = PhaseIncludedFields
->(): { [key: string]: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } {
-  return {};
-}
-
-// Example of how to define allPhaseHooks with proper typing
-const allPhaseHooks = createTypedPhaseHooks();
 
 // Alternative: If you're getting allPhaseHooks from elsewhere, create a typed version
 function getTypedAllPhaseHooks<

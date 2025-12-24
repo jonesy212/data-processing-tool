@@ -1,7 +1,7 @@
 // CustomDataProvider.tsx
 // CustomDataProvider.ts
 import { useAuth } from "@/app/state/context/AuthContext";
-import { BaseRecord, CreateParams, CreateResponse, DataProvider, DeleteOneParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@/app/state/context/DataContext";
+import { BaseRecord, CreateParams, CreateResponse, DataProvider, DeleteOneParams, DeleteOneResponse, GetListParams, GetListResponse, GetOneParams, GetOneResponse, UpdateParams, UpdateResponse } from "@/app/models/data/dataContracts";
 
 const CustomDataProvider: DataProvider = {
   getList: async <TData extends BaseRecord = BaseRecord>(

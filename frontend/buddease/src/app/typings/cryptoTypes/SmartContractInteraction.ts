@@ -1,7 +1,7 @@
 // SmartContractInteraction.ts
-import { Signature } from "ethers";
 import { SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { Transaction, BaseTransaction } from "@/app/payment/Transaction";
+import { AccessList, Signature } from "ethers";
 
 interface SmartContractInteraction {
   id: string | null;
@@ -18,7 +18,7 @@ interface CustomTransactionProps extends SmartContractInteraction,  BaseTransact
   endDate: Date | undefined;
   serialized: string | undefined;
   unsignedSerialized: string | undefined;
-  accessList: [] | undefined;
+  accessList: AccessList | null;
   to?: string | null | undefined;
   nonce?: number | null;
   gasLimit?: bigint | null;
@@ -76,7 +76,6 @@ type CustomTransaction = Transaction & {
   clone?: (() => CustomTransaction) | undefined;
   toJSON?: (() => CustomTransaction) | undefined;
   equals?: (other: CustomTransaction) => boolean;
-  accessList?: [] | undefined;
   to?: string | null | undefined;
   nonce?: number | null;
   gasLimit?: bigint | null;
@@ -89,6 +88,7 @@ type CustomTransaction = Transaction & {
   isSigned?: boolean | (() => boolean) | undefined;
   inferType?: () => number | undefined;
   inferTypes?: () => number[] | undefined;
+  accessList: AccessList; 
   getSubscriptionLevel?: () => string; // Added getSubscriptionLevel here
   getRecentActivity?: () => [
     {

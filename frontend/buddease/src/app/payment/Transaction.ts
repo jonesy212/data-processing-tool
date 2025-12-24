@@ -17,7 +17,7 @@ interface BaseTransaction {
   gasPrice: bigint | null;
   date: Date | undefined;
   description: string | null;
-  value: bigint;
+  value: bigint | null;
 }
 
 // `Transaction` extends `BaseTransaction` with specific fields
@@ -114,7 +114,7 @@ class TransactionProcessor implements Transaction {
   isBerlin(): this is Transaction & {
     type: 'buy' | 'sell' | 'transfer' | 'exchange' | null;
     gasPrice: bigint;
-    accessList: AccessList;
+    accessList: AccessList | null;
   } {
     // Fixed: type is string literal, not number
     return (

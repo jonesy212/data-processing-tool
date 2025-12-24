@@ -7,7 +7,7 @@ import headersConfig from '@/app/api/headers/HeadersConfig';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { useNotification } from '@/app/state/context/NotificationContext';
-
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 import { AxiosError } from 'axios';
 
@@ -173,7 +173,7 @@ const handleTradingApiErrorAndNotify = (
       entityType: 'trading',
       entityId: additionalData?.tradingId || additionalData?.orderId || additionalData?.tradeId || 'unknown',
       action: additionalData?.action || errorMessageId.toString().toLowerCase().replace('_error', ''),
-      errorCode: axiosError.response?.status,
+      statusCode: axiosError.response?.status,
       errorType: errorMessageId.toString(),
       originalError: axiosError.message,
       url: axiosError.config?.url,
@@ -541,7 +541,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TECHNICAL_ANALYSIS_ERROR' as TradingNotificationMessages
+        'FETCH_TECHNICAL_ANALYSIS_ERROR'
       );
       throw error;
     }
@@ -564,7 +564,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_MARKET_SENTIMENT_ERROR' as TradingNotificationMessages
+        'FETCH_MARKET_SENTIMENT_ERROR'
       );
       throw error;
     }
@@ -585,7 +585,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_GAINERS_ERROR' as TradingNotificationMessages
+        'FETCH_TOP_GAINERS_ERROR'
       );
       throw error;
     }
@@ -605,7 +605,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_LOSERS_ERROR' as TradingNotificationMessages
+        'FETCH_TOP_LOSERS_ERROR'
       );
       throw error;
     }
@@ -626,7 +626,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_EXCHANGE_RATES_ERROR' as TradingNotificationMessages
+        'FETCH_EXCHANGE_RATES_ERROR'
       );
       throw error;
     }
@@ -650,7 +650,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ORDER_BOOK_ERROR' as TradingNotificationMessages
+        'FETCH_ORDER_BOOK_ERROR'
       );
       throw error;
     }
@@ -673,7 +673,7 @@ export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TRADE_HISTORY_ERROR' as TradingNotificationMessages
+        'FETCH_TRADE_HISTORY_ERROR'
       );
       throw error;
     }

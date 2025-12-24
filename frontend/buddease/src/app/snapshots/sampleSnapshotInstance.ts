@@ -6,7 +6,7 @@ import { getDataVersions } from '@/app/api/ApiData';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
@@ -33,7 +33,7 @@ import { NotificationType } from '@/app/state/context/NotificationContext';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 
 const sampleSnapshot: Snapshot<
   AppEntity,                // T — base entity
@@ -329,7 +329,7 @@ snapshot?: Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, 
     dataCallback?: (
       subscribers: Subscriber<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[],
       snapshots: Snapshots<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>
-    ) => Promise<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]>
+    ) => Promise<SnapshotUnion<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[]>
   ): Promise<Snapshot<AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields>[]> {
     throw new Error("Function not implemented.");
   },

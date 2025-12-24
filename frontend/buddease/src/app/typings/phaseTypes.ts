@@ -132,7 +132,8 @@ export type UnifiedPhaseType =
   | ProjectPhaseTypeEnum 
   | ProgressPhase 
   | DocumentPhaseTypeEnum 
-  | string; // Allow string for flexibility
+  | string 
+  | undefined;; // Allow string for flexibility
 
 // Default phase type
 export type PhaseDefaultEnum = UnifiedPhaseType | undefined;

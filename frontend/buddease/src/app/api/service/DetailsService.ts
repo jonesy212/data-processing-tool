@@ -8,10 +8,11 @@ import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { AxiosError } from 'axios';
+import { useNotification } from '@/app/state/context/NotificationContext';
 
 const API_BASE_URL = "/api/details";
 
-
+const { notify } = useNotification()
 
 export const detailsApiService = {
   fetchDetailsItem: async <

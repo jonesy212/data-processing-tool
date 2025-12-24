@@ -12,7 +12,7 @@ import { Subscription } from '@/app/subscriptions/Subscription';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { Snapshot, SnapshotStoreConfig } from "@/app/snapshots/Snapshot";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 

@@ -10,7 +10,6 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 
-export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 
 // Updated ProgressBar component to utilize the ProgressPhase enum
 const ProgressBar: React.FC<ProgressBarProps> = ({

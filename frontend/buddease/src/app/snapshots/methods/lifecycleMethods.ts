@@ -57,7 +57,7 @@ export const LifecycleMethods = {
     category?: Category
   ): void {
     this.executeDelegateMethod(
-      (delegate) => delegate.initSnapshot.bind(delegate),
+      'initSnapshot',
       snapshot,
       snapshotId,
       snapshotData,
@@ -128,12 +128,13 @@ export const LifecycleMethods = {
         } as SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
         const storeId = snapshotApi.getSnapshotStoreId(String(this.snapshotId));
-        const snapshotManager = await useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId, storeProps);
+        const snapshotManager = useSnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(await storeId, storeProps);
 
         this.snapshots.push(snapshot as any);
 
-        if (this.executeDelegateMethodAsync && this.executeDelegateMethodAsync.length > 0) {
-          for (const delegateConfig of this.executeDelegateMethodAsync) {
+        // FIX: Use this.delegate instead of this.executeDelegateMethodAsync
+        if (this.delegate && this.delegate.length > 0) {
+          for (const delegateConfig of this.delegate) {
             if (delegateConfig && typeof delegateConfig.createSnapshotSuccess === "function") {
               await delegateConfig.createSnapshotSuccess(
                 id,
@@ -144,7 +145,7 @@ export const LifecycleMethods = {
               return resolve(snapshot);
             }
           }
-          return reject(new Error("No valid delegate found for createSnapshotFailure"));
+          return reject(new Error("No valid delegate found for createSnapshotSuccess")); // Fixed error message
         } else {
           return reject(new Error("Delegate is undefined or empty"));
         }
@@ -256,7 +257,7 @@ export const LifecycleMethods = {
           snapshotDataConfig ? snapshotDataConfig[0] || null : null, // snapshotStoreConfig
           false, // isSubscribed
           category, // category
-          this.storeProps, // storeProps
+          this.getStoreProps(), // storeProps
           this.storeOptions, // storeOptions
           categoryProperties, // categoryProperties
           undefined, // dataStore (optional)

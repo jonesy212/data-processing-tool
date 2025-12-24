@@ -47,7 +47,7 @@ interface ReassignEventResponse extends ExtendedCalendarEvent, EventData {
 
 interface AssignEventStore<
   T extends BaseDataEntity = MeetingEntity, 
-  K extends T = MeetingK, 
+  K extends T = T, 
   Meta extends DefaultMeta<T, K> = MeetingMeta, 
   AttachmentType extends Attachment = MeetingAttachment,
   ExcludedFields extends keyof T = MeetingExcludedFields,
@@ -58,11 +58,11 @@ interface AssignEventStore<
   assignedEvents: Record<string, ExtendedCalendarEvent[]>; // Use eventId as key and array of event IDs as value
   assignedTodos: Record<string, string[]>; // Use eventId as key and array of todo IDs as value
   reassignUser: Record<string, ReassignEventResponse[]>;
-  assignEvent: (eventId: string, userId: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>) => void;
+  assignEvent: (eventId: string, userId: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   assignUsersToEvents: (eventIds: string[], userId: string) => void;
   unassignUsersFromEvents: (eventIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (
-    message: Message<MessageEntity, MessageK, MessageMeta, MessageAttachment, MessageExcludedFields, MessageIncludedFields>,
+    message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: NotificationType
   ) => void;
   getAuthStore: () => AuthStore;
@@ -103,6 +103,17 @@ interface AssignEventStore<
   fetchUsersByTaskId: (taskId: string) => Promise<string[]>; // Fetches user IDs by task ID
 }
 
+function isExtendedCalendarEvent(
+  event: ExtendedCalendarEvent | CalendarEventTimingOptimization
+): event is ExtendedCalendarEvent {
+  return 'assignedTo' in event && 'id' in event && 'title' in event;
+}
+
+function isCalendarEventTimingOptimization(
+  event: ExtendedCalendarEvent | CalendarEventTimingOptimization
+): event is CalendarEventTimingOptimization {
+  return 'events' in event && 'optimizeTiming' in event;
+}
 
 
 const useAssignEventStore = (): AssignEventStore => {
@@ -258,32 +269,47 @@ const useAssignEventStore = (): AssignEventStore => {
     oldUserId: ExtendedCalendarEvent | CalendarEventTimingOptimization,
     newUserId: PresentationEventAssignment
   ) => {
-    eventIds.forEach((eventId) => {
-      const events = baseStore.events[eventId];
-      if (events && Array.isArray(events)) {
-        const index = events.findIndex(
-          (event) => event.id === (oldUserId as ExtendedCalendarEvent).eventId
-        );
-        if (index !== -1) {
-          const updatedEvent: ExtendedCalendarEvent = {
-            ...events[index],
-            assignedTo: newUserId as unknown as string,
-          };
-          events[index] = updatedEvent;
-        } else {
-          console.error(
-            `Event with ID ${eventId} and old user ID ${
-              (oldUserId as ExtendedCalendarEvent).eventId
-            } not found.`
+    // Handle different types separately
+    if (isExtendedCalendarEvent(oldUserId)) {
+      eventIds.forEach((eventId) => {
+        const events = baseStore.events[eventId];
+        if (events && Array.isArray(events)) {
+          const index = events.findIndex(
+            (event) => event.id === oldUserId.eventId
           );
+          if (index !== -1) {
+            const updatedEvent: ExtendedCalendarEvent = {
+              ...events[index],
+              assignedTo: newUserId.assignedTo, // Assuming newUserId has assignedTo
+            };
+            events[index] = updatedEvent;
+          } else {
+            console.error(
+              `Event with ID ${eventId} and old user ID ${oldUserId.eventId} not found.`
+            );
+          }
+        } else {
+          console.error(`Event with ID ${eventId} not found.`);
         }
-      } else {
-        console.error(`Event with ID ${eventId} not found.`);
-      }
-    });
+      });
+    } else if (isCalendarEventTimingOptimization(oldUserId)) {
+      // Handle CalendarEventTimingOptimization type
+      eventIds.forEach((eventId) => {
+        const eventGroup = baseStore.eventOptimizations[eventId];
+        if (eventGroup) {
+          // Logic for CalendarEventTimingOptimization
+          oldUserId.events.forEach((event) => {
+            // Update assignments on the timing optimization object
+            oldUserId.optimizeTiming(newUserId);
+          });
+        }
+      });
+    }
+    
     useNotification();
     assignUserSuccess();
   };
+
 
   const assignUserToTodo = (todoId: string, userId: string) => {
     const todos = assignedTodos[todoId];

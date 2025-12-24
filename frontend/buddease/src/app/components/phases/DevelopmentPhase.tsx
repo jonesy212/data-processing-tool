@@ -10,7 +10,8 @@ export type PhaseUnion = DevelopmentPhaseEnum | OnboardingPhase;
 export interface DevelopmentPhase {
   phase: PhaseUnion; // Adjust type to union type
   title: string;
-  render(): JSX.Element;
+  render(): React.JSX.Element; 
+
 }
 
 

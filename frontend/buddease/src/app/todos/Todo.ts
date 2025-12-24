@@ -30,7 +30,7 @@ import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { default as initialState, default as SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotWithCriteria, TagsRecord } from '@/app/models/tracker/Tag';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';

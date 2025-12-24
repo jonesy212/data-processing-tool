@@ -2,7 +2,7 @@
 import { hasPriority } from '@/app/api/processSnapshotData';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot, SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Snapshot, SnapshotData } from '@/app/snapshots/Snapshot';
 import { useDataStore } from '@/app/state/stores/DataStore';
 
 interface DataWithVersion {

@@ -6,26 +6,26 @@ import CustomFile from "@/app/documents/File";
 
 export const FileActions = {
   // Standard file actions
-  addFile: createAction<CustomFile>("addFile"),
+  addFile: createAction<CustomFile<any>>("addFile"),
   removeFile: createAction<number>("removeFile"),
-  removeFileSuccess: createAction<CustomFile>("removeFileSuccess"),
+  removeFileSuccess: createAction<CustomFile<any>>("removeFileSuccess"),
   updateFile: createAction<{ id: number, newTitle: string }>("updateFileTitle"),
-  validateFile: createAction<CustomFile>("validateFile"),
-  setSelectedFile: createAction<CustomFile[] | null>("setSelectedFile"),
+  validateFile: createAction<CustomFile<any>>("validateFile"),
+  setSelectedFile: createAction<CustomFile<any>[] | null>("setSelectedFile"),
   setInputValue: createAction<string>("setInputValue"),
 
   fetchFileData: createAction<number>("fetchFileData"),
-  fetchFileRequest: createAction<CustomFile>("fetchFileRequest"),
+  fetchFileRequest: createAction<CustomFile<any>>("fetchFileRequest"),
 
-  fetchFiles: createAction<{ fileType: FileTypeEnum, files: CustomFile[] }>("fetchFiles"),
+  fetchFiles: createAction<{ fileType: FileTypeEnum, files: CustomFile<any>[] }>("fetchFiles"),
   fetchFilesRequest: createAction("fetchFilesRequest"),
-  fetchFilesSuccess: createAction<{ files: CustomFile[] }>("fetchFilesSuccess"),
+  fetchFilesSuccess: createAction<{ files: CustomFile<any>[] }>("fetchFilesSuccess"),
   fetchFilesFailure: createAction<{ error: string }>("fetchFilesFailure"),
   
   // Additional actions for file handling
-  uploadFile: createAction<CustomFile>("uploadFile"),
-  uploadFileRequest: createAction<CustomFile>("uploadFileRequest"),
-  uploadFileSuccess: createAction<CustomFile>("uploadFileSuccess"),
+  uploadFile: createAction<CustomFile<any>>("uploadFile"),
+  uploadFileRequest: createAction<CustomFile<any>>("uploadFileRequest"),
+  uploadFileSuccess: createAction<CustomFile<any>>("uploadFileSuccess"),
   uploadFileFailure: createAction<{ error: string }>("uploadFileFailure"),
 
   // Batch actions for file operations
@@ -70,7 +70,7 @@ export const FileActions = {
   
 
     autosaveFileRequest: createAction<{ editorContent: string }>("autosaveFileRequest"),
-    autosaveFileSuccess: createAction<CustomFile>("autosaveFileSuccess"),
+    autosaveFileSuccess: createAction<CustomFile<any>>("autosaveFileSuccess"),
     autosaveFileFailure: createAction<{ error: string }>("autosaveFileFailure"),
   
 };

@@ -41,7 +41,7 @@ import Papa from "papaparse";
 import { PDFDocument } from "@/app/documents/editing/PDFDocument";
 import { AppType } from "@/app/documents/parsePDF";
 import { extractTextFromPage } from "@/app/documents/CustomPDFPage";
-import { ModifiedDate, ParsedData, YourPDFType } from "@/app/dataIntegration/parseData";
+import { ModifiedDate, ParsedData, YourPDFType } from "@/app/documents/DocType";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';

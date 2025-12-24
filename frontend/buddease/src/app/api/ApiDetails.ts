@@ -5,7 +5,7 @@ import { detailsApiService } from '@/app/api/service/DetailsService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
-import { ApiService } from '@/app/api/service/ApiService';
+import  ApiService from '@/app/api/service/ApiService';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useDetailsContext } from '@/app/models/data/DetailsContext';
 import { useNotification } from '@/app/state/context/NotificationContext';
@@ -64,7 +64,7 @@ export const fetchDetails = async <
   IncludedFields extends keyof T = keyof T
 >(): Promise<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
-    const details = await detailsApiService.fetchDetails<T, K, Meta>();
+    const details = await detailsApiService.fetchDetailsItem<T, K, Meta>();
     
     // Notify success using object parameter
     const successMessage = detailsNotificationMessages.FETCH_DETAILS_SUCCESS;

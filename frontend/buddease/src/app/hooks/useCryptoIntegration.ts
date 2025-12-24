@@ -1,7 +1,7 @@
 // useCryptoIntegration.ts
 // src/hooks/useCryptoIntegration.ts
 import { useState, useEffect } from 'react';
-import { cryptoIntegrationService, CryptoPortfolio } from '@/app/components/crypto/CryptoPortfolio';
+import { cryptoIntegrationService, CryptoPortfolio } from '@/app/services/CryptoIntegrationService';
 import { environmentAwareEndpointManager } from '@/config/endpoints/EnvironmentAwareEndpointManager';
 
 export const useCryptoIntegration = (userId: number) => {

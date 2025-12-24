@@ -54,7 +54,7 @@ type ProjectManagerBaseParams = {
 export type {
   ProjectManagerEntity,
   ProjectManagerK,
-  ProjectManagerMeta
+  ProjectManagerMeta,
   ProjectManagerAttachment, 
   ProjectManagerIncludedFields,
   ProjectManagerExcludedFields,

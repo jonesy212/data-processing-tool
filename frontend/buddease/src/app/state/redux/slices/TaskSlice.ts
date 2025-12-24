@@ -4,7 +4,7 @@ import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagEntity } from '@/app/typings/entities/TagEntity';
 import { UserEntity } from '@/app/typings/entities/UserEntity';
-import { User, UserAttachment, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/users/User';
+import { User, UserAttachment, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
 
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { Task } from "@/app/components/models/tasks/Task";

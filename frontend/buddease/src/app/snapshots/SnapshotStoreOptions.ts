@@ -17,7 +17,7 @@ import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
-
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotOperation } from "@/app/actions/SnapshotActions";
 
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';

@@ -3,7 +3,7 @@
 import { fetchFolderContentsAPI } from '@/app/api/ApiFiles';
 import { Folder } from '@/app/models/data/Folder'
 import { refreshUIForFile } from '@/app/snapshots/refreshUI';
-import { selectFilteredEvents } from '@/app/state/redux/slices/FilteredEventsSlice';
+import { selectFilteredEvents } from '@/app/pages/searches/FilteredEvents';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
 import { FilterEntity, FilterK, FilterMeta, FilterAttachment, FilterExcludedFields, FilterIncludedFields, FilterBaseParams } from '@/app/typings/entities/FilterEntity';
 import { FilteredEventsState, useFilterStore } from '@/app/state/stores/FilterStore';

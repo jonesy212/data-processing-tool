@@ -11,7 +11,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotVersioning } from '@/app/snapshots/SnapshotVersioning'
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot, SnapshotDataType } from '@/app/snapshots/Snapshot';
+import { Snapshot, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotBaseProperties, SnapshotData } from '@/app/snapshots/SnapshotData';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';

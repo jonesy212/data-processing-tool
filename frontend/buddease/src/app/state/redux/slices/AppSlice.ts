@@ -14,7 +14,7 @@ import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
 import { UIState } from '@/app/state/stores/UISlice';
 import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
-import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from '@/app/state/redux/slices/EntitySlice';
 import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
 import { BlogState } from '@/app/state/redux/slices/BlogSlice';
 import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';

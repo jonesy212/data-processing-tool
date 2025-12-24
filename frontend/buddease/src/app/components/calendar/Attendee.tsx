@@ -9,6 +9,7 @@ import { getDefaultDocumentOptions } from '@/app/documents/DocumentOptions';
 import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import IdeationPhase from '@/app/users/userJourney/IdeationPhase';
 import { CalendarManagerState } from '@/app/state/redux/slices/CalendarSlice';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
@@ -197,7 +198,7 @@ const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtta
   participants: [],
   analysisType: {} as AnalysisTypeEnum,
   analysisResults: [],
-  videoData: {} as VideoData<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>,
+  videoData: {} as VideoData<CalendarEntity, CalendarK>,
   content: "Event content",
   topics: [],
   highlights: [],
@@ -206,7 +207,7 @@ const event: CalendarEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAtta
   attendees: [],
   location: "Event location",
   getData: () => Promise.resolve({}) as Promise<Snapshot<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>>,
-  meta: {} as StructuredMetadata<alendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>
+  meta: {} as StructuredMetadata<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>
 };
 
 const calendarManagerState: CalendarManagerState = {

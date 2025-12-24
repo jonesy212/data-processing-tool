@@ -15,7 +15,6 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 
-// Combined Calendar Entity System
 
 // 1. Unified Base Calendar Entity
 export interface CalendarEntity extends BaseDataEntity {

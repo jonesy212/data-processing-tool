@@ -978,11 +978,11 @@ async processBatch(
     throw error;
   }
 }
+protected snapshotSubscribers: Map<string, Array<(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>> = new Map();
+protected deletedSnapshots: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();
+private delegate: Array<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
 
 
-  private delegate: Array<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
-  protected snapshotSubscribers: Map<string, Array<(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void>> = new Map();
-  
   private securityService: SecurityService = {} as SecurityService;
   private syncInProgress: boolean = false;
   
@@ -1050,107 +1050,109 @@ async processBatch(
     return await this.config;
   }
 
-// Renamed method to avoid conflict
-processSnapshotData = async (
-  id: string | number | null,
-  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  timestamp: Date,
-  payload: UpdateSnapshotPayload<T>,
-  categoryProperties: CategoryProperties | undefined,
-  payloadData: T | K,
-  mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  category?: Category,
-  snapshotId?: string | number | null,
-  storeId?: number,
-  store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-  try {
-    // Determine what to return based on input parameters
-    if (payload?.returnType === 'map') {
-      const snapshotsMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
-      if (newData.id) {
-        snapshotsMap.set(newData.id.toString(), newData);
+  processSnapshotData = async (
+    id: string | number | null,
+    data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    timestamp: Date,
+    payload: UpdateSnapshotPayload<T>,
+    categoryProperties: CategoryProperties | undefined,
+    payloadData: T | K,
+    mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    category?: Category,
+    snapshotId?: string | number | null,
+    storeId?: number,
+    store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  ): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+    try {
+      // Use type assertion for payload since returnType might not exist
+      const payloadWithReturn = payload as { returnType?: string };
+      
+      // Determine what to return based on input parameters
+      if (payloadWithReturn?.returnType === 'map') {
+        const snapshotsMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
+        if (newData.id) {
+          snapshotsMap.set(newData.id.toString(), newData);
+        }
+        return snapshotsMap as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       }
-      return snapshotsMap;
-    }
 
-    if (payload?.returnType === 'store') {
-      return snapshotStore;
-    }
+      if (payloadWithReturn?.returnType === 'store') {
+        return snapshotStore as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      }
 
-    if (payload?.returnType === 'promise') {
-      return Promise.resolve({ snapshot: newData });
-    }
+      if (payloadWithReturn?.returnType === 'promise') {
+        // Cast the promise to the expected type
+        return (Promise.resolve({ snapshot: newData }) as unknown) as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      }
 
-    if (payload?.returnType === 'snapshotData') {
-      // Return as SnapshotData type if needed
-      // Get the current config for use in the return object
-      const currentConfig = await this.config;
-        
-      return {
-        getSnapshot: async () => {
+      if (payloadWithReturn?.returnType === 'snapshotData') {
+        // Return as SnapshotData type if needed
+        const currentConfig = await this.config;
+          
+        const snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          getSnapshot: async () => {
             if (newData.id) {
               const snapshot = await this.getSnapshot(newData.id.toString());
               return snapshot || newData;
             }
-          return newData;
-        },
-        validate: () => this.validateSnapshot(newData.id?.toString() || '', newData),
-        transform: (snap) => this.transformSnapshotMethod(snap),
-        id: newData.id?.toString() || "",
-        storeId: this.storeId,
-        category: this.category?.toString() || "",
-        serialize: () => JSON.stringify(newData),
-        get: (key: string) => {
-          return (newData as any)[key]; // Simple property access
-        },
-        set: (key: string, value: any) => {
-          (newData as any)[key] = value; // Simple property set
-        },
-        processEvent: (eventData: any, type: string, event: Event) => {
-          this.processAction({
-            type: 'EVENT_PROCESS',
-            payload: { eventData, type, event }
-          });
-        },
-        config: Promise.resolve(currentConfig),
-        shared: this.topic || "",
-        operations: this.getSnapshotOperations(), // Use existing method
-        base: this.getBaseEntity(), // Use existing method
-        sharedMetadata: JSON.stringify(this.metadata || {}),
+            return newData;
+          },
+          validate: () => this.validateSnapshot(newData.id?.toString() || '', newData),
+          transform: (snap: any) => this.transformSnapshotMethod(snap),
+          id: newData.id?.toString() || "",
+          storeId: this.storeId,
+          category: this.category?.toString() || "",
+          serialize: () => JSON.stringify(newData),
+          get: (key: string) => {
+            return (newData as any)[key];
+          },
+          set: (key: string, value: any) => {
+            (newData as any)[key] = value;
+          },
+          processEvent: (eventData: any, type: string, event: Event) => {
+            this.processAction({
+              type: 'EVENT_PROCESS',
+              payload: { eventData, type, event }
+            });
+          },
+          config: Promise.resolve(currentConfig),
+          shared: this.topic || "",
+          operations: this.getSnapshotOperations(),
+          base: this.getBaseEntity(),
+          sharedMetadata: JSON.stringify(this.metadata || {}),
+          getSnapshotData: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+            return this.getSnapshotData(params);
+          },
+          deleteSnapshot: (id: string) => {
+            this.removeSnapshot(id);
+          },
+          core: this.getCoreSnapshot(),
+          security: this.getSecurity(),
+          storage: this.getStorageType(),
+          isExpired: () => this.isExpired(),
+          data: JSON.stringify(newData.data || {}),
+          snapshotStore: this,
+          timestamp: new Date(),
+        };
 
-        // For RETRIEVING data (simple lookup)
-        getSnapshotData: (params: SnapshotDataParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
-          return this.getSnapshotData(params);
-        },
-        
-        deleteSnapshot: (id: string) => {
-          this.removeSnapshot(id); // Use existing method
-        },
-        core: this.getCoreSnapshot(), // Use existing method
-        security: this.getSecurity(), // Use existing method
-        storage: this.getStorageType(), // Use existing method
-        isExpired: () => this.isExpired(), // Use existing method
-        data: JSON.stringify(newData.data || {}),
-        snapshotStore: this,
-        timestamp: new Date(),
-      } as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+        return snapshotData;
+      }
+
+      // Default: return the newData as fallback
+      return newData as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+    } catch (error) {
+      console.error('Error in processSnapshotData:', error);
+      // Return a valid default instead of undefined
+      return new Map() as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     }
-
-    // Default: return undefined or based on some condition
-    return undefined;
-
-  } catch (error) {
-    console.error('Error in snapshotData:', error);
-    return undefined;
   }
-}
     // Additional method to handle task assignment if taskIdToAssign is provided
   async assignTaskIfNeeded(): Promise<void> {
     if (this.taskIdToAssign) {
@@ -2044,11 +2046,22 @@ handleActions(action: any): void {
     console.log("Snapshot cleared");
   }
 
-  validate(): boolean {
-  this.validateConstructorParams();
-  this.validateAction();
-  return true; // or actual validation result
-}
+  validate(options?: any, config?: any, action?: any): boolean {
+    // Validate constructor params if provided
+    if (options !== undefined && config !== undefined) {
+      this.validateConstructorParams(options, config);
+    }
+    
+    // Validate action if provided
+    if (action !== undefined) {
+      this.validateAction(action);
+    }
+    
+    // Add additional validation logic here
+    const isValid = this.validateInternalState();
+    
+    return isValid;
+  }
 
   constructor({
     storeId,
@@ -2142,6 +2155,7 @@ handleActions(action: any): void {
     this.dataStores = [];
     this.setConfig(config);
     this.endpointCategory = endpointCategory;
+    this._storeOptions = storeOptions;
 
     this.startIdleTimeout = this.startIdleTimeout.bind(this);
     this.stopIdleTimeout = this.stopIdleTimeout.bind(this);
@@ -2747,6 +2761,8 @@ handleActions(action: any): void {
   }
 
 
+  
+  
   // ✅ PROTECTED helper methods
   protected queueSyncOperation(): void {
     console.log('Queueing sync operation...');
@@ -3495,7 +3511,7 @@ handleActions(action: any): void {
 
 
 // Add this method for snapshot-specific configuration
-public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
+public async getSnapshotConfig(snapshotId: string | null): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
   try {
     const fullConfig = await this.getConfig();
     return fullConfig?.snapshots?.[snapshotId] || null; // Adjust based on your config structure
@@ -4321,6 +4337,13 @@ public async getSnapshotConfig(snapshotId: string): Promise<SnapshotConfig<T, K,
       console.log(`Snapshot store with ID ${storeId} not found.`);
       return null;
     }
+  }
+
+  private _storeOptions: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  
+  // Public getter
+  public get storeOptions(): SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    return this._storeOptions;
   }
   // Public setter
   public setDataStores(stores: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): void {
@@ -6530,10 +6553,11 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
       payload: FetchSnapshotPayload<K>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payloadData: T | Data,
-      category?: Category,      categoryProperties: CategoryProperties | undefined,
+      categoryProperties: CategoryProperties | undefined,
       timestamp: Date,
       data: T,
-      delegate: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+      delegate: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+      category?: Category,      
     ) => void
   ): Promise<{
     id: any;
@@ -6585,9 +6609,10 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category?: Category,    categoryProperties: CategoryProperties | undefined,
+    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
+    category?: Category,    
     dataCallback?: (
       subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

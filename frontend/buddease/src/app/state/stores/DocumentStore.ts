@@ -9,7 +9,7 @@ import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from '@/app/documents/DocType';
-import { DocumentOptions, DocumentSize } from '@/app/models/data/StatusType';
+import { DocumentOptions, DocumentSize } from '@/app/documents/DocumentOptions';
 import { DocumentPath } from "@/app/documents/DocumentPath";
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';

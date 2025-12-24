@@ -4,7 +4,7 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { SnapshotEntity, SnapshotK } from "@/app/typings/entities/SnapshotEntity";
 import { snapshotApi } from '@/app/api/SnapshotApi';
-import { getSubscriberId, extractCriteria } from "@/app/api/SnapshotApi";
+import { getSubscriberId, extractCriteria } from "@/app/api/subscriberApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -68,7 +68,7 @@ import {
   UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
 import { SnapshotContainer, snapshotContainer } from "@/app/snapshots/SnapshotContainer";
-import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots/SnapshotContainer";
+import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots/Snapshot";
 import { useDispatch } from "react-redux";
 
 import {
@@ -95,14 +95,25 @@ import { Document, DocumentStore } from "@/app/state/stores/DocumentStore";
 import { MobXRootState } from "@/app/state/stores/RootStores";
 
 const dispatch = useDispatch()
-const { subscriber, tempSubscriber } = createSubscriber();
 
 const exchangeData = {
-  type: ExchangeDataTypeEnum.TRADES, // or whatever type you need
+  id: 'test-id',
+  name: 'Test Exchange',
+  pair: 'BTC/USDT',
+  price: 50000,
+  volume: 1000000,
+  type: ExchangeDataTypeEnum.TRADES, // or ORDER_BOOK or TICKER
+  snapshot: {} as Snapshot<BaseDataRoot>, // mock snapshot
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  liquidity: 10000000,
+  tokens: ['BTC', 'USDT'],
   data: {
-    getAll: () => [] // Your actual data here
+    getAll: () => [] // mock data
   }
 };
+
+const { subscriber, tempSubscriber } = createSubscriber(exchangeData);
 
 type SnapshotWithCriteriaOrBase = Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>;
 

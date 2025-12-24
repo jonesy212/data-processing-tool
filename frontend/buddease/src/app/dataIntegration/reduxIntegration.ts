@@ -6,7 +6,7 @@ import { TaskActions } from '@/app/actions/TaskActions';
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { Snapshot, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot, Snapshots } from '@/app/snapshots/Snapshot';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { addNotification } from '@/app/components/notifications/Notification';
 import { useDispatch } from 'react-redux';

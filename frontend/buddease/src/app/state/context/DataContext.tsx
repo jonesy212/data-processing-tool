@@ -1,5 +1,5 @@
 // DataContext.tsx
-import { BaseData } from '@/app/models/data/Data';
+import { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta, RootCategories } from '@/app/config/BaseConfig';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
     DataStore,
@@ -9,9 +9,12 @@ import {
 import { createContext, ReactNode, useContext } from "react";
 
 interface DataContextProps<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   dataStore: DataStore<T, K> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
@@ -26,9 +29,12 @@ const DataContext = createContext<DataContextProps<any, any>>({
 });
 
 export const DataProvider = <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   children,
 }: {

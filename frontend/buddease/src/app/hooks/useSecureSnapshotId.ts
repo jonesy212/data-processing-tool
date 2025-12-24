@@ -1,12 +1,8 @@
 // useSecureSnapshotId.ts
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import {
-    addSnapshot,
-    saveSnapshotToDatabase
-} from '@/app/api/SnapshotApi'; // Adjust the import path as necessary
 import { useAuth } from '@/app/state/context/AuthContext';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { snapshotApi } from '@/app/api/SnapshotApi';
 
 // small helper for cleaning primitive IDs
 const sanitizePrimitive = (value: string | number): string | number => {
@@ -29,9 +25,9 @@ export const useSecureSnapshotId = () => {
       }
 
       try {
-        // fetch snapshot object by user.id
-        const fetchedSnapshot = await snapshotApi.fetchSnapshotById(user.id);
-
+        
+        const fetchedSnapshot = await (snapshotApi.fetchSnapshotById(user.id) as Promise<{ id: number }>);
+        
         if (fetchedSnapshot?.id) {
           const sanitizedSnapshotId = sanitizePrimitive(fetchedSnapshot.id);
           setSnapshotId(Number(sanitizedSnapshotId));
@@ -61,10 +57,10 @@ export const useSecureSnapshotId = () => {
 
   const handleAddSnapshot = async (newSnapshotData: any) => {
     try {
-      const result = await addSnapshot(newSnapshotData);
+      const result = await snapshotApi.addSnapshot(newSnapshotData);
       console.log("Snapshot added:", result);
 
-      const saveResult = await saveSnapshotToDatabase(result);
+      const saveResult = await snapshotApi.saveSnapshotToDatabase(result);
       console.log("Snapshot saved to database:", saveResult);
     } catch (error) {
       console.error("Error adding snapshot:", error);

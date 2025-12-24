@@ -3,24 +3,74 @@ import { BASE_URL } from '@/app/api/baseUrl';
 import { TodosEndpoints } from '@/app/typings/categories/TodosEndpoints';
 
 export const todosConfig: TodosEndpoints = {
-  create: `${BASE_URL}/api/todos/create`,
-  list: { path: "/api/todos", method: "GET" },
-  single: (todoId: number) => `${BASE_URL}/api/todos/${todoId}`,
-  add: { path: "/api/todos/add", method: "POST" },
-  remove: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/remove`,
-  process: { path: "/api/todos/process", method: "POST" },
-  update: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/update`,
-  delete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/delete`,
-  complete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/complete`,
-  uncomplete: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/uncomplete`,
-  fetch: `${BASE_URL}/api/todos`,
-  assign: (todoId: number, teamId: number) => `${BASE_URL}/api/todos/${todoId}/assign/${teamId}`,
-  reassign: (todoId: number, newTeamId: number) => `${BASE_URL}/api/todos/${todoId}/reassign/${newTeamId}`,
-  unassign: (todoId: number) => `${BASE_URL}/api/todos/${todoId}/unassign`,
-  toggle: (entityId: number, entityType: string) => `${BASE_URL}/api/toggle/${entityType}/${entityId}`,
-  search: `${BASE_URL}/api/todos/search`,
-  bulkAssign: `${BASE_URL}/api/todos/bulk-assign`,
-  bulkUnassign: `${BASE_URL}/api/todos/bulk-unassign`,
-  removeMultiple: { path: "/api/todos/removeMultiple", method: "POST" },
-  toggleMultiple: { path: "/api/todos/toggleMultiple", method: "POST" },
+  // EndpointConfig objects (not strings)
+  create: { path: `${BASE_URL}/api/todos/create`, method: "POST" },
+  list: { path: `${BASE_URL}/api/todos`, method: "GET" },
+  
+  // Functions returning EndpointConfig
+  single: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}`, 
+    method: "GET" 
+  }),
+  
+  add: { path: `${BASE_URL}/api/todos/add`, method: "POST" },
+  
+  remove: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/remove`, 
+    method: "DELETE" 
+  }),
+  
+  process: { path: `${BASE_URL}/api/todos/process`, method: "POST" },
+  
+  update: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/update`, 
+    method: "PUT" 
+  }),
+  
+  delete: (todo: number) => ({  // Note: parameter name should match interface (todoId)
+    path: `${BASE_URL}/api/todos/${todo}/delete`, 
+    method: "DELETE" 
+  }),
+  
+  complete: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/complete`, 
+    method: "POST" 
+  }),
+  
+  uncomplete: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/uncomplete`, 
+    method: "POST" 
+  }),
+  
+  fetch: { path: `${BASE_URL}/api/todos`, method: "GET" },
+  
+  assign: (todoId: number, teamId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/assign/${teamId}`, 
+    method: "POST" 
+  }),
+  
+  reassign: (todoId: number, newTeamId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/reassign/${newTeamId}`, 
+    method: "PUT" 
+  }),
+  
+  unassign: (todoId: number) => ({ 
+    path: `${BASE_URL}/api/todos/${todoId}/unassign`, 
+    method: "DELETE" 
+  }),
+  
+  toggle: (todoId: number, entityType: string) => ({ 
+    path: `${BASE_URL}/api/toggle/${entityType}/${todoId}`, 
+    method: "POST" 
+  }),
+  
+  search: { path: `${BASE_URL}/api/todos/search`, method: "GET" },
+  
+  bulkAssign: { path: `${BASE_URL}/api/todos/bulk-assign`, method: "POST" },
+  
+  bulkUnassign: { path: `${BASE_URL}/api/todos/bulk-unassign`, method: "POST" },
+  
+  removeMultiple: { path: `${BASE_URL}/api/todos/removeMultiple`, method: "POST" },
+  
+  toggleMultiple: { path: `${BASE_URL}/api/todos/toggleMultiple`, method: "POST" },
 };

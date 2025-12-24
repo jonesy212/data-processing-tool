@@ -8,7 +8,7 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStore } from '@/app/state/stores/DataStore';
-import { SnapshotData, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData, SnapshotDataType } from '@/app/snapshots/SnapshotData';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';

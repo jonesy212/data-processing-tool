@@ -20081,7 +20081,7 @@
         "import React, { useEffect } from \"react\";",
         "import { BackendStructureWrapper } from '@/app/components/backend/BackendStructureWrapper';",
         "import { selectApiConfigs } from '@/app/store/slices/apiConfigSlice';",
-        "import getAppPath from "@/app/config/appStructure/appPath";",
+        "import getAppPath from '@/app/config/appStructure/appPath';",
         "import { useSelector } from 'react-redux';"
       ],
       "issues": [

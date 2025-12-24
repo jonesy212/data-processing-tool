@@ -6,6 +6,7 @@ import { Sender } from '@/app/components/communications/CommunicationPage';
 import { Task } from '@/app/components/models/tasks/Task';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
@@ -16,7 +17,8 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { PhaseDefault } from '@/app/typings/phaseTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotBase, SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotBase } from "@/app/snapshots/SnapshotContainer";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 
 import { Label } from "@/app/branding/BrandingSettings";
 import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -179,6 +181,7 @@ interface CoreSnapshot<
     snapshotContainer?: T,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined
   ) => void;
+  
   handleSnapshot?: (
     id: string,
     snapshotId: string | number | null,

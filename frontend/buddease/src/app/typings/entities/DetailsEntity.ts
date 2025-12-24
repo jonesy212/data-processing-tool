@@ -8,7 +8,7 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Content, ContentData } from "@/app/models/content/AddContent";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Permission } from '@/app/permissions/Permission';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotData';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

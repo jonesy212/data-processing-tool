@@ -2,7 +2,9 @@
 import internalApiService from '@/app/api/ApiClient';
 import { AppPhase } from '@/app/typings/entities/PhaseEntity';
 import { UnifiedPhaseType } from '@/app/typings/phaseTypes';
-import { ProjectPhaseTypeEnum, ProgressPhase, DocumentPhaseTypeEnum } from '@/app/models/data/StatusType';
+import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { DocumentPhaseTypeEnum } from '@/app/documents/editing/DocumentPhaseType'
 
 // Define the structure for phase data initialization
 interface PhaseInitialData {
@@ -18,6 +20,10 @@ interface PhaseInitialData {
   checklist?: Array<{ id: string; label: string; completed: boolean }>;
 }
 
+
+const DEFAULT_PHASE_TYPE = ProjectPhaseTypeEnum.Ideation;
+
+
 export const phaseApiService = {
   // Server communication methods using ApiClient
   fetchPhaseData: async (phaseId: string): Promise<any> => {
@@ -32,6 +38,15 @@ export const phaseApiService = {
   
 loadPhaseFromDatabase: async (phaseId: string): Promise<AppPhase> => {
   try {
+    console.log('Testing AppPhase type:', {
+      hasThen: 'then' in ({} as AppPhase),
+      prototype: Object.getPrototypeOf({} as AppPhase)
+    });
+    
+    const phaseData = await phaseApiService.fetchPhaseData(phaseId);
+    console.log('Phase data type:', typeof phaseData, 'has then?', typeof (phaseData as any).then
+  );
+      
     const phaseData = await phaseApiService.fetchPhaseData(phaseId);
     
     // Validate phase data and ensure it's not a Promise-like object
@@ -132,38 +147,59 @@ loadPhaseFromDatabase: async (phaseId: string): Promise<AppPhase> => {
 
 // Helper function to normalize phase types
 const normalizePhaseType = (phaseType: any): UnifiedPhaseType => {
-  if (!phaseType) return undefined;
+  // Handle null/undefined/empty
+  if (!phaseType) {
+    return DEFAULT_PHASE_TYPE;
+  }
+  
+  // Handle string conversion safely
+  const phaseTypeStr = String(phaseType).trim();
+  if (!phaseTypeStr) {
+    return DEFAULT_PHASE_TYPE;
+  }
   
   // Check if it's already a valid enum value
-  if (
-    Object.values(ProjectPhaseTypeEnum).includes(phaseType) ||
-    Object.values(ProgressPhase).includes(phaseType) ||
-    Object.values(DocumentPhaseTypeEnum).includes(phaseType)
-  ) {
+  const allEnumValues = [
+    ...Object.values(ProjectPhaseTypeEnum),
+    ...Object.values(ProgressPhase),
+    ...Object.values(DocumentPhaseTypeEnum)
+  ];
+  
+  if (allEnumValues.includes(phaseType as any)) {
     return phaseType;
   }
   
-  // Try to map string to enum
-  const phaseTypeStr = String(phaseType).toLowerCase();
+  // Normalize the string for comparison
+  const normalizedStr = phaseTypeStr.toLowerCase().replace(/[^a-z0-9]/g, '');
   
-  // Map to ProjectPhaseTypeEnum
-  if (phaseTypeStr.includes('ideation')) return ProjectPhaseTypeEnum.Ideation;
-  if (phaseTypeStr.includes('draft')) return ProjectPhaseTypeEnum.Draft;
-  if (phaseTypeStr.includes('team')) return ProjectPhaseTypeEnum.TeamFormation;
-  if (phaseTypeStr.includes('brainstorm')) return ProjectPhaseTypeEnum.ProductBrainstorming;
-  if (phaseTypeStr.includes('launch')) return ProjectPhaseTypeEnum.Launch;
-  if (phaseTypeStr.includes('data') || phaseTypeStr.includes('analysis')) return ProjectPhaseTypeEnum.DataAnalysis;
-  if (phaseTypeStr.includes('review')) return ProjectPhaseTypeEnum.Review;
-  if (phaseTypeStr.includes('final')) return ProjectPhaseTypeEnum.Final;
-  if (phaseTypeStr.includes('test')) return ProjectPhaseTypeEnum.Test;
-  if (phaseTypeStr.includes('create')) return ProjectPhaseTypeEnum.CreatePhase;
-  if (phaseTypeStr.includes('previous')) return ProjectPhaseTypeEnum.Previous;
-  if (phaseTypeStr.includes('register')) return ProjectPhaseTypeEnum.Register;
-  if (phaseTypeStr.includes('planning')) return ProjectPhaseTypeEnum.Planning;
-  if (phaseTypeStr.includes('development')) return ProjectPhaseTypeEnum.Development;
+  // Use a map for better maintainability
+  const phaseTypeMap: Record<string, UnifiedPhaseType> = {
+    ideation: ProjectPhaseTypeEnum.Ideation,
+    draft: ProjectPhaseTypeEnum.Draft,
+    team: ProjectPhaseTypeEnum.TeamFormation,
+    brainstorm: ProjectPhaseTypeEnum.ProductBrainstorming,
+    launch: ProjectPhaseTypeEnum.Launch,
+    data: ProjectPhaseTypeEnum.DataAnalysis,
+    analysis: ProjectPhaseTypeEnum.DataAnalysis,
+    review: ProjectPhaseTypeEnum.Review,
+    final: ProjectPhaseTypeEnum.Final,
+    test: ProjectPhaseTypeEnum.Test,
+    create: ProjectPhaseTypeEnum.CreatePhase,
+    previous: ProjectPhaseTypeEnum.Previous,
+    register: ProjectPhaseTypeEnum.Register,
+    planning: ProjectPhaseTypeEnum.Planning,
+    development: ProjectPhaseTypeEnum.Development
+  };
   
-  // Return as string if no match
-  return phaseType;
+  // Find matching phase type
+  for (const [key, value] of Object.entries(phaseTypeMap)) {
+    if (normalizedStr.includes(key)) {
+      return value;
+    }
+  }
+  
+  // Return the original as fallback
+  return phaseType as UnifiedPhaseType;
 };
 
 // Initialize phase data based on phase type

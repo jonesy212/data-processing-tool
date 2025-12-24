@@ -1,6 +1,6 @@
 // fileSagas.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
-// import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/app/api/ApiFiles';
+// import { archiveFile, batchRemoveFiles, createFileVersion, determineFileType, exportFile, fetchFileVersions, fetchFiles, importFile, markFileAsComplete, receiveFileUpdate, requestAccessToFile, shareFile, startCollaborativeEdit, uploadFile } from '@/app/components/configs/DetermineFileType';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { DataFrameActions } from '@/app/actions/DataFrameActions';
 import { FileActions } from '@/app/actions/FileActions';

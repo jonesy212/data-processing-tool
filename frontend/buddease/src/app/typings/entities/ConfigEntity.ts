@@ -23,7 +23,7 @@ type ConfigBaseParams = {
 export type {
   ConfigEntity, 
   ConfigK,
-  ConfigMeta
+  ConfigMeta,
   ConfigAttachment, 
   ConfigExcludedFields,
   ConfigIncludedFields, 

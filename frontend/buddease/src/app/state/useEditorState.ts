@@ -4,14 +4,16 @@ import { EditorState } from 'draft-js';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore'
 import SnapshotStore from '@/app/snapshots/SnapshotStore'; 
 import BrowserBehaviorManager from '@/app/state/BrowserBehaviorManager'; 
+import draftjs from 'draft-js';
 
 // Custom hook for editor state management
 const useEditorState = (
   browserCheckStore: BrowserCheckStore,  // Inject BrowserCheckStore
-  snapshotStore: SnapshotStore<any, any> // Inject SnapshotStore for snapshot management
+  snapshotStore: SnapshotStore<any, any, any, any, any, any> // Inject SnapshotStore for snapshot management
 ) => {
   // Initialize editor state
-  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+const [editorState, setEditorState] = useState(() => draftjs.EditorState.createEmpty());
+
 
   // Handle editor state changes and save snapshots based on browser behavior
   const handleEditorStateChange = (newEditorState: EditorState) => {

@@ -3,7 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Snapshot, Snapshots, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot, Snapshots, UpdateSnapshotPayload } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";

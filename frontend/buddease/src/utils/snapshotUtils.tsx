@@ -13,7 +13,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots/SnapshotContainer';
 import { createSnapshotStoreOptions } from "@/app/snapshots/createSnapshotStoreOptions";
 import {
   Snapshots,

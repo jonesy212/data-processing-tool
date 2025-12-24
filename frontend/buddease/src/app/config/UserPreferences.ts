@@ -14,7 +14,9 @@ import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { FileAttachment, FileEntity, FileExcludedFields, FileIncludedFields, FileK, FileMeta } from '@/app/typings/entities/FileEntity';
 import { User } from "@/app/users/User";
-import { AnyAction, Reducer } from 'redux';
+import { AnyAction, Reducer } from 'react-redux';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
@@ -70,7 +72,7 @@ interface UserPreferences<
     sessionTimeout?: number; // Timeout duration for user sessions (in minutes)
     activityLogRetention?: '30days' | '60days' | '90days'; // Retention period for activity logs
   };
-  privacySettings?: PrivacySettings; // Detailed privacy settings
+  privacySettings?: PrivacySettings<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Detailed privacy settings
 
   // Project Management Preferences
   projectManagement?: {

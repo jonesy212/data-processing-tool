@@ -2,7 +2,7 @@
 import { CustomHydrateResult } from "@/app/config/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots/SnapshotData';
+import { SnapshotConfig, SnapshotData, SnapshotItem, SnapshotOperationType, SnapshotStoreProps } from '@/app/snapshots/SnapshotConfig';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { DataStore } from "@/app/state/stores/DataStore";
@@ -23,7 +23,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig, UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 import { User } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";
 import { BaseData, Data } from "@/app/models/data/Data";
@@ -1733,6 +1733,7 @@ const dataStoreMethods = <
     getStoreData: function (id: number): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       throw new Error("Function not implemented.");
     },
+
     getDelegate: function (context: {
       useSimulatedDataSource: boolean;
       simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -1768,11 +1769,12 @@ const dataStoreMethods = <
     },
 
     getSnapshotWithCriteria: function (
-      category?: Category, timestamp: any,
+      timestamp: any,
       id: number,
-      snapshot: Snapshot<BaseDataEntity, any>,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: BaseDataEntity
+      data: BaseDataEntity,
+      category?: Category
     ): Promise<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       return new Promise((resolve, reject) => {
         resolve(undefined);
@@ -1780,11 +1782,12 @@ const dataStoreMethods = <
     },
 
     getSnapshotVersions: function (
-      category?: Category, timestamp: any,
+      timestamp: any,
       id: number,
-      snapshot: Snapshot<BaseData, any>,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      data: BaseDataEntity
+      data: BaseDataEntity,
+      category?: Category
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
       return new Promise((resolve, reject) => {
         resolve(undefined);
@@ -1794,7 +1797,7 @@ const dataStoreMethods = <
       category?: Category,
       timestamp: any,
       id: number,
-      snapshot: Snapshot<BaseData, any>,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: BaseDataEntity
     ): Promise<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {

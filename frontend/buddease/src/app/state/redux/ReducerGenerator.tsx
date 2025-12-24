@@ -4,15 +4,9 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CollaboratorEntity } from '@/app/typings/entities/CollaboratorEntity';
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
+import { EntityState } from '@/app/state/redux/slices/EntitySlice'
 
 export type WritableDraft<EntityData> = Draft<EntityData>;
-
-// UPDATED: EntityState to match your RootState structure
-interface EntityState<
-  T extends BaseDataEntity = BaseDataRoot
-> {
-  entities: { [id: string]: T }; // Use T instead of EntityData to match your generic structure
-}
 
 export interface EntityAction<
   T extends BaseDataEntity = BaseDataRoot

@@ -4,7 +4,7 @@
 // import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 // import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 // import { BaseData, Data } from '@/app/models/data/Data';
-// import { Snapshot, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
+// import { Snapshot, Snapshots } from '@/app/snapshots/Snapshot'
 // import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 // import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 // import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -127,7 +127,7 @@
 //   subscribers: [],
 //   createSnapshot: (
 //     id: string,
-//     snapshotData: SnapshotData<any, Data>,
+//     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //     category: string) => {
 //     // Implementation for production environment
 //     return {

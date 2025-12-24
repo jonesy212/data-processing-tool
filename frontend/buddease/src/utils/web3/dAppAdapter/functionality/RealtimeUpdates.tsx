@@ -26,7 +26,7 @@ import { ChatSettings } from '@/app/notifications/NotificationChannelManager'
 /* ---------- Realtime entity imports ---------- */
 import {
   AppRealtimeData
-} from "@/app/entities/RealtimeDataEntity";
+} from "@/app/typings/entities/RealtimeDataEntity";
 
 
 /* ---------- Realtime subscription ---------- */

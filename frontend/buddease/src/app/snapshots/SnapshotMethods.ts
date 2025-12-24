@@ -41,7 +41,7 @@ import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-2import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
+import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
 import { IHydrateResult } from "mobx-persist";
 
@@ -1062,7 +1062,8 @@ interface SnapshotMethods<
 
   unsubscribe: (
     unsubscribeDetails: {
-      userId: string; snapshotId: string;
+      userId: string; 
+      snapshotId: string;
       unsubscribeType: string;
       unsubscribeDate: Date;
       unsubscribeReason: string;
@@ -1076,7 +1077,7 @@ interface SnapshotMethods<
     snapshotId: string,
     callback: (
       snapshotId: string,
-      payload: FetchSnapshotPayload<T> | undefined,
+      payload: FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payloadData: T | BaseData<any>,
       category: symbol | string | Category | undefined,

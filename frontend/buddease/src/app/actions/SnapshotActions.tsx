@@ -659,7 +659,11 @@ const newTaskSnapshot: Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, Tas
 
   createSnapshot: undefined,
 
-  createInitSnapshot: function (id: string, snapshotData: SnapshotData<any, TaskEntity>, category: string): Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> {
+  createInitSnapshot: function (
+    id: string, 
+    snapshotData: SnapshotData<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>, 
+    category: string
+  ): Snapshot<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields> {
     throw new Error('Function not implemented.');
   },
 

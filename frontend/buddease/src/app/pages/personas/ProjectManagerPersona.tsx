@@ -13,7 +13,7 @@ import TeamProgressBar from "@/app/projects/projectManagement/TeamProgressBar";
 import { useSearch } from "@/app/state/context/SearchContext";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
-import { Settings } from 'app/state/hybrid/SettingsManagerStore';
+import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 import { ContentState } from "draft-js";
 import React, { useState } from "react";
 

@@ -9,7 +9,7 @@
 // import { BaseData, Data } from '@/app/models/data/Data';
 // import { K, T } from "@/app/models/data/dataStoreMethods";
 // import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-// import { Snapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore'
+// import { Snapshot, SnapshotsArray } from '@/app/snapshots/Snapshot'
 // import SnapshotStore from "./SnapshotStore";
 
 // // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

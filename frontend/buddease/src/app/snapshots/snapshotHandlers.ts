@@ -558,11 +558,11 @@ async function createSnapshotStore<
         payload: FetchSnapshotPayload<K>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payloadData: T | BaseData<any>,
-        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
-        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+        delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        category?: Category,
       ) => void
     ): Promise<{
       id: any;
@@ -2119,5 +2119,11 @@ const notifySubscribers = async <
   return subscribers;
 };
 
-export { adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshots, batchUpdateSnapshotsFailure, createSnapshotStore, deleteSnapshot, fetchSnapshot, initializeSnapshotStore, notifySubscribers, updateSnapshot };
+export {
+  adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure,
+  batchFetchSnapshotsSuccess, batchUpdateSnapshots, 
+  batchUpdateSnapshotsFailure, createSnapshotStore,
+  deleteSnapshot, fetchSnapshot, initializeSnapshotStore,
+  notifySubscribers, updateSnapshot
+};
 

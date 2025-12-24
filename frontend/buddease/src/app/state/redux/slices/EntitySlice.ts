@@ -4,6 +4,7 @@ import axiosInstance from '@/app/api/csrfToken';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
 
+
 // Define the entity interface
 interface Entity {
     id: string;
@@ -11,19 +12,17 @@ interface Entity {
     // Add other properties as needed
 }
 
-// Define the initial state for the entity slice
-interface EntityState<T, Id extends string> {
-    entities: T[];
-    selectedEntityId: Id | null;
-}
-
-// Define CustomEntityState interface
-interface CustomEntityState<T, Id extends string> extends EntityState<T, Id> {
-    selectedEntityId: Id | null;
+// Simple array-based entity state
+interface EntityState {
+  entities: Entity[];
+  selectedEntityId: string | null;
+  loading?: boolean;
+  error?: string | null;
+  lastUpdated?: Date;
 }
 
 // Define the initial state for the entity slice
-const initialState: CustomEntityState<any, string> = {
+const initialState: EntityState = {
     entities: [],
     selectedEntityId: null,
 };
@@ -39,7 +38,11 @@ export const useEntityManagerSlice = createSlice({
         },
 
         removeEntity: (state, action: PayloadAction<string>) => {
-            state.entities = state.entities.filter(entity => entity.id !== action.payload);
+            state.entities = state.entities.filter((entity: Entity) => entity.id !== action.payload);
+            // Clear selection if the removed entity was selected
+            if (state.selectedEntityId === action.payload) {
+                state.selectedEntityId = null;
+            }
         },
 
         selectEntity: (state, action: PayloadAction<string>) => {
@@ -48,12 +51,49 @@ export const useEntityManagerSlice = createSlice({
 
         removeAllEntities: (state) => {
             state.entities = [];
+            state.selectedEntityId = null;
         },
+
+        // Additional reducers
+        updateEntity: (state, action: PayloadAction<{id: string; changes: Partial<Entity>}>) => {
+            const { id, changes } = action.payload;
+            const index = state.entities.findIndex((entity: Entity) => entity.id === id);
+            if (index !== -1) {
+                state.entities[index] = {
+                    ...state.entities[index],
+                    ...changes
+                };
+            }
+        },
+
+        setEntities: (state, action: PayloadAction<Entity[]>) => {
+            state.entities = action.payload;
+        },
+
+        clearSelection: (state) => {
+            state.selectedEntityId = null;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchEntities.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchEntities.fulfilled, (state, action: PayloadAction<Entity[]>) => {
+                state.loading = false;
+                state.entities = action.payload;
+                state.lastUpdated = new Date();
+            })
+            .addCase(fetchEntities.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to fetch entities';
+            });
     },
 });
 
 // Define async thunks for fetching entities and clearing all entities
-export const fetchEntities = createAsyncThunk(
+export const fetchEntities = createAsyncThunk<Entity[], string>(
     'entityManager/fetchEntities',
     async (entityName: string) => {
         try {
@@ -73,11 +113,31 @@ export const clearAllEntities = createAsyncThunk(
     }
 );
 
-// Define selector function to access the entity state
+// Export types
+export type { EntityState };
+
+// Define selector functions to access the entity state
 export const selectEntities = (state: RootState) => state.entityManager.entities;
+export const selectSelectedEntityId = (state: RootState) => state.entityManager.selectedEntityId;
+export const selectSelectedEntity = (state: RootState) => 
+    state.entityManager.selectedEntityId 
+        ? state.entityManager.entities.find((entity: Entity) => entity.id === state.entityManager.selectedEntityId)
+        : null;
+export const selectEntityById = (id: string) => (state: RootState) => 
+    state.entityManager.entities.find((entity: Entity) => entity.id === id);
+export const selectEntityLoading = (state: RootState) => state.entityManager.loading;
+export const selectEntityError = (state: RootState) => state.entityManager.error;
 
 // Export the reducer and actions
-export const { addEntity, removeEntity, selectEntity, removeAllEntities } = useEntityManagerSlice.actions;
+export const { 
+    addEntity, 
+    removeEntity, 
+    selectEntity, 
+    removeAllEntities,
+    updateEntity,
+    setEntities,
+    clearSelection
+} = useEntityManagerSlice.actions;
 
 // Export the reducer
 export const entityManagerReducer = useEntityManagerSlice.reducer;

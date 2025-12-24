@@ -34,7 +34,7 @@ export const CollaborationActions = {
   removeCollaboratorFromProject: createAction<{ projectId: string, collaboratorId: string }>('collaboration/removeCollaboratorFromProject'),
   assignRoleToCollaboratorInProject: createAction<{ projectId: string, collaboratorId: string, role: string }>('collaboration/assignRoleToCollaboratorInProject'),
   updateCollaborationNotes: createAction<{ projectId: string, notes: string }>('collaboration/updateCollaborationNotes'),
-  shareDocument: createAction<{ documentId: string, collaborators: Collaborator[] }>('collaboration/shareDocument'),
+  shareDocument: createAction<{ documentId: string, collaborators: Collaborator<any, any, any, any, any, any>[] }>('collaboration/shareDocument'),
   unshareDocument: createAction<{ documentId: string }>('collaboration/unshareDocument'),
   // Collaboration actions
   saveCollaborationPreferences: createAction<CollaborationPreferences>('collaboration/saveCollaborationPreferences')

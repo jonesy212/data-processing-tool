@@ -1,4 +1,6 @@
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 // snapshotOperations.ts
+import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
 import { snapshotApi } from '@/app/api/SnapshotApi';
@@ -14,6 +16,7 @@ import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ProjectStateEnum } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { ProjectType } from '@/app/models/projects/Project';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -44,6 +47,8 @@ import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { convertSnapshotContainerToStore } from '@/app/typings/YourSpecificSnapshotType';
 import { createVersionInfo } from '@/app/versions/createVersionInfo';
 import { VersionData } from '@/app/versions/VersionData';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+
 
 interface SnapshotOperations<
   T extends BaseDataEntity,
@@ -401,7 +406,7 @@ const handleSnapshot = <
   data: T | null,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotData: BaseData<any>,
-  callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -473,7 +478,7 @@ const handleSnapshot = <
         storeProps: {} as Partial<SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 
         payload: {} as Payload,
-        callback: "",
+        callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>{},
         endpointCategory: "",
 
         initialState: {} as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -517,7 +522,7 @@ const handleSnapshot = <
         validate: "",
         serialize: "",
         get: "",
-      
+        base: 'based process snapshot',
         set: "",
         processEvent: "",
         shared: "",
@@ -622,7 +627,8 @@ const validateSnapshot = <
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): boolean => {
-  const { id, data } = snapshot;
+
+  const { id } = snapshot;
   return id != null && data != null;
 };
 
@@ -745,7 +751,7 @@ function createMockSnapshot<
     validateSnapshot: () => false,
     handleActions: () => {},
     setSnapshot: () => {},
-    transformSnapshotConfig: (config) => config,
+    transformSnapshotConfig: (config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => config,
     setSnapshots: () => {},
     clearSnapshot: () => {},
     mergeSnapshots: () => {},
@@ -820,7 +826,7 @@ const getSnapshot = <
         // Add the other required properties based on the StructuredMetadata interface
         // Check your actual interface definition for exact property names
         // For example:
-        metadata: {} as any, // Use proper type based on your interface
+        metadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Use proper type based on your interface
         attachments: [] as AttachmentType[],
         excludedFields: [] as ExcludedFields[],
         includedFields: [] as IncludedFields[],

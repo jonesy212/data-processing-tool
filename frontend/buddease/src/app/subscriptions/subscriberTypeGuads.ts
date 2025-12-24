@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { SnapshotData, SnapshotsArray } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { SnapshotData, SnapshotsArray } from "@/app/snapshots/SnapshotData";
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 
