@@ -76,7 +76,7 @@ export interface EventHandlerConfig {
   stopPropagation?: boolean;
   stopImmediatePropagation?: boolean;
 }
-p
+
 export interface EventEmitterConfig {
   maxListeners?: number;
   enableErrorHandling?: boolean;

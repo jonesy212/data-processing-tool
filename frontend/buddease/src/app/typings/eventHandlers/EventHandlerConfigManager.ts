@@ -1,7 +1,10 @@
 // app/utils/eventHandlers/EventHandlerConfigManager.ts
 import { debounce } from "@/app/pages/searches/Debounce";
 
-import { EventHandlerConfig, PlatformTimeout } from "@/app/typings/eventHandlers/eventTypes";
+import { EventHandlerConfig } from "@/app/typings/eventHandlers/eventTypes";
+import { PlatformTimeout, clearPlatformTimeout } from '@/app/typings/timeoutTypes'
+
+
 
 export class EventHandlerConfigManager {
   private config: EventHandlerConfig;
@@ -201,15 +204,36 @@ export class EventHandlerConfigManager {
     return Object.keys(options).length > 0 ? options : undefined;
   }
 
-  // Create a throttled function (using your debounce with immediate option)
+  // Create a debounced function
+  createDebouncedFunction(fn: Function): Function & { cancel?: () => void } {
+    if (!this.config.debounce || this.config.debounce <= 0) {
+      return fn;
+    }
+
+    // Cast to the expected type
+    const typedFn = fn as (...args: any[]) => any;
+    
+    // Use your existing debounce function
+    return debounce(
+      typedFn,
+      this.config.debounce,
+      {
+        leading: false,
+        trailing: true
+      }
+    );
+  }
+
+  // Create a throttled function
   createThrottledFunction(fn: Function): Function {
     if (!this.config.throttle || this.config.throttle <= 0) {
       return fn;
     }
 
     let lastCallTime = 0;
+    let timeoutId: PlatformTimeout | null = null;
     
-    return (...args: any[]) => {
+    const throttledFn = (...args: any[]) => {
       const now = Date.now();
       const timeSinceLastCall = now - lastCallTime;
       
@@ -218,19 +242,27 @@ export class EventHandlerConfigManager {
         return fn(...args);
       }
       
-      // If called too soon, use debounce with immediate false
-      // to schedule for after the throttle period
-      const timeRemaining = this.config.throttle! - timeSinceLastCall;
-      const debouncedFn = debounce(
-        fn,
-        timeRemaining,
-        { immediate: false, trailing: true }
-      );
-      
-      debouncedFn(...args);
+      // If called too soon, schedule for after the throttle period
+      if (!timeoutId) {
+        const timeRemaining = this.config.throttle! - timeSinceLastCall;
+        timeoutId = setTimeout(() => {
+          fn(...args);
+          lastCallTime = Date.now();
+          timeoutId = null;
+        }, timeRemaining);
+      }
     };
+    
+    // Add cancel method
+    throttledFn.cancel = () => {
+      if (timeoutId) {
+        clearPlatformTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+    
+    return throttledFn;
   }
-
 
   // Create a timeout-wrapped function
   createTimeoutFunction(fn: Function): Function {
@@ -242,7 +274,7 @@ export class EventHandlerConfigManager {
       return new Promise((resolve, reject) => {
         const timeoutId: PlatformTimeout = setTimeout(() => {
           reject(new Error(`Function timed out after ${this.config.timeout}ms`));
-        }, this.config.timeout);
+        }, this.config.timeout!);
 
         Promise.resolve(fn(...args))
           .then((result) => {
@@ -256,6 +288,8 @@ export class EventHandlerConfigManager {
       });
     };
   }
+
+
   // Create a retry function
   createRetryFunction(fn: Function): Function {
     if (!this.config.retryAttempts || this.config.retryAttempts <= 0) {
@@ -270,7 +304,6 @@ export class EventHandlerConfigManager {
           return await Promise.resolve(fn(...args));
         } catch (error) {
           lastError = error as Error;
-          
           if (attempt < this.config.retryAttempts!) {
             if (this.config.retryDelay) {
               await new Promise(resolve => setTimeout(resolve, this.config.retryDelay));
@@ -328,26 +361,5 @@ export class EventHandlerConfigManager {
       event.stopImmediatePropagation();
     }
   }
-    
-      // Create a debounced function using your existing debounce utility
-  createDebouncedFunction(fn: Function): Function {
-    if (!this.config.debounce || this.config.debounce <= 0) {
-      return fn;
-    }
-
-    // Use your existing debounce function
-    const debouncedFn = debounce(
-      fn,
-      this.config.debounce,
-      {
-        leading: false,
-        trailing: true
-      }
-    );
-
-    return (...args: any[]) => debouncedFn(...args);
-  }
-
-
-
+  
 }
