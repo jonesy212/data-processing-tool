@@ -2,23 +2,43 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
+import { Milestone } from '@/app/typings/milestoneTypes';
+import { Phase } from "@/app/models/phases/Phase";
 
-export interface BackupRecord {
+export interface CoreBackupMetadata {
+  version: string;
+  user: string;
+  tags: string[];
+  reason?: string;
+  parentOperationId?: string;
+  backupType: 'phase' | 'milestone' | 'entity' | 'restore-point';
+  operation: string;
+}
+
+// Extended backup metadata (optional)
+export interface ExtendedBackupMetadata<T = any> 
+  extends Partial<UnifiedMetadata<T, any, any, any, any, any>> {
+  // Add backup-specific fields
+  size?: number;
+  compression?: 'none' | 'gzip' | 'zip';
+  validationHash?: string;
+  dependencies?: string[];
+}
+
+// Complete backup metadata
+export type BackupMetadata<T = any> = CoreBackupMetadata & ExtendedBackupMetadata<T>;
+
+export interface BackupRecord<T = any> {
   id: string;
   timestamp: Date;
-  operation: 'phase-execution' | 'phase-modification' | 'milestone-complete' | 'dependency-update';
+  operation: string;
   phaseId: string;
   phaseName: string;
   backupPath: string;
   checksum: string;
   originalPath: string;
-  metadata: {
-    version: string;
-    user: string;
-    reason?: string;
-    parentOperationId?: string;
-    tags: string[];
-  };
+  metadata: BackupMetadata<T>;
   status: 'active' | 'rolled-back' | 'expired';
 }
 
@@ -71,6 +91,11 @@ export class PhaseBackupSystem {
     
     if (!fs.existsSync(path.join(this.backupDir, 'milestones'))) {
       fs.mkdirSync(path.join(this.backupDir, 'milestones'), { recursive: true });
+    }
+    
+    // Add entities directory
+    if (!fs.existsSync(path.join(this.backupDir, 'entities'))) {
+      fs.mkdirSync(path.join(this.backupDir, 'entities'), { recursive: true });
     }
     
     if (!fs.existsSync(this.recordsFile)) {
@@ -339,6 +364,74 @@ export class PhaseBackupSystem {
     }
   }
 
+  async backupEntity(
+    entityName: string,
+    filePath: string,
+    operation: string,
+    tags: string[]
+  ): Promise<{ id: string }> {
+    const timestamp = new Date();
+    const backupId = `entity-${entityName}-${timestamp.getTime()}`;
+    const backupPath = path.join(this.backupDir, 'entities', `${backupId}.bak`);
+    
+    // Ensure entity backup directory exists
+    const entityBackupDir = path.join(this.backupDir, 'entities');
+    if (!fs.existsSync(entityBackupDir)) {
+      fs.mkdirSync(entityBackupDir, { recursive: true });
+    }
+    
+    try {
+      // Read entity file content
+      const content = fs.readFileSync(filePath, 'utf8');
+      const checksum = this.calculateChecksum(content);
+      
+      // Write backup
+      const backupData = {
+        entityName,
+        filePath,
+        content,
+        timestamp: timestamp.toISOString(),
+        operation,
+        tags,
+        checksum
+      };
+      
+      fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
+      
+      // Create backup record
+      const record: BackupRecord = {
+        id: backupId,
+        timestamp,
+        operation: 'entity-backup',
+        phaseId: 'entity-backup-system',
+        phaseName: 'Entity Backup',
+        backupPath,
+        checksum,
+        originalPath: filePath,
+        metadata: {
+          version: '1.0.0',
+          user: process.env.USER || 'system',
+          entityName,
+          filePath,
+          operation,
+          tags,
+          reason: `Entity backup: ${operation}`
+        },
+        status: 'active'
+      };
+      
+      this.saveBackupRecord(record);
+      
+      console.log(`💾 Entity backup created: ${entityName} (${operation})`);
+      
+      return { id: backupId };
+      
+    } catch (error: any) {
+      console.error(`❌ Failed to backup entity ${entityName}:`, error.message);
+      throw new Error(`Entity backup failed: ${error.message}`);
+    }
+  }
+
   // ========== MILESTONE BACKUP METHODS ==========
 
   async backupMilestone<T extends BaseDataEntity>(
@@ -384,7 +477,7 @@ export class PhaseBackupSystem {
         milestoneId: milestone.id,
         milestoneName: milestone.name,
         operation,
-        tags: ['milestone', milestone.id, operation]
+        tags: ['milestone', String(milestone.id), String(operation)]
       },
       status: 'active'
     };
@@ -556,3 +649,34 @@ export class PhaseBackupSystem {
     };
   }
 }
+
+
+const record: BackupRecord = {
+  id: backupId,
+  timestamp,
+  operation: 'milestone-complete',
+  phaseId: phase.id,
+  phaseName: phase.name,
+  backupPath,
+  checksum,
+  originalPath: `${phase.id}:milestone:${milestone.id}`,
+  metadata: {
+    // Core metadata
+    version: '1.0.0',
+    user: process.env.USER || 'system',
+    tags: ['milestone', String(milestone.id), String(operation)],
+    backupType: 'milestone',
+    operation: String(operation),
+    
+    // Extended metadata
+    milestoneId: String(milestone.id),
+    milestoneName: milestone.name,
+    author: process.env.USER || 'system',
+    generatedAt: timestamp,
+    customMetadata: {
+      phaseProgress: phase.progress,
+      milestoneStatus: milestone.status
+    }
+  },
+  status: 'active'
+};

@@ -1,21 +1,32 @@
 // src/app/error-analyzer/types/FixStrategyTypes.ts
 import { FixPlan } from '@/app/error-analyzer/types/ErrorAnalysisTypes';
+import { StrategyCore } from '@/app/error-analyzer/types/ErrorAnalysisTypes';
 
+// Create a unified type that includes ALL fix types from both FixPlan and your new ones
 export type FixStrategyTypeDef = 
-  | 'import_fix'
-  | 'type_alignment'
-  | 'property_addition'
+  | 'missing_import'  
+  | 'type_mismatch'
+  | 'missing_property'   
+  | 'circular_dependency'
+  | 'method_redefinition'
+  | 'import_fix'   
+  | 'type_alignment'  
+  | 'property_addition'  
+  | 'circular_break'  
   | 'method_implementation'
-  | 'circular_break'
-  | 'interface_update'
-  | 'generic_constraint'
-  | 'type_guard'
-  | 'null_check'
-  | 'async_handling';
+  | 'interface_update'   
+  | 'generic_constraint' 
+  | 'type_guard'   
+  | 'null_check'   
+  | 'async_handling';    
 
-export interface ImportFixStrategy extends FixStrategyTypeDef {
+// Update BaseFixStrategy to use the unified type
+// In FixStrategyTypes.ts
 
-  type: FixStrategyType;
+
+// Base fix strategy with additional properties
+export interface BaseFixStrategy extends StrategyCore {
+  type: FixStrategyTypeDef;
   name: string;
   description: string;
   applicability: string[];
@@ -25,24 +36,25 @@ export interface ImportFixStrategy extends FixStrategyTypeDef {
   risks: string[];
 }
 
-export interface ImportFixStrategy extends FixStrategy {
-  type: 'import_fix';
+// Now create your specific strategy interfaces
+export interface ImportFixStrategy extends BaseFixStrategy {
+  type: 'import_fix' | 'missing_import'; // Include both possibilities
   importType: 'named' | 'default' | 'namespace';
   modulePath: string;
   importName: string;
   alternativePaths: string[];
 }
 
-export interface TypeAlignmentStrategy extends FixStrategy {
-  type: 'type_alignment';
+export interface TypeAlignmentStrategy extends BaseFixStrategy {
+  type: 'type_alignment' | 'type_mismatch'; // Include both possibilities
   sourceType: string;
   targetType: string;
   conversionRequired: boolean;
   typeMapping: Record<string, string>;
 }
 
-export interface PropertyAdditionStrategy extends FixStrategy {
-  type: 'property_addition';
+export interface PropertyAdditionStrategy extends BaseFixStrategy {
+  type: 'property_addition' | 'missing_property'; // Include both possibilities
   propertyName: string;
   targetType: string;
   inferredType: string;
@@ -50,8 +62,8 @@ export interface PropertyAdditionStrategy extends FixStrategy {
   defaultValue?: string;
 }
 
-export interface CircularBreakStrategy extends FixStrategy {
-  type: 'circular_break';
+export interface CircularBreakStrategy extends BaseFixStrategy {
+  type: 'circular_break' | 'circular_dependency'; // Include both possibilities
   cycle: string[];
   breakPoints: string[];
   replacementTypes: string[];
@@ -60,7 +72,7 @@ export interface CircularBreakStrategy extends FixStrategy {
 export interface FixExecutionResult {
   success: boolean;
   fixId: string;
-  strategy: FixStrategyType;
+  strategy: FixStrategyTypeDef;
   appliedChanges: AppliedChange[];
   validationResults: ValidationResult[];
   confidenceAfter: number;
@@ -94,4 +106,25 @@ export interface PrioritizationContext {
   typeUsageFrequency: Map<string, number>;
   errorDensity: Map<string, number>;
   projectStructure: any;
+}
+
+// Optional: Helper type to map old types to new types
+export type FixTypeMapping = {
+  'missing_import': 'import_fix';
+  'type_mismatch': 'type_alignment';
+  'missing_property': 'property_addition';
+  'circular_dependency': 'circular_break';
+  'method_redefinition': 'method_implementation';
+};
+
+// Optional: Helper function to convert old fix types to new ones
+export function mapToNewFixType(oldType: keyof FixTypeMapping): FixStrategyTypeDef {
+  const mapping: FixTypeMapping = {
+    'missing_import': 'import_fix',
+    'type_mismatch': 'type_alignment',
+    'missing_property': 'property_addition',
+    'circular_dependency': 'circular_break',
+    'method_redefinition': 'method_implementation'
+  };
+  return mapping[oldType];
 }

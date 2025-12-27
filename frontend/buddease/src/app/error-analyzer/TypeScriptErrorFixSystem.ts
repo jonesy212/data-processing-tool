@@ -93,7 +93,8 @@ export class TypeScriptErrorFixSystem {
                 fixPlan,
                 success,
                 Date.now() - startTime,
-                'Fix applied successfully'
+                undefined, // workflowContext is undefined (5th parameter)
+                'Fix applied successfully' // notes (6th parameter)
             );
 
             console.log(`✅ Fix ${fixId} applied successfully`);
@@ -107,8 +108,9 @@ export class TypeScriptErrorFixSystem {
                 fixPlan,
                 false,
                 Date.now() - startTime,
+                undefined,
                 error instanceof Error ? error.message : 'Unknown error'
-            );
+            );  
 
             return false;
         }

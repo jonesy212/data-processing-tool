@@ -10,7 +10,7 @@ interface DependencyGraph {
   inheritanceChains: string[][];
 }
 
-class TypeScriptDependencyAnalyzer {
+export class TypeScriptDependencyAnalyzer {
   async analyzeDependencies(srcDir: string = './src'): Promise<DependencyGraph> {
     console.log('🔗 Analyzing dependencies and inheritance...');
     

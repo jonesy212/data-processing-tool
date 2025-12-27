@@ -15,7 +15,7 @@ interface DependencyNode {
   generics?: string[];
 }
 
-interface CircularDependency {
+export interface CircularDependency {
   id: string;
   cycle: string[];
   files: string[];

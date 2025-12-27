@@ -92,22 +92,56 @@ class EnhancedFixStrategy {
     console.log('🔍 Running TypeScript check...');
     
     let errors: TypeScriptError[] = [];
+    let tscOutput = '';
     
     try {
-      const tscOutput = execSync('npx tsc --noEmit --pretty false 2>&1', {
+      tscOutput = execSync('npx tsc --noEmit --skipLibCheck --skipDefaultLibCheck 2>&1', {
         encoding: 'utf8',
         stdio: 'pipe'
-      });
+      }).toString();
+      
       errors = this.parseTypeScriptErrors(tscOutput);
+      
     } catch (error: any) {
-      if (error.stdout) {
-        errors = this.parseTypeScriptErrors(error.stdout);
+      console.error('TypeScript command failed:', error.message);
+      
+      // Capture the error output
+      const errorOutput = error.stdout?.toString() || error.message || '';
+      console.log('Error output (first 500 chars):', errorOutput.substring(0, 500));
+      
+      errors = this.parseTypeScriptErrors(errorOutput);
+      
+      // If still no errors but we got a crash, add a generic error
+      if (errors.length === 0) {
+        errors.push({
+          resource: 'TypeScript Compiler',
+          code: '9999',
+          message: `TypeScript crashed: ${error.message.split('\n')[0]}`,
+          startLineNumber: 0,
+          startColumn: 0,
+          endLineNumber: 0,
+          endColumn: 0,
+          severity: 8,
+          source: 'TypeScript'
+        });
       }
     }
     
+    console.log(`Found ${errors.length} errors`);
+    
     if (errors.length === 0) {
       console.log('✅ No TypeScript errors found!');
-      process.exit(0);
+      console.log('📊 Generating empty analysis report...');
+      
+      return {
+        totalErrors: 0,
+        totalFiles: 0,
+        folderBreakdown: [],
+        topFiles: [],
+        errorCodeDistribution: new Map(),
+        folderTree: 'No errors found - project is clean! ✅',
+        recommendations: ['🎉 No TypeScript errors to fix!', 'Keep up the good work!']
+      };
     }
     
     console.log(`📊 Found ${errors.length} errors across ${new Set(errors.map(e => e.resource)).size} files`);
@@ -120,7 +154,6 @@ class EnhancedFixStrategy {
     
     return analysis;
   }
-
 
   private determinePriority(score: number): 'critical' | 'high' | 'medium' | 'low' {
     if (score >= 90) return 'critical';
@@ -743,7 +776,7 @@ Raw TypeScript errors in JSON format for reference.
     };
     
     return descriptions[code] || `TS${code} - Check TypeScript documentation`;
-    }
+  }
   
   private parseTypeScriptErrors(output: string): TypeScriptError[] {
     const errors: TypeScriptError[] = [];
@@ -751,7 +784,30 @@ Raw TypeScript errors in JSON format for reference.
     
     const errorPattern = /^(.*\.(?:ts|tsx))\((\d+),(\d+)\):\s+error\s+TS(\d+):\s+(.+)$/;
     
+    // Check for stack overflow errors
+    const stackOverflowPatterns = [
+      'Maximum call stack size exceeded',
+      'RangeError',
+      'isTypeReferenceWithGenericArguments',
+      'getRelationKey'
+    ];
+    
+    let hasStackOverflow = false;
+    let suspectedFile = 'unknown';
+    
     for (const line of lines) {
+      // Check for stack overflow
+      if (stackOverflowPatterns.some(pattern => line.includes(pattern))) {
+        hasStackOverflow = true;
+      }
+      
+      // Try to extract file path from stack trace
+      const fileMatch = line.match(/at\s+.*\((.*\.tsx?):/);
+      if (fileMatch && !fileMatch[1].includes('node_modules')) {
+        suspectedFile = fileMatch[1];
+      }
+      
+      // Parse regular TypeScript errors
       const match = line.match(errorPattern);
       if (match) {
         const [, resource, startLine, startColumn, code, message] = match;
@@ -766,6 +822,27 @@ Raw TypeScript errors in JSON format for reference.
           severity: 8,
           source: 'TypeScript'
         });
+      }
+    }
+    
+    // Add stack overflow as an error
+    if (hasStackOverflow) {
+      errors.push({
+        resource: suspectedFile !== 'unknown' ? suspectedFile : 'TypeScript Compiler',
+        code: '2321',
+        message: 'CRITICAL: TypeScript stack overflow - Circular type dependency detected',
+        startLineNumber: 1,
+        startColumn: 1,
+        endLineNumber: 1,
+        endColumn: 1,
+        severity: 8,
+        source: 'TypeScript'
+      });
+      
+      console.error('⚠️ Detected TypeScript stack overflow!');
+      console.error('This indicates circular type dependencies in your code.');
+      if (suspectedFile !== 'unknown') {
+        console.error(`📄 Suspected file: ${suspectedFile}`);
       }
     }
     

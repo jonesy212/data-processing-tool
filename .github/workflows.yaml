@@ -1,0 +1,39 @@
+# .github/workflows/check-imports.yml
+name: Check Import/Export Types
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-imports:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check import/export types
+      run: npm run check:imports
+      
+    - name: Auto-fix if possible
+      if: failure()
+      run: npm run fix:imports
+      
+    - name: Commit fixes
+      if: failure()
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add .
+        git commit -m "fix: auto-fix import/export types" || echo "No changes to commit"
+        git push

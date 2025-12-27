@@ -35,7 +35,7 @@ interface Communication<
 > {
     id: string;
     messages: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-    participants: Sender[];
+    participants: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -48,12 +48,12 @@ interface CommunicationProps<
   IncludedFields extends keyof T = keyof T
 > {
   message: Message<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  sender: Sender;
+  sender: Sender<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   timestamp: Date;
 }
 
 
-const CommunicationPage: React.FC<CommunicationProps> = ({ message, sender, timestamp }) => {
+const CommunicationPage: React.FC<CommunicationProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = ({ message, sender, timestamp }) => {
   return (
     <div className="communication">
       <div className="communication-sender">{sender.username}</div>

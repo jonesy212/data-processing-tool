@@ -103,16 +103,33 @@
     "fix-imports:report": "tsx app/scripts/fix-imports.ts",
     "fix-imports:scan": "tsx app/scripts/fix-imports.ts",
     
-    "fix:interface-imports": "tsx app/scripts/fix-interface-imports.ts --all",
-    "fix:interface-imports:quick": "tsx app/scripts/fix-interface-imports.ts --quick",
+
+    "fix:interface-imports": "tsx app/scripts/fix-interface-imports.ts",
+    "fix:interface-imports:quick": "tsx app/scripts/fix-interface-imports.ts quick",
     "fix:interface-imports:preview": "tsx app/scripts/fix-interface-imports.ts --preview",
+    "fix:interface-imports:rollback": "tsx app/scripts/fix-interface-imports.ts --rollback",
+    "fix:interface-imports:dry-run": "tsx app/scripts/fix-interface-imports.ts preview",
+
+    "fix:interface-imports:analyze": "tsx app/scripts/fix-interface-imports.ts --analyze",
     
     "fix:all-imports": "npm run fix-imports && npm run fix:interface-imports",
     "fix:all-imports:dry": "npm run fix-imports:dry-run && npm run fix:interface-imports:preview",
     
+    "fix:interface-imports:scan": "tsx app/scripts/fix-interface-imports.ts scan --report",
+
+    "fix:interface-imports:all": "tsx app/scripts/fix-interface-imports.ts all",
+    "fix:interface-imports:interactive": "tsx app/scripts/fix-interface-imports.ts interactive",
+    "fix:interface-imports:safe": "tsx app/scripts/fix-interface-imports.ts safe",
+    "fix:interface-imports:target": "tsx app/scripts/fix-interface-imports.ts target src/app/state/stores/DataStore.ts",
+
+
+
     "test:imports": "pnpm type-check && pnpm analyze:all",
  
-
+    "detect:circular": "tsx scripts/detect-all-circular-deps.ts",
+    "detect:circular:full": "pnpm run-circular-detector && pnpm detect:circular",
+    "fix:circular": "pnpm detect:circular:full && echo 'Check reports/ for findings'",
+    "run-circular-detector": "tsx src/app/generators/corrections/CircularDependencyDetector.ts",
 
 
     "analyze:type-relationships": "pnpm tsx src/app/scripts/analyzeTypeRelationships.ts",

@@ -1,9 +1,11 @@
 // src/app/error-analyzer/ProgressTracker.ts
 import { FixPlan } from '@/app/error-analyzer/ErrorFixManager';
 import { Progress, ProgressPhase } from '@/models/tracker/ProgressBar';
+import { WorkflowProgressMetrics }  from '@/app/error-analyzer/WorkflowProgressMetrics'
+import { WorkflowTransition } from '@/app/models/phases/WorkflowTransition'
+import { TransitionEvaluationContext } from '@/app/error-analyzer/TransitionEvaluationContext'
 import fs from 'fs';
 import path from 'path';
-
 
 export interface ProgressMetrics {
     timestamp: string;
@@ -33,8 +35,10 @@ export interface FixHistoryEntry {
 export class ProgressTracker {
     private historyFile: string;
     private metricsFile: string;
+    private workflowMetricsFile: string; // NEW: Add workflow metrics file path
     private history: FixHistoryEntry[] = [];
     private metrics: ProgressMetrics[] = [];
+    private workflowMetrics: WorkflowProgressMetrics[] = []; // NEW: Add workflow metrics storage
     private currentProgress: Progress | null = null;
 
     constructor(trackingDir: string = './error-tracking') {
@@ -44,15 +48,40 @@ export class ProgressTracker {
 
         this.historyFile = path.join(trackingDir, 'fix-history.json');
         this.metricsFile = path.join(trackingDir, 'progress-metrics.json');
+        this.workflowMetricsFile = path.join(trackingDir, 'workflow-metrics.json'); // NEW
 
         this.loadHistory();
         this.loadMetrics();
+        this.loadWorkflowMetrics(); // NEW
         this.initializeProgress();
     }
 
+    // NEW: Method to load workflow metrics
+    private loadWorkflowMetrics(): void {
+        try {
+            if (fs.existsSync(this.workflowMetricsFile)) {
+                const data = fs.readFileSync(this.workflowMetricsFile, 'utf8');
+                this.workflowMetrics = JSON.parse(data);
+            }
+        } catch (error) {
+            console.warn('Could not load workflow metrics:', error);
+            this.workflowMetrics = [];
+        }
+    }
 
+    // NEW: Method to save workflow metrics
+    private saveWorkflowMetrics(): void {
+        try {
+            fs.writeFileSync(
+                this.workflowMetricsFile, 
+                JSON.stringify(this.workflowMetrics, null, 2)
+            );
+        } catch (error) {
+            console.warn('Could not save workflow metrics:', error);
+        }
+    }
 
-    // Enhanced method to track workflow transitions
+    // Enhanced method to track workflow transitions - updated
     trackWorkflowTransition(
         transition: WorkflowTransition,
         context: TransitionEvaluationContext,
@@ -67,22 +96,26 @@ export class ProgressTracker {
     ): void {
         const timestamp = new Date().toISOString();
         
+        // Calculate errors based on input or context
+        const errorCount = metrics?.errors?.length || 
+                          (context.data.validationResults?.errors?.length || 0);
+        
         // Create workflow metrics
-        const workflowMetrics: WorkflowProgressMetrics = {
+        const workflowMetric: WorkflowProgressMetrics = {
             timestamp,
             workflowId: context.workflowInstance.id,
             transitionId: transition.id,
             stepFrom: transition.fromStepId,
             stepTo: transition.toStepId,
             userId: context.user.id,
-            totalErrors: metrics?.errors?.length || 0,
-            fixedErrors: success ? 1 : 0,
-            remainingErrors: 0, // Calculated based on context
+            totalErrors: errorCount,
+            fixedErrors: success ? 1 : 0, // Simplified - adjust as needed
+            remainingErrors: Math.max(0, errorCount - (success ? 1 : 0)),
             fixRate: this.calculateWorkflowFixRate(),
-            confidenceTrend: 'stable',
-            topFiles: [],
-            byFixType: {},
-            byPriority: {},
+            confidenceTrend: 'stable', // You might want to calculate this
+            topFiles: this.extractTopFilesFromErrors(metrics?.errors || []),
+            byFixType: this.calculateFixTypeDistribution(metrics?.errors || []),
+            byPriority: this.calculatePriorityDistribution(metrics?.errors || []),
             performance: metrics ? {
                 conditionEvaluationTime: metrics.conditionEvaluationTime,
                 validationTime: metrics.validationTime,
@@ -91,7 +124,9 @@ export class ProgressTracker {
             } : undefined
         };
 
-        this.workflowMetrics.push(workflowMetrics);
+        // Add to workflow metrics
+        this.workflowMetrics.push(workflowMetric);
+        this.saveWorkflowMetrics();
         
         // Update UI metrics if tracking is enabled
         if (transition.progressTracking?.trackUIMetrics) {
@@ -118,7 +153,133 @@ export class ProgressTracker {
         }
 
         // Update progress metrics
-        this.updateMetricsAfterTransition(workflowMetrics);
+        this.updateMetricsAfterTransition(workflowMetric);
+    }
+
+    // NEW: Helper to extract top files from errors
+    private extractTopFilesFromErrors(errors: FixPlan[]): Array<{ file: string; errorCount: number }> {
+        const fileCounts = new Map<string, number>();
+        
+        for (const error of errors) {
+            const file = error.error.resource;
+            fileCounts.set(file, (fileCounts.get(file) || 0) + 1);
+        }
+        
+        return Array.from(fileCounts.entries())
+            .map(([file, errorCount]) => ({ file, errorCount }))
+            .sort((a, b) => b.errorCount - a.errorCount)
+            .slice(0, 10);
+    }
+
+    // NEW: Helper to calculate fix type distribution
+    private calculateFixTypeDistribution(errors: FixPlan[]): Record<string, number> {
+        const distribution: Record<string, number> = {};
+        
+        for (const error of errors) {
+            distribution[error.fixType] = (distribution[error.fixType] || 0) + 1;
+        }
+        
+        return distribution;
+    }
+
+    // NEW: Helper to calculate priority distribution
+    private calculatePriorityDistribution(errors: FixPlan[]): Record<string, number> {
+        const distribution: Record<string, number> = {};
+        
+        for (const error of errors) {
+            distribution[error.priority] = (distribution[error.priority] || 0) + 1;
+        }
+        
+        return distribution;
+    }
+
+    // Get workflow-specific metrics - already exists, keep as is
+    getWorkflowMetrics(workflowId: string, days: number = 7): WorkflowProgressMetrics[] {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - days);
+
+        return this.workflowMetrics.filter(metric =>
+            metric.workflowId === workflowId && 
+            new Date(metric.timestamp) >= cutoff
+        );
+    }
+
+    // NEW: Get all workflow IDs in the system
+    getAllWorkflowIds(): string[] {
+        return Array.from(
+            new Set(this.workflowMetrics.map(metric => metric.workflowId))
+        );
+    }
+
+    // NEW: Get transitions for a specific workflow
+    getWorkflowTransitions(workflowId: string): string[] {
+        const transitions = this.workflowMetrics
+            .filter(metric => metric.workflowId === workflowId)
+            .map(metric => metric.transitionId)
+            .filter((id): id is string => id !== undefined);
+        
+        return Array.from(new Set(transitions));
+    }
+
+    // NEW: Get workflow statistics
+    getWorkflowStatistics(workflowId: string): {
+        totalTransitions: number;
+        successfulTransitions: number;
+        successRate: number;
+        averageTime: number;
+        mostUsedTransition: string;
+    } {
+        const workflowData = this.workflowMetrics.filter(m => m.workflowId === workflowId);
+        
+        if (workflowData.length === 0) {
+            return {
+                totalTransitions: 0,
+                successfulTransitions: 0,
+                successRate: 0,
+                averageTime: 0,
+                mostUsedTransition: 'none'
+            };
+        }
+
+        const successfulTransitions = workflowData.filter(m => m.fixedErrors > 0);
+        const successRate = (successfulTransitions.length / workflowData.length) * 100;
+        
+        const avgTime = workflowData.reduce((sum, m) => {
+            const time = m.performance?.totalTransitionTime || 0;
+            return sum + time;
+        }, 0) / workflowData.length;
+
+        // Find most used transition
+        const transitionCounts = new Map<string, number>();
+        workflowData.forEach(m => {
+            if (m.transitionId) {
+                transitionCounts.set(m.transitionId, (transitionCounts.get(m.transitionId) || 0) + 1);
+            }
+        });
+
+        const mostUsedTransition = Array.from(transitionCounts.entries())
+            .sort((a, b) => b[1] - a[1])[0]?.[0] || 'none';
+
+        return {
+            totalTransitions: workflowData.length,
+            successfulTransitions: successfulTransitions.length,
+            successRate,
+            averageTime: avgTime,
+            mostUsedTransition
+        };
+    }
+
+    // Reset method - update to include workflow metrics
+    reset(): void {
+        this.history = [];
+        this.metrics = [];
+        this.workflowMetrics = []; // NEW: Clear workflow metrics
+
+        this.saveHistory();
+        this.saveMetrics();
+        this.saveWorkflowMetrics(); // NEW: Save cleared metrics
+
+        console.log('Progress tracking reset');
     }
 
     // Original analysis tracking method
@@ -176,7 +337,7 @@ export class ProgressTracker {
         this.updateProgressFromCurrentState();
     }
 
-        // Get Progress object for UI with workflow context
+    // Get Progress object for UI with workflow context
     getProgressForUI(workflowContext?: {
         workflowId?: string;
         transitionId?: string;
@@ -190,13 +351,43 @@ export class ProgressTracker {
             ? (currentMetrics.fixedErrors / currentMetrics.totalErrors) * 100
             : 0;
 
+        // Determine if we're in workflow context
+        const isWorkflowContext = !!workflowContext?.workflowId;
+        
+        if (isWorkflowContext) {
+            // For workflow context, we might want different progress calculation
+            // For example, based on workflow metrics instead of error metrics
+            const workflowId = workflowContext.workflowId!; 
+            
+            const workflowStats = this.getWorkflowStatistics(workflowId);
+            
+            const workflowPercentage = workflowStats.totalTransitions > 0
+                ? (workflowStats.successfulTransitions / workflowStats.totalTransitions) * 100
+                : 0;
+            
+            const workflowName = workflowContext.transitionId 
+                ? `Workflow: ${workflowId} (${workflowContext.transitionId})`
+                : `Workflow: ${workflowId}`;
+            
+            return {
+                id: `workflow-progress-${workflowId}`,
+                name: workflowName,
+                color: this.getProgressColor(workflowPercentage),
+                description: this.generateWorkflowProgressDescription(workflowId, workflowContext),
+                value: workflowPercentage,
+                label: `${Math.round(workflowPercentage)}%`,
+                current: workflowStats.successfulTransitions,
+                min: 0,
+                max: workflowStats.totalTransitions,
+                percentage: workflowPercentage,
+                done: workflowPercentage >= 100
+            };
+        }
+
+        // Default TypeScript error progress
         const progress: Progress = {
-            id: workflowContext?.workflowId 
-                ? `${workflowContext.workflowId}-progress`
-                : this.currentProgress.id,
-            name: workflowContext?.transitionId
-                ? `Transition: ${workflowContext.transitionId}`
-                : this.currentProgress.name,
+            id: 'typescript-error-fix-progress',
+            name: 'TypeScript Error Resolution',
             color: this.getProgressColor(percentage),
             description: this.generateProgressDescription(currentMetrics, workflowContext),
             value: percentage,
@@ -209,6 +400,32 @@ export class ProgressTracker {
         };
 
         return progress;
+    }
+
+
+    private generateWorkflowProgressDescription(
+        workflowId: string, 
+        context?: { workflowId?: string; transitionId?: string }
+    ): string {
+        const stats = this.getWorkflowStatistics(workflowId);
+        const metrics = this.getWorkflowMetrics(workflowId, 1); // Last day
+        
+        if (metrics.length === 0) {
+            return context?.transitionId 
+                ? `Starting transition: ${context.transitionId}`
+                : `Workflow ${workflowId} - No recent activity`;
+        }
+        
+        const lastMetric = metrics[metrics.length - 1];
+        const descriptions = [
+            `Transitions: ${stats.successfulTransitions}/${stats.totalTransitions} successful`,
+            context?.transitionId ? `Current: ${context.transitionId}` : '',
+            `Success rate: ${stats.successRate.toFixed(1)}%`,
+            lastMetric.performance ? `Avg time: ${lastMetric.performance.totalTransitionTime}ms` : '',
+            `${stats.totalTransitions - stats.successfulTransitions} remaining`
+        ].filter(Boolean);
+        
+        return descriptions.join(' • ');
     }
 
     // Get current phase with workflow context
@@ -255,17 +472,6 @@ export class ProgressTracker {
 
 
 
-
-    // Get workflow-specific metrics
-    getWorkflowMetrics(workflowId: string, days: number = 7): WorkflowProgressMetrics[] {
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - days);
-
-        return this.workflowMetrics.filter(metric =>
-            metric.workflowId === workflowId && 
-            new Date(metric.timestamp) >= cutoff
-        );
-    }
 
     // Generate workflow progress report
     generateWorkflowProgressReport(workflowId: string): string {
@@ -395,7 +601,7 @@ export class ProgressTracker {
             buttonClicks: 1,
             successRate: success ? 100 : 0,
             averageResponseTime: timeTaken,
-            themeChanges: context.uiContext.currentTheme.colors?.primary !== 
+            themeChanges: context.uiContext?.currentTheme.colors?.primary !== 
                          transition.uiConfig?.colors?.button ? 1 : 0,
             animationUsage: transition.uiConfig?.animations ? {
                 [transition.uiConfig.animations.transitionType || 'none']: 1
@@ -725,7 +931,34 @@ export class ProgressTracker {
         return ((percentage - phaseMin) / phaseWidth) * 100;
     }
 
-    private createDefaultProgress(): Progress {
+    private createDefaultProgress(workflowContext?: {
+        workflowId?: string;
+        transitionId?: string;
+    }): Progress {
+        if (workflowContext?.workflowId) {
+            // Create workflow-specific progress
+            const workflowName = workflowContext.transitionId 
+                ? `Workflow: ${workflowContext.workflowId} (${workflowContext.transitionId})`
+                : `Workflow: ${workflowContext.workflowId}`;
+            
+            return {
+                id: `workflow-progress-${workflowContext.workflowId}`,
+                name: workflowName,
+                color: '#3B82F6', // Blue for workflows
+                description: workflowContext.transitionId 
+                    ? `Processing workflow transition: ${workflowContext.transitionId}`
+                    : `Executing workflow: ${workflowContext.workflowId}`,
+                value: 0,
+                label: '0%',
+                current: 0,
+                min: 0,
+                max: 100, // Default to 100 for workflow steps
+                percentage: 0,
+                done: false
+            };
+        }
+        
+        // Default TypeScript error fix progress
         return {
             id: 'typescript-error-fix-progress',
             name: 'TypeScript Error Resolution',
@@ -993,14 +1226,4 @@ export class ProgressTracker {
         };
     }
 
-
-    reset(): void {
-        this.history = [];
-        this.metrics = [];
-
-        this.saveHistory();
-        this.saveMetrics();
-
-        console.log('Progress tracking reset');
-    }
 }

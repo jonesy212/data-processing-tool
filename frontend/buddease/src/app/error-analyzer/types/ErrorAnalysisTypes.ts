@@ -1,5 +1,5 @@
 // src/app/error-analyzer/types/ErrorAnalysisTypes.ts
-
+import {  FixStrategyTypeDef } from '@/app/error-analyzer/types/FixStrategyTypes'
 
 // ========== SHARED INTERFACES ==========
 export interface SharedErrorLocation {
@@ -87,7 +87,7 @@ export interface FixPlan extends
   SharedConfidence {
   id: string;
   error: TSCompilerError;
-  fixType: 'missing_import' | 'type_mismatch' | 'missing_property' | 'circular_dependency' | 'method_redefinition';
+  fixType: FixStrategyTypeDef
   priority: 'critical' | 'high' | 'medium' | 'low';
   suggestedFix: string;
   affectedFiles: string[];
@@ -135,13 +135,21 @@ export interface ConfidenceFactors {
   total: number; // 0-100
 }
 
-export interface FixStrategy {
-  type: FixPlan['fixType'];
+
+
+// Shared strategy properties
+export interface StrategyCore {
   confidenceThresholds: {
-    autoApply: number; // >= 85
-    suggestApply: number; // 70-84
-    manualReview: number; // < 70
+    autoApply: number;
+    suggestApply: number;
+    manualReview: number;
   };
   validationSteps: string[];
   fallbackStrategies: string[];
 }
+
+
+export interface FixStrategy extends StrategyCore {
+  type: FixStrategyTypeDef;
+}
+

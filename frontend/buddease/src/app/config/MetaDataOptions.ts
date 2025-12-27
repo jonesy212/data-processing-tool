@@ -323,7 +323,6 @@ type UnifiedMetadata<
   dataSource?: string;
   isArchived?: boolean
   initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  
   area?: string;
   overrides?: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   apiKey?: string;
@@ -331,7 +330,9 @@ type UnifiedMetadata<
   baseUrl?: string;
   config?: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   createdBy?: string;
+  metadata: BackupMetadata; 
 };
+
 
 interface UnifiedMetaDataOptions<
   T extends BaseDataEntity,

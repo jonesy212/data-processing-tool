@@ -1,0 +1,13 @@
+[
+  {
+    "resource": "TypeScript Compiler",
+    "code": "2321",
+    "message": "CRITICAL: TypeScript stack overflow - Circular type dependency detected",
+    "startLineNumber": 1,
+    "startColumn": 1,
+    "endLineNumber": 1,
+    "endColumn": 1,
+    "severity": 8,
+    "source": "TypeScript"
+  }
+]

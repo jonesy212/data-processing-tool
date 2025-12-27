@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "generated": "2025-12-27T05:47:31.697Z",
+    "totalErrors": 1,
+    "totalFiles": 1,
+    "overallPriority": 1
+  },
+  "summary": {
+    "topFiles": [
+      {
+        "name": "TypeScript Compiler",
+        "path": "/Users/dixiejones/data_analysis/frontend/buddease/TypeScript Compiler",
+        "errorCount": 1,
+        "priorityScore": 30,
+        "relativePath": "TypeScript Compiler",
+        "errorTypes": [
+          "2321"
+        ]
+      }
+    ],
+    "topFolders": [
+      {
+        "name": "project-root",
+        "fullPath": "project-root",
+        "errorCount": 1,
+        "fileCount": 1,
+        "priorityScore": 20,
+        "topErrors": [
+          {
+            "code": "TS2321",
+            "count": 1
+          }
+        ]
+      }
+    ],
+    "errorDistribution": [
+      {
+        "code": "TS2321",
+        "count": 1,
+        "description": "Circular dependency"
+      }
+    ]
+  },
+  "recommendations": [
+    "**Quick Wins:** Fix these files first (1-3 errors each): TypeScript Compiler",
+    "**Focus Folders:** Start with these high-priority folders: project-root",
+    "**Batch Fix:** Fix all TS2321 errors (1 occurrences)"
+  ]
+}

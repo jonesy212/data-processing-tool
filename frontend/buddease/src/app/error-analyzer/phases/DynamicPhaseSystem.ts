@@ -56,12 +56,13 @@ export interface PatternAnalysis {
 }
 
 export interface PhaseContext extends ExecutionContext {
-  projectRoot: string;
   entityAnalysis: Map<string, EntityAnalysis>;
   patternAnalysis: Map<string, PatternAnalysis>;
   testResults: Map<string, any>;
   backupSystem: PhaseBackupSystem;
   config: PhaseSystemConfig;
+
+  
 }
 
 export interface PhaseSystemConfig {
@@ -279,23 +280,17 @@ export class DynamicPhaseExecutor {
 
   constructor(config: Partial<PhaseSystemConfig> = {}) {
     this.context = {
+      // ExecutionContext properties
       projectRoot: config.entityDirectory || process.cwd(),
+      results: new Map(),
+      diagnostics: [],
+      config: config, // Pass through the config
+      
+      // PhaseContext additional properties
       entityAnalysis: new Map(),
       patternAnalysis: new Map(),
       testResults: new Map(),
       backupSystem: new PhaseBackupSystem(),
-      config: {
-        entityDirectory: config.entityDirectory || process.cwd(),
-        backupEnabled: config.backupEnabled !== undefined ? config.backupEnabled : true,
-        validationStrictness: config.validationStrictness || 'moderate',
-        autoFixPatterns: config.autoFixPatterns !== undefined ? config.autoFixPatterns : true,
-        generateReports: config.generateReports !== undefined ? config.generateReports : true,
-        parallelProcessing: config.parallelProcessing !== undefined ? config.parallelProcessing : false,
-        maxConcurrentPhases: config.maxConcurrentPhases || 3
-      },
-      results: new Map(),
-      diagnostics: [],
-     
     };
 
     this.patternAnalyzer = new PatternAnalyzer();
@@ -777,7 +772,7 @@ export class DynamicPhaseExecutor {
     entityName: string;
     error: string;
     location: string;
-    severity: 'low' | 'medium' | 'high';
+    severity: 'low' | 'medium' | 'high' | 'critical';
   }>> {
     console.log('🔎 Detecting type errors...');
     
@@ -785,7 +780,7 @@ export class DynamicPhaseExecutor {
       entityName: string;
       error: string;
       location: string;
-      severity: 'low' | 'medium' | 'high';
+      severity: 'low' | 'medium' | 'high' | 'critical';
     }> = [];
     
     // Run TypeScript diagnostics

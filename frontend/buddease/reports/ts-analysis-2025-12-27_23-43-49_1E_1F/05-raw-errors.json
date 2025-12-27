@@ -1,0 +1,13 @@
+[
+  {
+    "resource": "TypeScript Compiler",
+    "code": "9999",
+    "message": "TypeScript crashed: Command failed: npx tsc --noEmit --skipLibCheck --skipDefaultLibCheck 2>&1",
+    "startLineNumber": 0,
+    "startColumn": 0,
+    "endLineNumber": 0,
+    "endColumn": 0,
+    "severity": 8,
+    "source": "TypeScript"
+  }
+]

@@ -993,8 +993,7 @@ private async detectESMRuntimeFailures(): Promise<ImportError[]> {
     return errors;
   }
 
-
-  private async detectCircularDependencies(): Promise<ImportError[]> {
+  public async detectCircularDependencies(): Promise<ImportError[]> {
     const errors: ImportError[] = [];
     
     console.log('   🔄 Using enhanced circular dependency detection...');

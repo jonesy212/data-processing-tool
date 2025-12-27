@@ -22,15 +22,22 @@ interface EventDetails extends CalendarEventViewingDetailsProps {
   // Add more properties as needed
 }
 
-interface CalendarEventViewingDetailsProps {
-  // Define props here if needed
+interface CalendarEventViewingDetailsBaseProps {
   eventId: string;
   title?: string;
-  None?: () => React.JSX.Element;
+  None?: () => JSX.Element;
   date?: string;
   productId?: string;
-  eventDetails: React.FunctionComponent<CalendarEventViewingDetailsProps>;
 }
+
+// If you need the component type, create a separate type
+type CalendarEventViewingDetailsComponent = 
+  React.ComponentType<CalendarEventViewingDetailsBaseProps>;
+
+// Or if you really need both in one type:
+type CalendarEventViewingDetailsProps = CalendarEventViewingDetailsBaseProps & {
+  eventDetails?: CalendarEventViewingDetailsComponent;
+};
 
 const CalendarEventViewingDetails: React.FC<CalendarEventViewingDetailsProps> = ({ None , eventId}) => {
   const [eventDetails, setEventDetails] = useState<EventDetails>({} as EventDetails);
