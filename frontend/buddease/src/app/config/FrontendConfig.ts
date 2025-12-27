@@ -1,5 +1,5 @@
 // FrontendConfig.ts
-import { ApiConfig, CacheConfig, RetryConfig } from "@/app/api/ApiConfigService";
+import { ApiConfig, CacheConfig, RetryConfig } from "@/app/config/CacheConfig";
 
 interface FrontendConfig {
   appName: string;

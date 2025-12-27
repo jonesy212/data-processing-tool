@@ -7,16 +7,16 @@ import { Subscriber } from '@/app/subscribers/Subscriber';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { useCallback } from 'react';
 
 import {
-  CreateOptions,
-  FetchAllOptions,
-  FetchOptions,
-  FindSubscriberOptions,
-  GetConfigOptions
+    CreateOptions,
+    FetchAllOptions,
+    FetchOptions,
+    FindSubscriberOptions,
+    GetConfigOptions
 } from '@/app/snapshots/SnapshotOptions';
 
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';

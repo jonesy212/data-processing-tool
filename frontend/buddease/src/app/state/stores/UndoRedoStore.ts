@@ -1,8 +1,8 @@
 // UndoRedoStore.ts
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Data, } from '@/app/models/data/Data';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
-import { Data, } from '@/app/models/data/Data';
 
 export interface UndoRedoStore {
   actions: any[];

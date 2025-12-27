@@ -2,8 +2,8 @@
 // scripts/generateComponentsScript.ts
 import fs from 'fs';
 import path from 'path';
-import { PatternAnalyzer } from '@/app/scripts/generateComponentsScript'
-import { ComponentPatternDetector } from '../../src/app/scripts/ComponentPatternDetector';
+import PatternAnalyzer from '@/app/scripts/generateComponentsScript'
+import { ComponentPatternDetector } from '@/app/scripts/ComponentPatternDetector'
 import { TemplateGenerator } from './TemplateGenerator';
 
 class GenerateComponentsScript {

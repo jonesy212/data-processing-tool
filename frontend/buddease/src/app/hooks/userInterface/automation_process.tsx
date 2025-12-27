@@ -3,13 +3,13 @@
 import { ErrorHandlingActions } from '@/app/api/ErrorHandlingActions';
 import errorHandlingStore from '@/app/components/state/stores/ErrorHandlingStore';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import RandomWalkSuggestions from '@/app/hooks/userInterface/RandomWalkSuggestions';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { useNotification } from '@/app/state/context/NotificationContext';
-import RandomWalkSuggestions from '@/app/hooks/userInterface/RandomWalkSuggestions';
 import { notify } from '@/utils/snapshotUtils';
 import ReactDOM, { useEffect } from 'react';
 

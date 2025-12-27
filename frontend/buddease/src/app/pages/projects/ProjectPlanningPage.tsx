@@ -1,7 +1,7 @@
 // ProjectPlanningPage.tsx
 // Example usage in another component or page
 import React from 'react';
-import IdeaLifecycleComponent
+import IdeaLifecycleComponent from '@/app/pages/projects/IdeaLifecycleComponent'; // Added semicolon here
 
 const ProjectPlanningPage: React.FC = () => {
   return (
@@ -14,3 +14,5 @@ const ProjectPlanningPage: React.FC = () => {
     </div>
   );
 };
+
+export default ProjectPlanningPage; // Don't forget to export

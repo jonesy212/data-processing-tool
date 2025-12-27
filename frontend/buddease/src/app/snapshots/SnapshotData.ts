@@ -17,10 +17,14 @@ import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessin
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotSecurity } from "@/app/snapshots/SnapshotSecurity";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore, InitializedState } from '@/app/state/stores/DataStore';
 import { AuditRecord } from "@/app/subscribers/Subscriber";
@@ -30,11 +34,7 @@ import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { SnapshotStorage } from "@/utils/storage/SnapshotStorage";
-import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
-import { SnapshotSecurity } from "@/app/snapshots/SnapshotSecurity";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 interface SnapshotBaseProperties<
   T extends BaseDataEntity,
@@ -497,6 +497,6 @@ interface HierarchyExport<
 }
 
 export type {
-  CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotCoreBase, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
+    CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotCoreBase, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
 };
 

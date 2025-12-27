@@ -12,7 +12,7 @@ import FrontendStructure from "@/app/config/appStructure/FrontendStructureCompon
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -497,55 +497,55 @@ const emptyDocumentData: AppDocumentData = createDefaultDocumentData();
 
 export type {
 
-  // ========== DOCUMENT AI/ML FEATURES ==========
-  AISuggestion,
-  // ========== CORE APP TYPES ==========
-  AppDocument,
-  AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
-  AppDocumentSnapshotData,
-  AppDocumentSnapshotStore,
-  AppDocumentStructuredMetadata,
-  AppDocumentUnifiedMetadata, BackupSchedule,
-  // ========== BATCH OPERATIONS ==========
-  BatchDocumentOperation,
-  BatchOperationResult, DocumentAccessLog, DocumentAIAnalysis,
-  // ========== DOCUMENT ANALYTICS & USAGE ==========
-  DocumentAnalytics, DocumentAttachment, DocumentBackup,
-  // ========== DOCUMENT COLLABORATION ==========
-  DocumentCollaborator,
-  DocumentComment, DocumentContext,
-  // ========== CORE DOCUMENT ENTITY TYPES ==========
-  DocumentEntity, DocumentExcludedFields,
-  // ========== DOCUMENT EXPORT & FORMATTING ==========
-  DocumentExportOptions, DocumentFilterOptions, DocumentFrontendStructure, DocumentIncludedFields, DocumentIndex, DocumentK,
-  DocumentMeta,
-  // ========== DOCUMENT CONFIGURATION & PARAMS ==========
-  DocumentParams,
-  // ========== DOCUMENT PERMISSIONS & ACCESS ==========
-  DocumentPermissions,
-  // ========== DOCUMENT SEARCH & FILTERING ==========
-  DocumentSearchResult, DocumentSession, DocumentShareLink, DocumentSnapshotsArray, DocumentSnapshotStoreConfig, DocumentSortOptions,
-  // ========== DOCUMENT CONTENT & STYLING ==========
-  DocumentStyles, DocumentSummary,
-  DocumentTemplate, DocumentUsageStats,
+    // ========== DOCUMENT AI/ML FEATURES ==========
+    AISuggestion,
+    // ========== CORE APP TYPES ==========
+    AppDocument,
+    AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
+    AppDocumentSnapshotData,
+    AppDocumentSnapshotStore,
+    AppDocumentStructuredMetadata,
+    AppDocumentUnifiedMetadata, BackupSchedule,
+    // ========== BATCH OPERATIONS ==========
+    BatchDocumentOperation,
+    BatchOperationResult, DocumentAccessLog, DocumentAIAnalysis,
+    // ========== DOCUMENT ANALYTICS & USAGE ==========
+    DocumentAnalytics, DocumentAttachment, DocumentBackup,
+    // ========== DOCUMENT COLLABORATION ==========
+    DocumentCollaborator,
+    DocumentComment, DocumentContext,
+    // ========== CORE DOCUMENT ENTITY TYPES ==========
+    DocumentEntity, DocumentExcludedFields,
+    // ========== DOCUMENT EXPORT & FORMATTING ==========
+    DocumentExportOptions, DocumentFilterOptions, DocumentFrontendStructure, DocumentIncludedFields, DocumentIndex, DocumentK,
+    DocumentMeta,
+    // ========== DOCUMENT CONFIGURATION & PARAMS ==========
+    DocumentParams,
+    // ========== DOCUMENT PERMISSIONS & ACCESS ==========
+    DocumentPermissions,
+    // ========== DOCUMENT SEARCH & FILTERING ==========
+    DocumentSearchResult, DocumentSession, DocumentShareLink, DocumentSnapshotsArray, DocumentSnapshotStoreConfig, DocumentSortOptions,
+    // ========== DOCUMENT CONTENT & STYLING ==========
+    DocumentStyles, DocumentSummary,
+    DocumentTemplate, DocumentUsageStats,
 
-  // ========== DOCUMENT VALIDATION ==========
-  DocumentValidationRule,
-  // ========== DOCUMENT VERSIONS & HISTORY ==========
-  DocumentVersion,
-  DocumentVersionHistory,
-  // ========== DOCUMENT WORKFLOW ==========
-  DocumentWorkflow, ExportFormat,
-  ExportResult,
-  HeaderStyle, PrivateDocument,
-  PublicDocument, TemplateField, WorkflowParticipant, WorkflowStep
+    // ========== DOCUMENT VALIDATION ==========
+    DocumentValidationRule,
+    // ========== DOCUMENT VERSIONS & HISTORY ==========
+    DocumentVersion,
+    DocumentVersionHistory,
+    // ========== DOCUMENT WORKFLOW ==========
+    DocumentWorkflow, ExportFormat,
+    ExportResult,
+    HeaderStyle, PrivateDocument,
+    PublicDocument, TemplateField, WorkflowParticipant, WorkflowStep
 };
 
 
 
 
   export {
-    createDefaultDocument, createDefaultDocumentData,
-    createDocumentVersion, emptyDocument, emptyDocumentData, incrementVersion
-  };
+        createDefaultDocument, createDefaultDocumentData,
+        createDocumentVersion, emptyDocument, emptyDocumentData, incrementVersion
+    };
 

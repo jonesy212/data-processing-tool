@@ -1,7 +1,7 @@
 // createSnapshotExample.ts
-// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotData';
+// import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 // import { Data } from '@/app/models/data/Data';
 // import { K, T } from '@/app/models/data/dataStoreMethods';

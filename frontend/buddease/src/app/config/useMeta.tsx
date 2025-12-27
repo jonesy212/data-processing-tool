@@ -1,16 +1,16 @@
 // useMeta.tsx
+import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PhaseData } from "@/app/models/phases/Phase";
 import { Taggable } from '@/app/models/tracker/Tag';
 import { backendStructure } from "@/app/server/database/BackendStructure";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { EventManager } from "@/app/state/stores/DataStore";
 import VersionImpl, { Version } from "@/app/versions/Version";
 import { useMemo } from "react";
-import { frontendStructure } from "@/app/config/appStructure/FrontendStructure";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 
 function useMeta<
   T extends BaseDataEntity,

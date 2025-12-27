@@ -13,7 +13,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots/SnapshotConfig';
 import { createSnapshotStoreOptions } from "@/app/snapshots/createSnapshotStoreOptions";
 import {
   Snapshots,
@@ -21,7 +21,7 @@ import {
   SnapshotStoreObject,
   SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
@@ -592,56 +592,87 @@ function isSnapshotStoreConfig<
 }
 
 
-export const addToSnapshotList = async  <
+export const addToSnapshotList = async <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
-  >(
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   console.log("Snapshot added to snapshot list: ", snapshot);
+  
   if (!storeProps) {
-    throw new Error("Snapshot properties not available")
+    throw new Error("Snapshot properties not available");
   }
-  const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
 
-  const subscriptionData: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = snapshot.data
-    ? {
-        name: snapshot.name ? snapshot.name : undefined,
-        subscribers: [],
-        getSubscriptionLevel: getSubscriptionLevel,
-        unsubscribe: (): void => {},
-        portfolioUpdates: (): void => {},
-        tradeExecutions: (): void => {},
-        marketUpdates: (): void => {},
-        triggerIncentives: (): void => {},
-        communityEngagement: (): void => {},
-        determineCategory: (
-          data: string | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
-        ): string | CategoryProperties => {
-          // Adjusted return type
-          if (data === undefined || data === null) {
-            return ""; // Provide a default or handle appropriately
-          }
-          if (typeof data === "string") {
-            return data;
-          }
-          // Ensure snapshotStore.determineCategory returns CategoryProperties
-          return snapshotStore.determineCategory(data)
-        },
-        portfolioUpdatesLastUpdated: {} as ModifiedDate,
-        ...snapshot.data,
+  // If snapshot is incomplete or missing required properties, create a new one
+  let validSnapshot = snapshot;
+  
+  if (!snapshot || !snapshot.data) {
+    // Create a new snapshot using createCompleteSnapshot
+    const newSnapshot = await createCompleteSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+      snapshot?.data || {} as T, // Provide fallback data
+      new Map(), // baseMeta
+      snapshot?.id || null, // snapshotId
+      null, // snapshotStore
+      null, // snapshotManager
+      null, // snapshotStoreConfig
+      false, // isSubscribed
+      snapshot?.category, // category
+      storeProps // storeProps
+      // Add other required parameters for createCompleteSnapshot
+    );
+    
+    validSnapshot = newSnapshot;
+  }
+
+  const snapshotStore = await useSnapshotStore(validSnapshot, storeProps);
+
+  const subscriptionData: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+    name: validSnapshot.name || storeProps.name || "Unnamed Subscription",
+    subscribers: subscribers || [],
+    getSubscriptionLevel: getSubscriptionLevel,
+    unsubscribe: (): void => {
+      console.log("Unsubscribed from subscription");
+    },
+    portfolioUpdates: (): void => {
+      console.log("Portfolio updates triggered");
+    },
+    tradeExecutions: (): void => {
+      console.log("Trade executions triggered");
+    },
+    marketUpdates: (): void => {
+      console.log("Market updates triggered");
+    },
+    triggerIncentives: (): void => {
+      console.log("Incentives triggered");
+    },
+    communityEngagement: (): void => {
+      console.log("Community engagement triggered");
+    },
+    determineCategory: (
+      data: string | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
+    ): string | CategoryProperties => {
+      if (data === undefined || data === null) {
+        return "";
       }
-    : null;
+      if (typeof data === "string") {
+        return data;
+      }
+      return snapshotStore.determineCategory(data);
+    },
+    portfolioUpdatesLastUpdated: {} as ModifiedDate,
+    snapshot: validSnapshot, // Add the required snapshot property
+    ...validSnapshot.data // Spread snapshot data as additional properties
+  };
 
   return subscriptionData;
 };
-
 
 
 export const getSnapshotsBySubscriber = async <

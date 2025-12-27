@@ -1,7 +1,7 @@
 // NavigationContext.ts
 import React, { createContext, useContext, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Step } from '@/app/hooks/useStepNavigation'
+import { Step } from '@/app/hooks/useStepNavigation';
 
 /**
  * NavigationView - extend with your app's views
@@ -18,6 +18,37 @@ export type NavigationView =
   | "analysis"
   | "docs"
   | string;
+
+// Define the context type
+interface NavigationContextState {
+  currentPath: string;
+  currentView: NavigationView | undefined;
+  machineState: NavState;
+  backStack: Array<{ path: string; view?: NavigationView }>;
+  forwardStack: Array<{ path: string; view?: NavigationView }>;
+  currentStepId: string | undefined;
+  steps: Step[];
+  
+  navigateTo: (path: string, view?: NavigationView, replace?: boolean) => void;
+  replace: (path: string, view?: NavigationView) => void;
+  goBack: () => void;
+  goForward: () => void;
+  resetHistory: (startPath?: string, startView?: NavigationView) => void;
+  pushToBackStack: (entry: { path: string; view?: NavigationView }) => void;
+  clearForwardStack: () => void;
+  
+  goToStep: (stepId: string) => void;
+  autoNavigate: (condition?: () => boolean) => void;
+  autoNavigateForPhase: (phaseId: string) => void;
+  autoNavigateForStep: (stepIndex: number, stepList: Step[]) => void;
+  autoNavigateForRole: (role: string) => void;
+  
+  getState: () => NavState;
+  sendEvent: (event: NavEvent) => void;
+}
+
+// Alias for consistency (you had both NavigationContextState and NavigationContextValue)
+type NavigationContextValue = NavigationContextState;
 
 const NavigationContext = createContext<NavigationContextState | undefined>(undefined);
 
@@ -64,9 +95,6 @@ function navStateMachine(state: NavState, event: NavEvent): NavState {
   }
 }
 
-
-
-
 interface NavigationProviderProps {
   children: React.ReactNode;
   initialPath?: string;
@@ -74,11 +102,9 @@ interface NavigationProviderProps {
   initialSteps?: Step[];
 }
 
-
 /**
  * Provider that tracks custom back/forward stacks while delegating actual URL changes to react-router
  */
-
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   children,
   initialPath = "/",
@@ -206,7 +232,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
   };
 
   // --- Context value ---
-  const contextValue: NavigationContextValue = useMemo(
+  const contextValue: NavigationContextState = useMemo(
     () => ({
       currentPath,
       currentView,
@@ -239,8 +265,12 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({
       machineState,
       currentStepId,
       steps,
+      backStack,
+      forwardStack,
     ]
   );
 
   return <NavigationContext.Provider value={contextValue}>{children}</NavigationContext.Provider>;
 };
+
+export default NavigationContext;

@@ -5,6 +5,7 @@ import { Task } from '@/app/components/models/tasks/Task';
 import { AppStructurePermissions } from '@/app/config/appStructure/AppStructure';
 import { baseConfig, BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
+import { CoreMetadata } from '@/app/config/MetadataStateManager';
 import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/app/config/StructuredMetadata';
 import { useMeta } from '@/app/config/useMeta';
 import { Attachment } from '@/app/documents/attachment/Attachment';
@@ -20,10 +21,9 @@ import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PriorityValue } from '@/app/pages/searches/CriteriaType';
 import { TransactionData } from '@/app/payment/Transaction';
 import { Permission } from '@/app/permissions/Permission';
-import { CoreMetadata } from '@/app/config/MetadataStateManager';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 
@@ -1119,7 +1119,7 @@ const myMetaData: UnifiedMetadata<MetaEntity, MetaK, MetaMeta, MetaAttachment, M
 export { fetchUserAreaDimensions, transformProjectToUnifiedMetadata };
 
   export type {
-    AdditionalMetaDataOptions, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-    SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
-  };
+        AdditionalMetaDataOptions, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
+        SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
+    };
 

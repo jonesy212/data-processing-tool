@@ -7,6 +7,7 @@ import { Task } from '@/app/components/models/tasks/Task';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { options } from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
@@ -23,19 +24,19 @@ import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysi
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { LocalStorageSnapshotStore, Result, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import { default as initialState, default as SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotWithCriteria, TagsRecord } from '@/app/models/tracker/Tag';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { UserAttachment, UserEntity, UserExcludedFields, UserIncludedFields, UserK, UserMeta } from '@/app/typings/entities/UserEntity';
@@ -47,7 +48,6 @@ import { User } from '@/app/users/User';
 import operation from 'antd/es/transfer/operation';
 import { config } from 'process';
 import { FC } from 'react';
-import { options } from '@/app/generators/GenerateUniqueIds';
 
 export type UserAssignee = Pick<User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields>, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>
 & {

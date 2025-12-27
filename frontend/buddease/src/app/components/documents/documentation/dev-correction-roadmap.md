@@ -72,7 +72,7 @@ touch scripts/devCorrectionRoadmap.ts
 
 **Problem:**
 ```ts
-import { Snapshot } from './Snapshot';
+import type { Snapshot } from './Snapshot';
 ```
 
 # 🛠️  Developer Correction Roadmap
@@ -89,12 +89,12 @@ import { Snapshot } from './Snapshot';
 ### 1. Missing import in useSnapshot.ts (**CRITICAL** – src/app/snapshots/useSnapshot.ts:17)
 **Problem:**
 ```ts
-import { Snapshot } from './snap';   // ← file does not exist
+import type { Snapshot } from './snap';   // ← file does not exist
 Suggested Fix:
 TypeScript
 Copy
 ```
-import { Snapshot } from './Snapshot';
+import type { Snapshot } from './Snapshot';
 2. …
 ---
 

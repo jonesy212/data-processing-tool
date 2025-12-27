@@ -7,7 +7,7 @@ import { NotificationType } from '@/app/features/support/UnifiedNotificationType
 import { Content } from '@/app/models/content/AddContent';
 import { Data } from '@/app/models/data/Data';
 import Tracker from '@/app/models/tracker/Tracker';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useNotification } from '@/app/state/context/NotificationContext';

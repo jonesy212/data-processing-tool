@@ -3,7 +3,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { createBaseDataEntity } from '@/app/config/createBaseDataEntity';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMap';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';

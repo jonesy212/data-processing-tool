@@ -1,6 +1,6 @@
 // closeChatSettingsPanel.ts
 import { useRef } from "react";
-import { ChatSettings } from "@/app/components/communications/chat/ChatSettingsPanel";
+import { ChatSettings } from "@/app/notifications/NotificationChannelManager";
 
 const settingsPanel = useRef<ChatSettings | null>(null);
 // Function to close the chat settings panel

@@ -4,13 +4,13 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { DataStore } from "@/app/state/stores/DataStore";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import SnapshotStore from "./SnapshotStore";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { DataStore } from "@/app/state/stores/DataStore";
+import SnapshotStore from "./SnapshotStore";
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
 interface SnapshotCommonProps<

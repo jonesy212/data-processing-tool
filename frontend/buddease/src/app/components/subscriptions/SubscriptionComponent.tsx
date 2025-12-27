@@ -6,16 +6,17 @@ import useRealtimeData, {
 } from "@/app/hooks/commHooks/useRealtimeData";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
+import { K, T } from "@/app/models/data/dataStoreMethods";
 import {
   SubscriberTypeEnum,
   SubscriptionTypeEnum,
 } from "@/app/models/data/StatusType";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T } from "@/app/models/data/dataStoreMethods";
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useUser } from "@/app/state/context/UserContext";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from '@/app/subscriptions/Subscription';
+import { subscriptionServiceInstance } from "@/app/subscriptions/SubscriptionService";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import {
   logActivity,
@@ -24,7 +25,6 @@ import {
   updateProjectState,
 } from "@/utils/web3/applicationUtils";
 import React, { useEffect, useState } from "react";
-import { subscriptionServiceInstance } from "@/app/subscriptions/SubscriptionService";
 
 interface Props {
   initialData: RealtimeDataItem[];

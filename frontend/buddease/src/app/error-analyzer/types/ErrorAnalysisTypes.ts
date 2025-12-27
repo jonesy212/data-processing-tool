@@ -1,16 +1,48 @@
 // src/app/error-analyzer/types/ErrorAnalysisTypes.ts
 
-export interface TSCompilerError {
-  resource: string;
-  owner: string;
-  code: string;
-  severity: number;
-  message: string;
-  source: string;
+
+// ========== SHARED INTERFACES ==========
+export interface SharedErrorLocation {
   startLineNumber: number;
   startColumn: number;
   endLineNumber: number;
   endColumn: number;
+}
+
+export interface SharedResourceInfo {
+  resource: string;
+  owner: string;
+  source: string;
+}
+
+export interface SharedPriority {
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  priorityScore: number;
+}
+
+export interface SharedConfidence {
+  confidence: number; // 0-100
+}
+
+export interface SharedTypeInfo {
+  name: string;
+  file: string;
+  type: 'interface' | 'type' | 'class' | 'component' | 'props';
+}
+
+export interface SharedUsageInfo {
+  file: string;
+  line: number;
+}
+
+
+// ========== EXISTING INTERFACES (UPDATED) ==========
+export interface TSCompilerError extends 
+  SharedResourceInfo,
+  SharedErrorLocation {
+  code: string;
+  severity: number;
+  message: string;
   relatedInformation?: Array<{
     startLineNumber: number;
     startColumn: number;
@@ -51,11 +83,11 @@ export interface RelationshipMap {
   fileDependencies: Map<string, string[]>; // file -> imported files
 }
 
-export interface FixPlan {
+export interface FixPlan extends 
+  SharedConfidence {
   id: string;
   error: TSCompilerError;
   fixType: 'missing_import' | 'type_mismatch' | 'missing_property' | 'circular_dependency' | 'method_redefinition';
-  confidence: number; // 0-100
   priority: 'critical' | 'high' | 'medium' | 'low';
   suggestedFix: string;
   affectedFiles: string[];
@@ -69,10 +101,8 @@ export interface TypeHierarchy {
   depth: number;
 }
 
-export interface TypeNode {
-  name: string;
-  file: string;
-  type: 'interface' | 'type' | 'class' | 'component' | 'props';
+export interface TypeNode extends 
+  SharedTypeInfo {
   extends?: string[];
   implements?: string[];
   properties: string[];

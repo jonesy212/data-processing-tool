@@ -1,6 +1,7 @@
 // src/app/error-analyzer/ImportSuggestionGenerator.ts
 
-import { TSCompilerError, RelationshipMap } from '@/app/error-analyzer/ErrorFixManager';
+import { TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 import { ImportFixStrategy } from '@/app/error-analyzer/index';
 import fs from 'fs';
 import path from 'path';

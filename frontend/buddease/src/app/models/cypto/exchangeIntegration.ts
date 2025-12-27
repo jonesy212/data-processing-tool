@@ -4,21 +4,21 @@ import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import updateUI, { updateUIWithSearchResults } from "@/app/documents/editing/updateUI";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { updateUIWithSnapshotStore } from "@/app/snapshots/updateUIWithSnapshotStore";
+import { ClientSubscriber } from '@/app/subscriptions/ClientSubscriber';
 import {
-  DEXEnum,
-  ExchangeDataTypeEnum,
-  ExchangeEnum
+    DEXEnum,
+    ExchangeDataTypeEnum,
+    ExchangeEnum
 } from "@/app/typings/exchangeTypes";
 import OrderBookUpdater from "../../components/crypto/OrderBookUpdater";
 import TickerUpdater from "../../components/crypto/TickerUpdater";
-import { ClientSubscriber } from '@/app/subscriptions/ClientSubscriber';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
-  OrderBookEntity,
-  OrderBookSnapshot
+    OrderBookEntity,
+    OrderBookSnapshot
 } from '@/app/typings/ExchangeTypes';
 
 // Client-side instances
@@ -401,9 +401,9 @@ const exampleUsage = () => {
 // Export everything
 export default integrateExchange;
 export {
-  DEXEnum, ExchangeDataTypeEnum, ExchangeEnum, handleOrderBookUpdateUI,
-  subscribeToOrderBookUpdates,
-  unsubscribeFromOrderBookUpdates, updateOrderBook,
-  updateTicker
+    DEXEnum, ExchangeDataTypeEnum, ExchangeEnum, handleOrderBookUpdateUI,
+    subscribeToOrderBookUpdates,
+    unsubscribeFromOrderBookUpdates, updateOrderBook,
+    updateTicker
 };
 

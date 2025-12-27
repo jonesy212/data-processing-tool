@@ -1,43 +1,35 @@
 // ExampleTeam.ts
-import { AppTeamEntity, TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields } from '@/app/typings/entities/TeamEntity'
-import { PriorityTypeEnum, TeamStatus } from '@/app/models/data/StatusType';
-import { Phase } from '@/app/models/phases/Phase';
-import { assignProject, Project, ProjectType, reassignProject, unassignProject } from '@/app/models/projects/Project';
-import { Task } from '@/app/models/tasks/Task';
+import { UserSettings } from '@/app/config/UserSettings';
+import { assignProject, Project, reassignProject, unassignProject } from '@/app/models/projects/Project';
 import { TeamData } from '@/app/models/teams/TeamData';
 import { Progress } from '@/app/models/tracker/ProgressBar';
 import { UserRole } from '@/app/models/UserRole';
 import UserRoles from '@/app/models/UserRoles';
 import { Persona } from '@/app/pages/personas/Persona';
 import { ProfileAccessControl } from '@/app/pages/profile/Profile';
-import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { Settings } from 'app/state/hybrid/SettingsManagerStore'
 import { DataProcessingTask } from '@/app/todos/tasks/DataProcessingTask';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { AppTeamEntity, TeamAttachment, TeamEntity, TeamExcludedFields, TeamIncludedFields, TeamK, TeamMeta } from '@/app/typings/entities/TeamEntity';
 import { VideoData } from '@/app/typings/videoTypes/Video';
-import { Idea } from '@/app/users/Ideas';
-import { User } from '@/app/users/User';
-import { UserSettings } from '@/app/config/UserSettings';
+import { Settings } from 'app/state/hybrid/SettingsManagerStore';
 
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from '@/app/communications/LanguageEnum';
-import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
 import { DefaultMeta } from '@/app/config/BaseConfig';
+import { ThemeEnum } from '@/app/libraries/ui/theme/Theme';
 
 import { updateProgress } from '@/app/components/calendar/CalendarApp';
 import { CommonDetails } from '@/app/components/models/details/CommonDetails';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
 import { Team } from '@/app/components/teams/Team';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields } from '@/app/typings/entities/MemberEntity';
 import { options } from '@/app/generators/GenerateUniqueIds';
-import { useFiltering } from '@/app/hooks/useFiltering'
+import { useFiltering } from '@/app/hooks/useFiltering';
+import generateTimeBasedCode from '@/app/models/realtime/TimeBasedCodeGenerator';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { MemberAttachment, MemberEntity, MemberExcludedFields, MemberIncludedFields, MemberK, MemberMeta } from '@/app/typings/entities/MemberEntity';
 const timeBasedCode = generateTimeBasedCode();
 const { addFilter } = useFiltering(options);
 

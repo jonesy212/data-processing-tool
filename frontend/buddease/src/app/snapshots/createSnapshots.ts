@@ -1,66 +1,66 @@
 // createSnapshots.ts
 import {
-  addData,
-  fetchData,
-  getBackendVersion,
-  getDataVersions,
-  getFrontendVersion
+    addData,
+    fetchData,
+    getBackendVersion,
+    getDataVersions,
+    getFrontendVersion
 } from "@/app/api/ApiData";
 import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CreateSnapshotStoresPayload } from "@/app/interfaces/payload/payloadTypes";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useSubscription from "@/app/hooks/useSubscription";
+import { CreateSnapshotStoresPayload } from "@/app/interfaces/payload/payloadTypes";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
-import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import * as SubscriptionMethods from '@/app/snapshots/methods/subscriptionMethods';
-import { notify } from "@/utils/snapshotUtils";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { flatMap } from "@/app/snapshots/defaultSnapshotBuilder";
 import { defaultSubscribeToSnapshot } from "@/app/snapshots/defaultSnapshotSubscribeFunctions";
 import { defaultSubscribeToSnapshots } from "@/app/snapshots/defaultSubscribeToSnapshots";
-import {
-  addDataStatus,
-  addDataSuccess,
-  getAllItems,
-  getAllKeys,
-  getData,
-  removeData,
-  setData,
-  updateData,
-  updateDataDescription, updateDataStatus,
-  updateDataTitle
-} from "./methods/dataMethods";
-import * as VersionMethods from "./methods/snapshotMethods";
+import * as SubscriptionMethods from '@/app/snapshots/methods/subscriptionMethods';
 import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
 import { UtilMethods } from "@/app/snapshots/methods/utilMethods";
-import {
-  addSnapshotSuccess,
-  batchFetchSnapshots,
-  batchFetchSnapshotsFailure,
-  batchFetchSnapshotsSuccess,
-  batchTakeSnapshot,
-  batchTakeSnapshotsRequest,
-  batchUpdateSnapshotsFailure,
-  batchUpdateSnapshotsRequest,
-  batchUpdateSnapshotsSuccess,
-  createInitSnapshot,
-  createSnapshotFailure, createSnapshotSuccess,
-  determinePrefix,
-  fetchSnapshot,
-  getAllSnapshots,
-  getDelegate,
-  handleSnapshotSuccess,
-  initSnapshot, notifySubscribers,
-  onSnapshot, onSnapshots,
-  updateSnapshots,
-  updateSnapshotsSuccess,
-  updateSnapshotSuccess
-} from "./snapshotHandlers";
 import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "@/app/snapshots/snapshotOperations";
+import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { notify } from "@/utils/snapshotUtils";
+import {
+    addDataStatus,
+    addDataSuccess,
+    getAllItems,
+    getAllKeys,
+    getData,
+    removeData,
+    setData,
+    updateData,
+    updateDataDescription, updateDataStatus,
+    updateDataTitle
+} from "./methods/dataMethods";
+import * as VersionMethods from "./methods/snapshotMethods";
+import {
+    addSnapshotSuccess,
+    batchFetchSnapshots,
+    batchFetchSnapshotsFailure,
+    batchFetchSnapshotsSuccess,
+    batchTakeSnapshot,
+    batchTakeSnapshotsRequest,
+    batchUpdateSnapshotsFailure,
+    batchUpdateSnapshotsRequest,
+    batchUpdateSnapshotsSuccess,
+    createInitSnapshot,
+    createSnapshotFailure, createSnapshotSuccess,
+    determinePrefix,
+    fetchSnapshot,
+    getAllSnapshots,
+    getDelegate,
+    handleSnapshotSuccess,
+    initSnapshot, notifySubscribers,
+    onSnapshot, onSnapshots,
+    updateSnapshots,
+    updateSnapshotsSuccess,
+    updateSnapshotSuccess
+} from "./snapshotHandlers";
 
 type Params<
   T extends BaseDataEntity,

@@ -1,8 +1,8 @@
 // snapshotStorageOptionsInstance.ts
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Data } from '@/app/models/data/Data';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { Data } from '@/app/models/data/Data';
 import { Result } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExcludedFields, SnapshotStorageIncludedFields, SnapshotStorageK, SnapshotStorageMeta } from '@/app/typings/entities/SnapshotStorageOptionsEntity';
@@ -10,8 +10,9 @@ import { SnapshotStorageAttachment, SnapshotStorageEntity, SnapshotStorageExclud
 import { SnapshotWithData } from "@/app/components/calendar/CalendarApp";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, DataDetails } from '@/app/models/data/Data';
@@ -20,12 +21,16 @@ import { NotificationPosition, PriorityTypeEnum, StatusType } from '@/app/models
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/interfaces/payload/payloadTypes";
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotContainer, SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
 import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import SnapshotStoreSubset from '@/app/snapshots/SnapshotStoreSubset';
 import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
@@ -39,14 +44,8 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { VersionHistory } from "@/app/versions/VersionData";
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
-import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { SnapshotActionType } from "./SnapshotActionType";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { InitializedConfig, SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 // Define a specific set of options for snapshot storage
 interface SnapshotStorageOptions<
@@ -1444,6 +1443,6 @@ SnapshotStorageIncludedFields>
 };
 
 export {
-	snapshotConfigOptions
+    snapshotConfigOptions
 };
 

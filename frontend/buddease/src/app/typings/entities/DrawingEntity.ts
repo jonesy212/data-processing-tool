@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Content } from '@/app/models/content/AddContent';
 import { Filter } from '@/app/pages/searches/SearchOptions';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -229,16 +229,16 @@ export interface TrackerDrawingElement {
 }
 
 export type {
-  DrawingAttachment as AppAttachment, DrawingBaseParams as AppBaseParams, DrawingEntity as AppEntity, DrawingExcludedFields as AppExcludedFields,
-  DrawingIncludedFields as AppIncludedFields,
-  DrawingK as AppK,
-  DrawingMeta as AppMeta, DrawingParams as AppParams,
-  DrawingRealtimeDataItem as AppRealtimeDataItem,
-  DrawingSnapshot as AppSnapshot, DrawingSnapshotData as AppSnapshotData,
-  DrawingSnapshotsArray as AppSnapshotsArray,
-  DrawingSnapshotStore as AppSnapshotStore,
-  DrawingSnapshotStoreConfig as AppSnapshotStoreConfig,
-  DrawingSnapshotWithCriteria as AppSnapshotWithCriteria,
-  DrawingSubscriberCollection as AppSubscriberCollection
+    DrawingAttachment as AppAttachment, DrawingBaseParams as AppBaseParams, DrawingEntity as AppEntity, DrawingExcludedFields as AppExcludedFields,
+    DrawingIncludedFields as AppIncludedFields,
+    DrawingK as AppK,
+    DrawingMeta as AppMeta, DrawingParams as AppParams,
+    DrawingRealtimeDataItem as AppRealtimeDataItem,
+    DrawingSnapshot as AppSnapshot, DrawingSnapshotData as AppSnapshotData,
+    DrawingSnapshotsArray as AppSnapshotsArray,
+    DrawingSnapshotStore as AppSnapshotStore,
+    DrawingSnapshotStoreConfig as AppSnapshotStoreConfig,
+    DrawingSnapshotWithCriteria as AppSnapshotWithCriteria,
+    DrawingSubscriberCollection as AppSubscriberCollection
 };
 

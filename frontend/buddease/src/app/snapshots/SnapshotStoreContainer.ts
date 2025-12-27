@@ -5,20 +5,20 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { Category, generateCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
-import { DataStore } from '@/app/state/stores/DataStore';
-import { SimulatedDataSource } from '@/app/snapshots/createSnapshotOptions';
-import { getSnapshotContainer } from "./snapshotOperations";
-import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
+import { DataStore } from '@/app/state/stores/DataStore';
+import { getSnapshotContainer } from "./snapshotOperations";
+import SnapshotStore from "./SnapshotStore";
 interface SnapshotStoreContainer<
     T extends BaseDataEntity,
     K extends T = T,

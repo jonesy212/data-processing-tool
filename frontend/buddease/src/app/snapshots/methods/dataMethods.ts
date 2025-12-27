@@ -5,7 +5,7 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';

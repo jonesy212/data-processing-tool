@@ -7,7 +7,7 @@ import { NotificationPosition } from "@/app/models/data/StatusType";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";

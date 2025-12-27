@@ -4,6 +4,16 @@ import fs from 'fs';
 import path from 'path';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
 
+export interface BasePatternAnalysis {
+  patternName: string;
+  entityCount: number;
+  totalUsages: number;
+  files: string[];
+  variations: Map<string, number>;
+  compatibilityMatrix: Map<string, string[]>;
+}
+
+
 export interface PatternAnalysis {
   patternType: string;
   occurrences: number;

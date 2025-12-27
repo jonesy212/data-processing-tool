@@ -1,7 +1,7 @@
 // utilMethods.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from "@/app/snapshots/Snapshot"; // adjust path to where Snapshot<T,K> lives
+import type { Snapshot } from '@/app/snapshots/Snapshot';; // adjust path to where Snapshot<T,K> lives
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';

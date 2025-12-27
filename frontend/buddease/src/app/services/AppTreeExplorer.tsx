@@ -5,7 +5,10 @@ import EnhancedTreeView from "@/app/pages/dashboards/EnhancedTreeView";
 import TreeView from "@/app/pages/dashboards/TreeView";
 import IntegratedAppTreeService from "./AppTreeService";
 import { useNotification } from "@/app/state/context/NotificationContext";
+import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
 import { useSearch } from "@/app/state/context/SearchContext";
+import { getFileCategory } from '@/utils/fileCategoryUtils';
+
 const AppTreeExplorer: React.FC = () => {
   const [activeView, setActiveView] = useState<
     "enhanced" | "basic" | "analysis"
@@ -289,13 +292,17 @@ const AppTreeExplorer: React.FC = () => {
                   entityId: file.id || file.name,
                   action: "select",
                   fileInfo: {
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
+                    viewType: "enhanced_tree",
+                    operation: "file_upload", // or "file_selection"
+                    fileCategory: getFileCategory(file.name),
+                    selectionMethod: "user_upload", // or "user_click"
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileSize: file.size,
                     path: file.path,
                     extension: file.name.split(".").pop(),
-                    lastModified: file.lastModified,
-                  },
+                    lastModified: new Date(file.lastModified),
+                  } as FileMetadata,
                   timestamp: new Date().toISOString(),
                 },
                 timestamp: new Date(),

@@ -22,7 +22,7 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
 
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SnapshotStoreProps } from "@/app/snapshots/useSnapshotStore";

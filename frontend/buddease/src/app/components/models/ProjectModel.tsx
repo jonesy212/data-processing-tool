@@ -4,7 +4,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config
 import { ClientDatabaseService } from '@/app/config/DatabaseTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Project, ProjectData } from '@/app/models/projects/Project';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 
 type AppProject = Project<
   ProjectEntity,

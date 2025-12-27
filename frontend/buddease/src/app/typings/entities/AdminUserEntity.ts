@@ -16,4 +16,4 @@ type AdminUserBaseParams = {
   IncludedFields: AdminUserIncludedFields;
 };
 
-export
+export { AdminUserEntity, AdminUserK, AdminUserMeta, AdminUserAttachment, AdminUserExcludedFields, AdminUserIncludedFields, AdminUserBaseParams }

@@ -23,7 +23,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 
 import { ConfigureSnapshotStorePayload } from '@/app/snapshots/SnapshotConfig';
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';

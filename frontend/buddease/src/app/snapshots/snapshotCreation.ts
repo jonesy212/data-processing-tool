@@ -12,7 +12,7 @@ import {
 
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 
 export const takeSnapshot = async <
   T extends BaseDataEntity,

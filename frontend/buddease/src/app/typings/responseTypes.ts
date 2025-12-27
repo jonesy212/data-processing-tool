@@ -15,19 +15,19 @@ import { Phase } from '@/app/models/phases/Phase';
 import { Project } from '@/app/models/projects/Project';
 import { Task } from '@/app/models/tasks/Task';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { Settings } from '@/app/state/hybrid/SettingsManagerStore';
 import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
 import { CalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
 import { IconStore } from '@/app/state/stores/IconStore';
-import { TaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TodoManagerStore } from '@/app/state/stores/TodoStore';
 import { TrackerStore } from '@/app/state/stores/TrackerStore';
 import { Todo } from '@/app/todos/Todo';
 import { BaseResponseType } from '@/app/typings/baseResponseTypes';
 import { User } from '@/app/users/User';
+import { TaskManagerStore } from '@/src/app/state/stores/TaskStore';
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo

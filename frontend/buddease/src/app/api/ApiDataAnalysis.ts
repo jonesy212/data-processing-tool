@@ -2,7 +2,7 @@
 import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from "@/app/api/endpointConfigurations";
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -10,7 +10,7 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import { NotificationPosition, PriorityTypeEnum } from '@/app/models/data/StatusType';
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { convertResponseToSnapshot } from "@/app/snapshots/InitializedSnapshotTypes";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';

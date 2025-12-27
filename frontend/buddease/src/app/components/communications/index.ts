@@ -1,11 +1,11 @@
 // index.ts
-export * from '@/communications/chat/ChatInput';
-export * from '@/communications/chat/ChatMessage'; // Include other relevant modules
-export * from '@/communications/chat/ChatNotification';
-export * from '@/communications/chat/ChatRoom';
-export * from '@/communications/chat/ChatRoomDashboard';
-export * from '@/communications/chat/ChatUserList';
-export * from '@/communications/chat/EnhancedGroupChatDashboard';
-export * from '@/communications/chat/Group';
-export * from '@/communications/chat/GroupChatMessage';
+export * from '@/app/components/communications/chat/ChatInput';
+export * from '@/app/components/communications/chat/ChatMessage'; // Include other relevant modules
+export * from '@/app/components/communications/chat/ChatNotification';
+export * from '@/app/components/communications/chat/ChatRoom';
+export * from '@/app/components/communications/chat/ChatRoomDashboard';
+export * from '@/app/components/communications/chat/ChatUserList';
+export * from '@/app/components/communications/chat/EnhancedGroupChatDashboard';
+export * from '@/app/components/communications/chat/Group';
+export * from '@/app/components/communications/chat/GroupChatMessage'
 

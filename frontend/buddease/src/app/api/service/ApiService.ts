@@ -4,7 +4,7 @@ import FileData from "@/app/models/data/FileData";
 import { BaseApiService } from '@/app/api/service/BaseApiService';
 import { getAuthToken } from '@/app/server/auth/getAuthToken';
 import { ConfigurationService } from "@/app/services/ConfigurationService";
-import { getBackendStructureFilePath } from "@/utils/cache/CacheManager";
+import { getBackendStructureFilePath } from '@/utils/cache/CacheWriteOptions'
 import { STORE_KEYS } from '@/app/libraries/cache/client/constants';
 import { CustomApp } from '@/utils/web3/dAppAdapter/DApp';
 import { currentAppName } from "@/app/versions/AppVersion";

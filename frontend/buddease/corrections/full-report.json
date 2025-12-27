@@ -50136,8 +50136,8 @@
       "type": "error",
       "severity": "high",
       "file": "src/app/models/phases/PhaseManager.tsx",
-      "message": "Component 'PhaseManager' references missing props interface '{ phases: Phase<AppPhaseEntity'",
-      "code": "interface { phases: Phase<AppPhaseEntity { /* not found */ }",
+      "message": "Component 'PhaseManager' references missing props interface '{ phases: Phase<PhaseT'",
+      "code": "interface { phases: Phase<PhaseT { /* not found */ }",
       "fix": "Create the missing interface or fix the reference",
       "category": "structure"
     },
@@ -78510,8 +78510,8 @@
             "type": "error",
             "severity": "high",
             "file": "src/app/models/phases/PhaseManager.tsx",
-            "message": "Component 'PhaseManager' references missing props interface '{ phases: Phase<AppPhaseEntity'",
-            "code": "interface { phases: Phase<AppPhaseEntity { /* not found */ }",
+            "message": "Component 'PhaseManager' references missing props interface '{ phases: Phase<PhaseT'",
+            "code": "interface { phases: Phase<PhaseT { /* not found */ }",
             "fix": "Create the missing interface or fix the reference",
             "category": "structure"
           },

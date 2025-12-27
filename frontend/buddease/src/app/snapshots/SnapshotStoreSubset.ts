@@ -3,22 +3,21 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
+import { Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { Payload } from '@/app/interfaces/payload/payloadTypes';
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
-import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotOperation } from "@/app/snapshots/index";
+import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
-import { DataStore } from '@/app/state/stores/DataStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { DataStore } from '@/app/state/stores/DataStore';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';

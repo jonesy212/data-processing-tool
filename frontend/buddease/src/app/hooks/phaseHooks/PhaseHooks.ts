@@ -23,7 +23,7 @@ import {
 import { useEffect } from "react";
 import { TestPhaseHookConfig, TestScenario, TestResult, TestPhaseHooks, ValidationResult, TransitionTestResult } from '@/app/hooks/useTestPhaseHooks'
 import { 
-  AppPhaseEntity, 
+  PhaseT, 
   PhaseK, 
   PhaseMeta, 
   PhaseAttachment, 
@@ -451,7 +451,7 @@ const additionalPhaseNames = [
 
 const additionalPhaseHooks: { 
   [key: string]: CustomPhaseHooks<
-    AppPhaseEntity, 
+    PhaseT, 
     PhaseK, 
     PhaseMeta, 
     PhaseAttachment, 
@@ -499,7 +499,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
       toggleActivation: () => {},
       cleanup: undefined,
     }) as CustomPhaseHooks<
-      AppPhaseEntity, 
+      PhaseT, 
       PhaseK, 
       PhaseMeta, 
       PhaseAttachment, 
@@ -542,7 +542,7 @@ additionalPhaseNames.forEach(([phaseName, duration]) => {
         component: IdeationPhaseComponent,
         hooks: [ideationPhaseHook],
       } as unknown as Phase<
-        AppPhaseEntity, 
+        PhaseT, 
         PhaseK, 
         PhaseMeta, 
         PhaseAttachment, 
@@ -576,7 +576,7 @@ const allPhaseHooks = {
 
 // Helper function to properly type allPhaseHooks
 function createTypedPhaseHooks<
-  T extends BaseDataEntity = AppPhaseEntity,
+  T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,
   Meta extends DefaultMeta<T, K> = PhaseMeta,
   AttachmentType extends Attachment = PhaseAttachment,
@@ -819,7 +819,7 @@ async function fetchPhaseData(storageClient: any, keys: string[]) {
 
 // Example: Initialize all phases in the app
 export async function initializeAllPhases<
-  T extends BaseDataEntity = AppPhaseEntity,
+  T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,
   Meta extends DefaultMeta<T, K> = PhaseMeta,
   AttachmentType extends Attachment = PhaseAttachment,
@@ -910,7 +910,7 @@ export async function initializeAllPhases<
 
 // Alternative: If you're getting allPhaseHooks from elsewhere, create a typed version
 function getTypedAllPhaseHooks<
-  T extends BaseDataEntity = AppPhaseEntity,
+  T extends BaseDataEntity = PhaseT,
   K extends T = PhaseK,
   Meta extends DefaultMeta<T, K> = PhaseMeta,
   AttachmentType extends Attachment = PhaseAttachment,

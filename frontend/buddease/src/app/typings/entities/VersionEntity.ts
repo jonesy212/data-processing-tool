@@ -6,7 +6,7 @@ import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
@@ -280,30 +280,30 @@ const createDefaultVersionData = (
 });
 
 export type {
-  VersionAttachment, VersionBaseParams, VersionEntity, VersionEntityApplyFieldFilters,
-  VersionEntityBackendStructure,
-  VersionEntityData,
-  VersionEntityDataInterface,
-  VersionEntityFrontendStructure,
-  VersionEntityHistoryEntry,
-  VersionEntityImpl,
-  VersionEntityRealtimeDataItem,
-  VersionEntitySnapshot,
-  VersionEntitySnapshotData,
-  VersionEntitySnapshotsArray,
-  VersionEntitySnapshotStore,
-  VersionEntitySnapshotStoreConfig,
-  VersionEntitySubscriberCollection,
-  VersionEntityType, VersionExcludedFields,
-  VersionIncludedFields, VersionK,
-  VersionMeta, VersionStructuredMetadata,
-  VersionUnifiedMetadata
+    VersionAttachment, VersionBaseParams, VersionEntity, VersionEntityApplyFieldFilters,
+    VersionEntityBackendStructure,
+    VersionEntityData,
+    VersionEntityDataInterface,
+    VersionEntityFrontendStructure,
+    VersionEntityHistoryEntry,
+    VersionEntityImpl,
+    VersionEntityRealtimeDataItem,
+    VersionEntitySnapshot,
+    VersionEntitySnapshotData,
+    VersionEntitySnapshotsArray,
+    VersionEntitySnapshotStore,
+    VersionEntitySnapshotStoreConfig,
+    VersionEntitySubscriberCollection,
+    VersionEntityType, VersionExcludedFields,
+    VersionIncludedFields, VersionK,
+    VersionMeta, VersionStructuredMetadata,
+    VersionUnifiedMetadata
 };
 
     export {
-    createDefaultVersionData,
-    emptyVersionData
-  };
+        createDefaultVersionData,
+        emptyVersionData
+    };
 
 // Export specific type alias for AppVersion
 export type AppVersion = VersionEntityType;

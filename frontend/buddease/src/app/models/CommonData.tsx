@@ -1,5 +1,4 @@
 // CommonData.tsx
-// CommonDetails.tsx
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { TradeData } from "@/app/components/trading/TradeData";
@@ -21,7 +20,7 @@ import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { Member } from "@/app/models/members/Member";
 import { ProjectData } from "@/app/models/projects/Project";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
 import { AllTypes } from "@/app/typings/PropTypes";

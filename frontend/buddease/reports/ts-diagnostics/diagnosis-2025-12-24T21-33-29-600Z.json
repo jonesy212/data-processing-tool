@@ -1,0 +1,59 @@
+{
+  "phase": "initial-diagnosis",
+  "timestamp": "2025-12-24T21:32:58.599Z",
+  "totalErrors": 76,
+  "nodeModuleErrors": 0,
+  "projectErrors": 76,
+  "filesWithErrors": [
+    "app/scripts/diagnose-snapshots.ts",
+    "src/app/components/models/teams/TeamManager.tsx",
+    "src/app/hooks/phases/UIPhase.ts",
+    "src/app/libraries/ui/buttons/FullscreenButtonComponent.tsx",
+    "src/app/libraries/ui/components/SnapshotComponent.tsx",
+    "src/app/models/CommunityData.tsx",
+    "src/app/models/data/DataService.ts",
+    "src/app/pages/index.tsx",
+    "src/app/pages/onboarding/PlanningSubPhase.tsx",
+    "src/app/pages/projects/ProjectPlanningPage.tsx",
+    "src/app/projects/projectManagement/ProjectManagementApp.jsx",
+    "src/app/snapshots/addToSnapshotList.tsx",
+    "src/app/snapshots/convertMetadata.ts",
+    "src/app/snapshots/InitializableWithData.tsx",
+    "src/app/snapshots/isValidMeta.ts",
+    "src/app/snapshots/snapshotBuilder.ts",
+    "src/app/snapshots/SnapshotType.ts",
+    "src/app/state/context/NavigationContext.ts",
+    "src/app/state/redux/RootSagas.ts",
+    "src/app/state/redux/sagas/fileSagas.ts",
+    "src/app/state/redux/slices/ThemeSlice.ts",
+    "src/app/state/stores/UserPresentationsStore.ts",
+    "src/app/todos/TodoComponent.ts",
+    "src/app/typings/entities/AdminUserEntity.ts",
+    "src/app/typings/typeguards/dataStoreTypeGuards.ts"
+  ],
+  "worstFile": {
+    "path": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/snapshotBuilder.ts",
+    "name": "snapshotBuilder.ts",
+    "errorCount": 29,
+    "percentage": 38
+  },
+  "errorCodeDistribution": {
+    "1002": 2,
+    "1005": 43,
+    "1109": 13,
+    "1110": 2,
+    "1128": 7,
+    "1135": 1,
+    "1161": 2,
+    "1434": 3,
+    "2809": 1,
+    "8010": 1,
+    "18026": 1
+  },
+  "recommendations": [
+    "Focus on snapshotBuilder.ts first (29 errors, 38% of total)",
+    "Batch fix all TS1005 errors (43 occurrences)",
+    "Start with quick wins: Fix files with 1-3 errors first"
+  ],
+  "nextPhase": "error-grouping"
+}

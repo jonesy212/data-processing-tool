@@ -1,53 +1,49 @@
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 // snapshotOperations.ts
-import { Payload } from '@/app/interfaces/payload/payloadTypes';
 import { SnapshotOperation } from '@/app/actions/SnapshotActions';
-import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
 import { snapshotApi } from '@/app/api/SnapshotApi';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, BaseConfig } from '@/app/config/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Version } from '@/app/versions/Version';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ProjectStateEnum } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/members/Member';
-import { InitializedState } from '@/app/state/stores/DataStore';
 import { ProjectType } from '@/app/models/projects/Project';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { data, SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
+import { InitializedState } from '@/app/state/stores/DataStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import {
-  SnapshotAttachment,
-  SnapshotEntity,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields,
-  SnapshotK,
-  SnapshotMeta
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { convertSnapshotContainerToStore } from '@/app/typings/YourSpecificSnapshotType';
 import { createVersionInfo } from '@/app/versions/createVersionInfo';
+import { Version } from '@/app/versions/Version';
 import { VersionData } from '@/app/versions/VersionData';
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
 
 
 interface SnapshotOperations<
@@ -1114,9 +1110,9 @@ const configureSnapshot = <
 
 
 export {
-  clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
-  getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
-  takeSnapshot, updateSnapshot, validateSnapshot
+    clearSnapshotFailure, configureSnapshot, createMockSnapshot, getChildIds, getLatestSnapshot, getParentId, getSnapshot, getSnapshotById,
+    getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+    takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };
 

@@ -1,44 +1,36 @@
 // GenerateComponent.tsx
 import { Label } from '@/app/branding/BrandingSettings';
-import { NestedCategoryKeys } from '@/app/pages/personas/ScenarioBuilder'
-import { createMetaState } from '@/app/config/MetadataStateManager';
-import { UnifiedMetaDataOptions } from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { createMetaState } from '@/app/config/MetadataStateManager';
+import { useMeta } from "@/app/config/useMeta";
+import { useMetadata } from "@/app/config/useMetadata";
 import { ModifiedDate } from "@/app/documents/DocType";
 import {
-    getDefaultDocumentOptions,
-    getDocumentPhase,
-    mapDocumentToProjectPhase
+  getDefaultDocumentOptions,
+  getDocumentPhase,
+  mapDocumentToProjectPhase
 } from "@/app/documents/DocumentOptions";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { VersionHistory } from '@/app/versions/VersionData';
-import { buildDocument } from '@/app/services/documentService'
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData } from '@/app/models/data/Data';
 import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
 import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
-import { CategoryProperties, dataVisualizationProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CategoryProperties, NestedCategoryKeys, dataVisualizationProperties, defaultCondition } from '@/app/pages/personas/ScenarioBuilder';
 import { generateValidationRulesCode } from "@/app/server/security/validationRulesCode";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { buildDocument } from '@/app/services/documentService';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
-import { UserData } from '@/app/users/User';
-import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity'
+import { AppStructuredMetadata, AppUnifiedMetadata } from '@/app/typings/entities/AppMetadataEntity';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { Version } from "@/app/versions/Version";
-import { VersionData } from "@/app/versions/VersionData";
+import { VersionData, VersionHistory } from '@/app/versions/VersionData';
 import fs from "fs";
 import path from "path";
 import { useState } from "react";
-import { DocumentEntity, DocumentK, DocumentMeta, DocumentAttachment, DocumentExcludedFields, DocumentIncludedFields } from '@/app/typings/entities/DocumentEntity'
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { useMeta } from "@/app/config/useMeta";
-import { NestedCategoryKey, defaultCondition } from '@/app/pages/personas/ScenarioBuilder'
-import { useMetadata } from "@/app/config/useMetadata";
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
 
 
 
@@ -581,7 +573,7 @@ generateComponent(componentName, promptingContent);
 
 
 export {
-    generateComponent
+  generateComponent
 };
 
 // Example usage

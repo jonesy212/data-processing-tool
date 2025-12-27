@@ -1,8 +1,8 @@
 // projectConverter.ts
 import { Logger } from '@/app/dataIntegration/projectIntegration/activityLogger';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { ProjectDataManagement, ProjectPhase } from "@/app/projects/projectManagement/ProjectManager";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 export interface ProjectConversionResult<T = any> {
   success: boolean;

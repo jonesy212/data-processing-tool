@@ -35,8 +35,13 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { createSnapshotItem, SnapshotItem } from "@/app/snapshots/SnapshotList";
 import SnapshotManagerOptions from '@/app/snapshots/SnapshotManagerOptions';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 import { useNotification } from '@/app/state/context/NotificationContext';
 import useSnapshotSlice from '@/app/state/redux/slices/SnapshotSlice';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -47,11 +52,6 @@ import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { snapshotCache } from '@/utils/cache/InternalCache';
 import { addToSnapshotList, generateSnapshotId } from "@/utils/snapshotUtils";
-import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
-import { createSnapshotItem, SnapshotItem } from "@/app/snapshots/SnapshotList";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
 
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -2120,10 +2120,10 @@ const notifySubscribers = async <
 };
 
 export {
-  adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure,
-  batchFetchSnapshotsSuccess, batchUpdateSnapshots, 
-  batchUpdateSnapshotsFailure, createSnapshotStore,
-  deleteSnapshot, fetchSnapshot, initializeSnapshotStore,
-  notifySubscribers, updateSnapshot
+    adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure,
+    batchFetchSnapshotsSuccess, batchUpdateSnapshots,
+    batchUpdateSnapshotsFailure, createSnapshotStore,
+    deleteSnapshot, fetchSnapshot, initializeSnapshotStore,
+    notifySubscribers, updateSnapshot
 };
 

@@ -1,12 +1,13 @@
 // snapshotStoreConfigInstance.ts
-import { fetchCategoryByName } from "@/app/api/CategoryApi";
+import categoryApiService from "@/app/api/CategoryApi"; 
 import { endpoints } from "@/app/api/endpointConfigurations";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
-import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+import type { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import determineFileCategory, { fetchFileSnapshotData } from "@/app/libraries/categories/determineFileCategory";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -578,7 +579,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
       let resolvedCategory: CategoryProperties | undefined;
 
       if (typeof category === "string") {
-        resolvedCategory = await fetchCategoryByName(category);
+        resolvedCategory = await categoryApiService.fetchCategoryByName(category);
       } else {
         resolvedCategory = category;
       }

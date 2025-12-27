@@ -10,6 +10,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NOTIFICATION_TYPES } from "@/app/features/support/NotificationTypes";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationType } from "@/app/features/support/UnifiedNotificationTypes";
+import { FileMetadata } from '@/utils/fileCategoryUtils'
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { LogEntry } from "@/app/hooks/useLogManagement";
 import { NotificationData } from "@/app/hooks/useNotificationSystem";
@@ -20,6 +21,7 @@ import { LogData } from "@/app/models/LogData";
 import { NotificationChannels } from "@/app/notifications/NotificationChannels";
 import NotificationStore from "@/app/state/stores/NotificationStore";
 import { createContext, ReactNode, useContext } from "react";
+
 
 // Define missing Notification type
 interface Notification {
@@ -72,8 +74,19 @@ interface NotificationDataPayload<T = unknown> {
   method?: string;
   updatedFields?: Record<string, any>;
   responseData?: any;
+  fileInfo?: FileMetadata;
   details?: string | Record<string, any>;
+  directoryInfo?: {
+    name: string;
+    path: string;
+    itemCount?: number;
+    isRoot?: boolean;
+    hasSubdirectories?: boolean;
+    createdDate?: Date | string;
+    lastModified?: Date | string;
+  };
 }
+
 
 interface NotificationOptions {
   id?: string;

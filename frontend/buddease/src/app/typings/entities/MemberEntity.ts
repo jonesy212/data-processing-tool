@@ -13,7 +13,7 @@ import { Persona } from "@/app/pages/personas/Persona";
 import { Permission } from '@/app/permissions/Permission';
 import { Product } from '@/app/products/Product';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -21,9 +21,9 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { AuditRecord } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 import { ProjectBudget } from '@/app/typings/projectTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { PhaseMeta } from '@/app/typings/entities/PhaseEntity';
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
   // Only include fields that are fundamentally part of the entity data model
@@ -235,13 +235,13 @@ const createDefaultMemberData = (
 export default MemberData;
 
 export type {
-  MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
-  MemberIncludedFields, MemberK,
-  MemberMeta, MemberParams, MemberRealtimeDataItem, MemberSnapshot,
-  MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
+    MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
+    MemberIncludedFields, MemberK,
+    MemberMeta, MemberParams, MemberRealtimeDataItem, MemberSnapshot,
+    MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
 };
 
     export {
-    createDefaultMemberData, emptyMemberData
-  };
+        createDefaultMemberData, emptyMemberData
+    };
 

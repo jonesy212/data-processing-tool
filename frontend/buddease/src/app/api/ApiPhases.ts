@@ -1,7 +1,7 @@
 // ApiPhases.ts
 import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';

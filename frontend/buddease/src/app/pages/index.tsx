@@ -1,4 +1,3 @@
-// index.tsx
 // pages/index.tsx
 import useMessagingSystem from "@/app/components/communications/chat/useMessagingSystem";
 import generateDynamicContent from '@/app/documents/DynamicContentGenerator';
@@ -18,7 +17,8 @@ import YourApp from "./YourApp";
 import Layout from "./layouts/Layouts";
 import { Persona } from "@/app/pages/personas/Persona";
 
- // pages/index.tsx
+// Import ApiSynchronizationScript if you haven't already
+import ApiSynchronizationScript from "@/app/app/scripts/ApiSynchronizationScript"; // Adjust path as needed
 
 // your custom hydrate function
 const hydrate = (key: string) => {
@@ -27,7 +27,6 @@ const hydrate = (key: string) => {
     jsonify: true,
   })("RootStore", rootStores).rehydrate();
 };
-
 
 const Index: React.FC<{}> = () => {
   const router = useRouter();
@@ -40,129 +39,138 @@ const Index: React.FC<{}> = () => {
       'UserEntity'
     )
   );
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate redirection to the dashboard after registration
+  // Initialize once on mount - hydrate stores
   useEffect(() => {
-     // Initialize synchronization
-    const initializeSync = async () => {
+    hydrate(rootStores.constructor.name);
+  }, []);
+
+  // Initialize socket connection
+  useEffect(() => {
+    const initializeSocket = async () => {
       try {
-        await syncScript.syncAllData();
-        console.log('Initial sync completed');
+        // You might want to get the actual server URL from environment/config
+        const serverUrl = process.env.NEXT_PUBLIC_SOCKET_SERVER || 'http://localhost:3001';
+        const socketInstance = io(serverUrl, {
+          transports: ['websocket', 'polling'],
+          withCredentials: true,
+          auth: {
+            token: authToken
+          }
+        });
+
+        socketInstance.on('connect', () => {
+          console.log('Socket connected:', socketInstance.id);
+        });
+
+        socketInstance.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+        });
+
+        setSocket(socketInstance);
       } catch (error) {
-        console.error('Initial sync failed:', error);
+        console.error('Failed to initialize socket:', error);
       }
     };
 
-    initializeSync();
+    if (authState.isAuthenticated) {
+      initializeSocket();
+    }
+  }, [authState.isAuthenticated]);
 
-      // Set up periodic synchronization (every 5 minutes)
-    const syncInterval = setInterval(() => {
-        syncScript.syncAllData().catch(console.error);
-      }, 5 * 60 * 1000);
-
-      return () => clearInterval(syncInterval);
-    }, [syncScript]);
-
-
-    hydrate(rootStores.constructor.name);
-
+  // Authentication effect
+  useEffect(() => {
     const authenticateUser = async () => {
-      const timeBasedCode = generateTimeBasedCode();
-      const user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
-        // user object
-        _id: "123",
-        id: 1,
-        username: "testUser",
-        email: "test@test.com",
-        tier: "free",
-        userType: "standard",
-        hasQuota: true,
-        fullName: null,
-        bio: null,
-        profilePicture: null,
-        processingTasks: [],
-        uploadQuota: 0,
-        role: {} as UserRole,
-        timeBasedCode: timeBasedCode,
-        persona: {} as Persona,
-        snapshots: [],
-        token: authToken
-      };
+      try {
+        const timeBasedCode = generateTimeBasedCode();
+        const user: User<UserEntity, UserK, UserMeta, UserAttachment, UserExcludedFields, UserIncludedFields> = {
+          _id: "123",
+          id: 1,
+          username: "testUser",
+          email: "test@test.com",
+          tier: "free",
+          userType: "standard",
+          hasQuota: true,
+          fullName: null,
+          bio: null,
+          profilePicture: null,
+          processingTasks: [],
+          uploadQuota: 0,
+          role: {} as UserRole,
+          timeBasedCode: timeBasedCode,
+          persona: {} as Persona,
+          snapshots: [],
+          token: authToken
+        };
 
-      authDispatch({ type: "LOGIN", payload: { user: {} as User, roles: [], nfts: [], authToken: authToken } });
+        authDispatch({ 
+          type: "LOGIN", 
+          payload: { 
+            user: {} as User, 
+            roles: [], 
+            nfts: [], 
+            authToken: authToken 
+          } 
+        });
+      } catch (error) {
+        console.error('Authentication failed:', error);
+      } finally {
+        // Set loading to false after authentication attempt
+        setIsLoading(false);
+      }
     };
 
-    const establishSocketConnection = () => {
-      const newSocket = io(
-        "http://" + window.location.hostname + ":" + location.port
-      );
-
-      newSocket.on("connect", () => {
-        setSocket(newSocket);
-      });
-
-      // Return the socket instance
-      return newSocket;
-    };
-
-    const socket = establishSocketConnection();
-
-
-    interface MessagingSystemOptions {
-      onMessageReceived: (message: string) => void;
-      socket: Socket
-      // other properties...
-    }
-
-    // Use the useMessagingSystem hook without assigning onMessageReceived to a variable
-    useMessagingSystem({
-      onMessageReceived: (message: string) => {
-        return console.log("Received message:", message);
-      },
-    } as MessagingSystemOptions);
-
-    const storedRoute = localStorage.getItem("lastRoute");
-
-    if (storedRoute) {
-      // Redirect to the last visited route
-      router.push(storedRoute);
-      // Clear the stored route after redirecting
-      localStorage.removeItem("lastRoute");
-    } else {
-      // Assuming some condition triggers the redirection
-      router.push("/dashboard");
-    }
-
-    // Check if the user is not authenticated, then authenticate
     if (!authState.isAuthenticated) {
       authenticateUser();
     } else {
-      const newSocket = establishSocketConnection();
-
-      return () => {
-        newSocket.disconnect();
-      };
+      // If already authenticated, set loading to false
+      setIsLoading(false);
     }
-  }, [authState.isAuthenticated, router, authDispatch, socket]);
+  }, [authState.isAuthenticated, authDispatch]);
+
+  // Final redirect effect after initialization
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        const storedRoute = localStorage.getItem("lastRoute");
+        if (storedRoute) {
+          router.push(storedRoute);
+          localStorage.removeItem("lastRoute");
+        } else {
+          router.push("/dashboard");
+        }
+      }, 2000); // 2 second delay for initialization
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, router]);
 
   // Generate dynamic content using the function
   const appName = "MyApp"; // Replace with actual logic to fetch app name
   const currentDate = new Date().toLocaleDateString(); // Get current date
   const dynamicContent = generateDynamicContent(appName, currentDate);
 
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <h2>Initializing application...</h2>
+        <p>Please wait while we set up your environment</p>
+      </div>
+    );
+  }
 
   return (
-      <Layout>
-        <div>
-          <YourApp />
-          <h1>Redirecting to the Dashboard...</h1>
-          <PaymentForm /> {/* Include the PaymentForm component */}
-          {/* Render the dynamic content */}
-
-          <div>{dynamicContent}</div>
-
-        </div>
-      </Layout>
+    <Layout>
+      <div>
+        <YourApp />
+        <h1>Redirecting to the Dashboard...</h1>
+        <PaymentForm /> {/* Include the PaymentForm component */}
+        {/* Render the dynamic content */}
+        <div>{dynamicContent}</div>
+      </div>
+    </Layout>
   );
 };
 

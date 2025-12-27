@@ -6,8 +6,8 @@ declare module 'app' {
 
 
 declare function require(path: string): any;
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Presentation } from '@/app/documents/editing/Presentation';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 
 // CSS Modules

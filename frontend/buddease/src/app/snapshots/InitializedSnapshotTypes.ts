@@ -1,7 +1,7 @@
 // InitializedSnapshotTypes.ts
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
 import { YourResponseType } from '@/app/typings/responseTypes';
@@ -84,7 +84,7 @@ function enrichAsInitializedSnapshot<
 }
 
 export {
-  convertResponseToSnapshot, convertToIntermediateType,
-  enrichAsInitializedSnapshot
+    convertResponseToSnapshot, convertToIntermediateType,
+    enrichAsInitializedSnapshot
 };
 

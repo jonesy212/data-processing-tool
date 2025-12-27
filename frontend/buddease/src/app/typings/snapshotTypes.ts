@@ -4,7 +4,7 @@ import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { BaseEventCallbacks, EventManagement, ExtractContextArgs, RecordManagement, SharedProperties, SnapshotEventBase } from '@/app/snapshots/SnapshotEvents';
 import { SnapshotContext, SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";

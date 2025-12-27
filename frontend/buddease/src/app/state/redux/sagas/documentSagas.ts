@@ -1,5 +1,5 @@
 // documentSagas.ts
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentStatus } from "@/app/components/documents/types";
 import { DocumentActions } from "@/app/tokens/DocumentActions";

@@ -2,7 +2,7 @@
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
 
 
@@ -142,7 +142,7 @@ export const triggerOnSnapshotAsync = async <
 
 
 export {
-  handleDataUpdateSnapshot, handleDefaultSnapshot, handleSystemEventSnapshot,
-  handleUserActionSnapshot, processSnapshotData, updateSnapshotMetrics, validateSnapshot
+    handleDataUpdateSnapshot, handleDefaultSnapshot, handleSystemEventSnapshot,
+    handleUserActionSnapshot, processSnapshotData, updateSnapshotMetrics, validateSnapshot
 };
 

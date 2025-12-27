@@ -22,7 +22,7 @@ import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 import { DefaultCalendarEvent } from '@/app/actions/CalendarEventActions';
 import { Theme } from '@/app/libraries/ui/theme/Theme';
 import { encryptData } from "@/app/server/security/encryptedData";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification() || { notify: () => {} };
@@ -2070,28 +2070,28 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
-  AnalyticsLogger,
-  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
-  BugLogger,
-  CalendarLogger,
-  ChannelLogger,
-  ChatLogger,
-  CollaborationLogger,
-  CommunityLogger,
-  ComponentLogger,
-  ConfigLogger,
-  ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
-  DexLogger,
-  DocumentLogger, errorLogger, ErrorLogger,
-  ExchangeLogger,
-  FileLogger,
-  FormLogger,
-  IntegrationLogger,
-  PaymentLogger,
-  SearchLogger,
-  SecurityLogger, SnapshotLogger, TaskLogger,
-  TeamLogger,
-  TenantLogger, ThemeLogger, UILogger, VideoLogger,
-  WebLogger
+    AnalyticsLogger,
+    AnimationLogger, AssignBaseStoreLogger, AudioLogger,
+    BugLogger,
+    CalendarLogger,
+    ChannelLogger,
+    ChatLogger,
+    CollaborationLogger,
+    CommunityLogger,
+    ComponentLogger,
+    ConfigLogger,
+    ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
+    DexLogger,
+    DocumentLogger, errorLogger, ErrorLogger,
+    ExchangeLogger,
+    FileLogger,
+    FormLogger,
+    IntegrationLogger,
+    PaymentLogger,
+    SearchLogger,
+    SecurityLogger, SnapshotLogger, TaskLogger,
+    TeamLogger,
+    TenantLogger, ThemeLogger, UILogger, VideoLogger,
+    WebLogger
 };
 

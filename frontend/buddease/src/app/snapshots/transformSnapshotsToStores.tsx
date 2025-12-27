@@ -3,8 +3,8 @@
 // import { BaseData } from '@/app/models/data/Data';
 // import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 // import { data } from "@/app/snapshots/SnapshotWithCriteria";
-// import { Snapshot } from '@/app/snapshots/Snapshot';
-// import { SnapshotStoreConfig, snapshotConfig } from "@/app/snapshots/SnapshotStoreConfig";
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
+// import { SnapshotStoreConfig, snapshotConfig } from "@/app/snapshots/Snapshot";
 // import SnapshotStore from "./SnapshotStore";
 // import { delegate, subscribeToSnapshots } from "@/app/snapshots/index";
 

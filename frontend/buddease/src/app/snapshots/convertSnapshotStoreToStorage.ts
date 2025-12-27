@@ -3,7 +3,7 @@ import { SnapshotOperation } from '@/app/actions/SnapshotActions';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
@@ -65,7 +65,7 @@ function convertStorageToSnapshotStore<  T extends BaseDataEntity,
 
 
   export {
-  convertSnapshotStoreToStorage,
-  convertStorageToSnapshotStore
+    convertSnapshotStoreToStorage,
+    convertStorageToSnapshotStore
 };
 

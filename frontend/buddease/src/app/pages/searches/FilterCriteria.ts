@@ -1,62 +1,59 @@
 
 // FilterCriteria.ts
-import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { extractCriteria } from '@/app/api/SnapshotApi';
-import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { useMetadata } from '@/app/config/useMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { FileTypeEnum } from "@/app/documents/FileType";
 import { MessageType } from "@/app/generators/MessaageType";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { CategoryIdentifier } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "@/app/models/data/StatusType";
 import UserRoles from '@/app/models/UserRoles';
-import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Filter } from "@/app/pages/searches/Filter";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Filter } from "@/app/pages/searches/Filter";
 import { SecurityFeatureEnum } from "@/app/server/security/SecurityFeatureEnum";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import {
-  DocumentTypeEnum
+    DocumentTypeEnum
 } from "@/app/typings/documentTypes";
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/app/typings/entities/CalendarEntity";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { Pagination } from '@refinedev/core';
 
-import { Sort } from '@/app/settings/SortCriteria'
+import { Sort } from '@/app/settings/SortCriteria';
 
 
 interface FilterCriteria extends Timestamped, StatusTrackable {

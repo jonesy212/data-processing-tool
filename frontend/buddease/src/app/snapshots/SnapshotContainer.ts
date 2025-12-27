@@ -11,7 +11,7 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { createCompleteSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshots, SnapshotsArray, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { Version } from "@/app/versions/Version";
 
 import { BaseDataEntity, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -322,7 +322,7 @@ export const snapshotContainer = async <
 };
 
 export type {
-  ItemUnion, SnapshotBase,
-  SnapshotContainer, SnapshotContainerData, SnapshotContainerType, SnapshotDataType
+    ItemUnion, SnapshotBase,
+    SnapshotContainer, SnapshotContainerData, SnapshotContainerType, SnapshotDataType
 };
 

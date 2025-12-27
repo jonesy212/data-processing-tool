@@ -1,7 +1,7 @@
 // sendToAnalytics.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

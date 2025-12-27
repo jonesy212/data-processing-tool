@@ -25,7 +25,7 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 import { EventHandlers } from '@/app/libraries/eventSystem/eventHandlers'
 
-interface SnapshotLifecycle<T extends BaseDataEntity> {
+interface SnapshotLifecycle<T extends BaseDataEntity = BaseDataRoot> {
   initializeWithData<T>(data: SnapshotUnion<T, any, any, any, any, any>[]): void;
   clear(): void;
 }

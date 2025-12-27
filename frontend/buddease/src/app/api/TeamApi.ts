@@ -2,7 +2,7 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import endpointConfigurations, { endpoints } from "@/app/api/endpointConfigurations";
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';

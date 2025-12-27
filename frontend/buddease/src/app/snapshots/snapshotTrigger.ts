@@ -1,19 +1,19 @@
 // snapshotTrigger.ts
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 import { archiveSnapshot } from '@/app/api/service/ArchiveService';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { validateSnapshot } from '@/app/snapshots/snapshotOperations';
 import {
-  handleDataUpdateSnapshot,
-  handleDefaultSnapshot,
-  handleSystemEventSnapshot,
-  handleUserActionSnapshot,
-  processSnapshotData,
-  updateSnapshotMetrics
+    handleDataUpdateSnapshot,
+    handleDefaultSnapshot,
+    handleSystemEventSnapshot,
+    handleUserActionSnapshot,
+    processSnapshotData,
+    updateSnapshotMetrics
 } from '@/app/snapshots/snapshotValidationUtils';
 import { useNotification } from '@/app/state/context/NotificationContext';
 

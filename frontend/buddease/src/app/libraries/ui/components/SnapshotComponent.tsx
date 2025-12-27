@@ -11,7 +11,7 @@ import {
   SnapshotData,
   SnapshotStoreConfig
 } from "@/app/snapshots";
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps'
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps'
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { isSnapshot } from "@/utils/snapshotUtils";

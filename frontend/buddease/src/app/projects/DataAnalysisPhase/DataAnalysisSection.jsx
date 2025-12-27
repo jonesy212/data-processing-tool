@@ -1,7 +1,7 @@
 
 // DataAnalysisSection.jsx
 
-const DataAnalysisSection = () => {
+export const DataAnalysisSection = () => {
     return (
       <div>
         <h2>Data Analysis Section</h2>

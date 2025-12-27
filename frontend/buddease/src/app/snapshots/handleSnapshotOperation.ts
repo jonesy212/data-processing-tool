@@ -1,12 +1,12 @@
 // handleSnapshotOperation.ts
-import { SnapshotStoreActions } from "@/app/actions/SnapshotActions";
+import SnapshotStoreActions from '@/app/actions/SnapshotActions';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/index";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 
 // First, extract the sorting logic to a shared utility function

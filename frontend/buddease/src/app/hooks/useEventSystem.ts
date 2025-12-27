@@ -1,16 +1,16 @@
 // useEventSystem.ts
-import { useCallback, useRef, useEffect } from 'react';
-import { SnapshotEventHandlers } from '@/app/libraries/eventSystem/eventHandlers';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry';
-import { 
-  EventContext, 
-  EventHandler,
-  SnapshotEvent,
-  ErrorEvent
-} from '@/app/typings/eventHandlers/eventTypes'
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { CallbackRegistry } from '@/app/libraries/eventSystem/callbackRegistry';
+import { SnapshotEventHandlers } from '@/app/libraries/eventSystem/eventHandlers';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import {
+    ErrorEvent,
+    EventContext,
+    EventHandler,
+    SnapshotEvent
+} from '@/app/typings/eventHandlers/eventTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const useEventSystem = <
   T extends BaseDataEntity = BaseDataEntity,

@@ -5,7 +5,7 @@ import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 import { Data } from '@/app/models/data/Data';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { EventData } from "@/app/state/stores/AssignEventStore";
 import { AllTypes } from "@/app/typings/PropTypes";
 

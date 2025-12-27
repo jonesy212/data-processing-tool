@@ -4,38 +4,36 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { SharedErrorLocation, SharedPriority} from '@/app/error-analyzer/types/ErrorAnalysisTypes'
 
 // Define types
-interface TypeScriptError {
+interface TypeScriptError extends 
+  SharedErrorLocation {
   resource: string;
   code: string;
   message: string;
-  startLineNumber: number;
-  startColumn: number;
-  endLineNumber: number;
-  endColumn: number;
   severity: number;
   source: string;
 }
 
-interface FolderStats {
+interface FolderStats extends 
+  SharedPriority {
   path: string;
   name: string;
   errorCount: number;
   fileCount: number;
   subfolders: FolderStats[];
   errorsByType: Map<string, number>;
-  priorityScore: number;
 }
 
-interface FileStats {
+interface FileStats extends 
+  SharedPriority {
   path: string;
   name: string;
   folder: string;
   errorCount: number;
   errors: TypeScriptError[];
   errorTypes: Set<string>;
-  priorityScore: number;
 }
 
 interface ErrorAnalysis {
@@ -47,6 +45,41 @@ interface ErrorAnalysis {
   folderTree: string;
   recommendations: string[];
 }
+
+
+
+// #TODO: Added optional shared interfaces at the bottom for future use:
+
+// SharedWithRelatedInfo: For related error information
+
+// SharedWithDependencies: For dependency info
+
+// SharedWithProperties: For property/method info
+
+
+// ========== SHARED INTERFACES (if needed elsewhere) ==========
+interface SharedWithRelatedInfo {
+  relatedInformation?: Array<{
+    startLineNumber: number;
+    startColumn: number;
+    endLineNumber: number;
+    endColumn: number;
+    message: string;
+    resource: string;
+  }>;
+}
+
+interface SharedWithDependencies {
+  extends?: string[];
+  implements?: string[];
+  dependencies: string[];
+}
+
+interface SharedWithProperties {
+  properties: string[];
+  methods: string[];
+}
+
 
 class EnhancedFixStrategy {
   private projectRoot: string;
@@ -87,6 +120,14 @@ class EnhancedFixStrategy {
     
     return analysis;
   }
+
+
+  private determinePriority(score: number): 'critical' | 'high' | 'medium' | 'low' {
+    if (score >= 90) return 'critical';
+    if (score >= 70) return 'high';
+    if (score >= 40) return 'medium';
+    return 'low';
+  }
   
   private analyzeFolderStructure(errors: TypeScriptError[]): ErrorAnalysis {
     // Group errors by file
@@ -107,7 +148,8 @@ class EnhancedFixStrategy {
       fileCount: 0,
       subfolders: [],
       errorsByType: new Map(),
-      priorityScore: 0
+      priorityScore: 0,
+      priority: 'medium'
     };
     
     const folderMap = new Map<string, FolderStats>();
@@ -116,43 +158,49 @@ class EnhancedFixStrategy {
     // Process each file
     const fileStats: FileStats[] = [];
     
-    for (const [filePath, fileErrors] of errorsByFile.entries()) {
-      const folderPath = path.dirname(filePath);
-      const fileName = path.basename(filePath);
+    
+  for (const [filePath, fileErrors] of errorsByFile.entries()) {
+    const folderPath = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    
+    // Create or get folder stats
+    let folder = folderMap.get(folderPath);
+    if (!folder) {
+      folder = this.createFolderStats(folderPath);
+      folderMap.set(folderPath, folder);
       
-      // Create or get folder stats
-      let folder = folderMap.get(folderPath);
-      if (!folder) {
-        folder = this.createFolderStats(folderPath);
-        folderMap.set(folderPath, folder);
-        
-        // Ensure parent folders exist
-        this.ensureParentFolders(folderPath, folderMap);
-      }
-      
-      // Update folder stats
-      folder.errorCount += fileErrors.length;
-      folder.fileCount += 1;
-      
-      // Update error type distribution
-      for (const error of fileErrors) {
-        const count = folder.errorsByType.get(error.code) || 0;
-        folder.errorsByType.set(error.code, count + 1);
-      }
-      
-      // Create file stats
-      const fileStat: FileStats = {
-        path: filePath,
-        name: fileName,
-        folder: folderPath,
-        errorCount: fileErrors.length,
-        errors: fileErrors,
-        errorTypes: new Set(fileErrors.map(e => e.code)),
-        priorityScore: this.calculateFilePriority(filePath, fileErrors)
-      };
-      
-      fileStats.push(fileStat);
+      // Ensure parent folders exist
+      this.ensureParentFolders(folderPath, folderMap);
     }
+    
+    // Update folder stats
+    folder.errorCount += fileErrors.length;
+    folder.fileCount += 1;
+    
+    // Update error type distribution
+    for (const error of fileErrors) {
+      const count = folder.errorsByType.get(error.code) || 0;
+      folder.errorsByType.set(error.code, count + 1);
+    }
+    
+    // Calculate priority based on error count/severity
+    const priorityScore = this.calculateFilePriority(filePath, fileErrors);
+    const priority = this.determinePriority(priorityScore); // Add this helper method
+    
+    // Create file stats
+    const fileStat: FileStats = {
+      path: filePath,
+      name: fileName,
+      folder: folderPath,
+      errorCount: fileErrors.length,
+      errors: fileErrors,
+      errorTypes: new Set(fileErrors.map(e => e.code)),
+      priorityScore: priorityScore,
+      priority: priority // Use the calculated priority
+    };
+    
+    fileStats.push(fileStat);
+  }
     
     // Build folder tree
     const folderTree = this.buildFolderTree(rootFolder, folderMap);
@@ -196,7 +244,7 @@ class EnhancedFixStrategy {
   private createFolderStats(folderPath: string): FolderStats {
     const relativePath = path.relative(this.projectRoot, folderPath);
     const folderName = relativePath || 'project-root';
-    
+ 
     return {
       path: folderPath,
       name: folderName,
@@ -204,7 +252,8 @@ class EnhancedFixStrategy {
       fileCount: 0,
       subfolders: [],
       errorsByType: new Map(),
-      priorityScore: 0
+      priorityScore: 0,
+      priority: 'low' as const 
     };
   }
   

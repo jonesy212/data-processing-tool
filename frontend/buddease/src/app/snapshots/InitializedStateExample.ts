@@ -10,7 +10,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Data } from "@/app/models/data/Data";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { InitializedState, initializeState } from "@/app/state/stores/DataStore";

@@ -1,17 +1,17 @@
 // ProjectManagementApp.js
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
-import CommunicationHub from '@/CommunicationHub';
-import DashboardOverview from '@/DashboardOverview';
-import DataAnalysisSection from '@/DataAnalysisSection';
-import { addNotification, selectNotifications } from '@/NotificationSlice';
-import PhasesNavigation from '@/PhasesNavigation';
-import ProjectManagerComponent from '@/ProjectManager';
-import ProjectTimelineDashboard from '@/ProjectTimelineDashboard';
-import ProjectWorkspace from '@/ProjectWorkspace';
-import RandomWalkVisualization from '@/RandomWalkVisualization';
-import ProjectCreationForm from '@/projects/ProjectCreationForm';
-import { ClientProjectEntity } from '@/projects/Project';
+import CommunicationHub from '@/app/pages/dashboards/DashboardOverview';
+import DashboardOverview from '@/app/pages/dashboards/DashboardOverview';
+import DataAnalysisSection from '@/app/projects/DataAnalysisPhase/DataAnalysisSection';
+import { addNotification, selectNotifications } from '@/app/state/redux/slices/NotificationSlice';
+import PhasesNavigation from '@/app/components/phases/PhasesNavigation';
+import ProjectManagerComponent from '@/app/projects/projectManagement/ProjectManager'
+import ProjectTimelineDashboard from '@/app/dashboards/ProjectTimelineDashboard';
+import ProjectWorkspace from '@/app/pages/dashboards/DashboardOverview'
+import RandomWalkVisualization from '@/app/hooks/userInterface/RandomWalkVisualization'
+import ProjectCreationForm from '@/app/pages/forums/ProjectCreationForm';
+import { ClientProjectEntity } from '@/app/models/projects/Project';
 
 const ProjectManagementApp = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const ProjectManagementApp = () => {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [projects, setProjects] = useState([]);
-
+  const [updateTeamData, setUpdateTeamData] = useState([])
   // Mock data - replace with actual API calls
   const teams = [
     { id: 'team-1', name: 'Development Team' },
@@ -170,7 +170,7 @@ const ProjectManagementApp = () => {
 
         <div className="dashboard-bottom">
           <PhasesNavigation />
-          <RandomWalkVisualization />
+          <RandomWalkVisualization updateTeamData={updateTeamData} />
           <ProjectManagerComponent 
             projects={projects}
             onProjectAction={handleEditProject}

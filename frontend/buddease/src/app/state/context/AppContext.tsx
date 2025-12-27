@@ -1,14 +1,13 @@
 // AppContext.ts
 // app/state/context/AppContext.tsx
-import React, { createContext, useContext, useEffect, useRef } from 'react';
-import { ProjectStore } from '@/app/state/stores/ProjectStore';
-import { CryptoStore } from '@/app/state/stores/CryptoStore';
-import { TaskManagerStore } from '@/app/state/stores/TaskStore ';
-import { PhaseStore } from '@/app/state/stores/PhaseStore';
-import { useDispatch } from 'react-redux';
 import { hydrateSnapshot, persistSnapshot } from '@/app/api/persistSnapshot/route'; // <- add your snapshot helpers
-import { RootState } from '@/app/state/redux/slices/RootSlice'
-import { useSelector } from 'react-redux';
+import { RootState } from '@/app/state/redux/slices/RootSlice';
+import { CryptoStore } from '@/app/state/stores/CryptoStore';
+import { PhaseStore } from '@/app/state/stores/PhaseStore';
+import { ProjectStore } from '@/app/state/stores/ProjectStore';
+import { TaskManagerStore } from '@/src/app/state/stores/TaskStore';
+import React, { createContext, useContext, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 type PersistenceStrategy = "localStorage" | "indexedDB" | "hybrid" | "remote";

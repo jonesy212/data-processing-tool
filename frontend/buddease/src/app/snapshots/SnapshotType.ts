@@ -1,26 +1,24 @@
 // SnapshotType.ts
-import {
-    snapshotContainer,
-    SnapshotContainer,
-    SnapshotDataType,
-  } from "./SnapshotContainer";
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import * as snapshotApi from '@/app/api/SnapshotApi'
-import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreConfig, snapshotFunction } from "@/app/snapshots/SnapshotStoreConfig";
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
+import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from "@/app/models/data/Data";
-import { isSnapshot, snapshotId, isSnapshotDataType } from "@/utils/snapshotUtils";
-import useSecureStoreId from "@/app/hooks/useSecureStoreId";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/config/BaseConfig";
+import { CriteriaType } from "@/app/pages/searches/CriteriaType";
+import { snapshotFunction, SnapshotStoreConfig } from "@/app/snapshots/LocalStorageSnapshotStore";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { isSnapshot, isSnapshotDataType, snapshotId } from "@/utils/snapshotUtils";
+import {
+    SnapshotContainer,
+    SnapshotDataType
+} from "./SnapshotContainer";
 import snapshotDelegate from "./snapshotDelegate";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 
-const snapshotType = <
+export const snapshotType = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -359,4 +357,3 @@ const snapshotType = <
 }
 
 
-export snapshotType

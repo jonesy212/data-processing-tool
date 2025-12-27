@@ -12,7 +12,7 @@ import { Task } from '@/app/models/tasks/Task';
 import { useNotification } from '@/app/state/context/NotificationContext';
 
 import { historyManagerStore } from '@/app/state/stores/HistoryStore';
-import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
+import { useTaskManagerStore } from '@/src/app/state/stores/TaskStore';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;

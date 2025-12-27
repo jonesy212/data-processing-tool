@@ -44,6 +44,7 @@ export interface ExtendedCalendarEventProps<
 // CLASS — implements the interface
 // =========================================
 
+// First, update ExtendedCalendarEvent class to include missing properties
 class ExtendedCalendarEvent<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -54,10 +55,11 @@ class ExtendedCalendarEvent<
 > implements ExtendedCalendarEventProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   id: string;
+  eventId?: string; // Add missing property
   title: string;
   description: string;
-  startTime?: string | Date;
-  endTime?: string | Date;
+  startTime?: Date; // Change from string | Date to Date
+  endTime?: Date;   // Change from string | Date to Date
   duration?: number;
   attendees: Attendee[];
   assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -66,6 +68,11 @@ class ExtendedCalendarEvent<
   reminder?: string;
   pinned?: boolean;
   archived?: boolean;
+  
+  // Add missing timing suggestion properties
+  suggestedStartTime?: Date;
+  suggestedEndTime?: Date;
+  suggestedDuration?: number;
   suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["day"] | null;
   suggestedWeeks?: number[] | null;
   suggestedMonths?: Month[] | null;
@@ -77,7 +84,6 @@ class ExtendedCalendarEvent<
     description: string,
     startTime?: string | Date,
     endTime?: string | Date,  
-  
     attendees: Attendee[] = [],
     assignedTo?: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ) {
@@ -88,6 +94,18 @@ class ExtendedCalendarEvent<
     this.endTime = typeof endTime === 'string' ? new Date(endTime) : endTime;
     this.attendees = attendees;
     this.assignedTo = assignedTo ?? null;
+    this.eventId = id; // Default eventId to id
+  }
+
+  // Helper method to safely convert to Date
+  getStartTimeAsDate(): Date | undefined {
+    if (!this.startTime) return undefined;
+    return typeof this.startTime === 'string' ? new Date(this.startTime) : this.startTime;
+  }
+
+  getEndTimeAsDate(): Date | undefined {
+    if (!this.endTime) return undefined;
+    return typeof this.endTime === 'string' ? new Date(this.endTime) : this.endTime;
   }
 
   forEach?(callback: (event: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
@@ -106,25 +124,25 @@ interface CalendarEventTimingOptimization<
 > {
   eventId?: string;
   timestamp?: string | number | Date | undefined;
-  suggestedStartTime?: Date;
-  suggestedEndTime?: Date;
-  suggestedDuration?: number; // in minutes
-  id?: string
-  startTime?: Date;
-  endTime?: Date;
+  suggestedStartTime?: Date | string;  // Allow string
+  suggestedEndTime?: Date | string;    // Allow string
+  suggestedDuration?: number;
+  id?: string;
+  startTime?: Date | string;           // Allow string
+  endTime?: Date | string;             // Allow string
   duration?: number;
   status?: AllStatus;
   assignedTo: string;
-  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['day'] | null
-  suggestedWeeks?: number[] | null
-  suggestedMonths?: Month[] | null
-  suggestedSeasons?: Season[] | null
-  assignees?: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Record of user IDs to User objects
-  comments?: Record<string, string[]>; // Record of event IDs to arrays of comments
-  notifications?: Record<string, NotificationType[]>; // Record of event IDs to arrays of notification types
-  reassignmentHistory?: Record<string, ReassignEventResponse[]>; // Record of event IDs to arrays of reassignment responses
-  todoIds?: string[]; // Array of todo IDs associated with the event
-  relatedEventsList?: string[]; // Array of related event IDs
+  suggestedDay?: DayOfWeekProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['day'] | null;
+  suggestedWeeks?: number[] | null;
+  suggestedMonths?: Month[] | null;
+  suggestedSeasons?: Season[] | null;
+  assignees?: Record<string, User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  comments?: Record<string, string[]>;
+  notifications?: Record<string, NotificationType[]>;
+  reassignmentHistory?: Record<string, ReassignEventResponse[]>;
+  todoIds?: string[];
+  relatedEventsList?: string[];
 }
 
 

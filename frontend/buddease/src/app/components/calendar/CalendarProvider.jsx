@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTaskManagerStore } from '@/app/state/stores/TaskStore';
 import { transformTasksToEvents, transformTodosToEvents } from '@/CalendarEvents';
- // Create a context to manage shared state
+
+// Create a context to manage shared state
 const CalendarContext = React.createContext<any>(null);
  
 export const CalendarProvider = ({ children }) => {
@@ -34,8 +35,4 @@ export const CalendarProvider = ({ children }) => {
   return (
     <CalendarContext.Provider value={value}>{children}</CalendarContext.Provider>
   );
-};
-
-export const useCalendarContext = () => {
-  return useContext(CalendarContext);
 };

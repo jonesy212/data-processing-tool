@@ -34,7 +34,7 @@ import { Member } from "@/app/models/members/Member";
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { EventManager } from "@/app/state/stores/DataStore";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
@@ -74,7 +74,7 @@ interface BuildVersion<
   frontend: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
 }
 
-interface Version<
+export interface Version<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -563,7 +563,7 @@ class VersionImpl<
   versionNumber: string | number = "";
   description: string = "";
   isPublished: boolean = false;
-  publishedAt: Date | null = null;
+  publishedAt?: Date | null = null;
   isActive: boolean = true;
   isLatest: boolean = true;
   checksum: string = "";
@@ -2046,5 +2046,5 @@ const devVersion: DevVersion<VersionEntity, VersionK, VersionMeta, VersionAttach
 
 export default VersionImpl
 export { createVersion, devVersion, version, versionData };
-export type { BuildVersion, Version, Versions };
+export type { BuildVersion, Versions };
 

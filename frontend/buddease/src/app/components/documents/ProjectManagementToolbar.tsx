@@ -1,22 +1,21 @@
 // ProjectManagementToolbar.tsx
-  import * as snapshotApi from '@/app/api/SnapshotApi';
-  import ProjectEventEmitter from '@/app/libraries/eventSystem/ProjectEventEmitter'
+  import ProjectEventEmitter from '@/app/libraries/eventSystem/ProjectEventEmitter';
   
-  import React from 'react';
-  import { Task } from '@/app/models/tasks/Task';
   import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-  import { useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
-  import { rootStores } from '@/app/state/stores/RootStores';
-  import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
-  import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
-  import useTodoManagerStore, { TodoManagerStoreProps } from '@/app/state/stores/TodoStore';
-  import useTrackerStore from '@/app/state/stores/TrackerStore';
-  import TodoImpl, { Todo } from '@/app/todos/Todo';
-  import ToolbarItem from './ToolbarItem';
-  import { showModalOrNotification } from '@/app/hooks/commHooks/idleTimeoutUtils';
-  import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-  import { TaskEntity, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/typings/entities/TaskEntity';
-  import { TaskEntityExtended } from '@/app/typings/taskTypes'
+import { showModalOrNotification } from '@/app/hooks/commHooks/idleTimeoutUtils';
+import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import { Task } from '@/app/models/tasks/Task';
+import { useCalendarManagerStore } from '@/app/state/stores/CalendarManagerStore';
+import { rootStores } from '@/app/state/stores/RootStores';
+import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
+import useTodoManagerStore, { TodoManagerStoreProps } from '@/app/state/stores/TodoStore';
+import useTrackerStore from '@/app/state/stores/TrackerStore';
+import TodoImpl, { Todo } from '@/app/todos/Todo';
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskMeta } from '@/app/typings/entities/TaskEntity';
+import { TaskEntityExtended } from '@/app/typings/taskTypes';
+import { useTaskManagerStore } from '@/src/app/state/stores/TaskStore';
+import React from 'react';
+import ToolbarItem from './ToolbarItem';
 
   const ProjectManagementToolbar: React.FC<{ 
     task: Task<TaskEntity, TaskEntityExtended, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>  

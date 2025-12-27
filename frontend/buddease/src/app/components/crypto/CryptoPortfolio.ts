@@ -6,13 +6,13 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { TradeLogger } from "@/app/logging/TradeLogger";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 
 
 import {
-  cryptoNotificationMessages
+    cryptoNotificationMessages
 } from '@/app/api/ApiCrypto';
 
 // Portfolio management in crypto

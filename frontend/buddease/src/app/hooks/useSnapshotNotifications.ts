@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import snapshotStoreInstance from '@/app/snapshots/SnapshotStore';
 import { useSnapshot } from "@/app/state/context/SnapshotContext";
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';

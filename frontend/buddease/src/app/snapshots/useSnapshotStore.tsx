@@ -1,17 +1,12 @@
 // useSnapshotStore.tsx
 
+import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { useDebouncedCallback } from '@/app/hooks/useDebouncedCallback';
 import {
   SnapshotStoreOptions
 } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { useCallback, useEffect, useRef, useState } from "react";
-import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
-import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import {
   SubscriberTypeEnum,
   SubscriptionTypeEnum
@@ -19,10 +14,14 @@ import {
 import {
   DataStoreWithSnapshotMethods
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
+import { SnapshotStoreProps, storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import { triggerOnSnapshot } from '@/app/snapshots/snapshotTrigger';
+import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import {
   logActivity,

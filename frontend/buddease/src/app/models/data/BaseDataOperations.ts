@@ -2,14 +2,14 @@
 // BaseDataOperations
 import { fetchApiData } from '@/app/api/ApiData';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import {
-  addData as addDataAction,
-  fetchDataFailure,
-  fetchDataRequest,
-  fetchDataSuccess,
-  removeData as removeDataAction,
-  updateDataDetails as updateDataDetailsAction
+    addData as addDataAction,
+    fetchDataFailure,
+    fetchDataRequest,
+    fetchDataSuccess,
+    removeData as removeDataAction,
+    updateDataDetails as updateDataDetailsAction
 } from '@/app/state/redux/slices/DataSlice'; // Adjust based on your project structure
 import { useDispatch } from 'react-redux';
 

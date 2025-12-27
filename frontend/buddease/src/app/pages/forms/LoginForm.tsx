@@ -3,7 +3,7 @@
 
 import { NOTIFICATION_TYPES } from "@/app/features/support/NotificationTypes";
 import { useAuth } from "@/app/state/context/AuthContext";
-import { NotificationContext, NotificationTypeEnum } from '@/app/state/context/NotificationContext';
+import { NotificationContext, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 

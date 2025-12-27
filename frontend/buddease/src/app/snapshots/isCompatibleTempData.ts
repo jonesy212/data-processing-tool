@@ -1,24 +1,24 @@
 // isCompatibleTempData.ts
 //isCompatibleTempData.ts
-import { TempData } from "@/app/models/data/TempData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData } from '@/app/models/data/Data';
 import { T } from '@/app/models/data/dataStoreMethods';
+import { TempData } from "@/app/models/data/TempData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
+import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 type U = T;
 type WrappedU = U extends BaseDataEntity ? U : BaseData<U, U, StructuredMetadata<U, U>, Attachment>;

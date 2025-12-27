@@ -1,7 +1,7 @@
 // convertSnapshotContainer.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainerType } from "@/app/snapshots/SnapshotContainer";
 
 /**

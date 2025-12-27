@@ -355,6 +355,10 @@ export class ASTParserUtils {
         return null;
     }
 
+    private createSourceFile(fileName: string, content: string, target: ts.ScriptTarget, setParentNodes: boolean): ts.SourceFile {
+        return ts.createSourceFile(fileName, content, target, setParentNodes);
+    }
+
     private parseTypeDeclaration(node: ts.Node, sourceFile: ts.SourceFile, filePath: string): TypeInfo | null {
         if (ts.isInterfaceDeclaration(node)) {
             return this.parseInterfaceDeclaration(node, sourceFile, filePath);

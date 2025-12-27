@@ -3,10 +3,10 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Member } from '@/app/models/members/Member'
+import { Member } from '@/app/models/members/Member';
 import { TeamPermission } from '@/app/permissions/Permission';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -126,23 +126,23 @@ type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, a
   SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 export type {
-  // Core type parameters
-  AppTeamEntity, BasicTeamInfo,
-  // Team entity types
-  CompleteTeam,
-  PublicTeamProfile, TeamAttachment, TeamBaseParams, TeamExcludedFields,
-  TeamIncludedFields, TeamK,
-  TeamMeta, TeamParams, TeamRealtimeDataItem,
-  // Snapshot types
-  TeamSnapshot,
-  TeamSnapshotData,
-  // Utility types
-  TeamSnapshotFromParams, TeamSnapshotsArray,
-  TeamSnapshotStore, TeamSnapshotStoreConfig,
-  TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria,
-  TeamStructuredMetadata, TeamSubscriberCollection,
-  // Metadata types
-  TeamUnifiedMetadata, TeamWithMembers
+    // Core type parameters
+    AppTeamEntity, BasicTeamInfo,
+    // Team entity types
+    CompleteTeam,
+    PublicTeamProfile, TeamAttachment, TeamBaseParams, TeamExcludedFields,
+    TeamIncludedFields, TeamK,
+    TeamMeta, TeamParams, TeamRealtimeDataItem,
+    // Snapshot types
+    TeamSnapshot,
+    TeamSnapshotData,
+    // Utility types
+    TeamSnapshotFromParams, TeamSnapshotsArray,
+    TeamSnapshotStore, TeamSnapshotStoreConfig,
+    TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria,
+    TeamStructuredMetadata, TeamSubscriberCollection,
+    // Metadata types
+    TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces

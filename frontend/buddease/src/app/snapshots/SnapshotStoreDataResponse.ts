@@ -6,7 +6,7 @@ import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Data } from '@/app/models/data/Data';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';

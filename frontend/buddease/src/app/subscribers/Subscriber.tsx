@@ -33,7 +33,7 @@ import { TriggerIncentivesParams } from "@/utils/web3/applicationUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Payload, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "@/app/snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "@/app/snapshots/SnapshotStoreSubset";

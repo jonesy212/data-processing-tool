@@ -9,7 +9,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Data } from '@/app/models/data/Data';
 import { TagsRecord } from '@/app/models/tracker/Tag';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { DataAttachment, DataEntity, DataExcludedFields, DataIncludedFields, DataK, DataMeta } from '@/app/typings/entities/DataEntity';

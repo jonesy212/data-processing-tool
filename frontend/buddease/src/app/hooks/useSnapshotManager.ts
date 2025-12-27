@@ -128,7 +128,7 @@ type CombinedEvents<
 };
 
 
-interface SnapshotManager<
+export interface SnapshotManager<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -774,7 +774,7 @@ export const useSnapshotManager = <
 
 
 export { completeDataStoreMethods, convertMapToCustomSnapshotData, convertSnapshotToContent, createSnapshotStore };
-export type { CombinedEvents, SnapshotManager, SnapshotStoreOptions };
+export type { CombinedEvents, SnapshotStoreOptions };
 
 
 

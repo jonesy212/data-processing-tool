@@ -9,10 +9,11 @@ import ClickableList from "@/app/actions/ClickableList";
 import { ImageCard } from "@/app/cards/index";
 import { loadDuckDuckGoIcon } from "@/app/components/icons/IconLoader";
 import TaskList from "@/app/components/lists/TaskList";
+import TodoList from "@/app/components/lists/TodoList";
 import ContentItemComponent, {
   ContentItem,
 } from "@/app/components/models/content/ContentItem";
-import TodoList from "@/app/components/lists/TodoList";
+import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import {
@@ -25,10 +26,9 @@ import {
 } from "@/app/hooks/userInterface/UIPhaseHooks";
 import useDarkModeToggle from "@/app/hooks/userInterface/useDarkModeToggle";
 import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";
-import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
-import useTodoManagerStore from "@/app/state/stores/TodoStore";
 import { useLayout } from "@/app/pages/layouts/LayoutContext";
+import useTodoManagerStore from "@/app/state/stores/TodoStore";
+import { useTaskManagerStore } from "@/src/app/state/stores/TaskStore";
 
 interface ClickableListItem {
   id: number;

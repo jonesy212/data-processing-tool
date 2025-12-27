@@ -7,7 +7,7 @@ import { Content } from '@/app/models/content/AddContent';
 import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";

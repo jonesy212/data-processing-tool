@@ -1,7 +1,8 @@
 // src/app/error-analyzer/TypeRelationshipAnalyzer.ts
 import fs from 'fs';
 import path from 'path';
-import { TSCompilerError, RelationshipMap } from '@/app/error-analyzer/ErrorFixManager';
+import { TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 
 export class TypeRelationshipAnalyzer {
   async buildRelationshipMap(errors: TSCompilerError[]): Promise<RelationshipMap> {

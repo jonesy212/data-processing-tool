@@ -3,7 +3,7 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { BaseDataEntity, DefaultMeta } from '@/app/config/BaseConfig';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { useNotification } from '@/app/state/context/NotificationContext';

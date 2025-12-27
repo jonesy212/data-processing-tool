@@ -12,7 +12,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { T } from "@/app/models/data/dataStoreMethods";
 import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { CorrectionCategory } from '@/app/typings/correctionTypes';
@@ -273,7 +273,7 @@ function wrapMapInSnapshot<
     initialConfig: {},
     createdAt: new Date(),
     updatedAt: new Date(),
-    
+    latestVersion: latestVersion,
     
     // ---------- CoreSnapshot required stubs ----------
     id: crypto.randomUUID(),
@@ -300,7 +300,7 @@ function wrapMapInSnapshot<
     
     schema: {} as Record<string, SchemaField>,
     // (add any other mandatory CoreSnapshot fields your build demands)
-  } as Snapshot<T, K, M, A, Ex, In>;
+  }
 }
 
 export { fileCategoryMapping, getEntriesByCategory, processSnapshotsByCategory };

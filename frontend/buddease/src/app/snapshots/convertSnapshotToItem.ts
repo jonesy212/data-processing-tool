@@ -1,6 +1,6 @@
 // convertSnapshotToItem.ts
 // import { Data } from '@/app/models/data/Data';
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 // import { Attachment } from '@/app/documents/attachment/Attachment';
 // import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';

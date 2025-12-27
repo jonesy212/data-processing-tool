@@ -1,39 +1,38 @@
 // sampleSnapshotInstance.ts
-import { SnapshotEvent } from '@/app/typings/snapshotTypes'
-import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { getDataVersions } from '@/app/api/ApiData';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { DataStore } from '@/app/state/stores/DataStore';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/typings/entities/AppEntity";
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
+import { DataStore } from '@/app/state/stores/DataStore';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from "@/app/typings/entities/AppEntity";
+import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 
-import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SnapshotItem } from '@/app/snapshots/SnapshotList';
-import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotStoreProps  } from '@/app/snapshots/SnapshotStoreProps';
-import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
-import { Tag } from '@/app/models/tracker/Tag';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { NotificationType } from '@/app/state/context/NotificationContext';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { Payload } from '@/app/interfaces/payload/payloadTypes';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Tag } from '@/app/models/tracker/Tag';
+import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
+import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { NotificationType } from '@/app/state/context/NotificationContext';
+import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 const sampleSnapshot: Snapshot<
   AppEntity,                // T — base entity

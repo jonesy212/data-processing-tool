@@ -8,7 +8,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AccessControlEntry } from '@/app/permissions/AccessControlEntry';
 import { PermissionLevel, VisibilityLevel } from '@/app/permissions/PermissionEnums';
 import { AuthenticationProvider } from '@/app/server/auth/AuthService';
-import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/Snapshot';
+import { Snapshot, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots/SnapshotData';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

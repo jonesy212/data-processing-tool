@@ -3,8 +3,8 @@ import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultIncludedField
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Taggable } from '@/app/models/tracker/Tag'
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Taggable } from '@/app/models/tracker/Tag';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
@@ -54,7 +54,7 @@ function convertMetadata<
       timestamp: "",
       author: "",
       isActive: true, 
-      meta: {} as StructuredMetadata<, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      meta: {} as StructuredMetadata<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       mappedSnapshot: {} as Map<string, Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       events: {} as EventManager<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       latestVersion: createLatestVersion<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),

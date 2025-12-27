@@ -3,7 +3,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -61,20 +61,20 @@ type ApplySubscriberFieldFilters<
 > = Pick<Omit<SubscriberEntity, Excluded>, Included>;
 
 export type {
-  ApplySubscriberFieldFilters, SubscriberAttachment,
-  SubscriberBaseParams,
-  SubscriberEntity,
-  SubscriberExcludedFields,
-  SubscriberIncludedFields,
-  SubscriberK, SubscriberMeta,
-  SubscriberParams,
-  SubscriberRealtimeDataItem,
-  SubscriberSnapshot,
-  SubscriberSnapshotData,
-  SubscriberSnapshotsArray,
-  SubscriberSnapshotStore,
-  SubscriberSnapshotStoreConfig,
-  SubscriberSnapshotWithCriteria,
-  SubscriberSubscriberCollection
+    ApplySubscriberFieldFilters, SubscriberAttachment,
+    SubscriberBaseParams,
+    SubscriberEntity,
+    SubscriberExcludedFields,
+    SubscriberIncludedFields,
+    SubscriberK, SubscriberMeta,
+    SubscriberParams,
+    SubscriberRealtimeDataItem,
+    SubscriberSnapshot,
+    SubscriberSnapshotData,
+    SubscriberSnapshotsArray,
+    SubscriberSnapshotStore,
+    SubscriberSnapshotStoreConfig,
+    SubscriberSnapshotWithCriteria,
+    SubscriberSubscriberCollection
 };
 

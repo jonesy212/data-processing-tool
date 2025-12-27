@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { SnapshotsArray, } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot, } from "@/app/snapshots/Snapshot";
-import { SnapshotData, Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotData, Snapshots } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";

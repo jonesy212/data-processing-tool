@@ -68,7 +68,7 @@ import {
   createCompleteSnapshot,
   createSnapshot,
 } from '@/app/snapshots/createSnapshot';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import {
   snapshotContainer,
   SnapshotContainer,
@@ -95,20 +95,20 @@ import {
 } from '@/utils/web3/applicationUtils';
 
 
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import baseMeta from '@/app/server/database/baseMeta';
-import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
-import { FC } from 'react';
 import { ExcludedFields } from '@/app/components/routing/Fields';
+import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NoteAttachment } from '@/app/documents/NoteData';
-import { subscription } from '@/app/subscriptions/SubscriptionService';
+import baseMeta from '@/app/server/database/baseMeta';
 import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
+import { subscription } from '@/app/subscriptions/SubscriptionService';
+import { SnapshotEntityType } from '@/app/typings/entities/SnapshotEntity';
+import { FC } from 'react';
 
 const SNAPSHOT_URL = endpoints.snapshots;
 
 type SnapshotUnion<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,

@@ -1,0 +1,82 @@
+#!/usr/bin/env tsx
+// src/app/scripts/fix-index-tsx.ts
+// Fix index.tsx syntax errors
+
+import fs from 'fs';
+import path from 'path';
+
+function fixIndexTSX() {
+  const filePath = path.join(process.cwd(), 'src/app/pages/index.tsx');
+  
+  if (!fs.existsSync(filePath)) {
+    console.error('❌ index.tsx not found');
+    return;
+  }
+
+  console.log('🔧 Fixing index.tsx syntax errors...\n');
+  
+  const content = fs.readFileSync(filePath, 'utf8');
+  const lines = content.split('\n');
+  
+  // Check line 146 (0-indexed 145)
+  if (lines.length > 145) {
+    console.log(`Line 146: ${lines[145]}`);
+    
+    // Common issues on this line:
+    // 1. Missing comma in object/function call
+    // 2. Missing closing parenthesis/bracket
+    
+    let fixed = false;
+    
+    // Fix 1: Check for missing comma in function parameters
+    if (lines[145].includes('(') && !lines[145].includes(')')) {
+      console.log('⚠️  Possible missing closing parenthesis');
+      
+      // Look ahead for the closing
+      for (let i = 146; i < Math.min(lines.length, 155); i++) {
+        if (lines[i].includes(')')) {
+          console.log(`   Closing parenthesis found at line ${i + 1}`);
+          break;
+        }
+      }
+    }
+    
+    // Fix 2: Check for object literal without comma
+    if (lines[145].includes('{') && !lines[145].includes('}')) {
+      const nextLine = lines[146] || '';
+      if (nextLine.trim().startsWith('}')) {
+        // Missing comma before closing brace
+        lines[145] = lines[145].trim() + ',';
+        fixed = true;
+        console.log('✅ Added missing comma before closing brace');
+      }
+    }
+    
+    if (fixed) {
+      // Create backup
+      const backupPath = filePath + '.backup';
+      fs.writeFileSync(backupPath, content, 'utf8');
+      
+      // Write fixed file
+      fs.writeFileSync(filePath, lines.join('\n'), 'utf8');
+      
+      console.log(`📁 Backup saved to: ${backupPath}`);
+      console.log(`✅ Fixed index.tsx`);
+    } else {
+      console.log('ℹ️  Could not auto-fix. Manual inspection needed.');
+      console.log('\n💡 Check for:');
+      console.log('   - Missing commas in function calls');
+      console.log('   - Missing closing parentheses/brackets');
+      console.log('   - Nested useEffect hooks');
+    }
+  } else {
+    console.log('File has fewer than 146 lines');
+  }
+}
+
+// Run if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  fixIndexTSX();
+}
+
+export { fixIndexTSX };

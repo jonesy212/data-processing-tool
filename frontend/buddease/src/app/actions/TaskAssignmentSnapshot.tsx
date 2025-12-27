@@ -1,6 +1,6 @@
 // TaskAssignmentSnapshot.tsx
+import { useTaskManagerStore } from '@/src/app/state/stores/TaskStore';
 import React, { useState } from 'react';
-import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 
 interface TaskAssignmentSnapshotProps {
   taskId: string;

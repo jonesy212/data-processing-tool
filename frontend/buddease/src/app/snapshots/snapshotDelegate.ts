@@ -1,33 +1,30 @@
 // snapshotDelegate.ts
-import { BaseDataEntity } from '@/app/config/BaseConfig';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { isRealtimeDataItemArray } from '@/app/hooks/isRealtimeDataItemArray';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
-import { DataStore } from '@/app/state/stores/DataStore';
-import { SnapshotData, SnapshotDataType } from '@/app/snapshots/SnapshotData';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotContainer, SnapshotData, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { DataStore } from '@/app/state/stores/DataStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
-import { isRealtimeDataItemArray } from '@/app/hooks/isRealtimeDataItemArray';
 import { Version } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
-import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
 
 const snapshotDelegate = <

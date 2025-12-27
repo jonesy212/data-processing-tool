@@ -1,249 +1,155 @@
 # 📦 Import Fix Report (Validated)
 
-**Generated:** 2025-12-24T00:29:04.989Z
-**Total Issues Found:** 123
-**✅ Valid Suggestions:** 123
+**Generated:** 2025-12-25T11:17:02.985Z
+**Total Issues Found:** 98
+**✅ Valid Suggestions:** 98
 **❌ Invalid/Needs Review:** 0
-**Files with Valid Issues:** 76
+**Files with Valid Issues:** 67
 **Files with Invalid Issues:** 0
 
 ## ✅ Validated Fixes (Ready to Apply)
 
-#### 📄 src/app/DynamicIntroTooltip.tsx
+#### 📄 src/app/api/ApiHighlightEvent.tsx
 
-1. **Line 2**: `intro.js`
-   - **Suggested fix:** `intro.js` → `@/app/hooks/useStepNavigation`
-   - **Validation:** Found: src/app/hooks/useStepNavigation.ts
-
-#### 📄 src/app/api/phases/phaseApiService.ts
-
-1. **Line 5**: `@/app/models/data/StatusType`
-   - **Suggested fix:** `@/app/models/data/StatusType` → `@/app/models/tracker/ProgressBar`
-   - **Validation:** Found: src/app/models/tracker/ProgressBar.tsx
+1. **Line 9**: `@/app/snapshots/methods/dataMethods`
+   - **Suggested fix:** `@/app/snapshots/methods/dataMethods` → `@/app/api/ApiData`
+   - **Validation:** Found: src/app/api/ApiData.ts
 
 #### 📄 src/app/api/processSnapshotData.ts
 
-1. **Line 14**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotContainer`
-   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+1. **Line 14**: `@/app/snapshots/SnapshotContainer`
+   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/Snapshot`
+   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+
+#### 📄 src/app/components/communications/chat/features/closeChatSettingsPanel.ts
+
+1. **Line 3**: `@/app/components/communications/chat/ChatSettingsPanel`
+   - **Suggested fix:** `@/app/components/communications/chat/ChatSettingsPanel` → `@/app/notifications/NotificationChannelManager`
+   - **Validation:** Found: src/app/notifications/NotificationChannelManager.ts
 
 #### 📄 src/app/components/database/SchemaEvolutionManager.ts
 
-1. **Line 12**: `@/app/server/database/DatabaseServiceFactory`
-   - **Suggested fix:** `@/app/server/database/DatabaseServiceFactory` → `@/app/typings/database`
-   - **Validation:** Found: src/app/typings/database.ts
-
-#### 📄 src/app/components/models/file/FileManager.tsx
-
-1. **Line 6**: `@/app/state/redux/slices/FilteredEventsSlice`
-   - **Suggested fix:** `@/app/state/redux/slices/FilteredEventsSlice` → `@/app/pages/searches/FilteredEvents`
-   - **Validation:** Found: src/app/pages/searches/FilteredEvents.tsx
+1. **Line 12**: `@/app/typings/database`
+   - **Suggested fix:** `@/app/typings/database` → `@/app/server/database/DatabaseServiceFactory`
+   - **Validation:** Found: src/app/server/database/DatabaseServiceFactory.ts
 
 #### 📄 src/app/config/FrontendConfig.ts
 
-1. **Line 2**: `@/app/config/CacheConfig`
-   - **Suggested fix:** `@/app/config/CacheConfig` → `@/app/api/ApiConfigService`
-   - **Validation:** Found: src/app/api/ApiConfigService.ts
+1. **Line 2**: `@/app/api/ApiConfigService`
+   - **Suggested fix:** `@/app/api/ApiConfigService` → `@/app/config/CacheConfig`
+   - **Validation:** Found: src/app/config/CacheConfig.ts
 
-2. **Line 2**: `@/app/config/CacheConfig`
-   - **Suggested fix:** `@/app/config/CacheConfig` → `@/app/services/ConfigurationService`
+2. **Line 2**: `@/app/api/ApiConfigService`
+   - **Suggested fix:** `@/app/api/ApiConfigService` → `@/app/services/ConfigurationService`
    - **Validation:** Found: src/app/services/ConfigurationService.ts
 
 #### 📄 src/app/dataIntegration/reduxIntegration.ts
 
-1. **Line 9**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 9**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
 #### 📄 src/app/documents/DocumentGeneratorMethods.ts
 
-1. **Line 44**: `@/app/dataIntegration/parseData`
-   - **Suggested fix:** `@/app/dataIntegration/parseData` → `@/app/documents/DocType`
-   - **Validation:** Found: src/app/documents/DocType.ts
+1. **Line 44**: `@/app/documents/DocType`
+   - **Suggested fix:** `@/app/documents/DocType` → `@/app/dataIntegration/parseData`
+   - **Validation:** Found: src/app/dataIntegration/parseData.ts
 
-#### 📄 src/app/error-analyzer/CircularDependencyResolver.ts
-
-1. **Line 3**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-2. **Line 4**: `./types/FixStrategyTypes`
-   - **Suggested fix:** `./types/FixStrategyTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-#### 📄 src/app/error-analyzer/ErrorFixManager.ts
-
-1. **Line 2**: `./TypeScriptErrorAnalyzer`
-   - **Suggested fix:** `./TypeScriptErrorAnalyzer` → `@/app/error-analyzer/TypeScriptErrorAnalyzer`
-   - **Validation:** Found: src/app/error-analyzer/TypeScriptErrorAnalyzer.ts
-
-2. **Line 3**: `./TypeRelationshipAnalyzer`
-   - **Suggested fix:** `./TypeRelationshipAnalyzer` → `@/app/error-analyzer/TypeRelationshipAnalyzer`
-   - **Validation:** Found: src/app/error-analyzer/TypeRelationshipAnalyzer.ts
-
-3. **Line 4**: `./FixPrioritizer`
-   - **Suggested fix:** `./FixPrioritizer` → `@/app/error-analyzer/FixPrioritizer`
-   - **Validation:** Found: src/app/error-analyzer/FixPrioritizer.ts
-
-4. **Line 5**: `./FixConfidenceCalculator`
-   - **Suggested fix:** `./FixConfidenceCalculator` → `@/app/error-analyzer/FixConfidenceCalculator`
-   - **Validation:** Found: src/app/error-analyzer/FixConfidenceCalculator.ts
-
-5. **Line 6**: `./CircularDependencyResolver`
-   - **Suggested fix:** `./CircularDependencyResolver` → `@/app/error-analyzer/CircularDependencyResolver`
-   - **Validation:** Found: src/app/error-analyzer/CircularDependencyResolver.ts
-
-6. **Line 7**: `./ImportSuggestionGenerator`
-   - **Suggested fix:** `./ImportSuggestionGenerator` → `@/app/error-analyzer/ImportSuggestionGenerator`
-   - **Validation:** Found: src/app/error-analyzer/ImportSuggestionGenerator.ts
-
-7. **Line 8**: `./FixVerifier`
-   - **Suggested fix:** `./FixVerifier` → `@/app/error-analyzer/FixVerifier`
-   - **Validation:** Found: src/app/error-analyzer/FixVerifier.ts
-
-8. **Line 9**: `./ProgressTracker`
-   - **Suggested fix:** `./ProgressTracker` → `@/app/error-analyzer/ProgressTracker`
-   - **Validation:** Found: src/app/error-analyzer/ProgressTracker.ts
-
-9. **Line 10**: `./ReportGenerator`
-   - **Suggested fix:** `./ReportGenerator` → `@/app/error-analyzer/ReportGenerator`
-   - **Validation:** Found: src/app/error-analyzer/ReportGenerator.ts
-
-#### 📄 src/app/error-analyzer/FixConfidenceCalculator.ts
-
-1. **Line 3**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-2. **Line 4**: `./types/FixStrategyTypes`
-   - **Suggested fix:** `./types/FixStrategyTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-#### 📄 src/app/error-analyzer/FixPrioritizer.ts
-
-1. **Line 3**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-2. **Line 4**: `./types/FixStrategyTypes`
-   - **Suggested fix:** `./types/FixStrategyTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-#### 📄 src/app/error-analyzer/FixVerifier.ts
-
-1. **Line 3**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-2. **Line 4**: `./types/FixStrategyTypes`
-   - **Suggested fix:** `./types/FixStrategyTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-#### 📄 src/app/error-analyzer/ImportSuggestionGenerator.ts
-
-1. **Line 3**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-2. **Line 4**: `./types/FixStrategyTypes`
-   - **Suggested fix:** `./types/FixStrategyTypes` → `@/app/error-analyzer/index`
-   - **Validation:** Found: src/app/error-analyzer/index.ts
-
-#### 📄 src/app/error-analyzer/ProgressTracker.ts
-
-1. **Line 2**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-#### 📄 src/app/error-analyzer/ReportGenerator.ts
+#### 📄 src/app/error-analyzer/IndexFileFixer.ts
 
 1. **Line 4**: `./ErrorFixManager`
    - **Suggested fix:** `./ErrorFixManager` → `@/app/error-analyzer/ErrorFixManager`
    - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
 
-2. **Line 5**: `./TypeScriptErrorAnalyzer`
-   - **Suggested fix:** `./TypeScriptErrorAnalyzer` → `@/app/error-analyzer/TypeScriptErrorAnalyzer`
-   - **Validation:** Found: src/app/error-analyzer/TypeScriptErrorAnalyzer.ts
+#### 📄 src/app/error-analyzer/cli/phases-cli.ts
 
-#### 📄 src/app/error-analyzer/TypeRelationshipAnalyzer.ts
+1. **Line 4**: `../phases/TypeScriptDiagnosticPhase`
+   - **Suggested fix:** `../phases/TypeScriptDiagnosticPhase` → `@/app/error-analyzer/phases/TypeScriptDiagnosticPhase`
+   - **Validation:** Found: src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
 
-1. **Line 4**: `./ErrorFixManager`
-   - **Suggested fix:** `./ErrorFixManager` → `@/app/error-analyzer/ErrorFixManager`
+2. **Line 5**: `../phases/PhaseExecutor`
+   - **Suggested fix:** `../phases/PhaseExecutor` → `@/app/error-analyzer/phases/PhaseExecutor`
+   - **Validation:** Found: src/app/error-analyzer/phases/PhaseExecutor.ts
+
+#### 📄 src/app/error-analyzer/phases/PhaseExecutor.ts
+
+1. **Line 14**: `./TypeScriptDiagnosticPhase`
+   - **Suggested fix:** `./TypeScriptDiagnosticPhase` → `@/app/error-analyzer/phases/TypeScriptDiagnosticPhase`
+   - **Validation:** Found: src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
+
+#### 📄 src/app/error-analyzer/phases/SafePhaseExecutor.ts
+
+1. **Line 4**: `./PhaseBackupSystem`
+   - **Suggested fix:** `./PhaseBackupSystem` → `@/app/models/phases/PhaseBackupSystem`
+   - **Validation:** Found: src/app/models/phases/PhaseBackupSystem.ts
+
+#### 📄 src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts
+
+1. **Line 5**: `../ErrorFixManager`
+   - **Suggested fix:** `../ErrorFixManager` → `@/app/error-analyzer/ErrorFixManager`
    - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
 
-#### 📄 src/app/error-analyzer/TypeScriptErrorAnalyzer.ts
+#### 📄 src/app/error-analyzer/phases/test-phase.ts
 
-1. **Line 4**: `./ErrorFixManager`
-   - **Suggested fix:** `./ErrorFixManager` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-#### 📄 src/app/error-analyzer/TypeScriptErrorFixSystem.ts
-
-1. **Line 2**: `./ErrorFixManager`
-   - **Suggested fix:** `./ErrorFixManager` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-2. **Line 3**: `./ProgressTracker`
-   - **Suggested fix:** `./ProgressTracker` → `@/app/error-analyzer/ProgressTracker`
-   - **Validation:** Found: src/app/error-analyzer/ProgressTracker.ts
-
-3. **Line 4**: `./ReportGenerator`
-   - **Suggested fix:** `./ReportGenerator` → `@/app/error-analyzer/ReportGenerator`
-   - **Validation:** Found: src/app/error-analyzer/ReportGenerator.ts
-
-4. **Line 5**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/ErrorFixManager`
-   - **Validation:** Found: src/app/error-analyzer/ErrorFixManager.ts
-
-#### 📄 src/app/error-analyzer/cli.ts
-
-1. **Line 5**: `./TypeScriptErrorFixSystem`
-   - **Suggested fix:** `./TypeScriptErrorFixSystem` → `@/app/error-analyzer/TypeScriptErrorFixSystem`
-   - **Validation:** Found: src/app/error-analyzer/TypeScriptErrorFixSystem.ts
-
-#### 📄 src/app/error-analyzer/types/FixStrategyTypes.ts
-
-1. **Line 2**: `./types/ErrorAnalysisTypes`
-   - **Suggested fix:** `./types/ErrorAnalysisTypes` → `@/app/error-analyzer/types/ErrorAnalysisTypes`
-   - **Validation:** Found: src/app/error-analyzer/types/ErrorAnalysisTypes.ts
+1. **Line 2**: `./app/error-analyzer/phases/PhaseExecutor`
+   - **Suggested fix:** `./app/error-analyzer/phases/PhaseExecutor` → `@/app/error-analyzer/phases/PhaseExecutor`
+   - **Validation:** Found: src/app/error-analyzer/phases/PhaseExecutor.ts
 
 #### 📄 src/app/hooks/useCryptoIntegration.ts
 
-1. **Line 4**: `@/app/components/crypto/CryptoPortfolio`
-   - **Suggested fix:** `@/app/components/crypto/CryptoPortfolio` → `@/app/services/CryptoIntegrationService`
-   - **Validation:** Found: src/app/services/CryptoIntegrationService.ts
+1. **Line 4**: `@/app/services/CryptoIntegrationService`
+   - **Suggested fix:** `@/app/services/CryptoIntegrationService` → `@/app/components/crypto/CryptoPortfolio`
+   - **Validation:** Found: src/app/components/crypto/CryptoPortfolio.ts
 
 #### 📄 src/app/hooks/useRoleAccess.ts
 
-1. **Line 8**: `@/app/config/BaseConfig`
-   - **Suggested fix:** `@/app/config/BaseConfig` → `@/app/documents/attachment/Attachment`
-   - **Validation:** Found: src/app/documents/attachment/Attachment.tsx
+1. **Line 8**: `@/app/documents/attachment/Attachment`
+   - **Suggested fix:** `@/app/documents/attachment/Attachment` → `@/app/config/BaseConfig`
+   - **Validation:** Found: src/app/config/BaseConfig.ts
 
 #### 📄 src/app/libraries/eventSystem/ProjectEventEmitter.ts
 
-1. **Line 2**: `@/app/branding/BrandingSettings`
-   - **Suggested fix:** `@/app/branding/BrandingSettings` → `@/app/libraries/theme/BrandingService`
-   - **Validation:** Found: src/app/libraries/theme/BrandingService.ts
+1. **Line 2**: `@/app/libraries/theme/BrandingService`
+   - **Suggested fix:** `@/app/libraries/theme/BrandingService` → `@/app/branding/BrandingSettings`
+   - **Validation:** Found: src/app/branding/BrandingSettings.ts
 
 #### 📄 src/app/models/data/dataStoreMethods.ts
 
-1. **Line 5**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
+1. **Line 5**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 5**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotList`
+2. **Line 5**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotList`
    - **Validation:** Found: src/app/snapshots/SnapshotList.tsx
 
-3. **Line 5**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreProps`
+3. **Line 5**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotStoreProps`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreProps.ts
+
+#### 📄 src/app/models/phases/DynamicPhaseSystem.ts
+
+1. **Line 8**: `@/app/error-analyzer/phases/PhaseBackupSystem`
+   - **Suggested fix:** `@/app/error-analyzer/phases/PhaseBackupSystem` → `@/app/models/phases/PhaseBackupSystem`
+   - **Validation:** Found: src/app/models/phases/PhaseBackupSystem.ts
+
+#### 📄 src/app/models/phases/PhaseManager.tsx
+
+1. **Line 4**: `./PhaseSystem`
+   - **Suggested fix:** `./PhaseSystem` → `@/app/models/phases/PhaseSystem`
+   - **Validation:** Found: src/app/models/phases/PhaseSystem.ts
 
 #### 📄 src/app/pages/forms/LoginForm.tsx
 
-1. **Line 6**: `@/app/features/support/UnifiedNotificationTypes`
-   - **Suggested fix:** `@/app/features/support/UnifiedNotificationTypes` → `@/app/state/context/NotificationContext`
-   - **Validation:** Found: src/app/state/context/NotificationContext.tsx
+1. **Line 6**: `@/app/state/context/NotificationContext`
+   - **Suggested fix:** `@/app/state/context/NotificationContext` → `@/app/features/support/UnifiedNotificationTypes`
+   - **Validation:** Found: src/app/features/support/UnifiedNotificationTypes.ts
+
+#### 📄 src/app/scripts/analyze-ts-errors.mjs
+
+1. **Line 16**: `../dist/app/error-analyzer/index.js`
+   - **Suggested fix:** `../dist/app/error-analyzer/index.js` → `@/app/api/index`
+   - **Validation:** Semantic fallback: @/app/api/index
 
 #### 📄 src/app/server/auth/AuthComponent.tsx
 
@@ -253,404 +159,380 @@
 
 #### 📄 src/app/server/database/CustomDataProvider.tsx
 
-1. **Line 4**: `@/app/state/context/DataContext`
-   - **Suggested fix:** `@/app/state/context/DataContext` → `@/app/models/data/dataContracts`
-   - **Validation:** Found: src/app/models/data/dataContracts.ts
+1. **Line 4**: `@/app/models/data/dataContracts`
+   - **Suggested fix:** `@/app/models/data/dataContracts` → `@/app/state/context/DataContext`
+   - **Validation:** Found: src/app/state/context/DataContext.tsx
 
 #### 📄 src/app/server/security/SecurityConfiguration.ts
 
-1. **Line 5**: `@/app/api/ApiConfigService`
-   - **Suggested fix:** `@/app/api/ApiConfigService` → `@/app/services/ConfigurationService`
-   - **Validation:** Found: src/app/services/ConfigurationService.ts
-
-#### 📄 src/app/snapshots/CoreSnapshot.tsx
-
-1. **Line 19**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotContainer`
-   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+1. **Line 5**: `@/app/services/ConfigurationService`
+   - **Suggested fix:** `@/app/services/ConfigurationService` → `@/app/api/ApiConfigService`
+   - **Validation:** Found: src/app/api/ApiConfigService.ts
 
 #### 📄 src/app/snapshots/SnapshohtDevConfigs.ts
 
-1. **Line 7**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 7**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
 #### 📄 src/app/snapshots/SnapshotContent.ts
 
-1. **Line 5**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 5**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/SnapshotManagement.ts
 
-1. **Line 6**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 6**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
-2. **Line 6**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/interfaces/payload/payloadTypes`
+2. **Line 6**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/interfaces/payload/payloadTypes`
    - **Validation:** Found: src/app/interfaces/payload/payloadTypes.ts
 
 #### 📄 src/app/snapshots/SnapshotMap.ts
 
-1. **Line 9**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 9**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/SnapshotStoreMethods.ts
 
-1. **Line 15**: `@/app/snapshots/SnapshotStoreConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 15**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
+   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
 #### 📄 src/app/snapshots/SnapshotStoreProps.ts
 
-1. **Line 17**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
+1. **Line 17**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/SnapshotType.ts
 
-1. **Line 11**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/SnapshotStoreConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
+1. **Line 11**: `@/app/snapshots/SnapshotStoreConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
 #### 📄 src/app/snapshots/convertSnapshot.ts
 
-1. **Line 11**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 11**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotContainer`
+   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
 
-2. **Line 14**: `@/app/snapshots/SnapshotStoreProps`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreProps` → `@/app/snapshots/SnapshotStoreMethods`
-   - **Validation:** Found: src/app/snapshots/SnapshotStoreMethods.ts
+2. **Line 14**: `@/app/snapshots/SnapshotStoreMethods`
+   - **Suggested fix:** `@/app/snapshots/SnapshotStoreMethods` → `@/app/snapshots/SnapshotStoreProps`
+   - **Validation:** Found: src/app/snapshots/SnapshotStoreProps.ts
 
 #### 📄 src/app/snapshots/convertSnapshotsArray.ts
 
-1. **Line 12**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
-
-#### 📄 src/app/snapshots/createSnapshot.ts
-
-1. **Line 13**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
+1. **Line 12**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
 #### 📄 src/app/snapshots/createSnapshotExample.ts
 
-1. **Line 2**: `@/app/snapshots/SnapshotStoreConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/SnapshotData`
-   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
-
-#### 📄 src/app/snapshots/createSnapshotStoreOptions.ts
-
-1. **Line 32**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
-
-2. **Line 32**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotContainer`
-   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
-
-3. **Line 32**: `@/app/snapshots/SnapshotData`
+1. **Line 2**: `@/app/snapshots/SnapshotData`
    - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
-4. **Line 32**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreProps`
+#### 📄 src/app/snapshots/createSnapshotStoreOptions.ts
+
+1. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
+
+2. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotContainer`
+   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+
+3. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotStoreConfig`
+   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
+
+4. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotStoreProps`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreProps.ts
 
-5. **Line 32**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotWithCriteria`
+5. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotWithCriteria`
    - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
 
-6. **Line 32**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/subscribers/subscribeToSnapshotsImplementation`
+6. **Line 32**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/subscribers/subscribeToSnapshotsImplementation`
    - **Validation:** Found: src/app/subscribers/subscribeToSnapshotsImplementation.ts
 
 #### 📄 src/app/snapshots/defaultDataStoreMethods.ts
 
-1. **Line 18**: `@/app/interfaces/payload/payloadTypes`
-   - **Suggested fix:** `@/app/interfaces/payload/payloadTypes` → `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
+1. **Line 18**: `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/interfaces/payload/payloadTypes`
+   - **Validation:** Found: src/app/interfaces/payload/payloadTypes.ts
 
-2. **Line 44**: `@/app/snapshots/SnapshotWithCriteria`
-   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/snapshots/SnapshotData`
-   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
+2. **Line 44**: `@/app/snapshots/SnapshotData`
+   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotWithCriteria`
+   - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
 
-3. **Line 44**: `@/app/snapshots/SnapshotWithCriteria`
-   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/snapshots/SnapshotList`
+3. **Line 44**: `@/app/snapshots/SnapshotData`
+   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotList`
    - **Validation:** Found: src/app/snapshots/SnapshotList.tsx
 
 #### 📄 src/app/snapshots/methods/commonDataStoreMethods.ts
 
-1. **Line 10**: `@/app/typings/entities/SnapshotEntity`
-   - **Suggested fix:** `@/app/typings/entities/SnapshotEntity` → `@/app/typings/entities/AppEntity`
-   - **Validation:** Found: src/app/typings/entities/AppEntity.ts
+1. **Line 10**: `@/app/typings/entities/AppEntity`
+   - **Suggested fix:** `@/app/typings/entities/AppEntity` → `@/app/typings/entities/SnapshotEntity`
+   - **Validation:** Found: src/app/typings/entities/SnapshotEntity.ts
 
 #### 📄 src/app/snapshots/methods/containerMethods.ts
 
-1. **Line 8**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotContainer`
-   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+1. **Line 8**: `@/app/snapshots/SnapshotContainer`
+   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/methods/subscriptionMethods.ts
 
-1. **Line 7**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
+1. **Line 7**: `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/newStoreUtils.ts
 
-1. **Line 13**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
+1. **Line 13**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/snapshots/responsetUtils.ts
 
-1. **Line 8**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
-
-#### 📄 src/app/snapshots/snapshotDelegate.ts
-
-1. **Line 11**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotData`
-   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
-
-#### 📄 src/app/snapshots/transformSnapshotsToStores.tsx
-
-1. **Line 7**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
-
-#### 📄 src/app/snapshots/updateSubscribersAndSnapshots.ts
-
-1. **Line 17**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/interfaces/payload/payloadTypes`
-   - **Validation:** Found: src/app/interfaces/payload/payloadTypes.ts
-
-2. **Line 17**: `@/app/snapshots/Snapshot`
+1. **Line 8**: `@/app/snapshots/Snapshot`
    - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
    - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-3. **Line 17**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+#### 📄 src/app/snapshots/snapshotDelegate.ts
+
+1. **Line 11**: `@/app/snapshots/SnapshotData`
+   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotContainer`
+   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+
+#### 📄 src/app/snapshots/transformSnapshotsToStores.tsx
+
+1. **Line 7**: `@/app/snapshots/SnapshotStoreConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/Snapshot`
+   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+
+#### 📄 src/app/snapshots/updateSubscribersAndSnapshots.ts
+
+1. **Line 17**: `@/app/interfaces/payload/payloadTypes`
+   - **Suggested fix:** `@/app/interfaces/payload/payloadTypes` → `@/app/snapshots/Snapshot`
+   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+
+2. **Line 17**: `@/app/interfaces/payload/payloadTypes`
+   - **Suggested fix:** `@/app/interfaces/payload/payloadTypes` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
+
+3. **Line 17**: `@/app/interfaces/payload/payloadTypes`
+   - **Suggested fix:** `@/app/interfaces/payload/payloadTypes` → `@/app/snapshots/LocalStorageSnapshotStore`
    - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
-4. **Line 17**: `@/app/snapshots/Snapshot`
-   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/LocalStorageSnapshotStore`
+4. **Line 17**: `@/app/interfaces/payload/payloadTypes`
+   - **Suggested fix:** `@/app/interfaces/payload/payloadTypes` → `@/app/snapshots/LocalStorageSnapshotStore`
    - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
+
+#### 📄 src/app/state/context/DataContext.tsx
+
+1. **Line 2**: `@/app/config/BaseConfig`
+   - **Suggested fix:** `@/app/config/BaseConfig` → `@/app/models/data/Data`
+   - **Validation:** Found: src/app/models/data/Data.tsx
 
 #### 📄 src/app/state/redux/sagas/fileSagas.ts
 
-1. **Line 3**: `@/app/api/ApiFiles`
-   - **Suggested fix:** `@/app/api/ApiFiles` → `@/app/components/configs/DetermineFileType`
-   - **Validation:** Found: src/app/components/configs/DetermineFileType.tsx
-
-#### 📄 src/app/state/redux/slices/AppSlice.ts
-
-1. **Line 17**: `@reduxjs/toolkit`
-   - **Suggested fix:** `@reduxjs/toolkit` → `@/app/state/redux/slices/EntitySlice`
-   - **Validation:** Found: src/app/state/redux/slices/EntitySlice.ts
+1. **Line 3**: `@/app/components/configs/DetermineFileType`
+   - **Suggested fix:** `@/app/components/configs/DetermineFileType` → `@/app/api/ApiFiles`
+   - **Validation:** Found: src/app/api/ApiFiles.ts
 
 #### 📄 src/app/state/redux/slices/TaskSlice.ts
 
-1. **Line 7**: `@/app/users/User`
-   - **Suggested fix:** `@/app/users/User` → `@/app/typings/entities/UserEntity`
-   - **Validation:** Found: src/app/typings/entities/UserEntity.ts
-
-#### 📄 src/app/state/redux/slices/TodoSlice.ts
-
-1. **Line 6**: `@reduxjs/toolkit`
-   - **Suggested fix:** `@reduxjs/toolkit` → `@/app/state/redux/slices/EntitySlice`
-   - **Validation:** Found: src/app/state/redux/slices/EntitySlice.ts
-
-#### 📄 src/app/state/stores/AppStore.ts
-
-1. **Line 30**: `@reduxjs/toolkit`
-   - **Suggested fix:** `@reduxjs/toolkit` → `@/app/state/redux/slices/EntitySlice`
-   - **Validation:** Found: src/app/state/redux/slices/EntitySlice.ts
-
-#### 📄 src/app/state/stores/ArticleStore.ts
-
-1. **Line 5**: `@/app/features/support/UnifiedNotificationTypes`
-   - **Suggested fix:** `@/app/features/support/UnifiedNotificationTypes` → `@/app/state/context/NotificationContext`
-   - **Validation:** Found: src/app/state/context/NotificationContext.tsx
+1. **Line 7**: `@/app/typings/entities/UserEntity`
+   - **Suggested fix:** `@/app/typings/entities/UserEntity` → `@/app/users/User`
+   - **Validation:** Found: src/app/users/User.tsx
 
 #### 📄 src/app/state/stores/CalendarManagerStore.tsx
 
-1. **Line 7**: `@/app/api/SnapshotApi`
-   - **Suggested fix:** `@/app/api/SnapshotApi` → `@/app/api/subscriberApi`
-   - **Validation:** Found: src/app/api/subscriberApi.ts
+1. **Line 7**: `@/app/api/subscriberApi`
+   - **Suggested fix:** `@/app/api/subscriberApi` → `@/app/api/SnapshotApi`
+   - **Validation:** Found: src/app/api/SnapshotApi.ts
 
-2. **Line 71**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+2. **Line 71**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotContainer`
+   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
 
 #### 📄 src/app/state/stores/CommonEvent.ts
 
-1. **Line 12**: `@/app/snapshots/SnapshotStoreConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/SnapshotData`
-   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
+1. **Line 12**: `@/app/snapshots/SnapshotData`
+   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
+   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
-2. **Line 19**: `@/app/snapshots/SnapshotWithCriteria`
-   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/models/tracker/Tag`
-   - **Validation:** Found: src/app/models/tracker/Tag.tsx
+2. **Line 19**: `@/app/models/tracker/Tag`
+   - **Suggested fix:** `@/app/models/tracker/Tag` → `@/app/snapshots/SnapshotWithCriteria`
+   - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
 
 #### 📄 src/app/state/stores/DataStore.ts
 
-1. **Line 30**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
+1. **Line 30**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotContainer`
+   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
 
-2. **Line 30**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotData`
+2. **Line 30**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
    - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-3. **Line 30**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotList`
+3. **Line 30**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotList`
    - **Validation:** Found: src/app/snapshots/SnapshotList.tsx
 
-4. **Line 30**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotStoreMethods`
+4. **Line 30**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotStoreMethods`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreMethods.ts
 
-5. **Line 30**: `@/app/snapshots/SnapshotContainer`
-   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotStoreProps`
+5. **Line 30**: `@/app/snapshots/SnapshotConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotStoreProps`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreProps.ts
 
 #### 📄 src/app/state/stores/DetailsListStore.ts
 
-1. **Line 43**: `@/app/snapshots/SnapshotConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotWithCriteria`
-   - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
+1. **Line 43**: `@/app/snapshots/SnapshotWithCriteria`
+   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/snapshots/SnapshotConfig`
+   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
 
-2. **Line 43**: `@/app/snapshots/SnapshotConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotContainer`
+2. **Line 43**: `@/app/snapshots/SnapshotWithCriteria`
+   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/snapshots/SnapshotContainer`
    - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
 
 #### 📄 src/app/state/stores/DocumentStore.ts
 
-1. **Line 12**: `@/app/models/data/StatusType`
-   - **Suggested fix:** `@/app/models/data/StatusType` → `@/app/documents/DocumentOptions`
-   - **Validation:** Found: src/app/documents/DocumentOptions.ts
+1. **Line 12**: `@/app/documents/DocumentOptions`
+   - **Suggested fix:** `@/app/documents/DocumentOptions` → `@/app/models/data/StatusType`
+   - **Validation:** Found: src/app/models/data/StatusType.ts
 
 #### 📄 src/app/state/stores/TaskStore .tsx
 
-1. **Line 20**: `@/app/models/tasks/Task`
-   - **Suggested fix:** `@/app/models/tasks/Task` → `@/app/components/models/tasks/TaskDataSource`
-   - **Validation:** Found: src/app/components/models/tasks/TaskDataSource.ts
+1. **Line 20**: `@/app/components/models/tasks/TaskDataSource`
+   - **Suggested fix:** `@/app/components/models/tasks/TaskDataSource` → `@/app/models/tasks/Task`
+   - **Validation:** Found: src/app/models/tasks/Task.tsx
 
 #### 📄 src/app/subscriptions/subscriberTypeGuads.ts
 
-1. **Line 9**: `@/app/snapshots/LocalStorageSnapshotStore`
-   - **Suggested fix:** `@/app/snapshots/LocalStorageSnapshotStore` → `@/app/snapshots/SnapshotData`
-   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
+1. **Line 9**: `@/app/snapshots/SnapshotData`
+   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/LocalStorageSnapshotStore`
+   - **Validation:** Found: src/app/snapshots/LocalStorageSnapshotStore.tsx
 
 #### 📄 src/app/todos/Todo.ts
 
-1. **Line 33**: `@/app/snapshots/SnapshotWithCriteria`
-   - **Suggested fix:** `@/app/snapshots/SnapshotWithCriteria` → `@/app/models/tracker/Tag`
-   - **Validation:** Found: src/app/models/tracker/Tag.tsx
+1. **Line 33**: `@/app/models/tracker/Tag`
+   - **Suggested fix:** `@/app/models/tracker/Tag` → `@/app/snapshots/SnapshotWithCriteria`
+   - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
+
+#### 📄 src/app/todos/TodoComponent.tsx
+
+1. **Line 11**: `antd`
+   - **Suggested fix:** `antd` → `@/app/models/tracker/ProgressBar`
+   - **Validation:** Found: src/app/models/tracker/ProgressBar.tsx
 
 #### 📄 src/app/ts/ScheduleEventModal.tsx
 
-1. **Line 2**: `@/app/calendar/CalendarEvent`
-   - **Suggested fix:** `@/app/calendar/CalendarEvent` → `@/app/state/stores/CalendarManagerStore`
-   - **Validation:** Found: src/app/state/stores/CalendarManagerStore.tsx
+1. **Line 2**: `@/app/state/stores/CalendarManagerStore`
+   - **Suggested fix:** `@/app/state/stores/CalendarManagerStore` → `@/app/calendar/CalendarEvent`
+   - **Validation:** Found: src/app/calendar/CalendarEvent.ts
 
 #### 📄 src/app/typings/YourSpecificSnapshotType.ts
 
-1. **Line 14**: `@/app/snapshots/SnapshotStoreProps`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreProps` → `@/app/snapshots/SnapshotStoreConfig`
-   - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
+1. **Line 14**: `@/app/snapshots/SnapshotStoreConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/SnapshotStoreProps`
+   - **Validation:** Found: src/app/snapshots/SnapshotStoreProps.ts
 
-2. **Line 14**: `@/app/snapshots/SnapshotStoreProps`
-   - **Suggested fix:** `@/app/snapshots/SnapshotStoreProps` → `@/app/snapshots/SnapshotWithCriteria`
+2. **Line 14**: `@/app/snapshots/SnapshotStoreConfig`
+   - **Suggested fix:** `@/app/snapshots/SnapshotStoreConfig` → `@/app/snapshots/SnapshotWithCriteria`
    - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
 
 #### 📄 src/app/typings/appEventTypes.ts
 
-1. **Line 9**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 9**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 #### 📄 src/app/typings/entities/AssignEntity.ts
 
-1. **Line 8**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 8**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 8**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
+2. **Line 8**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
 #### 📄 src/app/typings/entities/AuthEntity.ts
 
-1. **Line 11**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 11**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 11**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
+2. **Line 11**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
 #### 📄 src/app/typings/entities/DetailsEntity.ts
 
-1. **Line 11**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 11**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 11**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
+2. **Line 11**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
 #### 📄 src/app/typings/entities/UserEntity.ts
 
-1. **Line 10**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 10**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 10**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotStoreConfig`
+2. **Line 10**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotStoreConfig`
    - **Validation:** Found: src/app/snapshots/SnapshotStoreConfig.ts
 
 #### 📄 src/app/typings/exchangeTypes.ts
 
-1. **Line 4**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
+1. **Line 4**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
+   - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-2. **Line 4**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/SnapshotWithCriteria`
+2. **Line 4**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotWithCriteria`
    - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
+
+#### 📄 src/utils/fileCategoryUtils.ts
+
+1. **Line 2**: `./fsOperations`
+   - **Suggested fix:** `./fsOperations` → `@/app/server/fsOperations`
+   - **Validation:** Found: src/app/server/fsOperations.ts
 
 #### 📄 src/utils/snapshotUtils.tsx
 
-1. **Line 16**: `@/app/snapshots/SnapshotConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotContainer`
-   - **Validation:** Found: src/app/snapshots/SnapshotContainer.ts
+1. **Line 16**: `@/app/snapshots/SnapshotContainer`
+   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotConfig`
+   - **Validation:** Found: src/app/snapshots/SnapshotConfig.ts
 
-2. **Line 16**: `@/app/snapshots/SnapshotConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotData`
+2. **Line 16**: `@/app/snapshots/SnapshotContainer`
+   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotData`
    - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
-3. **Line 16**: `@/app/snapshots/SnapshotConfig`
-   - **Suggested fix:** `@/app/snapshots/SnapshotConfig` → `@/app/snapshots/SnapshotWithCriteria`
+3. **Line 16**: `@/app/snapshots/SnapshotContainer`
+   - **Suggested fix:** `@/app/snapshots/SnapshotContainer` → `@/app/snapshots/SnapshotWithCriteria`
    - **Validation:** Found: src/app/snapshots/SnapshotWithCriteria.ts
 
 #### 📄 src/utils/versionUtils.ts
 
-1. **Line 5**: `@/app/snapshots/SnapshotData`
-   - **Suggested fix:** `@/app/snapshots/SnapshotData` → `@/app/snapshots/Snapshot`
-   - **Validation:** Found: src/app/snapshots/Snapshot.tsx
-
-#### 📄 src/utils/web3/applicationUtils.tsx
-
-1. **Line 49**: `@/utils/snapshotUtils`
-   - **Suggested fix:** `@/utils/snapshotUtils` → `@/app/snapshots/SnapshotData`
+1. **Line 5**: `@/app/snapshots/Snapshot`
+   - **Suggested fix:** `@/app/snapshots/Snapshot` → `@/app/snapshots/SnapshotData`
    - **Validation:** Found: src/app/snapshots/SnapshotData.ts
 
 ### 🚀 Available Commands

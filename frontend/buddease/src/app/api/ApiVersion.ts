@@ -4,7 +4,7 @@ import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correc
 import { endpoints } from "@/app/api/endpointConfigurations";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import { YourResponseType } from '@/app/typings/responseTypes';
 
@@ -207,6 +207,6 @@ const storeVersionedAnalyticsData = async (analyticsData: any): Promise<void> =>
 
 
 export {
-  fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
+    fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
 };
 

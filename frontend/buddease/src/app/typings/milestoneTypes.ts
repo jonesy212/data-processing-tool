@@ -3,27 +3,24 @@ import { DetailsListStore } from '@/app/state/stores/DetailsListStore';
 import { StatusType } from '@/app/models/data/StatusType';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Reminder } from '@/app/settings/Reminder'
+import { 
+  BaseEntityProperties, 
+  SharedIdentifiers, 
+  SharedSnapshotProperties, 
+  SharedStatusFlags, 
+  SharedTimestamps 
+} from '@/app/documents/RelatedProps';
 
 // -------------------- Core Milestone Interface --------------------
-export interface Milestone {
-  // Core Identification
-  id: string;
-  name: string;
-  title: string; // Alias for name for compatibility
+export interface Milestone extends 
+  BaseEntityProperties,
+  SharedTimestamps,
+  SharedStatusFlags {
   
-  // Dates
-  date: Date; // Primary milestone date
-  dueDate: Date | null; // Optional specific due date
-  startDate: Date | null; // Optional start date for milestone period
-  completedDate?: Date; // When milestone was actually completed
-  estimatedDate?: Date; // Original estimated completion date
+  // Core Identification (some already in BaseEntityProperties)
+  // id, name, title, category are already in BaseEntityProperties
   
-  // Status & Progress
-  status: AllStatus;
-  completed: boolean; // Simple completion flag
-  progress: number; // 0-100 percentage
-  
-  // Description & Details
+  // Milestone-specific properties not covered by shared interfaces
   description: string;
   deliverables: string[]; // What needs to be delivered
   successCriteria: string[]; // How we know it's done
@@ -34,12 +31,17 @@ export interface Milestone {
   projectId: string; // Parent project ID
   phaseId?: string; // Optional phase association
   
-  // Metadata
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  tags: string[];
-  createdBy: string;
-  createdAt: Date;
-  updatedAt: Date;
+  // Dates (some already in SharedTimestamps, add milestone-specific)
+  date: Date; // Primary milestone date
+  dueDate: Date | null; // Optional specific due date
+  startDate: Date | null; // Optional start date for milestone period
+  completedDate?: Date; // When milestone was actually completed
+  estimatedDate?: Date; // Original estimated completion date
+  
+  // Status & Progress (status flags in SharedStatusFlags)
+  status: AllStatus;
+  completed: boolean; // Simple completion flag
+  progress: number; // 0-100 percentage
   
   // Resource Information
   assignedTo?: string; // Person/team responsible
@@ -50,15 +52,72 @@ export interface Milestone {
   riskLevel: 'low' | 'medium' | 'high';
   impact: 'low' | 'medium' | 'high' | 'critical';
   blockers: string[]; // Current blocking issues
+  
+  // Priority & Tags (already in BaseEntityProperties as category?)
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  tags: string[];
 }
 
 // -------------------- Specialized Milestone Types --------------------
-export interface ProjectMilestone extends Milestone {
+
+// -------------------- Phase-Specific Milestone --------------------
+export interface PhaseMilestone extends 
+  Milestone,
+  SharedSnapshotProperties<BaseDataEntity> { // Add snapshot properties
+  
+  // Phase-specific required properties
+  phaseId: string; // Required for PhaseMilestone (optional in base)
+  phaseName: string;
+  phaseOrder: number; // Order within the phase
+  phaseStatus: 'pending' | 'in-progress' | 'completed' | 'blocked';
+  
+  // Phase-specific metadata
+  isPhaseEntry?: boolean; // Marks entry into a phase
+  isPhaseExit?: boolean; // Marks exit from a phase
+  phaseCompletionRequired?: boolean; // Must complete to exit phase
+  
+  // Additional phase-specific properties
+  phaseDescription?: string;
+  phaseDeliverables?: string[];
+  phaseSuccessCriteria?: string[];
+}
+
+// -------------------- Project-Specific Milestone --------------------
+export interface ProjectMilestone extends 
+  Milestone,
+  SharedIdentifiers<BaseDataEntity> { // Add identifier properties
+  
   // Project-specific extensions
   projectPhase: string;
   isCritical: boolean; // Part of critical path
   baselineDate?: Date; // Original planned date
   variance?: number; // Days ahead/behind schedule
+  
+  // Additional project metrics
+  earnedValue?: number;
+  plannedValue?: number;
+  actualCost?: number;
+  scheduleVariance?: number;
+  costVariance?: number;
+}
+
+// -------------------- Usage/Productivity Milestone --------------------
+export interface UsageMilestone extends 
+  Milestone,
+  SharedSnapshotProperties<BaseDataEntity> {
+  
+  // Usage-specific properties
+  type: 'usage' | 'productivity' | 'collaboration' | 'learning' | 'financial';
+  achievedAt: Date;
+  value: number;
+  badgeUrl?: string;
+  
+  // Usage metrics
+  metricName: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  trend: 'increasing' | 'decreasing' | 'stable';
 }
 
 export interface CalendarMilestone extends Milestone {

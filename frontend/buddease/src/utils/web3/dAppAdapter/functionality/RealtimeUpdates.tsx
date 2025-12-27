@@ -1,7 +1,7 @@
 // RealtimeUpdatesComponent.tsx
 
 import axiosInstance from '@/app/api/csrfToken';
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 
 import DatePicker from "@/app/components/calendar/DatePicker";
@@ -34,7 +34,7 @@ import {
 export const subscribeToRealtimeUpdates = <
   TRealtime = AppRealtimeData
 >(
-  user: User,
+  user: User<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback?: (payload: TRealtime) => void
 ) => {
   const socket = new WebSocket("ws://example.com/realtime");

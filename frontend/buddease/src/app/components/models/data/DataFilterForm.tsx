@@ -1,27 +1,27 @@
 // DataFilterForm.tsx - Fixed version
 import userService, { userId } from "@/app/api/ApiUser";
+import ListGenerator from "@/app/generators/ListGenerator";
 import processSnapshotList from "@/app/generators/processSnapshotList";
+import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import { Data } from "@/app/models/data/Data";
+import { Phase } from '@/app/models/phases/Phase';
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
+import { authToken } from "@/app/server/auth/authToken";
+import type { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotList from "@/app/snapshots/SnapshotList";
 import snapshotStore from "@/app/snapshots/SnapshotStore";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
 import {
   DataAnalysisAction,
   DataAnalysisDispatch,
 } from "@/app/typings/phases/dataAnalysisTypes";
+import { shuffleArray } from "@/utils/shuffleArray";
 import { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import ListGenerator from "@/app/generators/ListGenerator";
-import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
-import { Phase } from '@/app/models/phases/Phase';
-import { authToken } from "@/app/server/auth/authToken";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotList from "@/app/snapshots/SnapshotList";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
-import { shuffleArray } from "@/utils/shuffleArray";
 
 interface DataFilterFormProps {
   onSubmit: (

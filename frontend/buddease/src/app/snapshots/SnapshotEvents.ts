@@ -1,6 +1,6 @@
 // SnapshotEvents.ts
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotCoreBase, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";

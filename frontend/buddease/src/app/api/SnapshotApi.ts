@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
 import SnapshotList from "@/app/snapshots/SnapshotList";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -3174,5 +3174,6 @@ export {
   getSnapshot,
   getSnapshotCriteria,
   getSnapshotId,
+  createSnapshotContainer
   // ... other exports
 };

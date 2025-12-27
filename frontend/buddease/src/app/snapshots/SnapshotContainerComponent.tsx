@@ -4,11 +4,10 @@ import { fetchAllSnapshots } from '@/app/api/SnapshotApi';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import useErrorHandling from '@/app/hooks/userInterface/automation_process';
 import { Data } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotList from '@/app/snapshots/SnapshotList'; // Use the existing SnapshotList class
 import { useNotification } from '@/app/state/context/NotificationContext';
 import React from 'react';
-import { createErrorNotificationContent, errorLogger } from '@/app/logging/Logger';import { createErrorNotificationContent, errorLogger } from '@/app/logging/Logger';
 interface SnapshotContainerProps {
   target: Target;
 }

@@ -4,7 +4,7 @@ import { NotificationType } from '@/app/features/support/UnifiedNotificationType
 import { Content } from '@/app/models/content/AddContent';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';

@@ -9,7 +9,8 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedTimestamps } from '@/app/documents/RelatedProps';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
-import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { CommonData } from "@/app/models/CommonData";
+import { CommonDetails } from '@/app/components/models/details/CommonDetails'
 import { Exchange } from '@/app/models/cypto/Exchange';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";

@@ -2,7 +2,7 @@
 import internalApiService from "@/app/api/ApiClient";
 import { handleApiError } from '@/app/api/ApiLogs';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';

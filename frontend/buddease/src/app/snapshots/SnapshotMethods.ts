@@ -1,10 +1,12 @@
 // SnapshotMethods.ts
 
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
@@ -13,14 +15,13 @@ import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import {
-  Result,
-  Snapshots, SnapshotsArray, SnapshotUnion
+    Result,
+    Snapshots, SnapshotsArray, SnapshotUnion
 } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
@@ -40,7 +41,6 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
 import { IHydrateResult } from "mobx-persist";

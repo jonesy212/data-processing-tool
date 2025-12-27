@@ -1,5 +1,6 @@
 // src/app/error-analyzer/FileRelationshipAnalyzer.ts
-import { TSCompilerError, FixPlan, RelationshipMap } from '@/app/error-analyzer/ErrorFixManager';
+import { TSCompilerError, FixPlan } from '@/app/error-analyzer/ErrorFixManager';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 import fs from 'fs';
 import path from 'path';
 

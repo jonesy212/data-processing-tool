@@ -1,7 +1,7 @@
 // MetadataMap.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

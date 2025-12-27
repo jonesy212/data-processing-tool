@@ -1,7 +1,7 @@
 // useFileUpload.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import CustomFile from "@/app//documents/File";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { FileLogger } from "@/app/logging/Logger";

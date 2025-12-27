@@ -2,15 +2,15 @@
 import { Shared } from '@/app/api/instances/createSharedSnapshotContainer';
 import { default as getSnapshot, default as snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { SharedConfig } from '@/app/config/BaseConfig';
 import { AppStructureItem } from '@/app/config/appStructure/AppStructure';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, SharedConfig } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CreateSnapshotsPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { Data, DataDetails } from '@/app/models/data/Data';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { Tag } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
@@ -18,7 +18,7 @@ import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessin
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer, SnapshotContainerData, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
@@ -33,17 +33,16 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import {
-  SnapshotAttachment,
-  SnapshotEntity,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields,
-  SnapshotK,
-  SnapshotMeta
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 
 function createSnapshotContainerConfig<

@@ -8,7 +8,7 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { Task } from '@/app/models/tasks/Task';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -112,17 +112,17 @@ type ApplyTaskFieldFilters<
 export type AppTask = Task<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>;
 
 export type {
-  ApplyTaskFieldFilters,
-  AppTaskMetadata, TaskAttachment, TaskBaseParams,
-  TaskCollection, TaskEntity, TaskExcludedFields,
-  TaskIncludedFields, TaskK,
-  TaskMeta, TaskParams, TaskRealtimeDataItem,
-  TaskSnapshot, TaskSnapshotData,
-  TaskSnapshotsArray, TaskSnapshotStore,
-  TaskSnapshotStoreConfig,
-  TaskSnapshotWithCriteria,
-  TaskStructuredMetadata,
-  TaskSubscriberCollection,
-  TaskUnifiedMetadata
+    ApplyTaskFieldFilters,
+    AppTaskMetadata, TaskAttachment, TaskBaseParams,
+    TaskCollection, TaskEntity, TaskExcludedFields,
+    TaskIncludedFields, TaskK,
+    TaskMeta, TaskParams, TaskRealtimeDataItem,
+    TaskSnapshot, TaskSnapshotData,
+    TaskSnapshotsArray, TaskSnapshotStore,
+    TaskSnapshotStoreConfig,
+    TaskSnapshotWithCriteria,
+    TaskStructuredMetadata,
+    TaskSubscriberCollection,
+    TaskUnifiedMetadata
 };
 

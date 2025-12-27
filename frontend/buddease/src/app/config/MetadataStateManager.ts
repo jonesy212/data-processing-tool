@@ -11,7 +11,7 @@ import { SharedRelationshipData } from '@/app/models/data/Data';
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { Permission } from "@/app/permissions/Permission";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";

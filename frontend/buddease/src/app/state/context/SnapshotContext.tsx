@@ -9,7 +9,7 @@ import { addToSnapshotList, isBaseData, isSnapshot } from '@/utils/snapshotUtils
 import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';

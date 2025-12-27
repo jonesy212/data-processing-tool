@@ -2,6 +2,7 @@
 
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment'
 
 // Conditional Utility Types
 export type SnapshotConfigArgs<
@@ -34,18 +35,28 @@ function createSnapshotBuilder<T extends BaseDataEntity>(type: T) {
       return {
         withMeta<Meta extends DefaultMeta<T, K>>(meta: Meta) {
           return {
-            withExcluded<Excluded extends keyof T>(excluded: Excluded) {
+            withAttachmentType<AttachmentType extends Attachment>(attachmentType: AttachmentType) {
               return {
-                build: () => ({} as SnapshotConfigBuilder<T, K, Meta, Excluded>)
+                withExcluded<Excluded extends keyof T>(excluded: Excluded) {
+                  return {
+                    withIncluded<Included extends keyof T>(included: Included) {
+                      return {
+                        build: () => ({} as SnapshotConfigBuilder<T, K, Meta, AttachmentType, Excluded, Included>)
+                      };
+                    },
+                    build: () => ({} as SnapshotConfigBuilder<T, K, Meta, AttachmentType, Excluded, keyof T>)
+                  };
+                },
+                build: () => ({} as SnapshotConfigBuilder<T, K, Meta, AttachmentType, DefaultExcludedFields<T>, keyof T>)
               };
             },
-            build: () => ({} as SnapshotConfigBuilder<T, K, Meta, DefaultExcludedFields<T>>)
+            build: () => ({} as SnapshotConfigBuilder<T, K, Meta, Attachment, DefaultExcludedFields<T>, keyof T>)
           };
         },
-        build: () => ({} as SnapshotConfigBuilder<T, K, DefaultMeta<T, K>, DefaultExcludedFields<T>>)
+        build: () => ({} as SnapshotConfigBuilder<T, K, DefaultMeta<T, K>, Attachment, DefaultExcludedFields<T>, keyof T>)
       };
     },
-    build: () => ({} as SnapshotConfigBuilder<T, T, DefaultMeta<T, T>, DefaultExcludedFields<T>>)
+    build: () => ({} as SnapshotConfigBuilder<T, T, DefaultMeta<T, T>, Attachment, DefaultExcludedFields<T>, keyof T>)
   };
 }
 
@@ -60,8 +71,8 @@ export function snapshotBuilder<T extends BaseDataEntity>(type: T) {
     
     // Config object API method
     configure: <
-      K extends T, 
-      Meta extends DefaultMeta<T, K>, 
+      K extends T = T, 
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
       AttachmentType extends Attachment = Attachment,
       ExcludedFields extends keyof T = DefaultExcludedFields<T>,
       IncludedFields extends keyof T = keyof T
@@ -75,11 +86,11 @@ export function snapshotBuilder<T extends BaseDataEntity>(type: T) {
       } = {}
     ): SnapshotConfigBuilder<
       T,
-      K extends undefined ? T : NonNullable<K>,
-      Meta extends undefined ? DefaultMeta<T, K extends undefined ? T : NonNullable<K>> : NonNullable<Meta>>,
-      AttachmentType extends undefined ? Attachment : NonNullable<AttachmentType>,
-      Excluded extends undefined ? DefaultExcludedFields<T> : NonNullable<Excluded>,
-      Included extends undefined ? keyof T : NonNullable<Included>
+      K,
+      Meta,
+      AttachmentType,
+      ExcludedFields,
+      IncludedFields
     > => {
       // Implementation that creates the builder from config
       return {} as any;

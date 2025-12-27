@@ -9,7 +9,8 @@ import { AxiosError } from "axios";
 import getAppPath from "@/app/config/appStructure/appPath";
 import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { Version } from '@/app/versions/Version';
+import type { Version } from '@/app/versions/Version';
+import { VersionImpl } from '@/app/versions/Version';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 const { notify } = useNotification();  // Destructure notify from useNotification

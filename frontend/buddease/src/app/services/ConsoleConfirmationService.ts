@@ -1,5 +1,6 @@
 // ConsoleConfirmationService.ts
 import { ConfirmationService } from '@/app/services/ConfirmationService';
+import path from 'path'; 
 
 export class ConsoleConfirmationService implements ConfirmationService {
   async confirm(message: string): Promise<boolean> {
@@ -33,12 +34,25 @@ export class ConsoleConfirmationService implements ConfirmationService {
   }
 
   async confirmMultiple(changes: Array<{file: string; changes: string[]}>): Promise<boolean> {
-    console.log('\n📋 The following changes will be made:');
-    changes.forEach(({file, changes}) => {
-      console.log(`\n📁 ${file}:`);
-      changes.forEach(change => console.log(`   • ${change}`));
-    });
+      console.log('\n📋 CONSOLIDATING HEADERS IMPORTS');
+      console.log('='.repeat(50));
+      console.log('Rationale: headersConfig should be imported from the canonical');
+      console.log('source (SharedHeaders.ts) rather than internal HeadersConfig.tsx');
+      console.log('='.repeat(50));
+      
+      changes.forEach(({file, changes}) => {
+          const relativePath = path.relative(process.cwd(), file);
+          console.log(`\n📁 ${relativePath}:`);
+          changes.forEach(change => {
+              if (change.includes('headersConfig')) {
+                  console.log(`   • Consolidate: ${change.replace('Move', 'Use canonical')}`);
+              } else {
+                  console.log(`   • ${change}`);
+              }
+          });
+      });
 
-    return this.confirm(`Apply ${changes.reduce((acc, curr) => acc + curr.changes.length, 0)} import fixes?`);
+      const totalChanges = changes.reduce((acc, curr) => acc + curr.changes.length, 0);
+      return this.confirm(`Consolidate ${totalChanges} imports to use canonical headersConfig source?`);
   }
 }

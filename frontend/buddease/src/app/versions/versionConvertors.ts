@@ -1,7 +1,8 @@
 // versionConvertors.ts
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Version, VersionImpl } from '@/app/versions/Version';
+import type { Version } from '@/app/versions/Version';
+import { VersionImpl } from '@/app/versions/Version';
 import { VersionData } from '@/app/versions/VersionData';
 
 

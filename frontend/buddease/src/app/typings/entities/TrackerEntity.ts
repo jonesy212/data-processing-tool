@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -62,10 +62,10 @@ type ApplyTrackerFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  ApplyTrackerFieldFilters, TrackerAttachment, TrackerBaseParams, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK,
-  TrackerMeta, TrackerParams,
-  TrackerRealtimeDataItem, TrackerSnapshot, TrackerSnapshotData, TrackerSnapshotsArray,
-  TrackerSnapshotStore, TrackerSnapshotStoreConfig, TrackerSnapshotWithCriteria,
-  TrackerSubscriberCollection
+    ApplyTrackerFieldFilters, TrackerAttachment, TrackerBaseParams, TrackerEntity, TrackerExcludedFields, TrackerIncludedFields, TrackerK,
+    TrackerMeta, TrackerParams,
+    TrackerRealtimeDataItem, TrackerSnapshot, TrackerSnapshotData, TrackerSnapshotsArray,
+    TrackerSnapshotStore, TrackerSnapshotStoreConfig, TrackerSnapshotWithCriteria,
+    TrackerSubscriberCollection
 };
 

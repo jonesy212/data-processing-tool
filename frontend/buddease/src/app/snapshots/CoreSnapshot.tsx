@@ -6,7 +6,6 @@ import { Sender } from '@/app/components/communications/CommunicationPage';
 import { Task } from '@/app/components/models/tasks/Task';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { InitializedState } from '@/app/state/stores/DataStore';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
@@ -14,11 +13,12 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { Content } from "@/app/models/content/AddContent";
 import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
-import { PhaseDefault } from '@/app/typings/phaseTypes';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 import { SnapshotBase } from "@/app/snapshots/SnapshotContainer";
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotIdentity } from '@/app/snapshots/SnapshotIdentity';
+import { InitializedState } from '@/app/state/stores/DataStore';
+import { PhaseDefault } from '@/app/typings/phaseTypes';
+import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
 
 import { Label } from "@/app/branding/BrandingSettings";
 import { BaseDataEntity, BaseDataRoot, BaseEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
@@ -29,29 +29,29 @@ import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { TagsRecord } from '@/app/models/tracker/Tag';
+import { SnapshotOperation } from "@/app/snapshots/index";
 import {
   SnapshotEquality,
   Snapshots,
   SnapshotsArray
 } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
+import { InitializedDataStore } from "@/app/snapshots/SnapshotStoreOptions";
+import { SnapshotCRUD } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
 import { User } from "@/app/users/User";
-import { SnapshotOperation } from "@/app/snapshots/index";
-import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
-import { SnapshotItem } from "@/app/snapshots/SnapshotList";
-import { SnapshotMethods } from "@/app/snapshots/SnapshotMethods";
 import { default as SnapshotStore } from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
-import { InitializedDataStore } from "@/app/snapshots/SnapshotStoreOptions";
-import { SnapshotCRUD } from "@/app/snapshots/SnapshotSubscriberManagement";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 
 interface CoreSnapshot<
   T extends BaseDataEntity = BaseDataRoot,

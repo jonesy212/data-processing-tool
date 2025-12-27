@@ -92,7 +92,7 @@ class DataService<
       
       const response = await internalApiService.get(`/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${authStore.token}` }
-      },,
+      },
         'FETCH_CLIENT_DETAILS_SUCCESS',
         'FETCH_CLIENT_DETAILS_ERROR'
       );

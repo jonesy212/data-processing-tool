@@ -4,9 +4,10 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import {
-    CalendarEvent, SimpleCalendarEvent,
+    CalendarEvent, 
     useCalendarContext
 } from '@/app/calendar/CalendarEvent';
+import { SimpleCalendarEvent } from '@/app/components/calendar/CalendarContext'
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CalendarNotificationTypes } from '@/app/features/support/NotificationTypes';

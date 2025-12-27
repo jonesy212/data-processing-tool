@@ -3,7 +3,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Content } from '@/app/models/content/AddContent';
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 

@@ -1,13 +1,12 @@
 // ArchiveService.tsx
-import { FileMetadata } from '@/app/interfaces/provider/CloudStorageProvider';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { LocalStorageAdapter, PersistenceLayer } from '@/app/dataIntegration/persistenceLayer';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
-import { CloudStorageProvider } from "@/app/interfaces/provider/CloudStorageProvider";
+import { CloudStorageProvider, FileMetadata } from '@/app/interfaces/provider/CloudStorageProvider';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import authService from '@/app/server/auth/AuthService'; // Your client-side AuthService
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import StorageService from '@/utils/storage/StoragService';
 

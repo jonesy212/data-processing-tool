@@ -6,6 +6,7 @@ import { ProjectStructure } from '@/app/scripts/generateRoadmaps'
 import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/app/generators/ApiCodeGenerator'
 import fs from 'fs';
 import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
+import { Property } from '@/app/generators/ApiCodeGenerator'
 
 interface SecurityIssue extends Correction {
   // props come from Correction interface
@@ -311,6 +312,41 @@ export class SecurityAuditor {
     const medium = issues.filter(i => i.severity === 'medium');
     const low = issues.filter(i => i.severity === 'low');
 
+    // Helper function to safely get code snippet
+    const getCodeSnippet = (issue: SecurityIssue): string => {
+      if (!issue.code || issue.code.trim() === '') {
+        return '// No code snippet available';
+      }
+      return issue.code;
+    };
+
+    // Helper function to safely get fix
+    const getFixSnippet = (issue: SecurityIssue): string => {
+      const fix = issue.fix;
+      
+      if (!fix) {
+        return '// Automatic fix not available - manual review required';
+      }
+      
+      if (typeof fix === 'string') {
+        return fix.trim() === '' 
+          ? '// Automatic fix not available - manual review required'
+          : fix;
+      }
+      
+      // Handle ImportFix object
+      const importFix = fix as ImportFix;
+      if (importFix.newLine) {
+        return importFix.newLine;
+      }
+      
+      if (importFix.originalLine && importFix.newLine) {
+        return `Replace: ${importFix.originalLine}\nWith: ${importFix.newLine}`;
+      }
+      
+      return '// Fix object provided';
+    };
+
     if (critical.length > 0) {
       lines.push('## 🚨 Critical Security Issues');
       lines.push('');
@@ -318,24 +354,51 @@ export class SecurityAuditor {
       lines.push('');
       
       critical.forEach((issue, index) => {
-        lines.push(`### ${index + 1}. ${issue.message}`);
-        lines.push(`**File:** ${issue.file}`);
-        lines.push(`**Type:** ${issue.type.replace('_', ' ')}`);
+        lines.push(`### ${index + 1}. ${issue.message || 'Unnamed security issue'}`);
+        lines.push(`**File:** ${issue.file || 'Unknown file'}`);
+        lines.push(`**Type:** ${(issue.type || 'unknown').replace('_', ' ')}`);
         lines.push('');
         lines.push('**Problem:**');
         lines.push('```typescript');
-        lines.push(issue.code);
+        lines.push(getCodeSnippet(issue));
         lines.push('```');
         lines.push('');
         lines.push('**Fix:**');
         lines.push('```typescript');
-        lines.push(issue.fix);
+        lines.push(getFixSnippet(issue));
         lines.push('```');
         lines.push('---');
         lines.push('');
       });
     }
 
+    // Add the other severity sections with the same safety checks
+    if (high.length > 0) {
+      lines.push('## 🔴 High Severity Security Issues');
+      lines.push('');
+      lines.push('**Urgent attention needed** - These issues should be fixed soon:');
+      lines.push('');
+      
+      high.forEach((issue, index) => {
+        lines.push(`### ${index + 1}. ${issue.message || 'Unnamed security issue'}`);
+        lines.push(`**File:** ${issue.file || 'Unknown file'}`);
+        lines.push(`**Type:** ${(issue.type || 'unknown').replace('_', ' ')}`);
+        lines.push('');
+        lines.push('**Problem:**');
+        lines.push('```typescript');
+        lines.push(getCodeSnippet(issue));
+        lines.push('```');
+        lines.push('');
+        lines.push('**Fix:**');
+        lines.push('```typescript');
+        lines.push(getFixSnippet(issue));
+        lines.push('```');
+        lines.push('---');
+        lines.push('');
+      });
+    }
+
+    // Optional: Add more sections for medium and low if needed
     // Add security recommendations
     lines.push('## 🛡️ Security Best Practices');
     lines.push('');
@@ -350,9 +413,7 @@ export class SecurityAuditor {
     return lines.join('\n');
   }
 
-
-
-    private createSecurityCorrection(id: string, file: string, context: any = {}): Correction {
+  private createSecurityCorrection(id: string, file: string, context: any = {}): Correction {
     return {
       id,
       type: context.type || 'error',
@@ -365,11 +426,11 @@ export class SecurityAuditor {
     };
   }
 
-  // Usage example:
-  private analyzeSensitiveData(interfaceInfo: any): Correction[] {
+    // Usage example:
+  private analyzeSensitiveData(interfaceInfo: InterfaceInfo): Correction[] {
     const corrections: Correction[] = [];
     
-    interfaceInfo.properties?.forEach(prop => {
+    interfaceInfo.properties?.forEach((prop: Property) => {
       if (this.isSensitiveField(prop.name, prop.fieldType)) {
         corrections.push(this.createSecurityCorrection(
           `sensitive-data-${interfaceInfo.name}-${prop.name}`,

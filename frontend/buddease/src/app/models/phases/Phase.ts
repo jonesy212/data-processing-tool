@@ -18,7 +18,7 @@ import { TagsRecord } from '@/app/models/tracker/Tag';
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
 import { ValidationResult } from '@/app/components/database/SchemaEvolutionManager';
 import { useNotification } from '@/app/state/context/NotificationContext';
-
+import { Milestone } from '@/app/typings/milestoneTypes'
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { PhaseMeta } from '@/app/typings/phaseTypes';
@@ -111,6 +111,17 @@ export interface Phase<
   milestones?: PhaseMilestone[];
   __typename?: "Phase";
   // status: 'planned' | 'active' | 'completed' | 'cancelled';
+
+  // Add hierarchical properties:
+  level?: number; // 0 = root, 1 = subphase, etc.
+  parentPhaseId?: string;
+  dependencies?: string[]; // IDs of phases this depends on
+  prerequisites?: string[]; // IDs of phases that must complete before this
+  milestones?: Milestone[]; // From milestoneTypes.ts
+  riskLevel?: 'low' | 'medium' | 'high';
+  estimatedEffort?: number;
+  actualEffort?: number;
+  isParallel?: boolean;
 }
 
 export class PhaseImpl<

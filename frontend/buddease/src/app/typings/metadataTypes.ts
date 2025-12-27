@@ -8,7 +8,7 @@ import { IBackendStructure } from '@/app/config/appStructure/IBackendStructure';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { TaskMetadata, UnifiedMetadata, } from '@/app/config/MetaDataOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { DatabaseSchema, ServiceSchema, StructureSchema } from '@/app/typings/database';
 import { AppTask } from '@/app/typings/entities/AppEntity';
 import { WorkflowStep } from '@/app/typings/entities/DocumentEntity';

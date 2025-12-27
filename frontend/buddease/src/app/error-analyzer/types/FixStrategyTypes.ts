@@ -1,7 +1,7 @@
 // src/app/error-analyzer/types/FixStrategyTypes.ts
 import { FixPlan } from '@/app/error-analyzer/types/ErrorAnalysisTypes';
 
-export type FixStrategyType = 
+export type FixStrategyTypeDef = 
   | 'import_fix'
   | 'type_alignment'
   | 'property_addition'
@@ -13,7 +13,8 @@ export type FixStrategyType =
   | 'null_check'
   | 'async_handling';
 
-export interface FixStrategy {
+export interface ImportFixStrategy extends FixStrategyTypeDef {
+
   type: FixStrategyType;
   name: string;
   description: string;

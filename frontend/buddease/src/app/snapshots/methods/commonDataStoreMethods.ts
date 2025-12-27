@@ -7,7 +7,7 @@ import { MixedCriteria } from '@/app/pages/searches/CriteriaOptions';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { AppSubscriber } from '@/app/subscribers/Subscriber';
-import { AppAttachment, AppEntity, AppMeta, AppSnapshot, AppSnapshotContainer, AppSnapshotStore } from '@/app/typings/entities/AppEntity';
+import { AppAttachment, AppEntity, AppMeta, AppSnapshot, AppSnapshotContainer, AppSnapshotStore } from '@/app/typings/entities/SnapshotEntity';
 
 // Helper functions (can be in same file or imported)
 const matchesCriteria = <T extends BaseDataEntity>(

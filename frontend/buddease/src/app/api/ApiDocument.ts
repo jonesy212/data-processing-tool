@@ -1,7 +1,7 @@
 // ApiDocument.ts
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
-import headersConfig from "@/app/api/headers/HeadersConfig";
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { Collaborator } from "@/app/collaborators/Collaborator";
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';

@@ -7,7 +7,7 @@ import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Data } from '@/app/models/data/Data';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { NotificationType } from "@/app/state/context/NotificationContext";
 import { generateSnapshotId } from '@/utils/snapshotUtils';
@@ -16,10 +16,10 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { useNotification } from '@/app/state/context/NotificationContext';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
-import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { makeAutoObservable } from "mobx";
 import { useRef, useState } from "react";
 

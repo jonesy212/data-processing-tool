@@ -9,25 +9,26 @@ import { displayToast } from "@/app/models/display/ShowToast";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
+import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
+import { SnapshotOperation } from "@/app/snapshots/index";
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { InitializedData, SnapshotInstanceProps } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
 import { DataStore, InitializedState, initializeState, useDataStore } from '@/app/state/stores/DataStore';
+import { SubscribeResult } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { SubscribeResult } from '@/app/subscribers/Subscriber';
 import { addToSnapshotList, category } from '@/utils/snapshotUtils';
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { SnapshotOperation } from "@/app/snapshots/index";
-import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
-import { handleSnapshotOperation } from "@/app/snapshots/handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreReference } from "@/app/snapshots/SnapshotStoreReference";
+import { Data } from '@/app/models/data/Data'
 
 interface SimulatedDataSource<
   T extends BaseDataEntity,
@@ -38,7 +39,7 @@ interface SimulatedDataSource<
   IncludedFields extends keyof T = keyof T 
 > extends
   SnapshotInstanceProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  SharedIdentifiers  {
+  SharedIdentifiers<T, K>  {
   // Define the properties of the simulated data source
   data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   fetchData: () => Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -57,7 +58,7 @@ function getDefaultInitializedState<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(options?: InitializedStateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+>(options?: InitializedStateOptions): InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   if (options?.asMap) {
     return new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
   }
@@ -154,7 +155,7 @@ function createSnapshotOptions<
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
-      return configureSnapshot(id, category, callback, snapshotData, snapshotStoreConfig, subscribers);
+      return configureSnapshot(id, storeId, snapshotId, dataStoreMethods, category, callback, snapshotData, snapshotStoreConfig, subscribers);
     },
     createdAt: new Date(), // Ensure proper timestamp initialization
     updatedAt: new Date(), // Ensure proper timestamp initialization

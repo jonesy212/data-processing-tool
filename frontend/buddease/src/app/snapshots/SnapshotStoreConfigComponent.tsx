@@ -2,7 +2,7 @@
 import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { useEffect, useState } from 'react';
 

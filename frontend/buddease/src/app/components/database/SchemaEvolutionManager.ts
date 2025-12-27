@@ -1,15 +1,15 @@
 // MigrationSystem.ts
 // Types for Entity Relationships & Constraints
+import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/components/database/SchemaEvolutionManager';
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationProgress, RelationshipSchema, TableSchema } from '@/app/components/database/SchemaEvolutionManager';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BackendDatabaseService, DatabaseType } from '@/app/server/database/DatabaseServiceFactory';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { ValidationRule } from '@/app/snapshots/ValidationRule';
-import { DatabaseType, BackendDatabaseService } from '@/app/typings/database'
 
 import { DatabaseMigrationDefinition } from '@/app/components/database/MigrationSystem';
 
@@ -1315,7 +1315,7 @@ export interface ValidationResult {
 
 // Export everything
 export {
-  ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationContext, MigrationDefinition, MigrationProgress, RelationshipSchema, TableSchema
+    ColumnSchema, ConstraintSchema, DatabaseSchema, IndexSchema, MigrationContext, MigrationDefinition, MigrationProgress, RelationshipSchema, TableSchema
 };
 
 export default SchemaEvolutionManager;

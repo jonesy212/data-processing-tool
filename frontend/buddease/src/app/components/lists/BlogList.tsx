@@ -7,7 +7,7 @@ import { Content } from '@/app/models/content/AddContent';
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { Phase } from '@/app/models/phases/Phase';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { BlogAttachment, BlogEntity, BlogExcludedFields, BlogIncludedFields, BlogK, BlogMeta } from '@/app/typings/entities/BlogEntity';
 import React from "react";

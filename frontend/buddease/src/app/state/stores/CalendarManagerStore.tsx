@@ -4,7 +4,7 @@
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { SnapshotEntity, SnapshotK } from "@/app/typings/entities/SnapshotEntity";
 import { snapshotApi } from '@/app/api/SnapshotApi';
-import { getSubscriberId, extractCriteria } from "@/app/api/subscriberApi";
+import { getSubscriberId, extractCriteria } from "@/app/api/SnapshotApi";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
@@ -68,7 +68,7 @@ import {
   UpdateEventPayload,
 } from "@/app/server/database/CalendarActionPayload";
 import { SnapshotContainer, snapshotContainer } from "@/app/snapshots/SnapshotContainer";
-import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots/Snapshot";
+import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots/SnapshotContainer";
 import { useDispatch } from "react-redux";
 
 import {

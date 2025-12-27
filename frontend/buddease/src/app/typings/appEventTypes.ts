@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseCustomEvent, CustomEventExtension } from '@/app/events/BaseCustomEvent';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/events/BaseEvent';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { Snapshot, SnapshotData } from "@/app/snapshots/Snapshot";
+import { Snapshot, SnapshotData } from "@/app/snapshots/SnapshotData";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { handleSnapshotEvent } from '@/app/snapshots/FetchableDataStore';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

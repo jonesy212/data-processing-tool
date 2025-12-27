@@ -3,7 +3,7 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 // Function to unsubscribe from snapshots

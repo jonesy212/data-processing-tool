@@ -5,7 +5,7 @@
 // import { Data } from '@/app/models/data/Data';
 // import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 // import { MultipleEventsCallbacks } from '@/app/subscribers/subscribeToSnapshotsImplementation';
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 
 // class SnapshotStoreComponent<T extends BaseDataEntity,  

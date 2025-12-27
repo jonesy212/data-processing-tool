@@ -4,7 +4,7 @@
 // import { RetrievedSnapshot } from '@/utils/retrieveSnapshotData';
 // import { BaseData } from '@/app/models/data/Data'
 // import axiosInstance from '@/app/api/csrfToken';
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotData } from '@/app/snapshots/SnapshotData';
 // import SnapshotStoreComponent from '@/app/snapshots/SnapshotStoreComponent';
 

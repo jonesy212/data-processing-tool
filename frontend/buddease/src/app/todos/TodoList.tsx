@@ -1,15 +1,16 @@
 // TodoList.tsx
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import axios from "axios";
-import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
-import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { CommonData } from "@/app/models/CommonData";
 import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { CommonDetails } from "@/app/models/details/CommonDetails";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import useTodoManagerStore from "@/app/state/stores/TodoStore";
 import { Todo } from "@/app/todos/Todo";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import axios from "axios";
+import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;

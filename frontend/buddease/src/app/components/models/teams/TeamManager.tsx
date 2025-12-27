@@ -1,8 +1,19 @@
-// TeamManager.ts
-
+// TeamManager.tsx
+import React, { useState } from 'react'; // Import useState
 import { TeamFull, createDefaultTeam } from '@/app/typings/teamTypes';
 
-const TeamManager = () => {
+// Define emptyTeam or import it from teamTypes
+const emptyTeam: TeamFull = {
+  id: '',
+  name: '',
+  ownerId: '',
+  members: [],
+  createdAt: new Date(),
+  updatedAt: new Date()
+  // Add other required properties from TeamFull type
+};
+
+const TeamManager: React.FC = () => {
   const [currentTeam, setCurrentTeam] = useState<TeamFull>(emptyTeam);
   const [teams, setTeams] = useState<TeamFull[]>([]);
 
@@ -12,16 +23,24 @@ const TeamManager = () => {
       ownerId,
       members: [ownerId]
     });
-    setTeams(prev => [...prev, newTeam]);
+    setTeams((prev: TeamFull[]) => [...prev, newTeam]); // Type the prev parameter
   };
 
+  // Your component JSX
   return (
-    // Your component JSX
+    <div>
+      {/* Your JSX content here */}
+      <h1>Team Manager</h1>
+      <div>Current Team: {currentTeam.name}</div>
+      <div>Total Teams: {teams.length}</div>
+    </div>
   );
 };
 
-// In API calls
-const fetchTeam = async (teamId: string): Promise<TeamFull> => {
+export default TeamManager;
+
+// In API calls (separate utility function)
+export const fetchTeam = async (teamId: string): Promise<TeamFull> => {
   const response = await api.get(`/teams/${teamId}`);
   return createDefaultTeam(response.data);
 };

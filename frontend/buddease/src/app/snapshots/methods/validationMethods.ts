@@ -2,7 +2,7 @@
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/config/BaseConfig";
 import { SearchCriteria } from "@/app/pages/searches/SearchCriteria";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotWithCriteriaAsBase } from "@/app/snapshots/SnapshotStoreOptions";

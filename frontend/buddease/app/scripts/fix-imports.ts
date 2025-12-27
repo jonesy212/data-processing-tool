@@ -7,6 +7,8 @@ import path from 'path';
 import ts from 'typescript';
 import { ImportValidator } from './import-validator';
 import { SafeFixer } from './safe-fixer';
+import { applyAppSpecificRules, APP_SPECIFIC_RULES } from '@/app/error-analyzer/rules/app-specific-rules'
+import { ImportFixerService } from '@/app/generators/corrections/ImportFixServicies';
 
 const PROJECT_ROOT = process.cwd();
 const SRC_ROOT = path.join(PROJECT_ROOT, 'src');
@@ -1867,6 +1869,35 @@ async function main() {
       uniqueExports: new Set(Array.from(exportCache.values()).flat()).size
     }
   };
+
+  if (process.argv.includes('--apply-rules')) {
+    console.log('🔧 Applying app-specific rules...');
+    
+    const fixer = new ImportFixerService();
+    const result = await fixer.applyAppSpecificRulesToProject();
+    
+    console.log(`\n📊 Results:`);
+    console.log(`   Files scanned: ${result.filesScanned}`);
+    console.log(`   Files updated: ${result.filesUpdated}`);
+    
+    if (result.filesUpdated === 0) {
+        console.log('✅ All files already follow app-specific rules!');
+    }
+    
+    return;
+}
+
+// Show available rules
+if (process.argv.includes('--list-rules')) {
+    console.log('📋 App-specific import/export rules:');
+    Object.entries(APP_SPECIFIC_RULES).forEach(([name, rule]) => {
+        console.log(`\n🔹 ${name}:`);
+        console.log(`   Message: ${rule.message}`);
+        console.log(`   Pattern: ${rule.pattern}`);
+        console.log(`   Fix: ${rule.fix}`);
+    });
+    return;
+}
 
   if (process.argv.includes('--rollback')) {
     const rec = './reports/fix-records-<latest>.json';

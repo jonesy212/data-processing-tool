@@ -1,6 +1,6 @@
+#!/usr/bin/env tsx
 // diagnose-snapshots.ts
 // src/app/scripts/diagnose-snapshots.ts
-#!/usr/bin/env tsx
 
 import fs from 'fs';
 import path from 'path';

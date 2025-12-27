@@ -7,7 +7,7 @@ import { DataStore, InitializedState } from "@/app/state/stores/DataStore";
 import useDocumentStore from "@/app/state/stores/DocumentStore";
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore'
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { BaseData } from '@/app/models/data/Data'

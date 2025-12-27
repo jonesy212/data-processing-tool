@@ -6,8 +6,22 @@ import { ConsoleConfirmationService } from '@/app/services/ConsoleConfirmationSe
 import { FileConfirmationService } from '@/app/services/FileConfirmationService';
 import { InteractiveConfirmationService } from '@/app/services/InteractiveConfirmationService';
 import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/app/typings/correctionTypes';
+import { applyAppSpecificRules } from '@/app/error-analyzer/rules/app-specific-rules';
+
 import fs from 'fs';
 import path from 'path';
+
+
+interface ApplyFixesOptions {
+    backup?: boolean;
+    debug?: boolean | DebugMode;
+    dryRun?: boolean;
+    verbose?: boolean;
+    applyRules?: boolean;
+}
+
+type DebugMode = 'none' | 'basic' | 'detailed' | 'verbose';
+
 
 export interface ImportFix {
     filePath: string;
@@ -30,12 +44,70 @@ export interface ParsedImport {
 }
 
 interface FileInfo {
-    exports: string[];
-    path: string;
+  exports?: string[];     // Keep existing
+  path: string;           // Keep existing
+  name?: string;          // Add new
+  type?: string;          // Add new  
+  size?: number;          // Add new
+  extension?: string;     // Add new
 }
 
 
 export class ImportFixerService {
+
+    // 🆕 Public getter for the confirmation service
+    public getConfirmationService(): ConfirmationService {
+        return this.confirmationService;
+    }
+
+    // 🆕 Or make it a public property with getter/setter
+    public get confirmation(): ConfirmationService {
+        return this.confirmationService;
+    }
+
+    // 🆕 Optional: Setter to change confirmation service at runtime
+    public setConfirmationService(service: ConfirmationService): void {
+        this.confirmationService = service;
+    }
+    private async debugFixExecution(fix: ImportFix): Promise<void> {
+        console.log('🔍 DEBUGGING FIX EXECUTION:');
+        console.log('File:', path.relative(process.cwd(), fix.filePath));
+        console.log('Original line:', fix.originalLine);
+        console.log('New line:', fix.newLine);
+        console.log('Missing types:', fix.missingTypes);
+        console.log('Target path:', fix.targetImportPath);
+        console.log('Confidence:', fix.confidence);
+        console.log('Reason:', fix.reason);
+        
+        // Check what actually exists at both paths
+        const originalPath = fix.originalLine?.match(/from\s+['"]([^'"]+)['"]/)?.[1];
+        const targetPath = fix.newLine?.match(/from\s+['"]([^'"]+)['"]/)?.[1];
+        
+        if (originalPath) {
+            const resolvedOriginal = this.resolveModulePath(originalPath, fix.filePath);
+            console.log('Original resolved path:', resolvedOriginal);
+            console.log('Original exists:', fs.existsSync(resolvedOriginal || ''));
+        }
+        
+        if (targetPath) {
+            const resolvedTarget = this.resolveModulePath(targetPath, fix.filePath);
+            console.log('Target resolved path:', resolvedTarget);
+            console.log('Target exists:', fs.existsSync(resolvedTarget || ''));
+            
+            // Check what's exported at target path
+            if (resolvedTarget && fs.existsSync(resolvedTarget)) {
+                const content = await fs.promises.readFile(resolvedTarget, 'utf8');
+                const exports = this.extractExports(content);
+                console.log('Target exports:', exports);
+            }
+        }
+        console.log('---');
+    }
+
+
+
+
+
     private readonly KNOWN_IMPORT_MAPPINGS: Map<string, string> = new Map([
         ['NotificationType', '@/app/features/support/UnifiedNotificationTypes'],
         ['NotificationTypeEnum', '@/app/features/support/UnifiedNotificationTypes'],
@@ -205,31 +277,6 @@ export class ImportFixerService {
         } catch (error) {
             console.warn(`⚠️ Could not analyze file for exports: ${filePath}`, error);
         }
-    }
-
-
-    private extractExports(content: string): string[] {
-        const exports: string[] = [];
-        const lines = content.split('\n');
-
-        const exportPatterns = [
-            /export\s+(?:const|let|var|function|class|interface|type)\s+(\w+)/g,
-            /export\s+default\s+(\w+)/g,
-            /export\s+{\s*([^}]+)\s*}/g
-        ];
-
-        for (const pattern of exportPatterns) {
-            let match;
-            while ((match = pattern.exec(content)) !== null) {
-                if (match[1]) {
-                    // Handle multiple exports in one line: export { A, B, C }
-                    const exportsList = match[1].split(',').map(e => e.trim());
-                    exports.push(...exportsList);
-                }
-            }
-        }
-
-        return [...new Set(exports)]; // Remove duplicates
     }
 
     /**
@@ -421,6 +468,132 @@ export class ImportFixerService {
         });
 
         return fixes;
+    }
+
+    /**
+     * Apply fixes with options (replacement for applyFixesWithConfirmation with options)
+     */
+    async applyFixesWithOptions(
+        fixes: ImportFix[], 
+        options: {
+            minConfidence?: 'high' | 'medium' | 'low';
+            applyRules?: boolean;
+            backup?: boolean;
+            dryRun?: boolean;
+            debug?: boolean | DebugMode;
+        } = {}
+    ): Promise<{ success: boolean; applied: number }> {
+        const {
+            minConfidence = 'medium',
+            applyRules = true,
+            backup = true,
+            dryRun = false,
+            debug = false
+        } = options;
+
+        if (fixes.length === 0) {
+            return { success: true, applied: 0 };
+        }
+
+        // Type-safe confidence filtering
+        const confidenceLevels = { high: 3, medium: 2, low: 1 } as const;
+        const minLevel = confidenceLevels[minConfidence];
+        
+        const filteredFixes = fixes.filter(fix => {
+            const fixConfidence = fix.confidence || 'medium';
+            const fixLevel = confidenceLevels[fixConfidence];
+            return fixLevel >= minLevel;
+        });
+
+        if (filteredFixes.length === 0) {
+            console.log(`⚠️ No fixes meet the minimum confidence level: ${minConfidence}`);
+            return { success: false, applied: 0 };
+        }
+
+        // Group fixes by file for better presentation
+        const fileGroups = this.groupFixesByFile(filteredFixes);
+        const changes = Array.from(fileGroups.entries()).map(([file, fileFixes]) => ({
+            file,
+            changes: fileFixes.map(fix =>
+                fix.originalLine
+                    ? `Update import for ${fix.missingTypes.join(', ')}`
+                    : `Add import for ${fix.missingTypes.join(', ')}`
+            )
+        }));
+
+        // Show app-specific rules info
+        if (applyRules) {
+            console.log('\n📐 App-specific rules will be applied automatically');
+        }
+
+        // Get user confirmation
+        const confirmed = await this.confirmationService.confirmMultiple(changes);
+
+        if (!confirmed) {
+            console.log('❌ Import fixes cancelled by user');
+            return { success: false, applied: 0 };
+        }
+
+        // Apply fixes file by file
+        let totalApplied = 0;
+
+        for (const [filePath, fileFixes] of fileGroups) {
+            try {
+                const result = await this.applyFixes(fileFixes, {
+                    backup,
+                    applyRules,
+                    dryRun,
+                    debug
+                });
+                
+                if (result.success) {
+                    console.log(`✅ Applied ${fileFixes.length} fixes to ${path.basename(filePath)}`);
+                    totalApplied += fileFixes.length;
+                }
+            } catch (error) {
+                console.error(`❌ Failed to apply fixes to ${filePath}:`, error);
+            }
+        }
+
+        return { success: true, applied: totalApplied };
+    }
+
+
+    /**
+     * Apply app-specific rules to entire project
+     */
+async applyAppSpecificRulesToProject(rootDir: string = process.cwd()): Promise<{ 
+    success: boolean; 
+    filesUpdated: number;
+    filesScanned: number;
+}> {
+    console.log('📐 Applying app-specific rules to project...');
+        
+        const tsFiles = this.getAllTypeScriptFiles(rootDir);
+        let filesUpdated = 0;
+        
+        for (const filePath of tsFiles) {
+            try {
+                const content = await fs.promises.readFile(filePath, 'utf8');
+                const updatedContent = applyAppSpecificRules(content);
+                
+                if (content !== updatedContent) {
+                    await fs.promises.writeFile(filePath, updatedContent, 'utf8');
+                    filesUpdated++;
+                    console.log(`   ✅ Updated: ${path.relative(process.cwd(), filePath)}`);
+                }
+            } catch (error) {
+                console.warn(`   ⚠️ Could not update ${filePath}:`, error);
+            }
+        }
+        
+        console.log(`📐 Applied rules to ${filesUpdated} files`);
+
+    return { 
+            success: filesUpdated > 0, 
+            filesUpdated,
+            filesScanned: tsFiles.length
+        };
     }
 
     /**
@@ -673,53 +846,252 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
     }
 
 
-    // ENHANCED: Better path resolution
-    private async findCorrectImportPath(missingType: string, currentFile: string): Promise<string | null> {
-        // First check known mappings
+    private async findCorrectImportPath(
+        missingType: string,
+        currentFile: string
+    ): Promise<string | null> {
+        // 1. Known mappings always win
         const knownPath = this.KNOWN_IMPORT_MAPPINGS.get(missingType);
         if (knownPath) return knownPath;
 
-        // Special handling for headersConfig based on actual usage patterns
+        // 2. Context-aware handling for headersConfig with detailed debugging
         if (missingType === 'headersConfig') {
-            // Check if it's being used in API files (should come from HeadersConfig)
-            if (currentFile.includes('/api/') || currentFile.includes('/services/')) {
-                return '@/app/api/headers/HeadersConfig';
+            console.log(`🔍 Debug: Finding headersConfig for ${currentFile}`);
+            
+            // Check if the file is trying to IMPORT headersConfig (not export)
+            const content = await fs.promises.readFile(currentFile, 'utf8');
+            
+            // Find the import line
+            const importLine = content.split('\n').find(line => 
+                line.includes('headersConfig') && line.includes('import')
+            );
+            
+            if (importLine) {
+                // Extract current import path
+                const match = importLine.match(/from\s+['"]([^'"]+)['"]/);
+                const currentPath = match ? match[1] : '';
+                
+                console.log(`📝 Current import path: ${currentPath}`);
+                
+                // Check if current import path exists and exports headersConfig
+                const resolvedPath = this.resolveModulePath(currentPath, currentFile);
+                if (resolvedPath && fs.existsSync(resolvedPath)) {
+                    const targetContent = await fs.promises.readFile(resolvedPath, 'utf8');
+                    const exports = this.extractExports(targetContent);
+                    
+                    console.log(`📦 Exports at ${currentPath}:`, exports);
+                    
+                    if (exports.includes('headersConfig')) {
+                        // Current path already has it - NO CHANGE NEEDED
+                        console.log(`✅ ${currentPath} already exports headersConfig - no change needed`);
+                        return null; // Don't change
+                    }
+                }
             }
-            // Check if it's being used in components (should come from SharedHeaders)
+            
+            // Determine correct path based on file location
+            if (currentFile.includes('/api/') || currentFile.includes('/services/')) {
+                // API files might need the original HeadersConfig
+                // Check if HeadersConfig actually exports headersConfig
+                const headersConfigPath = '@/app/api/headers/HeadersConfig';
+                const resolved = this.resolveModulePath(headersConfigPath, currentFile);
+                
+                if (resolved && fs.existsSync(resolved)) {
+                    const content = await fs.promises.readFile(resolved, 'utf8');
+                    const exports = this.extractExports(content);
+                    
+                    if (exports.includes('headersConfig') || content.includes('export default')) {
+                        console.log(`📌 Using ${headersConfigPath} for API file`);
+                        return headersConfigPath;
+                    }
+                }
+            }
+            
+            // Component layer should use shared UI headers
             if (currentFile.includes('/components/')) {
+                console.log(`📌 Defaulting to SharedHeaders for component file`);
                 return '@/app/components/shared/SharedHeaders';
             }
+            
+            // Default fallback
+            console.log(`📌 Defaulting to SharedHeaders for ${path.basename(currentFile)}`);
+            return '@/app/components/shared/SharedHeaders';
         }
 
-        // Search project tree with smarter matching
+        // 3. Smart project-wide export search (for non-headersConfig types)
         for (const [filePath, fileInfo] of this.projectTree) {
-            if (fileInfo.exports.some(exp => 
+            const exportsList = fileInfo.exports ?? [];
+
+            const matchesExport = exportsList.some(exp =>
                 exp.toLowerCase() === missingType.toLowerCase() ||
                 exp.toLowerCase() === `${missingType.toLowerCase()}config` ||
                 exp.toLowerCase() === `${missingType.toLowerCase()}configs`
-            )) {
-                // Calculate relative path
-                const relativePath = path.relative(path.dirname(currentFile), filePath)
-                    .replace(/\\/g, '/')
-                    .replace(/\.(ts|tsx|js|jsx)$/, '');
-                
-                // Ensure path starts with ./
-                const finalPath = relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
-                
-                // Check for circular dependencies
-                if (this.isCircularImport(finalPath, currentFile, missingType)) {
-                    console.warn(`⚠️ Skipping circular import for ${missingType} from ${finalPath}`);
-                    return null;
-                }
-                
-                return finalPath;
+            );
+
+            if (!matchesExport) continue;
+
+            const relativePath = path
+                .relative(path.dirname(currentFile), filePath)
+                .replace(/\\/g, '/')
+                .replace(/\.(ts|tsx|js|jsx)$/, '');
+
+            const finalPath = relativePath.startsWith('.')
+                ? relativePath
+                : `./${relativePath}`;
+
+            if (this.isCircularImport(finalPath, currentFile, missingType)) {
+                console.warn(
+                    `Skipping circular import for ${missingType} from ${finalPath}`
+                );
+                return null;
             }
+
+            return finalPath;
         }
 
+        // 4. No resolution found
         console.warn(`No mapping found for missing type: ${missingType}`);
         return null;
     }
 
+    
+    // Helper method needed for headersConfig resolution
+    private resolveModulePath(importPath: string, currentFile: string): string | null {
+        try {
+            // Handle absolute paths (starting with @/)
+            if (importPath.startsWith('@/')) {
+                // Assuming your project root is at process.cwd()
+                const projectRoot = process.cwd();
+                const relativePath = importPath.replace('@/', '');
+                const resolved = path.join(projectRoot, relativePath);
+                
+                // Try common extensions
+                const extensions = ['.ts', '.tsx', '.js', '.jsx', '/index.ts', '/index.tsx'];
+                for (const ext of extensions) {
+                    const candidate = `${resolved}${ext}`;
+                    if (fs.existsSync(candidate)) {
+                        return candidate;
+                    }
+                }
+                
+                // If no extension, try the path as-is
+                if (fs.existsSync(resolved)) {
+                    return resolved;
+                }
+            }
+            
+            // Handle relative paths
+            if (importPath.startsWith('.')) {
+                const dir = path.dirname(currentFile);
+                const resolved = path.resolve(dir, importPath);
+                
+                // Try common extensions
+                const extensions = ['.ts', '.tsx', '.js', '.jsx', '/index.ts', '/index.tsx'];
+                for (const ext of extensions) {
+                    const candidate = `${resolved}${ext}`;
+                    if (fs.existsSync(candidate)) {
+                        return candidate;
+                    }
+                }
+                
+                // If no extension, try the path as-is
+                if (fs.existsSync(resolved)) {
+                    return resolved;
+                }
+            }
+            
+            // Try node_modules resolution
+            try {
+                return require.resolve(importPath, { paths: [path.dirname(currentFile)] });
+            } catch {
+                // Not in node_modules
+            }
+            
+            return null;
+        } catch (error) {
+            console.error(`Error resolving module path ${importPath}:`, error);
+            return null;
+        }
+    }
+
+
+    /**
+ * Create fix when type is not imported at all
+ */
+    private async createFixForMissingImport(
+        missingType: string,
+        targetPath: string,
+        filePath: string,
+        allImports: ParsedImport[]
+    ): Promise<ImportFix> {
+        // First check if target exports this as default or named
+        const isDefaultExport = await this.isDefaultExport(targetPath, missingType);
+        const isNamedExport = await this.isNamedExport(targetPath, missingType);
+        
+        const targetImport = allImports.find(imp => imp.importPath === targetPath);
+        let originalLine = '';
+        let newLine = '';
+
+        if (targetImport) {
+            originalLine = targetImport.fullLine;
+            
+            if (isDefaultExport) {
+                // Default export - can't combine with other imports
+                newLine = `import ${missingType} from '${targetPath}';`;
+            } else if (isNamedExport) {
+                // Named export - add to existing import
+                const newImports = [...targetImport.namedImports, missingType].sort();
+                if (targetImport.defaultImport) {
+                    newLine = `import ${targetImport.defaultImport}, { ${newImports.join(', ')} } from '${targetPath}';`;
+                } else {
+                    newLine = `import { ${newImports.join(', ')} } from '${targetPath}';`;
+                }
+            }
+        } else {
+            originalLine = '';
+            
+            if (isDefaultExport) {
+                newLine = `import ${missingType} from '${targetPath}';`;
+            } else if (isNamedExport) {
+                newLine = `import { ${missingType} } from '${targetPath}';`;
+            } else {
+                // Fallback to named import (safer guess)
+                newLine = `import { ${missingType} } from '${targetPath}';`;
+            }
+        }
+
+        // Calculate confidence score
+        const exactFileMatch = true; // We have a target path
+        const symbolMatch = true; // We're importing a specific symbol
+        const aliasUsed = targetPath.startsWith('@/');
+        const originalPath = ''; // No original import path
+        const suggestedPath = targetPath;
+
+        const score = this.scoreFix({
+            originalPath,
+            suggestedPath,
+            symbolMatch,
+            exactFileMatch,
+            aliasUsed
+        });
+
+        const reason = targetImport 
+            ? `Add ${missingType} to existing import from ${targetPath}`
+            : `Add new import for ${missingType} from ${targetPath}`;
+
+        return {
+            filePath,
+            originalLine,
+            newLine,
+            missingTypes: [missingType],
+            targetImportPath: targetPath,
+            confidenceScore: score,
+            confidence: this.classifyConfidence(score),
+            reason
+        };
+    }
+
+    // Use YOUR existing methods - these are already good:
     private isCircularImport(importPath: string, currentFile: string, missingType: string): boolean {
         // Check if this would create a circular dependency
         // Example: If current file exports the same thing it's trying to import
@@ -740,6 +1112,30 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         }
         
         return false;
+    }
+
+    private extractExports(content: string): string[] {
+        const exports: string[] = [];
+        const lines = content.split('\n');
+
+        const exportPatterns = [
+            /export\s+(?:const|let|var|function|class|interface|type)\s+(\w+)/g,
+            /export\s+default\s+(\w+)/g,
+            /export\s+{\s*([^}]+)\s*}/g
+        ];
+
+        for (const pattern of exportPatterns) {
+            let match;
+            while ((match = pattern.exec(content)) !== null) {
+                if (match[1]) {
+                    // Handle multiple exports in one line: export { A, B, C }
+                    const exportsList = match[1].split(',').map(e => e.trim());
+                    exports.push(...exportsList);
+                }
+            }
+        }
+
+        return [...new Set(exports)]; // Remove duplicates
     }
     /**
      * Parse all imports from file content
@@ -856,7 +1252,6 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         existingImports: ParsedImport[],
         filePath: string
     ): Promise<ImportFix | null> {
-
         const targetPath = await this.findCorrectImportPath(missingType, filePath);
         if (!targetPath) {
             console.warn(`No mapping found for missing type: ${missingType}`);
@@ -883,6 +1278,18 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             );
         }
 
+        // Special handling for headersConfig
+        if (missingType === 'headersConfig') {
+            const headersConfigImport = existingImports.find(imp =>
+                imp.importPath.includes('HeadersConfig') || 
+                (imp.namedImports.includes('headersConfig') || imp.defaultImport === 'headersConfig')
+            );
+            
+            if (headersConfigImport) {
+                return this.createFixForHeadersConfig(headersConfigImport, filePath);
+            }
+        }
+
         // No existing import for this type - need to add it
         return this.createFixForMissingImport(
             missingType,
@@ -891,7 +1298,6 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             existingImports
         );
     }
-
     /**
      * Create fix when type is imported from wrong path
      */
@@ -949,6 +1355,18 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             aliasUsed
         });
 
+        // Create a descriptive reason
+        let reason = '';
+        if (missingType === 'headersConfig') {
+            if (problematicImport.importPath.includes('HeadersConfig')) {
+                reason = `headersConfig should be imported from SharedHeaders.ts, not from ${problematicImport.importPath}`;
+            } else {
+                reason = `Import headersConfig from the correct source file SharedHeaders.ts`;
+            }
+        } else {
+            reason = `Move ${missingType} from ${problematicImport.importPath} to correct location ${targetPath}`;
+        }
+
         return {
             filePath,
             originalLine: problematicImport.fullLine,
@@ -961,63 +1379,42 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         };
     }
 
-    /**
-     * Create fix when type is not imported at all
-     */
-    private createFixForMissingImport(
-        missingType: string,
-        targetPath: string,
-        filePath: string,
-        allImports: ParsedImport[]
-    ): ImportFix {
-
-        const targetImport = allImports.find(imp => imp.importPath === targetPath);
-        let originalLine = '';
-        let newLine = '';
-
-        if (targetImport) {
-            originalLine = targetImport.fullLine;
-            const newImports = [...targetImport.namedImports, missingType].sort();
+    private async isDefaultExport(filePath: string, exportName: string): Promise<boolean> {
+        try {
+            const resolvedPath = this.resolveModulePath(filePath, process.cwd() + '/dummy.ts');
+            if (!resolvedPath || !fs.existsSync(resolvedPath)) return false;
             
-            if (targetImport.defaultImport) {
-                newLine = `import ${targetImport.defaultImport}, { ${newImports.join(', ')} } from '${targetPath}';`;
-            } else {
-                newLine = `import { ${newImports.join(', ')} } from '${targetPath}';`;
-            }
-        } else {
-            originalLine = '';
-            newLine = `import { ${missingType} } from '${targetPath}';`;
+            const content = await fs.promises.readFile(resolvedPath, 'utf8');
+            
+            // Check for default export patterns
+            const defaultExportPatterns = [
+                /export\s+default\s+(\w+)/,  // export default headersConfig
+                /export\s+default\s+{[^}]*\bheadersConfig\b[^}]*}/, // export default { headersConfig }
+            ];
+            
+            return defaultExportPatterns.some(pattern => pattern.test(content));
+        } catch {
+            return false;
         }
+    }
 
-        // Calculate confidence score
-        const exactFileMatch = true; // We have a target path
-        const symbolMatch = true; // We're importing a specific symbol
-        const aliasUsed = targetPath.startsWith('@/');
-        const originalPath = ''; // No original import path
-        const suggestedPath = targetPath;
-
-        const score = this.scoreFix({
-            originalPath,
-            suggestedPath,
-            symbolMatch,
-            exactFileMatch,
-            aliasUsed
-        });
-
-        const reason = targetImport 
-            ? `Add ${missingType} to existing import from ${targetPath}`
-            : `Add new import for ${missingType} from ${targetPath}`;
-
-        return {
-            filePath,
-            originalLine,
-            newLine,
-            missingTypes: [missingType],
-            targetImportPath: targetPath,
-            confidenceScore: score,
-            confidence: this.classifyConfidence(score),
-            reason
-        };
+    private async isNamedExport(filePath: string, exportName: string): Promise<boolean> {
+        try {
+            const resolvedPath = this.resolveModulePath(filePath, process.cwd() + '/dummy.ts');
+            if (!resolvedPath || !fs.existsSync(resolvedPath)) return false;
+            
+            const content = await fs.promises.readFile(resolvedPath, 'utf8');
+            
+            // Check for named export patterns
+            const namedExportPatterns = [
+                new RegExp(`export\\s+(?:const|let|var|function|class)\\s+${exportName}\\b`), // export const headersConfig
+                new RegExp(`export\\s*{[^}]*\\b${exportName}\\b[^}]*}`), // export { headersConfig }
+            ];
+            
+            return namedExportPatterns.some(pattern => pattern.test(content));
+        } catch {
+            return false;
+        }
     }
 
     // Smart scan with confidence filtering
@@ -1050,27 +1447,106 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         return this.applyFixesWithConfirmation(filteredFixes);
     }
 
+    // 🆕 Helper method to count rule changes
+    private countRuleChanges(original: string, fixed: string): number {
+        let count = 0;
+        
+        // Apply rules to original and see what changes
+        const afterRules = applyAppSpecificRules(original);
+        
+        if (afterRules !== original) {
+            // Count lines that changed due to rules
+            const originalLines = original.split('\n');
+            const afterRulesLines = afterRules.split('\n');
+            
+            for (let i = 0; i < Math.min(originalLines.length, afterRulesLines.length); i++) {
+                if (originalLines[i] !== afterRulesLines[i]) {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+
     /**
      * Apply fixes to files with safety checks
      */
-    async applyFixes(fixes: ImportFix[], backup: boolean = true): Promise<{ success: boolean; backupPath?: string }> {
+    async applyFixes(
+        fixes: ImportFix[], 
+        options: ApplyFixesOptions = {}
+    ): Promise<{ success: boolean; backupPath?: string; changes?: string }> {
+        const { 
+            backup = true, 
+            debug = false, 
+            dryRun = false,
+            verbose = false,
+            applyRules = true // 🆕 NEW OPTION: Whether to apply app-specific rules
+        } = options;
+        
+        const isDebug = debug === true || verbose;
+        const debugMode = typeof debug === 'string' ? debug : (verbose ? 'verbose' : 'none');
+
         if (fixes.length === 0) {
             return { success: true };
         }
 
         const filePath = fixes[0].filePath;
 
+        // Debug output
+        if (isDebug) {
+            console.log(`\n🎯 ======= DEBUG MODE =======`);
+            console.log(`📂 File: ${filePath}`);
+            console.log(`🔧 Fixes to apply: ${fixes.length}`);
+            console.log(`🔄 Dry run: ${dryRun ? 'YES' : 'NO'}`);
+            console.log(`📋 Backup: ${backup ? 'YES' : 'NO'}`);
+            console.log(`📐 Apply app-specific rules: ${applyRules ? 'YES' : 'NO'}`); // 🆕
+        }
+
         // Create backup
         let backupPath: string | undefined;
-        if (backup) {
+        if (backup && !dryRun) {
             backupPath = await this.createBackup(filePath);
+            if (isDebug) {
+                console.log(`💾 Backup created: ${backupPath}`);
+            }
         }
 
         try {
             const content = await fs.promises.readFile(filePath, 'utf8');
             let newContent = content;
 
-            // Group fixes by original line to handle multiple changes to same line
+            // Show content diff in debug mode
+            if (debugMode === 'verbose') {
+                console.log(`\n📄 ORIGINAL CONTENT (first 10 lines):`);
+                console.log(content.split('\n').slice(0, 10).join('\n'));
+            }
+
+            // 🆕 APPLY APP-SPECIFIC RULES (Pre-processing)
+            if (applyRules) {
+                const originalForRules = newContent;
+                newContent = applyAppSpecificRules(newContent);
+                
+                if (isDebug && originalForRules !== newContent) {
+                    console.log(`\n📐 APPLIED APP-SPECIFIC RULES (pre-processing):`);
+                    
+                    // Show what changed
+                    const originalLines = originalForRules.split('\n');
+                    const newLines = newContent.split('\n');
+                    
+                    for (let i = 0; i < Math.min(originalLines.length, newLines.length); i++) {
+                        if (originalLines[i] !== newLines[i]) {
+                            console.log(`   Line ${i + 1}: ${originalLines[i]} → ${newLines[i]}`);
+                        }
+                    }
+                    
+                    if (originalLines.length !== newLines.length) {
+                        console.log(`   File length changed: ${originalLines.length} → ${newLines.length} lines`);
+                    }
+                }
+            }
+
+            // Group fixes
             const fixesByLine = new Map<string, ImportFix[]>();
             fixes.forEach(fix => {
                 const key = fix.originalLine || 'NEW_IMPORT';
@@ -1083,33 +1559,142 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             // Apply fixes
             for (const [originalLine, lineFixes] of fixesByLine) {
                 if (originalLine === 'NEW_IMPORT') {
-                    // Add new imports at the top
                     const newImports = lineFixes.map(fix => fix.newLine).join('\n');
                     newContent = this.insertImport(newContent, newImports);
+                    
+                    if (debugMode === 'detailed' || debugMode === 'verbose') {
+                        console.log(`\n➕ ADDING NEW IMPORTS:`);
+                        console.log(newImports);
+                    }
                 } else {
-                    // Replace existing lines
                     const primaryFix = lineFixes[0];
                     newContent = newContent.replace(primaryFix.originalLine, primaryFix.newLine);
+                    
+                    if (debugMode === 'verbose') {
+                        console.log(`\n🔄 REPLACING:`);
+                        console.log(`BEFORE: ${primaryFix.originalLine}`);
+                        console.log(`AFTER:  ${primaryFix.newLine}`);
+                    }
                 }
             }
 
-            // Validate the fix before applying
+            // 🆕 APPLY APP-SPECIFIC RULES (Post-processing)
+            if (applyRules) {
+                const beforePostProcessing = newContent;
+                newContent = applyAppSpecificRules(newContent);
+                
+                if (isDebug && beforePostProcessing !== newContent) {
+                    console.log(`\n📐 APPLIED APP-SPECIFIC RULES (post-processing):`);
+                    
+                    // Show what changed in post-processing
+                    const beforeLines = beforePostProcessing.split('\n');
+                    const afterLines = newContent.split('\n');
+                    
+                    for (let i = 0; i < Math.min(beforeLines.length, afterLines.length); i++) {
+                        if (beforeLines[i] !== afterLines[i]) {
+                            console.log(`   Line ${i + 1}: ${beforeLines[i]} → ${afterLines[i]}`);
+                        }
+                    }
+                }
+            }
+
+            // Show diff in verbose mode
+            if (debugMode === 'verbose') {
+                console.log(`\n📄 NEW CONTENT (first 10 lines):`);
+                console.log(newContent.split('\n').slice(0, 10).join('\n'));
+                
+                console.log(`\n📋 FULL CHANGES:`);
+                const diff = this.generateDiff(content, newContent);
+                console.log(diff);
+            }
+
+            // Validate
             if (await this.validateFix(content, newContent)) {
-                await fs.promises.writeFile(filePath, newContent, 'utf8');
-                return { success: true, backupPath };
+                if (!dryRun) {
+                    await fs.promises.writeFile(filePath, newContent, 'utf8');
+                    
+                    if (isDebug) {
+                        console.log(`\n✅ FILE UPDATED SUCCESSFULLY`);
+                        console.log(`📝 Changes written to disk`);
+                        
+                        // Show summary of rule applications
+                        if (applyRules) {
+                            const ruleChanges = this.countRuleChanges(content, newContent);
+                            if (ruleChanges > 0) {
+                                console.log(`📐 Applied ${ruleChanges} app-specific rule fixes`);
+                            }
+                        }
+                    }
+                } else {
+                    if (isDebug) {
+                        console.log(`\n⚠️  DRY RUN - No changes written`);
+                        console.log(`📝 Would have written ${newContent.length} bytes`);
+                        
+                        if (applyRules) {
+                            const ruleChanges = this.countRuleChanges(content, newContent);
+                            if (ruleChanges > 0) {
+                                console.log(`📐 Would apply ${ruleChanges} app-specific rule fixes`);
+                            }
+                        }
+                    }
+                }
+                
+                // Conditional debug execution
+                if (debugMode === 'verbose' && !dryRun) {
+                    await this.debugFixExecution(fixes[0]);
+                }
+                
+                return { 
+                    success: true, 
+                    backupPath,
+                    changes: dryRun ? newContent : undefined 
+                };
             } else {
+                if (isDebug) {
+                    console.log(`\n❌ VALIDATION FAILED`);
+                }
                 throw new Error('Fix validation failed');
             }
 
         } catch (error) {
-            // Restore backup if fix failed
-            if (backupPath) {
+            if (backupPath && !dryRun) {
                 await this.restoreBackup(filePath, backupPath);
+                
+                if (isDebug) {
+                    console.log(`\n🔄 RESTORED FROM BACKUP`);
+                }
             }
+            
+            if (isDebug) {
+                console.error(`\n💥 ERROR:`, error);
+            }
+            
             throw error;
+        } finally {
+            if (isDebug) {
+                console.log(`\n🎯 ======= DEBUG END =======\n`);
+            }
         }
+
     }
 
+    private generateDiff(oldContent: string, newContent: string): string {
+        const oldLines = oldContent.split('\n');
+        const newLines = newContent.split('\n');
+        const diff: string[] = [];
+        
+        for (let i = 0; i < Math.max(oldLines.length, newLines.length); i++) {
+            const oldLine = oldLines[i] || '';
+            const newLine = newLines[i] || '';
+            
+            if (oldLine !== newLine) {
+                diff.push(`-${i + 1}: ${oldLine}`);
+                diff.push(`+${i + 1}: ${newLine}`);
+            }
+        }
+        
+        return diff.join('\n');
+    }
     /**
      * Create backup of file
      */
@@ -1267,7 +1852,8 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
      */
     private async applyImportFix(fix: ImportFix): Promise<boolean> {
         try {
-            const result = await this.applyFixes([fix], true);
+            // Pass options object instead of boolean
+            const result = await this.applyFixes([fix], { backup: true });
             if (result.success) {
                 console.log(`✅ Applied import fix for ${fix.missingTypes.join(', ')} in ${path.basename(fix.filePath)}`);
                 return true;
@@ -1310,21 +1896,49 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
     /**
      * Apply fixes with user confirmation
      */
-    async applyFixesWithConfirmation(fixes: ImportFix[]): Promise<{ success: boolean; applied: number }> {
+    async applyFixesWithConfirmation(
+        fixes: ImportFix[], 
+        options?: {
+            minConfidence?: 'high' | 'medium' | 'low';
+            applyRules?: boolean;
+        }
+    ): Promise<{ success: boolean; applied: number }> {
         if (fixes.length === 0) {
             return { success: true, applied: 0 };
         }
 
+        const minConfidence = options?.minConfidence || 'medium';
+        const applyRules = options?.applyRules ?? true; // Default to true
+
+        // Filter fixes by confidence
+        const confidenceLevels = { high: 3, medium: 2, low: 1 };
+        const minLevel = confidenceLevels[minConfidence];
+
+        const filteredFixes = fixes.filter(fix => {
+            const fixLevel = confidenceLevels[fix.confidence || 'medium'];
+            return fixLevel >= minLevel;
+        });
+
+        if (filteredFixes.length === 0) {
+            console.log(`⚠️ No fixes meet the minimum confidence level: ${minConfidence}`);
+            return { success: false, applied: 0 };
+        }
+
         // Group fixes by file for better presentation
-        const fileGroups = this.groupFixesByFile(fixes);
+        const fileGroups = this.groupFixesByFile(filteredFixes);
         const changes = Array.from(fileGroups.entries()).map(([file, fileFixes]) => ({
             file,
             changes: fileFixes.map(fix =>
                 fix.originalLine
-                    ? `Move ${fix.missingTypes.join(', ')} to ${fix.targetImportPath}`
-                    : `Add ${fix.missingTypes.join(', ')} from ${fix.targetImportPath}`
+                    ? `Update import for ${fix.missingTypes.join(', ')}`
+                    : `Add import for ${fix.missingTypes.join(', ')}`
             )
         }));
+
+        // Show app-specific rules info
+        if (applyRules) {
+            console.log('\n📐 App-specific rules will be applied automatically');
+        }
 
         // Get user confirmation
         const confirmed = await this.confirmationService.confirmMultiple(changes);
@@ -1339,7 +1953,11 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
 
         for (const [filePath, fileFixes] of fileGroups) {
             try {
-                const result = await this.applyFixes(fileFixes, true);
+                const result = await this.applyFixes(fileFixes, {
+                    backup: true,
+                    applyRules: applyRules
+                });
+                
                 if (result.success) {
                     console.log(`✅ Applied ${fileFixes.length} fixes to ${path.basename(filePath)}`);
                     totalApplied += fileFixes.length;
@@ -1351,7 +1969,7 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
 
         return { success: true, applied: totalApplied };
     }
-
+        
     private groupFixesByFile(fixes: ImportFix[]): Map<string, ImportFix[]> {
         const groups = new Map<string, ImportFix[]>();
 
@@ -1363,6 +1981,33 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         });
 
         return groups;
+    }
+
+    private generateChangeString(fix: ImportFix): string {
+        if (fix.missingTypes.includes('headersConfig')) {
+            return `Update headersConfig import from ${this.extractSourcePath(fix.originalLine)} to SharedHeaders.ts`;
+        }
+        
+        // For other imports, create a descriptive message
+        if (fix.originalLine && fix.originalLine.trim()) {
+            const source = this.extractSourcePath(fix.originalLine);
+            const target = this.extractSourcePath(fix.newLine);
+            
+            if (source && target && source !== target) {
+                return `Move ${fix.missingTypes.join(', ')} from ${source} to ${target}`;
+            }
+        }
+        
+        return `Update import for ${fix.missingTypes.join(', ')}`;
+    }
+
+    private extractSourcePath(importLine: string): string {
+        if (!importLine || importLine.trim() === '') {
+            return 'new import';
+        }
+        
+        const match = importLine.match(/from\s+['"]([^'"]+)['"]/);
+        return match ? match[1] : 'unknown source';
     }
 
     /**
@@ -1558,6 +2203,7 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         
         return errorsByFile;
     }
+
     /**
      * Fix only the real TypeScript errors first
      */
@@ -1602,7 +2248,8 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
                 
                 // Apply fixes if any
                 if (fixes.length > 0) {
-                    const result = await this.applyFixes(fixes, true);
+                    // Pass options object instead of boolean
+                    const result = await this.applyFixes(fixes, { backup: true });
                     if (result.success) {
                         totalFixed += fixes.length;
                         console.log(`   ✅ Fixed ${fixes.length} import(s)`);
@@ -1618,7 +2265,7 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
         
         return { success: totalFixed > 0, fixed: totalFixed };
     }
-
+    
     /**
      * Debug method to test TypeScript error detection
      */
@@ -1730,6 +2377,82 @@ async analyzeFile(filePath: string): Promise<ImportAnalysis> {
             } catch (error) {
                 console.log('Error reading tsconfig:', error);
             }
+        }
+    }
+
+    private async createFixForHeadersConfig(
+        currentImport: ParsedImport,
+        filePath: string
+    ): Promise<ImportFix | null> {
+        const currentPath = currentImport.importPath;
+        const targetPath = '@/app/components/shared/SharedHeaders';
+        
+        // Check if already importing from correct place
+        if (currentPath === targetPath) {
+            // Already correct, but check if using wrong import syntax
+            if (currentImport.defaultImport === 'headersConfig') {
+                // Wrong: import headersConfig from SharedHeaders (treating named as default)
+                // Fix: Change to named import
+                return {
+                    filePath,
+                    originalLine: currentImport.fullLine,
+                    newLine: `import { headersConfig } from '${targetPath}';`,
+                    missingTypes: ['headersConfig'],
+                    targetImportPath: targetPath,
+                    reason: 'headersConfig is a named export (not default) in SharedHeaders.ts - changing to named import syntax',
+                    confidence: 'high',
+                    confidenceScore: 100
+                };
+            }
+            return null; // Already correct
+        }
+        
+        // Moving from HeadersConfig.tsx to SharedHeaders.ts
+        const isDefaultImport = currentImport.defaultImport === 'headersConfig';
+        const isNamedImport = currentImport.namedImports.includes('headersConfig');
+        
+        let reason = '';
+        if (currentPath === '@/app/api/headers/HeadersConfig') {
+            reason = 'API services should import headersConfig from SharedHeaders.ts, not from API headers module';
+        } else if (currentPath.includes('HeadersConfig')) {
+            reason = 'Use canonical headersConfig from SharedHeaders.ts (HeadersConfig.tsx is internal/API-specific)';
+        } else {
+            reason = 'Import headersConfig from the correct source file SharedHeaders.ts';
+        }
+        
+        return {
+            filePath,
+            originalLine: currentImport.fullLine,
+            newLine: isDefaultImport 
+                ? `import { headersConfig } from '${targetPath}';`
+                : this.reconstructImportLine(currentImport, 'headersConfig', targetPath),
+            missingTypes: ['headersConfig'],
+            targetImportPath: targetPath,
+            reason: reason,
+            confidence: 'high',
+            confidenceScore: 95
+        };
+    }
+
+    private reconstructImportLine(
+        originalImport: ParsedImport,
+        newSymbol: string,
+        targetPath: string
+    ): string {
+        // Remove headersConfig from original imports if present
+        const filteredNamed = originalImport.namedImports.filter(name => name !== 'headersConfig');
+        const hasOtherImports = filteredNamed.length > 0 || originalImport.defaultImport;
+        
+        if (!hasOtherImports) {
+            // Only importing headersConfig - simple replacement
+            return `import { ${newSymbol} } from '${targetPath}';`;
+        }
+        
+        // Complex case: mixed imports
+        if (originalImport.defaultImport) {
+            return `import ${originalImport.defaultImport}, { ${[...filteredNamed, newSymbol].join(', ')} } from '${targetPath}';`;
+        } else {
+            return `import { ${[...filteredNamed, newSymbol].join(', ')} } from '${targetPath}';`;
         }
     }
 }

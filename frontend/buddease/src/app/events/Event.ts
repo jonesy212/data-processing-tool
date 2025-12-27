@@ -1,7 +1,7 @@
 // Event.ts
 import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { EventAttachment, EventEntity, EventExcludedFields, EventIncludedFields, EventK, EventMeta } from '@/app/typings/entities/EventEntity';
 import { triggerEvent, unsubscribe } from "@/utils/web3/applicationUtils";
 

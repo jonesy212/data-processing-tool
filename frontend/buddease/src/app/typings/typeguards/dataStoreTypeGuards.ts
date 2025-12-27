@@ -54,44 +54,82 @@ function isSnapshotStoreMethods<
 
 // Example type guard for `SnapshotStoreMethods`
 function isSnapshotStoreMethods<U extends BaseData, K extends Data>(
-  value: unknown, K extends
+  value: unknown,
 ): value is SnapshotStoreMethods<U, K, Meta> {
   // Assuming SnapshotStoreMethods is a function or object with specific properties
   return typeof value === 'function' || (typeof value === 'object' && value !== null);
 }
 
-
-// Example type guard for checking DataStoreWithSnapshotMethods
-function isDataStoreWithSnapshotMethods <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+function isSnapshotStoreMethods<
+  U extends BaseDataEntity,
+  K extends U = U,
+  Meta extends DefaultMeta<U, K> = DefaultMeta<U, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
+  ExcludedFields extends keyof U = DefaultExcludedFields<U>,
+  IncludedFields extends keyof U = keyof U
+>(
   value: unknown,
-): value is DataStoreWithSnapshotMethods<T, K> {
-  // Ensure the value is an object and not null
+): value is SnapshotStoreMethods<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // Check if value is an object and not null
   if (typeof value !== 'object' || value === null) {
     return false;
   }
 
-  // Check if `snapshotMethods` is either undefined or an array of `SnapshotStoreMethods`
-  if ('snapshotMethods' in value) {
-    const snapshotMethods = (value as DataStoreWithSnapshotMethods<T, K>).snapshotMethods;
+  const val = value as SnapshotStoreMethods<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  // Check for required methods/properties
+  return (
+    typeof val.addStore === 'function' &&
+    typeof val.getStore === 'function' &&
+    typeof val.createSnapshot === 'function'
+    // Add checks for other required methods as needed
+  );
+}
+
+
+
+function isDataStoreWithSnapshotMethods<
+  U extends BaseDataEntity,
+  K extends U = U,
+  Meta extends DefaultMeta<U, K> = DefaultMeta<U, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof U = DefaultExcludedFields<U>,
+  IncludedFields extends keyof U = keyof U
+>(
+  value: unknown,
+): value is DataStoreWithSnapshotMethods<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const val = value as DataStoreWithSnapshotMethods<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  // Check if snapshotMethods exists and matches the expected type
+  if ('snapshotMethods' in val) {
+    const snapshotMethods = val.snapshotMethods;
     
-    if (
-      snapshotMethods !== undefined &&
-      (!Array.isArray(snapshotMethods) ||
-        !snapshotMethods.every((method) => typeof method === 'function'))
-    ) {
-      return false;
+    // snapshotMethods can be undefined or an array of SnapshotStoreMethods
+    if (snapshotMethods !== undefined) {
+      if (!Array.isArray(snapshotMethods)) {
+        return false;
+      }
+      
+      // Verify each item in the array is a SnapshotStoreMethods
+      return snapshotMethods.every(method => 
+        isSnapshotStoreMethods<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(method)
+      );
     }
   }
 
-  // If necessary, add additional checks for other properties from DataStore
-  return true;
-}
+  // Optionally check for other DataStore properties
+  const requiredDataStoreProps = [
+    'id',
+    'name',
+    'data',
+    'metadata'
+  ] as const;
 
+  return requiredDataStoreProps.every(prop => prop in val);
+}
 
   export { isDataStoreMethod, isDataStoreWithSnapshotMethods };

@@ -2,7 +2,7 @@
 import { execSync, ExecSyncOptions } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { TSCompilerError } from '../ErrorFixManager';
+import { TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
 
 export interface DiagnosticResult {
   phase: string;
@@ -20,6 +20,7 @@ export interface DiagnosticResult {
   errorCodeDistribution: Map<string, number>;
   recommendations: string[];
   nextPhase: string;
+  area?: string;
 }
 
 export class TypeScriptDiagnosticPhase {
@@ -81,12 +82,23 @@ export class TypeScriptDiagnosticPhase {
     
     try {
       const command = 'npx tsc --noEmit --pretty false';
-      const output = execSync(command, this.execOptions);
+      
+      // Type-safe approach
+      const output = execSync(command, {
+        ...this.execOptions,
+        encoding: 'utf-8' as const  // ✅ Use 'as const' for literal type
+      });
+      
+      // Now TypeScript knows it's a string
       return output;
+      
     } catch (error: any) {
-      // tsc returns non-zero exit code when there are errors
       if (error.stdout) {
-        return error.stdout;
+        // Also ensure stdout is string
+        const stdout = typeof error.stdout === 'string' 
+          ? error.stdout 
+          : error.stdout.toString('utf-8');
+        return stdout;
       }
       throw new Error(`Failed to run TypeScript check: ${error.message}`);
     }

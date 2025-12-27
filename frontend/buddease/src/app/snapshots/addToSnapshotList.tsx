@@ -6,7 +6,7 @@
 // import { useState } from "react";
 // import { BaseData } from '@/app/models/data/Data';
 // import { displayToast } from "@/app/models/display/ShowToast";
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotActions } from "@/app/actions/SnapshotActions";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
@@ -14,12 +14,13 @@
 // import { Subscriber } from "@/app/subscribers/Subscriber";
 
 // // addToSnapshotList.ts
-// const addToSnapshotList = async  <  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
+// const addToSnapshotList = async  <  
+// T extends BaseDataEntity,
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T>(
 //   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 // ) => {

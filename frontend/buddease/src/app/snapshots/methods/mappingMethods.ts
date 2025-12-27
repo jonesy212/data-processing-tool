@@ -10,7 +10,7 @@ import {
   SnapshotsArray,
   SnapshotsObject
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';

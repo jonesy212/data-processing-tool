@@ -1,6 +1,6 @@
 // ApiEvent.ts
 
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';

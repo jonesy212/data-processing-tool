@@ -15,7 +15,7 @@ import { Phase } from '@/app/models/phases/Phase';
 import { Project } from "@/app/models/projects/Project";
 import { TeamData } from "@/app/models/teams/TeamData";
 import { TagsRecord } from '@/app/models/tracker/Tag';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';

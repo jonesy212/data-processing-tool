@@ -19,7 +19,7 @@ function isValidMeta<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  meta: StructuredMetadata<<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   schema: Record<string, SchemaField> = {}
 ): boolean {
   // Check if meta is an object and not null

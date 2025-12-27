@@ -26,7 +26,7 @@ interface CalendarEventViewingDetailsProps {
   // Define props here if needed
   eventId: string;
   title?: string;
-  None?: () => JSX.Element;
+  None?: () => React.JSX.Element;
   date?: string;
   productId?: string;
   eventDetails: React.FunctionComponent<CalendarEventViewingDetailsProps>;

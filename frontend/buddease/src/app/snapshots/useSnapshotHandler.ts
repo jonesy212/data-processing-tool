@@ -2,7 +2,7 @@
 // // useSnapshotHandler.ts
 // import { useState } from 'react';
 // import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 // import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 // import { BaseData } from '@/app/models/data/Data';
 // import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';

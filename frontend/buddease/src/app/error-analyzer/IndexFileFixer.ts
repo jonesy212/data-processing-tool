@@ -1,7 +1,7 @@
 // src/app/error-analyzer/IndexFileFixer.ts
 import fs from 'fs';
 import path from 'path';
-import { TSCompilerError } from './ErrorFixManager';
+import { TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
 
 export class IndexFileFixer {
   private projectRoot: string;

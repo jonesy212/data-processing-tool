@@ -1,9 +1,18 @@
 // src/app/error-analyzer/CircularDependencyResolver.ts
 
-import { TSCompilerError, RelationshipMap, FixPlan } from '@/app/error-analyzer/ErrorFixManager';
+import { TSCompilerError, FixPlan } from '@/app/error-analyzer/ErrorFixManager';
 import { CircularBreakStrategy } from '@/app/error-analyzer/index';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 import fs from 'fs';
 import path from 'path';
+
+interface PropertyUsage {
+  context: string;
+  // Add other properties as needed
+  propertyName?: string;
+  type?: string;
+  location?: string;
+}
 
 export class CircularDependencyResolver {
   private detectedCycles: Set<string>[] = [];
@@ -183,7 +192,7 @@ export class CircularDependencyResolver {
   private isInterfaceCycle(cycle: string[], relationshipMap: RelationshipMap): boolean {
     return cycle.some(type => {
       const usages = relationshipMap.propertyUsages.get(type) || [];
-      return usages.some(usage => usage.context.includes('interface'));
+      return usages.some((usage: PropertyUsage) => usage.context.includes('interface')); // ✅ ADD TYPE
     });
   }
 

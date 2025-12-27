@@ -6,7 +6,7 @@ import * as apiData from "@/app/api/ApiData";
 import { snapshotApi } from '@/app/api/SnapshotApi';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
@@ -27,11 +27,22 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { SearchCriteria } from '@/app/pages/searches/SearchCriteria';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
-import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethods, SnapshotStoreProps } from '@/app/snapshots/SnapshotConfig';
+
+import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
+import { SnapshotData, SnapshotItem, SnapshotStoreMethods } from '@/app/snapshots/SnapshotData';
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
+
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
+
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { retrievedSnapshot } from "@/app/snapshots/RetrieveSnapshotData";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotContainer, SnapshotDataType } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -41,7 +52,7 @@ import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriber
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseSnapshotProps } from "@/app/snapshots/createBaseSnapshot";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import isSnapshotsArray, { isSnapshotArrayState } from '@/app/snapshots/createSnapshotStoreOptions';
+import { isSnapshotsArray, isSnapshotArrayState } from '@/app/snapshots/createSnapshotStoreOptions';
 import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';

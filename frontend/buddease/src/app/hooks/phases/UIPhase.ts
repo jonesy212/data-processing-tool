@@ -34,7 +34,7 @@ export type DefaultNotificationData = NotificationData<
 
 const createDarkModeTogglePhaseHook = () => {
   return createPhaseHook(
-    idleTimeoutId: 30000,
+    30000,
     {
     name: 'Dark Mode Toggle Phase',
     condition: async () => true,
@@ -61,7 +61,7 @@ export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
 
 const createNotificationBarPhaseHook = () => {
   return createPhaseHook(
-    idleTimeoutDuration: 30000,
+    30000,
     {
     condition: isLoggedIn,
     duration: '10000',

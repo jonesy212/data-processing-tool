@@ -14,13 +14,13 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from '@/app/models/display/ShowToast';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
-import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotConfig';
+import { SnapshotConfig, SnapshotData } from '@/app/snapshots/SnapshotData';
 import {
   Snapshots,
   SnapshotsArray,
   SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";

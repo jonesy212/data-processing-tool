@@ -4,20 +4,19 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { FinancialMetrics, processFinancialMetrics } from '@/app/components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/app/components/metrics/TechnicalSpecifications';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
+import { BaseDataEntity } from '@/app/config/BaseConfig';
 import {
-  AddReportBase,
-  BaseReport, FinancialReport, ReportOptions,
-  ResearchReport,
-  TechnicalReport
+    AddReportBase,
+    BaseReport, FinancialReport, ReportOptions,
+    ResearchReport,
+    TechnicalReport
 } from '@/app/documents/Report';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { analyzeResearchFindings, ResearchFindings } from '@/app/pages/searches/ResearchFindings';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 
-import { Attachment } from '@/app/documents/attachment/Attachment';
 
 // Define the API base URL for reports
 const API_BASE_URL = endpoints.reports.list

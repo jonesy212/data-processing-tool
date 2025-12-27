@@ -1,5 +1,4 @@
 // StructuredMetadata.ts
-import { Contributor } from '@/app/models/teams/Contributor';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from '@/app/config/metadata/SchemaField';
@@ -11,15 +10,16 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { Comment } from '@/app/models/comments/Comments';
 import { BaseData, Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Task } from '@/app/models/tasks/Task';
+import { Contributor } from '@/app/models/teams/Contributor';
 import { Taggable, TagsRecord } from '@/app/models/tracker/Tag';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Permission } from '@/app/permissions/Permission';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { EventManager, InitializedState } from "@/app/state/stores/DataStore";
-import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
+import { ProjectAttachment, ProjectEntity, ProjectExcludedFields, ProjectIncludedFields, ProjectK, ProjectMeta } from '@/app/typings/entities/ProjectEntity';
 import { UserEntity, UserK } from '@/app/typings/entities/UserEntity';
 import { VideoAttachment, VideoEntity, VideoExcludedFields, VideoIncludedFields, VideoK, VideoMeta } from '@/app/typings/entities/VideoEntity';
 import { Video } from '@/app/typings/videoTypes/Video';

@@ -8,7 +8,7 @@ import { useMetadata } from "@/app/config/useMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from "@/app/models/data/Data";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { useSnapshot } from "@/app/state/context/SnapshotContext";
 import { EventManager } from "@/app/state/stores/DataStore";
 import { AppEntity, AppSnapshot } from '@/app/typings/entities/AppEntity';

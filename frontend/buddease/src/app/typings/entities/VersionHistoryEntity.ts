@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -98,15 +98,15 @@ type VersionHistoryApplyFieldFilters<
 > = Pick<Omit<T, Excluded>, Included>;
 
 export type {
-  VersionHistoryApplyFieldFilters, VersionHistoryAttachment, VersionHistoryBaseParams, VersionHistoryEntity, VersionHistoryExcludedFields,
-  VersionHistoryIncludedFields, VersionHistoryK,
-  VersionHistoryMeta, VersionHistoryParams,
-  VersionHistoryRealtimeDataItem,
-  VersionHistorySnapshot, VersionHistorySnapshotData,
-  VersionHistorySnapshotsArray,
-  VersionHistorySnapshotStore,
-  VersionHistorySnapshotStoreConfig,
-  VersionHistorySnapshotWithCriteria,
-  VersionHistorySubscriberCollection
+    VersionHistoryApplyFieldFilters, VersionHistoryAttachment, VersionHistoryBaseParams, VersionHistoryEntity, VersionHistoryExcludedFields,
+    VersionHistoryIncludedFields, VersionHistoryK,
+    VersionHistoryMeta, VersionHistoryParams,
+    VersionHistoryRealtimeDataItem,
+    VersionHistorySnapshot, VersionHistorySnapshotData,
+    VersionHistorySnapshotsArray,
+    VersionHistorySnapshotStore,
+    VersionHistorySnapshotStoreConfig,
+    VersionHistorySnapshotWithCriteria,
+    VersionHistorySubscriberCollection
 };
 

@@ -2,7 +2,7 @@
 import { allLifecyclePhases } from '@/app/hooks/phases/lifecycles';
 import React from 'react';
 
-const IdeaLifecycleComponent: React.FC = () => {
+const ProjectIdeaLifecycleComponent: React.FC = () => {
   return (
     <div>
       <h2>All Phases</h2>
@@ -18,4 +18,4 @@ const IdeaLifecycleComponent: React.FC = () => {
   );
 };
 
-export default IdeaLifecycleComponent;
+export default ProjectIdeaLifecycleComponent;

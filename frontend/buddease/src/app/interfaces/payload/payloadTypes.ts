@@ -1,16 +1,16 @@
 // payloadTypes.ts
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
 } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from "@/app/models/data/Data";
 import { StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -140,7 +140,7 @@ interface UpdateSnapshotPayload<T> extends Payload {
 
 
 export type {
-  CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload, Payload,
-  UpdateSnapshotPayload
+    CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload, Payload,
+    UpdateSnapshotPayload
 };
 

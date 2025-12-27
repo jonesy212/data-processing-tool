@@ -1,5 +1,5 @@
 // ApiData.ts
-import headersConfig from '@/app/api/headers/HeadersConfig';
+import { headersConfig } from '@/app/components/shared/SharedHeaders'
 import internalApiService from "@/app/api/ApiClient";
 import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
 import { handleApiError } from '@/app/api/ApiLogs';
@@ -83,9 +83,8 @@ const notifyDataSuccess = (
 };
 
 
-
 // Error handler with notification
-const handleDataApiErrorAndNotify = (
+const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   messageKey: keyof DataNotificationMessages
@@ -149,7 +148,7 @@ class DataApiService {
       handleApiError(error, apiNotificationMessages[errorMessageId]);
       
       // Error notification
-      handleDataApiErrorAndNotify(
+      handleApiErrorAndNotify(
         error as AxiosError<unknown>,
         apiNotificationMessages[errorMessageId],
         errorMessageId
@@ -202,7 +201,7 @@ class DataApiService {
 
       return highlights;
     } catch (error: any) {
-      handleDataApiErrorAndNotify(
+      handleApiErrorAndNotify(
         error as AxiosError<unknown>,
         "Failed to fetch highlights",
         "FETCH_HIGHLIGHTS_ERROR"
@@ -389,5 +388,5 @@ export default dataApiService;
 
 // Legacy exports for backward compatibility
 export {
-    apiNotificationMessages, dataApiService, handleDataApiErrorAndNotify
+    apiNotificationMessages, dataApiService, handleApiErrorAndNotify
 };

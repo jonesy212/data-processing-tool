@@ -1,6 +1,6 @@
 // src/app/error-analyzer/FixVerifier.ts
-
-import { FixPlan, RelationshipMap, TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
+import { FixPlan, TSCompilerError } from '@/app/error-analyzer/ErrorFixManager';
 import { FixExecutionResult, ValidationResult, AppliedChange } from '@/app/error-analyzer/index';
 import fs from 'fs';
 import path from 'path';

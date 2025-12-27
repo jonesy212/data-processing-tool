@@ -4,11 +4,16 @@ import { ThemeSettings } from '@/app/branding/ThemeSettings';
 import { DocumentAnimationOptions } from '@/app/documents/SharedDocumentProps';
 import { ValidationResult } from '@/app/components/database/SchemaEvolutionManager'
 import StorageService from '@/utils/storage/StoragService'
+import { PhaseManager } from '@/app/models/phases/PhaseManager'
+import { PhaseBackupSystem } from '@/app/models/phases/PhaseBackupSystem'
 
 // Create a storage service instance
 export const storageService = new StorageService();
 
-export interface WorkflowTransition {
+export interface WorkflowTransition extends 
+  SharedIdentifiers<any, any>, // Using 'any' since we don't have specific BaseDataEntity types here
+  SharedTimestamps,
+  SharedStatusFlags {
   id: string;
   name: string;
   description?: string;
@@ -42,10 +47,47 @@ export interface WorkflowTransition {
   priority: number;
   enabled: boolean;
   tags?: string[];
-  createdBy?: string;
-  createdAt: Date;
-  updatedAt?: Date;
   version: number;
+
+  progressTracking?: {
+    enabled: boolean;
+    trackPerformance: boolean;
+    trackUIMetrics: boolean;
+    trackErrors: boolean;
+    successThreshold?: number; // Minimum success rate to consider transition healthy
+    timeoutWarning?: number; // Time in ms after which to warn about slow transitions
+    autoRetry?: boolean; // Automatically retry failed transitions
+    maxRetries?: number;
+    progressTracker?: ProgressTracker; // Embedded progress tracker
+  };
+
+  phaseManagerConfig?: {
+    usePhaseManager: boolean;
+    phaseId?: string; // Specific phase to execute
+    autoAdvance?: boolean; // Auto-advance to next phase
+    autoCompleteMilestones?: boolean;
+    executeDependencies?: boolean; // Check and execute dependencies
+    backupEnabled?: boolean; // Use PhaseBackupSystem
+    rollbackOnError?: boolean;
+    maxRetries?: number;
+    retryDelay?: number;
+    
+    // Phase-specific transition rules
+    transitionRules?: {
+        requireAllDependencies?: boolean;
+        requireMilestoneCompletion?: boolean;
+        validatePhaseState?: boolean;
+        skipIfCompleted?: boolean;
+    };
+    
+    // Notification configuration
+    notifications?: {
+        onPhaseStart?: boolean;
+        onPhaseComplete?: boolean;
+        onError?: boolean;
+        onRollback?: boolean;
+    };
+};
 }
 
 // Enhanced TransitionUIConfig that integrates with your ThemeSettings
@@ -79,6 +121,16 @@ export interface TransitionUIConfig {
     confirmationRequired?: boolean;
     confirmButtonText?: string;
     cancelButtonText?: string;
+  };
+
+  // Progress display configuration
+  progressDisplay?: {
+    showProgressBar?: boolean;
+    progressBarPosition?: 'above' | 'below' | 'inline';
+    showPercentage?: boolean;
+    showEstimatedTime?: boolean;
+    successAnimation?: string;
+    errorAnimation?: string;
   };
   
   // Responsive Configuration
@@ -123,6 +175,14 @@ export interface TransitionAnimations extends Omit<DocumentAnimationOptions, 'du
     error?: string;
     duration?: number;
   };
+
+  // Progress animation
+  progressAnimation?: {
+    type: 'fill' | 'pulse' | 'wave' | 'scan';
+    color?: string;
+    speed?: number;
+    direction?: 'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top';
+  };
 }
 
 // Supporting types for WorkflowTransition
@@ -142,15 +202,35 @@ export interface TransitionCondition {
     paletteLoaded?: boolean;
     highlightActive?: boolean; // From your Highlight/ColorPalette context
   };
+
+  // Progress-aware conditions
+  progressCondition?: {
+    minProgress?: number; // Minimum progress percentage required
+    maxErrors?: number; // Maximum errors allowed
+    fixRate?: number; // Minimum fix rate required
+    confidenceTrend?: 'improving' | 'stable'; // Required confidence trend
+  };
 }
 
 export interface TransitionAction {
-  type: 'update_data' | 'send_notification' | 'call_webhook' | 'execute_script' | 'create_task' | 'log_audit' | 'ui_action' | 'theme_update';
+  type: 'update_data' | 'send_notification' 
+  | 'call_webhook' | 'execute_script' 
+  | 'create_task' | 'log_audit' | 'ui_action' 
+  | 'theme_update' | 'track_progress' | 'report_error';
   target?: string;
   payload?: any;
   delay?: number; // Delay in milliseconds before executing
   retryPolicy?: RetryPolicy;
   
+  // Progress tracking actions
+  progressActions?: {
+    startTracking?: boolean;
+    recordMetrics?: boolean;
+    updateProgressBar?: boolean;
+    sendProgressReport?: boolean;
+    logPerformance?: boolean;
+  };
+    
   // UI-specific actions
   uiActions?: {
     showToast?: {
@@ -201,6 +281,14 @@ export interface TransitionSchedule {
     lightModeOnly?: boolean;
     specificTheme?: string;
   };
+
+  // Progress-aware scheduling
+  progressAware?: {
+    minProgressRequired?: number;
+    maxErrorsAllowed?: number;
+    onlyDuringActiveTracking?: boolean;
+    pauseOnHighErrorRate?: boolean;
+  };
 }
 
 export interface RetryPolicy {
@@ -214,34 +302,70 @@ export interface RetryPolicy {
     retryMessage?: string;
     progressAnimation?: string;
   };
+  
+  // Progress tracking for retries
+  progressTracking?: {
+    trackRetryAttempts?: boolean;
+    updateProgressOnRetry?: boolean;
+    retryMetrics?: boolean;
+  };
 }
 
 // Enhanced context that includes UI/theme information
 export interface TransitionEvaluationContext {
-  workflowInstance: {
-    id: string;
-    currentStep: WorkflowStep;
-    data: Record<string, any>;
-    startedAt: Date;
-    createdBy: string;
-    uiState?: Record<string, any>; // Current UI state
-  };
-  user: {
-    id: string;
-    roles: string[];
-    permissions: string[];
-    themePreferences?: ThemeSettings; // User's theme preferences
-  };
-  uiContext: {
-    currentTheme: ThemeSettings;
-    colorPalette: string[]; // From your Palette component
-    activeHighlights: Highlight[]; // From your Highlight interface
-    animationsEnabled: boolean;
-    deviceType: 'desktop' | 'tablet' | 'mobile';
-    screenSize: { width: number; height: number };
-  };
-  actionData?: Record<string, any>;
-  timestamp: Date;
+    workflowInstance: {
+        id: string;
+        currentStep: WorkflowStep;
+        data: Record<string, any>;
+        startedAt: Date;
+        createdBy: string;
+        uiState?: Record<string, any>;
+        progress?: {
+            current: number;
+            total: number;
+            percentage: number;
+            metrics?: ProgressMetrics;
+        };
+        // Phase Manager integration
+        phases?: {
+            current: any;
+            manager: PhaseManager<any>;
+            backupSystem?: PhaseBackupSystem;
+            history?: any[];
+        };
+    };
+    user: {
+        id: string;
+        roles: string[];
+        permissions: string[];
+        themePreferences?: ThemeSettings;
+    };
+    uiContext: {
+        currentTheme: ThemeSettings;
+        colorPalette: string[];
+        activeHighlights: Highlight[];
+        animationsEnabled: boolean;
+        deviceType: 'desktop' | 'tablet' | 'mobile';
+        screenSize: { width: number; height: number };
+    };
+    progressContext: {
+        tracker?: ProgressTracker;
+        currentProgress?: Progress;
+        currentPhase?: ProgressPhase;
+        metrics?: ProgressMetrics;
+        history?: FixHistoryEntry[];
+        fixPlans?: FixPlan[];
+        backupSystem?: PhaseBackupSystem;
+    };
+    actionData?: Record<string, any>;
+    timestamp: Date;
+}
+
+
+ export interface WorkflowStep {
+  id: string;
+  name: string;
+  // ... other step properties
 }
 
 function evaluateCustomLogic(
@@ -482,24 +606,30 @@ function validateTransition(
   return true;
 }
 
-// Enhanced utility function with UI awareness
-// Make this function async and return Promise
+// Enhanced canTriggerTransition with progress tracking and UI awareness
 export async function canTriggerTransition(
   transition: WorkflowTransition,
   context: TransitionEvaluationContext
-): Promise<{ canTrigger: boolean; reasons: string[]; uiState: TransitionUIState }> {
+): Promise<{ canTrigger: boolean; reasons: string[]; uiState: TransitionUIState; progress?: Progress }> {
   const reasons: string[] = [];
   const errors: ValidationResult[] = [];
 
+  // Initialize UI state with transition configuration
   const uiState: TransitionUIState = {
     buttonEnabled: true,
     buttonColor: transition.uiConfig?.colors?.button,
     buttonText: transition.uiConfig?.buttonLabel || transition.name,
     tooltip: '',
     visualFeedback: transition.uiConfig?.visualFeedback,
+    // Add progress display if enabled
+    progress: transition.uiConfig?.progressDisplay?.showProgressBar ? {
+      value: context.workflowInstance.progress?.percentage || 0,
+      label: `${Math.round(context.workflowInstance.progress?.percentage || 0)}%`,
+      showAnimation: true
+    } : undefined
   };
-  
-  // Check user permissions
+
+  // === 1. Check user permissions ===
   const hasRolePermission = context.user.roles.some(role => 
     transition.allowedRoles.includes(role)
   );
@@ -513,14 +643,14 @@ export async function canTriggerTransition(
     uiState.buttonColor = context.uiContext.currentTheme.colors?.button.colorDisabled;
   }
   
-  // Check if transition is enabled
+  // === 2. Check if transition is enabled ===
   if (!transition.enabled) {
     reasons.push('Transition is disabled');
     uiState.buttonEnabled = false;
     uiState.buttonColor = context.uiContext.currentTheme.colors?.button.colorDisabled;
   }
   
-  // Check schedule
+  // === 3. Check schedule availability ===
   if (transition.schedule) {
     const scheduleCheck = isTransitionAvailable(transition.schedule, context);
     if (!scheduleCheck.available) {
@@ -531,7 +661,19 @@ export async function canTriggerTransition(
     }
   }
   
-  // Check conditions - ADD AWAIT HERE
+  // === 4. Check progress conditions if enabled ===
+  if (transition.progressTracking?.enabled && context.progressContext?.tracker) {
+    const progressCheck = checkProgressConditions(transition, context);
+    if (!progressCheck.allowed) {
+      reasons.push(progressCheck.reason);
+      if (progressCheck.blockTransition) {
+        uiState.buttonEnabled = false;
+        uiState.buttonColor = context.uiContext.currentTheme.colors?.button.colorDisabled;
+      }
+    }
+  }
+  
+  // === 5. Check conditions with async evaluation ===
   const conditionsResult = await evaluateTransitionConditions(transition.conditions, context);
   if (!conditionsResult.met) {
     reasons.push('Transition conditions not met');
@@ -541,7 +683,7 @@ export async function canTriggerTransition(
     }
   }
   
-  // Check validations
+  // === 6. Check validations ===
   const validationErrors = runTransitionValidations(transition.validations || [], context);
   if (validationErrors.length > 0) {
     reasons.push(...validationErrors.map(v => v.message));
@@ -551,14 +693,69 @@ export async function canTriggerTransition(
     }
   }
   
-  // Update UI state based on current theme
+  // === 7. Get progress data for UI if tracking is enabled ===
+  let progress: Progress | undefined;
+  if (transition.progressTracking?.enabled && context.progressContext?.tracker) {
+    progress = context.progressContext.tracker.getProgressForUI({
+      workflowId: context.workflowInstance.id,
+      transitionId: transition.id
+    });
+    
+    // Update UI state with current progress
+    if (progress) {
+      uiState.progress = {
+        value: progress.percentage,
+        label: `${Math.round(progress.percentage)}%`,
+        showAnimation: true
+      };
+    }
+  }
+  
+  // === 8. Update UI state based on current theme ===
   updateUIStateForTheme(uiState, context.uiContext.currentTheme);
   
   return {
     canTrigger: reasons.length === 0,
     reasons,
-    uiState
+    uiState,
+    progress
   };
+}
+
+// Helper function for progress conditions
+function checkProgressConditions(
+  transition: WorkflowTransition, 
+  context: TransitionEvaluationContext
+): { allowed: boolean; reason: string; blockTransition: boolean } {
+  const tracker = context.progressContext?.tracker;
+  if (!tracker) {
+    return { allowed: true, reason: '', blockTransition: false };
+  }
+  
+  const progress = tracker.getCurrentProgress(context.workflowInstance.id);
+  const requiredProgress = transition.progressTracking?.requiredProgress || 0;
+  
+  if (progress.percentage < requiredProgress) {
+    return {
+      allowed: false,
+      reason: `Requires ${requiredProgress}% completion (currently ${progress.percentage}%)`,
+      blockTransition: true
+    };
+  }
+  
+  // Check other progress conditions
+  const conditions = transition.progressTracking?.conditions || [];
+  for (const condition of conditions) {
+    if (!condition.check(progress, context)) {
+      return {
+        allowed: false,
+        reason: condition.message || 'Progress condition not met',
+        blockTransition: condition.blockTransition || false
+      };
+    }
+  }
+  
+  return { allowed: true, reason: '', blockTransition: false };
 }
 
 // Enhanced schedule check with theme awareness
@@ -722,27 +919,7 @@ function updateUIStateForTheme(
   }
 }
 
-// Utility to create a transition button component
-export async function createTransitionButton(
-  transition: WorkflowTransition,
-  context: TransitionEvaluationContext,
-  onClick: () => void
-): Promise<TransitionButtonProps> {
-  const { canTrigger, reasons, uiState } = await canTriggerTransition(transition, context);
-  
-  return {
-    id: transition.id,
-    label: uiState.buttonText,
-    enabled: canTrigger && uiState.buttonEnabled,
-    color: uiState.buttonColor,
-    tooltip: uiState.tooltip || reasons.join(', '),
-    icon: transition.uiConfig?.buttonIcon,
-    animations: transition.uiConfig?.animations,
-    onClick: canTrigger ? onClick : undefined,
-    visualFeedback: uiState.visualFeedback,
-    className: `transition-button ${!canTrigger ? 'disabled' : ''}`,
-  };
-}
+
 
 export interface TransitionButtonProps {
   id: string;
@@ -758,6 +935,59 @@ export interface TransitionButtonProps {
 }
 
 
+export const phaseWorkflowTransition: WorkflowTransition = {
+    id: 'phase-execution-transition',
+    name: 'Execute Current Phase',
+    description: 'Executes the current phase using PhaseManager',
+    
+    fromStepId: 'planning',
+    toStepId: 'execution',
+    
+    conditions: [
+        {
+            type: 'data_condition',
+            property: 'workflowInstance.phases.current',
+            operator: 'exists',
+            value: true
+        }
+    ],
+    
+    phaseManagerConfig: {
+        usePhaseManager: true,
+        autoAdvance: true,
+        autoCompleteMilestones: true,
+        backupEnabled: true,
+        rollbackOnError: true,
+        maxRetries: 3,
+        
+        transitionRules: {
+            requireAllDependencies: true,
+            requireMilestoneCompletion: false,
+            validatePhaseState: true,
+            skipIfCompleted: true
+        },
+        
+        notifications: {
+            onPhaseStart: true,
+            onPhaseComplete: true,
+            onError: true,
+            onRollback: true
+        }
+    },
+    
+    progressTracking: {
+        enabled: true,
+        trackPerformance: true,
+        trackUIMetrics: true,
+        successThreshold: 85,
+        timeoutWarning: 10000
+    },
+    
+    priority: 1,
+    enabled: true,
+    createdAt: new Date(),
+    version: 1
+};
 
 // ex:
 // Where you use TransitionAnimations, you might need to handle the optional duration:

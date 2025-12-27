@@ -5,9 +5,9 @@ import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AllStatus, StatusType } from '@/app/models/data/StatusType';
-import { Member } from '@/app/models/members/Member'
+import { Member } from '@/app/models/members/Member';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 export interface CalendarEventManagerOptions {
   enableRealTimeUpdates?: boolean;

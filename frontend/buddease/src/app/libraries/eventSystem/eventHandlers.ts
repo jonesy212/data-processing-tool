@@ -10,7 +10,7 @@ import {
   SubscriptionEvent,
   EventContext,
 } from '@/app/typings/snapshotTypes'
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 

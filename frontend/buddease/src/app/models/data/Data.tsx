@@ -17,9 +17,9 @@ import {
 } from "@/app/config/MetaDataOptions";
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
+import { ModuleType } from '@/app/config/UserPreferences';
 import userSettings from "@/app/config/UserSettings";
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ModuleType } from '@/app/config/UserPreferences';
 import {
   SharedIdentifiers,
   SharedStatusFlags,
@@ -31,6 +31,7 @@ import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTr
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
+import { Comment } from "@/app/models/comments/Comments";
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
 import { Member } from "@/app/models/members/Member";
@@ -48,7 +49,7 @@ import {
   Snapshots,
   SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
   SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
@@ -78,7 +79,6 @@ import { Version } from '@/app/versions/Version';
 import { VersionData } from "@/app/versions/VersionData";
 import { cleanEmptyStrings } from "@/utils/web3/cleanEmptyStrings";
 import { AxiosResponse } from "axios";
-import { Comment } from "@/app/models/comments/Comments";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,

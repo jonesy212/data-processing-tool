@@ -116,15 +116,29 @@ const transformExtendedCalendarEventToOptimization = <
 >(
   extendedEvent: ExtendedCalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): CalendarEventTimingOptimization<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  
+  // Helper function to safely convert to Date
+  const toDate = (value: string | Date | undefined): Date | undefined => {
+    if (!value) return undefined;
+    return typeof value === 'string' ? new Date(value) : value;
+  };
+
+  // Get assignedTo user ID
+  const assignedToId = extendedEvent.assignedTo 
+    ? (extendedEvent.assignedTo.id || extendedEvent.assignedTo._id || '') 
+    : '';
+
   return {
     id: extendedEvent.id,
-    startTime: extendedEvent.startTime,
-    endTime: extendedEvent.endTime,
+    startTime: toDate(extendedEvent.startTime),
+    endTime: toDate(extendedEvent.endTime),
     duration: extendedEvent.duration,
-    timestamp: extendedEvent.timestamp
+    timestamp: extendedEvent.timestamp,
     
     eventId: extendedEvent.eventId || extendedEvent.id,
-    assignedTo: extendedEvent.assignedTo ? 'user-id-placeholder' : '', // You'll need to extract user ID
+    assignedTo: assignedToId,
+    
+    // Use the properties from ExtendedCalendarEvent
     suggestedStartTime: extendedEvent.suggestedStartTime,
     suggestedEndTime: extendedEvent.suggestedEndTime,
     suggestedDuration: extendedEvent.suggestedDuration,
@@ -133,6 +147,14 @@ const transformExtendedCalendarEventToOptimization = <
     suggestedMonths: extendedEvent.suggestedMonths,
     suggestedSeasons: extendedEvent.suggestedSeasons,
 
+    // Add defaults for optional properties
+    status: undefined,
+    assignees: {},
+    comments: {},
+    notifications: {},
+    reassignmentHistory: {},
+    todoIds: [],
+    relatedEventsList: []
   };
 };
 

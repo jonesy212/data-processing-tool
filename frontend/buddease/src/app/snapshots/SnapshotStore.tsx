@@ -9,7 +9,7 @@ import { FilterCriteria } from '@/app/pages/searches/FilterCriteria';
 import { U, WrappedU } from '@/app/snapshots/isCompatibleTempData';
 import { FilterMethods } from '@/app/snapshots/methods/FilterMethods';
 import { MethodBinder, bindAllMethods } from '@/app/snapshots/methods/methodBinder';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStoreReference';
 import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
 import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
@@ -18,10 +18,10 @@ import { VersionHistory } from '@/app/versions/VersionData';
 
 import getSnapshotStoreConfig from '@/app/api/SnapshotApi';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { ProjectMetadata, StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
 import { SnapshotMethodsImplementation } from '@/app/snapshots/methods/snapshotMethods';
@@ -77,9 +77,9 @@ import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { InitializedDataStore, SnapshotWithCriteriaAsBase } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotWithCriteriaContract, data } from '@/app/snapshots/SnapshotWithCriteria';
 
+import { SnapshotStoreProps, useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 import { Callback } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { SnapshotStoreProps, useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 
 
 import { searchAPI } from "@/app/api/ApiSearch";
@@ -88,6 +88,7 @@ import { Sender } from '@/app/components/communications/CommunicationPage';
 import { SearchResult } from "@/app/components/routing/SearchResult";
 import { BaseEntity } from '@/app/config/BaseConfig';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from '@/app/snapshots/methods/advancedTransform';
 import { BatchMethods } from '@/app/snapshots/methods/batchMethods';
 import * as DataMethods from '@/app/snapshots/methods/dataMethods';
 import * as FetchMethods from '@/app/snapshots/methods/fetchMethods';
@@ -106,7 +107,6 @@ import { SnapshotContext } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { notify } from '@/utils/snapshotUtils';
-import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from '@/app/snapshots/methods/advancedTransform';
 
 interface UnsubscribeEvent extends UnsubscribeDetails {
   id: string;

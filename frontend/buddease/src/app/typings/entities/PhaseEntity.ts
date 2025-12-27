@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Phase } from '@/app/models/phases/Phase';
 import { Dependency } from '@/app/models/realtime/IntegrationLogic';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -47,6 +47,8 @@ interface PhaseMilestone {
   completed: boolean;
   completedAt?: Date;
   assignedTo?: string; // User ID
+  isPhaseEntry: true,
+  phaseCompletionRequired: true
 }
 
 interface PhaseSettings {
@@ -64,12 +66,12 @@ interface PhaseNotificationSettings {
 }
 
 // Phase-specific type parameters
-type AppPhaseEntity = PhaseEntity;
-type PhaseK = AppPhaseEntity;
-type PhaseMeta = DefaultMeta<AppPhaseEntity, PhaseK>;
+type PhaseT = PhaseEntity;
+type PhaseK = PhaseT;
+type PhaseMeta = DefaultMeta<PhaseT, PhaseK>;
 type PhaseAttachment = Attachment;
-type PhaseExcludedFields = DefaultExcludedFields<AppPhaseEntity>;
-type PhaseIncludedFields = keyof AppPhaseEntity;
+type PhaseExcludedFields = DefaultExcludedFields<PhaseT>;
+type PhaseIncludedFields = keyof PhaseT;
 
 
 // Phase parameters container
@@ -85,17 +87,17 @@ type PhaseBaseParams = {
 // CLEARLY NAMED PHASE TYPES:
 
 // Complete phase with all fields
-type CompletePhase = AppPhaseEntity;
+type CompletePhase = PhaseT;
 
 // Phase for public display
-type PublicPhaseProfile = Pick<AppPhaseEntity, "id" | "name" | "description" | "order" | "status" | "progress" | "startDate" | "endDate" | "color">;
+type PublicPhaseProfile = Pick<PhaseT, "id" | "name" | "description" | "order" | "status" | "progress" | "startDate" | "endDate" | "color">;
 
 // Minimal phase for basic display (lists, dropdowns)
-type BasicPhaseInfo = Pick<AppPhaseEntity, "id" | "name" | "order" | "status" | "progress" | "color">;
+type BasicPhaseInfo = Pick<PhaseT, "id" | "name" | "order" | "status" | "progress" | "color">;
 
 // Phase with dependencies and milestones for detailed views
-type PhaseWithDetails = AppPhaseEntity & {
-  dependentPhases?: AppPhaseEntity[];
+type PhaseWithDetails = PhaseT & {
+  dependentPhases?: PhaseT[];
   milestoneDetails?: PhaseMilestone[];
 };
 
@@ -116,19 +118,19 @@ interface PhaseSpecificMetadata extends PhaseStructuredMetadata {
 }
 
 // Core snapshot types
-type PhaseSnapshot = Snapshot<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseSnapshotData = SnapshotData<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseSnapshotStore = SnapshotStore<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseSnapshotWithCriteria = SnapshotWithCriteria<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseSubscriberCollection = SubscriberCollection<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseRealtimeDataItem = RealtimeDataItem<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshot = Snapshot<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshotData = SnapshotData<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshotStore = SnapshotStore<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshotWithCriteria = SnapshotWithCriteria<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSubscriberCollection = SubscriberCollection<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseRealtimeDataItem = RealtimeDataItem<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
 
 // Configuration types
-type PhaseSnapshotStoreConfig = SnapshotStoreConfig<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
-type PhaseSnapshotsArray = SnapshotsArray<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshotStoreConfig = SnapshotStoreConfig<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseSnapshotsArray = SnapshotsArray<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
 
 // PARAMS
-type PhaseParams = SnapshotConfigParams<AppPhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
+type PhaseParams = SnapshotConfigParams<PhaseT, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields>;
 
 // Utility types for snapshots
 type PhaseSnapshotFromParams<Params extends SnapshotConfigParams<any, any, any, any, any, any>> =
@@ -153,7 +155,7 @@ type AppPhase = Phase<
 
 // Base default types for Phase
 type PhaseWithGenerics<
-  T extends BaseDataEntity = AppPhaseEntity,
+  T extends BaseDataEntity = PhaseT,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = PhaseMeta,
   AttachmentType extends Attachment = PhaseAttachment,
@@ -164,7 +166,7 @@ type PhaseWithGenerics<
 // Specialized variants for common use cases
 type DefaultPhase = PhaseWithGenerics; // Uses all default Phase types
 type CustomEntityPhase<T extends BaseDataEntity> = PhaseWithGenerics<T>; // Custom entity only
-type CustomMetaPhase<M extends DefaultMeta<AppPhaseEntity, PhaseK>> = PhaseWithGenerics<AppPhaseEntity, PhaseK, M>; // Custom meta only
+type CustomMetaPhase<M extends DefaultMeta<PhaseT, PhaseK>> = PhaseWithGenerics<PhaseT, PhaseK, M>; // Custom meta only
 
 // For your NotificationProvider pattern matching
 type NotificationPhase = PhaseWithGenerics<
@@ -178,21 +180,21 @@ type NotificationPhase = PhaseWithGenerics<
 
 export type {
 
-  // App Phase type
-  AppPhase,
-  // Core type parameters
-  AppPhaseEntity, BasicPhaseInfo,
-  // Phase entity types
-  CompletePhase, PhaseAttachment, PhaseBaseParams, PhaseEntity, PhaseExcludedFields,
-  PhaseIncludedFields, PhaseK,
-  PhaseMeta, PhaseMilestone, PhaseNotificationSettings, PhaseParams, PhaseRealtimeDataItem, PhaseSettings,
-  // Snapshot types
-  PhaseSnapshot,
-  PhaseSnapshotData,
-  // Utility types
-  PhaseSnapshotFromParams, PhaseSnapshotsArray, PhaseSnapshotStore, PhaseSnapshotStoreConfig, PhaseSnapshotUnionFromParams, PhaseSnapshotWithCriteria, PhaseSpecificMetadata, PhaseStructuredMetadata, PhaseSubscriberCollection,
-  // Metadata tmypes
-  PhaseWithDetails, PublicPhaseProfile
+    // App Phase type
+    AppPhase, BasicPhaseInfo,
+    // Phase entity types
+    CompletePhase, PhaseAttachment, PhaseBaseParams, PhaseEntity, PhaseExcludedFields,
+    PhaseIncludedFields, PhaseK,
+    PhaseMeta, PhaseMilestone, PhaseNotificationSettings, PhaseParams, PhaseRealtimeDataItem, PhaseSettings,
+    // Snapshot types
+    PhaseSnapshot,
+    PhaseSnapshotData,
+    // Utility types
+    PhaseSnapshotFromParams, PhaseSnapshotsArray, PhaseSnapshotStore, PhaseSnapshotStoreConfig, PhaseSnapshotUnionFromParams, PhaseSnapshotWithCriteria, PhaseSpecificMetadata, PhaseStructuredMetadata, PhaseSubscriberCollection,
+    // Core type parameters
+    PhaseT,
+    // Metadata tmypes
+    PhaseWithDetails, PublicPhaseProfile
 };
 
 // Export the main interfaces

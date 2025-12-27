@@ -2,7 +2,7 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 function defaultTransformDelegate<
   T extends BaseDataEntity,
@@ -204,7 +204,7 @@ function defaultUpdateDataDescription<  T extends BaseDataEntity,
   }
   
   export {
-  defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
-  defaultUpdateDataStatus, defaultUpdateDataTitle
+    defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
+    defaultUpdateDataStatus, defaultUpdateDataTitle
 };
 

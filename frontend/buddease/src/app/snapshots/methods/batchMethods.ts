@@ -5,7 +5,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";

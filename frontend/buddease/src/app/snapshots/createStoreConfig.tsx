@@ -4,10 +4,9 @@ import {
   SnapshotUnion,
   SnapshotsArray
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-
 
 import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 

@@ -1,6 +1,4 @@
 // SnapshotStoreConfig.ts
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import { SnapshotContextType } from '@/app/state/context/SnapshotContext';
 import fetchCategoryByName from "@/app/api/CategoryApi";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
@@ -10,7 +8,9 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
+import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
 import { determineCategory } from "@/app/libraries/categories/determineCategory";
 import determineFileCategory, { fetchFileSnapshotData } from "@/app/libraries/categories/determineFileCategory";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -21,15 +21,16 @@ import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from "@/app/interfaces/payload/payloadTypes";
+import { SimulatedDataSource } from "@/app/snapshots/createSnapshotOptions";
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
+import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess } from "@/app/snapshots/index";
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { RetentionPolicy } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotErrorHandling } from '@/app/snapshots/SnapshotErrorHandling';
 import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess } from "@/app/snapshots/index";
+import { SnapshotContextType } from '@/app/state/context/SnapshotContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
@@ -43,45 +44,41 @@ import { generateSnapshotId, storeId } from "@/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives } from "@/utils/web3/applicationUtils";
 import { fetchData } from "@/utils/web3/dataAnalysisUtils";
-import { SimulatedDataSource } from "@/app/snapshots/createSnapshotOptions";
-import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 
 import { AdminUser } from "@/app/api/ApiUser";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { SchemaField } from "@/app/config/metadata/SchemaField";
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { TagsRecord } from '@/app/models/tracker/Tag';
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
-import { snapshotConfig } from '@/app/snapshots/Snapshot';
-import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
-import { SnapshotVersion } from '@/app/snapshots/useSnapshotVersioningSystem';
-import { AppSubscriber, AppSubscription } from '@/app/subscribers/Subscriber';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields, AppSnapshot, AppSnapshotStoreConfig } from "@/app/typings/entities/AppEntity";
-import { SnapshotEvent } from "@/app/typings/snapshotTypes";
-import { default as Version } from "@/app/versions/Version";
-import { UserConfig as ViteUserConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotOperation } from "@/app/snapshots/index";
 import { createSnapshot } from "@/app/snapshots/createSnapshot";
+import { batchTakeSnapshot, batchTakeSnapshotsRequest, handleSnapshotSuccess, SnapshotOperation } from "@/app/snapshots/index";
 import { TransformMethods } from "@/app/snapshots/methods/transformMethods";
+import { snapshotConfig } from '@/app/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotConfiguration } from "@/app/snapshots/SnapshotConfiguration";
 import { SnapshotContainer, SnapshotContainerType, SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
 import { SnapshotCore, SnapshotStoreCore } from "@/app/snapshots/SnapshotCore";
 import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
-import { batchTakeSnapshot, batchTakeSnapshotsRequest, handleSnapshotSuccess } from "@/app/snapshots/index";
 import SnapshotList, { SnapshotItem } from "@/app/snapshots/SnapshotList";
-import { default as SnapshotStore } from "./SnapshotStore";
+import { UserConfig as ViteUserConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData, InitializedDataStore, SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
-import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
-import SnapshotStoreSubset from "./SnapshotStoreSubset";
+import { SnapshotStoreProps, storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { TagsRecord } from '@/app/models/tracker/Tag';
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
-import { ValidationRule } from '@/app/snapshots/ValidationRule'
+import { UpdateSnapshotParams } from '@/app/snapshots/UpdateSnapshotParams';
+import { SnapshotVersion } from '@/app/snapshots/useSnapshotVersioningSystem';
+import { ValidationRule } from '@/app/snapshots/ValidationRule';
+import { AppSubscriber, AppSubscription } from '@/app/subscribers/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { subscribeToSnapshotImpl } from "@/app/subscribers/subscribeToSnapshotsImplementation";
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta, AppSnapshot, AppSnapshotStoreConfig } from "@/app/typings/entities/AppEntity";
+import { SnapshotEvent } from "@/app/typings/snapshotTypes";
+import { default as Version } from "@/app/versions/Version";
+import { default as SnapshotStore } from "./SnapshotStore";
+import SnapshotStoreSubset from "./SnapshotStoreSubset";
 
 interface UserConfig<  
   T extends BaseDataEntity,
@@ -4275,7 +4272,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
 ];
 
 export {
-  snapshotStoreConfigs
+    snapshotStoreConfigs
 };
 
   export type { InitializedConfig, UserConfig };

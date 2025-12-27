@@ -16,8 +16,9 @@ export { ASTParserUtils } from './utils/ASTParserUtils';
 export { TypeScriptErrorFixSystem, analyzeErrorsFromJson, analyzeErrorsFromFile, main } from './TypeScriptErrorFixSystem';
 
 // Type exports (interfaces, types, enums)
-export type { TSCompilerError, FixPlan, RelationshipMap } from './ErrorFixManager';
+export type { TSCompilerError, FixPlan } from './ErrorFixManager';
 export type { AnalyzedError } from './TypeScriptErrorAnalyzer';
+export type { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 
 // Wildcard exports (these are all types from those files)
 export * from './types/ErrorAnalysisTypes';

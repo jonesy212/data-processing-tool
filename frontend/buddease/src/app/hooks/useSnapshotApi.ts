@@ -3,7 +3,7 @@ import snapshotApi from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { CreateOptions, FetchAllOptions } from '@/app/snapshots/SnapshotOptions';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useCallback } from 'react';

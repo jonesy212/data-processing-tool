@@ -1,8 +1,8 @@
 // defaultSnapshotBuilder.ts
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta
 } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
@@ -13,15 +13,15 @@ import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { Subscribers } from '@/app/subscribers/Subscriber';
 import { SnapshotEvents } from '@/app/typings/snapshotTypes';
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { default as SnapshotStore } from './SnapshotStore';
 
-import { StoreMethods } from '@/app/models/tasks/StoreMethods'
+import { StoreMethods } from '@/app/models/tasks/StoreMethods';
 // Utility: flatten map
 function flatMap<
   T extends BaseDataEntity,

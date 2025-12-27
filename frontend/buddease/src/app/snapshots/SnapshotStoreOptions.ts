@@ -1,8 +1,8 @@
 // SnapshotStoreOptions.ts
-import { SnapshotOperationType } from '@/app/actions/SnapshotActions';
+import { SnapshotOperation, SnapshotOperationType } from '@/app/actions/SnapshotActions';
 import { ProjectMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { Category, CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -17,18 +17,16 @@ import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { Version } from '@/app/versions/Version';
-import { CategoryPropertyBundle } from '@/app/libraries/categories/generateCategoryProperties';
-import { SnapshotOperation } from "@/app/actions/SnapshotActions";
 
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 import { SimulatedDataSource } from "@/app/snapshots/createSnapshotOptions";
+import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
@@ -462,10 +460,10 @@ function normalizeInitializedData<
 
 
 export type {
-  InitializedData, InitializedDataStore,
-  InitializedDelegate, InitializedDelegateSearch,
-  InitializedSnapshot, MetaDataOptions, normalizeInitializedData, SnapshotConfigOption, SnapshotInstanceProps,
-  SnapshotStoreOptions,
-  SnapshotWithCriteriaAsBase, UnifiedConfigOption
+    InitializedData, InitializedDataStore,
+    InitializedDelegate, InitializedDelegateSearch,
+    InitializedSnapshot, MetaDataOptions, normalizeInitializedData, SnapshotConfigOption, SnapshotInstanceProps,
+    SnapshotStoreOptions,
+    SnapshotWithCriteriaAsBase, UnifiedConfigOption
 };
 

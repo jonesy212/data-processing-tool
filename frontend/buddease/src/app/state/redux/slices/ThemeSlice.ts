@@ -1388,7 +1388,7 @@ const themeSlice = createSlice({
     // Monitor Theme Health
     monitorThemeHealth: (state, action: PayloadAction<Partial<Theme>>) => {
       const healthData = monitorThemeHealth(action.payload); // Assume this function exists
-      state.quality.themeHealth = { ....quality.themeHealth, ...healthData };
+      state.quality.themeHealth = { ...quality.themeHealth, ...healthData };
       ThemeLogger.log("Theme Health", "Monitored theme health", healthData);
     },
   

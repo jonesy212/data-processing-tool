@@ -1,7 +1,6 @@
 // RootSagas.ts
 // RootSaga.ts
 import { useNotification } from '@/app/state/context/NotificationContext';
-import { useNotification } from '@/app/state/context/NotificationContext';
 import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -41,26 +40,24 @@ export function* rootSaga() {
       fork(snapshotSagas),
       fork(detailsSagas),
       fork(phaseSagas),
-      fork(userSagas),
       fork(videoSagas),
       fork(clientSagas),
       fork(promptSagas),
       fork(markerSagas),
       fork(teamSagas),
       fork(tenantSagas),
-      fork(snapshotSagas),
       fork(documentSagas),
       fork(undoRedoSagas)
       // Add more sagas here...
     ]);
   } catch (error) {
     console.error('Error in rootSaga:', error);
-    notify.useNotification({
-      "rootSagaError",
-      "Error in rootSaga",
-      NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR,
-      new Date,
-      NotificationTypeEnum.OPERATION_ERROR
+    notify({
+      message: "Error in rootSaga",  // Changed from "rootSagaError"
+      content: NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR,  // Changed from "Error in rootSaga"
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      // Add other required properties based on NotificationOptions interface
     });
   }
 }

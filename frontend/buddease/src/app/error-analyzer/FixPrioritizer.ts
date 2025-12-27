@@ -1,6 +1,7 @@
 // src/app/error-analyzer/FixPrioritizer.ts
 
-import { FixPlan, RelationshipMap } from '@/app/error-analyzer/ErrorFixManager';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
+import { FixPlan } from '@/app/error-analyzer/ErrorFixManager';
 import { FixPrioritizationRule, PrioritizationContext } from '@/app/error-analyzer/index';
 
 export class FixPrioritizer {

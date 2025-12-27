@@ -1,7 +1,7 @@
 // SnapshotImplementation.ts
 // import { Data } from '@/app/models/data/Data';
 // import { generateSnapshotId } from "@/utils/snapshotUtils";
-// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 // class SnapshotImplementation<T> {
 //   data: T | null;

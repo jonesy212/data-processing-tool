@@ -1,8 +1,9 @@
 // src/app/error-analyzer/ReportGenerator.ts
 import fs from 'fs';
 import path from 'path';
-import { FixPlan, RelationshipMap } from '@/app/error-analyzer/ErrorFixManager';
+import { FixPlan } from '@/app/error-analyzer/ErrorFixManager';
 import { AnalyzedError } from '@/app/error-analyzer/TypeScriptErrorAnalyzer';
+import { RelationshipMap } from'@/app/error-analyzer/types/ErrorAnalysisTypes'
 
 export class ReportGenerator {
   async generateReports(fixPlans: FixPlan[], relationshipMap: RelationshipMap): Promise<void> {

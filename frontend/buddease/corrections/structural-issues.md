@@ -1812,7 +1812,7 @@ Create the missing interface or fix the reference
 ## 📄 PhaseManager.tsx
 **Path:** src/app/models/phases/PhaseManager.tsx
 
-### 1. Component 'PhaseManager' references missing props interface '{ phases: Phase<AppPhaseEntity'
+### 1. Component 'PhaseManager' references missing props interface '{ phases: Phase<PhaseT'
 **Severity:** HIGH
 **Type:** error
 

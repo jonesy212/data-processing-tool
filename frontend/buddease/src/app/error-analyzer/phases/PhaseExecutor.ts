@@ -1,5 +1,17 @@
 // src/app/error-analyzer/phases/PhaseExecutor.ts
-import { DiagnosticResult, TypeScriptDiagnosticPhase } from './TypeScriptDiagnosticPhase';
+import { 
+  FileCategory  // Move this from separate import
+} from '@/app/documents/FileType';
+
+import { 
+  fileCategoryMapping, 
+  processSnapshotsByCategory, 
+  getEntriesByCategory,
+  suggestCorrectionCategoryFromFile 
+} from '@/app/libraries/categories/fileCategoryMapping';
+import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
+import { determineFileCategoryLogger } from "@/app/logging/determineFileCategoryLogger";
+import { DiagnosticResult, TypeScriptDiagnosticPhase } from '@/app/error-analyzer/phases/TypeScriptDiagnosticPhase';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,17 +35,75 @@ export class PhaseExecutor {
   private projectRoot: string;
   private executionPlan: ExecutionPlan;
   private diagnosticPhase: TypeScriptDiagnosticPhase;
-
+  private executedPhases: Set<string> = new Set(); 
+  private phaseResults: Map<string, any> = new Map(); 
+ 
   constructor(projectRoot: string = process.cwd()) {
     this.projectRoot = projectRoot;
     this.diagnosticPhase = new TypeScriptDiagnosticPhase(projectRoot);
     this.executionPlan = this.createExecutionPlan();
   }
 
+  get executedPhasesList(): string[] {
+    return Array.from(this.executedPhases);
+  }
+
+
+  private findAllTypeScriptFiles(): string[] {
+    const tsFiles: string[] = [];
+    
+    function walkDir(dir: string) {
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        
+        if (stat.isDirectory()) {
+          // Skip node_modules and other excluded directories
+          if (!file.includes('node_modules') && !file.startsWith('.')) {
+            walkDir(filePath);
+          }
+        } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
+          tsFiles.push(filePath);
+        }
+      });
+    }
+    
+    try {
+      walkDir(this.projectRoot);
+    } catch (error) {
+      console.warn('Error walking directory:', error);
+    }
+    
+    return tsFiles;
+  }
+
+  private generateCategoryRecommendations(categoryAnalysis: Record<string, any>): string[] {
+    const recommendations: string[] = [];
+    
+    Object.entries(categoryAnalysis).forEach(([category, data]) => {
+      if (data.count > 10) {
+        recommendations.push(`Focus on ${category} files: ${data.count} files found`);
+      }
+      
+      // Check for files without proper extensions
+      data.files.forEach((file: any) => {
+        const ext = path.extname(file.path);
+        const validExts = fileCategoryMapping[category as FileCategory] || [];
+        if (!validExts.includes(ext.slice(1))) {
+          recommendations.push(`File ${file.name} may have wrong extension for ${category} category`);
+        }
+      });
+    });
+    
+    return recommendations;
+  }
+
   private createExecutionPlan(): ExecutionPlan {
     return {
       phases: [
         'initial-diagnosis',
+        'file-category-analysis', 
         'skip-lib-check',
         'error-grouping',
         'file-analysis',
@@ -47,7 +117,58 @@ export class PhaseExecutor {
       results: {}
     };
   }
+private async executeFileCategoryAnalysis(): Promise<any> {
+  // Analyze all TypeScript files in the project and categorize them
+  const tsFiles = this.findAllTypeScriptFiles();
+  
+  const categoryAnalysis: Record<string, any> = {};
+  const uncategorizedFiles: string[] = [];
+  
+  tsFiles.forEach(filePath => {
+    const fileName = path.basename(filePath);
+    const extension = path.extname(filePath).slice(1);
+    
+    try {
+      const category = determineFileCategoryLogger(fileName, extension);
+      
+      // Skip files with null category
+      if (!category) {
+        uncategorizedFiles.push(fileName);
+        return;
+      }
+      
+      const correctionCategory = suggestCorrectionCategoryFromFile(fileName, extension);
+      
+      if (!categoryAnalysis[category]) {
+        categoryAnalysis[category] = {
+          count: 0,
+          files: [],
+          commonErrorPatterns: []
+        };
+      }
+      
+      categoryAnalysis[category].count++;
+      categoryAnalysis[category].files.push({
+        name: fileName,
+        path: filePath,
+        correctionCategory
+      });
+    } catch (error) {
+      uncategorizedFiles.push(fileName);
+    }
+  });
+  
+  return {
+    totalFilesAnalyzed: tsFiles.length,
+    categorizedFiles: Object.values(categoryAnalysis).reduce((sum, cat) => sum + cat.count, 0),
+    uncategorizedFiles: uncategorizedFiles.length,
+    categories: categoryAnalysis,
+    uncategorizedFileNames: uncategorizedFiles.slice(0, 10), // First 10
+    recommendations: this.generateCategoryRecommendations(categoryAnalysis)
+  };
+}
 
+  
   async executeAllPhases(): Promise<ExecutionPlan> {
     console.log('🚀 Starting TypeScript Error Resolution Phases\n');
     
@@ -68,75 +189,94 @@ export class PhaseExecutor {
     return this.executionPlan;
   }
 
-  async executePhase(phaseName: string): Promise<void> {
-    console.log(`\n${'='.repeat(60)}`);
-    console.log(`🎯 Phase ${this.executionPlan.currentPhase + 1}: ${phaseName}`);
-    console.log('='.repeat(60));
-    
-    const phaseProgress: PhaseProgress = {
-      phase: phaseName,
-      status: 'running',
-      startTime: new Date()
-    };
-    
-    this.executionPlan.progress.push(phaseProgress);
-    
-    try {
-      let result: any;
-      
-      switch (phaseName) {
-        case 'initial-diagnosis':
-          result = await this.executeInitialDiagnosis();
-          break;
-          
-        case 'skip-lib-check':
-          result = await this.executeSkipLibCheck();
-          break;
-          
-        case 'error-grouping':
-          result = await this.executeErrorGrouping();
-          break;
-          
-        case 'file-analysis':
-          result = await this.executeFileAnalysis();
-          break;
-          
-        case 'line-debugging':
-          result = await this.executeLineDebugging();
-          break;
-          
-        case 'auto-fix':
-          result = await this.executeAutoFix();
-          break;
-          
-        case 'manual-fix':
-          result = await this.executeManualFix();
-          break;
-          
-        case 'verification':
-          result = await this.executeVerification();
-          break;
-          
-        default:
-          throw new Error(`Unknown phase: ${phaseName}`);
-      }
-      
-      phaseProgress.status = 'completed';
-      phaseProgress.endTime = new Date();
-      phaseProgress.result = result;
-      this.executionPlan.results[phaseName] = result;
-      
-      console.log(`✅ ${phaseName} completed successfully`);
-      
-    } catch (error) {
-      phaseProgress.status = 'failed';
-      phaseProgress.endTime = new Date();
-      phaseProgress.error = error instanceof Error ? error.message : 'Unknown error';
-      
-      console.error(`❌ ${phaseName} failed:`, phaseProgress.error);
-      throw error;
-    }
+
+
+async executePhase(phaseName: string): Promise<void> {
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`🎯 Phase ${this.executionPlan.currentPhase + 1}: ${phaseName}`);
+  console.log(`🚀 Executing: ${phaseName}`);
+  console.log('='.repeat(60));
+  
+  // Check if phase already executed in this session
+  if (this.executedPhases.has(phaseName)) {
+    console.log(`📋 Phase ${phaseName} already executed, using cached result`);
+    return;
   }
+  
+  const phaseProgress: PhaseProgress = {
+    phase: phaseName,
+    status: 'running',
+    startTime: new Date()
+  };
+  
+  this.executionPlan.progress.push(phaseProgress);
+  this.executedPhases.add(phaseName);
+  
+  try {
+    await this.runPhaseDependencies(phaseName);
+
+    let result: any;
+    
+    switch (phaseName) {
+      case 'initial-diagnosis':
+        result = await this.executeInitialDiagnosis();
+        break;
+       
+      case 'file-category-analysis':  
+        result = await this.executeFileCategoryAnalysis();
+        break;
+        
+      case 'skip-lib-check':
+        result = await this.executeSkipLibCheck();
+        break;
+        
+      case 'error-grouping':
+        result = await this.executeErrorGrouping();
+        break;
+        
+      case 'file-analysis':
+        result = await this.executeFileAnalysis();
+        break;
+        
+      case 'line-debugging':
+        result = await this.executeLineDebugging();
+        break;
+        
+      case 'auto-fix':
+        result = await this.executeAutoFix();
+        break;
+        
+      case 'manual-fix':
+        result = await this.executeManualFix();
+        break;
+        
+      case 'verification':
+        result = await this.executeVerification();
+        break;
+        
+      default:
+        throw new Error(`Unknown phase: ${phaseName}`);
+    }
+    
+    phaseProgress.status = 'completed';
+    phaseProgress.endTime = new Date();
+    phaseProgress.result = result;
+    this.executionPlan.results[phaseName] = result;
+    this.phaseResults.set(phaseName, result); // Store in cache
+    
+    console.log(`✅ ${phaseName} completed successfully`);
+    
+  } catch (error) {
+    phaseProgress.status = 'failed';
+    phaseProgress.endTime = new Date();
+    phaseProgress.error = error instanceof Error ? error.message : 'Unknown error';
+    
+    console.error(`❌ ${phaseName} failed:`, phaseProgress.error);
+    throw error;
+  }
+}
+
+
 
   private async executeInitialDiagnosis(): Promise<DiagnosticResult> {
     return await this.diagnosticPhase.execute();
@@ -191,38 +331,66 @@ export class PhaseExecutor {
     };
   }
 
-  private async executeFileAnalysis(): Promise<any> {
-    // Analyze the worst file from diagnosis
-    const diagnosis = this.executionPlan.results['initial-diagnosis'];
-    if (!diagnosis?.worstFile) {
-      return { message: 'No file to analyze' };
-    }
-    
-    const filePath = diagnosis.worstFile.path;
-    
-    // Read and analyze the file
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lines = content.split('\n');
-    
-    // Get errors for this file
-    const { execSync } = require('child_exec');
-    const output = execSync(`npx tsc --noEmit --skipLibCheck "${filePath}" 2>&1`, {
-      encoding: 'utf-8'
-    });
-    
-    const errors = this.diagnosticPhase['parseErrors'](output);
-    
-    return {
-      file: path.basename(filePath),
-      lineCount: lines.length,
-      errorCount: errors.length,
-      errorsByLine: this.groupErrorsByLine(errors),
-      firstErrorContext: this.getErrorContext(errors[0], lines)
-    };
+private async executeFileAnalysis(): Promise<any> {
+  const diagnosis = this.executionPlan.results['initial-diagnosis'];
+  if (!diagnosis?.worstFile) {
+    return { message: 'No file to analyze' };
   }
+    
+  const filePath = diagnosis.worstFile.path;
+  const fileName = path.basename(filePath);
+  const extension = path.extname(filePath).slice(1);
+  
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+
+  // Determine file category
+  const fileCategory = determineFileCategoryLogger(fileName, extension);
+  const correctionCategory = suggestCorrectionCategoryFromFile(fileName, extension);
+  
+  // Get errors for this file
+  const { execSync } = require('child_process');
+  const output = execSync(`npx tsc --noEmit --skipLibCheck "${filePath}" 2>&1`, {
+    encoding: 'utf-8'
+  });
+  
+  const errors = this.diagnosticPhase['parseErrors'](output);
+  
+  return {
+    file: fileName,
+    fileCategory,
+    correctionCategory,
+    lineCount: lines.length,
+    errorCount: errors.length,
+    errorsByLine: this.groupErrorsByLine(errors),
+    firstErrorContext: this.getErrorContext(errors[0], lines),
+    categorySpecificAnalysis: fileCategory 
+      ? this.analyzeByFileCategory(filePath, fileCategory)
+      : { message: 'No category-specific analysis available' }
+  };
+}
+
+
+private analyzeByFileCategory(filePath: string, category: FileCategory): any {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  
+  switch (category) {
+    case FileCategory.Component:
+      return this.analyzeComponentFile(content);
+    case FileCategory.SmartContract:
+      return this.analyzeSmartContractFile(content);
+    case FileCategory.API:
+      return this.analyzeApiFile(content);
+    case FileCategory.Test:
+      return this.analyzeTestFile(content);
+    default:
+      return { message: `No specific analysis for ${category}` };
+  }
+}
+
+
 
   private async executeLineDebugging(): Promise<any> {
-    // Get file analysis results
     const fileAnalysis = this.executionPlan.results['file-analysis'];
     if (!fileAnalysis?.firstErrorContext) {
       return { message: 'No line to debug' };
@@ -231,14 +399,18 @@ export class PhaseExecutor {
     const { lineNumber, context } = fileAnalysis.firstErrorContext;
     const line = context.find((l: any) => l.lineNumber === lineNumber)?.content || '';
     
-    // Analyze the line
+    // Get the line analysis
     const analysis = this.analyzeLineSyntax(line);
+    
+    // Get file category from previous analysis
+    const fileCategory = fileAnalysis.fileCategory; // This should be set in executeFileAnalysis()
     
     return {
       lineNumber,
       lineContent: line,
       analysis,
-      suggestions: this.generateLineFixSuggestions(analysis)
+      suggestions: this.generateLineFixSuggestions(analysis, fileCategory), // Pass fileCategory here
+      fileCategory: fileCategory || 'unknown'
     };
   }
 
@@ -388,9 +560,14 @@ export class PhaseExecutor {
     return analysis;
   }
 
-  private generateLineFixSuggestions(analysis: any): string[] {
+
+  private generateLineFixSuggestions(
+    analysis: any, 
+    fileCategory?: FileCategory  // Add optional parameter
+  ): string[] {
     const suggestions: string[] = [];
     
+    // Generic TypeScript fixes
     if (analysis.openBrackets > analysis.closeBrackets) {
       suggestions.push('Add missing > to close generic type');
     }
@@ -405,6 +582,46 @@ export class PhaseExecutor {
     
     if (!analysis.endsWithSemicolon && !analysis.endsWithComma) {
       suggestions.push('Consider adding semicolon at end of line');
+    }
+    
+    // Category-specific fixes (only if fileCategory is provided)
+    if (fileCategory) {
+      switch (fileCategory) {
+        case FileCategory.Component:
+          suggestions.push('Check for missing React imports');
+          suggestions.push('Verify JSX/TSX syntax');
+          suggestions.push('Ensure component props are properly typed');
+          break;
+          
+        case FileCategory.SmartContract:
+          suggestions.push('Check Solidity syntax (if relevant)');
+          suggestions.push('Verify web3 library imports');
+          suggestions.push('Ensure contract ABI compatibility');
+          break;
+          
+        case FileCategory.API:
+          suggestions.push('Check for missing route handlers');
+          suggestions.push('Verify middleware function signatures');
+          suggestions.push('Ensure response types are correct');
+          break;
+          
+        case FileCategory.Test:
+          suggestions.push('Check for missing testing library imports');
+          suggestions.push('Verify test assertions');
+          suggestions.push('Ensure mock functions are properly typed');
+          break;
+          
+        case FileCategory.Utility:
+          suggestions.push('Check for proper export/import statements');
+          suggestions.push('Verify utility function signatures');
+          suggestions.push('Ensure consistent return types');
+          break;
+          
+        // Add more cases as needed
+        default:
+          // No category-specific suggestions
+          break;
+      }
     }
     
     return suggestions;
@@ -460,6 +677,43 @@ export class PhaseExecutor {
     });
     
     return guidance;
+  }
+
+
+  private analyzeComponentFile(content: string): any {
+    return {
+      hasJSX: content.includes('<') && (content.includes('/>') || content.includes('</')),
+      hasReactImport: content.includes("from 'react'") || content.includes('from "react"'),
+      hasUseState: content.includes('useState'),
+      hasUseEffect: content.includes('useEffect'),
+      propTypes: (content.match(/interface.*Props|type.*Props/g) || []).length
+    };
+  }
+
+  private analyzeSmartContractFile(content: string): any {
+    return {
+      hasSoliditySyntax: content.includes('pragma solidity') || content.includes('contract '),
+      hasWeb3Imports: content.includes('web3') || content.includes('ethers'),
+      hasABI: content.includes('ABI') || content.includes('abi'),
+      hasContract: content.includes('contract ')
+    };
+  }
+
+  private analyzeApiFile(content: string): any {
+    return {
+      hasRouteHandlers: content.includes('Router') || content.includes('app.get') || content.includes('app.post'),
+      hasMiddleware: content.includes('middleware') || content.includes('next('),
+      hasResponseTypes: content.includes('Response') || content.includes('res.')
+    };
+  }
+
+  private analyzeTestFile(content: string): any {
+    return {
+      hasTestImports: content.includes('jest') || content.includes('vitest') || content.includes('@testing-library'),
+      hasDescribe: content.includes('describe('),
+      hasIt: content.includes('it(') || content.includes('test('),
+      hasAssertions: content.includes('expect(') || content.includes('assert(')
+    };
   }
 
   private getErrorDescription(code: string): string {
@@ -596,10 +850,162 @@ export class PhaseExecutor {
       console.log(`${statusIcon} ${phase.phase}`);
     });
   }
+
+
+  private async runPhaseDependencies(phaseName: string): Promise<void> {
+    const dependencies: Record<string, string[]> = {
+      'file-category-analysis': [],  
+      'error-grouping': ['initial-diagnosis'],
+      'file-analysis': ['initial-diagnosis'],
+      'line-debugging': ['file-analysis'],
+      'auto-fix': ['initial-diagnosis'],
+      'manual-fix': ['initial-diagnosis'],
+      'verification': []
+    };
+
+    const requiredPhases = dependencies[phaseName] || [];
+    
+    for (const requiredPhase of requiredPhases) {
+      if (!this.executionPlan.results[requiredPhase]) {
+        console.log(`📋 Running required dependency: ${requiredPhase}`);
+        await this.executePhase(requiredPhase);
+      }
+    }
+  }
+
+  // FIX: Replace the executeAll method (lines 691-705)
+  async executeAll(): Promise<Map<string, any>> {
+    console.log('🚀 Starting Full TypeScript Error Resolution');
+    console.log('='.repeat(60));
+    
+    await this.executeAllPhases();
+    
+    // Convert results to Map
+    const allResults = new Map<string, any>();
+    Object.entries(this.executionPlan.results).forEach(([phase, result]) => {
+      allResults.set(phase, result);
+    });
+    
+    // Store in phaseResults cache
+    allResults.forEach((result, phaseId) => {
+      this.phaseResults.set(phaseId, result);
+      this.executedPhases.add(phaseId);
+    });
+    
+    console.log('\n🎉 All phases completed!');
+    return allResults;
+  }
+
+
+  getPhaseResult(phaseId: string): any {
+    return this.phaseResults.get(phaseId);
+  }
+
+  hasPhaseExecuted(phaseId: string): boolean {
+    return this.executedPhases.has(phaseId);
+  }
+
+  clearCache(): void {
+    this.executedPhases.clear();
+    this.phaseResults.clear();
+    console.log('🧹 Phase cache cleared');
+  }
 }
 
-// Factory function for easy use
-export async function runFullResolution(projectRoot?: string): Promise<ExecutionPlan> {
-  const executor = new PhaseExecutor(projectRoot);
-  return await executor.executeAllPhases();
+// Factory function for specific app areas
+export async function runAppAreaDiagnosis(
+  area: 'frontend' | 'backend' | 'shared' | 'all' = 'all',
+  projectRoot?: string
+): Promise<any> {
+  const phase = new TypeScriptDiagnosticPhase(projectRoot);
+  const result = await phase.execute();
+  await phase.generateConsoleReport(result);
+  
+  // Tag the result with the area
+  return {
+    ...result,
+    area,
+    timestamp: new Date().toISOString()
+  };
 }
+
+// Main execution function with area support
+export async function runFullResolution(
+  area: 'frontend' | 'backend' | 'shared' | 'all' = 'all',
+  projectRoot?: string
+): Promise<any> {
+  const executor = new PhaseExecutor(projectRoot);
+  
+  console.log(`🎯 Running TypeScript Error Resolution for: ${area.toUpperCase()}`);
+  console.log('='.repeat(60));
+  
+  let filterPattern = '';
+  switch (area) {
+    case 'frontend':
+      filterPattern = 'src/app';
+      break;
+    case 'backend':
+      filterPattern = 'src/server';
+      break;
+    case 'shared':
+      filterPattern = 'src/shared';
+      break;
+    case 'all':
+    default:
+      filterPattern = '';
+  }
+  
+  // Execute all phases
+  const results = await executor.executeAllPhases(); // Changed to executeAllPhases()
+  
+  return {
+    area,
+    filterPattern,
+    results: results, // Use the ExecutionPlan directly
+    timestamp: new Date().toISOString()
+  };
+}
+
+// Area-specific phase runners
+export const phaseRunners = {
+  frontend: async (projectRoot?: string) => 
+    runFullResolution('frontend', projectRoot),
+  
+  backend: async (projectRoot?: string) => 
+    runFullResolution('backend', projectRoot),
+  
+  shared: async (projectRoot?: string) => 
+    runFullResolution('shared', projectRoot),
+  
+  all: async (projectRoot?: string) => 
+    runFullResolution('all', projectRoot),
+  
+  // Quick diagnosis for specific areas
+  diagnoseFrontend: async (projectRoot?: string) => {
+    const phase = new TypeScriptDiagnosticPhase(projectRoot);
+    const result = await phase.execute();
+    // Filter to only frontend files
+    const frontendFiles = result.filesWithErrors.filter((file: string) => 
+      file.includes('src/app') || file.includes('src/components')
+    );
+    return {
+      ...result,
+      filesWithErrors: frontendFiles,
+      area: 'frontend'
+    };
+  },
+  
+  diagnoseBackend: async (projectRoot?: string) => {
+    const phase = new TypeScriptDiagnosticPhase(projectRoot);
+    const result = await phase.execute();
+    // Filter to only backend files
+    const backendFiles = result.filesWithErrors.filter((file: string) => 
+      file.includes('src/server') || file.includes('src/api')
+    );
+    return {
+      ...result,
+      filesWithErrors: backendFiles,
+      area: 'backend'
+    };
+  }
+};

@@ -14,7 +14,7 @@ import { ComponentMethods } from '@/app/page';
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/app/typings/entities/CalendarEntity';
 
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreProps, storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';

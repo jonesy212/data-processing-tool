@@ -4,7 +4,7 @@ import { SchemaField } from '@/app/config/metadata/SchemaField';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedSnapshotProperties } from "@/app/documents/RelatedProps";
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { InitializedConfig } from "@/app/snapshots/SnapshotStoreConfig";

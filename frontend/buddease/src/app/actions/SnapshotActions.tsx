@@ -12,11 +12,13 @@ import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshots, SnapshotsObject } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 
+import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotItem } from "@/app/snapshots/SnapshotList";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -29,8 +31,6 @@ import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { SnapshotEvent } from '@/app/typings/snapshotTypes';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
-import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
-import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 
 const dispatch = useDispatch()
 
@@ -175,7 +175,7 @@ interface TaskWithSubtasksSnapshotActionsTypes<
 }
 
 // Create action creators with generics
-export const SnapshotActions = <
+const SnapshotActions = <
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -1476,7 +1476,7 @@ batchUpdateSnapshotsRequest: function (
 // };
 
 
-
+export default SnapshotActions;
 // dispatch(SnapshotActions().addTaskSnapshot(newTaskSnapshot));
 // dispatch(TaskWithSubtasksSnapshotActions().addTaskWithSubtasksSnapshot(newTaskWithSubtasksSnapshot));
 export type { SnapshotOperation, SnapshotStoreActions };

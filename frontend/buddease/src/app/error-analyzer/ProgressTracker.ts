@@ -50,6 +50,78 @@ export class ProgressTracker {
         this.initializeProgress();
     }
 
+
+
+    // Enhanced method to track workflow transitions
+    trackWorkflowTransition(
+        transition: WorkflowTransition,
+        context: TransitionEvaluationContext,
+        success: boolean,
+        timeTaken: number,
+        metrics?: {
+            conditionEvaluationTime: number;
+            validationTime: number;
+            actionExecutionTime: number;
+            errors?: FixPlan[];
+        }
+    ): void {
+        const timestamp = new Date().toISOString();
+        
+        // Create workflow metrics
+        const workflowMetrics: WorkflowProgressMetrics = {
+            timestamp,
+            workflowId: context.workflowInstance.id,
+            transitionId: transition.id,
+            stepFrom: transition.fromStepId,
+            stepTo: transition.toStepId,
+            userId: context.user.id,
+            totalErrors: metrics?.errors?.length || 0,
+            fixedErrors: success ? 1 : 0,
+            remainingErrors: 0, // Calculated based on context
+            fixRate: this.calculateWorkflowFixRate(),
+            confidenceTrend: 'stable',
+            topFiles: [],
+            byFixType: {},
+            byPriority: {},
+            performance: metrics ? {
+                conditionEvaluationTime: metrics.conditionEvaluationTime,
+                validationTime: metrics.validationTime,
+                actionExecutionTime: metrics.actionExecutionTime,
+                totalTransitionTime: timeTaken
+            } : undefined
+        };
+
+        this.workflowMetrics.push(workflowMetrics);
+        
+        // Update UI metrics if tracking is enabled
+        if (transition.progressTracking?.trackUIMetrics) {
+            this.updateUIMetrics(transition, context, success, timeTaken);
+        }
+
+        // Log to history
+        if (transition.progressTracking?.enabled) {
+            const historyEntry: FixHistoryEntry = {
+                timestamp,
+                fixId: `workflow-${transition.id}-${Date.now()}`,
+                file: `workflow:${context.workflowInstance.id}`,
+                line: 0,
+                errorCode: 'WORKFLOW_TRANSITION',
+                fixType: transition.name,
+                confidence: this.calculateTransitionConfidence(transition, context),
+                success,
+                timeTaken,
+                notes: `Workflow transition from ${transition.fromStepId} to ${transition.toStepId}`
+            };
+            
+            this.history.push(historyEntry);
+            this.saveHistory();
+        }
+
+        // Update progress metrics
+        this.updateMetricsAfterTransition(workflowMetrics);
+    }
+
+    // Original analysis tracking method
     trackAnalysis(fixPlans: FixPlan[], totalErrors?: number): void {
     const timestamp = new Date().toISOString();
     const metrics = this.calculateMetrics(fixPlans, timestamp);
@@ -67,7 +139,21 @@ export class ProgressTracker {
     console.log(this.generateProgressSummary(metrics));
     }
 
-    trackFixApplied(fixId: string, plan: FixPlan, success: boolean, timeTaken: number, notes?: string): void {
+
+    // Enhanced fix tracking with workflow context
+    trackFixApplied(
+        fixId: string,
+        plan: FixPlan,
+        success: boolean,
+        timeTaken: number,
+        workflowContext?: {
+            transitionId?: string;
+            workflowId?: string;
+            stepFrom?: string;
+            stepTo?: string;
+        },
+        notes?: string
+    ): void {
         const entry: FixHistoryEntry = {
             timestamp: new Date().toISOString(),
             fixId,
@@ -78,7 +164,9 @@ export class ProgressTracker {
             confidence: plan.confidence,
             success,
             timeTaken,
-            notes
+            notes: workflowContext 
+                ? `${notes || ''} [Workflow: ${workflowContext.workflowId}, Transition: ${workflowContext.transitionId}]`
+                : notes
         };
 
         this.history.push(entry);
@@ -88,23 +176,29 @@ export class ProgressTracker {
         this.updateProgressFromCurrentState();
     }
 
-    // New method to get Progress object for ProgressBar component
-    getProgressForUI(): Progress {
+        // Get Progress object for UI with workflow context
+    getProgressForUI(workflowContext?: {
+        workflowId?: string;
+        transitionId?: string;
+    }): Progress {
         if (!this.currentProgress) {
-            return this.createDefaultProgress();
+            return this.createDefaultProgress(workflowContext);
         }
 
-        // Update the current progress with latest metrics
         const currentMetrics = this.getCurrentProgressMetrics();
         const percentage = currentMetrics.totalErrors > 0
             ? (currentMetrics.fixedErrors / currentMetrics.totalErrors) * 100
             : 0;
 
         const progress: Progress = {
-            id: this.currentProgress.id,
-            name: this.currentProgress.name,
+            id: workflowContext?.workflowId 
+                ? `${workflowContext.workflowId}-progress`
+                : this.currentProgress.id,
+            name: workflowContext?.transitionId
+                ? `Transition: ${workflowContext.transitionId}`
+                : this.currentProgress.name,
             color: this.getProgressColor(percentage),
-            description: this.generateProgressDescription(currentMetrics),
+            description: this.generateProgressDescription(currentMetrics, workflowContext),
             value: percentage,
             label: `${Math.round(percentage)}%`,
             current: currentMetrics.fixedErrors,
@@ -117,8 +211,10 @@ export class ProgressTracker {
         return progress;
     }
 
-    // New method to get current phase
-    getCurrentPhase(): { type: ProgressPhase; duration: number; value: number } {
+    // Get current phase with workflow context
+    getCurrentPhase(workflowContext?: {
+        transition?: WorkflowTransition;
+    }): { type: ProgressPhase; duration: number; value: number } {
         const currentMetrics = this.getCurrentProgressMetrics();
         const percentage = currentMetrics.totalErrors > 0
             ? (currentMetrics.fixedErrors / currentMetrics.totalErrors) * 100
@@ -126,29 +222,259 @@ export class ProgressTracker {
 
         let phaseType: ProgressPhase;
 
-        if (percentage < 20) {
-            phaseType = ProgressPhase.Ideation;
-        } else if (percentage < 40) {
-            phaseType = ProgressPhase.TeamFormation;
-        } else if (percentage < 60) {
-            phaseType = ProgressPhase.ProductDevelopment;
-        } else if (percentage < 80) {
-            phaseType = ProgressPhase.LaunchPreparation;
-        } else if (percentage < 100) {
-            phaseType = ProgressPhase.DataAnalysis;
+        // Use transition-specific phase mapping if available
+        if (workflowContext?.transition?.progressTracking) {
+            phaseType = this.mapProgressToTransitionPhase(percentage, workflowContext.transition);
         } else {
-            phaseType = ProgressPhase.Draft;
+            // Default phase mapping
+            if (percentage < 20) {
+                phaseType = ProgressPhase.Ideation;
+            } else if (percentage < 40) {
+                phaseType = ProgressPhase.TeamFormation;
+            } else if (percentage < 60) {
+                phaseType = ProgressPhase.ProductDevelopment;
+            } else if (percentage < 80) {
+                phaseType = ProgressPhase.LaunchPreparation;
+            } else if (percentage < 100) {
+                phaseType = ProgressPhase.DataAnalysis;
+            } else {
+                phaseType = ProgressPhase.Draft;
+            }
         }
 
-        // Calculate phase duration based on historical data
         const duration = this.calculatePhaseDuration(phaseType);
+        const value = this.getPhaseProgressValue(phaseType, percentage);
 
-        return {
-            type: phaseType,
-            duration,
-            value: this.getPhaseProgressValue(phaseType, percentage)
-        };
+        return { type: phaseType, duration, value };
     }
+
+
+
+
+
+
+
+
+
+    // Get workflow-specific metrics
+    getWorkflowMetrics(workflowId: string, days: number = 7): WorkflowProgressMetrics[] {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - days);
+
+        return this.workflowMetrics.filter(metric =>
+            metric.workflowId === workflowId && 
+            new Date(metric.timestamp) >= cutoff
+        );
+    }
+
+    // Generate workflow progress report
+    generateWorkflowProgressReport(workflowId: string): string {
+        const workflowMetrics = this.getWorkflowMetrics(workflowId, 30);
+        const transitions = workflowMetrics.reduce((acc, metric) => {
+            if (metric.transitionId && !acc.includes(metric.transitionId)) {
+                acc.push(metric.transitionId);
+            }
+            return acc;
+        }, [] as string[]);
+
+        const lines: string[] = [];
+
+        lines.push('# Workflow Transition Progress Report');
+        lines.push(`**Workflow:** ${workflowId}`);
+        lines.push(`**Generated:** ${new Date().toISOString()}`);
+        lines.push('');
+
+        lines.push('## 📊 Overall Progress');
+        lines.push('');
+        const overallProgress = this.getProgressForUI({ workflowId });
+        lines.push(`**Progress:** ${overallProgress.label}`);
+        lines.push(`**Current Phase:** ${this.getCurrentPhase().type}`);
+        lines.push('');
+
+        lines.push('## 🔄 Transition Statistics');
+        lines.push('');
+        lines.push('| Transition | Success Rate | Avg Time | Total Uses |');
+        lines.push('|------------|--------------|----------|------------|');
+
+        for (const transitionId of transitions) {
+            const transitionMetrics = workflowMetrics.filter(m => m.transitionId === transitionId);
+            const successCount = transitionMetrics.filter(m => m.fixedErrors > 0).length;
+            const successRate = transitionMetrics.length > 0 
+                ? (successCount / transitionMetrics.length) * 100 
+                : 0;
+            const avgTime = transitionMetrics.length > 0
+                ? transitionMetrics.reduce((sum, m) => sum + (m.performance?.totalTransitionTime || 0), 0) / transitionMetrics.length
+                : 0;
+            
+            lines.push(`| ${transitionId} | ${successRate.toFixed(1)}% | ${avgTime.toFixed(0)}ms | ${transitionMetrics.length} |`);
+        }
+        lines.push('');
+
+        lines.push('## 📈 Performance Metrics');
+        lines.push('');
+        if (workflowMetrics.length > 0) {
+            const lastMetric = workflowMetrics[workflowMetrics.length - 1];
+            if (lastMetric.performance) {
+                lines.push(`**Condition Evaluation:** ${lastMetric.performance.conditionEvaluationTime}ms`);
+                lines.push(`**Validation:** ${lastMetric.performance.validationTime}ms`);
+                lines.push(`**Action Execution:** ${lastMetric.performance.actionExecutionTime}ms`);
+                lines.push(`**Total Transition Time:** ${lastMetric.performance.totalTransitionTime}ms`);
+                lines.push('');
+            }
+        }
+
+        lines.push('## 💡 Workflow Recommendations');
+        lines.push('');
+        
+        const transitionSuccessRates = transitions.map(transitionId => {
+            const metrics = workflowMetrics.filter(m => m.transitionId === transitionId);
+            const successRate = metrics.length > 0 
+                ? (metrics.filter(m => m.fixedErrors > 0).length / metrics.length) * 100 
+                : 100;
+            return { transitionId, successRate };
+        });
+
+        const problematicTransitions = transitionSuccessRates.filter(t => t.successRate < 80);
+        if (problematicTransitions.length > 0) {
+            lines.push('⚠️ **Problematic Transitions:**');
+            for (const transition of problematicTransitions) {
+                lines.push(`- **${transition.transitionId}**: ${transition.successRate.toFixed(1)}% success rate`);
+            }
+            lines.push('');
+        }
+
+        const slowTransitions = workflowMetrics
+            .filter(m => m.performance && m.performance.totalTransitionTime > 1000)
+            .map(m => ({ transitionId: m.transitionId, time: m.performance!.totalTransitionTime }))
+            .reduce((acc, curr) => {
+                if (!acc.some(item => item.transitionId === curr.transitionId)) {
+                    acc.push(curr);
+                }
+                return acc;
+            }, [] as Array<{ transitionId?: string, time: number }>);
+
+        if (slowTransitions.length > 0) {
+            lines.push('⚠️ **Slow Transitions:**');
+            for (const transition of slowTransitions) {
+                lines.push(`- **${transition.transitionId}**: ${transition.time}ms`);
+            }
+            lines.push('');
+        }
+
+        lines.push('**Optimization Suggestions:**');
+        lines.push('1. Review conditions and validations for slow transitions');
+        lines.push('2. Consider caching for frequently evaluated conditions');
+        lines.push('3. Implement progress-aware scheduling for complex workflows');
+        lines.push('4. Add retry logic for unreliable external dependencies');
+
+        return lines.join('\n');
+    }
+
+    private mapProgressToTransitionPhase(percentage: number, transition: WorkflowTransition): ProgressPhase {
+        // Custom phase mapping based on transition configuration
+        if (transition.progressTracking?.enabled) {
+            // Use transition-specific phase mapping
+            if (percentage < 33) return ProgressPhase.Ideation;
+            if (percentage < 66) return ProgressPhase.ProductDevelopment;
+            return ProgressPhase.LaunchPreparation;
+        }
+        
+        // Default mapping
+        return this.getCurrentPhase().type;
+    }
+
+    private updateUIMetrics(
+        transition: WorkflowTransition,
+        context: TransitionEvaluationContext,
+        success: boolean,
+        timeTaken: number
+    ): void {
+        // Track UI interactions for this transition
+        // This could be extended to track button clicks, hover times, etc.
+        const uiMetrics = {
+            buttonClicks: 1,
+            successRate: success ? 100 : 0,
+            averageResponseTime: timeTaken,
+            themeChanges: context.uiContext.currentTheme.colors?.primary !== 
+                         transition.uiConfig?.colors?.button ? 1 : 0,
+            animationUsage: transition.uiConfig?.animations ? {
+                [transition.uiConfig.animations.transitionType || 'none']: 1
+            } : {}
+        };
+
+        // Store UI metrics (implementation depends on your storage solution)
+        console.log('UI Metrics recorded:', uiMetrics);
+    }
+
+    private calculateWorkflowFixRate(): number {
+        const recentWorkflowMetrics = this.workflowMetrics.filter(m => {
+            const metricTime = new Date(m.timestamp);
+            const hoursAgo = (Date.now() - metricTime.getTime()) / (1000 * 60 * 60);
+            return hoursAgo <= 24;
+        });
+
+        return recentWorkflowMetrics.length / 24;
+    }
+
+    private calculateTransitionConfidence(
+        transition: WorkflowTransition,
+        context: TransitionEvaluationContext
+    ): number {
+        // Calculate confidence based on transition history, conditions, and context
+        let confidence = 100;
+
+        // Reduce confidence based on complexity
+        if (transition.conditions.length > 5) confidence *= 0.9;
+        if (transition.validations && transition.validations.length > 3) confidence *= 0.9;
+        if (transition.preTransitionActions && transition.preTransitionActions.length > 2) confidence *= 0.95;
+        
+        // Increase confidence based on user permissions
+        const hasAllPermissions = transition.allowedRoles.every(role => 
+            context.user.roles.includes(role)
+        );
+        if (hasAllPermissions) confidence *= 1.1;
+        
+        // Cap at 100
+        return Math.min(confidence, 100);
+    }
+
+    private updateMetricsAfterTransition(metrics: WorkflowProgressMetrics): void {
+        // Update the last metric or add new one
+        if (this.metrics.length > 0) {
+            const lastMetric = this.metrics[this.metrics.length - 1];
+            lastMetric.totalErrors += metrics.totalErrors;
+            lastMetric.fixedErrors += metrics.fixedErrors;
+            lastMetric.remainingErrors = Math.max(0, lastMetric.remainingErrors - metrics.fixedErrors);
+        } else {
+            this.metrics.push({
+                timestamp: metrics.timestamp,
+                totalErrors: metrics.totalErrors,
+                fixedErrors: metrics.fixedErrors,
+                remainingErrors: Math.max(0, metrics.totalErrors - metrics.fixedErrors),
+                fixRate: metrics.fixRate,
+                confidenceTrend: 'stable',
+                topFiles: [],
+                byFixType: {},
+                byPriority: {}
+            });
+        }
+        
+        this.saveMetrics();
+        this.updateProgressFromCurrentState();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     getCurrentProgressMetrics(): ProgressMetrics {
         if (this.metrics.length === 0) {
@@ -340,24 +666,30 @@ export class ProgressTracker {
         return '#10B981'; // Green
     }
 
-    private generateProgressDescription(metrics: ProgressMetrics): string {
+    private generateProgressDescription(metrics: ProgressMetrics, context?: any): string {
         const percentage = metrics.totalErrors > 0
             ? (metrics.fixedErrors / metrics.totalErrors) * 100
             : 0;
 
         if (percentage >= 100) {
-            return 'All TypeScript errors have been fixed!';
+            return context?.workflowId 
+                ? `Workflow ${context.workflowId} completed!`
+                : 'All TypeScript errors have been fixed!';
         }
 
         const descriptions = [
             `Fixed ${metrics.fixedErrors} of ${metrics.totalErrors} errors`,
+            context?.transitionId ? `Transition: ${context.transitionId}` : '',
             `Fix rate: ${metrics.fixRate.toFixed(2)} errors/hour`,
             `Confidence trend: ${metrics.confidenceTrend}`,
             `${metrics.remainingErrors} errors remaining`
-        ];
+        ].filter(Boolean);
 
         return descriptions.join(' • ');
     }
+
+
+    
 
     private calculatePhaseDuration(phase: ProgressPhase): number {
         // Calculate duration based on historical data

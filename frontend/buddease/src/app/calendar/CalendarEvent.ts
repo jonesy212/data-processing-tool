@@ -16,7 +16,7 @@ import { Phase } from "@/app/models/phases/Phase";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
 import { ReminderSettings } from '@/app/settings/Reminder';
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { data } from "@/app/snapshots/SnapshotWithCriteria";
 import { CalendarEventEntity } from './../typings/entities/CalendarEntity';
 

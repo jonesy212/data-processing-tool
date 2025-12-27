@@ -29,13 +29,17 @@ interface ComponentInfo extends BaseCodeEntity {
   type: 'function' | 'class' | 'component';
 }
 
+interface Property {
+  name: string;
+  type: string;
+  optional: boolean;
+  // Add fieldType if it exists in your actual data
+  fieldType?: string;
+}
+
 // Normalized InterfaceInfo interface
 interface InterfaceInfo extends BaseCodeEntity {
-  properties?: Array<{
-    name: string;
-    type: string;
-    optional: boolean;
-  }>;
+  properties?: Property[];
   definition?: string;
   extends?: string[];
   type: 'interface' | 'type' | 'enum';

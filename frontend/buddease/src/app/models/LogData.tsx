@@ -5,7 +5,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import CustomFile from "@/app/documents/File";
 import { Highlight } from "@/app/documents/NoteData";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { BaseData } from "@/app/models/data/Data";
 
 interface LogData<

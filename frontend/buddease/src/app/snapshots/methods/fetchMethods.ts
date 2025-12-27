@@ -3,7 +3,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 

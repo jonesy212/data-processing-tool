@@ -25,7 +25,7 @@ import { BaseData, Data } from "@/app/models/data/Data";
 import { Task } from "@/app/models/tasks/Task";
 import { CriteriaType } from "@/app/pages/searches/CriteriaType";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { Snapshot } from "@/app/snapshots/Snapshot";
+import type { Snapshot } from '@/app/snapshots/Snapshot';;
 import { SnapshotContainer } from "@/app/snapshots/SnapshotContainer";
 import {
   ProjectEntity,

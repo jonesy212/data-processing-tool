@@ -17,7 +17,7 @@ import { Member } from '@/app/models/members/Member';
 import { Progress } from '@/app/models/tracker/ProgressBar';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { RootState } from '@/app/state/redux/slices/RootSlice';
 import { implementThen } from '@/app/state/stores/CommonEvent';

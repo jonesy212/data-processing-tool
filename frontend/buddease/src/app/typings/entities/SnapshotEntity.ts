@@ -5,18 +5,17 @@ import { StructuredMetadata } from "@/app/config/StructuredMetadata";
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Data } from '@/app/models/data/Data';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { data } from "@/app/snapshots/SnapshotWithCriteria";
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { data, SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
+import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 
 // --- Core Snapshot type definitions ---
@@ -265,32 +264,23 @@ const createDefaultSnapshotData = (
   updatedAt: new Date(),
 });
 
-export type { 
-  SnapshotEntity, 
-  SnapshotK, 
-  SnapshotMeta, 
-  SnapshotStructuredMetadata, 
-  SnapshotExcludedFields, 
-  SnapshotIncludedFields, 
-  DefaultSnapshotTypes, 
-  SnapshotAttachment, 
-  SnapshotBaseParams, 
-  AppSnapshotContainer, 
-  
-  SnapshotEntityApplyFieldFilters, 
-  SnapshotEntityData, 
-  SnapshotEntityDataInterface,
-  SnapshotEntityParams, 
-  SnapshotEntityRealtimeDataItem, 
-  SnapshotEntitySnapshotsArray, 
-  SnapshotEntityStore, 
-  SnapshotEntityStoreConfig, 
-  SnapshotEntitySubscriberCollection, 
-  SnapshotEntityType, 
-  SnapshotEntityWithCriteria, 
-  SnapshotFullType, 
-  SnapshotUnifiedMetadata 
+export type {
+    AppSnapshotContainer, DefaultSnapshotTypes,
+    SnapshotAttachment,
+    SnapshotBaseParams, SnapshotEntity, SnapshotEntityApplyFieldFilters,
+    SnapshotEntityData,
+    SnapshotEntityDataInterface,
+    SnapshotEntityParams,
+    SnapshotEntityRealtimeDataItem,
+    SnapshotEntitySnapshotsArray,
+    SnapshotEntityStore,
+    SnapshotEntityStoreConfig,
+    SnapshotEntitySubscriberCollection,
+    SnapshotEntityType,
+    SnapshotEntityWithCriteria, SnapshotExcludedFields, SnapshotFullType, SnapshotIncludedFields, SnapshotK,
+    SnapshotMeta,
+    SnapshotStructuredMetadata, SnapshotUnifiedMetadata
 };
 
-export { createDefaultSnapshotData, emptySnapshotData };
+    export { createDefaultSnapshotData, emptySnapshotData };
 

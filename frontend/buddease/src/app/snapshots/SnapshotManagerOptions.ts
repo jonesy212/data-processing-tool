@@ -2,8 +2,8 @@
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { subscribeToSnapshot, subscribeToSnapshots } from "@/app/snapshots/index";
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreOptions } from "@/app/snapshots/SnapshotStoreOptions";
 
 class SnapshotManagerOptions<

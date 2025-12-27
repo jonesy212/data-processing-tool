@@ -1,8 +1,7 @@
 // FullscreenButtonComponent.tsx
 // platform/web/FullscreenButtonComponent.tsx
 import React, { useState } from "react";
-import { SharedButton } from '@/app/components/shared/Share'
-frontend/buddease/platform/shared/SharedButton'
+import { SharedButton } from '@/platform/shared/SharedButton'
 import ToggleSwitch from "@/app/libraries/menu/ToggleSwitch";
 
 const FullscreenButtonComponent: React.FC = () => {

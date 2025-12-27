@@ -4,7 +4,7 @@ import { UnifiedMetadata } from '@/app/config/MetaDataOptions';
 import { StructuredMetadata } from '@/app/config/StructuredMetadata';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -152,23 +152,23 @@ type ExampleQuery = {
 // Export all types
 export type {
 
-  // Metadata types
-  AppExampleMetadata,
-  // Utility types
-  ApplyExampleFieldFilters, ExampleAttachment,
-  // Params and base
-  ExampleBaseParams, ExampleCollection,
-  // Core types
-  ExampleEntity, ExampleExcludedFields,
-  // Extended types
-  ExampleExtendedEntity,
-  ExampleExtendedMetadata,
-  ExampleExtendedUnifiedMetadata,
-  ExampleFactory, ExampleIncludedFields, ExampleK,
-  ExampleMeta, ExampleParams, ExampleQuery, ExampleRealtimeDataItem,
-  // Snapshot and store types
-  ExampleSnapshot,
-  ExampleSnapshotData, ExampleSnapshotsArray, ExampleSnapshotStore, ExampleSnapshotStoreConfig, ExampleSnapshotWithCriteria, ExampleStructuredMetadata, ExampleSubscriberCollection, ExampleUnifiedMetadata
+    // Metadata types
+    AppExampleMetadata,
+    // Utility types
+    ApplyExampleFieldFilters, ExampleAttachment,
+    // Params and base
+    ExampleBaseParams, ExampleCollection,
+    // Core types
+    ExampleEntity, ExampleExcludedFields,
+    // Extended types
+    ExampleExtendedEntity,
+    ExampleExtendedMetadata,
+    ExampleExtendedUnifiedMetadata,
+    ExampleFactory, ExampleIncludedFields, ExampleK,
+    ExampleMeta, ExampleParams, ExampleQuery, ExampleRealtimeDataItem,
+    // Snapshot and store types
+    ExampleSnapshot,
+    ExampleSnapshotData, ExampleSnapshotsArray, ExampleSnapshotStore, ExampleSnapshotStoreConfig, ExampleSnapshotWithCriteria, ExampleStructuredMetadata, ExampleSubscriberCollection, ExampleUnifiedMetadata
 };
 
 

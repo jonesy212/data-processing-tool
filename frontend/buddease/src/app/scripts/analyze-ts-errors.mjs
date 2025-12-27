@@ -13,7 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 async function loadTypeScriptSystem() {
   try {
     // First try to load from dist (if compiled)
-    const { TypeScriptErrorFixSystem } = await import('../dist/app/error-analyzer/index.js');
+    const { TypeScriptErrorFixSystem } = await import('@/app/api/index');
     return TypeScriptErrorFixSystem;
   } catch {
     try {

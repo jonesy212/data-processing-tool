@@ -1,5 +1,5 @@
 // DataContext.tsx
-import { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta, RootCategories } from '@/app/config/BaseConfig';
+import { BaseData, BaseDataEntity, DefaultExcludedFields, DefaultMeta, RootCategories } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
     DataStore,

@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { SharedTimestamps } from "@/app/models/CommonData";
 import { ExchangeDataTypeEnum } from "@/app/models/cypto/exchangeIntegration";
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 
 export interface ExchangeData<
   T extends BaseDataEntity = BaseDataRoot,

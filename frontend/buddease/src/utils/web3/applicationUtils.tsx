@@ -4,6 +4,11 @@ import { ApiNotificationsService } from '@/app/api/NotificationsService';
 import { sendEmail } from '@/app/api/sendEmail';
 import { sendSMS } from '@/app/api/sendSMS';
 import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/config/BaseConfig";
+import {
   fetchUserAreaDimensions,
   UnifiedMetadata,
   UnifiedMetaDataOptions,
@@ -14,7 +19,6 @@ import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotification
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationData } from '@/app/hooks/useNotificationSystem';
 import { Content } from '@/app/models/content/AddContent';
-import { BaseData } from '@/app/models/data/Data';
 import {
   ActivityActionEnum,
   ActivityTypeEnum,
@@ -23,18 +27,12 @@ import {
 } from '@/app/models/data/StatusType';
 import { Project, ProjectDetails } from '@/app/models/projects/Project';
 import { Task } from '@/app/models/tasks/Task';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { updateProject } from '@/app/state/redux/slices/ProjectManagerSlice';
 import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
 import { AxiosResponse } from 'axios';
 import { useDispatch } from 'react-redux';
-import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
-import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from "@/app/config/BaseConfig";
 
 import { useMeta } from "@/app/config/useMeta";
 import { useMetadata } from "@/app/config/useMetadata";
@@ -45,14 +43,14 @@ import {
   useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
-import { snapshot } from "@/utils/snapshotUtils";
-import { snapshot, SnapshotData } from "@/utils/snapshotUtils";
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { createSnapshot } from "@/app/snapshots/createSnapshot";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
 import { useDataStore } from "@/app/state/stores/DataStore";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
 import { SnapshotEvents } from "@/app/typings/snapshotTypes";
+import { snapshot } from "@/utils/snapshotUtils";
 
 const dispatch = useDispatch();
 const { notify } = useNotification();

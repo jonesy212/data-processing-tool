@@ -4,24 +4,24 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config
 import { useCallback, useRef } from 'react';
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import {
-  clearSnapshotFailure,
-  configureSnapshot,
-  createMockSnapshot,
-  getChildIds,
-  getParentId,
-  getSnapshot,
-  getSnapshotById,
-  getSnapshotItems,
-  getSnapshots,
-  handleSnapshot,
-  mapSnapshots,
-  removeSnapshot,
-  SnapshotOperations,
-  takeSnapshot,
-  updateSnapshot,
-  validateSnapshot
+    clearSnapshotFailure,
+    configureSnapshot,
+    createMockSnapshot,
+    getChildIds,
+    getParentId,
+    getSnapshot,
+    getSnapshotById,
+    getSnapshotItems,
+    getSnapshots,
+    handleSnapshot,
+    mapSnapshots,
+    removeSnapshot,
+    SnapshotOperations,
+    takeSnapshot,
+    updateSnapshot,
+    validateSnapshot
 } from '@/app/snapshots/snapshotOperations';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';

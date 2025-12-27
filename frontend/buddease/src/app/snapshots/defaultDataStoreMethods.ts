@@ -3,10 +3,10 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
 import { CustomHydrateResult } from '@/app/config/DocumentBuilderConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { options } from '@/app/generators/GenerateUniqueIds';
 import { NotificationType, NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
+import { options } from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Payload } from '@/app/interfaces/payload/payloadTypes';
+import { Payload, Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType, SubscriberTypeEnum } from '@/app/models/data/StatusType';
@@ -15,14 +15,13 @@ import { CriteriaType } from '@/app/pages/searches/CriteriaType';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { category } from '@/app/snapshots/isValidFileCategory';
-import { Snapshots, SnapshotsArray, SnapshotsObject, UpdateSnapshotPayload } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { mapToSnapshotStore } from '@/app/snapshots/mappings/mapToSnapshotStore';
-import { Snapshot } from '@/app/snapshots/Snapshot';
+import type {  Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { CustomSnapshotData, data, SnapshotItem, SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { useNotification } from '@/app/state/context/NotificationContext';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { DataStore } from "@/app/state/stores/DataStore";
@@ -31,17 +30,16 @@ import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { Callback } from '@/app/subscribers/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/app/subscriptions/Subscription';
 import {
-  SnapshotAttachment,
-  SnapshotEntity,
-  SnapshotExcludedFields,
-  SnapshotIncludedFields,
-  SnapshotK,
-  SnapshotMeta
+    SnapshotAttachment,
+    SnapshotEntity,
+    SnapshotExcludedFields,
+    SnapshotIncludedFields,
+    SnapshotK,
+    SnapshotMeta
 } from '@/app/typings/entities/SnapshotEntity';
 import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
 import { getCommunityEngagement, getMarketUpdates } from "@/utils/trading/TradingUtils";
 import { portfolioUpdates, tradeExections, triggerIncentives, unsubscribe } from "@/utils/web3/applicationUtils";
-import { CustomSnapshotData, data, SnapshotItem } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from "./SnapshotStore";
 
 export const defaultDelegate: SnapshotStoreConfig<SnapshotEntity, SnapshotK, SnapshotMeta, SnapshotAttachment, SnapshotExcludedFields, SnapshotIncludedFields>[] = [];
