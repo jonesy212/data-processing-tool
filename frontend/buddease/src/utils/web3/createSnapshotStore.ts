@@ -1,25 +1,26 @@
-import getSnapshotId from "@/app/api/SnapshotApi";
+import getSnapshotId from "@/core/api/SnapshotApi";
 import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultMeta
-} from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { UpdateSnapshotPayload } from '@/app/interfaces/payload/payloadTypes';
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/app/models/data/Data';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
-import type { Snapshot } from '@/app/snapshots/Snapshot';;
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/app/typings/realtimeTypes';
-import { SnapshotEvents } from '@/app/typings/snapshotTypes';
+    BaseDataEntity,
+    BaseDataRoot,
+    DefaultExcludedFields,
+    DefaultMeta
+} from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import { BaseData } from '@/core/models/data/Data';
+import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import { SnapshotsArray, SnapshotUnion } from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotData } from '@/core/snapshots/SnapshotData';
+import SnapshotStore from "@/core/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/core/subscribers/Subscriber";
+import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import { SnapshotEvents } from '@/core/typings/snapshotTypes';
+;
 
 // createSnapshotStore.ts
 export function createSnapshotStore <

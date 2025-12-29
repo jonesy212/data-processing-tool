@@ -1,55 +1,55 @@
 // applicationUtils.tsx
-import * as articleApi from '@/app/api/articleApi';
-import { ApiNotificationsService } from '@/app/api/NotificationsService';
-import { sendEmail } from '@/app/api/sendEmail';
-import { sendSMS } from '@/app/api/sendSMS';
+import * as articleApi from '@/core/api/articleApi';
+import { ApiNotificationsService } from '@/core/api/NotificationsService';
+import { sendEmail } from '@/core/api/sendEmail';
+import { sendSMS } from '@/core/api/sendSMS';
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from "@/app/config/BaseConfig";
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
+} from "@/core/config/BaseConfig";
 import {
-  fetchUserAreaDimensions,
-  UnifiedMetadata,
-  UnifiedMetaDataOptions,
-} from '@/app/config/MetaDataOptions';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { NotificationData } from '@/app/hooks/useNotificationSystem';
-import { Content } from '@/app/models/content/AddContent';
+    fetchUserAreaDimensions,
+    UnifiedMetadata,
+    UnifiedMetaDataOptions,
+} from '@/core/config/MetaDataOptions';
+import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
+import { NotificationData } from '@/core/hooks/useNotificationSystem';
+import { Content } from '@/core/models/content/AddContent';
 import {
-  ActivityActionEnum,
-  ActivityTypeEnum,
-  ProjectStateEnum,
-  StatusType
-} from '@/app/models/data/StatusType';
-import { Project, ProjectDetails } from '@/app/models/projects/Project';
-import { Task } from '@/app/models/tasks/Task';
-import type { Snapshot } from '@/app/snapshots/Snapshot';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { updateProject } from '@/app/state/redux/slices/ProjectManagerSlice';
-import { UnsubscribeDetails } from '@/app/typings/eventHandlers/eventTypes';
+    ActivityActionEnum,
+    ActivityTypeEnum,
+    ProjectStateEnum,
+    StatusType
+} from '@/core/models/data/StatusType';
+import { Project, ProjectDetails } from '@/core/models/projects/Project';
+import { Task } from '@/core/models/tasks/Task';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import SnapshotStore from '@/core/snapshots/SnapshotStore';
+import { updateProject } from '@/core/state/redux/slices/ProjectManagerSlice';
+import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 import { AxiosResponse } from 'axios';
 import { useDispatch } from 'react-redux';
 
-import { useMeta } from "@/app/config/useMeta";
-import { useMetadata } from "@/app/config/useMetadata";
-import NotificationManager from "@/app/features/support/NotificationManager";
-import { useSecureUserId } from "@/app/hooks/useSecureUserId";
+import { useMeta } from "@/core/config/useMeta";
+import { useMetadata } from "@/core/config/useMetadata";
+import NotificationManager from "@/core/features/support/NotificationManager";
+import { useSecureUserId } from "@/core/hooks/useSecureUserId";
 import {
-  CombinedEvents,
-  useSnapshotManager,
-} from "@/app/hooks/useSnapshotManager";
-import { CalendarEventWithCriteria } from "@/app/pages/searches/FilterCriteria";
-import { createSnapshot } from "@/app/snapshots/createSnapshot";
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
-import { useDataStore } from "@/app/state/stores/DataStore";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
-import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
-import { SnapshotEvents } from "@/app/typings/snapshotTypes";
+    CombinedEvents,
+    useSnapshotManager,
+} from "@/core/hooks/useSnapshotManager";
+import { CalendarEventWithCriteria } from "@/core/pages/searches/FilterCriteria";
+import { createSnapshot } from "@/core/snapshots/createSnapshot";
+import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import { useDataStore } from "@/core/state/stores/DataStore";
+import { SubscriberCollection } from "@/core/subscribers/SubscriberCollection";
+import { SubscriberCallbackType } from "@/core/subscriptions/Subscription";
+import { SnapshotEvents } from "@/core/typings/snapshotTypes";
 import { snapshot } from "@/utils/snapshotUtils";
 
 const dispatch = useDispatch();
@@ -995,14 +995,14 @@ const performGenericActions = (): void => {
 };
 
 export {
-  logActivity,
-  notifyEventSystem,
-  portfolioUpdates,
-  tradeExections,
-  triggerEvent,
-  triggerIncentives,
-  unsubscribe,
-  updateProjectState
+    logActivity,
+    notifyEventSystem,
+    portfolioUpdates,
+    tradeExections,
+    triggerEvent,
+    triggerIncentives,
+    unsubscribe,
+    updateProjectState
 };
 
   export type { LogActivityParams, TriggerIncentivesParams };

@@ -76,3 +76,7 @@ tsconfig.json
 *.py
 
 /frontend/buddease/src/app/components/documents/privateDocs
+# Smart Backup System
+.smart-backups/
+.smart-backup-config.local.json
+*.bak

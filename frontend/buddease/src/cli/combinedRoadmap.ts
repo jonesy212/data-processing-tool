@@ -1,10 +1,10 @@
 // combinedRoadmap.ts
 // services/combinedRoadmap.ts
+import { generateOutline } from '@/cli/roadmapOutline';
+import { RoadmapAudience, RoadmapNode } from '@/core/typings/roadmap';
 import * as fs from 'fs';
 import * as path from 'path';
 import readline from 'readline';
-import { RoadmapAudience, RoadmapNode } from '@/app/typings/roadmap';
-import { generateOutline } from '@/cli/roadmapOutline';
 
 const rl = readline.createInterface({
   input: process.stdin,

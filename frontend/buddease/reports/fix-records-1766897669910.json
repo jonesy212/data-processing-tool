@@ -1,0 +1,520 @@
+{
+  "sessionId": "1766897669911",
+  "generated": "2025-12-28T04:54:29.911Z",
+  "totalFixes": 57,
+  "records": [
+    {
+      "timestamp": "2025-12-28T04:54:29.817Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/api/ApiHighlightEvent.tsx",
+      "originalImport": "@/core/api/ApiData",
+      "newImport": "@/core/snapshots/methods/dataMethods",
+      "line": 9,
+      "backupPath": ".import-fix-backups/ApiHighlightEvent.tsx.1766897669749.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.819Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/api/processSnapshotData.ts",
+      "originalImport": "@/core/snapshots/SnapshotContainer",
+      "newImport": "@/core/snapshots/Snapshot",
+      "line": 14,
+      "backupPath": ".import-fix-backups/processSnapshotData.ts.1766897669750.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.820Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/database/SchemaEvolutionManager.ts",
+      "originalImport": "@/core/typings/database",
+      "newImport": "@/core/server/database/DatabaseServiceFactory",
+      "line": 10,
+      "backupPath": ".import-fix-backups/SchemaEvolutionManager.ts.1766897669752.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.826Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/config/FrontendConfig.ts",
+      "originalImport": "@/core/api/ApiConfigService",
+      "newImport": "@/core/config/CacheConfig",
+      "line": 2,
+      "backupPath": ".import-fix-backups/FrontendConfig.ts.1766897669753.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.827Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/dataIntegration/reduxIntegration.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 9,
+      "backupPath": ".import-fix-backups/reduxIntegration.ts.1766897669753.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.833Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/documents/DocumentGeneratorMethods.ts",
+      "originalImport": "@/core/documents/DocType",
+      "newImport": "@/core/dataIntegration/parseData",
+      "line": 44,
+      "backupPath": ".import-fix-backups/DocumentGeneratorMethods.ts.1766897669754.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.834Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useCryptoIntegration.ts",
+      "originalImport": "@/core/services/CryptoIntegrationService",
+      "newImport": "@/core/components/crypto/CryptoPortfolio",
+      "line": 4,
+      "backupPath": ".import-fix-backups/useCryptoIntegration.ts.1766897669755.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.835Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/hooks/useRoleAccess.ts",
+      "originalImport": "@/core/documents/attachment/Attachment",
+      "newImport": "@/core/config/BaseConfig",
+      "line": 8,
+      "backupPath": ".import-fix-backups/useRoleAccess.ts.1766897669755.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.836Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/libraries/eventSystem/ProjectEventEmitter.ts",
+      "originalImport": "@/core/libraries/theme/BrandingService",
+      "newImport": "@/core/branding/BrandingSettings",
+      "line": 2,
+      "backupPath": ".import-fix-backups/ProjectEventEmitter.ts.1766897669756.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.838Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/models/data/dataStoreMethods.ts",
+      "originalImport": "@/core/snapshots/SnapshotConfig",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 5,
+      "backupPath": ".import-fix-backups/dataStoreMethods.ts.1766897669756.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.844Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/pages/forms/LoginForm.tsx",
+      "originalImport": "@/core/state/context/NotificationContext",
+      "newImport": "@/core/features/support/UnifiedNotificationTypes",
+      "line": 6,
+      "backupPath": ".import-fix-backups/LoginForm.tsx.1766897669759.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.845Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/server/auth/AuthComponent.tsx",
+      "originalImport": "@/core/generators/GenerateTokens",
+      "newImport": "@/core/generators/GenerateTokens",
+      "line": 4,
+      "backupPath": ".import-fix-backups/AuthComponent.tsx.1766897669759.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.850Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/server/database/CustomDataProvider.tsx",
+      "originalImport": "@/core/models/data/dataContracts",
+      "newImport": "@/core/state/context/DataContext",
+      "line": 4,
+      "backupPath": ".import-fix-backups/CustomDataProvider.tsx.1766897669759.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.851Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/server/security/SecurityConfiguration.ts",
+      "originalImport": "@/core/services/ConfigurationService",
+      "newImport": "@/core/api/ApiConfigService",
+      "line": 5,
+      "backupPath": ".import-fix-backups/SecurityConfiguration.ts.1766897669760.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.852Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshohtDevConfigs.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 7,
+      "backupPath": ".import-fix-backups/SnapshohtDevConfigs.ts.1766897669760.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.852Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotContent.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 5,
+      "backupPath": ".import-fix-backups/SnapshotContent.ts.1766897669761.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.853Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotManagement.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 6,
+      "backupPath": ".import-fix-backups/SnapshotManagement.ts.1766897669761.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.854Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotMap.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 9,
+      "backupPath": ".import-fix-backups/SnapshotMap.ts.1766897669762.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.854Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotStoreMethods.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotStoreConfig",
+      "line": 15,
+      "backupPath": ".import-fix-backups/SnapshotStoreMethods.ts.1766897669766.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.855Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotStoreProps.ts",
+      "originalImport": "@/core/snapshots/SnapshotConfig",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 17,
+      "backupPath": ".import-fix-backups/SnapshotStoreProps.ts.1766897669767.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.858Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotType.ts",
+      "originalImport": "@/core/snapshots/SnapshotStoreConfig",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 8,
+      "backupPath": ".import-fix-backups/SnapshotType.ts.1766897669768.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.859Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/convertSnapshot.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotContainer",
+      "line": 11,
+      "backupPath": ".import-fix-backups/convertSnapshot.ts.1766897669769.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.859Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/convertSnapshot.ts",
+      "originalImport": "@/core/snapshots/SnapshotStoreMethods",
+      "newImport": "@/core/snapshots/SnapshotStoreProps",
+      "line": 14,
+      "backupPath": ".import-fix-backups/convertSnapshot.ts.1766897669769.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.860Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/convertSnapshotsArray.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 12,
+      "backupPath": ".import-fix-backups/convertSnapshotsArray.ts.1766897669769.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.861Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/createSnapshotExample.ts",
+      "originalImport": "@/core/snapshots/SnapshotData",
+      "newImport": "@/core/snapshots/SnapshotStoreConfig",
+      "line": 2,
+      "backupPath": ".import-fix-backups/createSnapshotExample.ts.1766897669770.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.866Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/createSnapshotStoreOptions.ts",
+      "originalImport": "@/core/snapshots/SnapshotConfig",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 32,
+      "backupPath": ".import-fix-backups/createSnapshotStoreOptions.ts.1766897669770.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.867Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/defaultDataStoreMethods.ts",
+      "originalImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "newImport": "@/core/interfaces/payload/payloadTypes",
+      "line": 9,
+      "backupPath": ".import-fix-backups/defaultDataStoreMethods.ts.1766897669774.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.868Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/defaultDataStoreMethods.ts",
+      "originalImport": "@/core/snapshots/SnapshotData",
+      "newImport": "@/core/snapshots/SnapshotWithCriteria",
+      "line": 24,
+      "backupPath": ".import-fix-backups/defaultDataStoreMethods.ts.1766897669774.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.869Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/methods/commonDataStoreMethods.ts",
+      "originalImport": "@/core/typings/entities/AppEntity",
+      "newImport": "@/core/typings/entities/SnapshotEntity",
+      "line": 10,
+      "backupPath": ".import-fix-backups/commonDataStoreMethods.ts.1766897669776.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.869Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/methods/containerMethods.ts",
+      "originalImport": "@/core/snapshots/SnapshotContainer",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 8,
+      "backupPath": ".import-fix-backups/containerMethods.ts.1766897669776.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.872Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/methods/subscriptionMethods.ts",
+      "originalImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 7,
+      "backupPath": ".import-fix-backups/subscriptionMethods.ts.1766897669776.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.874Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/newStoreUtils.ts",
+      "originalImport": "@/core/snapshots/SnapshotConfig",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 13,
+      "backupPath": ".import-fix-backups/newStoreUtils.ts.1766897669777.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.874Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/responsetUtils.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 8,
+      "backupPath": ".import-fix-backups/responsetUtils.ts.1766897669777.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.876Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/snapshotDelegate.ts",
+      "originalImport": "@/core/snapshots/SnapshotData",
+      "newImport": "@/core/snapshots/SnapshotContainer",
+      "line": 17,
+      "backupPath": ".import-fix-backups/snapshotDelegate.ts.1766897669778.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.877Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/transformSnapshotsToStores.tsx",
+      "originalImport": "@/core/snapshots/SnapshotStoreConfig",
+      "newImport": "@/core/snapshots/Snapshot",
+      "line": 7,
+      "backupPath": ".import-fix-backups/transformSnapshotsToStores.tsx.1766897669779.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.878Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/updateSubscribersAndSnapshots.ts",
+      "originalImport": "@/core/interfaces/payload/payloadTypes",
+      "newImport": "@/core/snapshots/Snapshot",
+      "line": 17,
+      "backupPath": ".import-fix-backups/updateSubscribersAndSnapshots.ts.1766897669782.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.879Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/context/DataContext.tsx",
+      "originalImport": "@/core/config/BaseConfig",
+      "newImport": "@/core/models/data/Data",
+      "line": 2,
+      "backupPath": ".import-fix-backups/DataContext.tsx.1766897669784.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.882Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/sagas/fileSagas.ts",
+      "originalImport": "@/core/components/configs/DetermineFileType",
+      "newImport": "@/core/api/ApiFiles",
+      "line": 3,
+      "backupPath": ".import-fix-backups/fileSagas.ts.1766897669784.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.884Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/redux/slices/TaskSlice.ts",
+      "originalImport": "@/core/typings/entities/UserEntity",
+      "newImport": "@/core/users/User",
+      "line": 7,
+      "backupPath": ".import-fix-backups/TaskSlice.ts.1766897669785.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.885Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "originalImport": "@/core/api/subscriberApi",
+      "newImport": "@/core/api/SnapshotApi",
+      "line": 7,
+      "backupPath": ".import-fix-backups/CalendarManagerStore.tsx.1766897669785.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.885Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CalendarManagerStore.tsx",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotContainer",
+      "line": 71,
+      "backupPath": ".import-fix-backups/CalendarManagerStore.tsx.1766897669785.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.886Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "originalImport": "@/core/snapshots/SnapshotData",
+      "newImport": "@/core/snapshots/SnapshotStoreConfig",
+      "line": 17,
+      "backupPath": ".import-fix-backups/CommonEvent.ts.1766897669786.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.886Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/CommonEvent.ts",
+      "originalImport": "@/core/models/tracker/Tag",
+      "newImport": "@/core/snapshots/SnapshotWithCriteria",
+      "line": 19,
+      "backupPath": ".import-fix-backups/CommonEvent.ts.1766897669786.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.888Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DataStore.ts",
+      "originalImport": "@/core/snapshots/SnapshotList",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 33,
+      "backupPath": ".import-fix-backups/DataStore.ts.1766897669787.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.891Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DetailsListStore.ts",
+      "originalImport": "@/core/snapshots/SnapshotWithCriteria",
+      "newImport": "@/core/snapshots/SnapshotConfig",
+      "line": 43,
+      "backupPath": ".import-fix-backups/DetailsListStore.ts.1766897669791.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.891Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/state/stores/DocumentStore.ts",
+      "originalImport": "@/core/documents/DocumentOptions",
+      "newImport": "@/core/models/data/StatusType",
+      "line": 12,
+      "backupPath": ".import-fix-backups/DocumentStore.ts.1766897669792.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.892Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/subscriptions/subscriberTypeGuads.ts",
+      "originalImport": "@/core/snapshots/SnapshotData",
+      "newImport": "@/core/snapshots/LocalStorageSnapshotStore",
+      "line": 9,
+      "backupPath": ".import-fix-backups/subscriberTypeGuads.ts.1766897669793.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.894Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/todos/Todo.ts",
+      "originalImport": "@/core/models/tracker/Tag",
+      "newImport": "@/core/snapshots/SnapshotWithCriteria",
+      "line": 34,
+      "backupPath": ".import-fix-backups/Todo.ts.1766897669794.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.895Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/ts/ScheduleEventModal.tsx",
+      "originalImport": "@/core/state/stores/CalendarManagerStore",
+      "newImport": "@/core/calendar/CalendarEvent",
+      "line": 2,
+      "backupPath": ".import-fix-backups/ScheduleEventModal.tsx.1766897669795.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.900Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/YourSpecificSnapshotType.ts",
+      "originalImport": "@/core/snapshots/SnapshotStoreConfig",
+      "newImport": "@/core/snapshots/SnapshotStoreProps",
+      "line": 14,
+      "backupPath": ".import-fix-backups/YourSpecificSnapshotType.ts.1766897669797.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.902Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/appEventTypes.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 9,
+      "backupPath": ".import-fix-backups/appEventTypes.ts.1766897669801.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.902Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/entities/AssignEntity.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 8,
+      "backupPath": ".import-fix-backups/AssignEntity.ts.1766897669802.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.903Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/entities/AuthEntity.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 11,
+      "backupPath": ".import-fix-backups/AuthEntity.ts.1766897669803.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.906Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/entities/UserEntity.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 10,
+      "backupPath": ".import-fix-backups/UserEntity.ts.1766897669808.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.907Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/app/typings/exchangeTypes.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 4,
+      "backupPath": ".import-fix-backups/exchangeTypes.ts.1766897669809.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.908Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/utils/snapshotUtils.tsx",
+      "originalImport": "@/core/snapshots/SnapshotContainer",
+      "newImport": "@/core/snapshots/SnapshotConfig",
+      "line": 16,
+      "backupPath": ".import-fix-backups/snapshotUtils.tsx.1766897669810.bak",
+      "resolved": true
+    },
+    {
+      "timestamp": "2025-12-28T04:54:29.910Z",
+      "file": "/Users/dixiejones/data_analysis/frontend/buddease/src/utils/versionUtils.ts",
+      "originalImport": "@/core/snapshots/Snapshot",
+      "newImport": "@/core/snapshots/SnapshotData",
+      "line": 5,
+      "backupPath": ".import-fix-backups/versionUtils.ts.1766897669811.bak",
+      "resolved": true
+    }
+  ]
+}

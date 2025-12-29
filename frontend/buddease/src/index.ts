@@ -4,7 +4,7 @@
 
 
 if (typeof window !== 'undefined') {
-  import('@/app/config/MainConfig'); // Import your global styles
+  import('@/core/config/MainConfig'); // Import your global styles
 }
 // Optionally, register the service worker (if applicable)
 if ('serviceWorker' in navigator) {

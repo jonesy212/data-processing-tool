@@ -28,6 +28,8 @@ class TypeExportAnalyzer {
     this.srcRoot = path.join(projectRoot, 'src');
   }
 
+
+
   async analyze(): Promise<TypeExportIssue[]> {
     console.log('🔍 Analyzing type exports for ESM compatibility...\n');
     
@@ -49,6 +51,186 @@ class TypeExportAnalyzer {
     this.identifyProblematicExports();
     
     return this.issues;
+  }
+
+
+  async focusOnStores(): Promise<void> {
+    console.log('🎯 Focusing on store-related type imports...\n');
+    
+    // 1. Find all store files
+    const storeFiles = this.getAllSourceFiles(this.srcRoot)
+      .filter(file => /stores?/.test(file) || /DataStore/.test(file));
+    
+    console.log(`📂 Found ${storeFiles.length} store-related files`);
+    
+    // 2. Analyze each store file
+    for (const storeFile of storeFiles) {
+      console.log(`\n📊 Analyzing: ${path.relative(this.projectRoot, storeFile)}`);
+      
+      const content = fs.readFileSync(storeFile, 'utf8');
+      const sourceFile = ts.createSourceFile(
+        storeFile,
+        content,
+        ts.ScriptTarget.Latest,
+        true
+      );
+      
+      // Find all exports - FIXED: renamed from 'exports' to 'foundExports'
+      const foundExports: Array<{ name: string; isTypeOnly: boolean }> = [];
+      
+      const visit = (node: ts.Node) => {
+        // Check for class exports (likely stores)
+        if (ts.isClassDeclaration(node) && node.name) {
+          const modifiers = node.modifiers || [];
+          if (modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) {
+            foundExports.push({  // FIXED: changed from exports.push
+              name: node.name.getText(),
+              isTypeOnly: false // Classes are runtime
+            });
+          }
+        }
+        
+        // Check for interface/type exports
+        if (ts.isInterfaceDeclaration(node) && node.name) {
+          const modifiers = node.modifiers || [];
+          if (modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) {
+            foundExports.push({  // FIXED: changed from exports.push
+              name: node.name.getText(),
+              isTypeOnly: true
+            });
+          }
+        }
+        
+        if (ts.isTypeAliasDeclaration(node) && node.name) {
+          const modifiers = node.modifiers || [];
+          if (modifiers.some(m => m.kind === ts.SyntaxKind.ExportKeyword)) {
+            foundExports.push({  // FIXED: changed from exports.push
+              name: node.name.getText(),
+              isTypeOnly: true
+            });
+          }
+        }
+        
+        ts.forEachChild(node, visit);
+      };
+      
+      visit(sourceFile);
+      
+      // Report findings
+      if (foundExports.length > 0) {  // FIXED: changed from exports.length
+        foundExports.forEach(exp => {  // FIXED: changed from exports.forEach
+          const marker = exp.isTypeOnly ? '📝 (type-only)' : '⚡ (runtime)';
+          console.log(`   ${marker} ${exp.name}`);
+        });
+        
+        // Check if there are type-only exports that might be problematic
+        const typeOnlyExports = foundExports.filter(e => e.isTypeOnly);  // FIXED: changed from exports.filter
+        if (typeOnlyExports.length > 0) {
+          console.log(`   ⚠️  Found ${typeOnlyExports.length} type-only exports that might need 'import type'`);
+        }
+      } else {
+        console.log('   No exports found');
+      }
+    }
+    
+    // 3. Find all imports of store files
+    console.log('\n🔍 Searching for store imports throughout the project...');
+    
+    const allFiles = this.getAllSourceFiles(this.srcRoot);
+    const storeImports: Array<{
+      file: string;
+      line: number;
+      importName: string;
+      importPath: string;
+      isTypeOnly: boolean;
+    }> = [];
+    
+    for (const file of allFiles) {
+      const content = fs.readFileSync(file, 'utf8');
+      const sourceFile = ts.createSourceFile(
+        file,
+        content,
+        ts.ScriptTarget.Latest,
+        true
+      );
+      
+      const visit = (node: ts.Node) => {
+        if (ts.isImportDeclaration(node)) {
+          const importPath = (node.moduleSpecifier as ts.StringLiteral).text;
+          
+          // Check if this import is from a store
+          if (importPath.includes('stores') || importPath.includes('DataStore')) {
+            const line = sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
+            const isTypeOnly = node.importClause?.isTypeOnly || false;
+            
+            if (node.importClause?.namedBindings && 
+                ts.isNamedImports(node.importClause.namedBindings)) {
+              
+              node.importClause.namedBindings.elements.forEach(element => {
+                const importedName = element.name.getText();
+                storeImports.push({
+                  file,
+                  line,
+                  importName: importedName,
+                  importPath,
+                  isTypeOnly
+                });
+              });
+            }
+          }
+        }
+        
+        ts.forEachChild(node, visit);
+      };
+      
+      visit(sourceFile);
+    }
+    
+    console.log(`📊 Found ${storeImports.length} store imports`);
+    
+    // Group problematic imports
+    const problematicImports = storeImports.filter(imp => !imp.isTypeOnly);
+    
+    if (problematicImports.length > 0) {
+      console.log(`\n🚨 Found ${problematicImports.length} potentially problematic imports (missing 'type' keyword):`);
+      
+      // Group by import path
+      const grouped = problematicImports.reduce((acc, imp) => {
+        const key = imp.importPath;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(imp);
+        return acc;
+      }, {} as Record<string, typeof problematicImports>);
+      
+      Object.entries(grouped).forEach(([importPath, imports]) => {
+        console.log(`\n📦 From: ${importPath}`);
+        
+        // Group by file
+        const byFile = imports.reduce((acc, imp) => {
+          const key = imp.file;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(imp);
+          return acc;
+        }, {} as Record<string, typeof imports>);
+        
+        Object.entries(byFile).forEach(([file, fileImports]) => {
+          const relativePath = path.relative(this.projectRoot, file);
+          console.log(`   📄 ${relativePath}:`);
+          
+          fileImports.forEach(imp => {
+            console.log(`      Line ${imp.line}: import { ${imp.importName} }`);
+          });
+        });
+      });
+      
+      // Ask if user wants to fix them
+      console.log('\n💡 To fix these, run:');
+      console.log('   pnpm run fix-type-exports --stores --fix');
+    }
   }
 
   private getAllSourceFiles(dir: string): string[] {
@@ -92,7 +274,7 @@ class TypeExportAnalyzer {
         true
       );
 
-      const exports: Array<{
+      const exportList: Array<{  // This is declared as exportList
         name: string;
         isTypeOnly: boolean;
         line: number;
@@ -101,13 +283,13 @@ class TypeExportAnalyzer {
       const visit = (node: ts.Node) => {
         // Named exports: export { X, Y }
         if (ts.isExportDeclaration(node)) {
-          const isTypeOnly = node.modifiers?.some(m => m.kind === ts.SyntaxKind.TypeKeyword) || false;
+          const isTypeOnly = node.isTypeOnly || false;
           
           if (node.exportClause && ts.isNamedExports(node.exportClause)) {
             const line = sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
             
             node.exportClause.elements.forEach(element => {
-              exports.push({
+              exportList.push({  // Correct: using exportList
                 name: element.name.getText(),
                 isTypeOnly,
                 line
@@ -119,7 +301,7 @@ class TypeExportAnalyzer {
         // Default export
         if (ts.isExportAssignment(node)) {
           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
-          exports.push({
+          exportList.push({  // Correct: using exportList
             name: 'default',
             isTypeOnly: false,
             line
@@ -132,25 +314,25 @@ class TypeExportAnalyzer {
           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
           
           if (ts.isClassDeclaration(node) && node.name) {
-            exports.push({
+            exportList.push({  // Correct: using exportList
               name: node.name.getText(),
               isTypeOnly: false,
               line
             });
           } else if (ts.isInterfaceDeclaration(node) && node.name) {
-            exports.push({
+            exportList.push({  // Correct: using exportList
               name: node.name.getText(),
               isTypeOnly: true,
               line
             });
           } else if (ts.isTypeAliasDeclaration(node) && node.name) {
-            exports.push({
+            exportList.push({  // Correct: using exportList
               name: node.name.getText(),
               isTypeOnly: true,
               line
             });
           } else if (ts.isFunctionDeclaration(node) && node.name) {
-            exports.push({
+            exportList.push({  // Correct: using exportList
               name: node.name.getText(),
               isTypeOnly: false,
               line
@@ -159,7 +341,7 @@ class TypeExportAnalyzer {
             // Handle variable statements with multiple declarations
             node.declarationList.declarations.forEach(decl => {
               if (ts.isIdentifier(decl.name)) {
-                exports.push({
+                exportList.push({  // Correct: using exportList
                   name: decl.name.getText(),
                   isTypeOnly: false,
                   line
@@ -174,8 +356,8 @@ class TypeExportAnalyzer {
 
       visit(sourceFile);
 
-      // Store in export map
-      exports.forEach(exp => {
+      // Store in export map - using exportList
+      exportList.forEach(exp => {  // Changed: using exportList
         const key = exp.name;
         if (!this.exportMap.has(key)) {
           this.exportMap.set(key, []);
@@ -192,6 +374,48 @@ class TypeExportAnalyzer {
     }
   }
 
+  public getExportsForFile(filePath: string): Array<{
+    name: string;
+    isTypeOnly: boolean;
+    line: number;
+  }> {
+    const results: Array<{
+      name: string;
+      isTypeOnly: boolean;
+      line: number;
+    }> = [];
+    
+    // Get all entries from exportMap
+    const entries = Array.from(this.exportMap.entries());
+    
+    // Filter for exports that come from the specified file
+    for (const [exportName, exportEntries] of entries) {
+      // Find exports from this specific file
+      const fileExports = exportEntries.filter(entry => entry.file === filePath);
+      
+      if (fileExports.length > 0) {
+        // Get the first export from this file (there could be multiple with same name?)
+        const firstExport = fileExports[0];
+        
+        results.push({
+          name: exportName,
+          isTypeOnly: firstExport.isTypeOnly,
+          line: 0 // You'll need to store line numbers in your exportMap structure
+        });
+      }
+    }
+    
+    return results;
+  }
+  // Or provide direct access to filtered exportMap
+  public getExportMap(): Map<string, Array<{
+    file: string;
+    name: string;
+    isTypeOnly: boolean;
+  }>> {
+    return this.exportMap;
+  }
+
   private async analyzeImports(filePath: string): Promise<void> {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
@@ -202,17 +426,16 @@ class TypeExportAnalyzer {
         true
       );
 
-      const imports = new Map<string, {
+      const importsMap = new Map<string, {  // Changed from 'exports' to 'importsMap'
         importPath: string;
         isTypeOnly: boolean;
         line: number;
       }>();
 
       const visit = (node: ts.Node) => {
-        // Named imports: import { X, Y } from 'path'
         if (ts.isImportDeclaration(node)) {
-          const isTypeOnly = node.importClause?.isTypeOnly || false;
           const importPath = (node.moduleSpecifier as ts.StringLiteral).text;
+          const isTypeOnly = node.importClause?.isTypeOnly || false;
           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1;
           
           if (node.importClause?.namedBindings && 
@@ -220,7 +443,7 @@ class TypeExportAnalyzer {
             
             node.importClause.namedBindings.elements.forEach(element => {
               const importedName = element.name.getText();
-              imports.set(importedName, {
+              importsMap.set(importedName, {  // Changed from 'exports' to 'importsMap'
                 importPath,
                 isTypeOnly,
                 line
@@ -230,7 +453,7 @@ class TypeExportAnalyzer {
           
           // Default import
           if (node.importClause?.name) {
-            imports.set('default', {
+            importsMap.set('default', {  // Changed from 'exports' to 'importsMap'
               importPath,
               isTypeOnly,
               line
@@ -244,7 +467,7 @@ class TypeExportAnalyzer {
       visit(sourceFile);
 
       // Check each import against export map
-      imports.forEach((importInfo, importedName) => {
+      importsMap.forEach((importInfo, importedName) => {  // Changed from 'exports' to 'importsMap'
         const matchingExports = this.exportMap.get(importedName) || [];
         
         matchingExports.forEach(exp => {
@@ -543,12 +766,16 @@ export async function checkSpecificFile(filePath: string): Promise<void> {
   const analyzer = new TypeExportAnalyzer();
   
   // Analyze exports in the file
-  await analyzer.analyzeExports(filePath);
+  await analyzer.getExportsForFile(filePath);
   
   // Get exports from the file
-  const fileExports = Array.from(analyzer.exportMap.entries())
-    .filter(([_, exports]) => exports.some(e => e.file === filePath))
-    .map(([name, exports]) => ({ name, exports: exports.filter(e => e.file === filePath) }));
+  const exportMap = analyzer.getExportMap();
+  const fileExports = Array.from(exportMap.entries())
+    .filter(([_, exports]) => exports.some((e: any) => e.file === filePath))
+    .map(([name, exports]) => ({ 
+      name, 
+      exports: exports.filter((e: any) => e.file === filePath) 
+    }));
   
   console.log(`📊 Found ${fileExports.length} exports in ${path.basename(filePath)}:`);
   
@@ -608,8 +835,14 @@ async function main() {
   const analyzeOnly = args.includes('--analyze') || args.includes('--scan');
   const fix = args.includes('--fix');
   const quick = args.includes('--quick');
+  const stores = args.includes('--stores'); // NEW
   const checkFile = args.find(arg => !arg.startsWith('--') && (arg.endsWith('.ts') || arg.endsWith('.tsx')));
   
+  if (stores) {
+    const analyzer  = new TypeExportAnalyzer()
+    await analyzer.focusOnStores();
+    return;
+  }
   if (checkFile) {
     await checkSpecificFile(path.resolve(process.cwd(), checkFile));
     return;
@@ -676,6 +909,9 @@ async function main() {
   if (issues.length > 10) {
     console.log(`   ... and ${issues.length - 10} more`);
   }
+
+
+  
   
   // Generate report
   const report = analyzer.generateReport(issues);
@@ -713,4 +949,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-export { TypeExportAnalyzer, checkSpecificFile };
+export { TypeExportAnalyzer };

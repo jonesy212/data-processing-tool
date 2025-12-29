@@ -1,13 +1,13 @@
 // snapshotValidators.ts
-import { SnapshotAnalyzer, SnapshotIssue } from '@/app/generators/corrections/SnapshotAnalyzer';
-import { StructureValidator } from '@/app/generators/corrections/StructureValidator';
-import { MultiPlatformDirectoryValidator } from '@/app/generators/corrections/validators/MultiPlatformDirectoryValidator';
-import { FileStructureValidator } from '@/app/generators/corrections/validators/FileStructureValidator';
-import { PackageJsonValidator } from '@/app/generators/corrections/validators/PackageJsonValidator';
-import { ConfigurationValidator } from '@/app/generators/corrections/validators/ConfigurationValidator';
-import { Correction } from '@/app/generators/corrections/CorrectionGenerator';
-import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/app/typings/correctionTypes';
-import { ImportFix } from '@/app/generators/corrections/ImportFixServicies';
+import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import { SnapshotAnalyzer } from '@/core/generators/corrections/SnapshotAnalyzer';
+import { StructureValidator } from '@/core/generators/corrections/StructureValidator';
+import { ConfigurationValidator } from '@/core/generators/corrections/validators/ConfigurationValidator';
+import { FileStructureValidator } from '@/core/generators/corrections/validators/FileStructureValidator';
+import { MultiPlatformDirectoryValidator } from '@/core/generators/corrections/validators/MultiPlatformDirectoryValidator';
+import { PackageJsonValidator } from '@/core/generators/corrections/validators/PackageJsonValidator';
+import { CorrectionCategory, CorrectionSeverity, CorrectionType } from '@/core/typings/correctionTypes';
 
 export type ValidationSuggestion = StringSuggestion | ImportFixSuggestion | CodeSuggestion;
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
 console.log('🚀 Standalone Import Error Scanner');
 console.log('══════════════════════════════════\n');
@@ -117,7 +117,7 @@ function parseTypeScriptErrors(output: string, errors: ImportError[]) {
 }
 
 function determineSeverity(importPath: string): 'high' | 'medium' | 'low' {
-  if (importPath.includes('@/app/') || importPath.includes('@/src/app/')) {
+  if (importPath.includes('@/core/') || importPath.includes('@/src/app/')) {
     return 'high';
   }
   if (importPath.includes('@/components/') || importPath.includes('@/hooks/')) {

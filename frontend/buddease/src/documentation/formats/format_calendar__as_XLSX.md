@@ -12,8 +12,8 @@ Sarah decides to export the calendar data to an XLSX file using the `formatCalen
 ### Code Example:
 ```javascript
 import * as XLSX from 'xlsx';
-import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { WritableDraft } from "@/core/state/redux/ReducerGenerator";
+import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import { SimpleCalendarEvent } from "./CalendarContext";
 
 // Function to format calendar data as XLSX binary string

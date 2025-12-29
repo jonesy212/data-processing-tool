@@ -71,8 +71,8 @@ The **Persistence Middleware** is responsible for:
 ## Example Usage
 
 ```ts
-import { persistenceMiddleware } from '@/app/middleware/persistenceMiddleware';
-import { middlewarePipeline } from '@/app/middleware/pipeline';
+import { persistenceMiddleware } from '@/core/middleware/persistenceMiddleware';
+import { middlewarePipeline } from '@/core/middleware/pipeline';
 
 middlewarePipeline.use(persistenceMiddleware);
 

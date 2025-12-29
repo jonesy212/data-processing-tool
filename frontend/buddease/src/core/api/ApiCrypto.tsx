@@ -1,0 +1,64 @@
+// ApiCrypto.tsx
+import { ApiActions } from '@/core/actions/ApiActions';
+import { handleApiError } from '@/core/api/ApiLogs';
+import axiosInstance from '@/core/api/csrfToken';
+import { endpoints } from '@/core/api/endpointConfigurations';
+import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { markTaskAsComplete, markTodoAsComplete } from '@/core/state/redux/slices/ApiSlice';
+
+import { AxiosError } from 'axios';
+import { observable, runInAction } from 'mobx';
+
+const API_BASE_URL = endpoints.crypto;
+
+const { notify } = useNotification(); 
+
+
+export const cryptoService = observable({
+  fetchCryptoData: async (): Promise<any> => {
+    try {
+      const response = await axiosInstance.get(API_BASE_URL.fetchCryptoData);
+      runInAction(() => {
+        // Update state or perform other MobX-related actions
+        // Example: this.someStateVariable = response.data;
+      });
+      notify(
+        "CryptoData", // Content (can be empty in this case)
+        'FetchCryptoDataSuccessId', // Provide a unique ID for the notification
+        NOTIFICATION_MESSAGES.Crypto.FETCH_CRYPTO_SUCCESS, // Message
+        new Date(), // Date
+        NotificationTypeEnum.OPERATION_SUCCESS // Type
+      );
+      // Dispatch fetchApiDataSuccess action with the received data
+      ApiActions.fetchApiDataSuccess({ data: response.data });
+      // Dispatch markTaskAsComplete action
+      markTaskAsComplete("taskId", "task");
+      // Dispatch markTodoAsComplete action
+      markTodoAsComplete("todoId", "todo");
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        handleApiError(
+          error as AxiosError<unknown>,
+          'Failed to fetch crypto data'
+        );
+        notify(
+          'FetchCryptoDataErrorId', // Provide a unique ID for the notification
+          NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_FAILURE, // Message
+          {}, // Content (can be empty in this case)
+          new Date(), // Date
+          NotificationTypeEnum.OPERATION_ERROR // Type (assuming this is more appropriate for a failure)
+        );
+        // Dispatch fetchApiDataFailure action with the error message
+        ApiActions.fetchApiDataFailure({ error: error.message });
+        throw error;
+      }
+    }
+  },
+  
+  // Add other methods for crypto-related API calls based on your requirements
+});
+
+export default cryptoService;

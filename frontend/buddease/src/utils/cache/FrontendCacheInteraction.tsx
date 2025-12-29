@@ -1,7 +1,6 @@
 // FrontendCacheInteraction.js
+import axiosInstance from '@/core/api/csrfToken';
 import { useState } from 'react';
-import axiosInstance from '@/app/api/csrfToken'
-import React from 'react';
 
 const FrontendCacheInteraction = () => {
   const [key, setKey] = useState('');

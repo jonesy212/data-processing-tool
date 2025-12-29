@@ -1,21 +1,22 @@
 // rollup.config.mjs
+import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 
 export default {
-  input: 'src/index.ts', // Adjust the input file path as per your project structure
+  input: 'src/index.ts',
   output: {
-    dir: 'dist', // Adjust the output directory as needed
-    format: 'cjs', // CommonJS format for Node.js compatibility
+    dir: 'dist',
+    format: 'cjs',
   },
   plugins: [
-    resolve(), // Resolve node_modules dependencies
-    commonjs(), // Convert CommonJS modules to ES modules
+    resolve(),
+    commonjs(),
     typescript({ 
       tsconfig: './tsconfig.json',
       declaration: true,
       declarationDir: 'dist'
     })
   ],
-  external: ['react', 'react-dom'], // Specify external dependencies
+  external: ['react', 'react-dom'],
 };

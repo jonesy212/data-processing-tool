@@ -1,0 +1,21 @@
+// SnapshotInitialization.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { InitializedConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import { InitializedState } from "@/core/state/stores/DataStore";
+
+interface SnapshotInitialization<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+> {
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  initialConfig: InitializedConfig | {};
+  onInitialize: (callback: () => void) => void;
+}
+
+
+export type { SnapshotInitialization };

@@ -1,5 +1,5 @@
-import { VideoOptions } from "@/app/cards/modal/ChatSettingsModal";
-import { VideoActions } from "@/app/actions/VideoActions";
+import { VideoActions } from "@/core/actions/VideoActions";
+import { VideoOptions } from "@/core/cards/modal/ChatSettingsModal";
 
 // displayVideoOptionsMenu.ts
 export const displayVideoOptionsMenu = async (id: string, options: VideoOptions[]) => {

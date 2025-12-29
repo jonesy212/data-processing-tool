@@ -1,10 +1,10 @@
 // metadataUtils.ts
-import { contentApiService } from '@/app/api/service/ContentApiService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { StructuredMetadata } from "@/app/config/StructuredMetadata";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CategoryKeys, getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { contentApiService } from '@/core/api/service/ContentApiService';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { StructuredMetadata } from "@/core/config/StructuredMetadata";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { CategoryKeys, getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
+import SnapshotStore from '@/core/snapshots/SnapshotStore';
 import nlp from 'compromise'; // lightweight NLP library
 import { ContentState } from "draft-js";
 import Sentiment from 'sentiment';
@@ -44,7 +44,7 @@ async function getMetadataForContent<
   const uniqueWordsCount = new Set(words).size;
 
   // --- Category assignment ---
-  const allCategoryKeys = Object.keys((await import('@/app/models/data/DataStructureCategories')).allCategories) as CategoryKeys[];
+  const allCategoryKeys = Object.keys((await import('@/core/models/data/DataStructureCategories')).allCategories) as CategoryKeys[];
   let bestCategory: CategoryKeys = allCategoryKeys[0];
   let maxMatches = 0;
 

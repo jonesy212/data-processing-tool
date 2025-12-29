@@ -1,6 +1,6 @@
 import { ChangeEvent } from "react";
-import CustomFile from "@/app/documents/File";
-import { FileActions } from "@/app/actions/FileActions";
+import CustomFile from "@/core/documents/File";
+import { FileActions } from "@/core/actions/FileActions";
 
 
 const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

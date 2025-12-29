@@ -1,4 +1,4 @@
-import { EventData } from "@/app/state/stores/AssignEventStore";
+import { EventData } from "@/core/state/stores/AssignEventStore";
 
 // isDataRecentEnough.ts
 const isDataRecentEnough = (

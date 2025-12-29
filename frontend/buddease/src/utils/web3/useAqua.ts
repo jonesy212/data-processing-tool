@@ -1,7 +1,7 @@
 // UseAqua.tsx
-import createDynamicHook from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
-import LoadAquaState from '@/app/dashboards/LoadAquaState';
-import { AquaState } from '@/app/state/AquaState'; // Assuming this type exists
+import LoadAquaState from '@/core/dashboards/LoadAquaState';
+import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
+import { AquaState } from '@/core/state/AquaState'; // Assuming this type exists
 
 // Create the dynamic hook for Aqua functionality
 const useAqua = createDynamicHook({

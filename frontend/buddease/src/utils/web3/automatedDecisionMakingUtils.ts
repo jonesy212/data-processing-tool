@@ -1,4 +1,4 @@
-import { MarketData } from "@/app/trading/TradingStrategy";
+import { MarketData } from "@/core/trading/TradingStrategy";
 
 // Function for automated decision making
 const automatedDecisionMaking = (marketData: MarketData[], winRate: number): void => {
@@ -15,4 +15,5 @@ const automatedDecisionMaking = (marketData: MarketData[], winRate: number): voi
   };
 
 
-  export {automatedDecisionMaking};
+  export { automatedDecisionMaking };
+

@@ -1,38 +1,39 @@
 // snapshotUtils.tsx
-import { SnapshotOperation, SnapshotOperationType } from "@/app/actions/SnapshotActions";
-import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import { snapshotApi } from '@/app/api/SnapshotApi';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { ModifiedDate } from "@/app/documents/DocType";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
-import useSecureStoreId from '@/app/hooks/useSecureStoreId';
-import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from '@/app/models/data/Data';
-import { allCategories } from "@/app/models/data/DataStructureCategories";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots/SnapshotConfig';
-import { createSnapshotStoreOptions } from "@/app/snapshots/createSnapshotStoreOptions";
+import { SnapshotOperation, SnapshotOperationType } from "@/core/actions/SnapshotActions";
+import { additionalHeaders } from '@/core/api/headers/generateAllHeaders';
+import { snapshotApi } from '@/core/api/SnapshotApi';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { ModifiedDate } from "@/core/documents/DocType";
+import UniqueIDGenerator from "@/core/generators/GenerateUniqueIds";
+import useSecureSnapshotId from '@/core/hooks/useSecureSnapshotId';
+import useSecureStoreId from '@/core/hooks/useSecureStoreId';
+import { getCategoryProperties } from '@/core/libraries/categories/CategoryManager';
+import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import { BaseData, Data } from '@/core/models/data/Data';
+import { allCategories } from "@/core/models/data/DataStructureCategories";
+import { CategoryProperties } from "@/core/pages/personas/ScenarioBuilder";
+import { createSnapshotStoreOptions } from "@/core/snapshots/createSnapshotStoreOptions";
 import {
-  Snapshots,
-  SnapshotsArray,
-  SnapshotStoreObject,
-  SnapshotUnion,
-} from "@/app/snapshots/LocalStorageSnapshotStore";
-import type { Snapshot } from '@/app/snapshots/Snapshot';;
-import { snapshotConfig } from '@/app/snapshots/snapshotContainerUtils';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
-import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
-import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/app/typings/entities/SnapshotEntity';
-import { SnapshotEvent, SnapshotEvents } from '@/app/typings/snapshotTypes';
+    Snapshots,
+    SnapshotsArray,
+    SnapshotStoreObject,
+    SnapshotUnion,
+} from "@/core/snapshots/LocalStorageSnapshotStore";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/core/snapshots/SnapshotContainer';
+import { snapshotConfig } from '@/core/snapshots/snapshotContainerUtils';
+import SnapshotStore from "@/core/snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreProps, useSnapshotStore } from "@/core/snapshots/useSnapshotStore";
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { Subscriber, SubscriberCallback } from "@/core/subscribers/Subscriber";
+import { SubscriberCallbackType, Subscription } from "@/core/subscriptions/Subscription";
+import { getSubscriptionLevel } from "@/core/subscriptions/SubscriptionLevel";
+import { SnapshotAttachment, SnapshotEntity, SnapshotExcludedFields, SnapshotIncludedFields, SnapshotK, SnapshotMeta } from '@/core/typings/entities/SnapshotEntity';
+import { SnapshotEvent, SnapshotEvents } from '@/core/typings/snapshotTypes';
 import { IHydrateResult } from "mobx-persist";
+;
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
@@ -1127,12 +1128,12 @@ export const snapshot = snapshotApi.getSnapshot(
 );
 
 export {
-  castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
-  isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
-  isSnapshotConfig, isSnapshotContainer, isSnapshotData,
-  isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
-  isSnapshotStoreCoreData, isSnapshotUnionBaseData,
-  isSnapshotWithCriteria, isSubscriberCallback
+    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
+    isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
+    isSnapshotConfig, isSnapshotContainer, isSnapshotData,
+    isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
+    isSnapshotStoreCoreData, isSnapshotUnionBaseData,
+    isSnapshotWithCriteria, isSubscriberCallback
 };
 
 export const snapshots = snapshotApi.getSnapshots(category)

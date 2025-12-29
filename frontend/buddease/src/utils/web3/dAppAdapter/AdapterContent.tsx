@@ -1,14 +1,14 @@
 // AdapterContent.tsx
-import React, { useState } from "react";
-import NavigationGenerator from "@/app/hooks/userInterface/NavigationGenerator";
-import DraggableAnimation from "@/app/libraries/animations/DraggableAnimation";
-import Link from "@/app/components/routing/Link";
+import Link from "@/core/components/routing/Link";
 import {
-  AnimatedComponentProps,
-} from "@/app/components/styling/AnimationsAndTansitions";
-import ColorPalette, { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
-import { AnimatedComponent } from "@/app/libraries/animations/AnimationComponent";
+    AnimatedComponentProps,
+} from "@/core/components/styling/AnimationsAndTansitions";
+import ColorPalette, { ColorSwatchProps } from "@/core/components/styling/ColorPalette";
+import NavigationGenerator from "@/core/hooks/userInterface/NavigationGenerator";
+import { AnimatedComponent } from "@/core/libraries/animations/AnimationComponent";
+import DraggableAnimation from "@/core/libraries/animations/DraggableAnimation";
 import { Card } from "antd";
+import React, { useState } from "react";
 
 interface ScreenElementProps {
   id: string;

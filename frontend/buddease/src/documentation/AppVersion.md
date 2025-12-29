@@ -217,7 +217,7 @@ private async analyzeCollaborationFeatures(): Promise<CollaborationStructure> {
 **Basic Initialization**
 
 ```typescript
-import { AppVersionImpl } from '@/app/core/versioning/AppVersionImpl';
+import { AppVersionImpl } from '@/core/versioning/AppVersionImpl';
 
 // Initialize with current version info
 const appVersion = new AppVersionImpl({
@@ -244,7 +244,7 @@ const appVersion = new AppVersionImpl({
 
 ``` typescript
 import { useEffect, useState } from 'react';
-import { appVersion } from '@/app/core/versioning/appVersion';
+import { appVersion } from '@/core/versioning/appVersion';
 
 const AppHeader = () => {
   const [versionInfo, setVersionInfo] = useState(null);
@@ -279,7 +279,7 @@ const AppHeader = () => {
 **In API Services**
 
 ```typescript
-import { appVersion } from '@/app/core/versioning/appVersion';
+import { appVersion } from '@/core/versioning/appVersion';
 
 export class AnalyticsService {
   static async getSystemAnalytics() {

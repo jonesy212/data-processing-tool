@@ -1,9 +1,9 @@
-import { ArchiveMetadata } from '@/app/api/service/ArchiveService';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UnifiedMetadata } from "@/app/config/MetaDataOptions";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import type {  Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { ArchiveMetadata } from '@/core/api/service/ArchiveService';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
 import StorageService from '@/utils/storage/StoragService';
 
 interface SnapshotStorage<

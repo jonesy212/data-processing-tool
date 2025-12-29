@@ -1,11 +1,11 @@
 // openVideoOptionsMenu.ts
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { VideoActions } from '@/core/actions/VideoActions';
+import VideoAPI from '@/core/api/videos/VideoAPI';
+import { VideoOptions } from '@/core/cards/modal/ChatSettingsModal';
+import { ChatRoomContext, useChatRoom } from '@/core/components/communications/chat/ChatRoomContext';
+import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
+import { showToast } from '@/core/models/display/ShowToast';
 import { useContext } from 'react';
-import { ChatRoomContext, useChatRoom } from '@/app/components/communications/chat/ChatRoomContext'
-import { VideoOptions } from '@/app/cards/modal/ChatSettingsModal';
-import { showToast } from '@/app/models/display/ShowToast';
-import VideoAPI from '@/app/api/videos/VideoAPI';
-import { VideoActions } from '@/app/actions/VideoActions';
 
 const videoOptions: VideoOptions = {
   enableVideo: false,

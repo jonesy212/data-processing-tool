@@ -1,4 +1,4 @@
-import AppCacheManagerStore from "@/app/state/stores/AppCacheManagerStore";
+import AppCacheManagerStore from "@/core/state/stores/AppCacheManagerStore";
 import { ExtendedData } from "@/utils/cache/AppCacheManager";
 import AppCacheManagerExtended from "@/utils/cache/AppCacheManagerExtended";
 import { makeAutoObservable } from "mobx";

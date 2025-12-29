@@ -1,6 +1,6 @@
+import { AppTree } from "@/core/generators/generateAppTree";
+import { getFileContent } from '@/core/server/fsOperations';
 import { getFileFromTree } from './appUtils';
-import { getFileContent } from '@/app/server/fsOperations';
-import { AppTree } from "@/app/generators/generateAppTree";
 
 // Define file category types
 export type FileCategory = 

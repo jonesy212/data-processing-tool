@@ -1,4 +1,4 @@
-import { RealtimeDataItem } from "@/app/typings/realtimeTypes";
+import { RealtimeDataItem } from "@/core/typings/realtimeTypes";
 
 // dataTypeGuards.ts
 function isRealtimeDataItemArray(data: any[]): data is RealtimeDataItem[] {
@@ -12,4 +12,4 @@ function isRealtimeDataItemArray(data: any[]): data is RealtimeDataItem[] {
   }
 
 
-  export  { isRealtimeDataItemArray }
+  export { isRealtimeDataItemArray };

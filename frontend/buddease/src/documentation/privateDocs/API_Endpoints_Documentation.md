@@ -119,8 +119,8 @@ This defines the core structure of each endpoint, ensuring all endpoints follow 
 
 File: src/config/endpoints/uiConfig.ts
 
-import { UiEndpoints } from '@/app/typings/categories/UiEndpoints';
-import { BASE_URL } from '@/app/api/baseUrl';
+import { UiEndpoints } from '@/core/typings/categories/UiEndpoints';
+import { BASE_URL } from '@/core/api/baseUrl';
 
 
 export const uiConfig: UiEndpoints = {
@@ -167,8 +167,8 @@ This structure allows for dynamic endpoint generation based on parameters (e.g.,
 🛠 **Utility Functions**
 ```typescript
 File: app/utils/urlGenerator.ts
-import { EndpointConfigurations, EndpointConfig } from '@/app/typings/EndpointConfigurations';
-import { BASE_URL } from '@/app/api/baseUrl';
+import { EndpointConfigurations, EndpointConfig } from '@/core/typings/EndpointConfigurations';
+import { BASE_URL } from '@/core/api/baseUrl';
 
 export const generateEndpointUrl = (
   category: keyof EndpointConfigurations,
@@ -206,7 +206,7 @@ const mergeConfigurations = (baseConfig: any, newConfig: any): any => {
 export default mergeConfigurations;
 
 File: app/utils/endpointMerger.ts
-import { EndpointConfigurations } from '@/app/typings/EndpointConfigurations';
+import { EndpointConfigurations } from '@/core/typings/EndpointConfigurations';
 import { generateEndpointUrl } from './urlGenerator';
 import mergeConfigurations from './mergeConfigurations';
 

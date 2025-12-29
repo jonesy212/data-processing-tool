@@ -1,5 +1,5 @@
 // debug-babel.ts
- import { DebugBabelAnalyzer } from '@/app/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer'
+ import { DebugBabelAnalyzer } from '@/core/generators/corrections/analyzers/react-native/config/DebugBabelAnalyzer';
  
 async function debugBabelConfigs() {
   console.log('🔧 DEBUG: Analyzing Babel Configuration Files\n');

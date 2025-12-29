@@ -1,12 +1,12 @@
 // Import necessary libraries or modules
-import { getConfigsData } from '@/app/api/getConfigsApi';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { ipfsConfig } from '@/app/config/ipfsConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { documentOptions } from '@/app/hooks/userScenarioCreation';
-import { DocumentSize } from "@/app/models/data/StatusType";
-import { useAuth } from '@/app/state/context/AuthContext';
-import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typings/entities/ExtendedDappEntity';
+import { getConfigsData } from '@/core/api/getConfigsApi';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { ipfsConfig } from '@/core/config/ipfsConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { documentOptions } from '@/core/hooks/userScenarioCreation';
+import { DocumentSize } from "@/core/models/data/StatusType";
+import { useAuth } from '@/core/state/context/AuthContext';
+import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/core/typings/entities/ExtendedDappEntity';
 import { CustomDAppAdapter } from '@/utils/web3/dAppAdapter/DApp';
 import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 import { ethers } from 'ethers';

@@ -1,917 +1,689 @@
 {
-  "generated": "2025-12-25T11:17:03.326Z",
+  "generated": "2025-12-29T07:25:59.004Z",
   "summary": {
-    "totalFilesScanned": 2981,
-    "totalIssuesFound": 110,
+    "totalFilesScanned": 3000,
+    "totalIssuesFound": 97,
     "symbolBasedIssues": 0,
-    "otherIssues": 98,
-    "validatedIssues": 98,
+    "otherIssues": 74,
+    "validatedIssues": 74,
     "invalidIssues": 0,
-    "highConfidence": 67,
-    "mediumConfidence": 31,
+    "highConfidence": 54,
+    "mediumConfidence": 20,
     "lowConfidence": 0
   },
   "symbolBasedIssues": [],
   "otherValidIssues": [
     {
-      "file": "src/app/api/ApiHighlightEvent.tsx",
-      "line": 9,
-      "importPath": "@/app/snapshots/methods/dataMethods",
-      "suggestedFix": "@/app/api/ApiData",
-      "reason": "Missing exports: handleApiErrorAndNotify",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/api/ApiData.ts"
-    },
-    {
-      "file": "src/app/api/processSnapshotData.ts",
+      "file": "src/core/api/processSnapshotData.ts",
       "line": 14,
-      "importPath": "@/app/snapshots/SnapshotContainer",
-      "suggestedFix": "@/app/snapshots/Snapshot",
-      "reason": "Missing exports: Snapshot",
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/snapshots/SnapshotContainer",
+      "reason": "Missing exports: SnapshotDataType",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/Snapshot.tsx"
+      "validationMessage": "Found: src/core/snapshots/SnapshotContainer.ts"
     },
     {
-      "file": "src/app/components/communications/chat/features/closeChatSettingsPanel.ts",
-      "line": 3,
-      "importPath": "@/app/components/communications/chat/ChatSettingsPanel",
-      "suggestedFix": "@/app/notifications/NotificationChannelManager",
-      "reason": "Missing exports: ChatSettings",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/notifications/NotificationChannelManager.ts"
-    },
-    {
-      "file": "src/app/components/database/SchemaEvolutionManager.ts",
+      "file": "src/core/components/database/SchemaEvolutionManager.ts",
       "line": 12,
-      "importPath": "@/app/typings/database",
-      "suggestedFix": "@/app/server/database/DatabaseServiceFactory",
-      "reason": "Missing exports: DatabaseType",
+      "importPath": "@/core/server/database/DatabaseServiceFactory",
+      "suggestedFix": "@/core/typings/database",
+      "reason": "Missing exports: BackendDatabaseService",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/server/database/DatabaseServiceFactory.ts"
+      "validationMessage": "Found: src/core/typings/database.ts"
     },
     {
-      "file": "src/app/config/FrontendConfig.ts",
+      "file": "src/core/config/FrontendConfig.ts",
       "line": 2,
-      "importPath": "@/app/api/ApiConfigService",
-      "suggestedFix": "@/app/config/CacheConfig",
-      "reason": "Keep exported symbols: CacheConfig",
+      "importPath": "@/core/config/CacheConfig",
+      "suggestedFix": "@/core/api/ApiConfigService",
+      "reason": "Keep exported symbols: ApiConfig",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/config/CacheConfig.ts"
+      "validationMessage": "Found: src/core/api/ApiConfigService.ts"
     },
     {
-      "file": "src/app/config/FrontendConfig.ts",
+      "file": "src/core/config/FrontendConfig.ts",
       "line": 2,
-      "importPath": "@/app/api/ApiConfigService",
-      "suggestedFix": "@/app/services/ConfigurationService",
+      "importPath": "@/core/config/CacheConfig",
+      "suggestedFix": "@/core/services/ConfigurationService",
       "reason": "Add missing symbol: RetryConfig",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/services/ConfigurationService.ts"
+      "validationMessage": "Found: src/core/services/ConfigurationService.ts"
     },
     {
-      "file": "src/app/dataIntegration/reduxIntegration.ts",
-      "line": 9,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Missing exports: Snapshots",
+      "file": "src/core/dataIntegration/reduxIntegration.ts",
+      "line": 10,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     },
     {
-      "file": "src/app/documents/DocumentGeneratorMethods.ts",
-      "line": 44,
-      "importPath": "@/app/documents/DocType",
-      "suggestedFix": "@/app/dataIntegration/parseData",
-      "reason": "Missing exports: ParsedData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/dataIntegration/parseData.ts"
-    },
-    {
-      "file": "src/app/error-analyzer/IndexFileFixer.ts",
-      "line": 4,
-      "importPath": "./ErrorFixManager",
-      "suggestedFix": "@/app/error-analyzer/ErrorFixManager",
-      "reason": "Missing exports: TSCompilerError",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/error-analyzer/ErrorFixManager.ts"
-    },
-    {
-      "file": "src/app/error-analyzer/cli/phases-cli.ts",
-      "line": 4,
-      "importPath": "../phases/TypeScriptDiagnosticPhase",
-      "suggestedFix": "@/app/error-analyzer/phases/TypeScriptDiagnosticPhase",
-      "reason": "Missing exports: runInitialDiagnosis",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts"
-    },
-    {
-      "file": "src/app/error-analyzer/cli/phases-cli.ts",
-      "line": 5,
-      "importPath": "../phases/PhaseExecutor",
-      "suggestedFix": "@/app/error-analyzer/phases/PhaseExecutor",
-      "reason": "Missing exports: runFullResolution, PhaseExecutor, phaseRunners",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/error-analyzer/phases/PhaseExecutor.ts"
-    },
-    {
-      "file": "src/app/error-analyzer/phases/PhaseExecutor.ts",
+      "file": "src/core/documents/DocumentGeneratorMethods.ts",
       "line": 14,
-      "importPath": "./TypeScriptDiagnosticPhase",
-      "suggestedFix": "@/app/error-analyzer/phases/TypeScriptDiagnosticPhase",
-      "reason": "Missing exports: DiagnosticResult, TypeScriptDiagnosticPhase",
+      "importPath": "@/core/dataIntegration/parseData",
+      "suggestedFix": "@/core/documents/DocType",
+      "reason": "Missing exports: ModifiedDate, YourPDFType",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts"
+      "validationMessage": "Found: src/core/documents/DocType.ts"
     },
     {
-      "file": "src/app/error-analyzer/phases/SafePhaseExecutor.ts",
+      "file": "src/core/hooks/useCryptoIntegration.ts",
       "line": 4,
-      "importPath": "./PhaseBackupSystem",
-      "suggestedFix": {
-        "path": "@/app/models/phases/PhaseBackupSystem",
-        "confidence": 95
-      },
-      "reason": "ESM resolution failure",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/models/phases/PhaseBackupSystem.ts"
-    },
-    {
-      "file": "src/app/error-analyzer/phases/TypeScriptDiagnosticPhase.ts",
-      "line": 5,
-      "importPath": "../ErrorFixManager",
-      "suggestedFix": "@/app/error-analyzer/ErrorFixManager",
-      "reason": "Missing exports: TSCompilerError",
+      "importPath": "@/core/components/crypto/CryptoPortfolio",
+      "suggestedFix": "@/core/services/CryptoIntegrationService",
+      "reason": "Missing exports: cryptoIntegrationService",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/error-analyzer/ErrorFixManager.ts"
+      "validationMessage": "Found: src/core/services/CryptoIntegrationService.ts"
     },
     {
-      "file": "src/app/error-analyzer/phases/test-phase.ts",
+      "file": "src/core/hooks/useRoleAccess.ts",
+      "line": 3,
+      "importPath": "@/core/config/BaseConfig",
+      "suggestedFix": "@/core/documents/attachment/Attachment",
+      "reason": "Missing exports: Attachment",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/documents/attachment/Attachment.tsx"
+    },
+    {
+      "file": "src/core/libraries/eventSystem/ProjectEventEmitter.ts",
       "line": 2,
-      "importPath": "./app/error-analyzer/phases/PhaseExecutor",
-      "suggestedFix": {
-        "path": "@/app/error-analyzer/phases/PhaseExecutor",
-        "confidence": 95
-      },
-      "reason": "ESM resolution failure",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/error-analyzer/phases/PhaseExecutor.ts"
-    },
-    {
-      "file": "src/app/hooks/useCryptoIntegration.ts",
-      "line": 4,
-      "importPath": "@/app/services/CryptoIntegrationService",
-      "suggestedFix": "@/app/components/crypto/CryptoPortfolio",
-      "reason": "Missing exports: CryptoPortfolio",
+      "importPath": "@/core/branding/BrandingSettings",
+      "suggestedFix": "@/core/libraries/theme/BrandingService",
+      "reason": "Missing exports: brandingSettings",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/components/crypto/CryptoPortfolio.ts"
+      "validationMessage": "Found: src/core/libraries/theme/BrandingService.ts"
     },
     {
-      "file": "src/app/hooks/useRoleAccess.ts",
-      "line": 8,
-      "importPath": "@/app/documents/attachment/Attachment",
-      "suggestedFix": "@/app/config/BaseConfig",
-      "reason": "Missing exports: BaseDataEntity, DefaultMeta, DefaultExcludedFields",
+      "file": "src/core/models/data/dataStoreMethods.ts",
+      "line": 7,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotConfig",
+      "reason": "Keep exported symbols: SnapshotConfig",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/config/BaseConfig.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotConfig.ts"
     },
     {
-      "file": "src/app/libraries/eventSystem/ProjectEventEmitter.ts",
-      "line": 2,
-      "importPath": "@/app/libraries/theme/BrandingService",
-      "suggestedFix": "@/app/branding/BrandingSettings",
-      "reason": "Missing exports: BrandingSettings",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/branding/BrandingSettings.ts"
-    },
-    {
-      "file": "src/app/models/data/dataStoreMethods.ts",
-      "line": 5,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/models/data/dataStoreMethods.ts",
-      "line": 5,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotList",
+      "file": "src/core/models/data/dataStoreMethods.ts",
+      "line": 7,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotList",
       "reason": "Add missing symbol: SnapshotItem",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotList.tsx"
+      "validationMessage": "Found: src/core/snapshots/SnapshotList.tsx"
     },
     {
-      "file": "src/app/models/data/dataStoreMethods.ts",
-      "line": 5,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreProps",
+      "file": "src/core/models/data/dataStoreMethods.ts",
+      "line": 7,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreProps",
       "reason": "Add missing symbol: SnapshotStoreProps",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreProps.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreProps.ts"
     },
     {
-      "file": "src/app/models/phases/DynamicPhaseSystem.ts",
-      "line": 8,
-      "importPath": "@/app/error-analyzer/phases/PhaseBackupSystem",
-      "suggestedFix": {
-        "path": "@/app/models/phases/PhaseBackupSystem",
-        "confidence": 95
-      },
-      "reason": "ESM resolution failure",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/models/phases/PhaseBackupSystem.ts"
-    },
-    {
-      "file": "src/app/models/phases/PhaseManager.tsx",
-      "line": 4,
-      "importPath": "./PhaseSystem",
-      "suggestedFix": "@/app/models/phases/PhaseSystem",
-      "reason": "Missing exports: HierarchicalPhaseExecutor",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/models/phases/PhaseSystem.ts"
-    },
-    {
-      "file": "src/app/pages/forms/LoginForm.tsx",
+      "file": "src/core/pages/forms/LoginForm.tsx",
       "line": 6,
-      "importPath": "@/app/state/context/NotificationContext",
-      "suggestedFix": "@/app/features/support/UnifiedNotificationTypes",
-      "reason": "Missing exports: NotificationTypeEnum",
+      "importPath": "@/core/features/support/UnifiedNotificationTypes",
+      "suggestedFix": "@/core/state/context/NotificationContext",
+      "reason": "Missing exports: NotificationContext",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/features/support/UnifiedNotificationTypes.ts"
+      "validationMessage": "Found: src/core/state/context/NotificationContext.tsx"
     },
     {
-      "file": "src/app/scripts/analyze-ts-errors.mjs",
-      "line": 16,
-      "importPath": "../dist/app/error-analyzer/index.js",
-      "suggestedFix": "@/app/api/index",
-      "reason": "Dynamic ESM import failure",
-      "confidenceScore": 80,
-      "validationMessage": "Semantic fallback: @/app/api/index"
-    },
-    {
-      "file": "src/app/server/auth/AuthComponent.tsx",
-      "line": 4,
-      "importPath": "@/app/generators/GenerateTokens",
-      "suggestedFix": "@/app/generators/GenerateTokens",
+      "file": "src/core/server/auth/AuthComponent.tsx",
+      "line": 5,
+      "importPath": "@/core/generators/GenerateTokens",
+      "suggestedFix": "@/core/generators/GenerateTokens",
       "reason": "Missing exports: generateTransferToken",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/generators/GenerateTokens.ts"
+      "validationMessage": "Found: src/core/generators/GenerateTokens.ts"
     },
     {
-      "file": "src/app/server/database/CustomDataProvider.tsx",
-      "line": 4,
-      "importPath": "@/app/models/data/dataContracts",
-      "suggestedFix": "@/app/state/context/DataContext",
-      "reason": "Keep exported symbols: DataProvider",
+      "file": "src/core/server/database/CustomDataProvider.tsx",
+      "line": 3,
+      "importPath": "@/core/state/context/DataContext",
+      "suggestedFix": "@/core/models/data/dataContracts",
+      "reason": "Keep exported symbols: CreateResponse, DeleteOneParams, DeleteOneResponse, GetOneParams, GetOneResponse, UpdateResponse",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/state/context/DataContext.tsx"
+      "validationMessage": "Found: src/core/models/data/dataContracts.ts"
     },
     {
-      "file": "src/app/server/security/SecurityConfiguration.ts",
-      "line": 5,
-      "importPath": "@/app/services/ConfigurationService",
-      "suggestedFix": "@/app/api/ApiConfigService",
-      "reason": "Missing exports: ApiConfig",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/api/ApiConfigService.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshohtDevConfigs.ts",
-      "line": 7,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Missing exports: Snapshots",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotContent.ts",
-      "line": 5,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotManagement.ts",
+      "file": "src/core/server/security/SecurityConfiguration.ts",
       "line": 6,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Keep exported symbols: Snapshots",
+      "importPath": "@/core/api/ApiConfigService",
+      "suggestedFix": "@/core/services/ConfigurationService",
+      "reason": "Missing exports: ConfigurationOptions, ConfigurationService",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
+      "validationMessage": "Found: src/core/services/ConfigurationService.ts"
     },
     {
-      "file": "src/app/snapshots/SnapshotManagement.ts",
+      "file": "src/core/snapshots/SnapshohtDevConfigs.ts",
+      "line": 7,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/snapshots/SnapshotContent.ts",
+      "line": 5,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/snapshots/SnapshotManagement.ts",
       "line": 6,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/interfaces/payload/payloadTypes",
-      "reason": "Add missing symbol: UpdateSnapshotPayload",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/interfaces/payload/payloadTypes.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotMap.ts",
-      "line": 9,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotStoreMethods.ts",
-      "line": 15,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Missing exports: SnapshotStoreConfig",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotStoreProps.ts",
-      "line": 17,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/SnapshotType.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/SnapshotStoreConfig",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Missing exports: snapshotFunction",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/snapshots/convertSnapshot.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Missing exports: SnapshotDataType",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/snapshots/convertSnapshot.ts",
-      "line": 14,
-      "importPath": "@/app/snapshots/SnapshotStoreMethods",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreProps",
-      "reason": "Missing exports: SnapshotStoreProps",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreProps.ts"
-    },
-    {
-      "file": "src/app/snapshots/convertSnapshotsArray.ts",
-      "line": 12,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Missing exports: SnapshotsArray",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotExample.ts",
-      "line": 2,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Missing exports: SnapshotStoreConfig",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: CustomSnapshotData, SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Add missing symbol: SnapshotContainer",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Add missing symbol: SnapshotStoreConfig",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreProps",
-      "reason": "Add missing symbol: SnapshotStoreProps",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreProps.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
-      "reason": "Add missing symbol: SnapshotWithCriteria",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
-    },
-    {
-      "file": "src/app/snapshots/createSnapshotStoreOptions.ts",
-      "line": 32,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/subscribers/subscribeToSnapshotsImplementation",
-      "reason": "Add missing symbol: subscribeToSnapshotImpl",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/subscribers/subscribeToSnapshotsImplementation.ts"
-    },
-    {
-      "file": "src/app/snapshots/defaultDataStoreMethods.ts",
-      "line": 18,
-      "importPath": "@/app/snapshots/LocalStorageSnapshotStore",
-      "suggestedFix": "@/app/interfaces/payload/payloadTypes",
-      "reason": "Missing exports: UpdateSnapshotPayload",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/interfaces/payload/payloadTypes.ts"
-    },
-    {
-      "file": "src/app/snapshots/defaultDataStoreMethods.ts",
-      "line": 44,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
-      "reason": "Keep exported symbols: data",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
-    },
-    {
-      "file": "src/app/snapshots/defaultDataStoreMethods.ts",
-      "line": 44,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/SnapshotList",
-      "reason": "Add missing symbol: SnapshotItem",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotList.tsx"
-    },
-    {
-      "file": "src/app/snapshots/methods/commonDataStoreMethods.ts",
-      "line": 10,
-      "importPath": "@/app/typings/entities/AppEntity",
-      "suggestedFix": "@/app/typings/entities/SnapshotEntity",
-      "reason": "Missing exports: AppSnapshotContainer",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/typings/entities/SnapshotEntity.ts"
-    },
-    {
-      "file": "src/app/snapshots/methods/containerMethods.ts",
-      "line": 8,
-      "importPath": "@/app/snapshots/SnapshotContainer",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/methods/subscriptionMethods.ts",
-      "line": 7,
-      "importPath": "@/app/snapshots/LocalStorageSnapshotStore",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/newStoreUtils.ts",
-      "line": 13,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/responsetUtils.ts",
-      "line": 8,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/snapshots/snapshotDelegate.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Missing exports: SnapshotDataType",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/snapshots/transformSnapshotsToStores.tsx",
-      "line": 7,
-      "importPath": "@/app/snapshots/SnapshotStoreConfig",
-      "suggestedFix": "@/app/snapshots/Snapshot",
-      "reason": "Missing exports: snapshotConfig",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/Snapshot.tsx"
-    },
-    {
-      "file": "src/app/snapshots/updateSubscribersAndSnapshots.ts",
-      "line": 17,
-      "importPath": "@/app/interfaces/payload/payloadTypes",
-      "suggestedFix": "@/app/snapshots/Snapshot",
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/Snapshot",
       "reason": "Keep exported symbols: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/Snapshot.tsx"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     },
     {
-      "file": "src/app/snapshots/updateSubscribersAndSnapshots.ts",
-      "line": 17,
-      "importPath": "@/app/interfaces/payload/payloadTypes",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Add missing symbol: CustomSnapshotData",
+      "file": "src/core/snapshots/SnapshotManagement.ts",
+      "line": 6,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/interfaces/payload/payloadTypes",
+      "reason": "Add missing symbol: UpdateSnapshotPayload",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
+      "validationMessage": "Found: src/core/interfaces/payload/payloadTypes.ts"
     },
     {
-      "file": "src/app/snapshots/updateSubscribersAndSnapshots.ts",
-      "line": 17,
-      "importPath": "@/app/interfaces/payload/payloadTypes",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Add missing symbol: Snapshots",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/snapshots/updateSubscribersAndSnapshots.ts",
-      "line": 17,
-      "importPath": "@/app/interfaces/payload/payloadTypes",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Add missing symbol: SnapshotsArray",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/state/context/DataContext.tsx",
-      "line": 2,
-      "importPath": "@/app/config/BaseConfig",
-      "suggestedFix": "@/app/models/data/Data",
-      "reason": "Missing exports: BaseData",
+      "file": "src/core/snapshots/SnapshotMap.ts",
+      "line": 9,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/models/data/Data.tsx"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     },
     {
-      "file": "src/app/state/redux/sagas/fileSagas.ts",
-      "line": 3,
-      "importPath": "@/app/components/configs/DetermineFileType",
-      "suggestedFix": "@/app/api/ApiFiles",
-      "reason": "Keep exported symbols: fetchFiles",
+      "file": "src/core/snapshots/SnapshotStoreMethods.ts",
+      "line": 15,
+      "importPath": "@/core/snapshots/SnapshotStoreConfig",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/api/ApiFiles.ts"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     },
     {
-      "file": "src/app/state/redux/slices/TaskSlice.ts",
-      "line": 7,
-      "importPath": "@/app/typings/entities/UserEntity",
-      "suggestedFix": "@/app/users/User",
-      "reason": "Missing exports: User",
+      "file": "src/core/snapshots/SnapshotStoreProps.ts",
+      "line": 23,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotConfig",
+      "reason": "Missing exports: SnapshotConfig",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/users/User.tsx"
+      "validationMessage": "Found: src/core/snapshots/SnapshotConfig.ts"
     },
     {
-      "file": "src/app/state/stores/CalendarManagerStore.tsx",
-      "line": 7,
-      "importPath": "@/app/api/subscriberApi",
-      "suggestedFix": "@/app/api/SnapshotApi",
-      "reason": "Missing exports: extractCriteria",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/api/SnapshotApi.ts"
-    },
-    {
-      "file": "src/app/state/stores/CalendarManagerStore.tsx",
-      "line": 71,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Missing exports: SnapshotContainer, snapshotContainer",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/state/stores/CommonEvent.ts",
-      "line": 12,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
+      "file": "src/core/snapshots/SnapshotType.ts",
+      "line": 11,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
       "reason": "Missing exports: SnapshotStoreConfig",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
     },
     {
-      "file": "src/app/state/stores/CommonEvent.ts",
-      "line": 19,
-      "importPath": "@/app/models/tracker/Tag",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
-      "reason": "Missing exports: SnapshotWithCriteria",
+      "file": "src/core/snapshots/addToSnapshotList.tsx",
+      "line": 3,
+      "importPath": "@/core/snapshots/ValidationRule",
+      "suggestedFix": "@/core/config/BaseConfig",
+      "reason": "Missing exports: BaseDataRoot, DefaultExcludedFields, DefaultMeta",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
+      "validationMessage": "Found: src/core/config/BaseConfig.ts"
     },
     {
-      "file": "src/app/state/stores/DataStore.ts",
-      "line": 30,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Keep exported symbols: snapshotContainer",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/state/stores/DataStore.ts",
-      "line": 30,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Add missing symbol: SnapshotData",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/state/stores/DataStore.ts",
-      "line": 30,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotList",
-      "reason": "Add missing symbol: SnapshotItem",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotList.tsx"
-    },
-    {
-      "file": "src/app/state/stores/DataStore.ts",
-      "line": 30,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreMethods",
-      "reason": "Add missing symbol: SnapshotStoreMethods",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreMethods.ts"
-    },
-    {
-      "file": "src/app/state/stores/DataStore.ts",
-      "line": 30,
-      "importPath": "@/app/snapshots/SnapshotConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreProps",
-      "reason": "Add missing symbol: SnapshotStoreProps",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreProps.ts"
-    },
-    {
-      "file": "src/app/state/stores/DetailsListStore.ts",
-      "line": 43,
-      "importPath": "@/app/snapshots/SnapshotWithCriteria",
-      "suggestedFix": "@/app/snapshots/SnapshotConfig",
-      "reason": "Keep exported symbols: SnapshotConfig",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotConfig.ts"
-    },
-    {
-      "file": "src/app/state/stores/DetailsListStore.ts",
-      "line": 43,
-      "importPath": "@/app/snapshots/SnapshotWithCriteria",
-      "suggestedFix": "@/app/snapshots/SnapshotContainer",
-      "reason": "Add missing symbol: SnapshotDataType",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotContainer.ts"
-    },
-    {
-      "file": "src/app/state/stores/DocumentStore.ts",
-      "line": 12,
-      "importPath": "@/app/documents/DocumentOptions",
-      "suggestedFix": "@/app/models/data/StatusType",
-      "reason": "Missing exports: DocumentSize",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/models/data/StatusType.ts"
-    },
-    {
-      "file": "src/app/state/stores/TaskStore .tsx",
-      "line": 20,
-      "importPath": "@/app/components/models/tasks/TaskDataSource",
-      "suggestedFix": "@/app/models/tasks/Task",
-      "reason": "Missing exports: Task",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/models/tasks/Task.tsx"
-    },
-    {
-      "file": "src/app/subscriptions/subscriberTypeGuads.ts",
-      "line": 9,
-      "importPath": "@/app/snapshots/SnapshotData",
-      "suggestedFix": "@/app/snapshots/LocalStorageSnapshotStore",
-      "reason": "Missing exports: SnapshotsArray",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/LocalStorageSnapshotStore.tsx"
-    },
-    {
-      "file": "src/app/todos/Todo.ts",
-      "line": 33,
-      "importPath": "@/app/models/tracker/Tag",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
-      "reason": "Missing exports: SnapshotWithCriteria",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
-    },
-    {
-      "file": "src/app/todos/TodoComponent.tsx",
+      "file": "src/core/snapshots/convertSnapshot.ts",
       "line": 11,
-      "importPath": "antd",
-      "suggestedFix": "@/app/models/tracker/ProgressBar",
-      "reason": "Keep exported symbols: Progress",
+      "importPath": "@/core/snapshots/SnapshotContainer",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/models/tracker/ProgressBar.tsx"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     },
     {
-      "file": "src/app/ts/ScheduleEventModal.tsx",
+      "file": "src/core/snapshots/convertSnapshot.ts",
+      "line": 14,
+      "importPath": "@/core/snapshots/SnapshotStoreProps",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreMethods",
+      "reason": "Missing exports: SnapshotStoreMethods",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreMethods.ts"
+    },
+    {
+      "file": "src/core/snapshots/convertSnapshotToItem.ts",
+      "line": 6,
+      "importPath": "@/core/snapshots/ValidationRule",
+      "suggestedFix": "@/core/config/BaseConfig",
+      "reason": "Missing exports: BaseDataRoot, DefaultExcludedFields, DefaultMeta",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/config/BaseConfig.ts"
+    },
+    {
+      "file": "src/core/snapshots/convertSnapshotsArray.ts",
+      "line": 4,
+      "importPath": "@/core/snapshots/ValidationRule",
+      "suggestedFix": "@/core/config/BaseConfig",
+      "reason": "Missing exports: BaseDataRoot, DefaultExcludedFields, DefaultMeta",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/config/BaseConfig.ts"
+    },
+    {
+      "file": "src/core/snapshots/convertSnapshotsArray.ts",
+      "line": 12,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/snapshots/createSnapshotExample.ts",
       "line": 2,
-      "importPath": "@/app/state/stores/CalendarManagerStore",
-      "suggestedFix": "@/app/calendar/CalendarEvent",
-      "reason": "Missing exports: CalendarEvent",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/calendar/CalendarEvent.ts"
-    },
-    {
-      "file": "src/app/typings/YourSpecificSnapshotType.ts",
-      "line": 14,
-      "importPath": "@/app/snapshots/SnapshotStoreConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreProps",
-      "reason": "Keep exported symbols: SnapshotStoreProps",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreProps.ts"
-    },
-    {
-      "file": "src/app/typings/YourSpecificSnapshotType.ts",
-      "line": 14,
-      "importPath": "@/app/snapshots/SnapshotStoreConfig",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
-      "reason": "Add missing symbol: SnapshotWithCriteriaConfig",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
-    },
-    {
-      "file": "src/app/typings/appEventTypes.ts",
-      "line": 9,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
+      "importPath": "@/core/snapshots/SnapshotStoreConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
       "reason": "Missing exports: SnapshotData",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
     },
     {
-      "file": "src/app/typings/entities/AssignEntity.ts",
-      "line": 8,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotConfig",
+      "reason": "Keep exported symbols: createSnapshotConfig, SnapshotConfig",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotConfig.ts"
     },
     {
-      "file": "src/app/typings/entities/AssignEntity.ts",
-      "line": 8,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotContainer",
+      "reason": "Add missing symbol: SnapshotContainer",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotContainer.ts"
+    },
+    {
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
       "reason": "Add missing symbol: SnapshotStoreConfig",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
     },
     {
-      "file": "src/app/typings/entities/AuthEntity.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/typings/entities/AuthEntity.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Add missing symbol: SnapshotStoreConfig",
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreProps",
+      "reason": "Add missing symbol: SnapshotStoreProps",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreProps.ts"
     },
     {
-      "file": "src/app/typings/entities/DetailsEntity.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/typings/entities/DetailsEntity.ts",
-      "line": 11,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Add missing symbol: SnapshotStoreConfig",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
-    },
-    {
-      "file": "src/app/typings/entities/UserEntity.ts",
-      "line": 10,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/typings/entities/UserEntity.ts",
-      "line": 10,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotStoreConfig",
-      "reason": "Add missing symbol: SnapshotStoreConfig",
-      "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotStoreConfig.ts"
-    },
-    {
-      "file": "src/app/typings/exchangeTypes.ts",
-      "line": 4,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Keep exported symbols: SnapshotData",
-      "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
-    },
-    {
-      "file": "src/app/typings/exchangeTypes.ts",
-      "line": 4,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotWithCriteria",
       "reason": "Add missing symbol: SnapshotWithCriteria",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotWithCriteria.ts"
     },
     {
-      "file": "src/utils/fileCategoryUtils.ts",
-      "line": 2,
-      "importPath": "./fsOperations",
-      "suggestedFix": {
-        "path": "@/app/server/fsOperations",
-        "confidence": 95
-      },
-      "reason": "ESM resolution failure",
+      "file": "src/core/snapshots/createSnapshotStoreOptions.ts",
+      "line": 40,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/subscribers/subscribeToSnapshotsImplementation",
+      "reason": "Add missing symbol: subscribeToSnapshotImpl",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/server/fsOperations.ts"
+      "validationMessage": "Found: src/core/subscribers/subscribeToSnapshotsImplementation.ts"
     },
     {
-      "file": "src/utils/snapshotUtils.tsx",
-      "line": 16,
-      "importPath": "@/app/snapshots/SnapshotContainer",
-      "suggestedFix": "@/app/snapshots/SnapshotConfig",
-      "reason": "Keep exported symbols: SnapshotConfig",
+      "file": "src/core/snapshots/defaultDataStoreMethods.ts",
+      "line": 17,
+      "importPath": "@/core/interfaces/payload/payloadTypes",
+      "suggestedFix": "@/core/snapshots/LocalStorageSnapshotStore",
+      "reason": "Missing exports: Snapshots, SnapshotsArray, SnapshotsObject",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotConfig.ts"
+      "validationMessage": "Found: src/core/snapshots/LocalStorageSnapshotStore.tsx"
+    },
+    {
+      "file": "src/core/snapshots/methods/commonDataStoreMethods.ts",
+      "line": 10,
+      "importPath": "@/core/typings/entities/SnapshotEntity",
+      "suggestedFix": "@/core/typings/entities/AppEntity",
+      "reason": "Missing exports: AppAttachment, AppEntity, AppMeta, AppSnapshot, AppSnapshotStore",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/typings/entities/AppEntity.ts"
+    },
+    {
+      "file": "src/core/snapshots/methods/containerMethods.ts",
+      "line": 7,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotContainer",
+      "reason": "Missing exports: SnapshotContainer",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotContainer.ts"
+    },
+    {
+      "file": "src/core/snapshots/newStoreUtils.ts",
+      "line": 15,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotConfig",
+      "reason": "Missing exports: SnapshotConfig",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotConfig.ts"
+    },
+    {
+      "file": "src/core/snapshots/responsetUtils.ts",
+      "line": 8,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/snapshots/snapshotDelegate.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/SnapshotContainer",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
+      "reason": "Missing exports: SnapshotData",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
+    },
+    {
+      "file": "src/core/snapshots/transformSnapshotsToStores.tsx",
+      "line": 7,
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
+      "reason": "Missing exports: SnapshotStoreConfig",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
+    },
+    {
+      "file": "src/core/snapshots/updateSubscribersAndSnapshots.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/interfaces/payload/payloadTypes",
+      "reason": "Keep exported symbols: CreateSnapshotsPayload",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/interfaces/payload/payloadTypes.ts"
+    },
+    {
+      "file": "src/core/snapshots/updateSubscribersAndSnapshots.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
+      "reason": "Add missing symbol: CustomSnapshotData",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
+    },
+    {
+      "file": "src/core/snapshots/updateSubscribersAndSnapshots.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/snapshots/LocalStorageSnapshotStore",
+      "reason": "Add missing symbol: Snapshots",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/LocalStorageSnapshotStore.tsx"
+    },
+    {
+      "file": "src/core/snapshots/updateSubscribersAndSnapshots.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/Snapshot",
+      "suggestedFix": "@/core/snapshots/LocalStorageSnapshotStore",
+      "reason": "Add missing symbol: SnapshotsArray",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/LocalStorageSnapshotStore.tsx"
+    },
+    {
+      "file": "src/core/state/context/DataContext.tsx",
+      "line": 2,
+      "importPath": "@/core/models/data/Data",
+      "suggestedFix": "@/core/config/BaseConfig",
+      "reason": "Missing exports: BaseDataEntity, DefaultExcludedFields, DefaultMeta",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/config/BaseConfig.ts"
+    },
+    {
+      "file": "src/core/state/redux/sagas/fileSagas.ts",
+      "line": 3,
+      "importPath": "@/core/api/ApiFiles",
+      "suggestedFix": "@/core/components/configs/DetermineFileType",
+      "reason": "Keep exported symbols: determineFileType",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/components/configs/DetermineFileType.tsx"
+    },
+    {
+      "file": "src/core/state/stores/CommonEvent.ts",
+      "line": 11,
+      "importPath": "@/core/snapshots/SnapshotWithCriteria",
+      "suggestedFix": "@/core/models/tracker/Tag",
+      "reason": "Missing exports: TagsRecord",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/models/tracker/Tag.tsx"
+    },
+    {
+      "file": "src/core/state/stores/CommonEvent.ts",
+      "line": 17,
+      "importPath": "@/core/snapshots/SnapshotStoreConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
+      "reason": "Missing exports: SnapshotData",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
+    },
+    {
+      "file": "src/core/state/stores/DataStore.ts",
+      "line": 33,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotList",
+      "reason": "Missing exports: SnapshotItem",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotList.tsx"
+    },
+    {
+      "file": "src/core/state/stores/DetailsListStore.ts",
+      "line": 43,
+      "importPath": "@/core/snapshots/SnapshotConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotWithCriteria",
+      "reason": "Keep exported symbols: data",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotWithCriteria.ts"
+    },
+    {
+      "file": "src/core/state/stores/DetailsListStore.ts",
+      "line": 43,
+      "importPath": "@/core/snapshots/SnapshotConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotContainer",
+      "reason": "Add missing symbol: SnapshotDataType",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotContainer.ts"
+    },
+    {
+      "file": "src/core/state/stores/DocumentStore.ts",
+      "line": 12,
+      "importPath": "@/core/models/data/StatusType",
+      "suggestedFix": "@/core/documents/DocumentOptions",
+      "reason": "Missing exports: DocumentOptions",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/documents/DocumentOptions.ts"
+    },
+    {
+      "file": "src/core/subscriptions/subscriberTypeGuads.ts",
+      "line": 9,
+      "importPath": "@/core/snapshots/LocalStorageSnapshotStore",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
+      "reason": "Missing exports: SnapshotData",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
+    },
+    {
+      "file": "src/core/todos/Todo.ts",
+      "line": 21,
+      "importPath": "@/core/snapshots/SnapshotWithCriteria",
+      "suggestedFix": "@/core/models/tracker/Tag",
+      "reason": "Missing exports: TagsRecord",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/models/tracker/Tag.tsx"
+    },
+    {
+      "file": "src/core/ts/ScheduleEventModal.tsx",
+      "line": 3,
+      "importPath": "@/core/calendar/CalendarEvent",
+      "suggestedFix": "@/core/state/stores/CalendarManagerStore",
+      "reason": "Missing exports: useCalendarManagerStore",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/state/stores/CalendarManagerStore.tsx"
+    },
+    {
+      "file": "src/core/typings/YourSpecificSnapshotType.ts",
+      "line": 21,
+      "importPath": "@/core/snapshots/SnapshotStoreProps",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
+      "reason": "Keep exported symbols: SnapshotStoreConfig",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
+    },
+    {
+      "file": "src/core/typings/YourSpecificSnapshotType.ts",
+      "line": 21,
+      "importPath": "@/core/snapshots/SnapshotStoreProps",
+      "suggestedFix": "@/core/snapshots/SnapshotWithCriteria",
+      "reason": "Add missing symbol: SnapshotWithCriteriaConfig",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotWithCriteria.ts"
+    },
+    {
+      "file": "src/core/typings/appEventTypes.ts",
+      "line": 11,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/typings/entities/AssignEntity.ts",
+      "line": 9,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Keep exported symbols: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/typings/entities/AssignEntity.ts",
+      "line": 9,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
+      "reason": "Add missing symbol: SnapshotStoreConfig",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
+    },
+    {
+      "file": "src/core/typings/entities/AuthEntity.ts",
+      "line": 12,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Keep exported symbols: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/typings/entities/AuthEntity.ts",
+      "line": 12,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
+      "reason": "Add missing symbol: SnapshotStoreConfig",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
+    },
+    {
+      "file": "src/core/typings/entities/UserEntity.ts",
+      "line": 11,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Keep exported symbols: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/typings/entities/UserEntity.ts",
+      "line": 11,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotStoreConfig",
+      "reason": "Add missing symbol: SnapshotStoreConfig",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotStoreConfig.ts"
+    },
+    {
+      "file": "src/core/typings/exchangeTypes.ts",
+      "line": 4,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Keep exported symbols: Snapshot",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
+    },
+    {
+      "file": "src/core/typings/exchangeTypes.ts",
+      "line": 4,
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/SnapshotWithCriteria",
+      "reason": "Add missing symbol: SnapshotWithCriteria",
+      "confidenceScore": 85,
+      "validationMessage": "Found: src/core/snapshots/SnapshotWithCriteria.ts"
     },
     {
       "file": "src/utils/snapshotUtils.tsx",
-      "line": 16,
-      "importPath": "@/app/snapshots/SnapshotContainer",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
+      "line": 24,
+      "importPath": "@/core/snapshots/SnapshotConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotContainer",
+      "reason": "Keep exported symbols: SnapshotContainer, SnapshotDataType",
+      "confidenceScore": 90,
+      "validationMessage": "Found: src/core/snapshots/SnapshotContainer.ts"
+    },
+    {
+      "file": "src/utils/snapshotUtils.tsx",
+      "line": 24,
+      "importPath": "@/core/snapshots/SnapshotConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotData",
       "reason": "Add missing symbol: SnapshotData",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotData.ts"
     },
     {
       "file": "src/utils/snapshotUtils.tsx",
-      "line": 16,
-      "importPath": "@/app/snapshots/SnapshotContainer",
-      "suggestedFix": "@/app/snapshots/SnapshotWithCriteria",
+      "line": 24,
+      "importPath": "@/core/snapshots/SnapshotConfig",
+      "suggestedFix": "@/core/snapshots/SnapshotWithCriteria",
       "reason": "Add missing symbol: SnapshotWithCriteria",
       "confidenceScore": 85,
-      "validationMessage": "Found: src/app/snapshots/SnapshotWithCriteria.ts"
+      "validationMessage": "Found: src/core/snapshots/SnapshotWithCriteria.ts"
     },
     {
       "file": "src/utils/versionUtils.ts",
       "line": 5,
-      "importPath": "@/app/snapshots/Snapshot",
-      "suggestedFix": "@/app/snapshots/SnapshotData",
-      "reason": "Missing exports: SnapshotData",
+      "importPath": "@/core/snapshots/SnapshotData",
+      "suggestedFix": "@/core/snapshots/Snapshot",
+      "reason": "Missing exports: Snapshot",
       "confidenceScore": 90,
-      "validationMessage": "Found: src/app/snapshots/SnapshotData.ts"
+      "validationMessage": "Found: src/core/snapshots/Snapshot.tsx"
     }
   ],
   "invalidIssues": [],
   "exportCacheStats": {
-    "totalFiles": 2990,
+    "totalFiles": 3010,
     "averageExportsPerFile": 2,
-    "uniqueExports": 5384
+    "uniqueExports": 5449
   }
 }

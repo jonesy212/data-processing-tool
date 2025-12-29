@@ -1,0 +1,15 @@
+// saveSecuritySettings.ts
+
+import SecurityAPI from "@/core/api/SecurityAPI";
+import { showToast } from "@/core/models/display/ShowToast";
+
+export const saveSecuritySettings = async (updatedSettings: SecuritySettings) => { 
+    try {
+        await SecurityAPI.updateSecuritySettings(updatedSettings);
+        showToast({ content: "Security settings updated successfully" });
+    } catch (error) {
+        console.error("Error updating security settings:", error);
+        showToast({ content: "Failed to update security settings" });
+        throw error;
+    }
+}

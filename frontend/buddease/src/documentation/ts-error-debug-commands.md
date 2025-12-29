@@ -142,9 +142,9 @@ find src/ -name "*.ts" -o -name "*.tsx" | xargs grep -l "CreateSnapshotsPayload"
 grep -n "from.*snapshot" src/app/snapshots/sampleSnapshotInstance.ts
 
 # 3. Common locations for missing types:
-#    - @/app/typings/snapshotTypes.ts
-#    - @/app/interfaces/payload/payloadTypes.ts
-#    - @/app/snapshots/types.ts
+#    - @/core/typings/snapshotTypes.ts
+#    - @/core/interfaces/payload/payloadTypes.ts
+#    - @/core/snapshots/types.ts
 Generic Parameter Consistency
 When generic parameters don't match:
 

@@ -1,0 +1,128 @@
+// CalendarDetails.tsx
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import ListGenerator from '@/core/generators/ListGenerator';
+import { CollaborationOptions } from '@/core/interfaces/options/CollaborationOptions';
+import { CommonData, Customizations } from '@/core/models/CommonData';
+import { Data } from '@/core/models/data/Data';
+import { CommonEvent } from '@/core/state/stores/CommonEvent';
+import { DetailsItem } from '@/core/state/stores/DetailsListStore';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from '@/core/typings/entities/CalendarEntity';
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+
+type CalendarDataAndEventDetails = Data | CommonEvent<CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields>;
+
+interface CalendarDetailsProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  data?: CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Make data prop optional
+  details: DetailsItem<T>;
+  customizations?: Customizations<T>;
+  collaborationOptions?: CollaborationOptions;
+}
+
+const formatDate = (date: Date | undefined): string => {
+  return date ? date.toLocaleDateString('en-US') : 'Not set';
+};
+
+const CalendarDetails: React.FC<CalendarDetailsProps<CalendarDataAndEventDetails>
+> = observer(({ details, data, collaborationOptions }) => {
+  return (
+    <div>
+      <h3>{details.title}</h3>
+      {details.phase && ( // Check if details.phase is not null or undefined
+        <div>
+          <p>Phase Description: {details.phase.description || "N/A"}</p>
+          <p>Phase Name: {details.phase.name || "N/A"}</p>
+        </div>
+      )}
+      <p>
+        Team Members: {details.teamMembers?.join(", ") || "No team members"}
+      </p>
+      {/* Update the rendering of Start Date and End Date */}
+      <p>
+        Start Date:{" "}
+        {details.phase?.startDate &&
+        typeof details.phase.startDate !== "boolean"
+          ? new Date(Number(details.phase.startDate)).toLocaleDateString()
+          : "N/A"}
+      </p>
+      <p>
+        End Date:{" "}
+        {details.phase?.endDate && typeof details.phase.endDate !== "boolean"
+          ? new Date(Number(details.phase.endDate)).toLocaleDateString()
+          : "N/A"}
+      </p>
+      <div>
+        <strong>Communication:</strong>
+        <ul>
+          {/* Update the logic based on the structure of details.communication */}
+          {/* For example, if details.communication represents a specific action, access its properties accordingly */}
+          <li>
+            Audio:{" "}
+            {details.communication && "audio" in details.communication
+              ? details.communication.audio
+              : "N/A"}
+          </li>
+          <li>
+            Video:{" "}
+            {details.communication && "video" in details.communication
+              ? details.communication.video
+              : "N/A"}
+          </li>
+          <li>
+            Text:{" "}
+            {details.communication && "text" in details.communication
+              ? details.communication.text
+              : "N/A"}
+          </li>
+        </ul>
+      </div>
+      <div>
+        <strong>Collaboration Options:</strong>
+        <ul>
+          {/* Ensure collaborationOptions is an array and then map over it */}
+          <ul>
+            {/* Use ListGenerator component to render collaborationOptions */}
+            <ListGenerator
+              items={
+                Array.isArray(collaborationOptions) ? collaborationOptions : []
+              }
+            />
+          </ul>
+        </ul>
+      </div>
+      {/* Display cryptocurrency event details */}
+      <div>
+        <h4>Cryptocurrency Event Details</h4>
+        <p>Event Title: {data?.title}</p>
+        <p>Description: {data?.description}</p>
+        <p>Start Date: {formatDate(data?.startDate)}</p>
+        <p>End Date: {formatDate(data?.endDate)}</p>
+        {/* Add more properties as needed */}
+      </div>
+      <div>
+        <h3>{details.title}</h3>
+        {/* Include additional event details */}
+        <p>Importance: {details.importance || "N/A"}</p>
+        <p>Location: {details.location || "N/A"}</p>
+        <p>Attendees: {details.attendees?.join(", ") || "N/A"}</p>
+        <p>Attachments: {details.attachments?.length || "N/A"}</p>
+        <p>Notes: {details.notes || "N/A"}</p>
+        <p>Recurring: {details.isRecurring ? "Yes" : "No"}</p>
+        <p>Reminders: {details.reminders?.join(", ") || "N/A"}</p>
+        <p>Status: {details.status || "N/A"}</p>
+        <p>Participants: {details.participants?.join(", ") || "N/A"}</p>
+        {/* Add more properties as needed */}
+      </div>
+    </div>
+  );
+});
+
+export default CalendarDetails;

@@ -1,0 +1,117 @@
+// SnapshotCore.ts
+import { MapExcludedFieldsToMetaKeys } from '@/core/components/routing/Fields';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { SchemaField } from '@/core/config/metadata/SchemaField';
+import { UnifiedMetadata } from "@/core/config/MetaDataOptions";
+import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { SharedIdentifiers } from "@/core/documents/RelatedProps";
+import { Category } from '@/core/libraries/categories/generateCategoryProperties';
+import { PriorityTypeEnum } from "@/core/models/data/StatusType";
+import { TagsRecord } from '@/core/models/tracker/Tag';
+import { CategoryProperties } from '@/core/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import { DataStoreMethods } from '@/core/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/core/snapshots/LocalStorageSnapshotStore';
+import SnapshotStore from '@/core/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import { UnifiedConfigOption } from '@/core/snapshots/SnapshotStoreOptions';
+import CalendarManagerStoreClass from '@/core/state/stores/CalendarManagerStore';
+import { EventRecord, InitializedState } from '@/core/state/stores/DataStore';
+import { AuditRecord } from '@/core/subscribers/Subscriber';
+import { MultipleEventsCallbacks } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import { MemberEntity } from '@/core/typings/entities/MemberEntity';
+import { ExtendedVersionData } from '@/core/versions/VersionData';
+
+interface SnapshotCore<
+  T extends BaseDataEntity = MemberEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  extends SharedIdentifiers<T, K> {
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};  
+  schema: string | Record<string, SchemaField>
+  versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
+
+  isCore: boolean;
+  taskIdToAssign: string | undefined;
+
+
+  // Identity and storage
+  storeId: number;
+  snapshotIds?: string[];
+  
+  // Metadata
+  description?: string | null;
+  tags?: TagsRecord<T>| string[] | undefined;
+  state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  topic?: string;
+  meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadata?: UnifiedMetadata<
+    T,
+    K,
+    Meta,
+    AttachmentType,
+    MapExcludedFieldsToMetaKeys<T, K,  Meta, AttachmentType, ExcludedFields, IncludedFields>
+  > | {};
+  
+  // Config and category
+  configOption?: UnifiedConfigOption<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  priority?: string | PriorityTypeEnum;
+  categoryProperties?: CategoryProperties
+  
+  // Lifecycle
+  isExpired: () => boolean | undefined;
+  isCompressed?: boolean;
+  isEncrypted?: boolean;
+  isSigned?: boolean;
+  expirationDate?: Date | string;
+  deleted?: boolean;
+  
+  // Audit
+  auditTrail?: AuditRecord[];
+  
+  // Data
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  dataStoreMethods?: DataStoreMethods<T, K, Meta> | null;
+  
+  // Timestamps
+  updatedAt?: string | Date;
+  timestamp: string | number | Date | undefined;
+  // Other core properties
+}
+
+interface SnapshotStoreCore<
+  T extends BaseDataEntity = MemberEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  id?: string | number | undefined;             
+  data: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;  
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  
+  storeId: string | number;
+  category: Category;
+  criteria?: CriteriaType;
+  snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  timestamp?: string | number | Date | undefined;
+  eventRecords: Record<string, EventRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> | null;
+  records?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;  
+
+  storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+
+  callback: (data: T) => void;
+  multipleCallbacks: MultipleEventsCallbacks<T>;
+
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean): number;  
+}
+
+
+  export type { SnapshotCore, SnapshotStoreCore };

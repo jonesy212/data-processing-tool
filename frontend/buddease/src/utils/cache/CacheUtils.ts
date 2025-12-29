@@ -1,7 +1,7 @@
 //Client-side cache utils /utils/cache/clientCacheUtils.ts):
 
+import { writeAndUpdateCache } from '@/core/server/CacheManager';
 import { readCache, writeCache } from '@/utils/ReadAndWriteCache';
-import { writeAndUpdateCache } from '@/app/server/CacheManager';
 import { create } from 'mobx-persist';
 
 // Read cache data

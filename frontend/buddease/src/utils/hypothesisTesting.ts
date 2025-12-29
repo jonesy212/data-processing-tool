@@ -1,5 +1,5 @@
 // utils/hypothesisTesting.ts
-import DatabaseClient from '@/app/api/DatabaseClient';
+import DatabaseClient from '@/core/api/DatabaseClient';
 
 // Types for statistical tests
 export interface TTestParams {
@@ -345,4 +345,4 @@ function normalCDF(x: number): number {
 }
 
 // Export individual test functions if needed elsewhere
-export { performTTest, performChiSquareTest, performAnovaTest };
+export { performAnovaTest, performChiSquareTest, performTTest };

@@ -1,6 +1,6 @@
 // buddease/test-reports-now.ts
-import { ReportGenerators } from '@/app/generators/corrections/ReportGenerators';
-import { CorrectionReport } from '@/app/generators/corrections/CorrectionGenerator';
+import { CorrectionReport } from '@/core/generators/corrections/CorrectionGenerator';
+import { ReportGenerators } from '@/core/generators/corrections/ReportGenerators';
 
 async function quickTest() {
   console.log('🚀 Testing Report Generators with ABSOLUTE PATHS...\n');

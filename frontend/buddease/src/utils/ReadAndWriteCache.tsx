@@ -1,27 +1,27 @@
-import { transformYourResponseToExchangeData } from '@/app/api/ApiExchange';
-import UserService, { userId, userService } from "@/app/api/ApiUser";
-import extractCriteria from '@/app/api/SnapshotApi';
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { transformYourResponseToExchangeData } from '@/core/api/ApiExchange';
+import UserService, { userId, userService } from "@/core/api/ApiUser";
+import extractCriteria from '@/core/api/SnapshotApi';
+import { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import {
-  frontendStructure,
-} from "@/app/config/appStructure/FrontendStructure";
-import { BackendConfig, backendConfig } from "@/app/config/BackendConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { FrontendConfig, frontendConfig } from "@/app/config/FrontendConfig";
-import userSettings, { UserSettings } from "@/app/config/UserSettings";
-import { DataVersions, dataVersions } from "@/app/configs/DataVersionsConfig";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CacheData, realtimeData } from "@/app/generators/GenerateCache";
-import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
-import { useErrorHandling } from "@/app/hooks/useErrorHandling";
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { CustomPhaseHooks } from '@/app/models/phases/Phase';
-import { authToken } from "@/app/server/auth/authToken";
-import BackendStructure, { backendStructure } from '@/app/server/database/BackendStructure';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { RealtimeData } from '@/app/typings/realtimeTypes';
-import { VideoData } from '@/app/typings/videoTypes/Video';
-import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
+    frontendStructure,
+} from "@/core/config/appStructure/FrontendStructure";
+import { BackendConfig, backendConfig } from "@/core/config/BackendConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { FrontendConfig, frontendConfig } from "@/core/config/FrontendConfig";
+import userSettings, { UserSettings } from "@/core/config/UserSettings";
+import { DataVersions, dataVersions } from "@/core/configs/DataVersionsConfig";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { CacheData, realtimeData } from "@/core/generators/GenerateCache";
+import { AsyncHook } from "@/core/hooks/useAsyncHookLinker";
+import { useErrorHandling } from "@/core/hooks/useErrorHandling";
+import { K, T } from '@/core/models/data/dataStoreMethods';
+import { CustomPhaseHooks } from '@/core/models/phases/Phase';
+import { authToken } from "@/core/server/auth/authToken";
+import BackendStructure, { backendStructure } from '@/core/server/database/BackendStructure';
+import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
+import { RealtimeData } from '@/core/typings/realtimeTypes';
+import { VideoData } from '@/core/typings/videoTypes/Video';
+import { VersionHistory, versionHistory } from "@/core/versions/VersionData";
 
 // Define the structure of the response data
 interface CacheResponse<

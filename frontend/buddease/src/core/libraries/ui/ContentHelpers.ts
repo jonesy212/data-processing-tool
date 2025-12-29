@@ -1,0 +1,56 @@
+// ContentHelpers.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { Project } from "@/core/models/projects/Project";
+import { Task } from "@/core/models/tasks/Task";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotData } from "@/core/snapshots/SnapshotData";
+import { Todo } from "@/core/todos/Todo";
+
+export function isTask<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(content: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Project): content is Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  return (content as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).status !== undefined;
+}
+
+export function isProject<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(content: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Project): content is Project {
+  return (content as Project).startDate !== undefined;
+}
+
+export function isTodo<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(content: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): content is Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    return (content as Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).title !== undefined;
+  }
+
+  
+export function isMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  & Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> {
+    return data instanceof Map;
+  }

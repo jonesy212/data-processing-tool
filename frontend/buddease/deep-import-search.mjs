@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const problematicFile = 'src/app/snapshots/snapshotContainerUtils.ts';
@@ -30,16 +30,16 @@ exportPatterns.forEach(pattern => {
   let match;
   while ((match = pattern.exec(content)) !== null) {
     console.log(`📤 Re-export found: ${match[0]}`);
-    if (match[1] === '@/app') {
-      console.log('   ❌ PROBLEMATIC: Re-exporting from @/app directly');
+    if (match[1] === '@/core') {
+      console.log('   ❌ PROBLEMATIC: Re-exporting from @/core directly');
     }
   }
 });
 
-// Check for any line that has @/app without a subpath in ANY context
+// Check for any line that has @/core without a subpath in ANY context
 const lines = content.split('\n');
 lines.forEach((line, index) => {
-  if (line.includes('@/app') && !line.includes('@/app/')) {
+  if (line.includes('@/core') && !line.includes('@/core/')) {
     console.log(`⚠️  SUSPICIOUS at line ${index + 1}: ${line.trim()}`);
   }
 });

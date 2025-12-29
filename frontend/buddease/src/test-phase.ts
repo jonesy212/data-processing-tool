@@ -1,4 +1,4 @@
-import { PhaseExecutor } from './app/error-analyzer/phases/PhaseExecutor';
+import { PhaseExecutor } from '@/core/error-analyzer/phases/PhaseExecutor';
 
 async function main() {
   const phaseName = process.argv[2];

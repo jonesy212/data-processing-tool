@@ -225,7 +225,7 @@ Theme configuration and management hook.
 
 ```typescript
 // app/layout/useAppThemeInit.ts
-import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
+import { useThemeConfig } from "@/core/hooks/userInterface/ThemeConfigContext";
 import { useLayout } from "../pages/layouts/LayoutContext";
 import { useCallback } from "react";
 

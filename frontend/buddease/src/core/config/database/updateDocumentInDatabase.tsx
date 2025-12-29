@@ -1,0 +1,387 @@
+// updateDocumentInDatabase.tsx
+import { handleApiError } from "@/core/api/ApiLogs";
+import axiosInstance from '@/core/api/csrfToken';
+import DatabaseClient from "@/core/api/DatabaseClient";
+import { endpoints } from '@/core/api/endpointConfigurations';
+import { DocumentId, DocumentStatus } from "@/core/components/documents/types";
+import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { databaseConfig } from '@/core/config/endpoints/databaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import { Drawing } from "@/core/libraries/drawing/generateDrawingJSON";
+import { useAuth } from "@/core/state/context/AuthContext";
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { DatasetModel } from "@/core/todos/tasks/DataSetModel";
+import { AxiosError, AxiosResponse } from "axios";
+
+const { notify } = useNotification();
+
+const API_BASE_URL = endpoints.documents;
+
+
+const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
+  try {
+    const documentUrl = `${API_BASE_URL}/documents/${documentId}`;
+    const headers = headersConfig;
+    const response = await axiosInstance.get(documentUrl, { headers });
+    const document = response.data;
+    document.status = 'draft';
+    
+    // Success notification could be added here if needed
+    // notify({
+    //   id: `document_fetch_success_${documentId}_${Date.now()}`,
+    //   message: "Document fetched from archive successfully",
+    //   data: { documentId },
+    //   timestamp: new Date(),
+    //   type: NotificationTypeEnum.OPERATION_SUCCESS,
+    //   level: 'success' as const
+    // });
+    
+  } catch (error: any) {
+    // Keep the existing handleApiError call
+    handleApiError(error, 'fetchDocumentFromArchive');
+    
+    // Enhanced error notification
+    const axiosError = error as AxiosError;
+    let userMessage = 'Error fetching document from archive';
+    
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 401:
+          userMessage = 'Authentication required to access archived documents';
+          break;
+        case 403:
+          userMessage = 'You don\'t have permission to access this archived document';
+          break;
+        case 404:
+          userMessage = 'Archived document not found';
+          break;
+        case 410:
+          userMessage = 'Document has been permanently removed from archive';
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = 'Network error: Unable to connect to document archive';
+    }
+    
+    // Using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `document_archive_fetch_error_${documentId}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'document',
+        entityId: documentId,
+        action: 'fetch_from_archive',
+        originalError: axiosError.message,
+        statusCode: axiosError.response?.status,
+        errorType: 'ARCHIVE_FETCH_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
+  }
+};
+
+async function updateDocumentInDatabase(documentId: DocumentId, status: DocumentStatus): Promise<void> {
+  try {
+    const documentUpdateUrl = `${API_BASE_URL}/documents/${documentId}`;
+    const headers = headersConfig;
+    
+    // Use the useAuth hook to access authentication state and functions
+    const { token } = useAuth();
+    
+    // Check if the user is authenticated before making the update request
+    if (!token) {
+      // Handle authentication error with consistent notification format
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_auth_error_${documentId}_${Date.now()}`,
+        message: 'Authentication required to update document',
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          errorType: 'AUTHENTICATION_ERROR',
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      throw new Error('User not authenticated');
+    }
+
+    const response: AxiosResponse = await axiosInstance.put(
+      documentUpdateUrl, 
+      { status }, 
+      { headers }
+    );
+
+    if (response.status === 200) {
+      console.log(`Document ${documentId} updated successfully in the database.`);
+      
+      // Success notification
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_success_${documentId}_${Date.now()}`,
+        message: NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS || "Document updated successfully",
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          responseData: response.data,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_SUCCESS,
+        level: 'success' as const
+      });
+      
+    } else {
+      // Handle non-200 status with consistent notification format
+      const { notify } = useNotification();
+      notify({
+        id: `document_update_failed_${documentId}_${Date.now()}`,
+        message: `Failed to update document (Status: ${response.status})`,
+        data: {
+          entityType: 'document',
+          entityId: documentId,
+          action: 'update',
+          status: status,
+          statusCode: response.status,
+          statusText: response.statusText,
+          responseData: response.data,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date(),
+        type: NotificationTypeEnum.OPERATION_ERROR,
+        level: 'error' as const
+      });
+      
+      throw new Error(`Failed to update document ${documentId} in the database.`);
+    }
+  } catch (error: any) {
+    const errorMessage = "Failed to update document";
+    
+    // Keep the existing handleApiError call
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    
+    // Enhanced error notification for caught errors
+    const axiosError = error as AxiosError;
+    let userMessage = errorMessage;
+    
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 400:
+          userMessage = 'Invalid document update data';
+          break;
+        case 401:
+          userMessage = 'Authentication required to update document';
+          break;
+        case 403:
+          userMessage = 'You don\'t have permission to update this document';
+          break;
+        case 404:
+          userMessage = 'Document not found for update';
+          break;
+        case 409:
+          userMessage = 'Document update conflict';
+          break;
+        case 422:
+          userMessage = 'Document validation failed';
+          break;
+      }
+    } else if (axiosError.request) {
+      userMessage = 'Network error: Unable to update document';
+    }
+    
+    // Using consistent object format
+    const { notify } = useNotification();
+    notify({
+      id: `document_update_error_${documentId}_${Date.now()}`,
+      message: userMessage,
+      data: {
+        entityType: 'document',
+        entityId: documentId,
+        action: 'update',
+        status: status,
+        originalError: axiosError.message,
+        statusCode: axiosError.response?.status,
+        errorType: 'DOCUMENT_UPDATE_ERROR',
+        timestamp: new Date().toISOString()
+      },
+      timestamp: new Date(),
+      type: NotificationTypeEnum.OPERATION_ERROR,
+      level: 'error' as const
+    });
+
+    throw error;
+  }
+}
+
+
+let documentId: DocumentData | undefined;
+
+if (typeof documentId === "string" || typeof documentId === "object") {
+  // No need to reassign documentId here
+} else {
+  // Handle case where documentId is undefined or not a string/object
+  // Handle non-string/object case if needed
+}
+
+
+ const addDocumentFailure = async (error: AxiosError<unknown>) => {
+  try {
+    const { data } = error.response as AxiosResponse;
+    const { message, status } = data;
+    console.log(`Error fetching document from archive: ${message}`);
+    console.log(`Status code: ${status}`);
+  } catch (error) {
+    console.error(`Error fetching document from archive: ${error}`);
+  }
+}
+
+
+
+
+
+
+// Combined function to load drawing from the database
+async function loadDrawingFromDatabase<  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
+  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | DocumentId
+): Promise<Drawing | string> {
+  try {
+    // Check if the documentId is of type DocumentData
+    if ("id" in documentId) {
+      // Mock implementation to simulate loading drawing from database
+      // Replace this with actual database query or API call
+      const drawing: Drawing = {
+        id: String(documentId.id),
+        name: "Mock Drawing",
+        // Add other properties of the drawing
+      };
+      return drawing;
+    } else if (typeof documentId === "string") {
+      // Initialize database client
+      const dbClient = new DatabaseClient(databaseConfig);
+
+      // Connect to the database
+      await dbClient.connect();
+
+      // Query the database for the drawing content
+      const result = await dbClient.query(
+        "SELECT content FROM drawings WHERE document_id = $1",
+        [documentId as string]
+      );
+
+      // Check if the query result has any rows
+      if (result.rows.length > 0) {
+        // Get the drawing content from the query result
+        const drawingContent = result.rows[0].content;
+        return drawingContent;
+      } else {
+        throw new Error("No drawing found for the given document ID");
+      }
+    } else {
+      throw new Error("Invalid documentId");
+    }
+  } catch (error: any) {
+    handleApiError(error, "loadDrawingFromDatabase");
+    throw error;
+  }
+}
+
+
+
+
+// Function to save to-do data to the database
+const saveTodoToDatabase = async (todoData: any): Promise<void> => {
+  try {
+    // Initialize database client
+    const dbClient = new DatabaseClient(databaseConfig);
+
+    // Connect to the database
+    await dbClient.connect();
+
+    // Insert the to-do data into the appropriate collection/table
+    await dbClient.insert("todos", todoData);
+
+    // Close the database connection
+    await dbClient.close();
+
+    console.log("To-do data saved to the database:", todoData);
+  } catch (error) {
+    console.error("Error saving to-do data to the database:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
+ const saveDocumentToDatabase = async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T>(document: DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content: string): Promise<void> => { 
+  try {
+
+    // Initialize database client
+    const dbClient = new DatabaseClient(databaseConfig);
+    // Connect to the database
+    await dbClient.connect();
+    // Save the document
+    await dbClient.insert("documents", document);
+    // Close the database connection
+    await dbClient.close();
+  } catch (error) {
+    handleApiError(error as AxiosError<unknown>, "Failed to save document to database");
+  }
+ }
+
+
+
+
+// Function to save trade data to the database
+ const saveTradeToDatabase = async (tradeData: any): Promise<void> => {
+  try {
+    // Initialize database client
+    const dbClient = new DatabaseClient(databaseConfig);
+
+    // Connect to the database
+    await dbClient.connect();
+
+    // Insert the trade data into the trades collection/table
+    await dbClient.insert("trades", tradeData);
+
+    // Close the database connection
+    await dbClient.close();
+
+    console.log("Trade data saved to the database:", tradeData);
+  } catch (error) {
+    console.error("Error saving trade data to the database:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
+export {
+    addDocumentFailure, fetchDocumentFromArchive,
+    loadDrawingFromDatabase, saveDocumentToDatabase,
+    saveTodoToDatabase,
+    saveTradeToDatabase,
+    updateDocumentInDatabase
+};
+

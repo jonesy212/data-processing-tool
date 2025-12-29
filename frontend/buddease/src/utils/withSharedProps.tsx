@@ -1,7 +1,7 @@
 // withSharedProps.tsx
 
+import { useStepContext } from "@/core/state/context/StepContext";
 import React from "react";
-import { useStepContext } from "@/app/state/context/StepContext";
 
 
 export const withSharedProps = (WrappedComponent: React.ComponentType<any>) => {

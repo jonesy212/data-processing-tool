@@ -1,0 +1,79 @@
+[
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/models/phases/Phase.ts",
+    "code": "1109",
+    "message": "Expression expected.",
+    "startLineNumber": 168,
+    "startColumn": 97,
+    "endLineNumber": 168,
+    "endColumn": 107,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/pages/community/MentorshipRequest.tsx",
+    "code": "1128",
+    "message": "Declaration or statement expected.",
+    "startLineNumber": 28,
+    "startColumn": 1,
+    "endLineNumber": 28,
+    "endColumn": 11,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/pages/community/MentorshipRequest.tsx",
+    "code": "2427",
+    "message": "Interface name cannot be 'default'.",
+    "startLineNumber": 28,
+    "startColumn": 18,
+    "endLineNumber": 28,
+    "endColumn": 28,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/shared/drawingLibrary.d.ts",
+    "code": "1128",
+    "message": "Declaration or statement expected.",
+    "startLineNumber": 5,
+    "startColumn": 3,
+    "endLineNumber": 5,
+    "endColumn": 13,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/shared/drawingLibrary.d.ts",
+    "code": "2427",
+    "message": "Interface name cannot be 'class'.",
+    "startLineNumber": 5,
+    "startColumn": 20,
+    "endLineNumber": 5,
+    "endColumn": 30,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/redux/slices/RandomWalkManagerSlice.ts",
+    "code": "1128",
+    "message": "Declaration or statement expected.",
+    "startLineNumber": 17,
+    "startColumn": 1,
+    "endLineNumber": 17,
+    "endColumn": 11,
+    "severity": 8,
+    "source": "TypeScript"
+  },
+  {
+    "resource": "/Users/dixiejones/data_analysis/frontend/buddease/src/core/state/redux/slices/RandomWalkManagerSlice.ts",
+    "code": "2427",
+    "message": "Interface name cannot be 'const'.",
+    "startLineNumber": 17,
+    "startColumn": 18,
+    "endLineNumber": 17,
+    "endColumn": 28,
+    "severity": 8,
+    "source": "TypeScript"
+  }
+]

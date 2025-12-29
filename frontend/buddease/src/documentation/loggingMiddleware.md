@@ -50,7 +50,7 @@ These allow type-safe access to store snapshots, notifications, tasks, etc.
 ## Example Usage
 
 ```ts
-import { loggingMiddleware } from '@/app/middleware/loggingMiddleware';
-import { middlewarePipeline } from '@/app/middleware/pipeline';
+import { loggingMiddleware } from '@/core/middleware/loggingMiddleware';
+import { middlewarePipeline } from '@/core/middleware/pipeline';
 
 middlewarePipeline.use(loggingMiddleware);

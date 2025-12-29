@@ -1,16 +1,16 @@
 // CacheManager.ts
-import getAppPath from "@/app/config/appStructure/appPath";
-import FrontendStructure from "@/app/config/appStructure/FrontendStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UserPreferences } from "@/app/config/UserPreferences";
-import { UserSettings } from "@/app/config/UserSettings";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from '@/app/models/data/Data';
-import { CustomPhaseHooks } from "@/app/models/phases/Phase";
-import BackendStructure from "@/app/server/database/BackendStructure";
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { DataAnalysisDispatch } from "@/app/typings/phases/dataAnalysisTypes";
-import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import getAppPath from "@/core/config/appStructure/appPath";
+import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UserPreferences } from "@/core/config/UserPreferences";
+import { UserSettings } from "@/core/config/UserSettings";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { BaseData } from '@/core/models/data/Data';
+import { CustomPhaseHooks } from "@/core/models/phases/Phase";
+import BackendStructure from "@/core/server/database/BackendStructure";
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { DataAnalysisDispatch } from "@/core/typings/phases/dataAnalysisTypes";
+import { getCurrentAppInfo } from "@/core/versions/VersionGenerator";
 import fs from 'fs';
 
 const { notify } = useNotification();

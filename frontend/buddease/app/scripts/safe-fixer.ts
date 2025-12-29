@@ -120,6 +120,7 @@ export class SafeFixer {
       return false;
     }
   }
+
   
   // Save fix records
   saveRecords(outputPath: string = './reports/fix-records.json', sessionId?: string): void {
@@ -165,19 +166,29 @@ export class SafeFixer {
     this.pendingFiles.clear();
   }
 
-    // Apply all pending fixes for a file
-  applyPendingFixes(filePath: string): boolean {
+  /**
+   * Apply fixes for a specific file (alias for applyPendingFixes)
+   * This method exists for backward compatibility with existing code
+   * 
+   * @param filePath - Path to the file to apply fixes to
+   * @returns boolean indicating if any fixes were applied
+   */
+
+  applyPendingFixes(filePath: string): { fixed: number; failed: number } {
     const resolvedPath = path.resolve(filePath);
     
     if (!this.pendingFiles.has(resolvedPath)) {
-      return false;
+      return { fixed: 0, failed: 0 };
     }
     
     const fileData = this.pendingFiles.get(resolvedPath)!;
     
     if (fileData.fixes.length === 0) {
-      return false;
+      return { fixed: 0, failed: 0 };
     }
+    
+    let fixed = 0;
+    let failed = 0;
     
     try {
       // Read the file
@@ -192,8 +203,15 @@ export class SafeFixer {
       for (const fix of fileData.fixes) {
         const lineIndex = fix.line - 1;
         
-        // Skip if line is out of bounds or already modified
-        if (lineIndex < 0 || lineIndex >= lines.length || modifiedLines.has(lineIndex)) {
+        // Skip if line is out of bounds
+        if (lineIndex < 0 || lineIndex >= lines.length) {
+          failed++;
+          continue;
+        }
+        
+        // Skip if line already modified
+        if (modifiedLines.has(lineIndex)) {
+          failed++; // Count as failed to avoid overwriting
           continue;
         }
         
@@ -205,6 +223,7 @@ export class SafeFixer {
           lines[lineIndex] = newLine;
           modifiedLines.add(lineIndex);
           hasChanges = true;
+          fixed++;
           
           // Add to records
           this.records.push({
@@ -216,6 +235,9 @@ export class SafeFixer {
             backupPath: fileData.backupPath || '',
             resolved: true
           });
+        } else {
+          // Fix pattern not found in line
+          failed++;
         }
       }
       
@@ -223,17 +245,31 @@ export class SafeFixer {
       if (hasChanges) {
         const newContent = lines.join('\n');
         fs.writeFileSync(filePath, newContent);
-        console.log(`✅ Applied ${modifiedLines.size} fixes to ${path.basename(filePath)}`);
-        return true;
       }
+      
+      // Remove processed fixes from pending list
+      if (fixed > 0) {
+        this.pendingFiles.set(resolvedPath, {
+          fixes: [],
+          backupPath: fileData.backupPath
+        });
+      }
+      
+      console.log(`✅ Applied ${fixed} fixes to ${path.basename(filePath)} (${failed} failed)`);
       
     } catch (error) {
       console.error(`❌ Error applying fixes to ${filePath}:`, error);
+      // Count all pending fixes as failed on error
+      failed = fileData.fixes.length;
     }
     
-    return false;
+    return { fixed, failed };
   }
-  
+
+  // Keep this as an alias that points to applyPendingFixes
+  applyFixesForFile(filePath: string): { fixed: number; failed: number } {
+    return this.applyPendingFixes(filePath);
+  }
   // Apply all pending fixes across all files
   applyAllPendingFixes(): { fixed: number; files: number } {
     let totalFixed = 0;

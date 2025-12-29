@@ -1,37 +1,37 @@
 // DApp.tsx
-import appTreeApiService from "@/app/api/appTreeApi";
-import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
-import { AquaChat } from "@/app/components/communications/chat/AquaChat";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import LoadAquaState from "@/app/dashboards/LoadAquaState";
-import { manageDocuments } from "@/app/documents/DocumentManagement";
-import { DocumentOptions } from "@/app/documents/DocumentOptions";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { SharedIdentifiers } from "@/app/documents/RelatedProps";
-import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
-import { useErrorHandling } from "@/app/hooks/useErrorHandling";
-import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
-import { DataLogger } from '@/app/logging/Logger';
-import { CommonRelationship, SharedRelationshipData } from '@/app/models/data/Data';
-import { DocumentSize } from "@/app/models/data/StatusType";
-import UserRoles from '@/app/models/UserRoles';
-import { authToken } from "@/app/server/auth/authToken";
-import Connection from "@/app/server/database/Connection";
-import isValidAuthToken from "@/app/server/security/AuthValidation";
-import { DatabaseType } from '@/app/server/database/DatabaseServiceFactory'
-import { AppEntity } from "@/app/typings/entities/AppEntity";
-import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/app/typings/entities/ExtendedDappEntity';
-import { UserData } from "@/app/users/User";
-import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection'
-import FluencePlugin from "@/utils/web3/pluginSystem/plugins/fluencePlugin";
-import { Attachment } from '@/app/documents/attachment/Attachment';
+import appTreeApiService from "@/core/api/appTreeApi";
+import { generateAllHeaders } from '@/core/api/headers/generateAllHeaders';
+import { AquaChat } from "@/core/components/communications/chat/AquaChat";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import LoadAquaState from "@/core/dashboards/LoadAquaState";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { manageDocuments } from "@/core/documents/DocumentManagement";
+import { DocumentOptions } from "@/core/documents/DocumentOptions";
+import { DocumentData } from "@/core/documents/editing/DocumentBuilder";
+import { SharedIdentifiers } from "@/core/documents/RelatedProps";
+import useSocialAuthentication from "@/core/hooks/commHooks/useSocialAuthentication";
+import { useErrorHandling } from "@/core/hooks/useErrorHandling";
+import { ThemeEnum } from "@/core/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/core/libraries/ui/theme/ThemeConfig";
+import { DataLogger } from '@/core/logging/Logger';
+import { CommonRelationship, SharedRelationshipData } from '@/core/models/data/Data';
+import { DocumentSize } from "@/core/models/data/StatusType";
+import UserRoles from '@/core/models/UserRoles';
+import { authToken } from "@/core/server/auth/authToken";
+import Connection from "@/core/server/database/Connection";
+import { DatabaseType } from '@/core/server/database/DatabaseServiceFactory';
+import isValidAuthToken from "@/core/server/security/AuthValidation";
+import { AppEntity } from "@/core/typings/entities/AppEntity";
+import { ExtendedDappAttachment, ExtendedDappEntity, ExtendedDappExcludedFields, ExtendedDappIncludedFields, ExtendedDappK, ExtendedDappMeta } from '@/core/typings/entities/ExtendedDappEntity';
+import { UserData } from "@/core/users/User";
 import { DAppAdapterProps } from '@/utils/web3/crossPlatformLayer/platform/DAppAdapter';
+import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
+import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';
+import FluencePlugin from "@/utils/web3/pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "@/utils/web3/webConfigs/aqua/AquaConfig";
 import YourClass from "@/utils/YourClass";
 import React, { FC } from "react";
 import winston from "winston";
-import { DAppAdapterConfig, DappProps } from '@/utils/web3/dAppAdapter/DAppAdapterConfig'
 
 export type CustomDocumentOptionProps<
   T extends BaseDataEntity = AppEntity,
@@ -483,9 +483,9 @@ class CustomDAppAdapter<
     // Simulate loading a component dynamically
     switch (componentName) {
       case "ChartComponent":
-        return import("@/app/components/charts/ChartComponent");
+        return import("@/core/components/charts/ChartComponent");
       case "UserFormComponent":
-        return import("@/app/pages/forms/UserFormComponent");
+        return import("@/core/pages/forms/UserFormComponent");
       // Add more cases as needed
       default:
         return null;
@@ -497,13 +497,13 @@ class CustomDAppAdapter<
     let component;
     switch (componentName) {
       case "ChartComponent":
-        component = await import("@/app/components/charts/ChartComponent");
+        component = await import("@/core/components/charts/ChartComponent");
         break;
       case "UserFormComponent":
-        component = await import("@/app/pages/forms/UserFormComponent");
+        component = await import("@/core/pages/forms/UserFormComponent");
         break;
       case "authToken":
-        component = await import("@/app/server/auth/authToken");
+        component = await import("@/core/server/auth/authToken");
         break;
 
       default:

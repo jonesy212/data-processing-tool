@@ -1,0 +1,40 @@
+// useSecureUserId.ts
+//useSecureUserId.ts
+import { sanitizeInput } from '@/core/models/cypto/SanitizationFunctions';
+import UserRoles from '@/core/models/UserRoles';
+import { useAuth } from '@/core/state/context/AuthContext';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export const useSecureUserId = () => {
+  const [userId, setUserId] = useState<string | null>(null);
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const history = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (!isLoading && isAuthenticated && user) {
+        try {
+          const fetchedUserId = user.id;
+
+          if (user.role !== UserRoles.Administrator && fetchedUserId !== user.id) {
+            throw new Error('Unauthorized access');
+          }
+          
+          // Use sanitizeInput or sanitize for strings
+          const sanitizedUserId = 
+            typeof fetchedUserId === "string" ? sanitizeInput(fetchedUserId) : null;
+
+          setUserId(sanitizedUserId); // Now properly typed as string | null
+        } catch (error: any) {
+          setError(error.message);
+          history('/login');
+        }
+      }
+    };
+    fetchUserId();
+  }, [isLoading, isAuthenticated, user, history]);
+
+  return { userId, error };
+};

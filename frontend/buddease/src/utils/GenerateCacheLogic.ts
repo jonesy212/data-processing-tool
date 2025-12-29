@@ -1,7 +1,7 @@
 // GenerateCacheLogic.ts
 // utils/GenerateCacheLogic.ts
-import { CacheConfig } from '@/app/config/CacheConfig';
-import { CacheManager, writeClientCache, synchronizeCacheWithServer } from '@/app/libraries/cache/client/CacheManager';
+import { CacheConfig } from '@/core/config/CacheConfig';
+import { CacheManager, synchronizeCacheWithServer, writeClientCache } from '@/core/libraries/cache/client/CacheManager';
 import axios from 'axios';
 
 export interface GenerateCacheOptions {

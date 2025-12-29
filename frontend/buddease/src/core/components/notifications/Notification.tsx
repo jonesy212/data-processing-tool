@@ -1,0 +1,70 @@
+// Notification.tsx
+// Notification.ts
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import { ThemeConfigProps } from '@/core/hooks/userInterface/ThemeConfigContext';
+import { NotificationContext } from '@/core/state/context/NotificationContext';
+import useNotificationStore from '@/core/state/stores/NotificationStore';
+import { NotificationProps } from '@/core/typings/PropTypes';
+import React, { useContext } from 'react';
+
+interface NotificationStyleProps extends ThemeConfigProps, NotificationProps {}
+
+
+enum NotificationPreferenceEnum {
+  Email = "email",
+  PushNotification = "push_notification",
+  SMS = "sms",
+  InAppNotification = "in_app_notification",
+  None = "none",
+}
+
+const Notification: React.FC<NotificationStyleProps> = ({
+  message,
+  backgroundColor,
+  primaryColor,
+  fontSize,
+}) => {
+  const notificationStyle = {
+    backgroundColor: backgroundColor || "#ffffff", // Default background color
+    color: primaryColor || "#000000", // Default text color
+    fontSize: fontSize || "16px", // Default font size
+  };
+
+  const { addNotification, notify } = useContext(NotificationContext);
+
+  // Function to handle notification dismissal
+  const handleDismiss = async (notificationId: string) => {
+    // Implement dismissal logic here
+    try {
+      // Example: Dismiss notification by removing it from the notification store
+      useNotificationStore.getState().dismissNotification(notificationId);
+
+      // Notify dismissal
+      notify(
+        "dismissedNotification for " + notificationId, // Unique id for dismissal
+        "Notification dismissed", // Message for dismissal
+        "Notification dismissed successfully", // Standardized message
+        new Date(),
+        NotificationTypeEnum.INFO // Notification type for dismissal
+      );
+    } catch (error) {
+      console.error("Error dismissing notification:", error);
+      notify(
+        "dismissNotificationError", // Unique id for error
+        "Error dismissing notification", // Message for error
+        "Error occurred while dismissing notification", // Standardized error message
+        new Date(),
+        NotificationTypeEnum.ERROR // Notification type for error
+      );
+    }
+  };
+  return (
+    <div className="notification" style={notificationStyle}>
+      <span>{message}</span>
+      <button onClick={() => handleDismiss(addNotification.toString())}>Dismiss</button>
+    </div>
+  );
+};
+
+export default Notification;
+export { NotificationPreferenceEnum };

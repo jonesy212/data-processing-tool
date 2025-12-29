@@ -1,27 +1,27 @@
 // ControlPanel.tsx
-import CustomizableTimersComponent from "@/app/components/stopwatches/CustomizableTimersComponent";
-import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
-import { CustomEventExtension } from "@/app/events/BaseCustomEvent";
+import CustomizableTimersComponent from "@/core/components/stopwatches/CustomizableTimersComponent";
+import responsiveDesignStore from "@/core/components/styling/ResponsiveDesign";
+import { themeConfig } from "@/core/config/endpoints/themeConfig";
+import { CustomEventExtension } from "@/core/events/BaseCustomEvent";
 import {
     ButtonGenerator,
     useButtonGeneratorProps, // Updated import
-} from "@/app/generators/GenerateButtons";
-import { usePresetPercentages } from "@/app/generators/presetPercentages";
-import ThemeCustomization from "@/app/hooks/userInterface/ThemeCustomization";
-import AnimationDial from "@/app/libraries/animations/AnimationDial";
-import FadeInAnimation from "@/app/libraries/animations/FadeInAnimation";
-import RotateAnimation from "@/app/libraries/animations/RotateAnimation";
-import SlideUpAnimation from "@/app/libraries/animations/SlideUpAnimation";
-import { themeConfig } from "@/app/config/endpoints/themeConfig";
-import { createCustomEvent } from "@/app/services/EventService";
+} from "@/core/generators/GenerateButtons";
+import { usePresetPercentages } from "@/core/generators/presetPercentages";
+import ThemeCustomization from "@/core/hooks/userInterface/ThemeCustomization";
+import AnimationDial from "@/core/libraries/animations/AnimationDial";
+import FadeInAnimation from "@/core/libraries/animations/FadeInAnimation";
+import RotateAnimation from "@/core/libraries/animations/RotateAnimation";
+import SlideUpAnimation from "@/core/libraries/animations/SlideUpAnimation";
+import { createCustomEvent } from "@/core/services/EventService";
 import {
     NotificationContextProps,
     NotificationType,
     useNotification
-} from "@/app/state/context/NotificationContext";
+} from "@/core/state/context/NotificationContext";
 import {
     default as useNotificationStore
-} from "@/app/state/stores/NotificationStore";
+} from "@/core/state/stores/NotificationStore";
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";

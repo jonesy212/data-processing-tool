@@ -1,11 +1,11 @@
 // CalendarUtils.ts
 
-import { CalendarEventWithCriteria } from '@/app/pages/searches/FilterCriteria';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
-import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { CalendarEntity, CalendarK, CalendarMeta, CalendarAttachment, CalendarExcludedFields, CalendarIncludedFields } from "@/app/typings/entities/CalendarEntity";
+import { StructuredMetadata } from '@/core/config/StructuredMetadata';
+import { CalendarEventWithCriteria } from '@/core/pages/searches/FilterCriteria';
+import { SnapshotStore } from '@/core/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/core/snapshots/SnapshotStoreConfig';
+import { SnapshotStoreOptions } from '@/core/snapshots/SnapshotStoreOptions';
+import { CalendarAttachment, CalendarEntity, CalendarExcludedFields, CalendarIncludedFields, CalendarK, CalendarMeta } from "@/core/typings/entities/CalendarEntity";
 
 /* ============================================================
  * Type Guard

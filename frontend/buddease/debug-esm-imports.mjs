@@ -1,6 +1,6 @@
 // debug-esm-imports.mjs
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { dirname, resolve, join } from 'path';
+import { existsSync, readdirSync, readFileSync } from 'fs';
+import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,17 +12,17 @@ console.log('🔍 DEBUG: Testing ES Module Resolution\n');
 const testCases = [
   {
     name: 'EXACT ERROR CASE',
-    import: '@/app',
+    import: '@/core',
     expected: 'This should NOT resolve as a package'
   },
   {
     name: 'File imports',
-    import: '@/app/snapshots/snapshotContainerUtils',
+    import: '@/core/snapshots/snapshotContainerUtils',
     expected: 'src/app/snapshots/snapshotContainerUtils.ts'
   },
   {
     name: 'Config imports', 
-    import: '@/app/config/BaseConfig',
+    import: '@/core/config/BaseConfig',
     expected: 'src/app/config/BaseConfig.ts'
   }
 ];
@@ -32,7 +32,7 @@ for (const test of testCases) {
   
   // Method 1: Check if it exists as a file
   const possiblePaths = [
-    test.import.replace('@/app/', 'src/app/'),
+    test.import.replace('@/core/', 'src/app/'),
     test.import.replace('@/', 'src/'),
     test.import
   ];
@@ -57,8 +57,8 @@ for (const test of testCases) {
     console.log(`  ❌ No file found for: ${test.import}`);
     
     // Show what's in the directory structure
-    if (test.import.startsWith('@/app/')) {
-      const dirPath = test.import.replace('@/app/', 'src/app/').split('/').slice(0, -1).join('/');
+    if (test.import.startsWith('@/core/')) {
+      const dirPath = test.import.replace('@/core/', 'src/app/').split('/').slice(0, -1).join('/');
       const fullDirPath = resolve(process.cwd(), dirPath);
       
       if (existsSync(fullDirPath)) {
@@ -98,7 +98,7 @@ if (existsSync(fullPath)) {
       const importPath = importMatch[1];
       console.log(`      📍 Import path: "${importPath}"`);
       
-      if (importPath.startsWith('@/app')) {
+      if (importPath.startsWith('@/core')) {
         console.log(`      ⚠️  THIS IS THE PROBLEM - ES modules treat this as a package`);
       }
     }

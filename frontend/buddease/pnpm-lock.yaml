@@ -254,6 +254,9 @@ dependencies:
   openai:
     specifier: ^6.7.0
     version: 6.15.0(ws@8.18.3)(zod@4.2.1)
+  p-limit:
+    specifier: ^7.2.0
+    version: 7.2.0
   pako:
     specifier: ^2.1.0
     version: 2.1.0
@@ -427,6 +430,9 @@ devDependencies:
   '@faker-js/faker':
     specifier: ^10.1.0
     version: 10.1.0
+  '@rollup/plugin-typescript':
+    specifier: ^12.3.0
+    version: 12.3.0(rollup@4.54.0)(typescript@5.9.3)
   '@storybook/addon-controls':
     specifier: ^9.0.8
     version: 9.0.8
@@ -5898,6 +5904,25 @@ packages:
       rollup: 2.79.2
     dev: false
 
+  /@rollup/plugin-typescript@12.3.0(rollup@4.54.0)(typescript@5.9.3):
+    resolution: {integrity: sha512-7DP0/p7y3t67+NabT9f8oTBFE6gGkto4SA6Np2oudYmZE/m1dt8RB0SjL1msMxFpLo631qjRCcBlAbq1ml/Big==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^2.14.0||^3.0.0||^4.0.0
+      tslib: '*'
+      typescript: '>=3.7.0'
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+      tslib:
+        optional: true
+    dependencies:
+      '@rollup/pluginutils': 5.3.0(rollup@4.54.0)
+      resolve: 1.22.11
+      rollup: 4.54.0
+      typescript: 5.9.3
+    dev: true
+
   /@rollup/pluginutils@3.1.0(rollup@2.79.2):
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
     engines: {node: '>= 8.0.0'}
@@ -5923,7 +5948,6 @@ packages:
       estree-walker: 2.0.2
       picomatch: 4.0.3
       rollup: 4.54.0
-    dev: false
 
   /@rollup/rollup-android-arm-eabi@4.54.0:
     resolution: {integrity: sha512-OywsdRHrFvCdvsewAInDKCNyR3laPA2mc9bRYJ6LBp5IyvF3fvXbbNR0bSzHlZVFtn6E0xw2oZlyjg4rKCVcng==}
@@ -11447,7 +11471,6 @@ packages:
 
   /estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
-    dev: false
 
   /esutils@2.0.3:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
@@ -16738,6 +16761,13 @@ packages:
   /p-limit@4.0.0:
     resolution: {integrity: sha512-5b0R4txpzjPWVw/cXXUResoD4hb6U/x9BH08L7nw+GN1sezDzPdxeRvpc9c433fZhBan/wusjbCsqwqm4EIBIQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      yocto-queue: 1.2.2
+    dev: false
+
+  /p-limit@7.2.0:
+    resolution: {integrity: sha512-ATHLtwoTNDloHRFFxFJdHnG6n2WUeFjaR8XQMFdKIv0xkXjrER8/iG9iu265jOM95zXHAfv9oTkqhrfbIzosrQ==}
+    engines: {node: '>=20'}
     dependencies:
       yocto-queue: 1.2.2
     dev: false

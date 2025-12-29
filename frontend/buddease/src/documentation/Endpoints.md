@@ -23,7 +23,7 @@ Step-by-- Step Guide
 ## File: src/app/config/endpoints/[category]Config.ts
 
 ```typescript
-import { EndpointCategoryConfig, EndpointConfig } from '@/app/config/EndpointConfig';
+import { EndpointCategoryConfig, EndpointConfig } from '@/core/config/EndpointConfig';
 
 export interface [Category]Endpoints extends EndpointCategoryConfig {
   // Basic CRUD operations
@@ -57,7 +57,7 @@ Group related operations logically
 ## File: src/app/config/endpoints/[category]Config.ts
 
 ```typescript
-import { BASE_URL } from '@/app/api/baseUrl';
+import { BASE_URL } from '@/core/api/baseUrl';
 import { [Category]Endpoints } from './[Category]Endpoints';
 
 export const [category]Config: [Category]Endpoints = {
@@ -135,7 +135,7 @@ export interface EndpointConfigurations {
 
 ```typescript
 // Import your new config
-import { [category]Config } from '@/app/config/endpoints/[category]Config';
+import { [category]Config } from '@/core/config/endpoints/[category]Config';
 
 // Main endpoint configurations
 export const endpointConfigurations: EndpointConfigurations = {
@@ -160,7 +160,7 @@ export const endpointConfigurations: EndpointConfigurations = {
 
 ```typescript
 // Import your new config
-import { [category]Config } from '@/app/config/endpoints/[category]Config';
+import { [category]Config } from '@/core/config/endpoints/[category]Config';
 
 // Add to dynamicConfigMap for automatic endpoint generation
 const dynamicConfigMap = {
@@ -210,8 +210,8 @@ case '[category]':
 # In React Components
 
 ```typescript
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { useApi } from '@/app/hooks/useApi';
+import { endpoints } from '@/core/api/endpointConfigurations';
+import { useApi } from '@/core/hooks/useApi';
 
 const MyComponent = () => {
   const { get, post, put, del } = useApi();
@@ -245,8 +245,8 @@ const MyComponent = () => {
 **In API Services**
 
 ```typescript
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { apiClient } from '@/app/api/apiClient';
+import { endpoints } from '@/core/api/endpointConfigurations';
+import { apiClient } from '@/core/api/apiClient';
 
 export class [Category]Service {
   // Get all entities
@@ -391,7 +391,7 @@ Solution: Verify the endpoint key matches between configuration and URL generati
 Testing Your Configuration
 ```typescript
 // Test file: src/app/utils/testEndpointConfig.ts
-import { endpoints } from '@/app/api/endpointConfigurations';
+import { endpoints } from '@/core/api/endpointConfigurations';
 
 const testEndpoints = () => {
   // Test simple endpoints

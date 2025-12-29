@@ -1,8 +1,7 @@
-import { EventAttendance } from '@/app/components/calendar/AttendancePrediction';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { CustomEventType, SystemEvent } from '@/app/events/BaseEvent';
-import { BaseEvent, TaskEvent, UserEvent } from '@/app/events/BaseEvent';
+import { EventAttendance } from '@/core/components/calendar/AttendancePrediction';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { CustomEventType, SystemEvent } from '@/core/events/BaseEvent';
 
 
 // Check if the event is a Task Event

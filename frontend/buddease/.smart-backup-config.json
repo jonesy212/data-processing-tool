@@ -1,0 +1,14 @@
+{
+  "backupOnChange": true,
+  "backupOnlyFixed": false,
+  "createProductionBackup": true,
+  "trackEntityChanges": true,
+  "cleanupOldBackups": true,
+  "backupDir": ".smart-backups",
+  "maxBackups": 20,
+  "excludePatterns": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "node_modules/**"
+  ]
+}

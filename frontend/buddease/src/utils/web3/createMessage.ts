@@ -1,13 +1,13 @@
 // createMessage.ts
-import { ChatRoom } from '@/app/communications/ChatRoom';
-import { Sender } from '@/app/components/communications/CommunicationPage';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { UserPreferences } from "@/app/config/UserPreferences";
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { Content } from '@/app/models/content/AddContent';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { ChatRoom } from '@/core/communications/ChatRoom';
+import { Sender } from '@/core/components/communications/CommunicationPage';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { UserPreferences } from "@/core/config/UserPreferences";
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import { Message } from "@/core/generators/GenerateChatInterfaces";
+import { Content } from '@/core/models/content/AddContent';
+import { CustomSnapshotData } from "@/core/snapshots/SnapshotData";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 
 type MessageProps<

@@ -1,5 +1,4 @@
-import { ChangeEvent, useState } from "react";
-import React from "react";
+import { ChangeEvent, useState } from 'react';
 import { UploaderProps } from "./ImageUploader";
 
 const VideoUploader: React.FC<UploaderProps> = ({ onUpload }) => {

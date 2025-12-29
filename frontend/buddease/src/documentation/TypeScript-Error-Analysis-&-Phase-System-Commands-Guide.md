@@ -6,44 +6,44 @@ json
 {
   "scripts": {
     // ========== DYNAMIC PHASE SYSTEM ==========
-    "phase:analyze": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models",
-    "phase:test-swaps": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability",
-    "phase:run-all": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-all",
-    "phase:run-standardization": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization",
-    "phase:generate-report": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application",
+    "phase:analyze": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models",
+    "phase:test-swaps": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability",
+    "phase:run-all": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-all",
+    "phase:run-standardization": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization",
+    "phase:generate-report": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application",
     
     // ========== PHASE EXECUTION (Hierarchical) ==========
-    "phase:diagnosis": "tsx src/app/error-analyzer/phases/PhaseSystem.ts diagnosis",
-    "phase:analysis": "tsx src/app/error-analyzer/phases/PhaseSystem.ts analysis",
-    "phase:resolution": "tsx src/app/error-analyzer/phases/PhaseSystem.ts resolution",
-    "phase:hierarchical": "tsx src/app/error-analyzer/phases/PhaseSystem.ts",
+    "phase:diagnosis": "tsx src/core/error-analyzer/phases/PhaseSystem.ts diagnosis",
+    "phase:analysis": "tsx src/core/error-analyzer/phases/PhaseSystem.ts analysis",
+    "phase:resolution": "tsx src/core/error-analyzer/phases/PhaseSystem.ts resolution",
+    "phase:hierarchical": "tsx src/core/error-analyzer/phases/PhaseSystem.ts",
     
     // ========== PATTERN ANALYSIS ==========
-    "pattern:analyze": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --strict",
-    "pattern:compatibility": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --output ./compatibility-report",
-    "pattern:fix-high-priority": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization --no-backup",
+    "pattern:analyze": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --strict",
+    "pattern:compatibility": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --output ./compatibility-report",
+    "pattern:fix-high-priority": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization --no-backup",
     
     // ========== TYPE PARAMETER INTERCHANGEABILITY ==========
-    "test:param-swaps": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability --verbose",
+    "test:param-swaps": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability --verbose",
     "test:entity-compatibility": "tsx src/app/error-analyzer/utils/EntityCompatibilityTester.ts",
-    "test:config-patterns": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --test-configurations",
+    "test:config-patterns": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --test-configurations",
     
     // ========== AUTOMATED FIXES ==========
-    "fix:phase-standardization": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix",
-    "fix:entity-patterns": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization --auto-fix",
+    "fix:phase-standardization": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix",
+    "fix:entity-patterns": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase pattern-standardization --auto-fix",
     "fix:generics-constraints": "tsx src/app/scripts/auto-fix-generics.js --phase-mode",
     
     // ========== BACKUP & ROLLBACK ==========
-    "backup:entities": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts backup-all src/app/models",
-    "backup:create-point": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts create-restore-point 'Entity Standardization'",
-    "backup:list": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts list",
-    "backup:rollback": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts rollback",
+    "backup:entities": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts backup-all src/app/models",
+    "backup:create-point": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts create-restore-point 'Entity Standardization'",
+    "backup:list": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts list",
+    "backup:rollback": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts rollback",
     
     // ========== REPORT GENERATION ==========
-    "report:phase-summary": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --generate-report",
-    "report:entity-inventory": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --inventory",
-    "report:pattern-analysis": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --pattern-report",
-    "report:compatibility-matrix": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --compatibility-matrix",
+    "report:phase-summary": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --generate-report",
+    "report:entity-inventory": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --inventory",
+    "report:pattern-analysis": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --pattern-report",
+    "report:compatibility-matrix": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --compatibility-matrix",
     
     // ========== QUICK WORKFLOWS ==========
     "standardize:entities": "pnpm phase:analyze && pnpm phase:run-standardization && pnpm phase:generate-report",

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import NOTIFICATION_MESSAGES from "@/core/features/support/NotificationMessages";
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import { RandomWalkActions } from "@/core/hooks/userInterface/RandomWalkActions";
+import { addNotification } from '@/core/state/redux/slices/NotificationSlice';
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { RandomWalkActions } from "@/app/hooks/userInterface/RandomWalkActions";
-import { addNotification } from '@/app/state/redux/slices/NotificationSlice'
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 
 const RandomWalk = () => {
   const dispatch = useDispatch();

@@ -3,8 +3,7 @@ import { ProjectConfig, DatabaseConfig } from '@/app/config/ProjectConfig';
 import { LifecycleManager } from '@/app/hooks/phases/LifecycleManager';
 import { Phase } from "@/app/models/phases/Phase";
 import { useButtonGeneratorProps } from '@/app/generators/GenerateButtons';
-import { Schema, DatabaseSchema as BaseDatabaseSchema } from '@/app/typings/database';
-import { BackendDatabaseService, DatabaseType } from '@/app/typings/database';
+import { Schema, DatabaseSchema } from '@/app/typings/database';
 import { PhaseEntity,
 PhaseK,
 PhaseMeta,

@@ -1,7 +1,7 @@
 // urlGenerator.ts
-import { endpointConfigurations } from '@/app/api/endpointConfigurations'
-import { EndpointConfigurations, EndpointConfig } from '@/app/config/EndpointConfig';
-import { BASE_URL } from '@/app/api/baseUrl';
+import { BASE_URL } from '@/core/api/baseUrl';
+import { endpointConfigurations } from '@/core/api/endpointConfigurations';
+import { EndpointConfig, EndpointConfigurations } from '@/core/config/EndpointConfig';
 
 /**
  * Function to generate endpoint URL based on configuration.

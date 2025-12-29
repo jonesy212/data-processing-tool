@@ -1,5 +1,5 @@
 // CallControlPanel.tsx
-import { useErrorHandling } from '@/app/hooks/useErrorHandling';
+import { useErrorHandling } from '@/core/hooks/useErrorHandling';
 import CallButton from '@/utils/web3/CallButton';
 import { onAudioCallStart, onVideoCallStart } from '@/utils/web3/commonUtils';
 import React from 'react';

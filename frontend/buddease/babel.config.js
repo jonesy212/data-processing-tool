@@ -100,11 +100,11 @@ module.exports = function (api) {
         "@/theming/*": "./src/app/components/styling/*",
         
         // Legacy/compatibility paths
-        "@/app/shared/shared_error_handling": "./src/app/config/declarations/global.d.ts",
+        "@/core/shared/shared_error_handling": "./src/app/config/declarations/global.d.ts",
         "@/drawingLibrary": "./src/app/config/declarations/global.d.ts",
         "@/backendStructure/*": "./src/app/config/appStructure/*",
         "@/frontendStructure/*": "./src/app/config/appStructure/*",
-        "@/app/documents/*": "./src/app/documents/*",
+        "@/core/documents/*": "./src/app/documents/*",
         "@/support/*": "./src/app/features/support/*",
         "@/animations/*": "./src/app/libraries/animations/*",
         "@/typings/*": "./src/app/types/*", // ← FIXED: Match tsconfig

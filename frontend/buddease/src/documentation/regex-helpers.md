@@ -4,7 +4,7 @@
 
 Installation
 ```typescript
-import RegexHelpers from '@/app/generators/corrections/analyzers/utils/RegexHelpers'
+import RegexHelpers from '@/core/generators/corrections/analyzers/utils/RegexHelpers'
 ```
 
 **Available Patterns**
@@ -150,7 +150,7 @@ const improvedContent = RegexHelpers.replace(
 );
 Real-world Example
 typescript
-import RegexHelpers from '@/app/generators/corrections/analyzers/utils/RegexHelpers'
+import RegexHelpers from '@/core/generators/corrections/analyzers/utils/RegexHelpers'
 
 function analyzeCodeFile(fileContent: string) {
   const analysis = RegexHelpers.analyzeContent(fileContent);
@@ -223,7 +223,7 @@ import {
   countPattern, 
   analyzeContent, 
   hasIssues 
-} from '@/app/generators/corrections/analyzers/utils/RegexHelpers'
+} from '@/core/generators/corrections/analyzers/utils/RegexHelpers'
 
 // Functional usage
 if (testPattern('consoleStatement', content)) {

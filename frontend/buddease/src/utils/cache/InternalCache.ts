@@ -1,8 +1,8 @@
 // InternalCache.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import type {  Snapshot } from '@/app/snapshots/Snapshot';
-import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/app/typings/entities/AppEntity';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { AppAttachment, AppEntity, AppExcludedFields, AppIncludedFields, AppK, AppMeta } from '@/core/typings/entities/AppEntity';
 class InternalCache<
   T extends BaseDataEntity,
   K extends T = T,

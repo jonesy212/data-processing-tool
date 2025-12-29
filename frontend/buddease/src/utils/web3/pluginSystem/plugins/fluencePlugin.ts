@@ -1,11 +1,11 @@
 // Import AquaChat and other necessary modules based on your actual structure
 
 
-import { AquaChat } from '@/app/components/communications/chat/AquaChat';
-import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection'
-import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig'
-import YourClass from '@/utils/YourClass';
+import { AquaChat } from '@/core/components/communications/chat/AquaChat';
+import FluenceConnection from '@/utils/web3/fluenceProtocoIntegration/FluenceConnection';
 import { DAppPlugin } from '@/utils/web3/pluginSystem/plugins/PluginInterface';
+import { AquaConfig } from '@/utils/web3/webConfigs/aqua/AquaConfig';
+import YourClass from '@/utils/YourClass';
 
 class FluencePlugin extends YourClass implements DAppPlugin {
   public name: string;

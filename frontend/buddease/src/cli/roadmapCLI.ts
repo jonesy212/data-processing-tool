@@ -1,15 +1,14 @@
 // roadmapCLI.ts
 // services/roadmapCLI.ts
+import { generateOutline } from '@/cli/roadmapOutline';
+import { BaseDataEntity } from '@/core/config/BaseConfig';
+import { RoadmapService } from '@/core/services/roadmapService';
+import { buildStakeholderRoadmap } from '@/core/services/stakeholderRoadmap';
+import { AnalysisNode } from '@/core/typings/AnalysisNode';
+import { RoadmapAudience, RoadmapNode } from '@/core/typings/roadmap';
 import * as fs from 'fs';
 import * as path from 'path';
 import readline from 'readline';
-import { RoadmapService } from '@/app/services/roadmapService';
-import { RoadmapAudience, RoadmapNode } from '@/app/typings/roadmap';
-import { buildStakeholderRoadmap } from '@/app/services/stakeholderRoadmap';
-import { handleCombinedRoadmap } from '@/cli/combinedRoadmap';
-import { BaseDataEntity } from '@/app/config/BaseConfig';
-import { AnalysisNode } from '@/app/typings/AnalysisNode';
-import { generateOutline } from '@/cli/roadmapOutline';
 
 const rl = readline.createInterface({
   input: process.stdin,

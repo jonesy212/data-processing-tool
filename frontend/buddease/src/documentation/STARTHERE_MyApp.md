@@ -33,7 +33,7 @@ Wraps your Next.js app, sets up:
 #### **`NotificationStore`**
 - Observable MobX store managing all notification logic  
 - Used by `NotificationContext` and `ProjectStore`  
-- ✅ Must be single instance app-wide (imported from `@/app/state/stores/NotificationStore`)  
+- ✅ Must be single instance app-wide (imported from `@/core/state/stores/NotificationStore`)  
 
 #### **`NotificationData`**
 - Generic interface used for notification items  

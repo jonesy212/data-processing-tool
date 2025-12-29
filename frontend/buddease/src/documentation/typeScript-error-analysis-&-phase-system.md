@@ -3,29 +3,29 @@
 ## Complete package.json Scripts
 {
   "scripts": {
-    "phase:scan": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --dry-run",
-    "phase:analyze": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models",
-    "phase:inventory": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --inventory",
+    "phase:scan": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --dry-run",
+    "phase:analyze": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models",
+    "phase:inventory": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --inventory",
 
-    "pattern:scan": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --dry-run --pattern-only",
-    "pattern:analyze": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --strict",
-    "pattern:compatibility": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --compatibility-matrix",
+    "pattern:scan": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --dry-run --pattern-only",
+    "pattern:analyze": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --strict",
+    "pattern:compatibility": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --compatibility-matrix",
 
-    "test:param-swaps": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability --verbose",
+    "test:param-swaps": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts test-interchangeability --verbose",
     "test:entity-compatibility": "tsx src/app/error-analyzer/utils/EntityCompatibilityTester.ts",
-    "test:config-patterns": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --test-configurations",
+    "test:config-patterns": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --test-configurations",
 
-    "fix:phase-safe": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix --safe",
-    "fix:phase-high": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix --high-priority",
-    "fix:phase-all": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix",
+    "fix:phase-safe": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix --safe",
+    "fix:phase-high": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix --high-priority",
+    "fix:phase-all": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts run-phase fix-application --auto-fix",
 
-    "phase:backup": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts backup-all src/app/models",
-    "phase:backup-point": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts create-restore-point",
-    "phase:backup-list": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts list",
-    "phase:rollback": "tsx src/app/error-analyzer/phases/PhaseBackupSystem.ts rollback",
+    "phase:backup": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts backup-all src/app/models",
+    "phase:backup-point": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts create-restore-point",
+    "phase:backup-list": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts list",
+    "phase:rollback": "tsx src/core/error-analyzer/phases/PhaseBackupSystem.ts rollback",
 
-    "phase:report": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --generate-report",
-    "phase:patterns-report": "tsx src/app/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --pattern-report",
+    "phase:report": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --generate-report",
+    "phase:patterns-report": "tsx src/core/error-analyzer/phases/DynamicPhaseSystem.ts analyze src/app/models --pattern-report",
 
     "phase:quick-fix": "pnpm phase:scan && pnpm fix:phase-safe && pnpm type-check",
     "phase:standardize": "pnpm phase:backup && pnpm phase:analyze && pnpm fix:phase-high && pnpm phase:report",

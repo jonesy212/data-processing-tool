@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-import UserSettings from '@/app/config/UserSettings';
-import useRealtimeData from '@/app/hooks/commHooks/useRealtimeData';
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { DataVersions } from '@/app/configs/DataVersionsConfig';
-import FrontendStructure from '@/app/config/appStructure/FrontendStructure';
-import { CacheData } from '@/app/generators/GenerateCache';
+import FrontendStructure from '@/core/config/appStructure/FrontendStructure';
+import UserSettings from '@/core/config/UserSettings';
+import { DataVersions } from '@/core/configs/DataVersionsConfig';
+import NOTIFICATION_MESSAGES from '@/core/features/support/NotificationMessages';
+import { CacheData } from '@/core/generators/GenerateCache';
+import useRealtimeData from '@/core/hooks/commHooks/useRealtimeData';
 import { writeCache } from '@/utils/ReadAndWriteCache';
 
 interface BatchProcessingResult {

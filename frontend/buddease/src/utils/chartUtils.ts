@@ -1,4 +1,4 @@
-import ChartComponent from '@/app/components/charts/ChartComponent';
+import ChartComponent from '@/core/components/charts/ChartComponent';
 import { ChartOptions } from '@/utils/chartUtils';
 
 export { ChartComponent };

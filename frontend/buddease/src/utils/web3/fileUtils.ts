@@ -1,5 +1,5 @@
 // fileUtils.ts
-import { FileMetadata } from "@/app/interfaces/provider/CloudStorageProvider";
+import { FileMetadata } from "@/core/interfaces/provider/CloudStorageProvider";
 
 interface MyFile extends File {
   id: string;
@@ -32,5 +32,6 @@ const updateFileMetadata = (fileId: string, newMetadata: Partial<FileMetadata>) 
 };
 
 
-export type { MyFile }
 export { updateFileMetadata };
+export type { MyFile };
+

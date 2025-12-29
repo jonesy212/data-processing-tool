@@ -1,6 +1,6 @@
-import { generateNewTask } from "@/app/generators/GenerateNewTask";
-import { Task } from "@/app/models/tasks/Task";
-import { ShareProps } from '@/app/components/shared/Share';
+import { ShareProps } from '@/core/components/shared/Share';
+import { generateNewTask } from "@/core/generators/GenerateNewTask";
+import { Task } from "@/core/models/tasks/Task";
 
 class ManagementSystem {
   private static instance: ManagementSystem;

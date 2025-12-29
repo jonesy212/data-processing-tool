@@ -1,7 +1,7 @@
 // getSecureSubscriberId.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { Subscriber } from '@/app/subscribers/Subscriber';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { Subscriber } from '@/core/subscribers/Subscriber';
 
 // For sanitizing strings specifically
 export const sanitizeString = (input: string): string => {

@@ -1,10 +1,10 @@
-import { BaseData, Data } from '@/app/models/data/Data';
-import type { Snapshot } from '@/app/snapshots/Snapshot';
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { BaseData, Data } from '@/core/models/data/Data';
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { useNotification } from '@/core/state/context/NotificationContext';
+import { AnalysisTypeEnum } from "@/core/typings/AnalysisType";
 
-import FrontendStructure from "@/app/config/appStructure/FrontendStructureComponent";
-import { VideoData } from "@/app/typings/videoTypes/Video";
+import FrontendStructure from "@/core/config/appStructure/FrontendStructureComponent";
+import { VideoData } from "@/core/typings/videoTypes/Video";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
 import FrontendCacheManager from "./FrontendCacheManager";

@@ -1,6 +1,5 @@
 // debug-roadmaps.ts
-import { generateRoadmaps } from '@/app/scripts/generateRoadmaps';
-import { ProjectStructure } from '@/app/scripts/generateRoadmaps';
+import { generateRoadmaps, ProjectStructure } from '@/core/scripts/generateRoadmaps';
 import fs from 'fs';
 import path from 'path';
 

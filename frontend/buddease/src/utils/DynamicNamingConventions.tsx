@@ -1,11 +1,11 @@
 // components/DynamicNamingConventions.tsx
-import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from '@/app/features/support/NotificationMessages';
-import { configServiceInstance } from '@/app/services/ConfigurationService';
-import { useDynamicComponents } from '@/app/components/DynamicComponentsContext';
-import { NamingConventionsError } from '@/app/shared/sharedError';
-import { useNotification } from '@/app/state/context/NotificationContext';
-import { NotificationTypeEnum } from '@/app/features/support/UnifiedNotificationTypes'
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { useDynamicComponents } from '@/core/components/DynamicComponentsContext';
+import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from '@/core/features/support/NotificationMessages';
+import { NotificationTypeEnum } from '@/core/features/support/UnifiedNotificationTypes';
+import UniqueIDGenerator from '@/core/generators/GenerateUniqueIds';
+import { configServiceInstance } from '@/core/services/ConfigurationService';
+import { NamingConventionsError } from '@/core/shared/sharedError';
+import { useNotification } from '@/core/state/context/NotificationContext';
 import React from 'react';
 
 interface DynamicNamingConventionsProps {

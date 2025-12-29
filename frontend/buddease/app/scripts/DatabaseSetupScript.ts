@@ -127,7 +127,6 @@ export const transaction = async (callback: (connection: any) => Promise<void>) 
 private generateSQLiteConfig(): string {
   return `import sqlite3 from 'sqlite3';
   import { open, Database } from 'sqlite';
-  import path from 'path';
 
   const dbPath = process.env.SQLITE_PATH || path.join(process.cwd(), 'database.sqlite');
 

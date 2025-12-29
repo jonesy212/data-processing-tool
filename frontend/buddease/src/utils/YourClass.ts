@@ -1,9 +1,9 @@
 // YourClass.ts
-import ApiConfig from '@/app/api/ApiConfigService';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { DocumentSize } from "@/app/models/data/StatusType";
-import UserRoles from '@/app/models/UserRoles';
+import ApiConfig from '@/core/api/ApiConfigService';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { DocumentSize } from "@/core/models/data/StatusType";
+import UserRoles from '@/core/models/UserRoles';
 import { CustomDocumentOptionProps } from "@/utils/web3/dAppAdapter/DApp";
 import { DappProps, fluenceApiKey } from '@/utils/web3/dAppAdapter/DAppAdapterConfig';
 

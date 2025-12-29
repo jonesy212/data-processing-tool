@@ -7,13 +7,13 @@ The TreeView component is used to display hierarchical data in a tree-like struc
 To use the TreeView component in your React application, you need to install it as follows:
 
 ```bash
-pnpm install @/app/pages/dashboards/TreeView
+pnpm install @/core/pages/dashboards/TreeView
 Usage
 Import the TreeView component and use it in your React application as shown below:
 
 jsx
 Copy code
-import TreeView from '@/app/pages/dashboards/TreeView';
+import TreeView from '@/core/pages/dashboards/TreeView';
 
 const MyComponent = () => {
   // Define your data
@@ -75,7 +75,7 @@ Consider a scenario where you have a directory structure representing files and 
 jsx
 Copy code
 ```typescript
-import TreeView from '@/app/pages/dashboards/TreeView';
+import TreeView from '@/core/pages/dashboards/TreeView';
 
 const DirectoryExplorer = () => {
   // Assume directory data is fetched from an API

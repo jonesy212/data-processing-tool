@@ -1,5 +1,5 @@
 // run-report-tests.ts (place in project root - run with: npx tsx run-report-tests.ts)
-import { ReportTester } from '@/app/generators/corrections/ReportTester';
+import { ReportTester } from '@/core/generators/corrections/ReportTester';
 
 async function main() {
   console.log('🧪 Starting Comprehensive Report Tests\n');

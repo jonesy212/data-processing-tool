@@ -1,8 +1,8 @@
 // run-with-paths.mjs
-import { register } from 'tsconfig-paths';
 import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import { register } from 'tsconfig-paths';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,7 +19,7 @@ try {
     baseUrl: process.cwd(),
     paths: {
       "@/*": ["src/*"],
-      "@/app/*": ["src/app/*"],
+      "@/core/*": ["src/app/*"],
       "@/analyzers/*": ["src/app/generators/corrections/analyzers/*"],
       "@/components/*": ["src/app/components/*"],
       "@/utils/*": ["src/utils/*"],

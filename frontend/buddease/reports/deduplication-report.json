@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-12-29T07:26:06.262Z",
+  "summary": {
+    "filesScanned": 1,
+    "filesWithDuplicates": 1,
+    "duplicatesRemoved": 1,
+    "importsAfterMerging": 10
+  },
+  "details": [
+    {
+      "file": "app/scripts/fix-imports.ts",
+      "removed": 1,
+      "merged": 10,
+      "duplicateSources": []
+    }
+  ]
+}

@@ -17,8 +17,8 @@ try {
 // Test path resolution
 console.log('\n🧪 Testing path resolution:');
 const testPaths = [
-  '@/app/generators/corrections/CorrectionGenerator',
-  '@/app/typings/correctionTypes', 
+  '@/core/generators/corrections/CorrectionGenerator',
+  '@/core/typings/correctionTypes', 
   '@/utils/BuildErrorHandler'
 ];
 

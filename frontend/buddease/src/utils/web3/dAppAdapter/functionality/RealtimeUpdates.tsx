@@ -1,32 +1,31 @@
 // RealtimeUpdatesComponent.tsx
 
-import axiosInstance from '@/app/api/csrfToken';
-import { headersConfig } from '@/app/components/shared/SharedHeaders'
-import { brandingSettings } from "@/app/libraries/theme/BrandingService";
+import { headersConfig } from '@/core/components/shared/SharedHeaders';
+import { brandingSettings } from "@/core/libraries/theme/BrandingService";
 
-import DatePicker from "@/app/components/calendar/DatePicker";
-import Checkbox from "@/app/libraries/menu/Checkbox";
-import ClearFiltersButton from "@/app/libraries/menu/ClearFiltersButton";
-import Dropdown from "@/app/libraries/menu/Dropdown";
-import SortableTableHeaders from "@/app/libraries/menu/SortableTableHeaders";
-import TagCloud from "@/app/libraries/menu/TagCloud";
-import ToggleSwitch from "@/app/libraries/menu/ToggleSwitch";
+import DatePicker from "@/core/components/calendar/DatePicker";
+import Checkbox from "@/core/libraries/menu/Checkbox";
+import ClearFiltersButton from "@/core/libraries/menu/ClearFiltersButton";
+import Dropdown from "@/core/libraries/menu/Dropdown";
+import SortableTableHeaders from "@/core/libraries/menu/SortableTableHeaders";
+import TagCloud from "@/core/libraries/menu/TagCloud";
+import ToggleSwitch from "@/core/libraries/menu/ToggleSwitch";
 
-import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
-import router from "@/app/projects/projectManagement/ProjectManagementSimulator";
+import { initializeUserData } from "@/core/pages/onboarding/PersonaBuilderData";
+import router from "@/core/projects/projectManagement/ProjectManagementSimulator";
 
-import { useAuth } from '@/app/state/context/AuthContext';
-import { User } from "@/app/users/User";
+import { useAuth } from '@/core/state/context/AuthContext';
+import { User } from "@/core/users/User";
 
+import { ChatSettings } from '@/core/notifications/NotificationChannelManager';
 import { BaseRouter } from "next/dist/shared/lib/router/router";
 import { Router } from "next/router";
 import React, { useEffect, useState } from "react";
-import { ChatSettings } from '@/app/notifications/NotificationChannelManager'
 
 /* ---------- Realtime entity imports ---------- */
 import {
-  AppRealtimeData
-} from "@/app/typings/entities/RealtimeDataEntity";
+    AppRealtimeData
+} from "@/core/typings/entities/RealtimeDataEntity";
 
 
 /* ---------- Realtime subscription ---------- */

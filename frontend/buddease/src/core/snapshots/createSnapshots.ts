@@ -1,0 +1,244 @@
+// createSnapshots.ts
+import {
+    addData,
+    fetchData,
+    getBackendVersion,
+    getDataVersions,
+    getFrontendVersion
+} from "@/core/api/ApiData";
+import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/core/api/SnapshotApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { SnapshotManager } from "@/core/hooks/useSnapshotManager";
+import useSubscription from "@/core/hooks/useSubscription";
+import { CreateSnapshotStoresPayload } from "@/core/interfaces/payload/payloadTypes";
+import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { Snapshot } from '@/core/snapshots/Snapshot';
+import { SnapshotConfig } from "@/core/snapshots/SnapshotConfig";
+import { SnapshotConfigParams } from '@/core/snapshots/SnapshotConfigBuilder';
+import { flatMap } from "@/core/snapshots/defaultSnapshotBuilder";
+import { defaultSubscribeToSnapshot } from "@/core/snapshots/defaultSnapshotSubscribeFunctions";
+import { defaultSubscribeToSnapshots } from "@/core/snapshots/defaultSubscribeToSnapshots";
+import * as SubscriptionMethods from '@/core/snapshots/methods/subscriptionMethods';
+import { TransformMethods } from "@/core/snapshots/methods/transformMethods";
+import { UtilMethods } from "@/core/snapshots/methods/utilMethods";
+import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "@/core/snapshots/snapshotOperations";
+import { clearSnapshot, clearSnapshots } from "@/core/state/redux/slices/SnapshotSlice";
+import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
+import { notify } from "@/utils/snapshotUtils";
+import {
+    addDataStatus,
+    addDataSuccess,
+    getAllItems,
+    getAllKeys,
+    getData,
+    removeData,
+    setData,
+    updateData,
+    updateDataDescription, updateDataStatus,
+    updateDataTitle
+} from "./methods/dataMethods";
+import * as VersionMethods from "./methods/snapshotMethods";
+import {
+    addSnapshotSuccess,
+    batchFetchSnapshots,
+    batchFetchSnapshotsFailure,
+    batchFetchSnapshotsSuccess,
+    batchTakeSnapshot,
+    batchTakeSnapshotsRequest,
+    batchUpdateSnapshotsFailure,
+    batchUpdateSnapshotsRequest,
+    batchUpdateSnapshotsSuccess,
+    createInitSnapshot,
+    createSnapshotFailure, createSnapshotSuccess,
+    determinePrefix,
+    fetchSnapshot,
+    getAllSnapshots,
+    getDelegate,
+    handleSnapshotSuccess,
+    initSnapshot, notifySubscribers,
+    onSnapshot, onSnapshots,
+    updateSnapshots,
+    updateSnapshotsSuccess,
+    updateSnapshotSuccess
+} from "./snapshotHandlers";
+
+type Params<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = SnapshotConfigParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+const createSnapshots = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  id: string,
+  snapshotId: string,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  payload: CreateSnapshotStoresPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
+  snapshotConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  category?: Category,
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null => {
+  const { data, events, dataItems, newData } = payload;
+
+  // Example logic to create multiple snapshots
+  const snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
+
+  const eventRecords: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = (events && typeof events === 'object')
+    ? events
+    : {};
+
+  data?.forEach((snapshotData: T, key: string) => {
+
+    const unsubscribe = useSubscription()
+    // Ensure eventRecords is of type Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> or null
+    const newSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+      ...snapshot,
+      id: key,
+      data: snapshotData,
+      eventRecords: eventRecords,
+      newData: newData,
+      dataItems: dataItems,
+      snapshotStoreConfig: null,
+      getSnapshotItems: getSnapshotItems ?? (() => { }),
+      defaultSubscribeToSnapshots: defaultSubscribeToSnapshots,
+      transformSubscriber: TransformMethods.transformSubscriber,
+      transformDelegate: TransformMethods.transformDelegate,
+      initializedState: undefined,
+      getAllKeys: getAllKeys,
+      getAllItems: getAllItems,
+      addDataStatus: addDataStatus,
+      removeData: removeData,
+      updateData: updateData,
+      updateDataTitle: updateDataTitle,
+      updateDataDescription: updateDataDescription,
+      updateDataStatus: updateDataStatus,
+      addDataSuccess: addDataSuccess,
+      getDataVersions: getDataVersions,
+      updateDataVersions: VersionMethods.updateDataVersions,
+      getBackendVersion: getBackendVersion,
+      getFrontendVersion: getFrontendVersion,
+      fetchData: fetchData,
+      defaultSubscribeToSnapshot: defaultSubscribeToSnapshot,
+      handleSubscribeToSnapshot: SubscriptionMethods.handleSubscribeToSnapshot,
+      removeItem: removeItem,
+      getSnapshot: getSnapshot,
+      getSnapshotSuccess: getSnapshotSuccess,
+      setItem: setItem,
+      getDataStore: {},
+      addSnapshotSuccess: addSnapshotSuccess,
+      deepCompare: UtilMethods.deepCompare,
+      shallowCompare: UtilMethods.shallowCompare,
+      determineCategory: UtilMethods.determineCategory,
+      getDataStoreMethods: getDataStoreMethods,
+      getDelegate: getDelegate,
+      determinePrefix: determinePrefix,
+      removeSnapshot: removeSnapshot,
+      addSnapshotItem: addSnapshotItem,
+      addNestedStore: addNestedStore,
+      clearSnapshots: clearSnapshots,
+      addSnapshot: addSnapshot,
+      createSnapshot: null,
+      createInitSnapshot: createInitSnapshot,
+      setSnapshotSuccess: setSnapshotSuccess,
+      setSnapshotFailure: setSnapshotFailure,
+      updateSnapshots: updateSnapshots,
+      updateSnapshotsSuccess: updateSnapshotsSuccess,
+      updateSnapshotsFailure: updateSnapshotsFailure,
+      initSnapshot: initSnapshot,
+      takeSnapshot: takeSnapshot,
+      takeSnapshotSuccess: takeSnapshotSuccess,
+      takeSnapshotsSuccess: takeSnapshotsSuccess,
+      flatMap: flatMap,
+      getState: getState,
+      setState: setState,
+      validateSnapshot: validateSnapshot,
+      handleActions: handleActions,
+      setSnapshot: setSnapshot,
+      setSnapshots: setSnapshots,
+      clearSnapshot: clearSnapshot,
+      mergeSnapshots: mergeSnapshots,
+      reduceSnapshots: reduceSnapshots,
+      sortSnapshots: sortSnapshots,
+      filterSnapshots: filterSnapshots,
+      findSnapshot: findSnapshot,
+      getSubscribers: getSubscribers,
+      notify: notify,
+      notifySubscribers: notifySubscribers,
+      getSnapshots: getSnapshots,
+      getAllSnapshots: getAllSnapshots,
+      generateId: generateId,
+      batchFetchSnapshots: batchFetchSnapshots,
+      batchTakeSnapshotsRequest: batchTakeSnapshotsRequest,
+      batchUpdateSnapshotsRequest: batchUpdateSnapshotsRequest,
+      filterSnapshotsByStatus: undefined,
+      filterSnapshotsByCategory: undefined,
+      filterSnapshotsByTag: undefined,
+      batchFetchSnapshotsSuccess: batchFetchSnapshotsSuccess,
+      batchFetchSnapshotsFailure: batchFetchSnapshotsFailure,
+      batchUpdateSnapshotsSuccess: batchUpdateSnapshotsSuccess,
+      batchUpdateSnapshotsFailure: batchUpdateSnapshotsFailure,
+      batchTakeSnapshot: batchTakeSnapshot,
+      handleSnapshotSuccess: handleSnapshotSuccess,
+      getSnapshotId: getSnapshotId,
+      compareSnapshotState: compareSnapshotState,
+      snapshotStore: null,
+      getParentId: getParentId,
+      getChildIds: getChildIds,
+      addChild: addChild,
+      removeChild: removeChild,
+      getChildren: getChildren,
+      hasChildren: hasChildren,
+      isDescendantOf: isDescendantOf,
+      timestamp: undefined,
+      getInitialState: getInitialState,
+      getConfigOption: getConfigOption,
+      getTimestamp: getTimestamp,
+      getStores: getStores,
+      getData: getData,
+      setData: setData,
+      addData: addData,
+      stores: null,
+      getStore: getStore,
+      addStore: addStore,
+      mapSnapshot: mapSnapshot,
+      mapSnapshots: mapSnapshots,
+      removeStore: removeStore,
+      unsubscribe: unsubscribe,
+      fetchSnapshot: fetchSnapshot,
+      addSnapshotFailure: addSnapshotFailure,
+      configureSnapshotStore: configureSnapshotStore,
+      updateSnapshotSuccess: updateSnapshotSuccess,
+      createSnapshotFailure: createSnapshotFailure,
+      createSnapshotSuccess: createSnapshotSuccess,
+      createSnapshots: createSnapshots,
+      onSnapshot: onSnapshot,
+      onSnapshots: onSnapshots,
+      label: undefined,
+      events: {
+        callbacks: callbacks,
+        eventRecords: null
+      },
+      handleSnapshot: handleSnapshot,
+      meta: {}
+    };
+
+    snapshots.push(newSnapshot);
+  });
+
+  // Call the callback function with the created snapshots
+  if (callback) {
+    callback(snapshots);
+  }
+
+  return snapshots.length > 0 ? snapshots : null;
+};

@@ -1,15 +1,15 @@
 // scripts/fix-imports.ts - UPDATED VERSION WITH VALIDATION
 
-import { ImportFix } from '@/app/generators/corrections/ImportFixServicies';
+import { APP_SPECIFIC_RULES } from '@/core/error-analyzer/rules/app-specific-rules';
+import { ImportFix } from '@/core/generators/corrections/ImportFixServicies';
+import { autoFixInterfaceImports } from '@/core/error-analyzer/utils/autoFixInterfaceImports'
+import ImportDeduplicator, { runDeduplicationCLI } from '@/utils/import-deduplicator';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
 import { ImportValidator } from './import-validator';
 import { SafeFixer } from './safe-fixer';
-import { applyAppSpecificRules, APP_SPECIFIC_RULES } from '@/app/error-analyzer/rules/app-specific-rules'
-import { ImportFixerService } from '@/app/generators/corrections/ImportFixServicies';
-
 const PROJECT_ROOT = process.cwd();
 const SRC_ROOT = path.join(PROJECT_ROOT, 'src');
 const importValidator = new ImportValidator(SRC_ROOT);
@@ -93,7 +93,7 @@ type ImportIssue = {
 const safeFixer = new SafeFixer();
 
 const KNOWN_ALIAS_ROOTS = [
-  '@/app',
+  '@/core',
   '@/utils',
   '@/components',
   '@/features',
@@ -993,7 +993,7 @@ function tryFixTypo(importPath: string, fromFile: string): string | undefined {
 
 function findBetterSuggestion(importPath: string, fromFile: string): string | undefined {
   // Don't try to fix @/ imports that look correct already
-  if (importPath.startsWith('@/app/') || importPath.startsWith('@/utils/')) {
+  if (importPath.startsWith('@/core/') || importPath.startsWith('@/utils/')) {
     // Check if it exists
     const { exists } = resolveESM(importPath, fromFile, allSourceFiles);
     if (exists) {
@@ -1006,7 +1006,7 @@ function findBetterSuggestion(importPath: string, fromFile: string): string | un
   // Get context from the import path
   const isInComponents = importPath.includes('/components/') || fromFile.includes('/components/');
   const isInUtils = importPath.includes('/utils/') || fromFile.includes('/utils/');
-  const isInApp = importPath.startsWith('@/app/') || fromFile.includes('/app/');
+  const isInApp = importPath.startsWith('@/core/') || fromFile.includes('/app/');
   
   const similarFiles = allSourceFiles.filter(file => {
     const fileName = path.basename(file, path.extname(file)).toLowerCase();
@@ -1103,6 +1103,88 @@ async function runTypeScriptCheck(): Promise<string[]> {
   }
 }
 
+
+function autoFixAliasesWithDeduplication(issues: ImportIssue[]): { fixed: number; failed: number; deduplicated: number } {
+  let fixed = 0;
+  let failed = 0;
+  let deduplicated = 0;
+  const total = issues.length;
+  
+  console.log(`🔧 Starting to fix ${total} issues with deduplication support...`);
+  
+  // Group issues by file for batch processing
+  const issuesByFile = new Map<string, ImportIssue[]>();
+  
+  for (const issue of issues) {
+    if (!issuesByFile.has(issue.file)) {
+      issuesByFile.set(issue.file, []);
+    }
+    issuesByFile.get(issue.file)!.push(issue);
+  }
+  
+  console.log(`📊 Processing ${issuesByFile.size} files with batch updates and deduplication`);
+  
+  // Phase 1: Process each file
+  for (const [filePath, fileIssues] of issuesByFile) {
+    if (!fs.existsSync(filePath)) {
+      console.log(`❌ File not found: ${filePath}`);
+      failed += fileIssues.length;
+      continue;
+    }
+    
+    try {
+      // Create backup
+      safeFixer.createBackup(filePath);
+      
+      // Record fixes
+      for (const issue of fileIssues) {
+        if (!shouldApplyFix(issue) || !issue.suggestedFix || !issue.validated) {
+          failed++;
+          continue;
+        }
+        
+        const suggestedFixString = extractStringFromSuggestedFix(issue.suggestedFix);
+        
+        if (!suggestedFixString) {
+          failed++;
+          continue;
+        }
+        
+        safeFixer.recordFix({
+          file: filePath,
+          originalImport: issue.importPath,
+          newImport: suggestedFixString,
+          line: issue.line
+        });
+      }
+      
+      // Apply fixes for this file
+      const result = safeFixer.applyFixesForFile(filePath);
+      fixed += result.fixed;
+      failed += result.failed;
+      
+      // NEW: Run deduplication after fixes
+      const dedupResult = ImportDeduplicator.deduplicateFile(filePath);
+      if (dedupResult.removed > 0) {
+        const relativePath = path.relative(PROJECT_ROOT, filePath);
+        console.log(`   🔄 Deduplicated ${dedupResult.removed} imports in ${relativePath}`);
+        deduplicated += dedupResult.removed;
+        
+        // If we created a backup during deduplication, track it
+        if (dedupResult.backupPath) {
+          console.log(`   💾 Deduplication backup: ${path.relative(PROJECT_ROOT, dedupResult.backupPath)}`);
+        }
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error processing ${filePath}:`, error);
+      failed += fileIssues.length;
+    }
+  }
+  
+  console.log(`\n📊 Final results: ${fixed} fixed, ${failed} failed, ${deduplicated} duplicates removed`);
+  return { fixed, failed, deduplicated };
+}
 
 
 // Add this helper function (somewhere near other export-related functions)
@@ -1226,8 +1308,8 @@ function shouldApplyFix(fix: ImportFix | ImportIssue): boolean {
       return false;
     }
     
-    // Don't change from @/utils to @/app unless there's a good reason
-    if (issue.importPath.startsWith('@/utils/') && suggestedFix.startsWith('@/app/')) {
+    // Don't change from @/utils to @/core unless there's a good reason
+    if (issue.importPath.startsWith('@/utils/') && suggestedFix.startsWith('@/core/')) {
       console.log(`⚠️  Skipping: Changing from utils to app directory`);
       return false;
     }
@@ -1261,11 +1343,11 @@ function filterProblematicFixes(issues: ImportIssue[]): ImportIssue[] {
       }
       
       // Don't reject directory changes if they make sense
-      if (issue.importPath.startsWith('@/utils/') && suggestedFixString.startsWith('@/app/')) {
+      if (issue.importPath.startsWith('@/utils/') && suggestedFixString.startsWith('@/core/')) {
         // Check if the app version actually exists
         const appVersionExists = checkIfFileExists(suggestedFixString, issue.file);
         const utilsVersionExists = checkIfFileExists(
-          issue.importPath.replace('@/utils/', '@/app/'), 
+          issue.importPath.replace('@/utils/', '@/core/'), 
           issue.file
         );
         
@@ -1321,17 +1403,28 @@ function extractStringFromSuggestedFix(suggestedFix: string | { path?: string; c
   return undefined;
 }
 
+
 // ---------------------
-// Auto-fix Aliases (WITH VALIDATION)
+// Auto-fix Aliases (WITH DEDUPLICATION AND VALIDATION)
 // ---------------------
-function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number } {
-  let fixed = 0;
-  let failed = 0;
-  const total = issues.length;
+function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number; deduplicated: number } {
+  // Step 1: Group issues by file
+  const issuesByFile = groupIssuesByFile(issues);
   
-  console.log(`🔧 Starting to fix ${total} issues with batch processing...`);
+  // Step 2: Apply fixes
+  const fixResult = applyFixesToFiles(issuesByFile);
   
-  // Group issues by file for batch processing
+  // Step 3: Deduplicate modified files
+  const deduplicationResult = deduplicateModifiedFiles(Array.from(issuesByFile.keys()), fixResult.fixed);
+  
+  return {
+    fixed: fixResult.fixed,
+    failed: fixResult.failed,
+    deduplicated: deduplicationResult
+  };
+}
+
+function groupIssuesByFile(issues: ImportIssue[]): Map<string, ImportIssue[]> {
   const issuesByFile = new Map<string, ImportIssue[]>();
   
   for (const issue of issues) {
@@ -1341,9 +1434,17 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
     issuesByFile.get(issue.file)!.push(issue);
   }
   
-  console.log(`📊 Processing ${issuesByFile.size} files with batch updates`);
+  console.log(`📊 Grouped ${issues.length} issues into ${issuesByFile.size} files`);
+  return issuesByFile;
+}
+
+function applyFixesToFiles(issuesByFile: Map<string, ImportIssue[]>): { fixed: number; failed: number } {
+  let fixed = 0;
+  let failed = 0;
   
-  // Phase 1: Collect all fixes
+  console.log(`🔧 Applying fixes to ${issuesByFile.size} files...`);
+  
+  // Collect all fixes
   for (const [filePath, fileIssues] of issuesByFile) {
     if (!fs.existsSync(filePath)) {
       console.log(`❌ File not found: ${filePath}`);
@@ -1351,18 +1452,15 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
       continue;
     }
     
-    // Create backup once per file
     try {
       safeFixer.createBackup(filePath);
       
-      // Record each fix
       for (const issue of fileIssues) {
         if (!shouldApplyFix(issue) || !issue.suggestedFix || !issue.validated) {
           failed++;
           continue;
         }
         
-        // Extract suggested fix from object if needed
         const suggestedFixString = extractStringFromSuggestedFix(issue.suggestedFix);
         
         if (!suggestedFixString) {
@@ -1383,7 +1481,7 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
     }
   }
   
-  // Phase 2: Apply all fixes in batch
+  // Apply fixes
   const result = safeFixer.applyAllPendingFixes();
   fixed = result.fixed;
   
@@ -1391,8 +1489,43 @@ function autoFixAliases(issues: ImportIssue[]): { fixed: number; failed: number 
   safeFixer.saveRecords(path.join('./reports', `fix-records-${Date.now()}.json`));
   safeFixer.clearPending();
   
-  console.log(`\n📊 Final results: ${fixed} fixed, ${failed} failed out of ${total} total`);
   return { fixed, failed };
+}
+
+function deduplicateModifiedFiles(filePaths: string[], filesFixed: number): number {
+  if (filesFixed === 0) {
+    return 0; // No files were fixed, so nothing to deduplicate
+  }
+  
+  console.log(`\n🧹 Running deduplication on ${filePaths.length} potentially modified files...`);
+  
+  let totalDedupRemoved = 0;
+  
+  for (const filePath of filePaths) {
+    try {
+      if (fs.existsSync(filePath)) {
+        const dedupResult = ImportDeduplicator.deduplicateFile(filePath);
+        if (dedupResult.removed > 0) {
+          const relativePath = path.relative(PROJECT_ROOT, filePath);
+          console.log(`   🔄 Deduplicated ${dedupResult.removed} imports in ${relativePath}`);
+          totalDedupRemoved += dedupResult.removed;
+        }
+      }
+    } catch (error: unknown) {
+      // Type-safe error handling
+      if (error instanceof Error) {
+        console.warn(`⚠️ Failed to deduplicate ${filePath}:`, error.message);
+      } else {
+        console.warn(`⚠️ Failed to deduplicate ${filePath}:`, String(error));
+      }
+    }
+  }
+  
+  if (totalDedupRemoved > 0) {
+    console.log(`\n📊 Total duplicates removed: ${totalDedupRemoved}`);
+  }
+  
+  return totalDedupRemoved;
 }
 
 function resolveIntentPreserving(
@@ -1566,10 +1699,38 @@ function generateDetailedReport(validIssues: ImportIssue[], invalidIssues: Impor
 
 
 // ---------------------
-// Main (UPDATED WITH VALIDATION)
+// Main (UPDATED WITH VALIDATION & DEDUPLICATION)
 // ---------------------
 async function main() {
   const args = process.argv.slice(2);
+
+  
+  // NEW: Handle deduplication commands
+  if (args.includes('--deduplicate') || args.includes('deduplicate')) {
+    // Remove the --deduplicate flag and pass remaining args to the CLI function
+    const dedupArgs = args.filter(arg => arg !== '--deduplicate' && arg !== 'deduplicate');
+    runDeduplicationCLI(['deduplicate', ...dedupArgs]);
+    return;
+  }
+  
+  // NEW: Handle analysis command
+  if (args.includes('--analyze-duplicates') || args.includes('analyze-imports')) {
+    const dedupArgs = args.filter(arg => arg !== '--analyze-duplicates' && arg !== 'analyze-imports');
+    runDeduplicationCLI(['analyze', ...dedupArgs]);
+    return;
+  }
+
+  if (args.includes('--import-stats') || args.includes('stats')) {
+    runDeduplicationCLI(['stats']);
+    return;
+  }
+
+  if (process.argv.includes('--fix-interfaces')) {
+    console.log('🔧 Auto-fixing interface import issues...');
+    await autoFixInterfaceImports(PROJECT_ROOT, allSourceFiles);
+    console.log('✅ Interface import fixes applied');
+  }
+
   const shouldFix = args.includes('--fix');
   const shouldFixHigh = args.includes('--fix-high');
   const shouldFixAll = args.includes('--fix-all');
@@ -1792,11 +1953,12 @@ async function main() {
       process.exit(0);
     }
     
-    // Apply fixes
-    const { fixed, failed } = autoFixAliases(issuesToFix);
+    // Apply fixes - UPDATED to include deduplication
+    const { fixed, failed, deduplicated } = autoFixAliases(issuesToFix);
     console.log(`\n📊 Fix Results:`);
     console.log(`✅ Fixed: ${fixed} imports`);
     console.log(`❌ Failed: ${failed} imports`);
+    console.log(`🧹 Duplicates removed: ${deduplicated} imports`);
     
     // Save remaining issues for manual review
     const remainingIssues = filteredValidIssues.filter(issue => 
@@ -1885,19 +2047,19 @@ async function main() {
     }
     
     return;
-}
+  }
 
-// Show available rules
-if (process.argv.includes('--list-rules')) {
+  // Show available rules
+  if (process.argv.includes('--list-rules')) {
     console.log('📋 App-specific import/export rules:');
     Object.entries(APP_SPECIFIC_RULES).forEach(([name, rule]) => {
-        console.log(`\n🔹 ${name}:`);
-        console.log(`   Message: ${rule.message}`);
-        console.log(`   Pattern: ${rule.pattern}`);
-        console.log(`   Fix: ${rule.fix}`);
+      console.log(`\n🔹 ${name}:`);
+      console.log(`   Message: ${rule.message}`);
+      console.log(`   Pattern: ${rule.pattern}`);
+      console.log(`   Fix: ${rule.fix}`);
     });
     return;
-}
+  }
 
   if (process.argv.includes('--rollback')) {
     const rec = './reports/fix-records-<latest>.json';

@@ -1,13 +1,13 @@
 import DynamicConfigActionType, {
-  DynamicComponentsProvider,
-  DynamicConfigType,
-  useDynamicComponents,
-} from "@/app/components/DynamicComponentsContext";
-import { useErrorHandling } from "@/app/hooks/useErrorHandling";
+    DynamicComponentsProvider,
+    DynamicConfigType,
+    useDynamicComponents,
+} from "@/core/components/DynamicComponentsContext";
+import { useErrorHandling } from "@/core/hooks/useErrorHandling";
 import DynamicSelectionControls, {
-  Option,
-} from "@/app/libraries/animations/DynamicSelectionControls";
-import Logger, { ComponentLogger } from '@/app/logging/Logger';
+    Option,
+} from "@/core/libraries/animations/DynamicSelectionControls";
+import Logger, { ComponentLogger } from '@/core/logging/Logger';
 import React from "react";
 
 interface DynamicComponentProps {

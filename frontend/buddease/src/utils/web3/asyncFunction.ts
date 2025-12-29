@@ -1,9 +1,9 @@
 // asyncFunction.ts
 
+import axiosInstance from '@/core/api/csrfToken';
+import { SupportedData } from "@/core/models/CommonData";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { SupportedData } from "@/app/models/CommonData";
-import axiosInstance from '@/app/api/csrfToken';
 
 const dispatch = useDispatch();
 // Example async function that fetches data from an API

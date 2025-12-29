@@ -1,8 +1,8 @@
 // logDataHelpers.ts
 // utils/logDataHelpers.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/config/BaseConfig';
-import { Attachment } from '@/app/documents/attachment/Attachment';
-import { LogData } from '@/app/models/LogData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
+import { Attachment } from '@/core/documents/attachment/Attachment';
+import { LogData } from '@/core/models/LogData';
 
 /**
  * Creates a minimal LogData object with required defaults

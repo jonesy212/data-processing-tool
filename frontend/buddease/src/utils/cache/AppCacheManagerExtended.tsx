@@ -1,5 +1,5 @@
-import { NotificationType } from '@/app/features/support/UnifiedNotificationTypes'
-import AppCacheManagerBase, { ExtendedData } from '@/utils/cache/AppCacheManager'
+import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import AppCacheManagerBase, { ExtendedData } from '@/utils/cache/AppCacheManager';
 
 class AppCacheManagerExtended extends AppCacheManagerBase<ExtendedData> {
   private notify: (
