@@ -1,8 +1,8 @@
 // persistenceLayer.ts
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { Attachment } from '@/core/documents/attachment/Attachment';
+import type { Attachment } from '@/core/documents/attachment/Attachment';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { CacheProxyConfig, PersistenceAdapter, PersistenceConfig } from '@/core/typings/persistenceTypes';
+import type { CacheProxyConfig, PersistenceAdapter, PersistenceConfig } from '@/core/typings/persistenceTypes';
 
 
 // Adapters
@@ -164,15 +164,34 @@ export class PersistenceLayer<
       return cached.data;
     }
     
+
+    // Load from persistence - ensure key is a string
+    if (typeof key !== 'string') {
+      throw new Error(`Invalid key type: ${typeof key}`);
+    }
+
     // Load from persistence
     const data = await this.adapter.load(key);
     if (!data) return null;
     
-    const snapshot = transformDataFromStorage(data);
-    const cachedSnapshot = createCacheProxy(snapshot, this.cacheConfig);
+        // Transform and validate the data
+    const transformedData = transformDataFromStorage(data);
+    
+    const snapshot = this.validateSnapshot(transformedData);
+    if (!snapshot) {
+      console.warn(`Invalid snapshot data for key: ${key}`);
+      return null;
+    }
+    
+  
+    // Update cache
+    const cachedSnapshot = createCacheProxy(snapshot, this.cacheConfig) as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
     // Update cache
-    this.cache.set(key, { data: cachedSnapshot, timestamp: Date.now() });
+    this.cache.set(key, { 
+      data: cachedSnapshot, 
+      timestamp: Date.now() 
+    });
     
     return cachedSnapshot;
   }

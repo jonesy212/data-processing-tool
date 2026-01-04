@@ -1,6 +1,6 @@
-src/app/error-analyzer/FixVerifier.ts
-import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
-import { AppliedChange, FixExecutionResult, ValidationResult } from '@/core/error-analyzer/index';
+// src/app/error-analyzer/FixVerifier.ts
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import type { AppliedChange, FixExecutionResult, ValidationResult } from '@/core/error-analyzer/index';
 import fs from 'fs';
 import path from 'path';
 

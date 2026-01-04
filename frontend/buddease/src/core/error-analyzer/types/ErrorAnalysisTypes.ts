@@ -136,6 +136,16 @@ export interface ConfidenceFactors {
 }
 
 
+export interface ValidationStep {
+  step: string;
+  action: string;
+  timeout: number;
+}
+
+export interface FallbackStrategy {
+  type: string;
+  description: string;
+}
 
 // Shared strategy properties
 export interface StrategyCore {
@@ -144,8 +154,8 @@ export interface StrategyCore {
     suggestApply: number;
     manualReview: number;
   };
-  validationSteps: string[];
-  fallbackStrategies: string[];
+  validationSteps: ValidationStep[];
+  fallbackStrategies: FallbackStrategy[];
 }
 
 

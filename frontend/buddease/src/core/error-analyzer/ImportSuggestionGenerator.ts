@@ -1,8 +1,8 @@
-src/app/error-analyzer/ImportSuggestionGenerator.ts
+// src/app/error-analyzer/ImportSuggestionGenerator.ts
 
-import { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
-import { ImportFixStrategy } from '@/core/error-analyzer/index';
-import { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
+import type { TSCompilerError } from '@/core/error-analyzer/ErrorFixManager';
+import type { ImportFixStrategy } from '@/core/error-analyzer/index';
+import type { RelationshipMap } from '@/core/error-analyzer/types/ErrorAnalysisTypes';
 import fs from 'fs';
 import path from 'path';
 
@@ -88,7 +88,22 @@ export class ImportSuggestionGenerator {
           importType: 'named',
           modulePath: this.getRelativeImportPath(currentFile, file),
           importName: identifier,
-          alternativePaths: []
+          alternativePaths: [],
+          confidenceThresholds: {
+            autoApply: 95,
+            suggestApply: 80,
+            manualReview: 60
+          },
+          validationSteps: [
+            { step: 'Check export exists', action: 'verifyExport', timeout: 1000 },
+            { step: 'Validate import path', action: 'validatePath', timeout: 500 },
+            { step: 'Test compilation', action: 'compileTest', timeout: 2000 }
+          ],
+          fallbackStrategies: [
+            { type: 'type_declaration', description: 'Create local type declaration' },
+            { type: 'dynamic_import', description: 'Use dynamic import if supported' },
+            { type: 'dependency_refactor', description: 'Refactor to remove dependency' }
+          ]
         });
       }
     }
@@ -116,7 +131,22 @@ export class ImportSuggestionGenerator {
           importType: 'named',
           modulePath: this.getRelativeImportPath(currentFile, file),
           importName: identifier,
-          alternativePaths: []
+          alternativePaths: [],
+          confidenceThresholds: {
+            autoApply: 85,
+            suggestApply: 70,
+            manualReview: 50
+          },
+          validationSteps: [
+            { step: 'Verify file exports', action: 'scanExports', timeout: 1500 },
+            { step: 'Check import compatibility', action: 'checkCompatibility', timeout: 1000 },
+            { step: 'Test in isolation', action: 'isolatedTest', timeout: 1000 }
+          ],
+          fallbackStrategies: [
+            { type: 'copy_implementation', description: 'Copy relevant code locally' },
+            { type: 'abstract_interface', description: 'Create interface instead' },
+            { type: 'alternative_source', description: 'Look for alternative source file' }
+          ]
         });
       }
     }
@@ -158,7 +188,22 @@ export class ImportSuggestionGenerator {
           importType: 'named',
           modulePath: this.getRelativeImportPath(process.cwd(), file),
           importName: identifier,
-          alternativePaths: []
+          alternativePaths: [],
+          confidenceThresholds: {
+            autoApply: 90,
+            suggestApply: 75,
+            manualReview: 55
+          },
+          validationSteps: [
+            { step: 'Analyze usage patterns', action: 'analyzePatterns', timeout: 2000 },
+            { step: 'Check export consistency', action: 'checkConsistency', timeout: 1000 },
+            { step: 'Validate import context', action: 'validateContext', timeout: 1500 }
+          ],
+          fallbackStrategies: [
+            { type: 'usage_refactor', description: 'Refactor usage to match available exports' },
+            { type: 'export_addition', description: 'Add missing export to source file' },
+            { type: 'wrapper_function', description: 'Create wrapper function' }
+          ]
         });
       }
     }
@@ -192,7 +237,22 @@ export class ImportSuggestionGenerator {
           importType: 'named',
           modulePath: library,
           importName: identifier,
-          alternativePaths: this.getAlternativeLibraryPaths(library, identifier)
+          alternativePaths: this.getAlternativeLibraryPaths(library, identifier),
+          confidenceThresholds: {
+            autoApply: 88,
+            suggestApply: 72,
+            manualReview: 58
+          },
+          validationSteps: [
+            { step: 'Check library installation', action: 'checkInstallation', timeout: 500 },
+            { step: 'Verify library exports', action: 'checkLibraryExports', timeout: 1500 },
+            { step: 'Test import resolution', action: 'testResolution', timeout: 1000 }
+          ],
+          fallbackStrategies: [
+            { type: 'alternative_library', description: 'Use alternative library with similar export' },
+            { type: 'polyfill', description: 'Create polyfill implementation' },
+            { type: 'custom_implementation', description: 'Implement functionality locally' }
+          ]
         });
       }
     }
@@ -219,7 +279,22 @@ export class ImportSuggestionGenerator {
         importType: 'named',
         modulePath: 'react',
         importName: identifier,
-        alternativePaths: ['react-dom', '@types/react', 'react-native']
+        alternativePaths: ['react-dom', '@types/react', 'react-native'],
+        confidenceThresholds: {
+          autoApply: 82,
+          suggestApply: 68,
+          manualReview: 52
+        },
+        validationSteps: [
+          { step: 'Check React installation', action: 'checkReact', timeout: 500 },
+          { step: 'Determine React type', action: 'determineReactType', timeout: 1000 },
+          { step: 'Verify React context', action: 'verifyReactContext', timeout: 1500 }
+        ],
+        fallbackStrategies: [
+          { type: 'react_alias', description: 'Use different React import pattern' },
+          { type: 'global_types', description: 'Add to global type definitions' },
+          { type: 'component_refactor', description: 'Refactor as custom component' }
+        ]
       });
     }
 
@@ -256,7 +331,22 @@ export class ImportSuggestionGenerator {
           importType: 'named',
           modulePath: this.getRelativeImportPath(currentFile, dep),
           importName: identifier,
-          alternativePaths: []
+          alternativePaths: [],
+          confidenceThresholds: {
+            autoApply: 98,
+            suggestApply: 90,
+            manualReview: 75
+          },
+          validationSteps: [
+            { step: 'Verify existing import', action: 'checkExistingImport', timeout: 300 },
+            { step: 'Check export availability', action: 'verifyExport', timeout: 700 },
+            { step: 'Test import update', action: 'testImportUpdate', timeout: 1000 }
+          ],
+          fallbackStrategies: [
+            { type: 'separate_import', description: 'Create separate import statement' },
+            { type: 'import_restructuring', description: 'Restructure imports for clarity' },
+            { type: 'dependency_consolidation', description: 'Consolidate dependency usage' }
+          ]
         });
       }
     }

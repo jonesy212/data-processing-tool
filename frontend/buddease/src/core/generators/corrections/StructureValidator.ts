@@ -1,15 +1,15 @@
-StructureValidator.ts
-import { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
+// StructureValidator.ts
+import type { ApiInfo, ComponentInfo, InterfaceInfo } from '@/core/generators/ApiCodeGenerator';
 import { BaseAnalyzer } from '@/core/generators/corrections/analyzers/BaseAnalyzer';
 import { PackageJsonAnalyzer } from '@/core/generators/corrections/analyzers/react-native/errors/PackageJsonAnalyzer';
 import { ConfigurationValidator } from '@/core/generators/corrections/validators/ConfigurationValidator';
 import { FileStructureValidator } from '@/core/generators/corrections/validators/FileStructureValidator';
 import { MultiPlatformDirectoryValidator } from '@/core/generators/corrections/validators/MultiPlatformDirectoryValidator';
 import { PackageJsonValidator } from '@/core/generators/corrections/validators/PackageJsonValidator';
-import { ProjectStructure } from '@/core/scripts/generateRoadmaps';
+import type { ProjectStructure } from '@/core/scripts/generateRoadmaps';
 
-import { Correction } from '@/core/generators/corrections/CorrectionGenerator';
-import { PackageJson } from '@/core/scripts/generate-commands-doc';
+import type { Correction } from '@/core/generators/corrections/CorrectionGenerator';
+import type { PackageJson } from '@/core/scripts/generate-commands-doc';
 
 import fs from 'fs';
 import path from 'path';

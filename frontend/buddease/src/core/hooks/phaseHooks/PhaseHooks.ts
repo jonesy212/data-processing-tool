@@ -1,26 +1,24 @@
-PhaseHooks.ts
+// PhaseHooks.ts
 
 import IdeationPhaseComponent from '@/core/components/phases/IdeationPhaseComponent';
-import type { BaseDataEntity, DefaultMeta } from '@/core/config/BaseConfig';
+import type { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/core/config/BaseConfig';
 import configData from "@/core/config/endpoints/configData";
 import { ipfsConfig } from '@/core/config/ipfsConfig';
 import userSettings from '@/core/config/UserSettings';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import createDynamicHook from '@/core/hooks/dynamicHooks/dynamicHookGenerator';
-import { TestPhaseHookConfig, TestPhaseHooks, TestResult, TestScenario, TransitionTestResult, ValidationResult } from '@/core/hooks/useTestPhaseHooks';
-import { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
-import { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
-import { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
-import BrandingSettings from '@/core/libraries/theme/BrandingService';
+import type { TestPhaseHookConfig, TestPhaseHooks, TestResult, TestScenario, TransitionTestResult, ValidationResult } from '@/core/hooks/useTestPhaseHooks';
+import type { BrainstormingSettings } from '@/core/interfaces/settings/BrainstormingSettings';
+import type { CollaborationPreferences } from '@/core/interfaces/settings/CollaborationPreferences';
+import type { TeamBuildingSettings } from '@/core/interfaces/settings/TeamBuildingSettings';
+import type BrandingSettings from '@/core/libraries/theme/BrandingService';
 import { ProjectPhaseTypeEnum } from '@/core/models/data/StatusType';
-import { CustomPhaseHooks, Phase } from '@/core/models/phases/Phase';
-import { Progress } from '@/core/models/tracker/ProgressBar';
+import type { CustomPhaseHooks, Phase } from '@/core/models/phases/Phase';
+import type { Progress } from '@/core/models/tracker/ProgressBar';
 import { useAuth } from '@/core/state/context/AuthContext';
 import type { PhaseAttachment, PhaseEntity, PhaseExcludedFields, PhaseIncludedFields, PhaseK, PhaseMeta, PhaseT } from '@/core/typings/entities/PhaseEntity';
-import {
-    ExtendedDAppAdapter,
-    ExtendedDappProps
-} from "@/utils/web3/dAppAdapter/IPFS";
+import { ExtendedDAppAdapter } from "@/utils/web3/dAppAdapter/IPFS";
+import type { ExtendedDappProps } from "@/utils/web3/dAppAdapter/IPFS";
 import { useEffect } from "react";
 
 const phaseHooks: { [key: string]: CustomPhaseHooks<PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields> } = {};
@@ -105,7 +103,7 @@ export interface TestPhaseHooks<
 }
 
 
-TestPhaseHookConfig.ts
+// TestPhaseHookConfig.ts
 
 export interface TestPhaseHookConfig<
   T extends BaseDataEntity,
@@ -124,7 +122,7 @@ export interface TestPhaseHookConfig<
 }
 
 export const idleTimeoutDuration = 10000; 
-Implementation matching your existing structure
+// Implementation matching your existing structure
 export const useTestPhaseHooks = <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -152,9 +150,9 @@ export const useTestPhaseHooks = <
         console.log("Test phase ended");
       }),
 
-      canTransitionTo: config.canTransitionTo || ((nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true),
+      canTransitionTo: config.canTransitionTo || ((currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => true),
       
-      handleTransitionTo: config.handleTransitionTo || (async (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+      handleTransitionTo: config.handleTransitionTo || (async (currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         console.log(`Transitioning to phase: ${nextPhase.name}`);
         // Default implementation
       }),

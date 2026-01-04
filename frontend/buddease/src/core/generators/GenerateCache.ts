@@ -1,15 +1,15 @@
-GenerateCache.ts
+// GenerateCache.ts
 
 import { FileTypeEnum } from "@/core/documents/FileType";
-
-import { CalendarEvent } from '@/core/calendar/CalendarEvent';
+import { updateCallback } from "@/core/pages/blog/UpdateCallbackUtils";
+import type { CalendarEvent } from '@/core/calendar/CalendarEvent';
 import FrontendStructure from "@/core/config/appStructure/FrontendStructure";
-import { IBackendStructure } from "@/core/config/appStructure/IBackendStructure";
+import { BackendStructure } from "@/core/database/server/BackendStructure";
 import { backendConfig } from "@/core/config/BackendConfig";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import { frontendConfig } from "@/core/config/FrontendConfig";
 import userSettings from "@/core/config/UserSettings";
-import { DataVersions } from "@/core/configs/DataVersionsConfig";
+import type { DataVersions } from "@/core/configs/DataVersionsConfig";
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import useRealtimeData from "@/core/hooks/commHooks/useRealtimeData";
 import {
@@ -41,9 +41,9 @@ import { VersionHistory } from "@/core/versions/VersionData";
 const initialData: any = {}; 
 
 export const realtimeData = useRealtimeData(sanitizeInitialData(initialData), sanitizeCallback(updateCallback));
-export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
+// export const realtimeData = {} as RealtimeData<RealtimeDataEntity, RealtimeDataK, RealtimeDataMeta, RealtimeDataAttachment, RealtimeDataExcludedFields, RealtimeDataIncludedFields>
 
-Updated cache data structure based on the provided tree structure
+// Updated cache data structure based on the provided tree structure
 export interface CacheData<  
     T extends BaseDataEntity,
     K extends T = T,
@@ -56,7 +56,7 @@ export interface CacheData<
   lastUpdated: VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dataVersions: DataVersions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  backendStructure: IBackendStructure,
+  backendStructure: BackendStructure,
   frontendConfig: typeof frontendConfig
   userSettings: typeof userSettings,
   realtimeData:  RealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -89,4 +89,3 @@ export interface CacheData<
   data: any,
 }
 
-Rest of the code remains unchanged...

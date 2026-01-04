@@ -1,5 +1,6 @@
 // DataVersionsConfig.tsx
-import AppStructure, { AppStructureItem } from "@/core/config/appStructure/AppStructure";
+import AppStructure from "@/core/config/appStructure/AppStructure";
+import type { AppStructureItem } from "@/core/config/appStructure/AppStructure";
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
 import { useDataStore } from "@/core/state/stores/DataStore";

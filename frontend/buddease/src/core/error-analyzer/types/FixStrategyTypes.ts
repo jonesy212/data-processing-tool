@@ -37,7 +37,7 @@ export interface BaseFixStrategy extends StrategyCore {
 
 // Now create your specific strategy interfaces
 export interface ImportFixStrategy extends BaseFixStrategy {
-  type: 'import_fix' | 'missing_import'; // Include both possibilities
+  type: 'import_fix' | 'missing_import'; 
   importType: 'named' | 'default' | 'namespace';
   modulePath: string;
   importName: string;
@@ -45,7 +45,7 @@ export interface ImportFixStrategy extends BaseFixStrategy {
 }
 
 export interface TypeAlignmentStrategy extends BaseFixStrategy {
-  type: 'type_alignment' | 'type_mismatch'; // Include both possibilities
+  type: 'type_alignment' | 'type_mismatch'; 
   sourceType: string;
   targetType: string;
   conversionRequired: boolean;
@@ -53,7 +53,7 @@ export interface TypeAlignmentStrategy extends BaseFixStrategy {
 }
 
 export interface PropertyAdditionStrategy extends BaseFixStrategy {
-  type: 'property_addition' | 'missing_property'; // Include both possibilities
+  type: 'property_addition' | 'missing_property'; 
   propertyName: string;
   targetType: string;
   inferredType: string;
@@ -68,7 +68,7 @@ interface ConfidenceThresholds{
 }
 
 export interface CircularBreakStrategy extends BaseFixStrategy {
-  type: 'circular_break' | 'circular_dependency'; // Include both possibilities
+  type: 'circular_break' | 'circular_dependency'; 
   cycle: string[];
   breakPoints: string[];
   replacementTypes: string[];

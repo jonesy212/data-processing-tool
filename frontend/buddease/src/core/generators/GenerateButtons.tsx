@@ -1,14 +1,14 @@
-GenerateButtons.tsx
-ButtonGenerator.tsx
-import { Label } from '@/core/branding/BrandingSettings';
+// GenerateButtons.tsx
+// ButtonGenerator.tsx
+import type { Label } from '@/core/branding/BrandingSettings';
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { SharedIdentifiers } from "@/core/documents/RelatedProps";
-import { LifecycleConfig } from '@/core/hooks/phases/lifecycles';
+import type { SharedIdentifiers } from "@/core/documents/RelatedProps";
+import type { LifecycleConfig } from '@/core/hooks/phases/lifecycles';
 import {
     startVoiceRecognition
 } from "@/core/intelligence/VoiceControl";
-import { Phase } from "@/core/models/phases/Phase";
+import type { Phase } from "@/core/models/phases/Phase";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -97,7 +97,7 @@ interface ButtonGeneratorProps<
   // ... (other props)
 }
 
-Define the default labels for each button type
+// Define the default labels for each button type
 const defaultLabels: Record<string, string> = {
   variant: "primary",
   submit: "Submit",
@@ -447,8 +447,8 @@ const ButtonGenerator = <
 
 
 
-Define buttonGeneratorProps
-Updated buttonGeneratorProps with proper LifecycleManager integration
+// Define buttonGeneratorProps
+// Updated buttonGeneratorProps with proper LifecycleManager integration
 const createButtonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -561,7 +561,7 @@ const createButtonGeneratorProps = <
 
 
 
-Create buttonGeneratorProps with default configuration
+// Create buttonGeneratorProps with default configuration
 const buttonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -582,7 +582,7 @@ const buttonGeneratorProps = <
 
 
 
-Hook for easy usage
+// Hook for easy usage
 const useButtonGeneratorProps = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -609,7 +609,7 @@ const useButtonGeneratorProps = <
   };
 };
 
-Default lifecycle configuration
+// Default lifecycle configuration
 const getDefaultLifecycleConfig = (): LifecycleConfig => ({
   phases: [
     {

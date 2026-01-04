@@ -1,7 +1,7 @@
-src/app/error-analyzer/FixPrioritizer.ts
+// src/app/error-analyzer/FixPrioritizer.ts
 
-import { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
-import { FixPrioritizationRule, PrioritizationContext } from '@/core/error-analyzer/index';
+import type { FixPlan } from '@/core/error-analyzer/ErrorFixManager';
+import type { FixPrioritizationRule, PrioritizationContext } from '@/core/error-analyzer/index';
 
 export class FixPrioritizer {
   private prioritizationRules: FixPrioritizationRule[];

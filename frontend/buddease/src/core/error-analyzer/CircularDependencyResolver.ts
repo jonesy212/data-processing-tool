@@ -308,163 +308,243 @@ export class CircularDependencyResolver {
     ) || 'reference';
   }
 
-private buildResolutionStrategies(): CircularBreakStrategy[] {
-  return [
-    {
-      type: 'circular_break',
-      name: 'Interface to Type Alias Conversion',
-      description: 'Convert one interface in the cycle to a type alias',
-      applicability: ['interface_cycle'],
-      confidenceScore: 85,
-      implementationSteps: [
-        'Identify the least complex interface in the cycle',
-        'Convert it to a type alias using the same properties',
-        'Update all references to use the type alias',
-        'Verify no functionality is broken'
-      ],
-      validationChecks: [
-        'Type alias maintains all necessary properties',
-        'All usages compile correctly',
-        'No runtime behavior changes'
-      ],
-      risks: ['May lose interface merging capabilities', 'Could affect type inference'],
-      cycle: [],
-      breakPoints: [],
-      replacementTypes: [],
-      // Add the missing properties from BaseFixStrategy
-      confidenceThresholds: {
-        autoApply: 90,
-        suggestApply: 70,
-        manualReview: 50
+  private buildResolutionStrategies(): CircularBreakStrategy[] {
+    return [
+      {
+        type: 'circular_break',
+        name: 'Interface to Type Alias Conversion',
+        description: 'Convert one interface in the cycle to a type alias',
+        applicability: ['interface_cycle'],
+        confidenceScore: 85,
+        implementationSteps: [
+          'Identify the least complex interface in the cycle',
+          'Convert it to a type alias using the same properties',
+          'Update all references to use the type alias',
+          'Verify no functionality is broken'
+        ],
+        validationChecks: [
+          'Type alias maintains all necessary properties',
+          'All usages compile correctly',
+          'No runtime behavior changes'
+        ],
+        risks: ['May lose interface merging capabilities', 'Could affect type inference'],
+        cycle: [],
+        breakPoints: [],
+        replacementTypes: [],
+        confidenceThresholds: {
+          autoApply: 90,
+          suggestApply: 70,
+          manualReview: 50
+        },
+        validationSteps: [
+          {
+            step: 'Check if type alias preserves all interface properties',
+            action: 'verifyPropertyPreservation',
+            timeout: 1000
+          },
+          {
+            step: 'Verify compilation succeeds',
+            action: 'runCompilationCheck',
+            timeout: 2000
+          },
+          {
+            step: 'Test runtime behavior remains unchanged',
+            action: 'runRuntimeTests',
+            timeout: 3000
+          }
+        ],
+        fallbackStrategies: [
+          {
+            type: 'alternate_conversion',
+            description: 'Try converting a different interface in the cycle'
+          },
+          {
+            type: 'base_extraction',
+            description: 'Consider extracting a base interface instead'
+          },
+          {
+            type: 'conditional_types',
+            description: 'Use conditional types to break the cycle'
+          }
+        ]
       },
-      validationSteps: [
-        'Check if type alias preserves all interface properties',
-        'Verify compilation succeeds',
-        'Test runtime behavior remains unchanged'
-      ],
-      fallbackStrategies: [
-        'Try converting a different interface in the cycle',
-        'Consider extracting a base interface instead',
-        'Use conditional types to break the cycle'
-      ]
-    },
-    {
-      type: 'circular_break',
-      name: 'Base Interface Extraction',
-      description: 'Extract common properties to a base interface',
-      applicability: ['interface_cycle', 'inheritance_cycle'],
-      confidenceScore: 80,
-      implementationSteps: [
-        'Identify properties common to all types in cycle',
-        'Create a base interface with these properties',
-        'Make all types extend the base interface',
-        'Remove circular references by using base interface'
-      ],
-      validationChecks: [
-        'Base interface contains only shared properties',
-        'All types correctly extend base interface',
-        'Circular reference is eliminated'
-      ],
-      risks: ['May create overly broad base type', 'Could affect existing type guards'],
-      cycle: [],
-      breakPoints: [],
-      replacementTypes: [],
-      // Add the missing properties
-      confidenceThresholds: {
-        autoApply: 85,
-        suggestApply: 65,
-        manualReview: 45
+      {
+        type: 'circular_break',
+        name: 'Base Interface Extraction',
+        description: 'Extract common properties to a base interface',
+        applicability: ['interface_cycle', 'inheritance_cycle'],
+        confidenceScore: 80,
+        implementationSteps: [
+          'Identify properties common to all types in cycle',
+          'Create a base interface with these properties',
+          'Make all types extend the base interface',
+          'Remove circular references by using base interface'
+        ],
+        validationChecks: [
+          'Base interface contains only shared properties',
+          'All types correctly extend base interface',
+          'Circular reference is eliminated'
+        ],
+        risks: ['May create overly broad base type', 'Could affect existing type guards'],
+        cycle: [],
+        breakPoints: [],
+        replacementTypes: [],
+        confidenceThresholds: {
+          autoApply: 85,
+          suggestApply: 65,
+          manualReview: 45
+        },
+        validationSteps: [
+          {
+            step: 'Verify base interface has only shared properties',
+            action: 'checkSharedProperties',
+            timeout: 1500
+          },
+          {
+            step: 'Check all types extend base interface correctly',
+            action: 'verifyInterfaceExtension',
+            timeout: 2000
+          },
+          {
+            step: 'Test that circular dependency is resolved',
+            action: 'testDependencyResolution',
+            timeout: 2500
+          }
+        ],
+        fallbackStrategies: [
+          {
+            type: 'multiple_bases',
+            description: 'Extract multiple smaller base interfaces'
+          },
+          {
+            type: 'mixins',
+            description: 'Use mixins instead of inheritance'
+          },
+          {
+            type: 'composition',
+            description: 'Consider composition over inheritance'
+          }
+        ]
       },
-      validationSteps: [
-        'Verify base interface has only shared properties',
-        'Check all types extend base interface correctly',
-        'Test that circular dependency is resolved'
-      ],
-      fallbackStrategies: [
-        'Extract multiple smaller base interfaces',
-        'Use mixins instead of inheritance',
-        'Consider composition over inheritance'
-      ]
-    },
-    {
-      type: 'circular_break',
-      name: 'Generic Parameter Restructuring',
-      description: 'Restructure generic parameters to break the cycle',
-      applicability: ['generic_cycle'],
-      confidenceScore: 75,
-      implementationSteps: [
-        'Analyze generic parameter dependencies',
-        'Introduce intermediate generic type',
-        'Restructure type parameters to remove direct circular dependency',
-        'Update all generic instantiations'
-      ],
-      validationChecks: [
-        'Generic constraints are preserved',
-        'Type inference still works',
-        'All usages compile with updated generics'
-      ],
-      risks: ['May increase type complexity', 'Could affect type inference in complex cases'],
-      cycle: [],
-      breakPoints: [],
-      replacementTypes: [],
-      // Add the missing properties
-      confidenceThresholds: {
-        autoApply: 80,
-        suggestApply: 60,
-        manualReview: 40
+      {
+        type: 'circular_break',
+        name: 'Generic Parameter Restructuring',
+        description: 'Restructure generic parameters to break the cycle',
+        applicability: ['generic_cycle'],
+        confidenceScore: 75,
+        implementationSteps: [
+          'Analyze generic parameter dependencies',
+          'Introduce intermediate generic type',
+          'Restructure type parameters to remove direct circular dependency',
+          'Update all generic instantiations'
+        ],
+        validationChecks: [
+          'Generic constraints are preserved',
+          'Type inference still works',
+          'All usages compile with updated generics'
+        ],
+        risks: ['May increase type complexity', 'Could affect type inference in complex cases'],
+        cycle: [],
+        breakPoints: [],
+        replacementTypes: [],
+        confidenceThresholds: {
+          autoApply: 80,
+          suggestApply: 60,
+          manualReview: 40
+        },
+        validationSteps: [
+          {
+            step: 'Test generic constraints with various type parameters',
+            action: 'testGenericConstraints',
+            timeout: 2000
+          },
+          {
+            step: 'Verify type inference in common use cases',
+            action: 'verifyTypeInference',
+            timeout: 2500
+          },
+          {
+            step: 'Check compilation with edge cases',
+            action: 'testEdgeCases',
+            timeout: 3000
+          }
+        ],
+        fallbackStrategies: [
+          {
+            type: 'simplify_generics',
+            description: 'Simplify generic parameters'
+          },
+          {
+            type: 'default_parameters',
+            description: 'Use type parameters with defaults'
+          },
+          {
+            type: 'remove_constraints',
+            description: 'Consider removing some generic constraints'
+          }
+        ]
       },
-      validationSteps: [
-        'Test generic constraints with various type parameters',
-        'Verify type inference in common use cases',
-        'Check compilation with edge cases'
-      ],
-      fallbackStrategies: [
-        'Simplify generic parameters',
-        'Use type parameters with defaults',
-        'Consider removing some generic constraints'
-      ]
-    },
-    {
-      type: 'circular_break',
-      name: 'Conditional Type Resolution',
-      description: 'Use conditional types to resolve circular dependencies',
-      applicability: ['generic_cycle', 'interface_cycle'],
-      confidenceScore: 70,
-      implementationSteps: [
-        'Identify the circular reference point',
-        'Create conditional type that resolves differently based on context',
-        'Replace circular reference with conditional type',
-        'Test with different type parameters'
-      ],
-      validationChecks: [
-        'Conditional type resolves correctly in all cases',
-        'No infinite type recursion',
-        'Type safety is maintained'
-      ],
-      risks: ['Conditional types can be complex', 'May affect IDE type hints'],
-      cycle: [],
-      breakPoints: [],
-      replacementTypes: [],
-      // Add the missing properties
-      confidenceThresholds: {
-        autoApply: 75,
-        suggestApply: 55,
-        manualReview: 35
-      },
-      validationSteps: [
-        'Test conditional type with various inputs',
-        'Verify no infinite recursion occurs',
-        'Check IDE type hints are still useful'
-      ],
-      fallbackStrategies: [
-        'Simplify the conditional type logic',
-        'Use distributive conditional types',
-        'Consider type assertion as last resort'
-      ]
-    }
-  ];
-}
-
+      {
+        type: 'circular_break',
+        name: 'Conditional Type Resolution',
+        description: 'Use conditional types to resolve circular dependencies',
+        applicability: ['generic_cycle', 'interface_cycle'],
+        confidenceScore: 70,
+        implementationSteps: [
+          'Identify the circular reference point',
+          'Create conditional type that resolves differently based on context',
+          'Replace circular reference with conditional type',
+          'Test with different type parameters'
+        ],
+        validationChecks: [
+          'Conditional type resolves correctly in all cases',
+          'No infinite type recursion',
+          'Type safety is maintained'
+        ],
+        risks: ['Conditional types can be complex', 'May affect IDE type hints'],
+        cycle: [],
+        breakPoints: [],
+        replacementTypes: [],
+        confidenceThresholds: {
+          autoApply: 75,
+          suggestApply: 55,
+          manualReview: 35
+        },
+        validationSteps: [
+          {
+            step: 'Test conditional type with various inputs',
+            action: 'testConditionalTypes',
+            timeout: 3000
+          },
+          {
+            step: 'Verify no infinite recursion occurs',
+            action: 'checkRecursion',
+            timeout: 2000
+          },
+          {
+            step: 'Check IDE type hints are still useful',
+            action: 'verifyIdeHints',
+            timeout: 1500
+          }
+        ],
+        fallbackStrategies: [
+          {
+            type: 'simplify_condition',
+            description: 'Simplify the conditional type logic'
+          },
+          {
+            type: 'distributive_condition',
+            description: 'Use distributive conditional types'
+          },
+          {
+            type: 'type_assertion',
+            description: 'Consider type assertion as last resort'
+          }
+        ]
+      }
+    ];
+  }
+  
   private async resolveSingleCircularDependency(
     plan: FixPlan,
     relationshipMap: RelationshipMap

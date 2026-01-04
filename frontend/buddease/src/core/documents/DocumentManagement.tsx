@@ -1,9 +1,10 @@
 // DocumentManagement.tsx
 import type { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { DocumentData, } from "@/core/documents/editing/DocumentBuilder";
-import DocumentGenerator, { DocumentTypeEnum } from "@/core/server/ServerDocumentGenerator";
-import { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
+import type { DocumentData, } from "@/core/documents/editing/DocumentBuilder";
+import type DocumentGenerator from "@/core/server/ServerDocumentGenerator";
+import type { DocumentTypeEnum } from "@/core/server/ServerDocumentGenerator";
+import type { DappProps } from "@/utils/web3/dAppAdapter/DAppAdapterConfig";
 
 const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
 

@@ -1,36 +1,36 @@
 // EventStore.ts
 import type { Attachment } from '@/core/documents/attachment/Attachment';
-import { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
-import { CombinedEvents } from '@/core/hooks/useSnapshotManager';
-import { Category } from "@/core/libraries/categories/generateCategoryProperties";
+import type { NotificationType } from '@/core/features/support/UnifiedNotificationTypes';
+import type { CombinedEvents } from '@/core/hooks/useSnapshotManager';
+import type { Category } from "@/core/libraries/categories/generateCategoryProperties";
 import { NotificationPosition } from "@/core/models/data/StatusType";
-import { CriteriaType } from '@/core/pages/searches/CriteriaType';
-import StoreConfig from "@/core/shoppingCenter/ShoppingCenterConfig";
-import { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
+import type { CriteriaType } from '@/core/pages/searches/CriteriaType';
+import type StoreConfig from "@/core/shoppingCenter/ShoppingCenterConfig";
+import type { Snapshots, SnapshotsArray } from '@/core/snapshots/LocalStorageSnapshotStore';
 import type { Snapshot } from '@/core/snapshots/Snapshot';
-import { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
-import { SnapshotData } from '@/core/snapshots/SnapshotData';
-import { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
-import { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
+import type { SnapshotConfig } from '@/core/snapshots/SnapshotConfig';
+import type { SnapshotData } from '@/core/snapshots/SnapshotData';
+import type { SnapshotStoreConfig } from "@/core/snapshots/SnapshotStoreConfig";
+import type { SnapshotStoreProps } from "@/core/snapshots/SnapshotStoreProps";
+import type { SnapshotWithCriteria } from "@/core/snapshots/SnapshotWithCriteria";
 import type { EventRecord, InitializedState } from "@/core/state/stores/DataStore";
-import { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
-import { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
+import type { Callback } from '@/core/subscribers/subscribeToSnapshotsImplementation';
+import type { UnsubscribeDetails } from '@/core/typings/eventHandlers/eventTypes';
 
 import type { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/core/config/BaseConfig';
-import { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
+import type { UnifiedMetaDataOptions } from "@/core/config/MetaDataOptions";
 import type { StructuredMetadata } from "@/core/config/StructuredMetadata";
-import { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
-import { Content } from '@/core/models/content/AddContent';
+import type { UpdateSnapshotPayload } from '@/core/interfaces/payload/payloadTypes';
+import type { Content } from '@/core/models/content/AddContent';
 import SnapshotStore from "@/core/snapshots/SnapshotStore";
-import { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
+import type { InitializedData } from '@/core/snapshots/SnapshotStoreOptions';
 import { fetchAndCreateSnapshot } from '@/core/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/core/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/core/subscribers/Subscriber";
-import { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
-import { SubscriberCallbackType, Subscription } from '@/core/subscriptions/Subscription';
-import { RealtimeDataItem } from '@/core/typings/realtimeTypes';
-import { SnapshotEvents } from '@/core/typings/snapshotTypes';
+import type { SubscriberCollection } from '@/core/subscribers/SubscriberCollection';
+import type { SubscriberCallbackType, Subscription } from '@/core/subscriptions/Subscription';
+import type { RealtimeDataItem } from '@/core/typings/realtimeTypes';
+import type { SnapshotEvents } from '@/core/typings/snapshotTypes';
 
 
 export type EventStore<
